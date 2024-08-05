@@ -74,13 +74,45 @@ class par_setter:
         s_par = s_par_flt | s_par_fix
         s_par = self._set_fix_mc(s_par)
         s_par = self._float_scales(s_par)
+        s_par = self._set_fix_brem(s_par)
 
         return s_par
     #----------------------------------
+    def _set_fix_brem(self, s_par):
+        if self._trig == 'MTOS':
+            return s_par
+
+        fz_par = self._get_par(s_par, f'fr_mc_z_mc_fit_{self._dset}_{self._trig}')
+        fo_par = self._get_par(s_par, f'fr_mc_o_mc_fit_{self._dset}_{self._trig}')
+        ft_par = self._get_par(s_par, f'fr_mc_t_mc_fit_{self._dset}_{self._trig}')
+
+        fr_mc_z, fr_mc_o, fr_mc_t = self._get_mc_brem_frac()
+
+        fz_par.set_value(fr_mc_z)
+        fo_par.set_value(fr_mc_o)
+        ft_par.set_value(fr_mc_t)
+
+        fz_par.floating = False
+        fo_par.floating = False
+        ft_par.floating = False
+
+        return s_par
+    #----------------------------------
+    def _get_mc_brem_frac(self):
+        nbrem_z = self._d_par[f'nevt_{self._dset}_{self._trig}_brem_0']
+        nbrem_o = self._d_par[f'nevt_{self._dset}_{self._trig}_brem_1']
+        nbrem_t = self._d_par[f'nevt_{self._dset}_{self._trig}_brem_2']
+
+        fr_mc_z = nbrem_z / (nbrem_z + nbrem_o + nbrem_t)
+        fr_mc_o = nbrem_o / (nbrem_z + nbrem_o + nbrem_t)
+        fr_mc_t = nbrem_t / (nbrem_z + nbrem_o + nbrem_t)
+
+        return fr_mc_z, fr_mc_o, fr_mc_t
+    #----------------------------------
     def _set_fix_mc(self, s_par):
-        log.debug(50 * '-')
+        log.debug(60 * '-')
         log.debug(f'Setting MC parameters')
-        log.debug(50 * '-')
+        log.debug(60 * '-')
         for par_name, par_value in self._d_par.items():
             if par_name.startswith('nevt_'):
                 continue
@@ -89,7 +121,7 @@ class par_setter:
             par.set_value(par_value)
             par.floating = False
 
-            log.debug(f'{par_name:<20}{"->":10}{par_value:<20.3}')
+            log.debug(f'{par_name:<40}{"->":10}{par_value:<10.3}')
 
         return s_par
     #----------------------------------
