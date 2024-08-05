@@ -29,15 +29,18 @@ def test_simple_ee():
     out_dir = f'{data.out_dir}/simple_ee'
     os.makedirs(out_dir, exist_ok=True)
 
-    pdf = get_signal(obs=data.obs_ee, dset="2018", trig="ETOS", prefix="prefix", syst="nom")
+    pdf   = get_signal(obs=data.obs_ee, dset="2018", trig="ETOS", prefix="mc_fit_2018_ETOS", syst="nom")
+    obj   = par_setter(pdf)
+    par   = obj.pdf
+    d_cns = obj.constraints
 
-    zut.print_pdf(pdf, txt_path=f'{out_dir}/pdf.txt')
+    zut.print_pdf(pdf,d_const = d_cns, txt_path=f'{out_dir}/pdf.txt')
 #-------------------------------------
 def main():
     par_logger.setLevel(10)
 
     test_simple_mm()
-    #test_simple_ee()
+    test_simple_ee()
 #-------------------------------------
 if __name__ == '__main__':
     main()
