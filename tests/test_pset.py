@@ -23,7 +23,7 @@ def test_simple_mm():
     par   = obj.pdf
     d_cns = obj.constraints
 
-    #zut.print_pdf(pdf, d_const = d_cns, txt_path=f'{out_dir}/pdf.txt')
+    zut.print_pdf(pdf, d_const = d_cns, txt_path=f'{out_dir}/pdf.txt')
 #-------------------------------------
 def test_simple_ee():
     out_dir = f'{data.out_dir}/simple_ee'
