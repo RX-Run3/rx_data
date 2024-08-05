@@ -72,33 +72,16 @@ class par_setter:
         s_par_fix = self._pdf.get_params(floating=False)
 
         s_par = s_par_flt | s_par_fix
-        s_par = self._fix_mc(s_par)
+        s_par = self._set_fix_mc(s_par)
         s_par = self._float_scales(s_par)
-        s_par = self._fix_tails(s_par)
 
         return s_par
     #----------------------------------
-    def _fix_mc(self, s_par):
-        log.debug(40 * '-')
-        log.debug('Fixing MC peak parameters')
-        log.debug(40 * '-')
-        for par in s_par:
-            if '_mc_mc_' not in par.name:
-                continue
-
-            par.floating = False
-            log.debug(f'{"":<20}{par.name:<20}')
-
-        return s_par
-    #----------------------------------
-    def _fix_tails(self, s_par):
+    def _set_fix_mc(self, s_par):
         log.debug(50 * '-')
-        log.debug(f'Setting tails')
+        log.debug(f'Setting MC parameters')
         log.debug(50 * '-')
         for par_name, par_value in self._d_par.items():
-            if '_mc_mc_' in par_name:
-                continue
-
             if par_name.startswith('nevt_'):
                 continue
 
