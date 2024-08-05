@@ -6,12 +6,15 @@ import glob
 import zfit
 import numpy
 import argparse
+import zutils.utils      as zut
 import matplotlib.pyplot as plt
+import utils_noroot      as utnr
 
-from zutils.plot import plot       as zfp
-from fitter      import zfitter
-from hqm2.signal import get_signal
-from log_store   import log_store
+from importlib.resources import files
+from zutils.plot         import plot       as zfp
+from fitter              import zfitter
+from hqm2.signal         import get_signal
+from log_store           import log_store
 
 log=log_store.add_logger('hqm2:fit_mc')
 #------------------------------
@@ -47,20 +50,20 @@ def get_args():
     data.log_lvl= args.logl
     data.ntries = args.ntry
 #------------------------------
-def get_dat(dset, trig):
+def get_dat(dset, trig, brem):
     log.debug(f'Getting data for: {dset}/{trig}')
     if   dset == 'r1': 
-        arr_11 = get_dat_by_year('2011', trig)
-        arr_12 = get_dat_by_year('2012', trig)
+        arr_11 = get_dat_by_year('2011', trig, brem)
+        arr_12 = get_dat_by_year('2012', trig, brem)
 
         arr_dat, arr_wgt = merge_years(arr_11, arr_12)
     elif dset == 'r2p1': 
-        arr_15 = get_dat_by_year('2015', trig)
-        arr_16 = get_dat_by_year('2016', trig)
+        arr_15 = get_dat_by_year('2015', trig, brem)
+        arr_16 = get_dat_by_year('2016', trig, brem)
 
         arr_dat, arr_wgt = merge_years(arr_15, arr_16)
     else:
-        arr_dat= get_dat_by_year(dset, trig)
+        arr_dat= get_dat_by_year(dset, trig, brem)
         arr_wgt= numpy.ones_like(arr_dat)
 
     obs = {'ETOS' : data.obs_ee, 'MTOS' : data.obs_mm}[trig]
@@ -83,7 +86,7 @@ def merge_years(arr_dat_y1, arr_dat_y2):
 
     return arr_dat, arr_wgt
 #------------------------------
-def get_dat_by_year(year, trig):
+def get_dat_by_year(year, trig, brem):
     asl_dir = os.environ['ASLDIR']
     rdf_wc  = f'{asl_dir}/rare_mc_fit/{data.mc_vers}/sign/v10.21p2/{year}_{trig}/*.root'
     l_path  = glob.glob(rdf_wc)
@@ -93,6 +96,12 @@ def get_dat_by_year(year, trig):
         raise
 
     rdf      = ROOT.RDataFrame(trig, l_path)
+    rdf      = rdf.Define('nbrem', 'L1_BremMultiplicity + L2_BremMultiplicity')
+    rdf      = rdf.Define('xbrem', 'nbrem >= 2 ? 2 : nbrem')
+    rdf      = rdf.Filter(f'xbrem == {brem}', 'BREM')
+    rep      = rdf.Report()
+    rep.Print()
+
     arr_mass = rdf.AsNumpy(['B_M'])['B_M']
 
     arr_mass.year = year
@@ -101,9 +110,32 @@ def get_dat_by_year(year, trig):
 #------------------------------
 def get_pdf(dset, trig):
     log.debug(f'Getting PDF for: {dset}/{trig}')
-    obs = {'ETOS' : data.obs_ee, 'MTOS' : data.obs_mm}[trig]
+    obs   = {'ETOS' : data.obs_ee, 'MTOS' : data.obs_mm}[trig]
+    pdf   = get_signal(obs=obs, dset=dset, trig=trig, prefix=f'mc_fit_{dset}_{trig}', syst='nom')
+    s_par = pdf.get_params()
 
-    pdf = get_signal(obs=obs, dset=dset, trig=trig, prefix='mc_fit', syst='nom')
+    for par in s_par:
+        #For MC fit, scales are 0 and fixed
+        if par.name.startswith('sc_'):
+            par.set_value(0)
+            par.floating=False
+
+        #For MC fit, resolutions are 1 and fixed
+        if par.name.startswith('rs_'):
+            par.set_value(1)
+            par.floating=False
+
+    [pdf_z, pdf_o, pdf_t] = pdf.models
+
+    epdf_z = _extend_pdf(pdf_z, dset, trig, '0')
+    epdf_o = _extend_pdf(pdf_o, dset, trig, '1')
+    epdf_t = _extend_pdf(pdf_t, dset, trig, '2')
+
+    return [epdf_z, epdf_o, epdf_t]
+#------------------------------
+def _extend_pdf(pdf, dset, trig, brem):
+    nevt = zfit.param.Parameter(f'nevt_{dset}_{trig}_brem_{brem}', 0, 0, 1e5)
+    pdf  = pdf.create_extended(nevt)
 
     return pdf
 #------------------------------
@@ -114,11 +146,24 @@ def fit(pdf, dat):
 
     return res
 #------------------------------
-def plot_fit(pdf, dat, res, dset, trig):
+def plot_fit(pdf, dat, res, dset, trig, brem):
     obj=zfp(model=pdf, data=dat, result=res) 
     obj.plot()
-    plt.savefig(f'{data.plt_dir}/{dset}_{trig}.png')
+    plot_path = f'{data.plt_dir}/{dset}_{trig}_{brem}.png'
+    log.info(f'Saving to: {plot_path}')
+    plt.savefig(plot_path)
     plt.close('all')
+#------------------------------
+def save_pars(l_res, dset, trig):
+    d_par = dict()
+    for res in l_res:
+        d_tmp = { par.name : d_val['value'] for par, d_val in res.params.items() }
+        d_par.update(d_tmp)
+
+    par_path = files('hqm2_data').joinpath(f'mc_pars/{dset}_{trig}.json')
+
+    log.info(f'Saving to: {par_path}')
+    utnr.dump_json(d_par, par_path)
 #------------------------------
 def main():
     get_args()
@@ -129,11 +174,15 @@ def main():
     for dset in data.l_dset:
         for trig in data.l_trig:
             log.info(f'Fitting for: {dset}/{trig}')
-            pdf = get_pdf(dset, trig)
-            dat = get_dat(dset, trig)
-            res = fit(pdf, dat)
+            l_pdf = get_pdf(dset, trig)
+            l_brm = [0, 1, 2]
+            l_dat = [ get_dat(dset, trig, brm) for brm in l_brm ]
+            l_res = [ fit(pdf, dat) for pdf, dat in zip(l_pdf, l_dat) ]
 
-            plot_fit(pdf, dat, res, dset, trig)
+            for pdf, dat, res, brm in zip(l_pdf, l_dat, l_res, l_brm):
+                plot_fit(pdf, dat, res, dset, trig, brm)
+
+            save_pars(l_res, dset, trig)
 #------------------------------
 if __name__ == '__main__':
     main()
