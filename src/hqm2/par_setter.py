@@ -158,7 +158,7 @@ class par_setter:
         for name, (val, err) in d_const.items():
             log.debug(f'{name:<20}{val:<20.3f}{err:<20.3f}')
 
-        return d_const
+        self._d_cns = d_const
     #----------------------------------
     @property
     def pdf(self):
