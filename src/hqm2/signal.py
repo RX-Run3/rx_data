@@ -44,6 +44,10 @@ def get_signal(obs=None, dset=None, trig=None, prefix=None, syst=None):
     else:
         pdf = _get_electron_signal(obs=obs, dset=dset, prefix=prefix, syst=syst)
 
+    pdf.dset = dset
+    pdf.trig = trig 
+    pdf.syst = syst 
+
     return pdf
 #--------------------------------------------------------------------
 def _get_muon_signal(obs=None, dset=None, prefix=None, syst=None):
