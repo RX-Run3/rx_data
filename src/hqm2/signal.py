@@ -85,7 +85,7 @@ def _get_dscb(mu, sg, prefix, obs):
     al = zfit.param.Parameter(f'al_{prefix}', 0, 0, 5)
     nl = zfit.param.Parameter(f'nl_{prefix}', 0, 0, 5)
     ar = zfit.param.Parameter(f'ar_{prefix}', 0, 0, 5)
-    nr = zfit.param.Parameter(f'nr_{prefix}', 0, 0, 5)
+    nr = zfit.param.Parameter(f'nr_{prefix}', 0, 0, 8)
 
     pdf = zfit.pdf.DoubleCB(mu, sg, al, nl, ar, nr, obs)
 
