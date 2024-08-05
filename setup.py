@@ -8,6 +8,7 @@ setup(
         scripts           = glob.glob('scripts/*'),
         long_description  = '', 
         package_dir       = {'' : 'src'},
-        #package_data      = {'hqm_data' : ['*/*.json']},
+        package_data      = {'hqm2_data' : ['*/*.json']},
         install_requires  = open('requirements.txt').read().splitlines()
         ) 
+
