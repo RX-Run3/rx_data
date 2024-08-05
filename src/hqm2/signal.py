@@ -58,14 +58,23 @@ def _get_muon_signal(obs=None, dset=None, prefix=None, syst=None):
     return pdf 
 #--------------------------------------------------------------------
 def _get_electron_signal(obs=None, dset=None, prefix=None, syst=None):
-    pdf_z = _get_electron_signal_brem(obs=obs, dset=dset, prefix=f'{prefix}_brem_0', syst=syst)
-    pdf_o = _get_electron_signal_brem(obs=obs, dset=dset, prefix=f'{prefix}_brem_1', syst=syst)
-    pdf_t = _get_electron_signal_brem(obs=obs, dset=dset, prefix=f'{prefix}_brem_2', syst=syst)
+    pdf_z    = _get_electron_signal_brem(obs=obs, dset=dset, prefix=f'{prefix}_brem_0', syst=syst)
+    pdf_o    = _get_electron_signal_brem(obs=obs, dset=dset, prefix=f'{prefix}_brem_1', syst=syst)
+    pdf_t    = _get_electron_signal_brem(obs=obs, dset=dset, prefix=f'{prefix}_brem_2', syst=syst)
 
-    fr_z  = zfit.param.Parameter('fr_z', 0, 0, 1)
-    fr_o  = zfit.param.Parameter('fr_o', 0, 0, 1)
+    fr_mc_z  = zfit.param.Parameter(f'fr_mc_z_{prefix}', 0, 0, 1)
+    fr_mc_o  = zfit.param.Parameter(f'fr_mc_o_{prefix}', 0, 0, 1)
+    fr_mc_t  = zfit.param.Parameter(f'fr_mc_t_{prefix}', 0, 0, 1)
 
-    pdf   = zfit.pdf.SumPDF([pdf_z, pdf_o, pdf_t], [fr_z, fr_o])
+    fr_sc_z  = zfit.param.Parameter(f'fr_sc_z_{prefix}', 1, 0, 2)
+    fr_sc_o  = zfit.param.Parameter(f'fr_sc_o_{prefix}', 1, 0, 2)
+    fr_sc_t  = zfit.param.Parameter(f'fr_sc_t_{prefix}', 1, 0, 2)
+
+    fr_z     = zfit.ComposedParameter(f'fr_z_{prefix}' , func=lambda d_par : d_par['mc'] * d_par['sc'], params={'mc' : fr_mc_z, 'sc' : fr_sc_z} )
+    fr_o     = zfit.ComposedParameter(f'fr_o_{prefix}' , func=lambda d_par : d_par['mc'] * d_par['sc'], params={'mc' : fr_mc_o, 'sc' : fr_sc_o} )
+    fr_t     = zfit.ComposedParameter(f'fr_t_{prefix}' , func=lambda d_par : d_par['mc'] * d_par['sc'], params={'mc' : fr_mc_t, 'sc' : fr_sc_t} )
+
+    pdf      = zfit.pdf.SumPDF([pdf_z, pdf_o, pdf_t], [fr_z, fr_o, fr_t])
 
     return pdf
 #--------------------------------------------------------------------
