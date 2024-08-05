@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+import argparse
+
+from log_store import log_store
+
+log=log_store.add_logger('hqm2:fit_mc')
+#------------------------------
+class data:
+    l_dset = ['r1', 'r2p1', '2017', '2018']
+    l_trig = ['MTOS', 'ETOS']
+    log_lvl= 20
+#------------------------------
+def get_args():
+    parser = argparse.ArgumentParser(description='Used to fit simulated MC in rare mode after full selection')
+    parser.add_argument('-d', '--dset' , nargs='+', help='Year, default: {data.l_dset}'   , default=data.l_dset, choices=data.l_dset)
+    parser.add_argument('-t', '--trig' , nargs='+', help='Trigger, default: {data.l_trig}', default=data.l_trig, choices=data.l_trig)
+    parser.add_argument('-l', '--logl' , type =int, help='Log level, default: {data.log_lvl}', default=data.log_lvl, choices=[10,20,30,40])
+    args = parser.parse_args()
+
+    data.l_dset = args.dset
+    data.l_trig = args.trig
+    data.log_lvl= args.logl
+#------------------------------
+def get_rdf(dset, trig):
+    return
+#------------------------------
+def get_pdf(dset, trig):
+    return
+#------------------------------
+def fit(rdf, pdf):
+    return
+#------------------------------
+def main():
+    get_args()
+
+    for dset in data.l_dset:
+        for trig in data.l_trig:
+            log.info(f'Fitting for: {dset}/{trig}')
+
+            rdf = get_rdf(dset, trig)
+            pdf = get_pdf(dset, trig)
+
+            fit(rdf, pdf)
+#------------------------------
+if __name__ == '__main__':
+    main()
+
