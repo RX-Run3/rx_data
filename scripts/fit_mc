@@ -87,6 +87,8 @@ def merge_years(arr_dat_y1, arr_dat_y2):
     return arr_dat, arr_wgt
 #------------------------------
 def get_dat_by_year(year, trig, brem):
+    log.debug(f'Getting data for: {year}/{trig}/{brem}')
+
     asl_dir = os.environ['ASLDIR']
     rdf_wc  = f'{asl_dir}/rare_mc_fit/{data.mc_vers}/sign/v10.21p2/{year}_{trig}/*.root'
     l_path  = glob.glob(rdf_wc)
@@ -96,11 +98,12 @@ def get_dat_by_year(year, trig, brem):
         raise
 
     rdf      = ROOT.RDataFrame(trig, l_path)
-    rdf      = rdf.Define('nbrem', 'L1_BremMultiplicity + L2_BremMultiplicity')
-    rdf      = rdf.Define('xbrem', 'nbrem >= 2 ? 2 : nbrem')
-    rdf      = rdf.Filter(f'xbrem == {brem}', 'BREM')
-    rep      = rdf.Report()
-    rep.Print()
+    if trig != 'MTOS':
+        rdf      = rdf.Define('nbrem', 'L1_BremMultiplicity + L2_BremMultiplicity')
+        rdf      = rdf.Define('xbrem', 'nbrem >= 2 ? 2 : nbrem')
+        rdf      = rdf.Filter(f'xbrem == {brem}', 'BREM')
+        rep      = rdf.Report()
+        rep.Print()
 
     arr_mass = rdf.AsNumpy(['B_M'])['B_M']
 
@@ -125,6 +128,11 @@ def get_pdf(dset, trig):
             par.set_value(1)
             par.floating=False
 
+    if trig == 'MTOS':
+        epdf_z = _extend_pdf(pdf, dset, trig, '0')
+
+        return [epdf_z]
+
     [pdf_z, pdf_o, pdf_t] = pdf.models
 
     epdf_z = _extend_pdf(pdf_z, dset, trig, '0')
@@ -134,8 +142,9 @@ def get_pdf(dset, trig):
     return [epdf_z, epdf_o, epdf_t]
 #------------------------------
 def _extend_pdf(pdf, dset, trig, brem):
-    nevt = zfit.param.Parameter(f'nevt_{dset}_{trig}_brem_{brem}', 0, 0, 1e5)
-    pdf  = pdf.create_extended(nevt)
+    nevt     = zfit.param.Parameter(f'nevt_{dset}_{trig}_brem_{brem}', 0, 0, 1e7)
+    pdf      = pdf.create_extended(nevt)
+    pdf.brem = brem
 
     return pdf
 #------------------------------
@@ -146,10 +155,10 @@ def fit(pdf, dat):
 
     return res
 #------------------------------
-def plot_fit(pdf, dat, res, dset, trig, brem):
+def plot_fit(pdf, dat, res, dset, trig):
     obj=zfp(model=pdf, data=dat, result=res) 
     obj.plot()
-    plot_path = f'{data.plt_dir}/{dset}_{trig}_{brem}.png'
+    plot_path = f'{data.plt_dir}/{dset}_{trig}_{pdf.brem}.png'
     log.info(f'Saving to: {plot_path}')
     plt.savefig(plot_path)
     plt.close('all')
@@ -175,12 +184,11 @@ def main():
         for trig in data.l_trig:
             log.info(f'Fitting for: {dset}/{trig}')
             l_pdf = get_pdf(dset, trig)
-            l_brm = [0, 1, 2]
-            l_dat = [ get_dat(dset, trig, brm) for brm in l_brm ]
+            l_dat = [ get_dat(dset, trig, pdf.brem) for pdf in l_pdf ]
             l_res = [ fit(pdf, dat) for pdf, dat in zip(l_pdf, l_dat) ]
 
-            for pdf, dat, res, brm in zip(l_pdf, l_dat, l_res, l_brm):
-                plot_fit(pdf, dat, res, dset, trig, brm)
+            for pdf, dat, res in zip(l_pdf, l_dat, l_res):
+                plot_fit(pdf, dat, res, dset, trig)
 
             save_pars(l_res, dset, trig)
 #------------------------------
