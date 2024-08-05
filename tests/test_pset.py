@@ -18,7 +18,7 @@ def test_simple_mm():
     os.makedirs(out_dir, exist_ok=True)
 
 
-    pdf   = get_signal(obs=data.obs_mm, dset="2018", trig="MTOS", prefix="prefix", syst="nom")
+    pdf   = get_signal(obs=data.obs_mm, dset="2018", trig="MTOS", prefix="mc_fit_2018_MTOS", syst="nom")
     obj   = par_setter(pdf)
     par   = obj.pdf
     d_cns = obj.constraints
