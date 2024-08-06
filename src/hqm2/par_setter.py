@@ -225,15 +225,14 @@ class par_setter:
 
         return d_const
     #----------------------------------
-    @property
-    def pdf(self):
+    def pdf(self, brem=None):
         self._initialize()
 
         return self._pdf
     #----------------------------------
-    @property
-    def constraints(self):
+    def constraints(self, brem=None):
         self._initialize()
 
         return self._d_cns
 #-------------------------------------------
+
