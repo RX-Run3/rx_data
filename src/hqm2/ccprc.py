@@ -26,8 +26,8 @@ class ccprc:
         return pdf_trf
     #---------------------------------
     def _get_muon_pdf(self):
-        obj     = data_store(qsq=self._qsq_src, trigger='MTOS', proc='data')
-        arr_dat = obj.get_array()
+        obj     = data_store(qsq=self._qsq_src, dset=self._dset, trig='MTOS', proc='data')
+        arr_dat = obj.get_array(cuts={'SB' : 'B_M < 5180'})
         zdata   = zfit.Data.from_numpy(self._obs, array=arr_dat)
         pdf_mmd = zfit.pdf.KDE1DimFFT(obs=self._obs, data=zdata, name='data muon')
 
