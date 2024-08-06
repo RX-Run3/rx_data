@@ -7,7 +7,7 @@ import os
 
 #--------------------------------------------------
 class data:
-    obs = zfit.Space("B_M", limits=(0, 6000))
+    obs = zfit.Space("B_M", limits=(0, 7000))
 #--------------------------------------------------
 def check_pdf(pdf, plot_dir):
     os.makedirs(plot_dir, exist_ok=True)
@@ -21,7 +21,7 @@ def check_pdf(pdf, plot_dir):
     plt.close('all')
 #--------------------------------------------------
 def test_simple():
-    obj=ccprc(obs=data.obs, dset='2017', preffix='test_simple', syst='nom', qsq_rng=['psi2', 'high'])
+    obj=ccprc(obs=data.obs, dset='r2p1', preffix='test_simple', syst='nom', qsq_rng=['psi2', 'high'])
     pdf=obj.get_pdf()
 
     plot_dir = 'tests/ccprc/simple'
