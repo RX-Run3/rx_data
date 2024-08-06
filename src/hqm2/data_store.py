@@ -17,7 +17,7 @@ class data_store:
         self._trig = trig 
         self._proc = proc 
     #----------------------------------
-    def get_array(self, variable='B_M'):
+    def get_array(self, variable='B_M', cuts=dict()):
         dat_dir = {'data' : 'r_fits'}[self._proc]
         log.info(f'Picking data from: {dat_dir}')
 
@@ -37,6 +37,8 @@ class data_store:
         bdt = rs.get('bdt', self._trig, q2bin=self._qsq, year=self._dset)
         rdf = rdf.Filter(qsq, 'qsq')
         rdf = rdf.Filter(bdt, 'bdt')
+        for name, cut in cuts.items():
+            rdf = rdf.Filter(cut, name)
 
         rep = rdf.Report()
         rep.Print()
