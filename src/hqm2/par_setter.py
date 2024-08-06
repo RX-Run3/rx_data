@@ -20,11 +20,12 @@ class par_setter:
         self._dset        = None
         self._trig        = None
         self._syst        = None
-        self._d_cns       = None
 
+        self._d_cns       = dict() 
         self._d_par       = dict()
         self._df_mu       = None
         self._df_sg       = None
+        self._df_br       = None
 
         self._initialized = False
     #----------------------------------
@@ -63,9 +64,11 @@ class par_setter:
 
         mu_path = f'{mon_dir}/mu.json'
         sg_path = f'{mon_dir}/sg.json'
+        br_path = f'{mon_dir}/br.json'
 
         self._df_mu = pnd.read_json(mu_path)
         self._df_sg = pnd.read_json(sg_path)
+        self._df_br = pnd.read_json(br_path)
     #----------------------------------
     def _set_pars(self):
         s_par_flt = self._pdf.get_params(floating=True)
@@ -74,11 +77,12 @@ class par_setter:
         s_par = s_par_flt | s_par_fix
         s_par = self._set_fix_mc(s_par)
         s_par = self._float_scales(s_par)
-        s_par = self._set_fix_brem(s_par)
+        s_par = self._set_fix_mc_brem(s_par)
+        s_par = self._set_dt_brem(s_par)
 
         return s_par
     #----------------------------------
-    def _set_fix_brem(self, s_par):
+    def _set_fix_mc_brem(self, s_par):
         if self._trig == 'MTOS':
             return s_par
 
@@ -98,6 +102,26 @@ class par_setter:
 
         return s_par
     #----------------------------------
+    def _set_dt_brem(self, s_par):
+        if self._trig == 'MTOS':
+            return s_par
+
+        fz_par = self._get_par(s_par, f'fr_sc_z_mc_fit_{self._dset}_{self._trig}')
+        fo_par = self._get_par(s_par, f'fr_sc_o_mc_fit_{self._dset}_{self._trig}')
+        ft_par = self._get_par(s_par, f'fr_sc_t_mc_fit_{self._dset}_{self._trig}')
+
+        fr_mc_z, fr_mc_o, fr_mc_t = self._get_brem_scale(value=True)
+
+        fz_par.set_value(fr_mc_z)
+        fo_par.set_value(fr_mc_o)
+        ft_par.set_value(fr_mc_t)
+
+        fz_par.floating = True 
+        fo_par.floating = True 
+        ft_par.floating = True 
+
+        return s_par
+    #----------------------------------
     def _get_mc_brem_frac(self):
         nbrem_z = self._d_par[f'nevt_{self._dset}_{self._trig}_brem_0']
         nbrem_o = self._d_par[f'nevt_{self._dset}_{self._trig}_brem_1']
@@ -108,6 +132,15 @@ class par_setter:
         fr_mc_t = nbrem_t / (nbrem_z + nbrem_o + nbrem_t)
 
         return fr_mc_z, fr_mc_o, fr_mc_t
+    #----------------------------------
+    def _get_brem_scale(self, value=True):
+        kind = {True: 'v' , False : 'e'}[value]
+
+        fr_z = self._df_br[f'{kind}_0'].loc[f'{self._trig} {self._dset}']
+        fr_o = self._df_br[f'{kind}_1'].loc[f'{self._trig} {self._dset}']
+        fr_t = self._df_br[f'{kind}_2'].loc[f'{self._trig} {self._dset}']
+
+        return fr_z, fr_o, fr_t
     #----------------------------------
     def _set_fix_mc(self, s_par):
         log.debug(60 * '-')
@@ -153,6 +186,29 @@ class par_setter:
         return s_par
     #----------------------------------
     def _build_constraints(self, s_par):
+        d_const_m = self._get_mass_constraints(s_par)
+        d_const_b = self._get_brem_constraints(s_par)
+        self._d_cns.update(d_const_m) 
+        self._d_cns.update(d_const_b) 
+
+        log.debug(70 * '-')
+        log.debug(f'{"Name":<40}{"Value":<15}{"Error":<15}')
+        log.debug(70 * '-')
+        for name, (val, err) in self._d_cns.items():
+            log.debug(f'{name:<40}{val:<15.3f}{err:<15.3f}')
+    #----------------------------------
+    def _get_brem_constraints(self, s_par):
+        sc_vz, sc_vo, sc_vt = self._get_brem_scale(value=True)
+        sc_ez, sc_eo, sc_et = self._get_brem_scale(value=False)
+
+        d_const = dict()
+        d_const[f'fr_sc_z_mc_fit_{self._dset}_{self._trig}'] = sc_vz, sc_ez
+        d_const[f'fr_sc_o_mc_fit_{self._dset}_{self._trig}'] = sc_vo, sc_eo
+        d_const[f'fr_sc_t_mc_fit_{self._dset}_{self._trig}'] = sc_vt, sc_et
+
+        return d_const
+    #----------------------------------
+    def _get_mass_constraints(self, s_par):
         sc_v=self._df_mu[f'v_{self._trig}'].loc[self._dset]
         sc_e=self._df_mu[f'e_{self._trig}'].loc[self._dset]
 
@@ -167,13 +223,7 @@ class par_setter:
                 rs.name : (rs_v, rs_e),
                 }
 
-        log.debug(60 * '-')
-        log.debug(f'{"Name":<20}{"Value":<20}{"Error":<20}')
-        log.debug(60 * '-')
-        for name, (val, err) in d_const.items():
-            log.debug(f'{name:<20}{val:<20.3f}{err:<20.3f}')
-
-        self._d_cns = d_const
+        return d_const
     #----------------------------------
     @property
     def pdf(self):
