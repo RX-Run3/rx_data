@@ -20,8 +20,8 @@ def test_simple_mm():
 
     pdf   = get_signal(obs=data.obs_mm, dset="2018", trig="MTOS", prefix="mc_fit_2018_MTOS", syst="nom")
     obj   = par_setter(pdf)
-    par   = obj.pdf
-    d_cns = obj.constraints
+    pdf   = obj.pdf()
+    d_cns = obj.constraints()
 
     zut.print_pdf(pdf, d_const = d_cns, txt_path=f'{out_dir}/pdf.txt')
 #-------------------------------------
@@ -31,7 +31,7 @@ def test_simple_ee():
 
     pdf   = get_signal(obs=data.obs_ee, dset="2018", trig="ETOS", prefix="mc_fit_2018_ETOS", syst="nom")
     obj   = par_setter(pdf)
-    par   = obj.pdf()
+    pdf   = obj.pdf()
     d_cns = obj.constraints()
 
     zut.print_pdf(pdf,d_const = d_cns, txt_path=f'{out_dir}/pdf.txt')
@@ -44,7 +44,7 @@ def test_brem_ee():
     obj   = par_setter(pdf)
 
     for brem in [0, 1, 2]:
-        par   = obj.pdf(brem=brem)
+        pdf   = obj.pdf(brem=brem)
         d_cns = obj.constraints(brem=brem)
 
         zut.print_pdf(pdf,d_const = d_cns, txt_path=f'{out_dir}/pdf_brem_{brem}.txt')
@@ -52,9 +52,7 @@ def test_brem_ee():
 def main():
     par_logger.setLevel(10)
 
-    #test_brem_ee()
-    #return
-
+    test_brem_ee()
     test_simple_mm()
     test_simple_ee()
 #-------------------------------------
