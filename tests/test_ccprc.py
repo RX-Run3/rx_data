@@ -21,7 +21,7 @@ def check_pdf(pdf, plot_dir):
     plt.close('all')
 #--------------------------------------------------
 def test_simple():
-    obj=ccprc(obs=data.obs, dset='r2p1', preffix='test_simple', syst='nom', qsq_rng=['psi2', 'high'])
+    obj=ccprc(obs=data.obs, dset='2018', preffix='test_simple', syst='nom', qsq_rng=['psi2', 'high'])
     pdf=obj.get_pdf()
 
     plot_dir = 'tests/ccprc/simple'
