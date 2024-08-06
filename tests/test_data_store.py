@@ -20,15 +20,25 @@ def test_simple():
 #------------------------------------
 def test_cut():
     obj     = data_store(qsq='psi2', dset='2018', trig='MTOS', proc='data')
-    arr_dat = obj.get_array(cuts={'SB' : 'B_M < 5180'})
+    arr_dat = obj.get_array(d_cut={'SB' : 'B_M < 5180'})
 
     plt_dir = 'tests/data_store/cut'
     os.makedirs(plt_dir, exist_ok=True)
 
     plot_data(arr_dat, plt_dir)
 #------------------------------------
+def test_dset():
+    obj     = data_store(qsq='psi2', dset='r1', trig='MTOS', proc='data')
+    arr_dat = obj.get_array()
+
+    plt_dir = 'tests/data_store/dset'
+    os.makedirs(plt_dir, exist_ok=True)
+
+    plot_data(arr_dat, plt_dir)
+#------------------------------------
 def main():
     test_simple()
+    test_dset()
     test_cut()
 #------------------------------------
 if __name__ == '__main__':
