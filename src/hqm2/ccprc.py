@@ -22,6 +22,8 @@ class ccprc:
         [self._qsq_src, self._qsq_tgt] = qsq_rng
 
         self._fft_npt = 1000
+        self._bw_mumu = 15
+        self._low_sb  = 5180
     #---------------------------------
     def _get_trf(self):
         mu      = zfit.param.Parameter(f'mu_trf_{self._pref}', 303, 0, 400)
@@ -35,10 +37,33 @@ class ccprc:
     #---------------------------------
     def _get_muon_pdf(self):
         #TODO: Combinatorial needs to be subtracted
-        obj     = data_store(qsq=self._qsq_src, dset=self._dset, trig='MTOS', proc='data')
-        arr_dat = obj.get_array(cuts={'SB' : 'B_M < 5180'})
-        zdata   = zfit.Data.from_numpy(self._obs, array=arr_dat)
-        pdf_mmd = zfit.pdf.KDE1DimFFT(obs=self._obs, data=zdata, name='data muon')
+        json_path = files('hqm2_data').joinpath(f'fits/data/{self._dset}_MTOS_{self._qsq_tgt}_lowsb.json')
+        json_path = str(json_path)
+        if os.path.isfile(json_path):
+            log.info(f'Low sideband muon data found, loading')
+
+            l_mass  = utnr.load_json(json_path)
+            zdata   = zfit.Data.from_numpy(self._obs, array=numpy.array(l_mass))
+            pdf_mmd = zfit.pdf.KDE1DimFFT(obs=self._obs, data=zdata, bandwidth=self._bw_mumu, name='data muon')
+        else:
+            log.info(f'Low sideband muon data not found, getting it')
+
+            obj       = data_store(qsq=self._qsq_src, dset=self._dset, trig='MTOS', proc='data')
+            arr_dat   = obj.get_array(d_cut={'SB' : f'B_M < {self._low_sb}'})
+            l_mass    = arr_dat.tolist()
+            utnr.dump_json(l_mass, json_path)
+
+            zdata     = zfit.Data.from_numpy(self._obs, array=arr_dat)
+            pdf_mmd   = zfit.pdf.KDE1DimFFT(obs=self._obs, data=zdata, bandwidth=self._bw_mumu, name='data muon')
+
+            obj=zfp(data=arr_dat, model=pdf_mmd, result=None)
+            obj.plot(plot_range=[4200, self._low_sb])
+
+            plot_path = json_path.replace('.json', '.png')
+            plot_dir  = os.path.dirname(plot_path)
+            os.makedirs(plot_dir, exist_ok=True)
+            plt.savefig(plot_path)
+            plt.close('all')
 
         return pdf_mmd
     #---------------------------------
@@ -73,6 +98,8 @@ class ccprc:
             val = d_par[par.name]
             par.set_value(val)
             par.floating = False
+
+        return pdf
     #---------------------------------
     def _get_pars(self, pdf, arr_dat, plot_path):
         obj=zfitter(pdf, arr_dat)
@@ -96,9 +123,9 @@ class ccprc:
         return 0.6
    #---------------------------------
     def get_pdf(self):
+        pdf_mmd = self._get_muon_pdf()
         pdf_res = self._get_reso()
         pdf_trf = self._get_trf()
-        pdf_mmd = self._get_muon_pdf()
         r       = self._get_ratio()
 
         pdf_prc = zfit.pdf.FFTConvPDFV1(func=pdf_trf, kernel=pdf_mmd, name='PRc', n=self._fft_npt)
@@ -106,3 +133,4 @@ class ccprc:
 
         return pdf
 #-----------------------------------
+
