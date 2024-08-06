@@ -1,13 +1,17 @@
 import zfit
+import numpy
+
+from hqm2.data_store import data_store
 
 #-----------------------------------
 class ccprc:
-    def __init__(self, obs=None, dset=None, qsq=None, preffix=None, syst=None):
-        self._obs = obs
-        self._dset= dset 
-        self._qsq = qsq 
-        self._syst= syst 
-        self._pref= preffix
+    def __init__(self, obs=None, dset=None, preffix=None, syst=None, qsq_rng=None):
+        self._obs   = obs
+        self._dset  = dset 
+        self._syst  = syst 
+        self._pref  = preffix
+
+        [self._qsq_src, self._qsq_tgt] = qsq_rng
 
         self._fft_npt = 1000
     #---------------------------------
@@ -21,8 +25,11 @@ class ccprc:
 
         return pdf_trf
     #---------------------------------
-    def _get_muon_data(self):
-        pdf_mmd = zfit.pdf.Uniform(4250, 5180, self._obs)
+    def _get_muon_pdf(self):
+        obj     = data_store(qsq=self._qsq_src, trigger='MTOS', proc='data')
+        arr_dat = obj.get_array()
+        zdata   = zfit.Data.from_numpy(self._obs, array=arr_dat)
+        pdf_mmd = zfit.pdf.KDE1DimFFT(obs=self._obs, data=zdata, name='data muon')
 
         return pdf_mmd
     #---------------------------------
@@ -38,7 +45,7 @@ class ccprc:
     #---------------------------------
     def get_pdf(self):
         pdf_trf = self._get_trf()
-        pdf_mmd = self._get_muon_data()
+        pdf_mmd = self._get_muon_pdf()
         r       = self._get_ratio()
         pdf_res = self._get_reso()
 
