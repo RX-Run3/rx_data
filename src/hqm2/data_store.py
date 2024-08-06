@@ -19,7 +19,7 @@ class data_store:
         self._proc = proc 
     #----------------------------------
     def _get_year_array(self, year, d_cut=None):
-        dat_dir = {'data' : 'r_fits'}[self._proc]
+        dat_dir = {'data' : 'r_fits', 'psi2' : 'r_fits', 'ctrl' : 'r_fits'}[self._proc]
         log.info(f'Picking data from: {dat_dir}')
 
         asl_dir = os.environ['ASLDIR']
