@@ -228,11 +228,33 @@ class par_setter:
     def pdf(self, brem=None):
         self._initialize()
 
-        return self._pdf
+        if brem is None:
+            return self._pdf
+
+        if brem not in [0, 1, 2]:
+            log.error(f'Invalid value of brem arg: {brem}')
+            raise
+
+        l_pdf = self._pdf.models
+
+        return l_pdf[brem]
     #----------------------------------
     def constraints(self, brem=None):
         self._initialize()
 
-        return self._d_cns
+        if brem is None:
+            return self._pdf
+
+        if brem not in [0, 1, 2]:
+            log.error(f'Invalid value of brem arg: {brem}')
+            raise
+
+        l_pdf = self._pdf.models
+        pdf   = l_pdf[brem]
+        s_par = pdf.get_params(floating=True)
+        l_par = [ par.name for par in s_par ]
+        d_cns = { name : value for name, value in self._d_cns.items()  if name in l_par }
+
+        return d_cns
 #-------------------------------------------
 
