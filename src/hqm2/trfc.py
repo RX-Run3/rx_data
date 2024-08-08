@@ -43,7 +43,7 @@ class trfc:
         self._plot_datasets(arr_dt_mm, arr_dt_ee, plot_range, plot_path)
 
         plot_path = json_path.replace('.json', '.png')
-        d_plt_opt = {'plot_path' : plot_path, 'plot_range' : plot_range, 'skip_pulls' : True , 'stacked' : True}
+        d_plt_opt = {'plot_path' : plot_path, 'plot_range' : plot_range, 'skip_pulls' : True , 'stacked' : False}
         d_fit_opt = {'ntries' : 5, 'pval_threshold' : 0.05}
         d_par     = zut.get_fit_pars(pdf_ees, arr_dt_ee, d_plt_opt=d_plt_opt, d_fit_opt=d_fit_opt)
         utnr.dump_json(d_par, json_path)
@@ -65,7 +65,7 @@ class trfc:
         [minx, maxx] = plot_range
         arr_x = numpy.linspace(minx, maxx, 300)
         arr_y = pdf.pdf(arr_x)
-        plt.plot(arr_x, arr_y, label=f'{par_name}={par_val}')
+        plt.plot(arr_x, arr_y)
         plt.legend()
         plt.savefig(plot_path)
         plt.close('all')
@@ -82,11 +82,11 @@ class trfc:
         return pdf
     #---------------------------------
     def _get_3cb(self):
-        mu  = zfit.param.Parameter(f'mu_trf_{self._pref}',    0, -100, 100)
+        mu  = zfit.param.Parameter(f'mu_trf_{self._pref}',    0, -200, 200)
 
-        sg1 = zfit.param.Parameter(f'sg1_trf_{self._pref}',  10,  0.1, 200)
-        sg2 = zfit.param.Parameter(f'sg2_trf_{self._pref}',  40,  0.1, 200)
-        sg3 = zfit.param.Parameter(f'sg3_trf_{self._pref}',  40,  0.1, 200)
+        sg1 = zfit.param.Parameter(f'sg1_trf_{self._pref}',  10,  0.1, 400)
+        sg2 = zfit.param.Parameter(f'sg2_trf_{self._pref}',  40,  0.1, 400)
+        sg3 = zfit.param.Parameter(f'sg3_trf_{self._pref}',  40,  0.1, 400)
         
         al  = zfit.param.Parameter(f'al_trf_{self._pref}', 1.5, 1e-3,   10)
         ar  = zfit.param.Parameter(f'ar_trf_{self._pref}', 1.5, 1e-3,   10)
@@ -117,8 +117,10 @@ class trfc:
         return pdf
     #---------------------------------
     def _get_trf_pdf(self):
-        if self._qsq_src == 'psi2' and self._qsq_tgt == 'high':
+        if   self._qsq_src == 'psi2' and self._qsq_tgt == 'high':
             pdf_trf = self._get_cb()
+        elif self._qsq_src == 'jpsi' and self._qsq_tgt == 'psi2':
+            pdf_trf = self._get_dscb()
         else:
             pdf_trf = self._get_3cb()
 
