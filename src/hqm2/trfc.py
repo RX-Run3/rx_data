@@ -61,12 +61,7 @@ class trfc:
         plt.savefig(plot_path)
         plt.close('all')
     #---------------------------------
-    def _plot_pdf(self, pdf, plot_range, plot_path, par_name=None, par_val=None):
-        if par_name is not None:
-            s_par = pdf.get_params()
-            [par] = [ par for par in s_par if par.name.startswith(par_name) ]
-            par.set_value(par_val)
-
+    def _plot_pdf(self, pdf, plot_range, plot_path) 
         [minx, maxx] = plot_range
         arr_x = numpy.linspace(minx, maxx, 300)
         arr_y = pdf.pdf(arr_x)
