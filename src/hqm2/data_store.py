@@ -20,7 +20,7 @@ class data_store:
     #----------------------------------
     def _get_year_array(self, year, d_cut=None):
         dat_dir = {'data' : 'r_fits', 'psi2' : 'r_fits', 'ctrl' : 'r_fits'}[self._proc]
-        log.info(f'Picking data from: {dat_dir}')
+        log.info(f'Picking {self._proc}/{self._trig}/{self._dset}/{self._qsq} from: {dat_dir}')
 
         asl_dir = os.environ['ASLDIR']
         root_wc = f'{asl_dir}/{dat_dir}/{self._proc}/v10.21p2/{year}_{self._trig}/*.root'
