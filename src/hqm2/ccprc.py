@@ -7,6 +7,7 @@ import zutils.utils      as zut
 
 from hqm2.data_store     import data_store
 from hqm2.trfc           import trfc
+from hqm2.ratc           import ratc 
 
 from importlib.resources import files
 from zutils.plot         import plot      as zfp
@@ -87,7 +88,10 @@ class ccprc:
         return pdf_res
     #---------------------------------
     def _get_ratio(self):
-        return 0.6
+        cal = ratc(dset=self._dset)
+        rat = cal.get_ratio()
+
+        return rat
     #---------------------------------
     def _get_trf(self):
         obj     = trfc(obs=self._obs, qsq_src=self._qsq_src, qsq_tgt=self._qsq_tgt, dset=self._dset, proc=self._proc_trf, pref=self._pref) 
