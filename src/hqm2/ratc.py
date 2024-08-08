@@ -17,6 +17,7 @@ class ratc:
         self._obs  = obs
 
         self._plot_range = [4500, 6000]
+        self._bandwidth  = 15
 
         self._rat_psi2 = zfit.param.Parameter('rat_psi2', 1, 0, 2)
         self._rat_ctrl = zfit.param.Parameter('rat_ctrl', 1, 0, 2)
@@ -62,8 +63,6 @@ class ratc:
 
         pdf_prps = self._get_pr_pdf(proc='psi2', qsq=qsq)
         pdf_prjp = self._get_pr_pdf(proc='ctrl', qsq=qsq)
-
-        exit()
 
         pdf_psi2 = self._get_mc_pdf(proc='psi2', qsq=qsq) 
         pdf_ctrl = self._get_mc_pdf(proc='ctrl', qsq=qsq) 
@@ -168,12 +167,17 @@ class ratc:
         '''
 
         qsq_src = {'psi2' : 'psi2', 'ctrl' : 'jpsi'}[proc]
-        obj     = trfc(obs=self._obs, qsq_src=qsq_src, qsq_tgt=qsq, proc=proc, dset=self._dset, pref=f'c_{qsq_src}_{qsq}_pr')
+        obj     = trfc(obs=self._obs, qsq_src=qsq_src, qsq_tgt=qsq, proc=proc, dset=self._dset, pref=f'{qsq_src}_{qsq}_pr')
         pdf_trf = obj.get_trf()
 
-        exit()
+        obj       = data_store(qsq=qsq, dset=self._dset, trig='MTOS', proc='data')
+        arr_dt_mm = obj.get_array()
 
-        return 
+        zdata     = zfit.Data.from_numpy(self._obs, array=arr_dt_mm)
+        pdf_mm    = zfit.pdf.KDE1DimFFT(obs=self._obs, data=zdata, bandwidth=self._bandwidth, name='PRec')
+        pdf_ee    = zfit.pdf.FFTConvPDFV1(func=pdf_mm, kernel=pdf_trf, name='pdf ee', n=self._fft_npt)
+
+        return pdf_ee
     #-----------------------------
     def _save_fit(self, out_dir, pdf, arr_dat):
         zut.print_pdf(pdf, txt_path=f'{out_dir}/pdf.txt')
