@@ -61,7 +61,7 @@ class trfc:
         plt.savefig(plot_path)
         plt.close('all')
     #---------------------------------
-    def _plot_pdf(self, pdf, plot_range, plot_path) 
+    def _plot_pdf(self, pdf, plot_range, plot_path):
         [minx, maxx] = plot_range
         arr_x = numpy.linspace(minx, maxx, 300)
         arr_y = pdf.pdf(arr_x)
@@ -100,8 +100,8 @@ class trfc:
         cb2 = zfit.pdf.CrystalBall(mu, sg2, al, nl, self._obs_trf, name='CB2')
         cb3 = zfit.pdf.CrystalBall(mu, sg3, ac, nc, self._obs_trf, name='CB3')
     
-        frc_1 = zfit.param.Parameter(f'frc_1{self._pref}', 0.5, 0, 1) 
-        frc_2 = zfit.param.Parameter(f'frc_2{self._pref}', 0.5, 0, 1) 
+        frc_1 = zfit.param.Parameter(f'frc_1_trf_{self._pref}', 0.5, 0, 1) 
+        frc_2 = zfit.param.Parameter(f'frc_2_trf_{self._pref}', 0.5, 0, 1) 
 
         pdf   = zfit.pdf.SumPDF([cb1, cb2, cb3], fracs=[frc_1, frc_2])
     
