@@ -26,6 +26,7 @@ class pdfmc:
         self._qsq    = qsq 
         self._pdf_suf= f'mc_{proc}_{dset}_{qsq}'
 
+        self._pdf         = None
         self._mrange      = None 
         self._out_dir     = None
         self._initialized = False
@@ -37,15 +38,21 @@ class pdfmc:
         self._out_dir = files('hqm2_data').joinpath(f'fits/{self._proc}/{self._dset}_{self._trig}_{self._qsq}')
         os.makedirs(self._out_dir, exist_ok=True)
 
+        self._set_mrange()
+        self._pdf = mod.get_dscb(self._pdf_suf, self._obs)
+
+        self._initialized = True
+    #------------------------------------
+    def _set_mrange(self):
         if   self._proc == 'ctrl':
             self._mrange = [4500, 6000]
-        elif self._proc == 'psi2':
+        elif self._proc == 'psi2' and self._qsq == 'psi2':
             self._mrange = [5000, 5500]
+        elif self._proc == 'psi2' and self._qsq == 'jpsi':
+            self._mrange = [5000, 5350]
         else:
             log.error(f'Invalid process: {self._proc}')
             raise
-
-        self._initialized = True
     #------------------------------------
     def _get_weight_rdf(self, proc=None):
         obj     = data_store(qsq=self._qsq, dset=self._dset, trig=self._trig, proc=proc)
@@ -68,25 +75,21 @@ class pdfmc:
 
         return arr_wgt
     #------------------------------------
-    def _build_pdf(self, arr_mas, arr_wgt):
+    def _get_pdf_pars(self, arr_mas, arr_wgt):
         zdt   = zfit.Data.from_numpy(obs=self._obs, array=arr_mas, weights=arr_wgt)
-        pdf   = mod.get_dscb(self._pdf_suf, self._obs)
 
-        zut.print_pdf(pdf, txt_path=f'{self._out_dir}/pdf.txt')
+        zut.print_pdf(self._pdf, txt_path=f'{self._out_dir}/pdf.txt')
 
         plot_path = f'{self._out_dir}/fit.png'
         d_plt_opt = {'plot_path' : plot_path, 'plot_range' : self._mrange, 'skip_pulls' : True , 'stacked' : False}
         d_fit_opt = {'ntries' : 5, 'pval_threshold' : 0.05}
-        d_par     = zut.get_fit_pars(pdf, zdt, d_plt_opt=d_plt_opt, d_fit_opt=d_fit_opt)
+        d_par     = zut.get_fit_pars(self._pdf, zdt, d_plt_opt=d_plt_opt, d_fit_opt=d_fit_opt)
 
-        return pdf, d_par
+        return d_par
     #------------------------------------
-    def _pdf_from_pars(self, json_path):
+    def _fix_pdf_pars(self, json_path):
         d_par = utnr.load_json(json_path)
-        pdf   = mod.get_dscb(self._pdf_suf, self._obs)
-        pdf   = zut.fix_pars(pdf, d_par)
-
-        return pdf
+        zut.fix_pars(self._pdf, d_par)
     #------------------------------------
     def get_pdf(self):
         self._initialize()
@@ -94,19 +97,19 @@ class pdfmc:
         json_path = f'{self._out_dir}/pars.json'
         if os.path.isfile(json_path):
             log.info(f'File with parameters found, loading it')
-            pdf = self._pdf_from_pars(json_path)
-            return pdf
+            self._fix_pdf_pars(json_path)
+            return self._pdf
 
         log.info(f'File with parameters not found, fitting')
         minm, maxm = self._mrange
 
-        obj      = data_store(qsq=self._qsq, dset=self._dset, trig=self._trig, proc=self._proc)
-        arr_mas  = obj.get_array(d_cut={'mass' : f'B_M > {minm} & B_M < {maxm}'})
-        arr_wgt  = self._get_weights(arr_mas)
-        pdf, d_par = self._build_pdf(arr_mas, arr_wgt)
+        obj     = data_store(qsq=self._qsq, dset=self._dset, trig=self._trig, proc=self._proc)
+        arr_mas = obj.get_array(d_cut={'mass' : f'B_M > {minm} & B_M < {maxm}'})
+        arr_wgt = self._get_weights(arr_mas)
+        d_par   = self._get_pdf_pars(arr_mas, arr_wgt)
 
         utnr.dump_json(d_par, json_path)
 
-        return pdf
+        return self._pdf
 #------------------------------------
 
