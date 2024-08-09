@@ -17,8 +17,10 @@ class data_store:
         self._dset = dset
         self._trig = trig 
         self._proc = proc 
+
+        self._l_vec_var = ['B_const_mass_M', 'B_const_mass_psi2S_M']
     #----------------------------------
-    def _get_year_array(self, year, d_cut=None):
+    def _get_year_array(self, year, var_name, d_cut=None):
         dat_dir = {'data' : 'r_fits', 'psi2' : 'r_fits', 'ctrl' : 'r_fits'}[self._proc]
         log.info(f'Picking {self._proc}/{self._trig}/{self._dset}/{self._qsq} from: {dat_dir}')
 
@@ -34,11 +36,18 @@ class data_store:
         log.debug(f'{nfiles} files found in: {root_wc}')
 
         rdf = ROOT.RDataFrame(self._trig, l_file)
+        rdf = self._vec_to_float(rdf)
         rdf = self._apply_selection(rdf, year, d_cut)
 
-        arr_mass = rdf.AsNumpy(['B_M'])['B_M']
+        arr_val = rdf.AsNumpy([var_name])[var_name]
 
-        return arr_mass
+        return arr_val
+    #----------------------------------
+    def _vec_to_float(self, rdf):
+        for var_name in self._l_vec_var:
+            rdf = rdf.Redefine(var_name, f'{var_name}[0]')
+
+        return rdf
     #----------------------------------
     def _apply_selection(self, rdf, year, d_cut):
         qsq = rs.get('q2' , self._trig, q2bin=self._qsq, year=year)
@@ -55,17 +64,17 @@ class data_store:
     #----------------------------------
     def get_array(self, variable='B_M', d_cut=dict()):
         if   self._dset == 'r1':
-            arr_11 = self._get_year_array('2011', d_cut=d_cut)
-            arr_12 = self._get_year_array('2012', d_cut=d_cut)
+            arr_11 = self._get_year_array('2011', var_name=variable, d_cut=d_cut)
+            arr_12 = self._get_year_array('2012', var_name=variable, d_cut=d_cut)
 
             arr_va = numpy.concatenate([arr_11, arr_12])
         elif self._dset == 'r2p1':
-            arr_15 = self._get_year_array('2015', d_cut=d_cut)
-            arr_16 = self._get_year_array('2016', d_cut=d_cut)
+            arr_15 = self._get_year_array('2015', var_name=variable, d_cut=d_cut)
+            arr_16 = self._get_year_array('2016', var_name=variable, d_cut=d_cut)
 
             arr_va = numpy.concatenate([arr_15, arr_16])
         else:
-            arr_va = self._get_year_array(self._dset, d_cut=d_cut)
+            arr_va = self._get_year_array(self._dset, var_name=variable, d_cut=d_cut)
 
         return arr_va
 #----------------------------------
