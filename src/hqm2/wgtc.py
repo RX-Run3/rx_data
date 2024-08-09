@@ -22,6 +22,7 @@ class wgtc:
 
         self._arr_edge= numpy.linspace(self._min_raw, self._max_raw, 100)
 
+        self._arr_wgt = None
         self._out_dir = None
 
         self._initialized = False
@@ -32,6 +33,13 @@ class wgtc:
 
         self._rdf_dt = self._apply_cuts(self._rdf_dt)
         self._rdf_mc = self._apply_cuts(self._rdf_mc)
+
+        arr_bc_dt     = self._get_hist(rdf=self._rdf_dt)
+        arr_bc_mc     = self._get_hist(rdf=self._rdf_mc)
+        self._arr_wgt = numpy.divide(arr_bc_dt, arr_bc_mc, out=numpy.ones_like(arr_bc_dt).astype(float), where=arr_bc_mc != 0)
+
+        self._check_weights()
+        self._validate_weights(arr_bc_dt, arr_bc_mc)
 
         self._initialized = True
     #-------------------------------------------------
@@ -54,22 +62,31 @@ class wgtc:
 
         return arr_bc
     #-------------------------------------------------
-    def _get_weights(self):
-        arr_bc_dt  = self._get_hist(rdf=self._rdf_dt)
-        arr_bc_mc  = self._get_hist(rdf=self._rdf_mc)
-        arr_wgt    = numpy.divide(arr_bc_dt, arr_bc_mc, out=numpy.ones_like(arr_bc_dt).astype(float), where=arr_bc_mc != 0)
+    def _check_weights(self):
+        wgt     = self._arr_wgt
+        arr_lrg = wgt[wgt > 2]
+        arr_neg = wgt[wgt < 0]
 
-        arr_mass   = self._rdf_mc.AsNumpy(['B_M'])['B_M']
-        arr_mc_ind = numpy.digitize(arr_mass, self._arr_edge, right=False)
-        arr_mc_ind = arr_mc_ind - 1
-        arr_mc_wgt = arr_wgt[arr_mc_ind] 
+        if arr_lrg.size > 0:
+            log.warning(f'Found {arr_lrg.size} weights larger than 2.')
 
+        if arr_neg.size > 0:
+            log.warning(f'Found {arr_neg.size} weights smaller than 0.')
+    #-------------------------------------------------
+    def _validate_weights(self, arr_bc_dt, arr_bc_mc):
+        arr_mas_mc = self._rdf_mc.AsNumpy(['B_M'])['B_M']
+        arr_mc_wgt = self._calculate_weights(arr_mas_mc)
         arr_bc_co  = self._get_hist(rdf=self._rdf_mc, weights=arr_mc_wgt)
-        self._save_mass_dist(dat=arr_bc_dt, sim=arr_bc_mc, cor=arr_bc_co, wgt=arr_wgt)
+        self._save_mass_dist(dat=arr_bc_dt, sim=arr_bc_mc, cor=arr_bc_co)
+    #-------------------------------------------------
+    def _calculate_weights(self, arr_mas):
+        arr_mc_ind = numpy.digitize(arr_mas, self._arr_edge, right=False)
+        arr_mc_ind = arr_mc_ind - 1
+        arr_mc_wgt = self._arr_wgt[arr_mc_ind] 
 
         return arr_mc_wgt
     #-------------------------------------------------
-    def _save_mass_dist(self, dat=None, sim=None, cor=None, wgt=None):
+    def _save_mass_dist(self, dat=None, sim=None, cor=None):
         if self._out_dir is None:
             return
 
@@ -79,9 +96,9 @@ class wgtc:
         ax1.stairs(sim, self._arr_edge, label=       'MC')
         ax1.stairs(cor, self._arr_edge, label='Corrected')
 
-        ax2.stairs(wgt, self._arr_edge, color='k'   )
+        ax2.stairs(self._arr_wgt, self._arr_edge, color='k')
 
-        plot_path = f'{self._out_dir}/mass_dist.png'
+        plot_path = f'{self._out_dir}/mass_validation_dist.png'
         log.info(f'Saving to: {plot_path}')
 
         ax1.legend()
@@ -98,10 +115,10 @@ class wgtc:
         os.makedirs(value, exist_ok=True)
         self._out_dir = value
     #-------------------------------------------------
-    def get_weights(self):
+    def get_weights(self, arr_mas=None):
         self._initialize()
 
-        arr_wgt = self._get_weights()
+        arr_mc_wgt = self._calculate_weights(arr_mas)
 
-        return arr_wgt
+        return arr_mc_wgt
 #-------------------------------------------------
