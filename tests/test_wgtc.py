@@ -28,7 +28,7 @@ def test_simple():
     arr_mas_dt  = numpy.random.normal(5285, 50, 100000)
     arr_mas_mc  = numpy.random.normal(5290, 48, 100000)
 
-    obj         = wgtc(rdf_dt=rdf_dt, rdf_mc=rdf_mc)
+    obj         = wgtc(rdf_dt=rdf_dt, rdf_mc=rdf_mc, mrange=[5100, 5500])
     obj.out_dir = 'tests/wgtc/simple'
     arr_wgt     = obj.get_weights(arr_mas=arr_mas_mc)
 
@@ -40,6 +40,9 @@ def test_simple():
     plt.savefig(plot_path)
     plt.close('all')
 #-------------------------------
-if __name__ == '__main__':
+def main():
     test_simple()
+#-------------------------------
+if __name__ == '__main__':
+    main()
 
