@@ -24,9 +24,9 @@ class pdfmc:
         self._proc   = proc
         self._trig   = 'ETOS' 
         self._qsq    = qsq 
-        self._mrange = [4500, 6000]
         self._pdf_suf= f'mc_{proc}_{dset}_{qsq}'
 
+        self._mrange      = None 
         self._out_dir     = None
         self._initialized = False
     #------------------------------------
@@ -37,14 +37,23 @@ class pdfmc:
         self._out_dir = files('hqm2_data').joinpath(f'fits/{self._proc}/{self._dset}_{self._trig}_{self._qsq}')
         os.makedirs(self._out_dir, exist_ok=True)
 
+        if   self._proc == 'ctrl':
+            self._mrange = [4500, 6000]
+        elif self._proc == 'psi2':
+            self._mrange = [5000, 5500]
+        else:
+            log.error(f'Invalid process: {self._proc}')
+            raise
+
         self._initialized = True
     #------------------------------------
     def _get_weight_rdf(self, proc=None):
         obj     = data_store(qsq=self._qsq, dset=self._dset, trig=self._trig, proc=proc)
-        arr_cns = obj.get_array(variable='B_const_mass_M')
+        arr_cnj = obj.get_array(variable='B_const_mass_M'      )
+        arr_cnp = obj.get_array(variable='B_const_mass_psi2S_M')
         arr_raw = obj.get_array(variable='B_M')
 
-        d_data  = {'B_const_mass_M' : arr_cns, 'B_M' : arr_raw}
+        d_data  = {'B_const_mass_M' : arr_cnj, 'B_M' : arr_raw, 'B_const_mass_psi2S_M' : arr_cnp}
         rdf     = ROOT.RDF.FromNumpy(d_data)
 
         return rdf
@@ -53,7 +62,7 @@ class pdfmc:
         rdf_dt = self._get_weight_rdf(proc=    'data')
         rdf_mc = self._get_weight_rdf(proc=self._proc)
 
-        obj         = wgtc(rdf_dt=rdf_dt, rdf_mc=rdf_mc, mrange=self._mrange)
+        obj         = wgtc(rdf_dt=rdf_dt, rdf_mc=rdf_mc, proc=self._proc, mrange=self._mrange)
         obj.out_dir = f'{self._out_dir}/weights'
         arr_wgt     = obj.get_weights(arr_mas=arr_mas)
 
