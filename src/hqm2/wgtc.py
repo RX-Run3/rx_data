@@ -34,6 +34,9 @@ class wgtc:
         self._rdf_dt = self._apply_cuts(self._rdf_dt)
         self._rdf_mc = self._apply_cuts(self._rdf_mc)
 
+        self._plot_mass(self._rdf_dt, 'data')
+        self._plot_mass(self._rdf_mc,   'mc')
+
         arr_bc_dt     = self._get_hist(rdf=self._rdf_dt)
         arr_bc_mc     = self._get_hist(rdf=self._rdf_mc)
         self._arr_wgt = numpy.divide(arr_bc_dt, arr_bc_mc, out=numpy.ones_like(arr_bc_dt).astype(float), where=arr_bc_mc != 0)
@@ -54,6 +57,18 @@ class wgtc:
         rep.Print()
 
         return rdf
+    #-------------------------------------------------
+    def _plot_mass(self, rdf, kind):
+        d_data = rdf.AsNumpy(['B_M', 'B_const_mass_M'])
+        for name, arr_mass in d_data.items():
+            plt.hist(arr_mass, bins=100, range=[self._min_raw, self._max_raw], histtype='step', label=name)
+
+        plot_path = f'{self._out_dir}/mass_dist.png'
+        plt.axvline(x=self._min_cns, color='r', linestyle=':')
+        plt.axvline(x=self._max_cns, color='r', linestyle=':')
+        plt.legend()
+        plt.savefig(plot_path)
+        plt.close('all')
     #-------------------------------------------------
     def _get_hist(self, rdf=None, weights=None):
         arr_mass     = rdf.AsNumpy(['B_M'])['B_M']
