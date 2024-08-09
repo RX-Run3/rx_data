@@ -44,8 +44,10 @@ class ccprc:
         else:
             log.info(f'Low sideband muon data not found, getting it')
 
+            cns_mas_var = {'jpsi' : 'B_const_mass_M', 'psi2' : 'B_const_mass_psi2S_M'}[self._qsq_src]
+
             obj       = data_store(qsq=self._qsq_src, dset=self._dset, trig='MTOS', proc='data')
-            arr_dat   = obj.get_array(d_cut={'SB' : f'B_M < {self._low_sb}'})
+            arr_dat   = obj.get_array(d_cut={'SB' : f'{cns_mas_var} < {self._low_sb}'})
             l_mass    = arr_dat.tolist()
             utnr.dump_json(l_mass, json_path)
 
@@ -53,7 +55,7 @@ class ccprc:
             pdf_mmd   = zfit.pdf.KDE1DimFFT(obs=self._obs, data=zdata, bandwidth=self._bw_mumu, name='data muon')
 
             obj=zfp(data=arr_dat, model=pdf_mmd, result=None)
-            obj.plot(plot_range=[4200, self._low_sb])
+            obj.plot(plot_range=[4200, 6000])
 
             plot_path = json_path.replace('.json', '.png')
             plot_dir  = os.path.dirname(plot_path)
