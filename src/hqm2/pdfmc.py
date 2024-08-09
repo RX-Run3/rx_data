@@ -74,7 +74,7 @@ class pdfmc:
     #------------------------------------
     def _pdf_from_pars(self, json_path):
         d_par = utnr.load_json(json_path)
-        pdf   = mod.get_3cb(self._pdf_suf, self._obs)
+        pdf   = mod.get_dscb(self._pdf_suf, self._obs)
         pdf   = zut.fix_pars(pdf, d_par)
 
         return pdf
