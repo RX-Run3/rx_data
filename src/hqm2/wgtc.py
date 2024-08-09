@@ -10,17 +10,16 @@ class wgtc:
     '''
     Class used to calculate weights to correct mass scale and resolution of signal
     '''
-    def __init__(self, rdf_dt=None, rdf_mc=None):
+    def __init__(self, rdf_dt=None, rdf_mc=None, mrange=None):
         self._rdf_dt = rdf_dt
         self._rdf_mc = rdf_mc
 
         self._min_cns = 5229
         self._max_cns = 5329
 
-        self._min_raw = 4600 
-        self._max_raw = 5800 
+        [self._min_raw, self._max_raw] = mrange 
 
-        self._arr_edge= numpy.linspace(self._min_raw, self._max_raw, 100)
+        self._arr_edge= numpy.linspace(self._min_raw, self._max_raw, 101)
 
         self._arr_wgt = None
         self._out_dir = None
@@ -63,7 +62,7 @@ class wgtc:
         for name, arr_mass in d_data.items():
             plt.hist(arr_mass, bins=100, range=[self._min_raw, self._max_raw], histtype='step', label=name)
 
-        plot_path = f'{self._out_dir}/mass_dist.png'
+        plot_path = f'{self._out_dir}/mass_dist_{kind}.png'
         plt.axvline(x=self._min_cns, color='r', linestyle=':')
         plt.axvline(x=self._max_cns, color='r', linestyle=':')
         plt.legend()
