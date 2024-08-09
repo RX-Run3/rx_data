@@ -10,14 +10,15 @@ class wgtc:
     '''
     Class used to calculate weights to correct mass scale and resolution of signal
     '''
-    def __init__(self, rdf_dt=None, rdf_mc=None, mrange=None):
+    def __init__(self, rdf_dt=None, rdf_mc=None, proc=None, mrange=None):
         self._rdf_dt = rdf_dt
         self._rdf_mc = rdf_mc
+        self._proc   = proc
+        [self._min_raw, self._max_raw] = mrange 
 
         self._min_cns = 5229
         self._max_cns = 5329
 
-        [self._min_raw, self._max_raw] = mrange 
 
         self._arr_edge= numpy.linspace(self._min_raw, self._max_raw, 101)
 
@@ -46,8 +47,9 @@ class wgtc:
         self._initialized = True
     #-------------------------------------------------
     def _apply_cuts(self, rdf):
-        cns_mass_cut = f'(B_const_mass_M > {self._min_cns}) && (B_const_mass_M < {self._max_cns})'
-        raw_mass_cut = f'(           B_M > {self._min_raw}) && (           B_M < {self._max_raw})'
+        cns_var      = {'ctrl' : 'B_const_mass_M', 'psi2' : 'B_const_mass_psi2S_M'}[self._proc]
+        cns_mass_cut = f'({cns_var} > {self._min_cns}) && ({cns_var}< {self._max_cns})'
+        raw_mass_cut = f'(      B_M > {self._min_raw}) && (     B_M < {self._max_raw})'
 
         rdf = rdf.Filter(cns_mass_cut, 'Constrained')
         rdf = rdf.Filter(raw_mass_cut, 'Raw')
@@ -58,7 +60,8 @@ class wgtc:
         return rdf
     #-------------------------------------------------
     def _plot_mass(self, rdf, kind):
-        d_data = rdf.AsNumpy(['B_M', 'B_const_mass_M'])
+        cns_var= {'ctrl' : 'B_const_mass_M', 'psi2' : 'B_const_mass_psi2S_M'}[self._proc]
+        d_data = rdf.AsNumpy(['B_M', cns_var])
         for name, arr_mass in d_data.items():
             plt.hist(arr_mass, bins=100, range=[self._min_raw, self._max_raw], histtype='step', label=name)
 
