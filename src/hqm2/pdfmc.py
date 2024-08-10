@@ -49,10 +49,12 @@ class pdfmc:
     def _set_pdf(self):
         if   self._proc == 'ctrl':
             self._pdf = mod.get_dscb(self._pdf_suf, self._obs)
-        elif self._proc == 'psi2':
+        elif self._proc == 'psi2' and self._qsq == 'psi2':
             self._pdf = mod.get_sujh_2cb(self._pdf_suf, self._obs)
+        elif self._proc == 'psi2' and self._qsq == 'jpsi':
+            self._pdf = mod.get_dscb(self._pdf_suf, self._obs)
         else:
-            log.error(f'Invalid process: {self._proc}')
+            log.error(f'Invalid process/qsq: {self._proc}/{self._qsq}')
             raise
     #------------------------------------
     def _set_ranges(self):
@@ -60,11 +62,11 @@ class pdfmc:
             self._wrange = [4500, 6000]
             self._prange = [4500, 6000]
         elif self._proc == 'psi2' and self._qsq == 'psi2':
-            self._wrange = [5150, 5350]
-            self._prange = [5000, 5500]
-        elif self._proc == 'psi2' and self._qsq == 'jpsi':
             self._wrange = [5000, 5350]
-            self._prange = [5000, 5350]
+            self._prange = [4500, 5500]
+        elif self._proc == 'psi2' and self._qsq == 'jpsi':
+            self._wrange = [5000, 5310]
+            self._prange = [4500, 5310]
         else:
             log.error(f'Invalid process: {self._proc}')
             raise
@@ -86,6 +88,10 @@ class pdfmc:
         return arr_wgt
     #------------------------------------
     def _get_pdf_pars(self, arr_mas, arr_wgt):
+        if self._proc == 'psi2' and self._qsq == 'jpsi':
+            log.warning(f'Dropping weights for fit')
+            arr_wgt = None
+
         zdt   = zfit.Data.from_numpy(obs=self._obs, array=arr_mas, weights=arr_wgt)
 
         zut.print_pdf(self._pdf, txt_path=f'{self._out_dir}/pdf.txt')
