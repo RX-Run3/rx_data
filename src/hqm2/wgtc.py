@@ -18,9 +18,7 @@ class wgtc:
 
         self._min_cns = None 
         self._max_cns = None 
-
-        self._arr_edge= numpy.linspace(self._min_raw, self._max_raw, 101)
-
+        self._arr_edge= None 
         self._arr_wgt = None
         self._out_dir = None
 
@@ -31,6 +29,7 @@ class wgtc:
             return
 
         self._set_cns_cut()
+        self._set_edges()
 
         self._rdf_dt = self._apply_cuts(self._rdf_dt)
         self._rdf_mc = self._apply_cuts(self._rdf_mc)
@@ -44,8 +43,25 @@ class wgtc:
 
         self._check_weights()
         self._validate_weights(arr_bc_dt, arr_bc_mc)
+        self._extend_weights()
 
         self._initialized = True
+    #-------------------------------------------------
+    def _extend_weights(self):
+        fwgt = self._arr_wgt[ 0]
+        lwgt = self._arr_wgt[-1]
+
+        self._arr_edge = numpy.concatenate([ [-numpy.inf], self._arr_edge, [numpy.inf] ]) 
+        self._arr_wgt  = numpy.concatenate([ [      fwgt], self._arr_wgt , [     lwgt] ]) 
+    #-------------------------------------------------
+    def _set_edges(self):
+        if   self._proc == 'ctrl':
+            self._arr_edge= numpy.linspace(self._min_raw, self._max_raw, 101)
+        elif self._proc == 'psi2':
+            self._arr_edge= numpy.linspace(self._min_raw, self._max_raw,  26)
+        else:
+            log.error(f'Invalid process: {self._proc}')
+            raise
     #-------------------------------------------------
     def _set_cns_cut(self):
         if   self._proc == 'ctrl':
