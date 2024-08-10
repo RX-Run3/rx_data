@@ -1,9 +1,16 @@
-from hqm2.wgtc import wgtc
+from hqm2.data_store import data_store 
+from hqm2.wgtc       import wgtc
 
 import matplotlib.pyplot as plt
 import numpy
 import ROOT
 
+#-------------------------------
+def get_real_rdf(proc=None):
+    obj     = data_store(qsq='psi2', dset='2018', trig='ETOS', proc=proc)
+    rdf     = obj.get_rdf(variables=['B_M', 'B_const_mass_M', 'B_const_mass_psi2S_M'])
+
+    return rdf
 #-------------------------------
 def get_rdf(kind=None):
     if   kind == 'data':
@@ -29,7 +36,7 @@ def filter_array(arr, mrange):
 
     return arr
 #-------------------------------
-def test_simple():
+def test_toy():
     mrange  = [5100, 5500]
     rdf_dt  = get_rdf(kind='data')
     rdf_mc  = get_rdf(kind='mc'  )
@@ -39,19 +46,39 @@ def test_simple():
     arr_mas_mc  = filter_array(arr_mas_mc, mrange)
 
     obj         = wgtc(rdf_dt=rdf_dt, rdf_mc=rdf_mc, proc='psi2', mrange=mrange)
-    obj.out_dir = 'tests/wgtc/simple'
+    obj.out_dir = 'tests/wgtc/toy'
     arr_wgt     = obj.get_weights(arr_mas=arr_mas_mc)
 
     plt.hist(arr_mas_dt, bins=30, range=mrange, histtype='step', label='Data')
     plt.hist(arr_mas_mc, bins=30, range=mrange, histtype='step', label=  'MC')
     plt.hist(arr_mas_mc, bins=30, range=mrange, histtype='step', label=  'Corrected', weights=arr_wgt)
     plt.legend()
-    plot_path = f'tests/wgtc/simple/mass_test_dist.png'
+    plot_path = f'tests/wgtc/toy/mass_test_dist.png'
     plt.savefig(plot_path)
     plt.close('all')
 #-------------------------------
+def test_real():
+    rdf_dt  = get_real_rdf(proc='data')
+    rdf_mc  = get_real_rdf(proc='psi2')
+    arr_mas = numpy.random.uniform(4500, 6000, 10000)
+
+    wrange      = [5000, 5500]
+    obj         = wgtc(rdf_dt=rdf_dt, rdf_mc=rdf_mc, proc='psi2', mrange=wrange)
+    obj.out_dir = 'tests/wgtc/real'
+    arr_wgt     = obj.get_weights(arr_mas=arr_mas)
+
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(20, 15))
+    ax1.hist(arr_mas, range=[4500, 6000], label='No weights', histtype='step')
+    ax1.hist(arr_mas, range=[4500, 6000], label='Weighted'  , weights=arr_wgt, alpha=0.5)
+    ax1.axvline(x=wrange[0], linestyle=':', color='r')
+    ax1.axvline(x=wrange[1], linestyle=':', color='r')
+    ax1.legend()
+
+    ax2.scatter(arr_mas, arr_wgt)
+#-------------------------------
 def main():
-    test_simple()
+    test_real()
+    test_toy()
 #-------------------------------
 if __name__ == '__main__':
     main()
