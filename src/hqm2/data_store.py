@@ -62,7 +62,13 @@ class data_store:
 
         return rdf
     #----------------------------------
-    def get_array(self, variable='B_M', d_cut=dict()):
+    def get_rdf(self, variables=None):
+        d_arr_val = { variable : self.get_array(variable, clean_repeated=False) for variable in variables }
+        rdf       = ROOT.RDF.FromNumpy(d_arr_val)
+
+        return rdf
+    #----------------------------------
+    def get_array(self, variable='B_M', d_cut=dict(), clean_repeated=False):
         if   self._dset == 'r1':
             arr_11 = self._get_year_array('2011', var_name=variable, d_cut=d_cut)
             arr_12 = self._get_year_array('2012', var_name=variable, d_cut=d_cut)
@@ -75,6 +81,9 @@ class data_store:
             arr_va = numpy.concatenate([arr_15, arr_16])
         else:
             arr_va = self._get_year_array(self._dset, var_name=variable, d_cut=d_cut)
+
+        if clean_repeated:
+            arr_va = numpy.unique(arr_va)
 
         return arr_va
 #----------------------------------
