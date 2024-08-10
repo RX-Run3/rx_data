@@ -27,10 +27,10 @@ def test_psi2_jpsi():
 def main():
     plt.style.use(mplhep.style.LHCb2)
 
-    test_psi2_psi2()
     test_ctrl_jpsi()
-    test_psi2_jpsi()
     test_ctrl_psi2()
+    test_psi2_jpsi()
+    test_psi2_psi2()
 #-------------------------------------
 if __name__ == '__main__':
     main()
