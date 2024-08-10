@@ -56,12 +56,7 @@ class pdfmc:
     #------------------------------------
     def _get_weight_rdf(self, proc=None):
         obj     = data_store(qsq=self._qsq, dset=self._dset, trig=self._trig, proc=proc)
-        arr_cnj = obj.get_array(variable='B_const_mass_M'      )
-        arr_cnp = obj.get_array(variable='B_const_mass_psi2S_M')
-        arr_raw = obj.get_array(variable='B_M')
-
-        d_data  = {'B_const_mass_M' : arr_cnj, 'B_M' : arr_raw, 'B_const_mass_psi2S_M' : arr_cnp}
-        rdf     = ROOT.RDF.FromNumpy(d_data)
+        rdf     = obj.get_rdf(variables=['B_M', 'B_const_mass_M', 'B_const_mass_psi2S_M'])
 
         return rdf
     #------------------------------------
@@ -104,7 +99,7 @@ class pdfmc:
         minm, maxm = self._mrange
 
         obj     = data_store(qsq=self._qsq, dset=self._dset, trig=self._trig, proc=self._proc)
-        arr_mas = obj.get_array(d_cut={'mass' : f'B_M > {minm} & B_M < {maxm}'})
+        arr_mas = obj.get_array(d_cut={'mass' : f'B_M > {minm} & B_M < {maxm}'}, clean_repeated=True)
         arr_wgt = self._get_weights(arr_mas)
         d_par   = self._get_pdf_pars(arr_mas, arr_wgt)
 
