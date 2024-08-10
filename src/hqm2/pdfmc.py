@@ -1,9 +1,11 @@
 import os
 import ROOT
 import zfit
+import numpy
 import hqm2.model    as mod
 import zutils.utils  as zut
 import utils_noroot  as utnr 
+import matplotlib.pyplot as plt
 
 from importlib.resources import files
 from hqm2.data_store     import data_store
@@ -27,7 +29,8 @@ class pdfmc:
         self._pdf_suf= f'mc_{proc}_{dset}_{qsq}'
 
         self._pdf         = None
-        self._mrange      = None 
+        self._wrange      = None 
+        self._prange      = None 
         self._out_dir     = None
         self._initialized = False
     #------------------------------------
@@ -38,18 +41,30 @@ class pdfmc:
         self._out_dir = files('hqm2_data').joinpath(f'fits/{self._proc}/{self._dset}_{self._trig}_{self._qsq}')
         os.makedirs(self._out_dir, exist_ok=True)
 
-        self._set_mrange()
-        self._pdf = mod.get_dscb(self._pdf_suf, self._obs)
+        self._set_ranges()
+        self._set_pdf()
 
         self._initialized = True
     #------------------------------------
-    def _set_mrange(self):
+    def _set_pdf(self):
         if   self._proc == 'ctrl':
-            self._mrange = [4500, 6000]
+            self._pdf = mod.get_dscb(self._pdf_suf, self._obs)
+        elif self._proc == 'psi2':
+            self._pdf = mod.get_sujh_2cb(self._pdf_suf, self._obs)
+        else:
+            log.error(f'Invalid process: {self._proc}')
+            raise
+    #------------------------------------
+    def _set_ranges(self):
+        if   self._proc == 'ctrl':
+            self._wrange = [4500, 6000]
+            self._prange = [4500, 6000]
         elif self._proc == 'psi2' and self._qsq == 'psi2':
-            self._mrange = [5000, 5500]
+            self._wrange = [5150, 5350]
+            self._prange = [5000, 5500]
         elif self._proc == 'psi2' and self._qsq == 'jpsi':
-            self._mrange = [5000, 5350]
+            self._wrange = [5000, 5350]
+            self._prange = [5000, 5350]
         else:
             log.error(f'Invalid process: {self._proc}')
             raise
@@ -64,7 +79,7 @@ class pdfmc:
         rdf_dt = self._get_weight_rdf(proc=    'data')
         rdf_mc = self._get_weight_rdf(proc=self._proc)
 
-        obj         = wgtc(rdf_dt=rdf_dt, rdf_mc=rdf_mc, proc=self._proc, mrange=self._mrange)
+        obj         = wgtc(rdf_dt=rdf_dt, rdf_mc=rdf_mc, proc=self._proc, mrange=self._wrange)
         obj.out_dir = f'{self._out_dir}/weights'
         arr_wgt     = obj.get_weights(arr_mas=arr_mas)
 
@@ -75,8 +90,13 @@ class pdfmc:
 
         zut.print_pdf(self._pdf, txt_path=f'{self._out_dir}/pdf.txt')
 
+        if arr_wgt is None:
+            title=None
+        else:
+            title=f'Unweighed: {arr_mas.size}; Weighed: {numpy.sum(arr_wgt):.0f}'
+
         plot_path = f'{self._out_dir}/fit.png'
-        d_plt_opt = {'plot_path' : plot_path, 'plot_range' : self._mrange, 'skip_pulls' : True , 'stacked' : False}
+        d_plt_opt = {'title' : title, 'plot_path' : plot_path, 'plot_range' : self._prange, 'skip_pulls' : True , 'stacked' : False}
         d_fit_opt = {'ntries' : 5, 'pval_threshold' : 0.05}
         d_par     = zut.get_fit_pars(self._pdf, zdt, d_plt_opt=d_plt_opt, d_fit_opt=d_fit_opt)
 
@@ -96,11 +116,13 @@ class pdfmc:
             return self._pdf
 
         log.info(f'File with parameters not found, fitting')
-        minm, maxm = self._mrange
+
+        [minm, maxm] = self._prange
 
         obj     = data_store(qsq=self._qsq, dset=self._dset, trig=self._trig, proc=self._proc)
         arr_mas = obj.get_array(d_cut={'mass' : f'B_M > {minm} & B_M < {maxm}'}, clean_repeated=True)
         arr_wgt = self._get_weights(arr_mas)
+
         d_par   = self._get_pdf_pars(arr_mas, arr_wgt)
 
         utnr.dump_json(d_par, json_path)
