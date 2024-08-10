@@ -28,8 +28,11 @@ class ratc:
         self._rat_psi2 = zfit.param.Parameter('rat_psi2', 1, 0, 8)
         self._rat_ctrl = zfit.param.Parameter('rat_ctrl', 1, 0, 8)
 
-        self._npr_psi2 = zfit.param.Parameter('npr_psi2', 1e3, 0, 1e6)
-        self._npr_ctrl = zfit.param.Parameter('npr_ctrl', 1e3, 0, 1e6)
+        #npr_xy Yiels of sample x in bin y, p=psi2, c=ctrl
+        self._npr_cc= zfit.param.Parameter('npr_cc', 1e3, 0, 1e6)
+        self._npr_cp= zfit.param.Parameter('npr_cp', 1e3, 0, 1e6)
+        self._npr_pc= zfit.param.Parameter('npr_pc', 1e3, 0, 1e6)
+        self._npr_pp= zfit.param.Parameter('npr_pp', 1e3, 0, 1e6)
     #-----------------------------
     def get_ratio(self):
         json_path = files('hqm2_data').joinpath(f'ratios/{self._dset}/parameters.json')
@@ -50,21 +53,15 @@ class ratc:
         os.makedirs(out_dir, exist_ok=True)
 
         nll_psi2= self._get_nll('psi2')
-        res     = self._sim_fit(nll_psi2)
-        self._save_fit(out_dir, 'psi2')
-
-        return
-
         nll_ctrl= self._get_nll('ctrl')
-        res     = self._sim_fit(nll_ctrl)
-        self._save_fit(out_dir, 'ctrl')
 
-        return
-
-
+        nll     = nll_psi2 + nll_ctrl
+        res     = self._sim_fit(nll)
 
         self._save_fit(out_dir, 'psi2')
         self._save_fit(out_dir, 'ctrl')
+
+        return
 
         d_par = zut.fit_result_to_dict(res)
         utnr.dump_json(d_par, json_path)
@@ -117,7 +114,7 @@ class ratc:
         pdf = obj.get_pdf()
 
         rat = {'ctrl' : self._rat_ctrl, 'psi2' : self._rat_psi2}[proc]
-        npr = {'ctrl' : self._npr_ctrl, 'psi2' : self._npr_psi2}[proc]
+        npr = self._get_pr_yield(proc=proc, qsq=qsq) 
         nfr = zfit.ComposedParameter(f'nfr_{proc}_{qsq}', func=lambda d_par : d_par['p1'] / d_par['p2'], params={'p1' : npr, 'p2' : rat} )
 
         pdf = pdf.create_extended(nfr, name= self._get_pdf_name(proc=proc, kind='fr'))
@@ -174,11 +171,21 @@ class ratc:
         zdata     = zfit.Data.from_numpy(self._obs, array=arr_dt_mm)
         pdf_mm    = zfit.pdf.KDE1DimFFT(obs=self._obs, data=zdata, bandwidth=self._bandwidth, name='PRec')
         pdf_ee    = zfit.pdf.FFTConvPDFV1(func=pdf_mm, kernel=pdf_trf, name=self._get_pdf_name(proc=proc, kind='pr') , n=self._fft_npt)
+        nevt      = self._get_pr_yield(proc=proc, qsq=qsq)
 
-        nevt      = {'ctrl' : self._npr_ctrl, 'psi2' : self._npr_psi2}[proc]
         pdf_ee.set_yield(nevt)
 
         return pdf_ee
+    #-----------------------------
+    def _get_pr_yield(self, proc=None, qsq=None):
+        nevt = {
+                'ctrl_jpsi' : self._npr_cc, 
+                'ctrl_psi2' : self._npr_cp, 
+                'psi2_jpsi' : self._npr_pc, 
+                'psi2_psi2' : self._npr_pp, 
+                }[f'{proc}_{qsq}']
+
+        return nevt
     #-----------------------------
     def _save_fit(self, out_dir, proc):
         dat, pdf = self._d_pdf_dat[proc]
