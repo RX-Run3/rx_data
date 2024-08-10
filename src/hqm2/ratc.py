@@ -138,21 +138,6 @@ class ratc:
 
         return d_name[kind][proc]
     #-----------------------------
-    def _is_shape_par(self, par_name):
-        if par_name.startswith('nfr_'):
-            return False
-
-        if par_name.startswith('rat_'):
-            return False
-
-        if par_name.startswith('mu_'):
-            return False
-
-        if par_name.startswith('sg_'):
-            return False
-
-        return True
-    #-----------------------------
     def _get_pr_pdf(self, proc=None, qsq=None):
         '''
         proc(str): Component that has to be modelled, provides muon MC sample and source q2 bin for transfer function.
