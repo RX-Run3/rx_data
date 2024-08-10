@@ -16,9 +16,8 @@ class wgtc:
         self._proc   = proc
         [self._min_raw, self._max_raw] = mrange 
 
-        self._min_cns = 5229
-        self._max_cns = 5329
-
+        self._min_cns = None 
+        self._max_cns = None 
 
         self._arr_edge= numpy.linspace(self._min_raw, self._max_raw, 101)
 
@@ -30,6 +29,8 @@ class wgtc:
     def _initialize(self):
         if self._initialized:
             return
+
+        self._set_cns_cut()
 
         self._rdf_dt = self._apply_cuts(self._rdf_dt)
         self._rdf_mc = self._apply_cuts(self._rdf_mc)
@@ -45,6 +46,17 @@ class wgtc:
         self._validate_weights(arr_bc_dt, arr_bc_mc)
 
         self._initialized = True
+    #-------------------------------------------------
+    def _set_cns_cut(self):
+        if   self._proc == 'ctrl':
+            self._min_cns = 5229
+            self._max_cns = 5329
+        elif self._proc == 'psi2':
+            self._min_cns = 5260
+            self._max_cns = 5300
+        else:
+            log.error(f'Invalid process: {self._proc}')
+            raise
     #-------------------------------------------------
     def _apply_cuts(self, rdf):
         cns_var      = {'ctrl' : 'B_const_mass_M', 'psi2' : 'B_const_mass_psi2S_M'}[self._proc]
@@ -109,9 +121,9 @@ class wgtc:
 
         fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(15, 10))
 
-        ax1.stairs(dat, self._arr_edge, label=     'Data')
-        ax1.stairs(sim, self._arr_edge, label=       'MC')
-        ax1.stairs(cor, self._arr_edge, label='Corrected')
+        ax1.stairs(dat, self._arr_edge, label=     'Data', fill= True, alpha=0.4)
+        ax1.stairs(sim, self._arr_edge, label=       'MC', fill=False)
+        ax1.stairs(cor, self._arr_edge, label='Corrected', fill=False)
 
         ax2.stairs(self._arr_wgt, self._arr_edge, color='k')
 
@@ -139,3 +151,4 @@ class wgtc:
 
         return arr_mc_wgt
 #-------------------------------------------------
+
