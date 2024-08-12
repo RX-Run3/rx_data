@@ -134,18 +134,28 @@ class data_store:
 
         return arr_val
     #----------------------------------
+    def _merge_arrays(self, arr_1, arr_2):
+        df_cf1 = arr_1.df_cf
+        df_cf2 = arr_2.df_cf
+        df_tot = self._merge_cf_df([df_cf1, df_cf2])
+
+        arr_tot       = numpy.concatenate([arr_1, arr_1])
+        arr_tot.df_cf = df_tot
+
+        return arr_tot
+    #----------------------------------
     @scache.cache_np_array
     def _calculate_array(self, variable=None, d_cut=dict()):
         if   self._dset == 'r1':
             arr_11 = self._get_year_array('2011', var_name=variable, d_cut=d_cut)
             arr_12 = self._get_year_array('2012', var_name=variable, d_cut=d_cut)
 
-            arr_va = numpy.concatenate([arr_11, arr_12])
+            arr_va = self._merge_arrays(arr_11, arr_12)
         elif self._dset == 'r2p1':
             arr_15 = self._get_year_array('2015', var_name=variable, d_cut=d_cut)
             arr_16 = self._get_year_array('2016', var_name=variable, d_cut=d_cut)
 
-            arr_va = numpy.concatenate([arr_15, arr_16])
+            arr_va = self._merge_arrays(arr_15, arr_16)
         else:
             arr_va = self._get_year_array(self._dset, var_name=variable, d_cut=d_cut)
 
