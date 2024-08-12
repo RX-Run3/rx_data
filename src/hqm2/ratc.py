@@ -217,6 +217,8 @@ class ratc:
     #-----------------------------
     def _book_histogram(self, name=None, binning=None, arr_val=None, label=None):
         plt.figure(name)
+
+        label = f'{label}; nev={arr_val.size}'
         plt.hist(arr_val, bins=binning, label=label, histtype='step', density=True)
     #-----------------------------
     def _get_pr_yield(self, proc=None, qsq=None):
