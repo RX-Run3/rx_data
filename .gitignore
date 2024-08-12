@@ -178,6 +178,7 @@ pyrightconfig.json
 *.swp
 *.txt
 *.png
+*.png.pdf
 
 src/hqm2_data/fits/data/*.json
 
