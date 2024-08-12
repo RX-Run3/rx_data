@@ -179,3 +179,5 @@ pyrightconfig.json
 *.txt
 *.png
 
+src/hqm2_data/fits/data/*.json
+
