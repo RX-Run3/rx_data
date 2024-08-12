@@ -2,6 +2,7 @@ import os
 import ROOT
 import glob
 import numpy
+import hashlib
 import read_selection as rs
 
 from storage.cache       import cache      as scache
@@ -71,10 +72,13 @@ class data_store:
         return rdf
     #----------------------------------
     def _hash_from_dict(self, d_val):
-        l_val = [val for val in d_val.values()]
-        t_val = tuple(l_val)
+        hash_gen = hashlib.sha256()
+        for val in d_val.values():
+            hash_gen.update(b'{val}')
 
-        return hash(t_val)
+        val = hash_gen.hexdigest()
+
+        return str(val)
     #----------------------------------
     def get_array(self, variable='B_M', d_cut=dict(), clean_repeated=False):
         cut_hash          = self._hash_from_dict(d_cut) 
