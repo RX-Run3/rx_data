@@ -1,7 +1,9 @@
 import os
 import ROOT
 import glob
+import utils
 import numpy
+import pandas         as pnd
 import hashlib
 import read_selection as rs
 
@@ -29,22 +31,52 @@ class data_store:
 
         asl_dir = os.environ['ASLDIR']
         root_wc = f'{asl_dir}/{dat_dir}/{self._proc}/v10.21p2/{year}_{self._trig}/*.root'
-        l_file  = glob.glob(root_wc)
+        json_wc = root_wc.replace('.root', '.json')
+        l_json  = self._wc_to_list(json_wc)
+        l_df    = [ self._df_from_json(json_path) for json_path in l_json ]
+        df_cf   = self._merge_cf_df(l_df)
+
+        l_file  = self._wc_to_list(root_wc)
+        rdf     = ROOT.RDataFrame(self._trig, l_file)
+        rdf     = self._vec_to_float(rdf)
+        rdf     = self._apply_selection(rdf, year, d_cut)
+        arr_val = rdf.AsNumpy([var_name])[var_name]
+
+        arr_val.df_cf = pnd.concat([df_cf, rdf.df_cf])
+
+        return arr_val
+    #----------------------------------
+    def _merge_cf_df(self, l_df):
+        df_tot = l_df[0]
+        sr_cut = df_tot.sr_cut
+        l_df   = l_df[1:]
+
+        for df in l_df:
+            df_tot = df_tot.add(df)
+
+        df_tot['Cut'] = sr_cut
+
+        return df_tot
+    #----------------------------------
+    def _df_from_json(self, json_path):
+        df        = pnd.read_json(json_path)
+        sr_cut    = df.Cut
+        df        = df.drop(columns=['file', 'tree', 'Cumulative', 'Efficiency', 'Cut'])
+        df.sr_cut = sr_cut
+
+        return df
+    #----------------------------------
+    def _wc_to_list(self, wc):
+        l_file  = glob.glob(wc)
         nfiles  = len(l_file)
 
         if nfiles == 0:
-            log.error(f'No files found in: {root_wc}')
+            log.error(f'No files found in: {wc}')
             raise
 
-        log.debug(f'{nfiles} files found in: {root_wc}')
+        log.debug(f'{nfiles} files found in: {wc}')
 
-        rdf = ROOT.RDataFrame(self._trig, l_file)
-        rdf = self._vec_to_float(rdf)
-        rdf = self._apply_selection(rdf, year, d_cut)
-
-        arr_val = rdf.AsNumpy([var_name])[var_name]
-
-        return arr_val
+        return l_file
     #----------------------------------
     def _vec_to_float(self, rdf):
         for var_name in self._l_vec_var:
@@ -55,13 +87,24 @@ class data_store:
     def _apply_selection(self, rdf, year, d_cut):
         qsq = rs.get('q2' , self._trig, q2bin=self._qsq, year=year)
         bdt = rs.get('bdt', self._trig, q2bin=self._qsq, year=year)
-        rdf = rdf.Filter(qsq, 'qsq')
-        rdf = rdf.Filter(bdt, 'bdt')
+        rdf = rdf.Filter(qsq, 'QSQ')
+        rdf = rdf.Filter(bdt, 'BDT')
+
+        l_cut = [qsq, bdt] 
         for name, cut in d_cut.items():
-            rdf = rdf.Filter(cut, name)
+            rdf  = rdf.Filter(cut, name)
+            l_cut.apppend(cut)
 
         rep = rdf.Report()
         rep.Print()
+
+        df = utils.rdf_report_to_df(rep)
+        df = df.set_index('cut', drop=True)
+        df = df.drop(columns=['Efficiency', 'Cummulative'])
+        df = df.rename(columns={'All' : 'Total', 'Passed' : 'Pased'})
+
+        df['Cut'] = l_cut
+        rdf.df_cf = df
 
         return rdf
     #----------------------------------
@@ -82,7 +125,8 @@ class data_store:
     #----------------------------------
     def get_array(self, variable='B_M', d_cut=dict(), clean_repeated=False):
         cut_hash          = self._hash_from_dict(d_cut) 
-        scache.cache_path = files('hqm2_data').joinpath(f'fits/{self._proc}/{self._qsq}_{self._dset}_{self._trig}_{variable}_{cut_hash}.json')
+        cache_path        = files('hqm2_data').joinpath(f'fits/{self._proc}/{self._qsq}_{self._dset}_{self._trig}_{variable}_{cut_hash}.json')
+        scache.cache_path = str(cache_path) 
         arr_val           = self._calculate_array(variable=variable, d_cut=d_cut)
 
         if clean_repeated:
