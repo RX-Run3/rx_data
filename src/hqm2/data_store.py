@@ -4,7 +4,9 @@ import glob
 import numpy
 import read_selection as rs
 
-from log_store import log_store
+from storage.cache       import cache      as scache
+from log_store           import log_store
+from importlib.resources import files
 
 log=log_store.add_logger('rx_hqm2:data_store')
 #----------------------------------
@@ -69,6 +71,16 @@ class data_store:
         return rdf
     #----------------------------------
     def get_array(self, variable='B_M', d_cut=dict(), clean_repeated=False):
+        scache.cache_path = files('hqm2_data').joinpath(f'fits/{self._proc}/{self._qsq}_{self._dset}_{self._trig}_{variable}.json')
+        arr_val           = self._calculate_array(variable=variable, d_cut=d_cut)
+
+        if clean_repeated:
+            arr_val = numpy.unique(arr_val)
+
+        return arr_val
+    #----------------------------------
+    @scache.cache_np_array
+    def _calculate_array(self, variable=None, d_cut=dict()):
         if   self._dset == 'r1':
             arr_11 = self._get_year_array('2011', var_name=variable, d_cut=d_cut)
             arr_12 = self._get_year_array('2012', var_name=variable, d_cut=d_cut)
@@ -81,9 +93,6 @@ class data_store:
             arr_va = numpy.concatenate([arr_15, arr_16])
         else:
             arr_va = self._get_year_array(self._dset, var_name=variable, d_cut=d_cut)
-
-        if clean_repeated:
-            arr_va = numpy.unique(arr_va)
 
         return arr_va
 #----------------------------------
