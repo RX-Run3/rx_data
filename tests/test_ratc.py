@@ -1,6 +1,8 @@
 from hqm2.ratc import ratc
 
 import zfit
+import mplhep
+import matplotlib.pyplot as plt
 
 from log_store import log_store
 
@@ -14,6 +16,7 @@ def test_simple():
 #-------------------------------------
 def main():
     log_store.set_level('scripts:zutils/utils', 30)
+    plt.style.use(mplhep.style.LHCb2)
 
     test_simple()
 #-------------------------------------
