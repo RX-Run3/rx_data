@@ -93,7 +93,7 @@ class data_store:
         l_cut = [qsq, bdt] 
         for name, cut in d_cut.items():
             rdf  = rdf.Filter(cut, name)
-            l_cut.apppend(cut)
+            l_cut.append(cut)
 
         rep = rdf.Report()
         rep.Print()
