@@ -58,11 +58,13 @@ class ratc:
         nll     = nll_psi2 + nll_ctrl
         res     = self._sim_fit(nll)
 
+        log.info('Plotting')
         self._save_fit(out_dir, 'psi2')
         self._save_fit(out_dir, 'ctrl')
 
         return
 
+        log.info('Saving parameters')
         d_par = zut.fit_result_to_dict(res)
         utnr.dump_json(d_par, json_path)
 
@@ -101,6 +103,7 @@ class ratc:
         return pdf
     #-----------------------------
     def _sim_fit(self, nll):
+        log.info('Fitting')
         minimizer = zfit.minimize.Minuit()
         res       = minimizer.minimize(nll)
         res.hesse(method='minuit_hesse')
