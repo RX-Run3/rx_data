@@ -9,6 +9,10 @@ def plot_data(arr_dat, plt_dir):
     plt.savefig(f'{plt_dir}/data.png')
     plt.close('all')
 #------------------------------------
+def test_rdf():
+    obj= data_store(qsq='psi2', dset='2018', trig='MTOS', proc='data')
+    obj.get_rdf(variables=['B_M', 'B_const_mass_M'])
+#------------------------------------
 def test_simple():
     obj     = data_store(qsq='psi2', dset='2018', trig='MTOS', proc='data')
     arr_dat = obj.get_array()
@@ -53,6 +57,7 @@ def test_dset():
     plot_data(arr_dat, plt_dir)
 #------------------------------------
 def main():
+    test_rdf()
     test_vec()
     test_simple()
     test_dset()
