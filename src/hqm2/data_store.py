@@ -70,8 +70,15 @@ class data_store:
 
         return rdf
     #----------------------------------
+    def _hash_from_dict(self, d_val):
+        l_val = [val for val in d_val.values()]
+        t_val = tuple(l_val)
+
+        return hash(t_val)
+    #----------------------------------
     def get_array(self, variable='B_M', d_cut=dict(), clean_repeated=False):
-        scache.cache_path = files('hqm2_data').joinpath(f'fits/{self._proc}/{self._qsq}_{self._dset}_{self._trig}_{variable}.json')
+        cut_hash          = self._hash_from_dict(d_cut) 
+        scache.cache_path = files('hqm2_data').joinpath(f'fits/{self._proc}/{self._qsq}_{self._dset}_{self._trig}_{variable}_{cut_hash}.json')
         arr_val           = self._calculate_array(variable=variable, d_cut=d_cut)
 
         if clean_repeated:
