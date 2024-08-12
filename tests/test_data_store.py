@@ -2,6 +2,7 @@ from hqm2.data_store import data_store
 
 import matplotlib.pyplot as plt
 import os
+import mplhep
 
 #------------------------------------
 def plot_data(arr_dat, plt_dir):
@@ -57,6 +58,8 @@ def test_dset():
     plot_data(arr_dat, plt_dir)
 #------------------------------------
 def main():
+    plt.style.use(mplhep.style.LHCb2)
+
     test_rdf()
     test_vec()
     test_simple()
