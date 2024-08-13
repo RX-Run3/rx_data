@@ -127,10 +127,27 @@ class trfc:
 
         return pdf_trf
     #---------------------------------
-    def get_trf(self, plot_range=[5000, 7000]):
-        pdf_trf = self._get_trf_pdf()
+    def _get_plot_range(self):
+        if self._qsq_src == 'psi2' and self._qsq_tgt == 'psi2':
+            return [4500, 6000]
 
-        json_path = utnr.build_path(package='hqm2_data', path=f'tfunc/{self._dset}/{self._qsq_src}_{self._qsq_tgt}_{self._proc}.json')
+        if self._qsq_src == 'jpsi' and self._qsq_tgt == 'jpsi':
+            return [4500, 5800]
+
+        if self._qsq_src == 'psi2' and self._qsq_tgt == 'jpsi':
+            return [4500, 5500]
+
+        if self._qsq_src == 'jpsi' and self._qsq_tgt == 'psi2':
+            return [5000, 6000]
+
+        if self._qsq_src == 'psi2' and self._qsq_tgt == 'high':
+            return [5000, 6400]
+    #---------------------------------
+    def get_trf(self):
+        plot_range = self._get_plot_range()
+        pdf_trf    = self._get_trf_pdf()
+        json_path  = config.make_data_path(kind='tfunc', dset=self._dset, fname=f'{self._qsq_src}_{self._qsq_tgt}_{self._proc}.json')
+
         if os.path.isfile(json_path):
             log.info('Transfer function parameters found, loading them')
             d_par = utnr.load_json(json_path)
