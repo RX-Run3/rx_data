@@ -215,7 +215,18 @@ class ratc:
 
         obj = zfp(data=dat, model=pdf)
         obj.plot(plot_range=self._plot_range, stacked=True, skip_pulls=True) 
+
+        ax  = obj.axs[0]
+        self._add_title(ax)
+
         plt.savefig(f'{self._out_dir}/fit_{proc}.png')
+    #-----------------------------
+    def _add_title(self, ax):
+        if len(config.binning) == 0:
+            return
+
+        cut = config.binning['cut']
+        ax.set_title(cut)
     #-----------------------------
     def _save_figs(self):
         for fig_name in plt.get_figlabels():
