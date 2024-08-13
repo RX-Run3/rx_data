@@ -7,6 +7,7 @@ log=log_store.add_logger('rx_hqm2:config')
 #-------------------------------------------------------------------
 class config:
     binning=dict()
+    fitting={'ntries' : 5, 'pval_threshold' : 0.05}
 
     @staticmethod
     def print_config(name):
