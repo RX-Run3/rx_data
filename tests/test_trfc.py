@@ -13,23 +13,23 @@ class data:
 #--------------------------------------
 def test_psi2_high():
     obj     = trfc(obs=data.obs, qsq_src='psi2', qsq_tgt='high', proc='psi2', dset='2018', pref='psi2_high_pr')
-    pdf_trf = obj.get_trf(plot_range=[5000, 7000])
+    pdf_trf = obj.get_trf()
 #--------------------------------------
 def test_jpsi_jpsi():
     obj     = trfc(obs=data.obs, qsq_src='jpsi', qsq_tgt='jpsi', proc='ctrl', dset='2018', pref='jpsi_jpsi_pr')
-    pdf_trf = obj.get_trf(plot_range=[4600, 5750])
+    pdf_trf = obj.get_trf()
 #--------------------------------------
 def test_jpsi_psi2():
     obj     = trfc(obs=data.obs, qsq_src='jpsi', qsq_tgt='psi2', proc='ctrl', dset='2018', pref='jpsi_psi2_pr')
-    pdf_trf = obj.get_trf(plot_range=[5000, 6000])
+    pdf_trf = obj.get_trf()
 #--------------------------------------
 def test_psi2_jpsi():
     obj     = trfc(obs=data.obs, qsq_src='psi2', qsq_tgt='jpsi', proc='psi2', dset='2018', pref='psi2_jpsi_pr')
-    pdf_trf = obj.get_trf(plot_range=[4500, 5400])
+    pdf_trf = obj.get_trf()
 #--------------------------------------
 def test_psi2_psi2():
     obj     = trfc(obs=data.obs, qsq_src='psi2', qsq_tgt='psi2', proc='psi2', dset='2018', pref='psi2_psi2_pr')
-    pdf_trf = obj.get_trf(plot_range=[4600, 5750])
+    pdf_trf = obj.get_trf()
 #--------------------------------------
 def main():
     plt.style.use(mplhep.style.LHCb2)
