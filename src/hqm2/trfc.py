@@ -129,7 +129,7 @@ class trfc:
     def get_trf(self, plot_range=[5000, 7000]):
         pdf_trf = self._get_trf_pdf()
 
-        json_path = files('hqm2_data').joinpath(f'tfunc/{self._dset}_{self._qsq_src}_{self._qsq_tgt}_{self._proc}.json')
+        json_path = utnr.build_path(package='hqm2_data', path=f'tfunc/{self._dset}/{self._qsq_src}_{self._qsq_tgt}_{self._proc}.json')
         if os.path.isfile(json_path):
             log.info('Transfer function parameters found, loading them')
             d_par = utnr.load_json(json_path)
