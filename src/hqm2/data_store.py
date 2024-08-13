@@ -5,6 +5,7 @@ import utils
 import numpy
 import pandas         as pnd
 import hashlib
+import utils_noroot   as utnr
 import read_selection as rs
 
 from storage.cache       import cache      as scache
@@ -125,7 +126,8 @@ class data_store:
     #----------------------------------
     def get_array(self, variable='B_M', d_cut=dict(), clean_repeated=False):
         cut_hash          = self._hash_from_dict(d_cut) 
-        cache_path        = files('hqm2_data').joinpath(f'fits/{self._proc}/{self._qsq}_{self._dset}_{self._trig}_{variable}_{cut_hash}.json')
+        cache_path        = utnr.build_path(package='hqm2_data', path=f'data/{self._dset}/{self._qsq}_{self._proc}_{self._trig}_{variable}_{cut_hash}.json')
+
         scache.cache_path = str(cache_path) 
         arr_val           = self._calculate_array(variable=variable, d_cut=d_cut)
 
