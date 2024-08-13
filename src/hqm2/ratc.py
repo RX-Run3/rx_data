@@ -168,7 +168,6 @@ class ratc:
 
         obj       = data_store(qsq=qsq_src, dset=self._dset, trig='MTOS', proc='data')
         arr_dt_mm = obj.get_array(variable='B_M', d_cut={'sb_mass' : f'{mas_cns} < {self._sb_mass}'})
-        #arr_dt_mm = self._extend_distribution(arr_tot=arr_dt_mm, qsq_src=qsq_src)
 
         self._book_histogram(name=f'mm_{qsq}', label=qsq_src, binning=numpy.linspace(3500, 5300, 100), arr_val=arr_dt_mm)
 
@@ -184,26 +183,6 @@ class ratc:
         pdf_ee.set_yield(nevt)
 
         return pdf_ee
-    #-----------------------------
-    def _extend_distribution(self, arr_tot=None, qsq_src=None):
-        if qsq_src != 'jpsi':
-            return arr_tot
-
-        arr_val       = arr_tot[arr_tot < 4450]
-        shift         = 450
-        binning       = numpy.linspace(3550, 4000, 101)
-
-        arr_shf       = arr_val - shift 
-        l_bc, l_ed    = numpy.histogram(arr_shf, bins=binning)
-        l_bc          = l_bc - (l_bc[-1] - l_bc[0])
-        nentries      = numpy.sum(l_bc)
-        nentries      = int(nentries)
-        l_pr          = l_bc / nentries
-        l_cn          = 0.5 * (l_ed[:-1] + l_ed[1:])
-        arr_ext       = numpy.random.choice(l_cn, size=nentries, p=l_pr)
-        arr_tot       = numpy.concatenate([arr_ext, arr_tot])
-
-        return arr_tot
     #-----------------------------
     def _book_pdf(self, name=None, pdf=None, label=None, minx=None, maxx=None):
         arr_mas = numpy.linspace(minx, maxx, 500)
