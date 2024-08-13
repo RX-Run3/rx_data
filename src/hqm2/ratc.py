@@ -20,7 +20,7 @@ class ratc:
         self._dset = dset
         self._obs  = obs
 
-        self._plot_range = [4000, 6000]
+        self._plot_range = [4500, 6000]
         self._bandwidth  = 15
         self._fft_npt    = 1000
         self._sb_mass    = 5180
