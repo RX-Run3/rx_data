@@ -30,8 +30,8 @@ class config:
         -----------------
         kind  (str): Name of directory meant to sybolize what data will be stored there, e.g. fits, trfc
         dset  (str): Year, e.g. r1, r2p1
-        dname (str): Descriptive name for kind of data stored, e.g. ctrl_ETOS
-        fname (str): Optional file name, e.g. data.json
+        dname (str): Optional, descriptive name for kind of data stored, e.g. ctrl_ETOS
+        fname (str): Optional, file name, e.g. data.json
 
         Returns
         -----------------
@@ -44,7 +44,11 @@ class config:
         except KeyError:
             binning = 'int'
 
-        dir_path = files('hqm2_data').joinpath(f'{kind}/{binning}/{dset}/{dname}')
+        if dname is not None:
+            dir_path = files('hqm2_data').joinpath(f'{kind}/{binning}/{dset}/{dname}')
+        else:
+            dir_path = files('hqm2_data').joinpath(f'{kind}/{binning}/{dset}')
+
         dir_path = str(dir_path)
         os.makedirs(dir_path, exist_ok=True)
 
