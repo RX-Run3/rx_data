@@ -146,6 +146,8 @@ class trfc:
             pdf_trf = self._get_dscb()
         elif self._qsq_src == 'psi2' and self._qsq_tgt == 'jpsi':
             pdf_trf = self._get_2cb()
+        elif self._qsq_src == 'psi2' and self._qsq_tgt == 'psi2':
+            pdf_trf = self._get_dscb()
         else:
             pdf_trf = self._get_3cb()
 
@@ -173,10 +175,10 @@ class trfc:
         json_path  = config.make_data_path(kind='tfunc', dset=self._dset, fname=f'{self._qsq_src}_{self._qsq_tgt}_{self._proc}.json')
 
         if os.path.isfile(json_path):
-            log.info('Transfer function {self._qsq_src} -> {self._qsq_tgt} found, loading parameters')
+            log.info(f'Transfer function {self._qsq_src} -> {self._qsq_tgt} found, loading parameters')
             d_par = utnr.load_json(json_path)
         else:
-            log.info('Transfer function {self._qsq_src} -> {self._qsq_tgt} not found, fitting')
+            log.info(f'Transfer function {self._qsq_src} -> {self._qsq_tgt} not found, fitting')
             d_par = self._get_trf_pars(pdf_trf, json_path, plot_range)
 
         pdf_trf = zut.fix_pars(pdf_trf, d_par)
