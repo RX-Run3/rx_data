@@ -90,6 +90,8 @@ class wgtc:
     def _plot_mass(self, rdf, kind):
         cns_var= {'ctrl' : 'B_const_mass_M', 'psi2' : 'B_const_mass_psi2S_M'}[self._proc]
         d_data = rdf.AsNumpy(['B_M', cns_var])
+
+        plt.figure('wgtc_mass')
         for name, arr_mass in d_data.items():
             plt.hist(arr_mass, bins=100, range=[self._min_raw, self._max_raw], histtype='step', label=name)
 
@@ -98,12 +100,13 @@ class wgtc:
         plt.axvline(x=self._max_cns, color='r', linestyle=':')
         plt.legend()
         plt.savefig(plot_path)
-        plt.close('all')
+        plt.close('wgtc_mass')
     #-------------------------------------------------
     def _get_hist(self, rdf=None, weights=None):
         arr_mass     = rdf.AsNumpy(['B_M'])['B_M']
+        plt.figure('tmp')
         arr_bc, _, _ = plt.hist(arr_mass, density=True, weights=weights, bins=self._arr_edge) 
-        plt.close('all')
+        plt.close('tmp')
 
         return arr_bc
     #-------------------------------------------------
@@ -135,7 +138,7 @@ class wgtc:
         if self._out_dir is None:
             return
 
-        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(15, 10))
+        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(15, 10), num='dt_mc_wgt')
 
         ax1.stairs(dat, self._arr_edge, label=     'Data', fill= True, alpha=0.4)
         ax1.stairs(sim, self._arr_edge, label=       'MC', fill=False)
@@ -149,7 +152,7 @@ class wgtc:
         ax1.legend()
 
         plt.savefig(plot_path)
-        plt.close('all')
+        plt.close('dt_mc_wgt')
     #-------------------------------------------------
     @property
     def out_dir(self):
