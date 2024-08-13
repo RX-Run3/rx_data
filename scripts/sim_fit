@@ -41,9 +41,15 @@ def set_config():
     config.binning['bin'] = data.ibin
     config.print_config('binning')
 #-----------------------------------
+def set_logs():
+    log_store.set_level('scripts:zutils/utils'    , 30)
+    log_store.set_level('rx_hqm2:data_store'      , 30)
+    log_store.set_level('rx_scripts:storage/cache', 30)
+#-----------------------------------
 def main():
     get_args()
     set_config()
+    set_logs()
 
     obs=zfit.Space('B_M', limits=(0, 7000))
     obj=ratc(obs=obs, dset=data.dset)
