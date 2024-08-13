@@ -7,9 +7,11 @@ import zutils.utils  as zut
 import utils_noroot  as utnr 
 import matplotlib.pyplot as plt
 
-from importlib.resources import files
 from hqm2.data_store     import data_store
+from hqm2.config         import config
 from hqm2.wgtc           import wgtc 
+
+from importlib.resources import files
 from log_store           import log_store
 
 log=log_store.add_logger('rx_hqm2:pdfmc')
@@ -38,8 +40,7 @@ class pdfmc:
         if self._initialized:
             return
 
-        self._out_dir = files('hqm2_data').joinpath(f'fits/{self._dset}/{self._proc}_{self._trig}_{self._qsq}')
-        os.makedirs(self._out_dir, exist_ok=True)
+        self._out_dir=config.make_data_path(kind='fits', dset=self._dset, dname=f'{self._proc}_{self._trig}_{self._qsq}', fname=None)
 
         self._set_ranges()
         self._set_pdf()
