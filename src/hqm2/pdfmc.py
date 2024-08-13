@@ -38,7 +38,7 @@ class pdfmc:
         if self._initialized:
             return
 
-        self._out_dir = files('hqm2_data').joinpath(f'fits/{self._proc}/{self._dset}_{self._trig}_{self._qsq}')
+        self._out_dir = files('hqm2_data').joinpath(f'fits/{self._dset}/{self._proc}_{self._trig}_{self._qsq}')
         os.makedirs(self._out_dir, exist_ok=True)
 
         self._set_ranges()
@@ -126,7 +126,7 @@ class pdfmc:
         [minm, maxm] = self._prange
 
         obj     = data_store(qsq=self._qsq, dset=self._dset, trig=self._trig, proc=self._proc)
-        arr_mas = obj.get_array(d_cut={'mass' : f'B_M > {minm} & B_M < {maxm}'}, clean_repeated=True)
+        arr_mas = obj.get_array(clean_repeated=True)
         arr_wgt = self._get_weights(arr_mas)
 
         d_par   = self._get_pdf_pars(arr_mas, arr_wgt)
