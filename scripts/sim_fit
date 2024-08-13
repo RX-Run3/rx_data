@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+
+import toml
+import pprint
+import argparse
+
+from hqm2.data_store     import data_store
+from hqm2.config         import config
+from hqm2.ratc           import ratc 
+from log_store           import log_store
+from importlib.resources import files
+
+log=log_store.add_logger('rx_hqm2:sim_fit')
+#-----------------------------------
+class data:
+    dset = None
+    var  = None 
+    ibin = None
+
+    l_dset = ['r1', 'r2p1', '2017', '2018']
+#-----------------------------------
+def get_args():
+    parser = argparse.ArgumentParser(description='Used to do simultaneous fits in a bin of a specific variable')
+    parser.add_argument('-d', '--dset', type=str, help='Dataset', required=True, choices=data.l_dset)
+    parser.add_argument('-v', '--var' , type=str, help='Variable', required=True)
+    parser.add_argument('-b', '--ibin', type=str, help='Bin index')
+    args = parser.parse_args()
+
+    data.dset = args.dset
+    data.var  = args.var
+    data.ibin = args.ibin
+#-----------------------------------
+def set_config():
+    config_path  = files('hqm2_data').joinpath('config/sim_fit.toml')
+    d_config     = toml.load(config_path)
+    [minv, maxv] = d_config[data.var][data.ibin]
+
+    config.binning['cut'] = f'({minv} < {data.var}) && ({data.var} < {maxv})'
+    config.binning['var'] = data.var
+    config.binning['bin'] = data.ibin
+    config.print_config('binning')
+#-----------------------------------
+def main():
+    get_args()
+    set_config()
+
+    return
+
+    obs=zfit.Space('B_M', limits=(0, 7000))
+    obj=ratc(obs=obs, dset=data.dset)
+    rat=obj.get_ratio()
+#-----------------------------------
+if __name__ == '__main__':
+    main()
+
