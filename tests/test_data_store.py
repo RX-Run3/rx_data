@@ -1,4 +1,5 @@
 from hqm2.data_store import data_store
+from hqm2.config     import config 
 
 import matplotlib.pyplot as plt
 import os
@@ -57,9 +58,23 @@ def test_dset():
 
     plot_data(arr_dat, plt_dir)
 #------------------------------------
+def test_binning():
+    config.binning['var'] =        'B_PT'
+    config.binning['bin'] =           '1'
+    config.binning['cut'] = 'B_PT < 5750'
+
+    obj     = data_store(qsq='psi2', dset='r1', trig='MTOS', proc='data')
+    arr_dat = obj.get_array()
+
+    plt_dir = 'tests/data_store/binninng'
+    os.makedirs(plt_dir, exist_ok=True)
+
+    plot_data(arr_dat, plt_dir)
+#------------------------------------
 def main():
     plt.style.use(mplhep.style.LHCb2)
 
+    test_binning()
     test_rdf()
     test_vec()
     test_simple()
