@@ -128,6 +128,7 @@ class data_store:
         return str(val)
     #----------------------------------
     def get_array(self, variable='B_M', d_cut=dict(), clean_repeated=False):
+        d_cut             = self._update_cuts(d_cut)
         cut_hash          = self._hash_from_dict(d_cut) 
         scache.cache_path = config.make_data_path(kind='data', dset=self._dset, dname=f'{self._qsq}_{self._proc}_{self._trig}', fname=f'{variable}_{cut_hash}.json')
         df_cf             = self._calculate_array(variable=variable, d_cut=d_cut)
@@ -137,6 +138,21 @@ class data_store:
             arr_val = numpy.unique(arr_val)
 
         return arr_val
+    #----------------------------------
+    def _update_cuts(self, d_cut):
+        if len(config.binning) == 0:
+            return d_cut
+
+        var = config.binning['var']
+        ibin= config.binning['bin']
+        cut = config.binning['cut']
+
+        name        = f'{var}_{ibin}'
+        d_cut[name] = cut
+
+        log.info(f'Adding cut: {name} -> {cut}')
+
+        return d_cut
     #----------------------------------
     def _merge_arrays(self, df_1, df_2):
         arr_1 = df_1.arr_val
