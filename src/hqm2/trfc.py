@@ -7,8 +7,10 @@ import os
 
 from zutils.plot         import plot      as zfp
 from importlib.resources import files
-from hqm2.data_store     import data_store
 from log_store           import log_store
+
+from hqm2.data_store     import data_store
+from hqm2.config         import config
 
 log=log_store.add_logger('rx_hqm2:trfc')
 #---------------------------------
@@ -44,8 +46,7 @@ class trfc:
 
         plot_path = json_path.replace('.json', '.png')
         d_plt_opt = {'plot_path' : plot_path, 'plot_range' : plot_range, 'skip_pulls' : True , 'stacked' : False}
-        d_fit_opt = {'ntries' : 5, 'pval_threshold' : 0.05}
-        d_par     = zut.get_fit_pars(pdf_ees, arr_dt_ee, d_plt_opt=d_plt_opt, d_fit_opt=d_fit_opt)
+        d_par     = zut.get_fit_pars(pdf_ees, arr_dt_ee, d_plt_opt=d_plt_opt, d_fit_opt=config.fitting)
         utnr.dump_json(d_par, json_path)
 
         plot_path = json_path.replace('.json', '_kde.png')
