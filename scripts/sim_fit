@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import zfit
 import toml
 import pprint
 import argparse
@@ -43,8 +44,6 @@ def set_config():
 def main():
     get_args()
     set_config()
-
-    return
 
     obs=zfit.Space('B_M', limits=(0, 7000))
     obj=ratc(obs=obs, dset=data.dset)
