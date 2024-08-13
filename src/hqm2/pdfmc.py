@@ -79,6 +79,9 @@ class pdfmc:
         return rdf
     #------------------------------------
     def _get_weights(self, arr_mas):
+        if self._skip_weights():
+            return
+
         rdf_dt = self._get_weight_rdf(proc=    'data')
         rdf_mc = self._get_weight_rdf(proc=self._proc)
 
@@ -87,6 +90,20 @@ class pdfmc:
         arr_wgt     = obj.get_weights(arr_mas=arr_mas)
 
         return arr_wgt
+    #------------------------------------
+    def _skip_weights(self):
+        '''
+        Will not skip weights if integrated OR if getting Jpsi shape in Jpsi bin
+        '''
+        if len(config.binning) == 0:
+            return False
+
+        if self._proc == 'ctrl' and self._qsq == 'jpsi':
+            return False 
+
+        log.warning(f'Skipping weights for proc/qsq: {self._proc}/{self._qsq}')
+
+        return True 
     #------------------------------------
     def _get_pdf_pars(self, arr_mas, arr_wgt):
         if self._proc == 'psi2' and self._qsq == 'jpsi':
