@@ -59,9 +59,17 @@ class trfc:
         plt.hist(arr_dt_mm, bins=100, density=True, histtype='step', range=plot_range, label='$\mu\mu$')
         plt.hist(arr_dt_ee, bins=100, density=True, histtype='step', range=plot_range, label='$e^+e^-$')
         plt.legend()
-        plt.title(f'$\mu$:{arr_dt_mm.shape[0]}; $e$:{arr_dt_ee.shape[0]}')
+        plt.title(f'$\mu$:{arr_dt_mm.shape[0]}; $e$:{arr_dt_ee.shape[0]}' + self._get_bin_title() )
         plt.savefig(plot_path)
         plt.close('sim_dset')
+    #---------------------------------
+    def _get_bin_title(self):
+        if len(config.binning) == 0:
+            return ''
+
+        cut = config.binninng['cut']
+
+        return f'; {cut}'
     #---------------------------------
     def _plot_pdf(self, pdf, plot_range, plot_path):
         [minx, maxx] = plot_range
@@ -71,6 +79,7 @@ class trfc:
         plt.figure('pdf_only')
         plt.plot(arr_x, arr_y)
         plt.legend()
+        plt.title(self._get_bin_title())
         plt.savefig(plot_path)
         plt.close('pdf_only')
     #---------------------------------
