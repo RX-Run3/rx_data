@@ -1,3 +1,7 @@
+[fits]
+ntries=10
+pval_threshold=0.05
+
 [B_PT]
 1=[    0,  5750]
 2=[ 5750,  8259]
