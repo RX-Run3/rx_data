@@ -45,6 +45,7 @@ class config:
             binning = 'int'
 
         dir_path = files('hqm2_data').joinpath(f'{kind}/{binning}/{dset}/{dname}')
+        dir_path = str(dir_path)
         os.makedirs(dir_path, exist_ok=True)
 
         if fname is None:
