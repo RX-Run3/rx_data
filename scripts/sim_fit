@@ -3,7 +3,9 @@
 import zfit
 import toml
 import pprint
+import mplhep
 import argparse
+import matplotlib.pyplot as plt
 
 from hqm2.data_store     import data_store
 from hqm2.config         import config
@@ -50,6 +52,8 @@ def main():
     get_args()
     set_config()
     set_logs()
+
+    plt.style.use(mplhep.style.LHCb2)
 
     obs=zfit.Space('B_M', limits=(0, 7000))
     obj=ratc(obs=obs, dset=data.dset)
