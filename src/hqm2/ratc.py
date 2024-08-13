@@ -24,6 +24,7 @@ class ratc:
         self._bandwidth  = 15
         self._fft_npt    = 1000
         self._sb_mass    = 5180
+        self._figsize    = 15, 10
         self._d_pdf_dat  = dict() 
         self._out_dir    = None
 
@@ -188,11 +189,11 @@ class ratc:
         arr_mas = numpy.linspace(minx, maxx, 500)
         arr_val = pdf.pdf(arr_mas) 
 
-        plt.figure(name)
+        plt.figure(name, figsize=self._figsize)
         plt.plot(arr_mas, arr_val, label=label)
     #-----------------------------
     def _book_histogram(self, name=None, binning=None, arr_val=None, label=None):
-        plt.figure(name)
+        plt.figure(name, figsize=self._figsize)
 
         label = f'{label}; nev={arr_val.size}'
         plt.hist(arr_val, bins=binning, label=label, histtype='step', density=True)
@@ -230,7 +231,7 @@ class ratc:
     #-----------------------------
     def _save_figs(self):
         for fig_name in plt.get_figlabels():
-            plt.figure(fig_name)
+            plt.figure(fig_name, self._figsize)
             plt.legend()
             plt.savefig(f'{self._out_dir}/{fig_name}.png')
 #-----------------------------
