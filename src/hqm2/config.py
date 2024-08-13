@@ -38,12 +38,12 @@ class config:
         -----------------
         string holding path to either file or directory
         '''
-        try:
+        if len(config.binning) == 0:
+            binning = 'int'
+        else:
             var     = config.binning['var']
             ibin    = config.binning['bin']
             binning = f'{var}_{ibin}'
-        except KeyError:
-            binning = 'int'
 
         if dname is not None:
             dir_path = files('hqm2_data').joinpath(f'{kind}/{binning}/{dset}/{dname}')
