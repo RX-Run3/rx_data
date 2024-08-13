@@ -8,7 +8,8 @@ import hashlib
 import utils_noroot   as utnr
 import read_selection as rs
 
-from storage.cache       import cache      as scache
+from rk.calc_utility     import addDiffVars as add_vars
+from storage.cache       import cache       as scache
 from log_store           import log_store
 from hqm2.config         import config
 
@@ -40,6 +41,7 @@ class data_store:
         l_file  = self._wc_to_list(root_wc)
         rdf     = ROOT.RDataFrame(self._trig, l_file)
         rdf     = self._vec_to_float(rdf)
+        rdf     = self._define_vars(rdf)
         rdf     = self._apply_selection(rdf, year, d_cut)
         arr_val = rdf.AsNumpy([var_name])[var_name]
 
@@ -49,6 +51,13 @@ class data_store:
         df_cf.arr_val = arr_val
 
         return df_cf 
+    #----------------------------------
+    def _define_vars(self, rdf):
+        rdf.q2  = 'none'
+        rdf.trig= self._trig
+        rdf     = add_vars(rdf)
+
+        return rdf
     #----------------------------------
     def _merge_cf_df(self, l_df):
         df_tot = l_df[0]
