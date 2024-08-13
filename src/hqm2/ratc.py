@@ -1,9 +1,9 @@
 from hqm2.data_store     import data_store
+from hqm2.config         import config
 from hqm2.pdfmc          import pdfmc
 from hqm2.trfc           import trfc
 
 from zutils.plot         import plot      as zfp
-from importlib.resources import files
 from log_store           import log_store
 
 import os
@@ -42,10 +42,7 @@ class ratc:
         if self._initialized:
             return
 
-        out_dir       = files('hqm2_data').joinpath(f'ratios/{self._dset}')
-        self._out_dir = str(out_dir)
-
-        os.makedirs(self._out_dir, exist_ok=True)
+        self._out_dir = config.make_data_path(kind='ratios', dset=self._dset)
 
         self._initialized=True
     #-----------------------------
