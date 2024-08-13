@@ -51,10 +51,10 @@ def get_2cb(pref, obs):
     return pdf
 #--------------------------------------------------------
 def get_cb(pref, obs):
-    mu  = zfit.param.Parameter(f'mu_{pref}', 5500, 5000, 6000)
-    sg  = zfit.param.Parameter(f'sg_{pref}',   10,  0.1, 400)
-    al  = zfit.param.Parameter(f'al_{pref}',-1.5,  -10,    0)
-    nl  = zfit.param.Parameter(f'nl_{pref}',   1, 1e-3,  110)
+    mu  = zfit.param.Parameter(f'mu_{pref}', 5500, 4500, 6000)
+    sg  = zfit.param.Parameter(f'sg_{pref}',   10,  0.1,  400)
+    al  = zfit.param.Parameter(f'al_{pref}',-1.5,  -10,     0)
+    nl  = zfit.param.Parameter(f'nl_{pref}',   1, 1e-3,   110)
     pdf = zfit.pdf.CrystalBall(mu, sg, al, nl, obs, name='CB')
 
     return pdf
@@ -72,10 +72,11 @@ def get_dscb(pref, obs):
 #--------------------------------------------------------
 def get_sujh(pref, obs):
     ms = zfit.Parameter(f'ms_{pref}', 5300, 5250, 5350)
-    lm = zfit.Parameter(f'lm_{pref}',   50,   40,   70)
+    lm = zfit.Parameter(f'lm_{pref}',   50,   40,  100)
     gm = zfit.Parameter(f'gm_{pref}',    2,    1,    4)
     dl = zfit.Parameter(f'dl_{pref}',    2,  1.0,    3)
 
+    #pdf= zfit.pdf.JohnsonSU(obs=obs, mu=ms, lambd=lm, gamma=gm, delta=dl)
     pdf= zpdf_jh(obs=obs, mu=ms, lm=lm, gamma=gm, delta=dl)
 
     return pdf
