@@ -218,6 +218,7 @@ class ratc:
         obj.plot(plot_range=self._plot_range, stacked=True, skip_pulls=True) 
 
         ax  = obj.axs[0]
+        ax.set_ylim(bottom=0)
         self._add_title(ax)
 
         plt.savefig(f'{self._out_dir}/fit_{proc}.png')
