@@ -130,8 +130,9 @@ class pdfmc:
         arr_wgt = self._get_weights(arr_mas)
 
         d_par   = self._get_pdf_pars(arr_mas, arr_wgt)
-
         utnr.dump_json(d_par, json_path)
+
+        self._fix_pdf_pars(json_path)
 
         return self._pdf
 #------------------------------------
