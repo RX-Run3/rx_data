@@ -10,6 +10,7 @@ import read_selection as rs
 
 from storage.cache       import cache      as scache
 from log_store           import log_store
+from hqm2.config         import config
 from importlib.resources import files
 
 log=log_store.add_logger('rx_hqm2:data_store')
@@ -43,9 +44,12 @@ class data_store:
         rdf     = self._apply_selection(rdf, year, d_cut)
         arr_val = rdf.AsNumpy([var_name])[var_name]
 
-        arr_val.df_cf = pnd.concat([df_cf, rdf.df_cf])
+        df_cf   = pnd.concat([df_cf, rdf.df_cf])
+        df_cf.sr_cut = df_cf.Cut
 
-        return arr_val
+        df_cf.arr_val = arr_val
+
+        return df_cf 
     #----------------------------------
     def _merge_cf_df(self, l_df):
         df_tot = l_df[0]
@@ -126,41 +130,39 @@ class data_store:
     #----------------------------------
     def get_array(self, variable='B_M', d_cut=dict(), clean_repeated=False):
         cut_hash          = self._hash_from_dict(d_cut) 
-        cache_path        = utnr.build_path(package='hqm2_data', path=f'data/{self._dset}/{self._qsq}_{self._proc}_{self._trig}_{variable}_{cut_hash}.json')
-
-        scache.cache_path = str(cache_path) 
-        arr_val           = self._calculate_array(variable=variable, d_cut=d_cut)
+        scache.cache_path = config.make_data_path(kind='data', dset=self._dset, dname=f'{self._qsq}_{self._proc}_{self._trig}', fname=f'{variable}_{cut_hash}.json')
+        df_cf             = self._calculate_array(variable=variable, d_cut=d_cut)
+        arr_val           = df_cf.arr_val
 
         if clean_repeated:
             arr_val = numpy.unique(arr_val)
 
         return arr_val
     #----------------------------------
-    def _merge_arrays(self, arr_1, arr_2):
-        df_cf1 = arr_1.df_cf
-        df_cf2 = arr_2.df_cf
-        df_tot = self._merge_cf_df([df_cf1, df_cf2])
+    def _merge_arrays(self, df_1, df_2):
+        arr_1 = df_1.arr_val
+        arr_2 = df_2.arr_val
 
-        arr_tot       = numpy.concatenate([arr_1, arr_1])
-        arr_tot.df_cf = df_tot
+        df_tot        = self._merge_cf_df([df_1 , df_2 ])
+        df_tot.arr_val= numpy.concatenate([arr_1, arr_1])
 
-        return arr_tot
+        return df_tot 
     #----------------------------------
-    @scache.cache_np_array
+    @scache.cache_selection
     def _calculate_array(self, variable=None, d_cut=dict()):
         if   self._dset == 'r1':
-            arr_11 = self._get_year_array('2011', var_name=variable, d_cut=d_cut)
-            arr_12 = self._get_year_array('2012', var_name=variable, d_cut=d_cut)
+            df_11 = self._get_year_array('2011', var_name=variable, d_cut=d_cut)
+            df_12 = self._get_year_array('2012', var_name=variable, d_cut=d_cut)
 
-            arr_va = self._merge_arrays(arr_11, arr_12)
+            df_mr = self._merge_arrays(df_11, df_12)
         elif self._dset == 'r2p1':
-            arr_15 = self._get_year_array('2015', var_name=variable, d_cut=d_cut)
-            arr_16 = self._get_year_array('2016', var_name=variable, d_cut=d_cut)
+            df_15 = self._get_year_array('2015', var_name=variable, d_cut=d_cut)
+            df_16 = self._get_year_array('2016', var_name=variable, d_cut=d_cut)
 
-            arr_va = self._merge_arrays(arr_15, arr_16)
+            df_mr = self._merge_arrays(df_15, df_16)
         else:
-            arr_va = self._get_year_array(self._dset, var_name=variable, d_cut=d_cut)
+            df_mr = self._get_year_array(self._dset, var_name=variable, d_cut=d_cut)
 
-        return arr_va
+        return df_mr
 #----------------------------------
 
