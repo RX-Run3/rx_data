@@ -55,21 +55,24 @@ class trfc:
         return d_par 
     #---------------------------------
     def _plot_datasets(self, arr_dt_mm, arr_dt_ee, plot_range, plot_path):
+        plt.figure('sim_dset')
         plt.hist(arr_dt_mm, bins=100, density=True, histtype='step', range=plot_range, label='$\mu\mu$')
         plt.hist(arr_dt_ee, bins=100, density=True, histtype='step', range=plot_range, label='$e^+e^-$')
         plt.legend()
         plt.title(f'$\mu$:{arr_dt_mm.shape[0]}; $e$:{arr_dt_ee.shape[0]}')
         plt.savefig(plot_path)
-        plt.close('all')
+        plt.close('sim_dset')
     #---------------------------------
     def _plot_pdf(self, pdf, plot_range, plot_path):
         [minx, maxx] = plot_range
         arr_x = numpy.linspace(minx, maxx, 300)
         arr_y = pdf.pdf(arr_x)
+
+        plt.figure('pdf_only')
         plt.plot(arr_x, arr_y)
         plt.legend()
         plt.savefig(plot_path)
-        plt.close('all')
+        plt.close('pdf_only')
     #---------------------------------
     def _get_dscb(self):
         al  = zfit.param.Parameter(f'al_trf_{self._pref}', 1.5, 1e-3,   10)
