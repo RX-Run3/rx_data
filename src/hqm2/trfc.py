@@ -67,7 +67,7 @@ class trfc:
         if len(config.binning) == 0:
             return ''
 
-        cut = config.binninng['cut']
+        cut = config.binning['cut']
 
         return f'; {cut}'
     #---------------------------------
