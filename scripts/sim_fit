@@ -38,16 +38,21 @@ def set_config():
     d_config     = toml.load(config_path)
     [minv, maxv] = d_config[data.var][data.ibin]
 
-    config.binning['cut'] = f'({minv} < {data.var}) && ({data.var} < {maxv})'
-    config.binning['var'] = data.var
-    config.binning['bin'] = data.ibin
+    config.fitting['ntries'        ] = d_config['fits']['ntries']
+    config.fitting['pval_threshold'] = d_config['fits']['pval_threshold']
+    config.binning['bin'           ] = data.ibin
+    config.binning['var'           ] = data.var
+    config.binning['cut'           ] = f'({minv} < {data.var}) && ({data.var} < {maxv})'
+
     config.print_config('binning')
+    config.print_config('fitting')
 #-----------------------------------
 def set_logs():
     log_store.set_level('scripts:zutils/utils'    , 30)
     log_store.set_level('rx_hqm2:data_store'      , 30)
     log_store.set_level('rx_scripts:storage/cache', 30)
     log_store.set_level('rx_scripts:atr_mgr:mgr'  , 30)
+    log_store.set_level('tools:calc_utility'      , 40)
 #-----------------------------------
 def main():
     get_args()
