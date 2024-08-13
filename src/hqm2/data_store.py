@@ -11,7 +11,6 @@ import read_selection as rs
 from storage.cache       import cache      as scache
 from log_store           import log_store
 from hqm2.config         import config
-from importlib.resources import files
 
 log=log_store.add_logger('rx_hqm2:data_store')
 #----------------------------------
