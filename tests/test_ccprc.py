@@ -1,6 +1,8 @@
 from hqm2.ccprc   import ccprc 
 from zutils.plot  import plot      as zfp
+from log_store    import log_store
 
+import zutils.utils      as zut
 import matplotlib.pyplot as plt
 import zfit
 import os
@@ -8,14 +10,23 @@ import os
 #--------------------------------------------------
 class data:
     obs = zfit.Space("B_M", limits=(0, 7000))
+#-------------------------------------
+def set_logs():
+    log_store.set_level('scripts:zutils/utils'    , 30)
+    log_store.set_level('rx_hqm2:data_store'      , 30)
+    log_store.set_level('rx_scripts:storage/cache', 30)
+    log_store.set_level('rx_scripts:atr_mgr:mgr'  , 30)
+    log_store.set_level('tools:calc_utility'      , 40)
 #--------------------------------------------------
 def check_pdf(pdf, plot_dir):
     os.makedirs(plot_dir, exist_ok=True)
 
+    zut.print_pdf(pdf, txt_path=f'{plot_dir}/pdf.txt')
+
     sam = pdf.create_sampler(n=10000)
 
     obj = zfp(data=sam, model=pdf)
-    obj.plot(plot_range=(4500, 6000), stacked=True) 
+    obj.plot(plot_range=(4500, 6000), stacked=True, skip_pulls=True) 
 
     plt.savefig(f'{plot_dir}/pdf.png')
     plt.close('all')
@@ -28,6 +39,8 @@ def test_simple():
     check_pdf(pdf, plot_dir)
 #--------------------------------------------------
 def main():
+    set_logs()
+
     test_simple()
 #--------------------------------------------------
 if __name__ == '__main__':
