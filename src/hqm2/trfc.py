@@ -31,7 +31,6 @@ class trfc:
         self._obs_trf  = zfit.Space('B_M', limits=(-1000, +1000))
     #---------------------------------
     def _get_trf_pars(self, pdf_trf, json_path, plot_range):
-        json_path = str(json_path)
         obj       = data_store(qsq=self._qsq_src, dset=self._dset, trig='MTOS', proc=self._proc)
         arr_dt_mm = obj.get_array()
         zdata     = zfit.Data.from_numpy(self._obs, array=arr_dt_mm)
