@@ -19,6 +19,14 @@ log=log_store.add_logger('rx_hqm2:ccprc')
 #-----------------------------------
 class ccprc:
     def __init__(self, obs=None, dset=None, preffix=None, syst=None, brem=None, qsq_rng=None):
+        '''
+        obs: zfit observable
+        dset (str): dataset, representing year, e.g. r1
+        preffix (str): String meant to be used for naming of variables
+        syst (str): Needed to switch between nominal and alternative models
+        brem (int): Needed to check models in brem categories 1 and 2. This component does not exist in brem = 0
+        qsq_rng (list): List with source and targe q2, e.g. ['psi2', 'high'] 
+        '''
         self._obs   = obs
         self._dset  = dset 
         self._syst  = syst 
@@ -31,7 +39,18 @@ class ccprc:
         self._bw_mumu = 15
         self._low_sb  = 5180
 
-        self._proc_trf= 'psi2'
+        self._proc_trf    = 'psi2'
+        self._initialized = False
+    #---------------------------------
+    def _initialize(self):
+        if self._initialized:
+            return
+
+        if self._brem not in [None, 1, 2]:
+            log.error(f'Invalid brem category: {self._brem}')
+            raise
+
+        self._initialized = True
     #---------------------------------
     def _get_muon_pdf(self):
         #TODO: Combinatorial needs to be subtracted
@@ -121,12 +140,11 @@ class ccprc:
         return pdf_trf
     #---------------------------------
     def get_pdf(self):
+        self._initialize()
+
         pdf_mmd = self._get_muon_pdf()
         pdf_trf = self._get_trf()
         pdf_prc = zfit.pdf.FFTConvPDFV1(func=pdf_mmd, kernel=pdf_trf, name='PRec', n=self._fft_npt)
-
-        if self._brem == 0:
-            return pdf_prc
 
         pdf_res = self._get_reso()
         r       = self._get_ratio()
