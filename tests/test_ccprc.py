@@ -18,17 +18,17 @@ def set_logs():
     log_store.set_level('rx_scripts:atr_mgr:mgr'  , 30)
     log_store.set_level('tools:calc_utility'      , 40)
 #--------------------------------------------------
-def check_pdf(pdf, plot_dir):
+def check_pdf(pdf, plot_dir, name='pdf'):
     os.makedirs(plot_dir, exist_ok=True)
 
-    zut.print_pdf(pdf, txt_path=f'{plot_dir}/pdf.txt')
+    zut.print_pdf(pdf, txt_path=f'{plot_dir}/{name}.txt')
 
     sam = pdf.create_sampler(n=10000)
 
     obj = zfp(data=sam, model=pdf)
     obj.plot(plot_range=(4500, 6000), stacked=True, skip_pulls=True) 
 
-    plt.savefig(f'{plot_dir}/pdf.png')
+    plt.savefig(f'{plot_dir}/{name}.png')
     plt.close('all')
 #--------------------------------------------------
 def test_simple():
@@ -38,9 +38,18 @@ def test_simple():
     plot_dir = 'tests/ccprc/simple'
     check_pdf(pdf, plot_dir)
 #--------------------------------------------------
+def test_brem(brem):
+    obj =ccprc(obs=data.obs, dset='2018', preffix='psi2_high_pr', syst='nom', brem=brem, qsq_rng=['psi2', 'high'])
+    pdf =obj.get_pdf()
+
+    plot_dir = 'tests/ccprc/brem'
+    check_pdf(pdf, plot_dir, name=f'pdf_{brem}')
+#--------------------------------------------------
 def main():
     set_logs()
 
+    test_brem(1)
+    test_brem(2)
     test_simple()
 #--------------------------------------------------
 if __name__ == '__main__':
