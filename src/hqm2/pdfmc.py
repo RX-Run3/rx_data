@@ -50,6 +50,8 @@ class pdfmc:
     def _set_pdf(self):
         if   self._proc == 'ctrl':
             self._pdf = mod.get_dscb(self._pdf_suf, self._obs)
+        elif self._proc == 'psi2' and self._qsq == 'high':
+            self._pdf = mod.get_cb(self._pdf_suf, self._obs)
         elif self._proc == 'psi2' and self._qsq == 'psi2':
             self._pdf = mod.get_sujh_2cb(self._pdf_suf, self._obs)
         elif self._proc == 'psi2' and self._qsq == 'jpsi':
@@ -68,8 +70,11 @@ class pdfmc:
         elif self._proc == 'psi2' and self._qsq == 'jpsi':
             self._wrange = [5000, 5310]
             self._prange = [4500, 5310]
+        elif self._proc == 'psi2' and self._qsq == 'high':
+            self._wrange = None 
+            self._prange = [5200, 7000]
         else:
-            log.error(f'Invalid process: {self._proc}')
+            log.error(f'Invalid process/qsq: {self._proc}/{self._qsq}')
             raise
     #------------------------------------
     def _get_weight_rdf(self, proc=None):
@@ -93,8 +98,12 @@ class pdfmc:
     #------------------------------------
     def _skip_weights(self):
         '''
+        Will skip data driven scale and resolution weights if modelling high-q2 bin
         Will not skip weights if integrated OR if getting Jpsi shape in Jpsi bin
         '''
+        if self._qsq == 'high':
+            return True
+
         if len(config.binning) == 0:
             return False
 
