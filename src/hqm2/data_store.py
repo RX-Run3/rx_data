@@ -27,8 +27,22 @@ class data_store:
 
         self._l_vec_var = ['B_const_mass_M', 'B_const_mass_psi2S_M']
     #----------------------------------
+    def _get_sample_dir(self):
+        dat_dir = {
+                'data' : 'r_fits', 
+                'psi2' : 'r_fits', 
+                'ctrl' : 'r_fits',
+                'bpks' : 'rare_backgrounds',
+                'bdks' : 'rare_backgrounds',
+                'bsph' : 'rare_backgrounds',
+                }
+
+        dir_name = dat_dir[self._proc]
+
+        return dir_name
+    #----------------------------------
     def _get_year_array(self, year, var_name, d_cut=None):
-        dat_dir = {'data' : 'r_fits', 'psi2' : 'r_fits', 'ctrl' : 'r_fits'}[self._proc]
+        dat_dir = self._get_sample_dir()
         log.info(f'Picking {self._proc}/{self._trig}/{self._dset}/{self._qsq} from: {dat_dir}')
 
         asl_dir = os.environ['ASLDIR']
