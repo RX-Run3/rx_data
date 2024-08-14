@@ -11,8 +11,10 @@ class data:
 #----------------------------------------
 def check_pdf(pdf, name='pdf'):
     arr_mas = pdf.arr_mas
+    arr_wgt = pdf.arr_wgt
+    zdata   = zfit.Data.from_numpy(data.obs, array=arr_mas, weights=arr_wgt)
 
-    obj = zfp(data=arr_mas, model=pdf)
+    obj = zfp(data=zdata, model=pdf)
     obj.plot(nbins=50, stacked=False)
     ax = obj.axs[0]
     ax.set_title(f'Nentries: {arr_mas.size}')
@@ -27,6 +29,14 @@ def test_simple(proc):
 
     check_pdf(pdf, name=proc)
 #----------------------------------------
+def test_boots():
+    data.out_dir = 'tests/prec_rare/boots'
+    os.makedirs(data.out_dir, exist_ok=True)
+
+    for bts in range(10):
+        pdf = get_prec_rare_pdf(obs=data.obs, dset='2018', kind='bpks', trig='ETOS', bts=bts) 
+        check_pdf(pdf, name=f'bts_{bts:03}')
+#----------------------------------------
 def test_brem_cut(proc, cbrem):
     d_cut=       {'brem' : f'cbrem=={cbrem}'}
     pdf          = get_prec_rare_pdf(obs=data.obs, dset='2018', kind=proc, trig='ETOS', d_cut=d_cut) 
@@ -37,11 +47,11 @@ def test_brem_cut(proc, cbrem):
     check_pdf(pdf, name=f'{proc}_{cbrem}')
 #----------------------------------------
 def main():
+    test_boots()
+
     test_simple('bsph')
     test_simple('bpks')
     test_simple('bdks')
-
-    return
 
     test_brem_cut('bsph', 0)
     test_brem_cut('bsph', 1)
@@ -54,10 +64,6 @@ def main():
     test_brem_cut('bdks', 0)
     test_brem_cut('bdks', 1)
     test_brem_cut('bdks', 2)
-
-    return
-
-
 #----------------------------------------
 if __name__ == '__main__':
     main()
