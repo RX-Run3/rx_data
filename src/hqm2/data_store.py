@@ -179,6 +179,10 @@ class data_store:
         ibin= config.binning['bin']
         cut = config.binning['cut']
 
+        #Do not cut in brem category for muon channel
+        if var == 'cbrem' and self._trig == 'MTOS':
+            return d_cut
+
         name        = f'{var}_{ibin}'
         d_cut[name] = cut
 
