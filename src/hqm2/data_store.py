@@ -153,7 +153,7 @@ class data_store:
 
         return str(val)
     #----------------------------------
-    def get_array(self, variable='B_M', d_cut=dict(), clean_repeated=False):
+    def get_array(self, variable='B_M', d_cut=None, clean_repeated=False):
         d_cut             = self._update_cuts(d_cut)
         cut_hash          = self._hash_from_dict(d_cut) 
 
@@ -164,9 +164,14 @@ class data_store:
         if clean_repeated:
             arr_val = numpy.unique(arr_val)
 
+        if len(arr_val) == 0:
+            log.error(f'Empty array found')
+            raise
+
         return arr_val
     #----------------------------------
     def _update_cuts(self, d_cut):
+        d_cut = dict() if d_cut is None else d_cut
         if len(config.binning) == 0:
             return d_cut
 
