@@ -18,7 +18,7 @@ def set_logs():
     log_store.set_level('rx_scripts:atr_mgr:mgr'  , 30)
     log_store.set_level('tools:calc_utility'      , 40)
 #--------------------------------------------------
-def check_pdf(pdf, plot_dir, name='pdf'):
+def check_pdf(pdf, plot_dir, name='pdf', title=None):
     os.makedirs(plot_dir, exist_ok=True)
 
     zut.print_pdf(pdf, txt_path=f'{plot_dir}/{name}.txt')
@@ -26,7 +26,11 @@ def check_pdf(pdf, plot_dir, name='pdf'):
     sam = pdf.create_sampler(n=10000)
 
     obj = zfp(data=sam, model=pdf)
-    obj.plot(plot_range=(4500, 6000), stacked=True, skip_pulls=True) 
+    obj.plot(plot_range=(4500, 6000), stacked=True, skip_pulls=True, no_data=True) 
+
+    if title is not None:
+        ax=obj.axs[0]
+        ax.set_title(title)
 
     plt.savefig(f'{plot_dir}/{name}.png')
     plt.close('all')
@@ -43,7 +47,7 @@ def test_brem(brem):
     pdf =obj.get_pdf()
 
     plot_dir = 'tests/ccprc/brem'
-    check_pdf(pdf, plot_dir, name=f'pdf_{brem}')
+    check_pdf(pdf, plot_dir, name=f'pdf_{brem}', title=f'Brem {brem}')
 #--------------------------------------------------
 def main():
     set_logs()
