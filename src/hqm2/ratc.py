@@ -75,7 +75,6 @@ class ratc:
         self._plot_fit('ctrl')
 
         self._save_figs()
-        return
 
         log.info('Saving parameters')
         d_par = zut.fit_result_to_dict(res)
