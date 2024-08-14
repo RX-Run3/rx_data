@@ -6,9 +6,9 @@ import os
 import mplhep
 
 #------------------------------------
-def plot_data(arr_dat, plt_dir):
+def plot_data(arr_dat, plt_dir, name='data'):
     plt.hist(arr_dat, bins=100, range=[4000, 6000])
-    plt.savefig(f'{plt_dir}/data.png')
+    plt.savefig(f'{plt_dir}/{name}.png')
     plt.close('all')
 #------------------------------------
 def test_rdf():
@@ -71,8 +71,21 @@ def test_binning():
 
     plot_data(arr_dat, plt_dir)
 #------------------------------------
+def test_rare(proc):
+    obj     = data_store(qsq='high', dset='2018', trig='ETOS', proc=proc)
+    arr_dat = obj.get_array()
+
+    plt_dir = 'tests/data_store/rare'
+    os.makedirs(plt_dir, exist_ok=True)
+
+    plot_data(arr_dat, plt_dir, name=proc)
+#------------------------------------
 def main():
     plt.style.use(mplhep.style.LHCb2)
+
+    test_rare('bpks')
+    test_rare('bdks')
+    test_rare('bsph')
 
     test_binning()
     test_rdf()
