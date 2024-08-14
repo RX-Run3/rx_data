@@ -6,6 +6,7 @@ import utils_noroot      as utnr
 import zutils.utils      as zut
 
 from hqm2.data_store     import data_store
+from hqm2.config         import config
 from hqm2.trfc           import trfc
 from hqm2.ratc           import ratc 
 
@@ -72,8 +73,7 @@ class ccprc:
         nt      = zfit.param.Parameter(f'nt_psi_{self._pref}',    1,    0,   20)
         pdf_res = zfit.pdf.CrystalBall(mu, sg, al, nt, obs=self._obs)
 
-        json_path = files('hqm2_data').joinpath(f'fits/psi2S/{self._dset}_ETOS_{self._qsq_tgt}.json')
-        json_path = str(json_path)
+        json_path = config.make_data_path(kind='fits', dset=self._dset, dname='psi2_ETOS_high', fname='pars.json')
         if os.path.isfile(json_path):
             log.info(f'Psi2S parameters found, not fitting')
             d_par = utnr.load_json(json_path)
@@ -82,7 +82,7 @@ class ccprc:
             plot_path = json_path.replace('.json', '.png')
             obj       = data_store(qsq=self._qsq_tgt, dset=self._dset, trig='ETOS', proc='psi2')
             arr_dat   = obj.get_array()
-            d_par     = zut.get_fit_pars(pdf_ees, arr_dat, d_plt_opt = {'plot_path' : plot_path, 'plot_range' : [5000, 7000] })
+            d_par     = zut.get_fit_pars(pdf_res, arr_dat, d_fit_opt={'ntries' : 5}, d_plt_opt = {'plot_path' : plot_path, 'plot_range' : [5000, 7000] })
             utnr.dump_json(d_par, json_path)
 
         pdf_res = zut.fix_pars(pdf_res, d_par)
@@ -90,10 +90,11 @@ class ccprc:
         return pdf_res
     #---------------------------------
     def _get_ratio(self):
-        cal = ratc(dset=self._dset)
-        rat = cal.get_ratio()
+        cal        = ratc(obs=self._obs, dset=self._dset)
+        [val, err] = cal.get_ratio()
+        par        = zfit.param.Parameter(f'r_psi2_{self._dset}', val, 0, 1)
 
-        return rat
+        return par 
     #---------------------------------
     def _get_trf(self):
         obj     = trfc(obs=self._obs, qsq_src=self._qsq_src, qsq_tgt=self._qsq_tgt, dset=self._dset, proc=self._proc_trf, pref=self._pref) 
@@ -107,7 +108,7 @@ class ccprc:
         pdf_res = self._get_reso()
         r       = self._get_ratio()
 
-        pdf_prc = zfit.pdf.FFTConvPDFV1(func=pdf_trf, kernel=pdf_mmd, name='PRec', n=self._fft_npt)
+        pdf_prc = zfit.pdf.FFTConvPDFV1(func=pdf_mmd, kernel=pdf_trf, name='PRec', n=self._fft_npt)
         pdf     = zfit.pdf.SumPDF([pdf_prc, pdf_res], r)
 
         return pdf
