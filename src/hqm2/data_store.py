@@ -3,6 +3,7 @@ import ROOT
 import glob
 import utils
 import numpy
+import pprint
 import pandas         as pnd
 import hashlib
 import utils_noroot   as utnr
@@ -70,6 +71,7 @@ class data_store:
         rdf.q2  = 'none'
         rdf.trig= self._trig
         rdf     = add_vars(rdf)
+        rdf     = rdf.Define('cbrem', 'xbrem < 2 ? xbrem : 2')
 
         return rdf
     #----------------------------------
@@ -144,7 +146,8 @@ class data_store:
     def _hash_from_dict(self, d_val):
         hash_gen = hashlib.sha256()
         for val in d_val.values():
-            hash_gen.update(b'{val}')
+            inp = val.encode('utf-8')
+            hash_gen.update(inp)
 
         val = hash_gen.hexdigest()
 
@@ -153,6 +156,7 @@ class data_store:
     def get_array(self, variable='B_M', d_cut=dict(), clean_repeated=False):
         d_cut             = self._update_cuts(d_cut)
         cut_hash          = self._hash_from_dict(d_cut) 
+
         scache.cache_path = config.make_data_path(kind='data', dset=self._dset, dname=f'{self._qsq}_{self._proc}_{self._trig}', fname=f'{variable}_{cut_hash}.json')
         df_cf             = self._calculate_array(variable=variable, d_cut=d_cut)
         arr_val           = df_cf.arr_val
