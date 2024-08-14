@@ -154,16 +154,22 @@ class trfc:
     def _get_trf_pdf(self):
         if   self._qsq_src == 'psi2' and self._qsq_tgt == 'high':
             pdf_trf = self._get_cb()
+        elif self._qsq_src == 'jpsi' and self._qsq_tgt == 'jpsi':
+            pdf_trf = self._get_3cb()
         elif self._qsq_src == 'jpsi' and self._qsq_tgt == 'psi2':
             pdf_trf = self._get_dscb()
         elif self._qsq_src == 'psi2' and self._qsq_tgt == 'jpsi':
             pdf_trf = self._get_2cb()
         elif self._qsq_src == 'psi2' and self._qsq_tgt == 'psi2':
-            pdf_trf = self._get_dscb()
+            pdf_trf = self._get_dscb() if self._is_binned() else self._get_3cb()
         else:
-            pdf_trf = self._get_3cb()
+            log.error(f'Invalid source/target q2: {self._qsq_src}/{self._qsq_tgt}')
+            raise
 
         return pdf_trf
+    #---------------------------------
+    def _is_binned(self):
+        return len(config.binning) > 0
     #---------------------------------
     def _get_plot_range(self):
         if self._qsq_src == 'psi2' and self._qsq_tgt == 'psi2':
