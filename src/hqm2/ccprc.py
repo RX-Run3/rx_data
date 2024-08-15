@@ -22,14 +22,13 @@ class ccprc:
     '''
     Class used to provide charmonium PDF that leaks to the high-q2 bin. 
     '''
-    def __init__(self, obs=None, dset=None, preffix=None, syst=None, brem=None, qsq_rng=None):
+    def __init__(self, obs=None, dset=None, preffix=None, syst=None, brem=None):
         '''
         obs: zfit observable
         dset (str): dataset, representing year, e.g. r1
         preffix (str): String meant to be used for naming of variables
         syst (str): Needed to switch between nominal and alternative models
         brem (int): Needed to check models in brem categories 1 and 2. This component does not exist in brem = 0
-        qsq_rng (list): List with source and targe q2, e.g. ['psi2', 'high'] 
         '''
         self._obs   = obs
         self._dset  = dset 
@@ -37,8 +36,8 @@ class ccprc:
         self._brem  = brem
         self._pref  = preffix
 
-        [self._qsq_src, self._qsq_tgt] = qsq_rng
-
+        self._qsq_src = 'psi2'
+        self._qsq_tgt = 'high'
         self._fft_npt = 1000
         self._bw_mumu = 15
         self._low_sb  = 5180

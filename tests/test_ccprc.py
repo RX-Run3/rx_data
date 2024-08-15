@@ -36,14 +36,14 @@ def check_pdf(pdf, plot_dir, name='pdf', title=None):
     plt.close('all')
 #--------------------------------------------------
 def test_simple():
-    obj=ccprc(obs=data.obs, dset='2018', preffix='psi2_high_pr', syst='nom', qsq_rng=['psi2', 'high'])
+    obj=ccprc(obs=data.obs, dset='2018', preffix='psi2_high_pr', syst='nom')
     pdf=obj.get_pdf()
 
     plot_dir = 'tests/ccprc/simple'
     check_pdf(pdf, plot_dir)
 #--------------------------------------------------
 def test_brem(brem):
-    obj =ccprc(obs=data.obs, dset='2018', preffix='psi2_high_pr', syst='nom', brem=brem, qsq_rng=['psi2', 'high'])
+    obj =ccprc(obs=data.obs, dset='2018', preffix='psi2_high_pr', syst='nom', brem=brem) 
     pdf =obj.get_pdf()
 
     plot_dir = 'tests/ccprc/brem'
