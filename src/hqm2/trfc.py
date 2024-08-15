@@ -183,7 +183,7 @@ class trfc:
         elif self._qsq_src == 'psi2' and self._qsq_tgt == 'jpsi':
             pdf_trf = self._get_sjcb()
         elif self._qsq_src == 'psi2' and self._qsq_tgt == 'psi2':
-            pdf_trf = self._get_dscb() if self._is_binned() else self._get_sjcb() 
+            pdf_trf = self._get_sjcb() 
         else:
             log.error(f'Invalid source/target q2: {self._qsq_src}/{self._qsq_tgt}')
             raise
