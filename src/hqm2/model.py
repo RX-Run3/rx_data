@@ -76,7 +76,6 @@ def get_sujh(pref, obs):
     gm = zfit.Parameter(f'gm_{pref}',    2,    1,    4)
     dl = zfit.Parameter(f'dl_{pref}',    2,  1.0,    3)
 
-    #pdf= zfit.pdf.JohnsonSU(obs=obs, mu=ms, lambd=lm, gamma=gm, delta=dl)
     pdf= zpdf_jh(obs=obs, mu=ms, lm=lm, gamma=gm, delta=dl)
 
     return pdf
