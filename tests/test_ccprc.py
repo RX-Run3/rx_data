@@ -36,7 +36,7 @@ def check_pdf(pdf, plot_dir, name='pdf', title=None):
     plt.close('all')
 #--------------------------------------------------
 def test_simple(dset):
-    obj=ccprc(obs=data.obs, dset=dset, preffix=r'psi2_high_pr_{dset}', syst='nom')
+    obj=ccprc(obs=data.obs, dset=dset, preffix=f'psi2_high_pr_{dset}', syst='nom')
     pdf=obj.get_pdf()
 
     plot_dir = 'tests/ccprc/simple'
@@ -54,6 +54,7 @@ def main():
 
     test_simple('2018')
     test_brem('2018', 1)
+    test_brem('2018', 2)
 #--------------------------------------------------
 if __name__ == '__main__':
     main()

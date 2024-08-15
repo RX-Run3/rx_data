@@ -1,11 +1,11 @@
 {
-    "frc_1_trf_psi2_jpsi_pr": 0.8000279664089989,
-    "frc_2_trf_psi2_jpsi_pr": 0.2658450320300087,
-    "mu_trf_psi2_jpsi_pr": -111.6104090447734,
-    "sg1_trf_psi2_jpsi_pr": 0.22467501189515704,
-    "ar_trf_psi2_jpsi_pr": 0.0019640103772495623,
-    "nr_trf_psi2_jpsi_pr": 9.913172680974945,
-    "sg2_trf_psi2_jpsi_pr": 0.23474556154308757,
-    "al_trf_psi2_jpsi_pr": -7.640559805743765,
-    "nl_trf_psi2_jpsi_pr": 3.864210144750196
+    "frc_trf_psi2_jpsi_2018_pr": 0.6818339468594926,
+    "ms_trf_psi2_jpsi_2018_pr": -102.30335805610729,
+    "lm_trf_psi2_jpsi_2018_pr": 10.073769949768176,
+    "gm_trf_psi2_jpsi_2018_pr": 3.5901492345170407,
+    "dl_trf_psi2_jpsi_2018_pr": 1.1335663908443714,
+    "mu_trf_psi2_jpsi_2018_pr": -115.01132933588556,
+    "sg_trf_psi2_jpsi_2018_pr": 1.000025704217004,
+    "al_trf_psi2_jpsi_2018_pr": -8.958986206382106,
+    "nt_trf_psi2_jpsi_2018_pr": 22.128546650045745
 }
