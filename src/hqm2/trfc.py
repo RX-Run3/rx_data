@@ -5,6 +5,7 @@ import numpy
 import zfit
 import os
 
+from zutils.pdf          import SUJohnson as zpdf_jh
 from zutils.plot         import plot      as zfp
 from importlib.resources import files
 from log_store           import log_store
@@ -44,8 +45,11 @@ class trfc:
         self._plot_datasets(arr_dt_mm, arr_dt_ee, plot_range, plot_path)
 
         plot_path = json_path.replace('.json', '.png')
+
         d_plt_opt = {'plot_path' : plot_path, 'plot_range' : plot_range, 'skip_pulls' : True , 'stacked' : False}
-        d_par     = zut.get_fit_pars(pdf_ees, arr_dt_ee, d_plt_opt=d_plt_opt, d_fit_opt=config.fitting)
+        d_fit_opt = dict(config.fitting)
+        d_fit_opt['ignore_status'] = True
+        d_par     = zut.get_fit_pars(pdf_ees, arr_dt_ee, d_plt_opt=d_plt_opt, d_fit_opt=d_fit_opt)
         utnr.dump_json(d_par, json_path)
 
         plot_path = json_path.replace('.json', '_kde.png')
@@ -89,7 +93,7 @@ class trfc:
         nl  = zfit.param.Parameter(f'nl_trf_{self._pref}',   1, 1e-3,  110)
         nr  = zfit.param.Parameter(f'nr_trf_{self._pref}',   1, 1e-3,  110)
         mu  = zfit.param.Parameter(f'mu_trf_{self._pref}',   0, -100,  100)
-        pdf = zfit.pdf.DoubleCB(mu=mu, sigma=sg, alphal=al, nl=nl, alphar=ar, nr=nr, obs=self._obs_trf)
+        pdf = zfit.pdf.DoubleCB(mu=mu, sigma=sg, alphal=al, nl=nl, alphar=ar, nr=nr, obs=self._obs_trf, name='DSCB')
 
         return pdf
     #---------------------------------
@@ -115,7 +119,7 @@ class trfc:
         frc_1 = zfit.param.Parameter(f'frc_1_trf_{self._pref}', 0.5, 0, 1) 
         frc_2 = zfit.param.Parameter(f'frc_2_trf_{self._pref}', 0.5, 0, 1) 
 
-        pdf   = zfit.pdf.SumPDF([cb1, cb2, cb3], fracs=[frc_1, frc_2])
+        pdf   = zfit.pdf.SumPDF([cb1, cb2, cb3], fracs=[frc_1, frc_2], name='3CB')
     
         return pdf
     #---------------------------------
@@ -137,7 +141,7 @@ class trfc:
         frc_1 = zfit.param.Parameter(f'frc_1_trf_{self._pref}', 0.5, 0, 1) 
         frc_2 = zfit.param.Parameter(f'frc_2_trf_{self._pref}', 0.5, 0, 1) 
 
-        pdf   = zfit.pdf.SumPDF([cb1, cb2], fracs=[frc_1, frc_2])
+        pdf   = zfit.pdf.SumPDF([cb1, cb2], fracs=[frc_1, frc_2], name='2CB')
     
         return pdf
     #---------------------------------
@@ -146,7 +150,26 @@ class trfc:
         sg  = zfit.param.Parameter(f'sg_trf_{self._pref}', 100,    1,  200)
         al  = zfit.param.Parameter(f'al_trf_{self._pref}',   2,   -9,   +9)
         nt  = zfit.param.Parameter(f'nt_trf_{self._pref}',   7,    0,  150)
-        pdf = zfit.pdf.CrystalBall(mu, sg, al, nt, obs=self._obs_trf)
+        pdf = zfit.pdf.CrystalBall(mu, sg, al, nt, obs=self._obs_trf, name='CB')
+
+        return pdf
+    #---------------------------------
+    def _get_sj(self):
+        ms = zfit.Parameter(f'ms_trf_{self._pref}',    0, -300,  300)
+        lm = zfit.Parameter(f'lm_trf_{self._pref}',   50,   10,  200)
+        gm = zfit.Parameter(f'gm_trf_{self._pref}',    0,  -10,   10)
+        dl = zfit.Parameter(f'dl_trf_{self._pref}',    2,  -10,   10)
+
+        pdf= zpdf_jh(obs=self._obs_trf, mu=ms, lm=lm, gamma=gm, delta=dl, name='SUJohnson')
+
+        return pdf
+    #---------------------------------
+    def _get_sjcb(self):
+        pdf_sj = self._get_sj()
+        pdf_cb = self._get_cb()
+        frc    = zfit.param.Parameter(f'frc_trf_{self._pref}', 0.5, 0, 1) 
+
+        pdf    = zfit.pdf.SumPDF([pdf_sj, pdf_cb], fracs=frc, name='SUJ_CB')
 
         return pdf
     #---------------------------------
@@ -156,11 +179,11 @@ class trfc:
         elif self._qsq_src == 'jpsi' and self._qsq_tgt == 'jpsi':
             pdf_trf = self._get_3cb()
         elif self._qsq_src == 'jpsi' and self._qsq_tgt == 'psi2':
-            pdf_trf = self._get_dscb()
+            pdf_trf = self._get_sjcb()
         elif self._qsq_src == 'psi2' and self._qsq_tgt == 'jpsi':
-            pdf_trf = self._get_2cb()
+            pdf_trf = self._get_sjcb()
         elif self._qsq_src == 'psi2' and self._qsq_tgt == 'psi2':
-            pdf_trf = self._get_dscb() if self._is_binned() else self._get_3cb()
+            pdf_trf = self._get_dscb() if self._is_binned() else self._get_sjcb() 
         else:
             log.error(f'Invalid source/target q2: {self._qsq_src}/{self._qsq_tgt}')
             raise
