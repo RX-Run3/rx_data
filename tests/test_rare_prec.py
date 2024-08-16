@@ -37,13 +37,13 @@ def test_boots():
         pdf = get_prec_rare_pdf(obs=data.obs, dset='2018', kind='bpks', trig='ETOS', bts=bts) 
         check_pdf(pdf, name=f'bts_{bts:03}')
 #----------------------------------------
-def test_brem(proc, cbrem):
-    pdf          = get_prec_rare_pdf(obs=data.obs, dset='2018', kind=proc, trig='ETOS', brem=cbrem) 
+def test_brem(proc, cbrem, dset='r1'):
+    pdf          = get_prec_rare_pdf(obs=data.obs, dset=dset, kind=proc, trig='ETOS', brem=cbrem) 
     data.out_dir = 'tests/prec_rare/brem'
 
     os.makedirs(data.out_dir, exist_ok=True)
 
-    check_pdf(pdf, name=f'{proc}_{cbrem}')
+    check_pdf(pdf, name=f'{proc}_{cbrem}_{dset}')
 #----------------------------------------
 def main():
     test_boots()
