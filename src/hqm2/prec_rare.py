@@ -1,4 +1,5 @@
 from hqm2.data_store import data_store
+from hqm2.config     import config
 
 import zfit
 import numpy
@@ -24,16 +25,24 @@ def get_bts_wgt(arr_dat, lam=1, rseed=None):
 
     return arr_wgt 
 #----------------------------------------------------------------------
+def configure_brem(brem):
+    if brem is None:
+        return
+
+    config.binning['var'] =          'cbrem'
+    config.binning['bin'] =            brem 
+    config.binning['cut'] = f'cbrem=={brem}'
+#----------------------------------------------------------------------
 def get_pdf(obs=None, dset=None, kind=None, trig=None, bts=None, brem=None):
     '''
     brem (int): 0, 1 or 2. If None (default) will return the PDF for all categories merged
     bts  (int): Bootstrapping index, used for systematics
     kind (str): Sample kind, bsph, bsks, bdks
     '''
-    obj     = data_store(qsq='high', dset=dset, trig=trig, proc=kind)
+    configure_brem(brem)
 
-    d_cut   = None if brem is None else {'brem' : f'cbrem=={brem}'}
-    arr_mas = obj.get_array(variable='B_M', d_cut = d_cut)
+    obj     = data_store(qsq='high', dset=dset, trig=trig, proc=kind)
+    arr_mas = obj.get_array(variable='B_M')
     arr_wgt = get_bts_wgt(arr_mas, rseed=bts)
     zdata   = zfit.Data.from_numpy(obs, array=arr_mas, weights=arr_wgt)
 
@@ -41,6 +50,8 @@ def get_pdf(obs=None, dset=None, kind=None, trig=None, bts=None, brem=None):
     pdf     = zfit.pdf.KDE1DimFFT(obs=obs, data=zdata, bandwidth=bw, name=f'{kind}_{dset}_{trig}')
     pdf.arr_mas = arr_mas
     pdf.arr_wgt = arr_wgt
+
+    config.binning = dict()
 
     return pdf
 #----------------------------------------------------------------------
