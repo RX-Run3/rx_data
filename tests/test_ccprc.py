@@ -6,6 +6,7 @@ from log_store    import log_store
 
 import zutils.utils      as zut
 import matplotlib.pyplot as plt
+import pprint
 import numpy
 import zfit
 import os
@@ -49,6 +50,8 @@ def plot_pdf(pdf, label=None):
 def test_simple(dset):
     obj=ccprc(obs=data.obs, dset=dset, preffix=f'psi2_high_pr_{dset}', brem=None, syst='nom')
     pdf=obj.get_pdf()
+
+    pprint.pprint(pdf.d_cns)
 
     plot_dir = 'tests/ccprc/simple'
     check_pdf(pdf, plot_dir)
@@ -95,12 +98,12 @@ def test_compare_brem(dset):
 #--------------------------------------------------
 def main():
     set_logs()
+    test_simple('2017')
 
     for dset in ['r1', 'r2p1', '2017', '2018']:
         test_compare_brem(dset)
 
     test_all()
-    test_simple('2017')
     test_brem('2018', 1)
     test_brem('2018', 2)
 #--------------------------------------------------

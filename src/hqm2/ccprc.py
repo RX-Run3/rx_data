@@ -113,9 +113,12 @@ class ccprc:
     def _get_ratio(self):
         cal        = ratc(obs=self._obs, dset=self._dset)
         [val, err] = cal.get_ratio()
-        par        = zfit.param.Parameter(f'r_psi2_{self._dset}', val, 0, 1)
 
-        return par 
+        name       = f'r_psi2_{self._dset}'
+        par        = zfit.param.Parameter(name, val, 0, 1)
+        d_cns      = {name : [val, err]}
+
+        return par, d_cns
     #---------------------------------
     def _get_trf(self):
         obj     = trfc(
@@ -143,8 +146,9 @@ class ccprc:
         obj     = pdfmc(obs=self._obs, dset=self._dset, proc='psi2', qsq='high')
         pdf_res = obj.get_pdf()
 
-        r       = self._get_ratio()
-        pdf     = zfit.pdf.SumPDF([pdf_prc, pdf_res], r)
+        r, d_cns = self._get_ratio()
+        pdf      = zfit.pdf.SumPDF([pdf_prc, pdf_res], r)
+        pdf.d_cns= d_cns
 
         return pdf
 #-----------------------------------
