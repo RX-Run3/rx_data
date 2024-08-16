@@ -1,3 +1,5 @@
+import ROOT
+
 from hqm2.ccprc   import ccprc 
 from zutils.plot  import plot      as zfp
 from log_store    import log_store
