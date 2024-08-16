@@ -68,8 +68,7 @@ class ccprc:
     #---------------------------------
     def _get_muon_pdf(self):
         #TODO: Combinatorial needs to be subtracted
-        json_path = files('hqm2_data').joinpath(f'fits/data/{self._dset}_MTOS_{self._qsq_tgt}_lowsb.json')
-        json_path = str(json_path)
+        json_path = config.make_data_path(kind='fits', dset=self._dset, dname=f'data_MTOS_{self._qsq_src}', fname='lowsb_B_M.json')
         if os.path.isfile(json_path):
             log.info(f'Low sideband muon data found, loading')
 
