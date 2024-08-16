@@ -139,7 +139,16 @@ class ccprc:
 
         pdf_mmd = self._get_muon_pdf()
         pdf_trf = self._get_trf()
-        pdf_prc = zfit.pdf.FFTConvPDFV1(func=pdf_mmd, kernel=pdf_trf, name='PRec', n=self._fft_npt)
+
+        try:
+            pdf_prc = zfit.pdf.FFTConvPDFV1(func=pdf_mmd, kernel=pdf_trf, name='PRec', n=self._fft_npt)
+        except:
+            log.error(f'Cannot build convolution for:')
+            log.info(f'{"Dataset":<15}{self._dset:<20}')
+            log.info(f'{"Systematic":<15}{self._syst:<20}')
+            log.info(f'{"Brem cat":<15}{str(self._brem):<20}')
+            log.info(f'{"Preffix":<15}{self._pref:<20}')
+            raise
 
         self._plot_fit(pdf_mmd, pdf_prc)
 
