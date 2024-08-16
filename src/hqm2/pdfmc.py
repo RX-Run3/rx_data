@@ -142,12 +142,13 @@ class pdfmc:
         self._initialize()
 
         json_path = f'{self._out_dir}/pars.json'
+        samp_info = f'{self._proc}_{self._dset}_{self._qsq}'
         if os.path.isfile(json_path):
-            log.info(f'File with parameters found, loading it')
+            log.info(f'File with parameters for {samp_info} found, loading it')
             self._fix_pdf_pars(json_path)
             return self._pdf
 
-        log.info(f'File with parameters not found, fitting')
+        log.info(f'File with parameters for {samp_info} not found, fitting')
 
         [minm, maxm] = self._prange
 
