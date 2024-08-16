@@ -32,10 +32,10 @@ class ratc:
         self._rat_ctrl = zfit.param.Parameter('rat_ctrl', 0.1, 0, 1)
 
         #npr_xy Yiels of sample x in bin y, p=psi2, c=ctrl
-        self._npr_cc= zfit.param.Parameter('npr_cc', 1e3, 0, 4e4)
-        self._npr_cp= zfit.param.Parameter('npr_cp', 1e3, 0, 4e4)
-        self._npr_pc= zfit.param.Parameter('npr_pc', 1e3, 0, 4e4)
-        self._npr_pp= zfit.param.Parameter('npr_pp', 1e3, 0, 4e4)
+        self._npr_cc= zfit.param.Parameter('npr_cc', 1e3, 0, 4e5)
+        self._npr_cp= zfit.param.Parameter('npr_cp', 1e3, 0, 4e5)
+        self._npr_pc= zfit.param.Parameter('npr_pc', 1e3, 0, 4e5)
+        self._npr_pp= zfit.param.Parameter('npr_pp', 1e3, 0, 4e5)
 
         self._initialized=False
     #-----------------------------
