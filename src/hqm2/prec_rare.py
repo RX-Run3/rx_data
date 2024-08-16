@@ -24,8 +24,15 @@ def get_bts_wgt(arr_dat, lam=1, rseed=None):
 
     return arr_wgt 
 #----------------------------------------------------------------------
-def get_pdf(obs=None, dset=None, kind=None, trig=None, bts=None, d_cut=dict()):
+def get_pdf(obs=None, dset=None, kind=None, trig=None, bts=None, brem=None):
+    '''
+    brem (int): 0, 1 or 2. If None (default) will return the PDF for all categories merged
+    bts  (int): Bootstrapping index, used for systematics
+    kind (str): Sample kind, bsph, bsks, bdks
+    '''
     obj     = data_store(qsq='high', dset=dset, trig=trig, proc=kind)
+
+    d_cut   = None if brem is None else {'brem' : f'cbrem=={brem}'}
     arr_mas = obj.get_array(variable='B_M', d_cut = d_cut)
     arr_wgt = get_bts_wgt(arr_mas, rseed=bts)
     zdata   = zfit.Data.from_numpy(obs, array=arr_mas, weights=arr_wgt)
@@ -36,4 +43,5 @@ def get_pdf(obs=None, dset=None, kind=None, trig=None, bts=None, d_cut=dict()):
     pdf.arr_wgt = arr_wgt
 
     return pdf
+#----------------------------------------------------------------------
 

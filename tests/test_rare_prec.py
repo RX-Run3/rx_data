@@ -37,10 +37,9 @@ def test_boots():
         pdf = get_prec_rare_pdf(obs=data.obs, dset='2018', kind='bpks', trig='ETOS', bts=bts) 
         check_pdf(pdf, name=f'bts_{bts:03}')
 #----------------------------------------
-def test_brem_cut(proc, cbrem):
-    d_cut=       {'brem' : f'cbrem=={cbrem}'}
-    pdf          = get_prec_rare_pdf(obs=data.obs, dset='2018', kind=proc, trig='ETOS', d_cut=d_cut) 
-    data.out_dir = 'tests/prec_rare/brem_cut'
+def test_brem(proc, cbrem):
+    pdf          = get_prec_rare_pdf(obs=data.obs, dset='2018', kind=proc, trig='ETOS', brem=cbrem) 
+    data.out_dir = 'tests/prec_rare/brem'
 
     os.makedirs(data.out_dir, exist_ok=True)
 
@@ -53,17 +52,17 @@ def main():
     test_simple('bpks')
     test_simple('bdks')
 
-    test_brem_cut('bsph', 0)
-    test_brem_cut('bsph', 1)
-    test_brem_cut('bsph', 2)
+    test_brem('bsph', 0)
+    test_brem('bsph', 1)
+    test_brem('bsph', 2)
 
-    test_brem_cut('bpks', 0)
-    test_brem_cut('bpks', 1)
-    test_brem_cut('bpks', 2)
+    test_brem('bpks', 0)
+    test_brem('bpks', 1)
+    test_brem('bpks', 2)
 
-    test_brem_cut('bdks', 0)
-    test_brem_cut('bdks', 1)
-    test_brem_cut('bdks', 2)
+    test_brem('bdks', 0)
+    test_brem('bdks', 1)
+    test_brem('bdks', 2)
 #----------------------------------------
 if __name__ == '__main__':
     main()
