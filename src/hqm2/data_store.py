@@ -120,6 +120,7 @@ class data_store:
         rdf = rdf.Filter(bdt, 'BDT')
 
         l_cut = [qsq, bdt] 
+        d_cut = dict() if d_cut is None else d_cut
         for name, cut in d_cut.items():
             rdf  = rdf.Filter(cut, name)
             l_cut.append(cut)
@@ -200,7 +201,7 @@ class data_store:
         return df_tot 
     #----------------------------------
     @scache.cache_selection
-    def _calculate_array(self, variable=None, d_cut=dict()):
+    def _calculate_array(self, variable=None, d_cut=None):
         if   self._dset == 'r1':
             df_11 = self._get_year_array('2011', var_name=variable, d_cut=d_cut)
             df_12 = self._get_year_array('2012', var_name=variable, d_cut=d_cut)
