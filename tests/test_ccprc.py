@@ -57,7 +57,8 @@ def test_all():
             obj=ccprc(obs=data.obs, dset=dset, preffix=f'psi2_high_pr_{dset}', brem=brem, syst='nom')
             pdf=obj.get_pdf()
 
-            plot_dir = f'tests/ccprc/all/{dset}_{brem}'
+            brem     = 'int' if brem is None else f'cbrem_{brem}'
+            plot_dir = f'tests/ccprc/all/{brem}/{dset}'
             check_pdf(pdf, plot_dir, title=f'Year:{dset}; Brem:{brem}')
 #--------------------------------------------------
 def main():
