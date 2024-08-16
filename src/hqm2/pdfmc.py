@@ -72,7 +72,7 @@ class pdfmc:
             self._prange = [4500, 5310]
         elif self._proc == 'psi2' and self._qsq == 'high':
             self._wrange = None 
-            self._prange = [5200, 7000]
+            self._prange = [5000, 6400]
         else:
             log.error(f'Invalid process/qsq: {self._proc}/{self._qsq}')
             raise
