@@ -59,6 +59,7 @@ class ccprc:
             raise
 
         if self._brem is None:
+            config.binning = dict()
             return
 
         config.binning['var'] =                'cbrem'
