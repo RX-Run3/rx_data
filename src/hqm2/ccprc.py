@@ -70,18 +70,36 @@ class ccprc:
         arr_mass  = self._get_muon_sb()
         zdata     = zfit.Data.from_numpy(self._obs, array=arr_mass)
         pdf_mmd   = zfit.pdf.KDE1DimFFT(obs=self._obs, data=zdata, bandwidth=self._bw_mumu, name='data muon')
-
-        self._plot_fit(arr_mass, pdf_mmd)
+        pdf_mmd.arr_mass = arr_mass
 
         return pdf_mmd
     #---------------------------------
-    def _plot_fit(self, arr_mass, pdf):
-        obj=zfp(data=arr_mass, model=pdf, result=None)
-        obj.plot(plot_range=[4200, 6000])
+    def _plot_fit(self, pdf_mm, pdf_ee):
+        plt_rng = [4200, 6000]
+        nbins   = 100
+
+        obj=zfp(data=pdf_mm.arr_mass, model=pdf_mm, result=None)
+        obj.plot(plot_range=plt_rng, nbins=nbins, d_leg={'data muon' : 'Original muon', 'Data' : 'Low SB data'})
+        nentries = pdf_mm.arr_mass.size
+        info = f'Entries:{nentries}; Bandwidth: {self._bw_mumu}'
+
+        ax   = obj.axs[0]
+        self._plot_pdf(pdf_ee, nbins=nbins, ax=ax, norm=nentries, rng=plt_rng)
+
+        ax.set_title(info)
+        ax.legend()
 
         plot_path = config.make_data_path(kind='fits', dset=self._dset, dname=f'data_MTOS_{self._qsq_src}', fname='fit.png')
         plt.savefig(plot_path)
         plt.close()
+    #---------------------------------
+    def _plot_pdf(self, pdf, nbins=None, ax=None, norm=None, rng=None):
+        arr_x = numpy.linspace(rng[0], rng[1], nbins)
+        arr_y = pdf.pdf(arr_x)
+        scale = norm / numpy.sum(arr_y)
+        arr_y = scale * arr_y
+
+        ax.plot(arr_x, arr_y, color='r', label='Smeared')
     #---------------------------------
     def _get_muon_sb(self):
         cns_mas_var = {'jpsi' : 'B_const_mass_M', 'psi2' : 'B_const_mass_psi2S_M'}[self._qsq_src]
@@ -119,6 +137,8 @@ class ccprc:
         pdf_mmd = self._get_muon_pdf()
         pdf_trf = self._get_trf()
         pdf_prc = zfit.pdf.FFTConvPDFV1(func=pdf_mmd, kernel=pdf_trf, name='PRec', n=self._fft_npt)
+
+        self._plot_fit(pdf_mmd, pdf_prc)
 
         obj     = pdfmc(obs=self._obs, dset=self._dset, proc='psi2', qsq='high')
         pdf_res = obj.get_pdf()
