@@ -67,37 +67,30 @@ class ccprc:
         config.binning['cut'] = f'cbrem=={self._brem}'
     #---------------------------------
     def _get_muon_pdf(self):
-        #TODO: Combinatorial needs to be subtracted
-        json_path = config.make_data_path(kind='fits', dset=self._dset, dname=f'data_MTOS_{self._qsq_src}', fname='lowsb_B_M.json')
-        if os.path.isfile(json_path):
-            log.info(f'Low sideband muon data found, loading')
+        arr_mass  = self._get_muon_sb()
+        zdata     = zfit.Data.from_numpy(self._obs, array=arr_mass)
+        pdf_mmd   = zfit.pdf.KDE1DimFFT(obs=self._obs, data=zdata, bandwidth=self._bw_mumu, name='data muon')
 
-            l_mass  = utnr.load_json(json_path)
-            zdata   = zfit.Data.from_numpy(self._obs, array=numpy.array(l_mass))
-            pdf_mmd = zfit.pdf.KDE1DimFFT(obs=self._obs, data=zdata, bandwidth=self._bw_mumu, name='data muon')
-        else:
-            log.info(f'Low sideband muon data not found, getting it')
-
-            cns_mas_var = {'jpsi' : 'B_const_mass_M', 'psi2' : 'B_const_mass_psi2S_M'}[self._qsq_src]
-
-            obj       = data_store(qsq=self._qsq_src, dset=self._dset, trig='MTOS', proc='data')
-            arr_dat   = obj.get_array(d_cut={'SB' : f'{cns_mas_var} < {self._low_sb}'})
-            l_mass    = arr_dat.tolist()
-            utnr.dump_json(l_mass, json_path)
-
-            zdata     = zfit.Data.from_numpy(self._obs, array=arr_dat)
-            pdf_mmd   = zfit.pdf.KDE1DimFFT(obs=self._obs, data=zdata, bandwidth=self._bw_mumu, name='data muon')
-
-            obj=zfp(data=arr_dat, model=pdf_mmd, result=None)
-            obj.plot(plot_range=[4200, 6000])
-
-            plot_path = json_path.replace('.json', '.png')
-            plot_dir  = os.path.dirname(plot_path)
-            os.makedirs(plot_dir, exist_ok=True)
-            plt.savefig(plot_path)
-            plt.close('all')
+        self._plot_fit(arr_mass, pdf_mmd)
 
         return pdf_mmd
+    #---------------------------------
+    def _plot_fit(self, arr_mass, pdf):
+        obj=zfp(data=arr_mass, model=pdf, result=None)
+        obj.plot(plot_range=[4200, 6000])
+
+        plot_path = config.make_data_path(kind='fits', dset=self._dset, dname=f'data_MTOS_{self._qsq_src}', fname='fit.png')
+        plt.savefig(plot_path)
+        plt.close()
+    #---------------------------------
+    def _get_muon_sb(self):
+        cns_mas_var = {'jpsi' : 'B_const_mass_M', 'psi2' : 'B_const_mass_psi2S_M'}[self._qsq_src]
+
+        #TODO: Combinatorial needs to be subtracted
+        obj       = data_store(qsq=self._qsq_src, dset=self._dset, trig='MTOS', proc='data')
+        arr_dat   = obj.get_array(d_cut={'SB' : f'{cns_mas_var} < {self._low_sb}'})
+
+        return arr_dat 
     #---------------------------------
     def _get_ratio(self):
         cal        = ratc(obs=self._obs, dset=self._dset)
