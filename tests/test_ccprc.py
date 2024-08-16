@@ -28,22 +28,24 @@ def check_pdf(pdf, plot_dir, name='pdf', title=None):
     obj = zfp(data=sam, model=pdf)
     obj.plot(plot_range=(4500, 6000), stacked=True, skip_pulls=True, no_data=True) 
 
+    ax=obj.axs[0]
     if title is not None:
-        ax=obj.axs[0]
         ax.set_title(title)
 
+    ax.axvline(x=5280, color='r', linestyle=':')
+    ax.set_ylim(bottom=0)
     plt.savefig(f'{plot_dir}/{name}.png')
     plt.close('all')
 #--------------------------------------------------
 def test_simple(dset):
-    obj=ccprc(obs=data.obs, dset=dset, preffix=f'psi2_high_pr_{dset}', syst='nom')
+    obj=ccprc(obs=data.obs, dset=dset, preffix=f'psi2_high_pr_{dset}', brem=None, syst='nom')
     pdf=obj.get_pdf()
 
     plot_dir = 'tests/ccprc/simple'
     check_pdf(pdf, plot_dir)
 #--------------------------------------------------
 def test_brem(dset, brem):
-    obj =ccprc(obs=data.obs, dset=dset, preffix=f'psi2_high_pr_{dset}_{brem}', syst='nom', brem=brem) 
+    obj =ccprc(obs=data.obs, dset=dset, preffix=f'psi2_high_pr_{dset}', syst='nom', brem=brem) 
     pdf =obj.get_pdf()
 
     plot_dir = 'tests/ccprc/brem'
@@ -55,14 +57,14 @@ def test_all():
             obj=ccprc(obs=data.obs, dset=dset, preffix=f'psi2_high_pr_{dset}', brem=brem, syst='nom')
             pdf=obj.get_pdf()
 
-            plot_dir = 'tests/ccprc/all/{dset}_{brem}'
-            check_pdf(pdf, plot_dir)
+            plot_dir = f'tests/ccprc/all/{dset}_{brem}'
+            check_pdf(pdf, plot_dir, title=f'Year:{dset}; Brem:{brem}')
 #--------------------------------------------------
 def main():
     set_logs()
 
     test_all()
-    test_simple('2018')
+    test_simple('2017')
     test_brem('2018', 1)
     test_brem('2018', 2)
 #--------------------------------------------------
