@@ -14,7 +14,7 @@ class data:
 def set_logs():
     log_store.set_level('scripts:zutils/utils'    , 30)
     log_store.set_level('rx_hqm2:data_store'      , 30)
-    log_store.set_level('rx_scripts:storage/cache', 30)
+    log_store.set_level('rx_scripts:storage/cache', 20)
     log_store.set_level('rx_scripts:atr_mgr:mgr'  , 30)
     log_store.set_level('tools:calc_utility'      , 40)
 #--------------------------------------------------
