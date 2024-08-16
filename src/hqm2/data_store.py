@@ -194,8 +194,8 @@ class data_store:
         arr_1 = df_1.arr_val
         arr_2 = df_2.arr_val
 
-        df_tot        = self._merge_cf_df([df_1 , df_2 ])
-        df_tot.arr_val= numpy.concatenate([arr_1, arr_1])
+        df_tot        = self._merge_cf_df([ df_1 , df_2])
+        df_tot.arr_val= numpy.concatenate([arr_1, arr_2])
 
         return df_tot 
     #----------------------------------
