@@ -49,9 +49,19 @@ def test_brem(dset, brem):
     plot_dir = 'tests/ccprc/brem'
     check_pdf(pdf, plot_dir, name=f'pdf_{brem}', title=f'Brem {brem}')
 #--------------------------------------------------
+def test_all():
+    for dset in ['r1', 'r2p1', '2017', '2018']:
+        for brem in [None, 1, 2]:
+            obj=ccprc(obs=data.obs, dset=dset, preffix=f'psi2_high_pr_{dset}', brem=brem, syst='nom')
+            pdf=obj.get_pdf()
+
+            plot_dir = 'tests/ccprc/all/{dset}_{brem}'
+            check_pdf(pdf, plot_dir)
+#--------------------------------------------------
 def main():
     set_logs()
 
+    test_all()
     test_simple('2018')
     test_brem('2018', 1)
     test_brem('2018', 2)
