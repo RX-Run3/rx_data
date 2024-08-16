@@ -159,6 +159,8 @@ class ccprc:
         pdf      = zfit.pdf.SumPDF([pdf_prc, pdf_res], r)
         pdf.d_cns= d_cns
 
+        config.binning = dict()
+
         return pdf
 #-----------------------------------
 
