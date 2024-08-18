@@ -28,8 +28,9 @@ class pdfmc:
         self._proc   = proc
         self._trig   = 'ETOS' 
         self._qsq    = qsq 
-        self._pdf_suf= f'mc_{proc}_{dset}_{qsq}'
 
+        self._pdf_suf     = None 
+        self._bin_suf     = None 
         self._pdf         = None
         self._wrange      = None 
         self._prange      = None 
@@ -42,10 +43,24 @@ class pdfmc:
 
         self._out_dir=config.make_data_path(kind='fits', dset=self._dset, dname=f'{self._proc}_{self._trig}_{self._qsq}', fname=None)
 
+        self._set_pdf_suffix()
         self._set_ranges()
         self._set_pdf()
 
         self._initialized = True
+    #------------------------------------
+    def _set_pdf_suffix(self):
+        pdf_suf= f'mc_{self._proc}_{self._dset}_{self._qsq}'
+        if len(config.binning) == 0:
+            self._bin_suf = None 
+            self._pdf_suf = pdf_suf
+            return
+
+        varn = config.binning['var']
+        ibin = config.binning['bin']
+
+        self._bin_suf = f'{varn}_{ibin}'
+        self._pdf_suf = f'{pdf_suf}_{self._bin_suf}'
     #------------------------------------
     def _set_pdf(self):
         if   self._proc == 'ctrl':
@@ -136,7 +151,22 @@ class pdfmc:
     #------------------------------------
     def _fix_pdf_pars(self, json_path):
         d_par = utnr.load_json(json_path)
+        d_par = self._rename_pars(d_par=d_par, suffix='add')
         zut.fix_pars(self._pdf, d_par)
+    #------------------------------------
+    def _rename_pars(self, d_par=None, suffix=None):
+        if self._bin_suf is None:
+            return d_par
+
+        if   suffix == 'add':
+            d_par_new = { f'{key}_{self._bin_suf}'             : val for key, val in d_par.items() }
+        elif suffix == 'remove':
+            d_par_new = { key.replace(f'_{self._bin_suf}', '') : val for key, val in d_par.items() }
+        else:
+            log.error(f'Invalid argument: {suffix}')
+            raise
+
+        return d_par_new
     #------------------------------------
     def get_pdf(self):
         self._initialize()
@@ -157,6 +187,7 @@ class pdfmc:
         arr_wgt = self._get_weights(arr_mas)
 
         d_par   = self._get_pdf_pars(arr_mas, arr_wgt)
+        d_par   = self._rename_pars(d_par=d_par, suffix='remove')
         utnr.dump_json(d_par, json_path)
 
         self._fix_pdf_pars(json_path)
