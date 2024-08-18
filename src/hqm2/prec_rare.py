@@ -33,6 +33,11 @@ def configure_brem(brem):
     config.binning['bin'] =            brem 
     config.binning['cut'] = f'cbrem=={brem}'
 #----------------------------------------------------------------------
+def get_pdf_name(**kwargs):
+    l_val = [ f'{key}_{val}' for key, val in kwargs.items() if val is not None ]
+
+    return '_'.join(l_val)
+#----------------------------------------------------------------------
 def get_pdf(obs=None, dset=None, kind=None, trig=None, bts=None, brem=None):
     '''
     brem (int): 0, 1 or 2. If None (default) will return the PDF for all categories merged
@@ -47,7 +52,8 @@ def get_pdf(obs=None, dset=None, kind=None, trig=None, bts=None, brem=None):
     zdata   = zfit.Data.from_numpy(obs, array=arr_mas, weights=arr_wgt)
 
     bw      = get_bandwidth(arr_mas.size)
-    pdf     = zfit.pdf.KDE1DimFFT(obs=obs, data=zdata, bandwidth=bw, name=f'{kind}_{dset}_{trig}')
+    name    = get_pdf_name(dset=dset, kind=kind, trig=trig, bts=bts, brem=brem)
+    pdf     = zfit.pdf.KDE1DimFFT(obs=obs, data=zdata, bandwidth=bw, name=name)
     pdf.arr_mas = arr_mas
     pdf.arr_wgt = arr_wgt
 
