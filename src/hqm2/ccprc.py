@@ -141,7 +141,7 @@ class ccprc:
 
         return f'{name}_brem_{self._brem}'
     #---------------------------------
-    def get_pdf(self):
+    def get_pdf(self, plot_pdf=False):
         self._initialize()
 
         pdf_mmd = self._get_muon_pdf()
@@ -157,7 +157,8 @@ class ccprc:
             log.info(f'{"Preffix":<15}{self._pref:<20}')
             raise
 
-        self._plot_fit(pdf_mmd, pdf_prc)
+        if plot_pdf:
+            self._plot_fit(pdf_mmd, pdf_prc)
 
         obj     = pdfmc(obs=self._obs, dset=self._dset, proc='psi2', qsq='high')
         pdf_res = obj.get_pdf()
