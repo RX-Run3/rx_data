@@ -1,5 +1,6 @@
 import zfit
 import mplhep
+import zutils.utils      as zut
 import matplotlib.pyplot as plt
 
 from hqm2.pdfmc  import pdfmc
@@ -12,7 +13,7 @@ class data:
     obs = zfit.Space('B_M', limits=[4500, 7000])
 #-------------------------------------
 def set_logs():
-    log_store.set_level('scripts:zutils/utils'    , 30)
+    log_store.set_level('scripts:zutils/utils'    , 20)
     log_store.set_level('rx_hqm2:data_store'      , 20)
     log_store.set_level('rx_scripts:storage/cache', 20)
     log_store.set_level('rx_scripts:atr_mgr:mgr'  , 30)
@@ -27,10 +28,14 @@ def test_brem_bin(ibin):
 
     obj=pdfmc(obs=data.obs, dset='2018', proc='psi2', qsq='high')
     pdf=obj.get_pdf()
+
+    zut.print_pdf(pdf)
+    config.binning=dict()
 #-------------------------------------
 def test_psi2_high():
     obj=pdfmc(obs=data.obs, dset='2018', proc='psi2', qsq='high')
     pdf=obj.get_pdf()
+    zut.print_pdf(pdf)
 #-------------------------------------
 def test_ctrl_psi2():
     obj=pdfmc(obs=data.obs, dset='2018', proc='ctrl', qsq='psi2')
@@ -52,10 +57,11 @@ def main():
     plt.style.use(mplhep.style.LHCb2)
     set_logs()
 
+    test_brem_bin(0)
     test_brem_bin(1)
     test_brem_bin(2)
-
     test_psi2_high()
+
     test_ctrl_jpsi()
     test_ctrl_psi2()
     test_psi2_jpsi()
