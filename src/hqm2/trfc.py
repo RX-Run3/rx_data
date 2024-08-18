@@ -109,6 +109,12 @@ class trfc:
         plt.savefig(plot_path)
         plt.close('pdf_only')
     #---------------------------------
+    def _get_pdf_name(self, kind):
+        if self._bin_suf is None:
+            return kind
+
+        return f'{kind}_{self._bin_suf}'
+    #---------------------------------
     def _get_dscb(self):
         al  = zfit.param.Parameter(f'al_trf_{self._suf}', 1.5, 1e-3,   10)
         ar  = zfit.param.Parameter(f'ar_trf_{self._suf}', 1.5, 1e-3,   10)
@@ -116,7 +122,16 @@ class trfc:
         nl  = zfit.param.Parameter(f'nl_trf_{self._suf}',   1, 1e-3,  110)
         nr  = zfit.param.Parameter(f'nr_trf_{self._suf}',   1, 1e-3,  110)
         mu  = zfit.param.Parameter(f'mu_trf_{self._suf}',   0, -100,  100)
-        pdf = zfit.pdf.DoubleCB(mu=mu, sigma=sg, alphal=al, nl=nl, alphar=ar, nr=nr, obs=self._obs_trf, name='DSCB')
+        pdf = zfit.pdf.DoubleCB(
+                obs   = self._obs_trf, 
+                mu    = mu, 
+                sigma = sg, 
+                alphal= al, 
+                alphar= ar, 
+                nl    = nl, 
+                nr    = nr, 
+                name  = self._get_pdf_name('DSCB'),
+                )
 
         return pdf
     #---------------------------------
@@ -142,7 +157,11 @@ class trfc:
         frc_1 = zfit.param.Parameter(f'frc_1_trf_{self._suf}', 0.5, 0, 1) 
         frc_2 = zfit.param.Parameter(f'frc_2_trf_{self._suf}', 0.5, 0, 1) 
 
-        pdf   = zfit.pdf.SumPDF([cb1, cb2, cb3], fracs=[frc_1, frc_2], name='3CB')
+        pdf   = zfit.pdf.SumPDF(
+                [cb1, cb2, cb3], 
+                fracs=[frc_1, frc_2], 
+                name =self._get_pdf_name('3CB'),
+                )
     
         return pdf
     #---------------------------------
@@ -164,7 +183,11 @@ class trfc:
         frc_1 = zfit.param.Parameter(f'frc_1_trf_{self._suf}', 0.5, 0, 1) 
         frc_2 = zfit.param.Parameter(f'frc_2_trf_{self._suf}', 0.5, 0, 1) 
 
-        pdf   = zfit.pdf.SumPDF([cb1, cb2], fracs=[frc_1, frc_2], name='2CB')
+        pdf   = zfit.pdf.SumPDF(
+                [cb1, cb2], 
+                fracs=[frc_1, frc_2], 
+                name =self._get_pdf_name('2CB'),
+                )
     
         return pdf
     #---------------------------------
@@ -173,7 +196,14 @@ class trfc:
         sg  = zfit.param.Parameter(f'sg_trf_{self._suf}', 100,    1,  200)
         al  = zfit.param.Parameter(f'al_trf_{self._suf}',   2,   -9,   +9)
         nt  = zfit.param.Parameter(f'nt_trf_{self._suf}',   7,    0,  150)
-        pdf = zfit.pdf.CrystalBall(mu, sg, al, nt, obs=self._obs_trf, name='CB')
+        pdf = zfit.pdf.CrystalBall(
+                mu, 
+                sg, 
+                al, 
+                nt, 
+                obs =self._obs_trf, 
+                name=self._get_pdf_name('CB'),
+                )
 
         return pdf
     #---------------------------------
@@ -183,7 +213,14 @@ class trfc:
         gm = zfit.Parameter(f'gm_trf_{self._suf}',    0,  -10,   10)
         dl = zfit.Parameter(f'dl_trf_{self._suf}',    2,  -10,   10)
 
-        pdf= zpdf_jh(obs=self._obs_trf, mu=ms, lm=lm, gamma=gm, delta=dl, name='SUJohnson')
+        pdf= zpdf_jh(
+                obs  = self._obs_trf, 
+                mu   = ms, 
+                lm   = lm, 
+                gamma= gm, 
+                delta= dl, 
+                name = self._get_pdf_name('SUJohnson'),
+                )
 
         return pdf
     #---------------------------------
@@ -192,7 +229,11 @@ class trfc:
         pdf_cb = self._get_cb()
         frc    = zfit.param.Parameter(f'frc_trf_{self._suf}', 0.5, 0, 1) 
 
-        pdf    = zfit.pdf.SumPDF([pdf_sj, pdf_cb], fracs=frc, name='SUJ_CB')
+        pdf    = zfit.pdf.SumPDF(
+                [pdf_sj, pdf_cb], 
+                fracs=frc, 
+                name =self._get_pdf_name('SUJ_CB'),
+                )
 
         return pdf
     #---------------------------------
