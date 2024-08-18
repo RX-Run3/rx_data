@@ -134,6 +134,13 @@ class ccprc:
 
         return pdf_trf
     #---------------------------------
+    def _get_pdf_name(self):
+        name = f'{self._pref}_{self._syst}_{self._dset}'
+        if self._brem is None:
+            return name
+
+        return f'{name}_brem_{self._brem}'
+    #---------------------------------
     def get_pdf(self):
         self._initialize()
 
@@ -156,7 +163,8 @@ class ccprc:
         pdf_res = obj.get_pdf()
 
         r, d_cns = self._get_ratio()
-        pdf      = zfit.pdf.SumPDF([pdf_prc, pdf_res], r)
+        name     = self._get_pdf_name()
+        pdf      = zfit.pdf.SumPDF([pdf_prc, pdf_res], r, name=name)
         pdf.d_cns= d_cns
 
         config.binning = dict()
