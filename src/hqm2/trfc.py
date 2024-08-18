@@ -30,6 +30,28 @@ class trfc:
         self._bandwidth= 15
         self._fft_npt  = 1000
         self._obs_trf  = zfit.Space('B_M', limits=(-1000, +1000))
+
+        self._bin_suf  = None
+
+        self._initialized = False
+    #---------------------------------
+    def _initialize(self):
+        if self._initialized:
+            return
+
+        self._set_suffix()
+
+        self._initialized = True 
+    #---------------------------------
+    def _set_suffix(self):
+        if len(config.binning) == 0:
+            return
+
+        varn = config.binning['var']
+        ibin = config.binning['bin']
+
+        self._bin_suf = f'{varn}_{ibin}'
+        self._suf     = f'{self._suf}_{self._bin_suf}'
     #---------------------------------
     def _get_trf_pars(self, pdf_trf, json_path, plot_range):
         obj       = data_store(qsq=self._qsq_src, dset=self._dset, trig='MTOS', proc=self._proc)
@@ -50,6 +72,7 @@ class trfc:
         d_fit_opt = dict(config.fitting)
         d_fit_opt['ignore_status'] = True
         d_par     = zut.get_fit_pars(pdf_ees, arr_dt_ee, d_plt_opt=d_plt_opt, d_fit_opt=d_fit_opt)
+        d_par     = self._rename_pars(d_par, suffix='remove')
         utnr.dump_json(d_par, json_path)
 
         plot_path = json_path.replace('.json', '_kde.png')
@@ -209,7 +232,23 @@ class trfc:
         if self._qsq_src == 'psi2' and self._qsq_tgt == 'high':
             return [5000, 6400]
     #---------------------------------
+    def _rename_pars(self, d_par=None, suffix=None):
+        if self._bin_suf is None:
+            return d_par
+
+        if   suffix == 'add':
+            d_par_new = { f'{key}_{self._bin_suf}'             : val for key, val in d_par.items() }
+        elif suffix == 'remove':
+            d_par_new = { key.replace(f'_{self._bin_suf}', '') : val for key, val in d_par.items() }
+        else:
+            log.error(f'Invalid argument: {suffix}')
+            raise
+
+        return d_par_new
+    #---------------------------------
     def get_trf(self):
+        self._initialize()
+
         plot_range = self._get_plot_range()
         pdf_trf    = self._get_trf_pdf()
         json_path  = config.make_data_path(kind='tfunc', dset=self._dset, fname=f'{self._qsq_src}_{self._qsq_tgt}_{self._proc}.json')
@@ -221,6 +260,7 @@ class trfc:
             log.info(f'Transfer function for {self._dset}, {self._qsq_src} -> {self._qsq_tgt} not found, i.e. {json_path}')
             d_par = self._get_trf_pars(pdf_trf, json_path, plot_range)
 
+        d_par   = self._rename_pars(d_par, suffix='add')
         pdf_trf = zut.fix_pars(pdf_trf, d_par)
 
         return pdf_trf
