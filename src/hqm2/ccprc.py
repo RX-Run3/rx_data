@@ -114,7 +114,7 @@ class ccprc:
         cal        = ratc(obs=self._obs, dset=self._dset)
         [val, err] = cal.get_ratio()
 
-        name       = f'r_psi2_{self._dset}'
+        name       = f'r_psi2_{self._dset}' if self._brem is None else f'r_psi2_{self._dset}_brem_{self._brem}'
         par        = zfit.param.Parameter(name, val, 0, 1)
         d_cns      = {name : [val, err]}
 
