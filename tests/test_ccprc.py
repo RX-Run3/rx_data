@@ -4,8 +4,9 @@ from hqm2.ccprc   import ccprc
 from zutils.plot  import plot      as zfp
 from log_store    import log_store
 
-import zutils.utils      as zut
 import matplotlib.pyplot as plt
+import zutils.utils      as zut
+import utils_noroot      as utnr 
 import pprint
 import numpy
 import zfit
@@ -22,15 +23,18 @@ def set_logs():
     log_store.set_level('rx_scripts:atr_mgr:mgr'  , 30)
     log_store.set_level('tools:calc_utility'      , 40)
 #--------------------------------------------------
-def check_pdf(pdf, plot_dir, name='pdf', title=None):
+@utnr.timeit
+def check_pdf(pdf, plot_dir, name='pdf', title=None, no_data=True):
     os.makedirs(plot_dir, exist_ok=True)
 
     zut.print_pdf(pdf, txt_path=f'{plot_dir}/{name}.txt')
 
     sam = pdf.create_sampler(n=10000)
+    arr = sam.value().numpy().flatten()
+    zdat= zfit.Data.from_numpy(pdf.space, array=arr)
 
-    obj = zfp(data=sam, model=pdf)
-    obj.plot(plot_range=(4000, 6000), stacked=True, skip_pulls=True, no_data=True) 
+    obj = zfp(data=zdat, model=pdf)
+    obj.plot(plot_range=(4000, 6000), stacked=True, skip_pulls=True, no_data=no_data) 
 
     ax=obj.axs[0]
     if title is not None:
@@ -96,8 +100,17 @@ def test_compare_brem(dset):
         plt.savefig(f'{plot_dir}/{dset}.png')
         plt.close()
 #--------------------------------------------------
+@utnr.timeit
+def test_data_generation(dset):
+    obj=ccprc(obs=data.obs, dset=dset, preffix=f'psi2_high_pr_{dset}', brem=None, syst='nom')
+    pdf=obj.get_pdf()
+
+    plot_dir = 'tests/ccprc/data_generation'
+    check_pdf(pdf, plot_dir, no_data=False)
+#--------------------------------------------------
 def main():
     set_logs()
+    test_data_generation('2017')
     test_simple('2017')
 
     for dset in ['r1', 'r2p1', '2017', '2018']:
