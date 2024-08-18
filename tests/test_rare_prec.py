@@ -2,6 +2,7 @@ from hqm2.prec_rare import get_pdf as get_prec_rare_pdf
 from zutils.plot    import plot    as zfp
 
 import matplotlib.pyplot as plt
+import zutils.utils      as zut
 import zfit
 import os
 #----------------------------------------
@@ -19,7 +20,12 @@ def check_pdf(pdf, name='pdf'):
     ax = obj.axs[0]
     ax.set_title(f'Nentries: {arr_mas.size}')
 
-    plt.savefig(f'{data.out_dir}/{name}.png')
+    plot_path = f'{data.out_dir}/{name}.png'
+    plt.savefig(plot_path)
+    plt.close()
+
+    text_path = f'{data.out_dir}/{name}.txt'
+    zut.print_pdf(pdf, txt_path=text_path)
 #----------------------------------------
 def test_simple(proc):
     pdf          = get_prec_rare_pdf(obs=data.obs, dset='2018', kind=proc, trig='ETOS') 
