@@ -25,7 +25,7 @@ def get_3cb(pref, obs):
     frc_1 = zfit.param.Parameter(f'frc_1_{pref}', 0.5, 0, 1) 
     frc_2 = zfit.param.Parameter(f'frc_2_{pref}', 0.5, 0, 1) 
 
-    pdf   = zfit.pdf.SumPDF([cb1, cb2, cb3], fracs=[frc_1, frc_2])
+    pdf   = zfit.pdf.SumPDF([cb1, cb2, cb3], fracs=[frc_1, frc_2], name=f'3CB_{pref}')
     
     return pdf
 #--------------------------------------------------------
@@ -46,7 +46,7 @@ def get_2cb(pref, obs):
     
     frc_1 = zfit.param.Parameter(f'frc_2cb_{pref}', 0.5, 0, 1) 
 
-    pdf   = zfit.pdf.SumPDF([cb1, cb2], fracs=[frc_1])
+    pdf   = zfit.pdf.SumPDF([cb1, cb2], fracs=[frc_1], name=f'2CB_{pref}')
     
     return pdf
 #--------------------------------------------------------
@@ -55,7 +55,7 @@ def get_cb(pref, obs):
     sg  = zfit.param.Parameter(f'sg_{pref}',   10,  0.1,  400)
     al  = zfit.param.Parameter(f'al_{pref}',-1.5,  -10,     0)
     nl  = zfit.param.Parameter(f'nl_{pref}',   1, 1e-3,   110)
-    pdf = zfit.pdf.CrystalBall(mu, sg, al, nl, obs, name='CB')
+    pdf = zfit.pdf.CrystalBall(mu, sg, al, nl, obs, name=f'CB_{pref}')
 
     return pdf
 #--------------------------------------------------------
@@ -66,7 +66,7 @@ def get_dscb(pref, obs):
     nl  = zfit.param.Parameter(f'nl_{pref}',   1, 1e-3,  110)
     nr  = zfit.param.Parameter(f'nr_{pref}',   1, 1e-3,  110)
     mu  = zfit.param.Parameter(f'mu_{pref}', 5500, 5000, 6000)
-    pdf = zfit.pdf.DoubleCB(mu=mu, sigma=sg, alphal=al, nl=nl, alphar=ar, nr=nr, obs=obs)
+    pdf = zfit.pdf.DoubleCB(mu=mu, sigma=sg, alphal=al, nl=nl, alphar=ar, nr=nr, obs=obs, name=f'DSCB_{pref}')
 
     return pdf
 #--------------------------------------------------------
@@ -76,7 +76,7 @@ def get_sujh(pref, obs):
     gm = zfit.Parameter(f'gm_{pref}',    2,    1,    4)
     dl = zfit.Parameter(f'dl_{pref}',    2,  1.0,    3)
 
-    pdf= zpdf_jh(obs=obs, mu=ms, lm=lm, gamma=gm, delta=dl)
+    pdf= zpdf_jh(obs=obs, mu=ms, lm=lm, gamma=gm, delta=dl, name=f'sujh_{pref}')
 
     return pdf
 #--------------------------------------------------------
@@ -85,7 +85,7 @@ def get_sujh_dscb(pref, obs):
     pdf_ds = get_dscb(pref, obs) 
 
     frc    = zfit.param.Parameter(f'frc_{pref}', 0.5, 0, 1) 
-    pdf    = zfit.pdf.SumPDF([pdf_jh, pdf_ds], fracs=[frc])
+    pdf    = zfit.pdf.SumPDF([pdf_jh, pdf_ds], fracs=[frc], name=f'sujh_dscb_{pref}')
 
     return pdf
 #--------------------------------------------------------
@@ -97,7 +97,7 @@ def get_sujh_2cb(pref, obs):
     frc_1 = zfit.param.Parameter(f'frc_1_{pref}', 0.5, 0, 1) 
     frc_2 = zfit.param.Parameter(f'frc_2_{pref}', 0.5, 0, 1) 
 
-    pdf = zfit.pdf.SumPDF([pdf_suj, pdf_cb1, pdf_cb2], fracs=[frc_1, frc_2])
+    pdf = zfit.pdf.SumPDF([pdf_suj, pdf_cb1, pdf_cb2], fracs=[frc_1, frc_2], name=f'sujh_2cb_{pref}')
 
     return pdf
 #--------------------------------------------------------
