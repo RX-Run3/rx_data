@@ -127,11 +127,12 @@ class ccprc:
     def _get_ratio(self):
         cal        = ratc(obs=self._obs, dset=self._dset)
         [val, err] = cal.get_ratio()
-        val, err   = self._transform_ratio(val, err)
+        tval, terr = self._transform_ratio(val, err)
 
         name       = f'r_psi2_{self._dset}' if self._brem is None else f'r_psi2_{self._dset}_brem_{self._brem}'
-        par        = zfit.param.Parameter(name, val, 0, 1)
-        d_cns      = {name : [val, err]}
+        label      = f'Ratio: {val:.3f}; Fraction: {tval:.3f}'
+        par        = zfit.param.Parameter(name, tval, 0, 1, label=label)
+        d_cns      = {name : [tval, terr]}
 
         return par, d_cns
     #---------------------------------
