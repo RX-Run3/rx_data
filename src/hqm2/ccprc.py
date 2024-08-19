@@ -1,5 +1,6 @@
 import os
 import zfit
+import math
 import numpy
 import matplotlib.pyplot as plt
 import utils_noroot      as utnr
@@ -15,6 +16,7 @@ from importlib.resources import files
 from zutils.plot         import plot      as zfp
 from fitter              import zfitter
 from log_store           import log_store
+from jacobi              import propagate
 
 log=log_store.add_logger('rx_hqm2:ccprc')
 #-----------------------------------
@@ -110,9 +112,22 @@ class ccprc:
 
         return arr_dat 
     #---------------------------------
+    def _transform_ratio(self, val, err):
+        tval, tvar = propagate(lambda x : 1. / (1. + 1./x), val, err**2)
+        terr       = math.sqrt(tvar)
+
+        log.debug(60 * '-')
+        log.debug('Transforming ratio')
+        log.debug(60 * '-')
+        log.debug(f'{val:<20.3f}{"-->":20}{tval:<20.3f}')
+        log.debug(f'{err:<20.3f}{"-->":20}{terr:<20.3f}')
+
+        return tval, terr
+    #---------------------------------
     def _get_ratio(self):
         cal        = ratc(obs=self._obs, dset=self._dset)
         [val, err] = cal.get_ratio()
+        val, err   = self._transform_ratio(val, err)
 
         name       = f'r_psi2_{self._dset}' if self._brem is None else f'r_psi2_{self._dset}_brem_{self._brem}'
         par        = zfit.param.Parameter(name, val, 0, 1)
