@@ -17,7 +17,7 @@ class data:
     obs = zfit.Space("B_M", limits=(0, 7000))
 #-------------------------------------
 def set_logs():
-    log_store.set_level('scripts:zutils/utils'    , 30)
+    log_store.set_level('scripts:zutils/utils'    , 20)
     log_store.set_level('rx_hqm2:data_store'      , 30)
     log_store.set_level('rx_scripts:storage/cache', 20)
     log_store.set_level('rx_scripts:atr_mgr:mgr'  , 30)
@@ -44,6 +44,12 @@ def check_pdf(pdf, plot_dir, name='pdf', title=None, no_data=True):
     ax.set_ylim(bottom=0)
     plt.savefig(f'{plot_dir}/{name}.png')
     plt.close('all')
+#--------------------------------------------------
+def get_label(pdf):
+    s_par = pdf.get_params(floating=None)
+    [rpar]= [ par for par in s_par if par.name.startswith('r_psi2_') ]
+
+    return rpar.label
 #--------------------------------------------------
 def plot_pdf(pdf, label=None):
     arr_mas = numpy.linspace(4000, 6000, 300)
@@ -72,10 +78,11 @@ def test_all():
         for brem in [None, 1, 2]:
             obj=ccprc(obs=data.obs, dset=dset, preffix=f'psi2_high_pr_{dset}', brem=brem, syst='nom')
             pdf=obj.get_pdf()
+            lab=get_label(pdf)
 
             brem     = 'int' if brem is None else f'cbrem_{brem}'
             plot_dir = f'tests/ccprc/all/{brem}/{dset}'
-            check_pdf(pdf, plot_dir, title=f'Year:{dset}; Brem:{brem}')
+            check_pdf(pdf, plot_dir, title=f'Year:{dset}; Brem:{brem}; {lab}')
 #--------------------------------------------------
 def test_compare_brem(dset):
     for brem in [None, 1, 2]:
@@ -110,13 +117,14 @@ def test_data_generation(dset):
 #--------------------------------------------------
 def main():
     set_logs()
+    test_all()
+
     test_data_generation('2017')
     test_simple('2017')
 
     for dset in ['r1', 'r2p1', '2017', '2018']:
         test_compare_brem(dset)
 
-    test_all()
     test_brem('2018', 1)
     test_brem('2018', 2)
 #--------------------------------------------------
