@@ -7,6 +7,10 @@ def get_data_files():
     l_json += ['tfunc/int/*/psi2_high_psi2.json']
     l_json += ['ratios/int/*/parameters.json']
     l_json += ['fits/int/*/psi2_ETOS_high/pars.json']
+    l_json += ['data/int/*/high_psi2_ETOS/B_M_*.json']
+    l_json += ['data/int/*/high_bdks_ETOS/B_M_*.json']
+    l_json += ['data/int/*/high_bpks_ETOS/B_M_*.json']
+    l_json += ['data/int/*/high_bsph_ETOS/B_M_*.json']
     l_json += ['data/int/*/psi2_data_MTOS/B_M_*.json']
     l_json += ['config/*.toml']
 
