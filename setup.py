@@ -1,6 +1,17 @@
 import glob
 from setuptools import setup
 
+#-------------------------------------------------
+def get_data_files():
+    l_json  = list()
+    l_json += ['tfunc/int/*/psi2_high_psi2.json']
+    l_json += ['ratios/int/*/parameters.json']
+    l_json += ['fits/int/*/psi2_ETOS_high/pars.json']
+    l_json += ['data/int/*/psi2_data_MTOS/B_M_*.json']
+    l_json += ['config/*.toml']
+
+    return l_json
+#-------------------------------------------------
 setup(
         name              = 'rx_hqm2',
         version           = '0.0.1',
@@ -8,7 +19,8 @@ setup(
         scripts           = glob.glob('scripts/*'),
         long_description  = '', 
         package_dir       = {'' : 'src'},
-        package_data      = {'hqm2_data' : ['*/*.json']},
+        packages          = ['hqm2', 'hqm2_data'],
+        package_data      = {'hqm2_data' : get_data_files() },
         install_requires  = open('requirements.txt').read().splitlines()
         ) 
 
