@@ -240,6 +240,8 @@ class trfc:
     def _get_trf_pdf(self):
         if   self._qsq_src == 'psi2' and self._qsq_tgt == 'high':
             pdf_trf = self._get_cb()
+        elif self._qsq_src == 'jpsi' and self._qsq_tgt == 'high':
+            pdf_trf = self._get_cb()
         elif self._qsq_src == 'jpsi' and self._qsq_tgt == 'jpsi':
             pdf_trf = self._get_3cb()
         elif self._qsq_src == 'jpsi' and self._qsq_tgt == 'psi2':
