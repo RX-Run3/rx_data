@@ -8,6 +8,7 @@ import pandas         as pnd
 import hashlib
 import utils_noroot   as utnr
 import read_selection as rs
+import version_management as vm
 
 from rk.calc_utility     import addDiffVars as add_vars
 from storage.cache       import cache       as scache
@@ -23,32 +24,33 @@ class data_store:
     def __init__(self, qsq=None, dset=None, trig=None, proc=None):
         self._qsq  = qsq
         self._dset = dset
-        self._trig = trig 
-        self._proc = proc 
+        self._trig = trig
+        self._proc = proc
 
         self._l_vec_var = ['B_const_mass_M', 'B_const_mass_psi2S_M']
     #----------------------------------
-    def _get_sample_dir(self):
+    def _get_root_wc(self, year):
         dat_dir = {
-                'data' : 'r_fits', 
-                'psi2' : 'r_fits', 
+                'data' : 'r_fits',
+                'psi2' : 'r_fits',
                 'ctrl' : 'r_fits',
                 'bpks' : 'rare_backgrounds',
                 'bdks' : 'rare_backgrounds',
                 'bsph' : 'rare_backgrounds',
-                }
+                }[self._proc]
 
-        dir_name = dat_dir[self._proc]
+        asl_dir  = os.environ['ASLDIR']
+        ver_dir  = vm.get_last_version(dir_path=f'{asl_dir}/{dat_dir}', version_only=False)
+        root_wc  = f'{ver_dir}/{self._proc}/v10.21p2/{year}_{self._trig}/*.root'
 
-        return dir_name
+        log.info(f'Picking data from {root_wc}')
+
+        return root_wc
     #----------------------------------
     def _get_year_array(self, year, var_name, d_cut=None):
-        dat_dir = self._get_sample_dir()
-        log.info(f'Picking {self._proc}/{self._trig}/{self._dset}/{self._qsq} from: {dat_dir}')
-
-        asl_dir = os.environ['ASLDIR']
-        root_wc = f'{asl_dir}/{dat_dir}/{self._proc}/v10.21p2/{year}_{self._trig}/*.root'
+        root_wc = self._get_root_wc(year=year)
         json_wc = root_wc.replace('.root', '.json')
+
         l_json  = self._wc_to_list(json_wc)
         l_df    = [ self._df_from_json(json_path) for json_path in l_json ]
         df_cf   = self._merge_cf_df(l_df)
@@ -65,7 +67,7 @@ class data_store:
 
         df_cf.arr_val = arr_val
 
-        return df_cf 
+        return df_cf
     #----------------------------------
     def _define_vars(self, rdf):
         rdf.q2  = 'none'
@@ -119,7 +121,7 @@ class data_store:
         rdf = rdf.Filter(qsq, 'QSQ')
         rdf = rdf.Filter(bdt, 'BDT')
 
-        l_cut = [qsq, bdt] 
+        l_cut = [qsq, bdt]
         d_cut = dict() if d_cut is None else d_cut
         for name, cut in d_cut.items():
             rdf  = rdf.Filter(cut, name)
@@ -156,7 +158,7 @@ class data_store:
     #----------------------------------
     def get_array(self, variable='B_M', d_cut=None, clean_repeated=False):
         d_cut             = self._update_cuts(d_cut)
-        cut_hash          = self._hash_from_dict(d_cut) 
+        cut_hash          = self._hash_from_dict(d_cut)
 
         scache.cache_path = config.make_data_path(kind='data', dset=self._dset, dname=f'{self._qsq}_{self._proc}_{self._trig}', fname=f'{variable}_{cut_hash}.json')
         df_cf             = self._calculate_array(variable=variable, d_cut=d_cut)
@@ -198,7 +200,7 @@ class data_store:
         df_tot        = self._merge_cf_df([ df_1 , df_2])
         df_tot.arr_val= numpy.concatenate([arr_1, arr_2])
 
-        return df_tot 
+        return df_tot
     #----------------------------------
     @scache.cache_selection
     def _calculate_array(self, variable=None, d_cut=None):
