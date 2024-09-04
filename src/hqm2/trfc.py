@@ -81,10 +81,10 @@ class trfc:
     #---------------------------------
     def _plot_datasets(self, arr_dt_mm, arr_dt_ee, plot_path):
         plt.figure('sim_dset')
-        plt.hist(arr_dt_mm, bins=100, density=True, histtype='step', label='$\mu\mu$')
-        plt.hist(arr_dt_ee, bins=100, density=True, histtype='step', label='$e^+e^-$')
+        plt.hist(arr_dt_mm, bins=100, density=True, histtype='step', label=f'$\mu\mu\in${self._qsq_src}')
+        plt.hist(arr_dt_ee, bins=100, density=True, histtype='step', label=f'$e^+e^-\in${self._qsq_tgt}')
         plt.legend()
-        plt.title(f'$\mu$:{arr_dt_mm.shape[0]}; $e$:{arr_dt_ee.shape[0]}' + self._get_bin_title() )
+        plt.title(f'Process: {self._proc}; Dataset: {self._dset}; $\mu$:{arr_dt_mm.shape[0]}; $e$:{arr_dt_ee.shape[0]}' + self._get_bin_title() )
         plt.savefig(plot_path)
         plt.close('sim_dset')
     #---------------------------------
