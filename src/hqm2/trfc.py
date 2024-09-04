@@ -6,7 +6,6 @@ import zfit
 import os
 
 from zutils.pdf          import SUJohnson as zpdf_jh
-from zutils.plot         import plot      as zfp
 from importlib.resources import files
 from log_store           import log_store
 
@@ -41,7 +40,7 @@ class trfc:
 
         self._set_suffix()
 
-        self._initialized = True 
+        self._initialized = True
     #---------------------------------
     def _set_suffix(self):
         if len(config.binning) == 0:
@@ -78,7 +77,7 @@ class trfc:
         plot_path = json_path.replace('.json', '_kde.png')
         self._plot_pdf(pdf_ees, plot_range, plot_path)
 
-        return d_par 
+        return d_par
     #---------------------------------
     def _plot_datasets(self, arr_dt_mm, arr_dt_ee, plot_range, plot_path):
         plt.figure('sim_dset')
@@ -123,13 +122,13 @@ class trfc:
         nr  = zfit.param.Parameter(f'nr_trf_{self._suf}',   1, 1e-3,  110)
         mu  = zfit.param.Parameter(f'mu_trf_{self._suf}',   0, -100,  100)
         pdf = zfit.pdf.DoubleCB(
-                obs   = self._obs_trf, 
-                mu    = mu, 
-                sigma = sg, 
-                alphal= al, 
-                alphar= ar, 
-                nl    = nl, 
-                nr    = nr, 
+                obs   = self._obs_trf,
+                mu    = mu,
+                sigma = sg,
+                alphal= al,
+                alphar= ar,
+                nl    = nl,
+                nr    = nr,
                 name  = self._get_pdf_name('DSCB'),
                 )
 
@@ -141,7 +140,7 @@ class trfc:
         sg1 = zfit.param.Parameter(f'sg1_trf_{self._suf}',  10,  0.1, 400)
         sg2 = zfit.param.Parameter(f'sg2_trf_{self._suf}',  40,  0.1, 400)
         sg3 = zfit.param.Parameter(f'sg3_trf_{self._suf}',  40,  0.1, 400)
-        
+
         al  = zfit.param.Parameter(f'al_trf_{self._suf}', 1.5, 1e-3,   10)
         ar  = zfit.param.Parameter(f'ar_trf_{self._suf}', 1.5, 1e-3,   10)
         ac  = zfit.param.Parameter(f'ac_trf_{self._suf}', 1.5, 1e-3,   10)
@@ -149,20 +148,20 @@ class trfc:
         nl  = zfit.param.Parameter(f'nl_trf_{self._suf}',   1, 1e-3,  110)
         nr  = zfit.param.Parameter(f'nr_trf_{self._suf}',   1, 1e-3,  110)
         nc  = zfit.param.Parameter(f'nc_trf_{self._suf}',   1, 1e-3,  110)
-    
+
         cb1 = zfit.pdf.CrystalBall(mu, sg1, ar, nr, self._obs_trf, name='CB1')
         cb2 = zfit.pdf.CrystalBall(mu, sg2, al, nl, self._obs_trf, name='CB2')
         cb3 = zfit.pdf.CrystalBall(mu, sg3, ac, nc, self._obs_trf, name='CB3')
-    
-        frc_1 = zfit.param.Parameter(f'frc_1_trf_{self._suf}', 0.5, 0, 1) 
-        frc_2 = zfit.param.Parameter(f'frc_2_trf_{self._suf}', 0.5, 0, 1) 
+
+        frc_1 = zfit.param.Parameter(f'frc_1_trf_{self._suf}', 0.5, 0, 1)
+        frc_2 = zfit.param.Parameter(f'frc_2_trf_{self._suf}', 0.5, 0, 1)
 
         pdf   = zfit.pdf.SumPDF(
-                [cb1, cb2, cb3], 
-                fracs=[frc_1, frc_2], 
+                [cb1, cb2, cb3],
+                fracs=[frc_1, frc_2],
                 name =self._get_pdf_name('3CB'),
                 )
-    
+
         return pdf
     #---------------------------------
     def _get_2cb(self):
@@ -170,25 +169,25 @@ class trfc:
 
         sg1 = zfit.param.Parameter(f'sg1_trf_{self._suf}',  10,  0.1, 400)
         sg2 = zfit.param.Parameter(f'sg2_trf_{self._suf}',  40,  0.1, 400)
-        
+
         al  = zfit.param.Parameter(f'al_trf_{self._suf}',  -1,  -10,    0)
         ar  = zfit.param.Parameter(f'ar_trf_{self._suf}',  +1,    0,   10)
 
         nl  = zfit.param.Parameter(f'nl_trf_{self._suf}',   1, 1e-3,  110)
         nr  = zfit.param.Parameter(f'nr_trf_{self._suf}',   1, 1e-3,  110)
-    
+
         cb1 = zfit.pdf.CrystalBall(mu, sg1, ar, nr, self._obs_trf, name='CB1')
         cb2 = zfit.pdf.CrystalBall(mu, sg2, al, nl, self._obs_trf, name='CB2')
-    
-        frc_1 = zfit.param.Parameter(f'frc_1_trf_{self._suf}', 0.5, 0, 1) 
-        frc_2 = zfit.param.Parameter(f'frc_2_trf_{self._suf}', 0.5, 0, 1) 
+
+        frc_1 = zfit.param.Parameter(f'frc_1_trf_{self._suf}', 0.5, 0, 1)
+        frc_2 = zfit.param.Parameter(f'frc_2_trf_{self._suf}', 0.5, 0, 1)
 
         pdf   = zfit.pdf.SumPDF(
-                [cb1, cb2], 
-                fracs=[frc_1, frc_2], 
+                [cb1, cb2],
+                fracs=[frc_1, frc_2],
                 name =self._get_pdf_name('2CB'),
                 )
-    
+
         return pdf
     #---------------------------------
     def _get_cb(self):
@@ -197,11 +196,11 @@ class trfc:
         al  = zfit.param.Parameter(f'al_trf_{self._suf}',   2,   -9,   +9)
         nt  = zfit.param.Parameter(f'nt_trf_{self._suf}',   7,    0,  150)
         pdf = zfit.pdf.CrystalBall(
-                mu, 
-                sg, 
-                al, 
-                nt, 
-                obs =self._obs_trf, 
+                mu,
+                sg,
+                al,
+                nt,
+                obs =self._obs_trf,
                 name=self._get_pdf_name('CB'),
                 )
 
@@ -214,11 +213,11 @@ class trfc:
         dl = zfit.Parameter(f'dl_trf_{self._suf}',    2,  -10,   10)
 
         pdf= zpdf_jh(
-                obs  = self._obs_trf, 
-                mu   = ms, 
-                lm   = lm, 
-                gamma= gm, 
-                delta= dl, 
+                obs  = self._obs_trf,
+                mu   = ms,
+                lm   = lm,
+                gamma= gm,
+                delta= dl,
                 name = self._get_pdf_name('SUJohnson'),
                 )
 
@@ -227,11 +226,11 @@ class trfc:
     def _get_sjcb(self):
         pdf_sj = self._get_sj()
         pdf_cb = self._get_cb()
-        frc    = zfit.param.Parameter(f'frc_trf_{self._suf}', 0.5, 0, 1) 
+        frc    = zfit.param.Parameter(f'frc_trf_{self._suf}', 0.5, 0, 1)
 
         pdf    = zfit.pdf.SumPDF(
-                [pdf_sj, pdf_cb], 
-                fracs=frc, 
+                [pdf_sj, pdf_cb],
+                fracs=frc,
                 name =self._get_pdf_name('SUJ_CB'),
                 )
 
@@ -241,7 +240,7 @@ class trfc:
         if   self._qsq_src == 'psi2' and self._qsq_tgt == 'high':
             pdf_trf = self._get_cb()
         elif self._qsq_src == 'jpsi' and self._qsq_tgt == 'high':
-            pdf_trf = self._get_cb()
+            pdf_trf = self._get_dscb()
         elif self._qsq_src == 'jpsi' and self._qsq_tgt == 'jpsi':
             pdf_trf = self._get_3cb()
         elif self._qsq_src == 'jpsi' and self._qsq_tgt == 'psi2':
@@ -249,7 +248,7 @@ class trfc:
         elif self._qsq_src == 'psi2' and self._qsq_tgt == 'jpsi':
             pdf_trf = self._get_sjcb()
         elif self._qsq_src == 'psi2' and self._qsq_tgt == 'psi2':
-            pdf_trf = self._get_sjcb() 
+            pdf_trf = self._get_sjcb()
         else:
             log.error(f'Invalid source/target q2: {self._qsq_src}/{self._qsq_tgt}')
             raise
@@ -274,6 +273,12 @@ class trfc:
 
         if self._qsq_src == 'psi2' and self._qsq_tgt == 'high':
             return [5000, 6400]
+
+        if self._qsq_src == 'jpsi' and self._qsq_tgt == 'high':
+            return [5000, 7000]
+
+        log.error(f'Invalid src/trg q2: {self._qsq_src}/{self._qsq_tgt}')
+        raise
     #---------------------------------
     def _rename_pars(self, d_par=None, suffix=None):
         if self._bin_suf is None:
