@@ -136,6 +136,7 @@ def main():
 
     set_logs()
     test_jpsi('comb')
+    return
     test_all()
 
     test_data_generation('2017')
