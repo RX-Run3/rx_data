@@ -42,7 +42,6 @@ def test_psi2_high():
 #--------------------------------------
 def test_jpsi_high():
     obj     = trfc(obs=data.obs, qsq_src='jpsi', qsq_tgt='high', proc='ctrl', dset='comb', pref='jpsi_high_pr_comb')
-    #obj     = trfc(obs=data.obs, qsq_src='jpsi', qsq_tgt='high', proc='ctrl', dset='2018', pref='jpsi_high_pr_2018')
     pdf_trf = obj.get_trf()
 #--------------------------------------
 def test_jpsi_jpsi():
