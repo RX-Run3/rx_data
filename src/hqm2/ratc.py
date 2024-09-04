@@ -16,9 +16,24 @@ import matplotlib.pyplot as plt
 log=log_store.add_logger('rx_hqm2:ratc')
 #-----------------------------
 class ratc:
-    def __init__(self, obs=None, dset=None):
-        self._dset = dset
+    '''
+    Class that builds model using:
+    - smeared muon data to represent electron partially reconstructed
+    - Analytical PDF to represent fully reconstructed components
+
+    it then uses the model to fit electron channel data and extract the ratios
+    of fully reconstructed over partially reconstructed
+    '''
+    #-----------------------------
+    def __init__(self, obs=None, dset=None, proc=None):
+        '''
+        obs       : zfit observable used in the simultaneous fits
+        dset (str): Dataset, e.g. r1, r2p1, 2017, 2018
+        proc (str): Process for which the ratio is returned, i.e. psi2 and ctrl
+        '''
         self._obs  = obs
+        self._dset = dset
+        self._proc = proc
 
         self._plot_range = [4500, 6000]
         self._bandwidth  = 15
@@ -55,7 +70,7 @@ class ratc:
             log.info(f'Parameters file found: {json_path}')
             d_par = utnr.load_json(json_path)
 
-            return d_par['rat_psi2']
+            return d_par[f'rat_{self._proc}']
 
         log.info('Parameters file not found, recalculating ratio')
 
