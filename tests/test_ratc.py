@@ -17,8 +17,8 @@ def set_logs():
     log_store.set_level('rx_scripts:atr_mgr:mgr'  , 30)
     log_store.set_level('tools:calc_utility'      , 40)
 #-------------------------------------
-def test_simple():
-    obj=ratc(obs=data.obs, dset='2018')
+def test_proc(proc):
+    obj=ratc(obs=data.obs, dset='2018', proc=proc)
     rat=obj.get_ratio()
 #-------------------------------------
 def main():
@@ -26,7 +26,8 @@ def main():
     plt.style.use(mplhep.style.LHCb2)
     set_logs()
 
-    test_simple()
+    test_proc('psi2')
+    test_proc('ctrl')
 #-------------------------------------
 if __name__ == '__main__': 
     main()
