@@ -191,9 +191,9 @@ class trfc:
         return pdf
     #---------------------------------
     def _get_cb(self):
-        mu  = zfit.param.Parameter(f'mu_trf_{self._suf}',-300, -400, +400)
-        sg  = zfit.param.Parameter(f'sg_trf_{self._suf}', 100,    1,  200)
-        al  = zfit.param.Parameter(f'al_trf_{self._suf}',   2,   -9,   +9)
+        mu  = zfit.param.Parameter(f'mu_trf_{self._suf}',-300, -400, 2400)
+        sg  = zfit.param.Parameter(f'sg_trf_{self._suf}', 100,    1,  600)
+        al  = zfit.param.Parameter(f'al_trf_{self._suf}',   0,   -9,   +9)
         nt  = zfit.param.Parameter(f'nt_trf_{self._suf}',   7,    0,  150)
         pdf = zfit.pdf.CrystalBall(
                 mu,
@@ -240,7 +240,7 @@ class trfc:
         if   self._qsq_src == 'psi2' and self._qsq_tgt == 'high':
             pdf_trf = self._get_cb()
         elif self._qsq_src == 'jpsi' and self._qsq_tgt == 'high':
-            pdf_trf = self._get_dscb()
+            pdf_trf = self._get_cb()
         elif self._qsq_src == 'jpsi' and self._qsq_tgt == 'jpsi':
             pdf_trf = self._get_3cb()
         elif self._qsq_src == 'jpsi' and self._qsq_tgt == 'psi2':
