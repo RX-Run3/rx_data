@@ -8,9 +8,9 @@ import zutils.utils      as zut
 
 from hqm2.data_store     import data_store
 from hqm2.config         import config
-from hqm2.pdfmc          import pdfmc 
+from hqm2.pdfmc          import pdfmc
 from hqm2.trfc           import trfc
-from hqm2.ratc           import ratc 
+from hqm2.ratc           import ratc
 
 from importlib.resources import files
 from zutils.plot         import plot      as zfp
@@ -22,34 +22,46 @@ log=log_store.add_logger('rx_hqm2:ccprc')
 #-----------------------------------
 class ccprc:
     '''
-    Class used to provide charmonium PDF that leaks to the high-q2 bin. 
+    Class used to provide charmonium PDF that leaks to the high-q2 bin.
     '''
-    def __init__(self, obs=None, dset=None, preffix=None, syst=None, brem=None):
+    def __init__(
+            self,
+            obs    =None,
+            dset   =None,
+            syst   =None,
+            brem   =None,
+            preffix=None,
+            qsq_src='psi2',
+            ):
         '''
-        obs: zfit observable
-        dset (str): dataset, representing year, e.g. r1
+        obs          : zfit observable
+        dset    (str): dataset, representing year, e.g. r1
+        syst    (str): Needed to switch between nominal and alternative models
+        brem    (int): Needed to check models in brem categories 1 and 2. This component does not exist in brem = 0
         preffix (str): String meant to be used for naming of variables
-        syst (str): Needed to switch between nominal and alternative models
-        brem (int): Needed to check models in brem categories 1 and 2. This component does not exist in brem = 0
+        qsq_src (str): Source q2 bin, either psi2S (default) or jpsi, needed to pick up muon data sample and transfer function
         '''
         self._obs   = obs
-        self._dset  = dset 
-        self._syst  = syst 
+        self._dset  = dset
+        self._syst  = syst
         self._brem  = brem
         self._pref  = preffix
 
-        self._qsq_src = 'psi2'
+        self._qsq_src = qsq_src
+
+        self._proc_trf= None
         self._qsq_tgt = 'high'
         self._fft_npt = 1000
         self._bw_mumu = 15
         self._low_sb  = 5180
 
-        self._proc_trf    = 'psi2'
         self._initialized = False
     #---------------------------------
     def _initialize(self):
         if self._initialized:
             return
+
+        self._proc_trf = {'psi2' : 'psi2', 'jpsi' : 'ctrl'}[self._qsq_src]
 
         self._check_brem()
 
@@ -65,7 +77,7 @@ class ccprc:
             return
 
         config.binning['var'] =                'cbrem'
-        config.binning['bin'] =             self._brem 
+        config.binning['bin'] =             self._brem
         config.binning['cut'] = f'cbrem=={self._brem}'
     #---------------------------------
     def _get_muon_pdf(self):
@@ -110,7 +122,7 @@ class ccprc:
         obj       = data_store(qsq=self._qsq_src, dset=self._dset, trig='MTOS', proc='data')
         arr_dat   = obj.get_array(d_cut={'SB' : f'{cns_mas_var} < {self._low_sb}'})
 
-        return arr_dat 
+        return arr_dat
     #---------------------------------
     def _transform_ratio(self, val, err):
         tval, tvar = propagate(lambda x : 1. / (1. + 1./x), val, err**2)
@@ -125,10 +137,15 @@ class ccprc:
         return tval, terr
     #---------------------------------
     def _get_ratio(self):
-        cal        = ratc(obs=self._obs, dset=self._dset)
-        [val, err] = cal.get_ratio()
-        tval, terr = self._transform_ratio(val, err)
+        if self._qsq_src == 'psi2':
+            cal        = ratc(obs=self._obs, dset=self._dset)
+            [val, err] = cal.get_ratio()
+        else:
+            log.warning(f'Returning a ratio of 0.5 for qsq: {self._qsq_src}')
+            val = 0.5
+            err = 0.1
 
+        tval, terr = self._transform_ratio(val, err)
         name       = f'r_psi2_{self._dset}' if self._brem is None else f'r_psi2_{self._dset}_brem_{self._brem}'
         label      = f'Ratio: {val:.3f}; Fraction: {tval:.3f}'
         par        = zfit.param.Parameter(name, tval, 0, 1, label=label)
@@ -138,13 +155,13 @@ class ccprc:
     #---------------------------------
     def _get_trf(self):
         obj     = trfc(
-                obs    = self._obs, 
-                dset   = self._dset, 
+                obs    = self._obs,
+                dset   = self._dset,
                 pref   = self._pref,
-                proc   = self._proc_trf, 
-                qsq_src= self._qsq_src, 
-                qsq_tgt= self._qsq_tgt, 
-                ) 
+                proc   = self._proc_trf,
+                qsq_src= self._qsq_src,
+                qsq_tgt= self._qsq_tgt,
+                )
 
         pdf_trf = obj.get_trf()
 
@@ -176,7 +193,8 @@ class ccprc:
         if plot_pdf:
             self._plot_fit(pdf_mmd, pdf_prc)
 
-        obj     = pdfmc(obs=self._obs, dset=self._dset, proc='psi2', qsq='high')
+        proc    = {'psi2' : 'psi2', 'jpsi' : 'ctrl'}[self._qsq_src]
+        obj     = pdfmc(obs=self._obs, dset=self._dset, proc=proc, qsq='high')
         pdf_res = obj.get_pdf()
 
         r, d_cns = self._get_ratio()
