@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import zutils.utils      as zut
 import utils_noroot      as utnr 
 import pprint
+import mplhep
 import numpy
 import zfit
 import os
@@ -24,7 +25,7 @@ def set_logs():
     log_store.set_level('tools:calc_utility'      , 40)
 #--------------------------------------------------
 @utnr.timeit
-def check_pdf(pdf, plot_dir, name='pdf', title=None, no_data=True):
+def check_pdf(pdf, plot_dir, name='pdf', title=None, no_data=True, plot_range=(4000, 6000), d_leg=None):
     os.makedirs(plot_dir, exist_ok=True)
 
     zut.print_pdf(pdf, txt_path=f'{plot_dir}/{name}.txt')
@@ -34,7 +35,7 @@ def check_pdf(pdf, plot_dir, name='pdf', title=None, no_data=True):
     zdat= zfit.Data.from_numpy(pdf.space, array=arr)
 
     obj = zfp(data=zdat, model=pdf)
-    obj.plot(plot_range=(4000, 6000), stacked=True, skip_pulls=True, no_data=no_data) 
+    obj.plot(plot_range=plot_range, stacked=True, skip_pulls=True, no_data=no_data, d_leg=d_leg) 
 
     ax=obj.axs[0]
     if title is not None:
@@ -65,6 +66,20 @@ def test_simple(dset):
 
     plot_dir = 'tests/ccprc/simple'
     check_pdf(pdf, plot_dir)
+#--------------------------------------------------
+def test_jpsi(dset):
+    obj=ccprc(obs=data.obs, dset=dset, preffix=f'jpsi_high_pr_{dset}', brem=None, syst='nom', qsq_src='jpsi')
+    pdf=obj.get_pdf()
+
+    pprint.pprint(pdf.d_cns)
+
+    plot_dir = 'tests/ccprc/jpsi'
+    d_leg    = {
+            'CB_mc_ctrl_comb_high' : r'$B^+\to J/\psi(e^+e^-) K^+$',
+            'PRec'                 : r'$B^+\to J/\psi(e^+e^-) + X$',
+            }
+
+    check_pdf(pdf, plot_dir, d_leg=d_leg, plot_range=[4000, 7000])
 #--------------------------------------------------
 def test_brem(dset, brem):
     obj =ccprc(obs=data.obs, dset=dset, preffix=f'psi2_high_pr_{dset}', syst='nom', brem=brem) 
@@ -117,6 +132,10 @@ def test_data_generation(dset):
 #--------------------------------------------------
 def main():
     set_logs()
+    plt.style.use(mplhep.style.LHCb2)
+
+    set_logs()
+    test_jpsi('comb')
     test_all()
 
     test_data_generation('2017')
