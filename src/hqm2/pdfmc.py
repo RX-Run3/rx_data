@@ -4,12 +4,12 @@ import zfit
 import numpy
 import hqm2.model    as mod
 import zutils.utils  as zut
-import utils_noroot  as utnr 
+import utils_noroot  as utnr
 import matplotlib.pyplot as plt
 
 from hqm2.data_store     import data_store
 from hqm2.config         import config
-from hqm2.wgtc           import wgtc 
+from hqm2.wgtc           import wgtc
 
 from importlib.resources import files
 from log_store           import log_store
@@ -26,14 +26,14 @@ class pdfmc:
         self._obs    = obs
         self._dset   = dset
         self._proc   = proc
-        self._trig   = 'ETOS' 
-        self._qsq    = qsq 
+        self._trig   = 'ETOS'
+        self._qsq    = qsq
 
-        self._pdf_suf     = None 
-        self._bin_suf     = None 
+        self._pdf_suf     = None
+        self._bin_suf     = None
         self._pdf         = None
-        self._wrange      = None 
-        self._prange      = None 
+        self._wrange      = None
+        self._prange      = None
         self._out_dir     = None
         self._initialized = False
     #------------------------------------
@@ -52,7 +52,7 @@ class pdfmc:
     def _set_pdf_suffix(self):
         pdf_suf= f'mc_{self._proc}_{self._dset}_{self._qsq}'
         if len(config.binning) == 0:
-            self._bin_suf = None 
+            self._bin_suf = None
             self._pdf_suf = pdf_suf
             return
 
@@ -63,7 +63,7 @@ class pdfmc:
         self._pdf_suf = f'{pdf_suf}_{self._bin_suf}'
     #------------------------------------
     def _set_pdf(self):
-        if   self._proc == 'ctrl':
+        if   self._proc == 'ctrl' and self._qsq != 'high':
             self._pdf = mod.get_dscb(self._pdf_suf, self._obs)
         elif self._proc == 'psi2' and self._qsq == 'high':
             self._pdf = mod.get_cb(self._pdf_suf, self._obs)
@@ -71,12 +71,14 @@ class pdfmc:
             self._pdf = mod.get_sujh_2cb(self._pdf_suf, self._obs)
         elif self._proc == 'psi2' and self._qsq == 'jpsi':
             self._pdf = mod.get_dscb(self._pdf_suf, self._obs)
+        elif self._proc == 'ctrl' and self._qsq == 'high':
+            self._pdf = mod.get_cb(self._pdf_suf, self._obs)
         else:
             log.error(f'Invalid process/qsq: {self._proc}/{self._qsq}')
             raise
     #------------------------------------
     def _set_ranges(self):
-        if   self._proc == 'ctrl':
+        if   self._proc == 'ctrl' and self._qsq != 'high':
             self._wrange = [4500, 6000]
             self._prange = [4500, 6000]
         elif self._proc == 'psi2' and self._qsq == 'psi2':
@@ -86,8 +88,11 @@ class pdfmc:
             self._wrange = [5000, 5310]
             self._prange = [4500, 5310]
         elif self._proc == 'psi2' and self._qsq == 'high':
-            self._wrange = None 
+            self._wrange = None
             self._prange = [5000, 6400]
+        elif self._proc == 'ctrl' and self._qsq == 'high':
+            self._wrange = None
+            self._prange = [5500, 7000]
         else:
             log.error(f'Invalid process/qsq: {self._proc}/{self._qsq}')
             raise
@@ -123,11 +128,11 @@ class pdfmc:
             return False
 
         if self._proc == 'ctrl' and self._qsq == 'jpsi':
-            return False 
+            return False
 
         log.warning(f'Skipping weights for proc/qsq: {self._proc}/{self._qsq}')
 
-        return True 
+        return True
     #------------------------------------
     def _get_pdf_pars(self, arr_mas, arr_wgt):
         if self._proc == 'psi2' and self._qsq == 'jpsi':
