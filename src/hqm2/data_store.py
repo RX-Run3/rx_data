@@ -77,18 +77,6 @@ class data_store:
 
         return rdf
     #----------------------------------
-    def _merge_cf_df(self, l_df):
-        df_tot = l_df[0]
-        sr_cut = df_tot.sr_cut
-        l_df   = l_df[1:]
-
-        for df in l_df:
-            df_tot = df_tot.add(df)
-
-        df_tot['Cut'] = sr_cut
-
-        return df_tot
-    #----------------------------------
     def _df_from_json(self, json_path):
         df        = pnd.read_json(json_path)
         sr_cut    = df.Cut
@@ -193,12 +181,31 @@ class data_store:
 
         return d_cut
     #----------------------------------
-    def _merge_arrays(self, df_1, df_2):
-        arr_1 = df_1.arr_val
-        arr_2 = df_2.arr_val
+    def _merge_arrays(self, l_df):
+        '''
+        Merges dataframes with cutflows and the data associated
+        in form of numpy arrays
+        '''
+        l_arr_val     = [ df.arr_val for df in l_df ]
+        df_tot        = self._merge_cf_df(l_df     )
+        df_tot.arr_val= numpy.concatenate(l_arr_val)
 
-        df_tot        = self._merge_cf_df([ df_1 , df_2])
-        df_tot.arr_val= numpy.concatenate([arr_1, arr_2])
+        return df_tot
+    #----------------------------------
+    def _merge_cf_df(self, l_df):
+        '''
+        Takes: List of dataframes with cuts attached as sr_cut and cutflow numbers as content
+        Does:  Merges all dataframes by adding  them
+        Returns: Merged dataframes
+        '''
+        df_tot = l_df[0]
+        sr_cut = df_tot.sr_cut
+        l_df   = l_df[1:]
+
+        for df in l_df:
+            df_tot = df_tot.add(df)
+
+        df_tot['Cut'] = sr_cut
 
         return df_tot
     #----------------------------------
@@ -208,12 +215,23 @@ class data_store:
             df_11 = self._get_year_array('2011', var_name=variable, d_cut=d_cut)
             df_12 = self._get_year_array('2012', var_name=variable, d_cut=d_cut)
 
-            df_mr = self._merge_arrays(df_11, df_12)
+            df_mr = self._merge_arrays([df_11, df_12])
         elif self._dset == 'r2p1':
             df_15 = self._get_year_array('2015', var_name=variable, d_cut=d_cut)
             df_16 = self._get_year_array('2016', var_name=variable, d_cut=d_cut)
 
-            df_mr = self._merge_arrays(df_15, df_16)
+            df_mr = self._merge_arrays([df_15, df_16])
+        elif self._dset == 'comb':
+            df_11 = self._get_year_array('2011', var_name=variable, d_cut=d_cut)
+            df_12 = self._get_year_array('2012', var_name=variable, d_cut=d_cut)
+
+            df_15 = self._get_year_array('2015', var_name=variable, d_cut=d_cut)
+            df_16 = self._get_year_array('2016', var_name=variable, d_cut=d_cut)
+
+            df_17 = self._get_year_array('2017', var_name=variable, d_cut=d_cut)
+            df_18 = self._get_year_array('2018', var_name=variable, d_cut=d_cut)
+
+            df_mr = self._merge_arrays([df_11, df_12, df_15, df_16, df_17, df_18])
         else:
             df_mr = self._get_year_array(self._dset, var_name=variable, d_cut=d_cut)
 
