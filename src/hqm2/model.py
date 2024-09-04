@@ -51,7 +51,7 @@ def get_2cb(pref, obs):
     return pdf
 #--------------------------------------------------------
 def get_cb(pref, obs):
-    mu  = zfit.param.Parameter(f'mu_{pref}', 5500, 4500, 6000)
+    mu  = zfit.param.Parameter(f'mu_{pref}', 5500, 4500, 7000)
     sg  = zfit.param.Parameter(f'sg_{pref}',   10,  0.1,  400)
     al  = zfit.param.Parameter(f'al_{pref}',-1.5,  -10,     0)
     nl  = zfit.param.Parameter(f'nl_{pref}',   1, 1e-3,   110)
