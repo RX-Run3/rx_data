@@ -50,7 +50,7 @@ class ccprc:
 
         self._qsq_src = qsq_src
 
-        self._proc_trf= None
+        self._proc    = None
         self._qsq_tgt = 'high'
         self._fft_npt = 1000
         self._bw_mumu = 15
@@ -62,7 +62,7 @@ class ccprc:
         if self._initialized:
             return
 
-        self._proc_trf = {'psi2' : 'psi2', 'jpsi' : 'ctrl'}[self._qsq_src]
+        self._proc = {'psi2' : 'psi2', 'jpsi' : 'ctrl'}[self._qsq_src]
 
         self._check_brem()
 
@@ -142,23 +142,31 @@ class ccprc:
         Returns numerical value and error of ratio of prec and fully reco
         '''
         if self._dset != 'comb':
-            cal        = ratc(obs=self._obs, dset=self._dset, proc=self._proc_trf)
+            cal        = ratc(obs=self._obs, dset=self._dset, proc=self._proc)
             [val, err] = cal.get_ratio()
 
             return val, err
 
         log.warning(f'Combined dataset ratio requested, using weigheted average instead of fit to full dataset')
+        log.debug(40 * '-')
+        log.debug(f'{"Value":<20}{"Error":<20}')
+        log.debug(40 * '-')
+
         l_val = []
         l_var = []
         for dset in ['r1', 'r2p1', '2017', '2018']:
-            cal        = ratc(obs=self._obs, dset=dset, proc=self._proc_trf)
+            cal        = ratc(obs=self._obs, dset=dset, proc=self._proc)
             [val, err] = cal.get_ratio()
+            log.debug(f'{val:<20.3f}{err:<20.3f}')
             l_val.append(val)
             l_var.append(err ** 2)
 
         cov      = numpy.diag(l_var)
-        val, var = jac.propagate(lambda x : sum(x), l_val, cov)
+        val, var = jac.propagate(lambda x : sum(x)/len(x), l_val, cov)
         err      = math.sqrt(var)
+        log.debug(40 * '-')
+        log.debug(f'Average: {val:<20.3f}{err:<20.3f}')
+        log.debug(40 * '-')
 
         return val, err
     #---------------------------------
@@ -168,7 +176,7 @@ class ccprc:
         '''
         val, err   = self._get_ratio_value()
         tval, terr = self._transform_ratio(val, err)
-        name       = f'r_psi2_{self._dset}' if self._brem is None else f'r_psi2_{self._dset}_brem_{self._brem}'
+        name       = f'r_{self._proc}_{self._dset}' if self._brem is None else f'r_{self._proc}_{self._dset}_brem_{self._brem}'
         label      = f'Ratio: {val:.3f}; Fraction: {tval:.3f}'
         par        = zfit.param.Parameter(name, tval, 0, 1, label=label)
         d_cns      = {name : [tval, terr]}
@@ -180,7 +188,7 @@ class ccprc:
                 obs    = self._obs,
                 dset   = self._dset,
                 pref   = self._pref,
-                proc   = self._proc_trf,
+                proc   = self._proc,
                 qsq_src= self._qsq_src,
                 qsq_tgt= self._qsq_tgt,
                 )
@@ -215,8 +223,7 @@ class ccprc:
         if plot_pdf:
             self._plot_fit(pdf_mmd, pdf_prc)
 
-        proc    = {'psi2' : 'psi2', 'jpsi' : 'ctrl'}[self._qsq_src]
-        obj     = pdfmc(obs=self._obs, dset=self._dset, proc=proc, qsq='high')
+        obj     = pdfmc(obs=self._obs, dset=self._dset, proc=self._proc, qsq='high')
         pdf_res = obj.get_pdf()
 
         r, d_cns = self._get_ratio()
