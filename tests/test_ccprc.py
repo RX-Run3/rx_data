@@ -18,6 +18,8 @@ class data:
     obs = zfit.Space("B_M", limits=(0, 7000))
 #-------------------------------------
 def set_logs():
+    log_store.set_level('rx_hqm2:ccprc'           , 10)
+    log_store.set_level('rx_hqm2:ratc'            , 30)
     log_store.set_level('scripts:zutils/utils'    , 20)
     log_store.set_level('rx_hqm2:data_store'      , 30)
     log_store.set_level('rx_scripts:storage/cache', 20)
@@ -58,14 +60,18 @@ def plot_pdf(pdf, label=None):
 
     plt.plot(arr_mas, arr_pdf, label=label)
 #--------------------------------------------------
-def test_simple(dset):
-    obj=ccprc(obs=data.obs, dset=dset, preffix=f'psi2_high_pr_{dset}', brem=None, syst='nom')
+def test_psi2(dset):
+    obj=ccprc(obs=data.obs, dset=dset, preffix=f'psi2_high_pr_{dset}', brem=None, syst='nom', qsq_src='psi2')
     pdf=obj.get_pdf()
 
     pprint.pprint(pdf.d_cns)
 
-    plot_dir = 'tests/ccprc/simple'
-    check_pdf(pdf, plot_dir)
+    plot_dir = f'tests/ccprc/psi2_{dset}'
+    d_leg    = {
+            f'CB_mc_psi2_{dset}_high' : r'$B^+\to \psi(2S)(e^+e^-) K^+$',
+            'PRec'                    : r'$B^+\to \psi(2S)(e^+e^-) + X$',
+            }
+    check_pdf(pdf, plot_dir, d_leg=d_leg)
 #--------------------------------------------------
 def test_jpsi(dset):
     obj=ccprc(obs=data.obs, dset=dset, preffix=f'jpsi_high_pr_{dset}', brem=None, syst='nom', qsq_src='jpsi')
@@ -73,10 +79,10 @@ def test_jpsi(dset):
 
     pprint.pprint(pdf.d_cns)
 
-    plot_dir = 'tests/ccprc/jpsi'
+    plot_dir = f'tests/ccprc/jpsi_{dset}'
     d_leg    = {
-            'CB_mc_ctrl_comb_high' : r'$B^+\to J/\psi(e^+e^-) K^+$',
-            'PRec'                 : r'$B^+\to J/\psi(e^+e^-) + X$',
+            f'CB_mc_ctrl_{dset}_high' : r'$B^+\to J/\psi(e^+e^-) K^+$',
+            'PRec'                    : r'$B^+\to J/\psi(e^+e^-) + X$',
             }
 
     check_pdf(pdf, plot_dir, d_leg=d_leg, plot_range=[4000, 7000])
@@ -136,11 +142,11 @@ def main():
 
     set_logs()
     test_jpsi('comb')
-    return
+    test_jpsi('2018')
+    test_psi2('2018')
     test_all()
 
     test_data_generation('2017')
-    test_simple('2017')
 
     for dset in ['r1', 'r2p1', '2017', '2018']:
         test_compare_brem(dset)
