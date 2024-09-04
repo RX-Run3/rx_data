@@ -63,7 +63,7 @@ class trfc:
         arr_dt_ee = obj.get_array()
 
         plot_path = json_path.replace('.json', '_data.png')
-        self._plot_datasets(arr_dt_mm, arr_dt_ee, plot_range, plot_path)
+        self._plot_datasets(arr_dt_mm, arr_dt_ee, plot_path)
 
         plot_path = json_path.replace('.json', '.png')
 
@@ -79,10 +79,10 @@ class trfc:
 
         return d_par
     #---------------------------------
-    def _plot_datasets(self, arr_dt_mm, arr_dt_ee, plot_range, plot_path):
+    def _plot_datasets(self, arr_dt_mm, arr_dt_ee, plot_path):
         plt.figure('sim_dset')
-        plt.hist(arr_dt_mm, bins=100, density=True, histtype='step', range=plot_range, label='$\mu\mu$')
-        plt.hist(arr_dt_ee, bins=100, density=True, histtype='step', range=plot_range, label='$e^+e^-$')
+        plt.hist(arr_dt_mm, bins=100, density=True, histtype='step', label='$\mu\mu$')
+        plt.hist(arr_dt_ee, bins=100, density=True, histtype='step', label='$e^+e^-$')
         plt.legend()
         plt.title(f'$\mu$:{arr_dt_mm.shape[0]}; $e$:{arr_dt_ee.shape[0]}' + self._get_bin_title() )
         plt.savefig(plot_path)
@@ -275,7 +275,7 @@ class trfc:
             return [5000, 6400]
 
         if self._qsq_src == 'jpsi' and self._qsq_tgt == 'high':
-            return [5000, 7000]
+            return [5500, 7000]
 
         log.error(f'Invalid src/trg q2: {self._qsq_src}/{self._qsq_tgt}')
         raise
