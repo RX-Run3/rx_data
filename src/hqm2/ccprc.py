@@ -2,6 +2,7 @@ import os
 import zfit
 import math
 import numpy
+import jacobi            as jac
 import matplotlib.pyplot as plt
 import utils_noroot      as utnr
 import zutils.utils      as zut
@@ -136,15 +137,36 @@ class ccprc:
 
         return tval, terr
     #---------------------------------
-    def _get_ratio(self):
-        if self._qsq_src == 'psi2':
-            cal        = ratc(obs=self._obs, dset=self._dset)
+    def _get_ratio_value(self):
+        '''
+        Returns numerical value and error of ratio of prec and fully reco
+        '''
+        if self._dset != 'comb':
+            cal        = ratc(obs=self._obs, dset=self._dset, proc=self._proc_trf)
             [val, err] = cal.get_ratio()
-        else:
-            log.warning(f'Returning a ratio of 0.5 for qsq: {self._qsq_src}')
-            val = 0.5
-            err = 0.1
 
+            return val, err
+
+        log.warning(f'Combined dataset ratio requested, using weigheted average instead of fit to full dataset')
+        l_val = []
+        l_var = []
+        for dset in ['r1', 'r2p1', '2017', '2018']:
+            cal        = ratc(obs=self._obs, dset=dset, proc=self._proc_trf)
+            [val, err] = cal.get_ratio()
+            l_val.append(val)
+            l_var.append(err ** 2)
+
+        cov      = numpy.diag(l_var)
+        val, var = jac.propagate(lambda x : sum(x), l_val, cov)
+        err      = math.sqrt(var)
+
+        return val, err
+    #---------------------------------
+    def _get_ratio(self):
+        '''
+        Returns zfit parameter representing the ratio and a dictionary with the constrain
+        '''
+        val, err   = self._get_ratio_value()
         tval, terr = self._transform_ratio(val, err)
         name       = f'r_psi2_{self._dset}' if self._brem is None else f'r_psi2_{self._dset}_brem_{self._brem}'
         label      = f'Ratio: {val:.3f}; Fraction: {tval:.3f}'
