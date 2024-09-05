@@ -295,6 +295,9 @@ class trfc:
         return d_par_new
     #---------------------------------
     def get_trf(self):
+        '''
+        Will return zfit PDF representing transfer function
+        '''
         self._initialize()
 
         plot_range = self._get_plot_range()
