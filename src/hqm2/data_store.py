@@ -188,7 +188,7 @@ class data_store:
         Merges dataframes with cutflows and the data associated
         in form of numpy arrays
         '''
-        l_arr_val     = [ df.arr_val for df in l_df ]
+        l_arr_val     = [ df.attrs['arr_val'] for df in l_df ]
         df_tot        = self._merge_cf_df(l_df     )
         df_tot.arr_val= numpy.concatenate(l_arr_val)
 
