@@ -34,6 +34,7 @@ class data_store:
                 'data' : 'r_fits',
                 'psi2' : 'r_fits',
                 'ctrl' : 'r_fits',
+                'sign' : 'rare_backgrounds',
                 'bpks' : 'rare_backgrounds',
                 'bdks' : 'rare_backgrounds',
                 'bsph' : 'rare_backgrounds',
@@ -60,12 +61,13 @@ class data_store:
         rdf     = self._vec_to_float(rdf)
         rdf     = self._define_vars(rdf)
         rdf     = self._apply_selection(rdf, year, d_cut)
+
+        log.debug(f'Picking up {var_name}/{year} from ROOT dataframe')
         arr_val = rdf.AsNumpy([var_name])[var_name]
 
         df_cf   = pnd.concat([df_cf, rdf.df_cf])
-        df_cf.sr_cut = df_cf.Cut
-
-        df_cf.arr_val = arr_val
+        df_cf.attrs['cut'    ] = df_cf.Cut
+        df_cf.attrs['arr_val'] = arr_val
 
         return df_cf
     #----------------------------------
@@ -78,10 +80,10 @@ class data_store:
         return rdf
     #----------------------------------
     def _df_from_json(self, json_path):
-        df        = pnd.read_json(json_path)
-        sr_cut    = df.Cut
-        df        = df.drop(columns=['file', 'tree', 'Cumulative', 'Efficiency', 'Cut'])
-        df.sr_cut = sr_cut
+        df              = pnd.read_json(json_path)
+        sr_cut          = df.Cut
+        df              = df.drop(columns=['file', 'tree', 'Cumulative', 'Efficiency', 'Cut'])
+        df.attrs['cut'] = sr_cut
 
         return df
     #----------------------------------
@@ -150,7 +152,7 @@ class data_store:
 
         scache.cache_path = config.make_data_path(kind='data', dset=self._dset, dname=f'{self._qsq}_{self._proc}_{self._trig}', fname=f'{variable}_{cut_hash}.json')
         df_cf             = self._calculate_array(variable=variable, d_cut=d_cut)
-        arr_val           = df_cf.arr_val
+        arr_val           = df_cf.attrs['arr_val']
 
         if clean_repeated:
             arr_val = numpy.unique(arr_val)
@@ -199,7 +201,7 @@ class data_store:
         Returns: Merged dataframes
         '''
         df_tot = l_df[0]
-        sr_cut = df_tot.sr_cut
+        sr_cut = df_tot.attrs['cut']
         l_df   = l_df[1:]
 
         for df in l_df:

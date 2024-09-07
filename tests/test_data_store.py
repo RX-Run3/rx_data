@@ -1,5 +1,6 @@
 from hqm2.data_store import data_store
 from hqm2.config     import config 
+from log_store       import log_store
 
 import matplotlib.pyplot as plt
 import os
@@ -7,9 +8,19 @@ import mplhep
 
 #------------------------------------
 def plot_data(arr_dat, plt_dir, name='data'):
-    plt.hist(arr_dat, bins=100, range=[4000, 6000])
+    plt.hist(arr_dat, bins=100)
     plt.savefig(f'{plt_dir}/{name}.png')
     plt.close('all')
+#------------------------------------
+def set_logs():
+    log_store.set_level('rx_hqm2:data_store'      , 10)
+    log_store.set_level('rx_scripts:storage/cache', 10)
+
+    log_store.set_level('rx_hqm2:ccprc'           , 10)
+    log_store.set_level('rx_hqm2:ratc'            , 30)
+    log_store.set_level('scripts:zutils/utils'    , 20)
+    log_store.set_level('rx_scripts:atr_mgr:mgr'  , 30)
+    log_store.set_level('tools:calc_utility'      , 40)
 #------------------------------------
 def test_rdf():
     obj= data_store(qsq='psi2', dset='2018', trig='MTOS', proc='data')
@@ -73,7 +84,7 @@ def test_binning():
 #------------------------------------
 def test_rare(proc):
     obj     = data_store(qsq='high', dset='2018', trig='ETOS', proc=proc)
-    arr_dat = obj.get_array()
+    arr_dat = obj.get_array(variable='B_ETA')
 
     plt_dir = 'tests/data_store/rare'
     os.makedirs(plt_dir, exist_ok=True)
@@ -82,7 +93,10 @@ def test_rare(proc):
 #------------------------------------
 def main():
     plt.style.use(mplhep.style.LHCb2)
+    set_logs()
 
+    test_rare('sign')
+    return
     test_rare('bpks')
     test_rare('bdks')
     test_rare('bsph')
