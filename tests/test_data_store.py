@@ -6,12 +6,12 @@ import matplotlib.pyplot as plt
 import os
 import mplhep
 
-#------------------------------------
+# ------------------------------------
 def plot_data(arr_dat, plt_dir, name='data'):
     plt.hist(arr_dat, bins=100)
     plt.savefig(f'{plt_dir}/{name}.png')
     plt.close('all')
-#------------------------------------
+# ------------------------------------
 def set_logs():
     log_store.set_level('rx_hqm2:data_store'      , 10)
     log_store.set_level('rx_scripts:storage/cache', 10)
@@ -21,11 +21,11 @@ def set_logs():
     log_store.set_level('scripts:zutils/utils'    , 20)
     log_store.set_level('rx_scripts:atr_mgr:mgr'  , 30)
     log_store.set_level('tools:calc_utility'      , 40)
-#------------------------------------
+# ------------------------------------
 def test_rdf():
     obj= data_store(qsq='psi2', dset='2018', trig='MTOS', proc='data')
     obj.get_rdf(variables=['B_M', 'B_const_mass_M'])
-#------------------------------------
+# ------------------------------------
 def test_simple():
     obj     = data_store(qsq='psi2', dset='2018', trig='MTOS', proc='data')
     arr_dat = obj.get_array()
@@ -34,7 +34,7 @@ def test_simple():
     os.makedirs(plt_dir, exist_ok=True)
 
     plot_data(arr_dat, plt_dir)
-#------------------------------------
+# ------------------------------------
 def test_vec():
     obj_jps = data_store(qsq='jpsi', dset='2018', trig='MTOS', proc='data')
     arr_jps = obj_jps.get_array(variable='B_const_mass_M')
@@ -50,7 +50,7 @@ def test_vec():
     plt.legend()
     plt.savefig(f'{plt_dir}/data.png')
     plt.close('all')
-#------------------------------------
+# ------------------------------------
 def test_cut():
     obj     = data_store(qsq='psi2', dset='2018', trig='MTOS', proc='data')
     arr_dat = obj.get_array(d_cut={'SB' : 'B_M < 5180'})
@@ -59,7 +59,7 @@ def test_cut():
     os.makedirs(plt_dir, exist_ok=True)
 
     plot_data(arr_dat, plt_dir)
-#------------------------------------
+# ------------------------------------
 def test_dset():
     obj     = data_store(qsq='psi2', dset='r1', trig='MTOS', proc='data')
     arr_dat = obj.get_array()
@@ -68,7 +68,7 @@ def test_dset():
     os.makedirs(plt_dir, exist_ok=True)
 
     plot_data(arr_dat, plt_dir)
-#------------------------------------
+# ------------------------------------
 def test_binning():
     config.binning['var'] =        'B_PT'
     config.binning['bin'] =           '1'
@@ -81,7 +81,7 @@ def test_binning():
     os.makedirs(plt_dir, exist_ok=True)
 
     plot_data(arr_dat, plt_dir)
-#------------------------------------
+# ------------------------------------
 def test_rare(proc):
     obj     = data_store(qsq='high', dset='2018', trig='ETOS', proc=proc)
     arr_dat = obj.get_array(variable='B_ETA')
@@ -90,7 +90,7 @@ def test_rare(proc):
     os.makedirs(plt_dir, exist_ok=True)
 
     plot_data(arr_dat, plt_dir, name=proc)
-#------------------------------------
+# ------------------------------------
 def main():
     plt.style.use(mplhep.style.LHCb2)
     set_logs()
@@ -107,7 +107,6 @@ def main():
     test_simple()
     test_dset()
     test_cut()
-#------------------------------------
+# ------------------------------------
 if __name__ == '__main__':
     main()
-
