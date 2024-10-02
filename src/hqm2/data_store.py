@@ -173,7 +173,7 @@ class data_store:
             arr_val = numpy.unique(arr_val)
 
         if len(arr_val) == 0:
-            log.error(f'Empty array found')
+            log.error('Empty array found')
             raise
 
         return arr_val
