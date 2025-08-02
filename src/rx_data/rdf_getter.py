@@ -314,7 +314,7 @@ class RDFGetter:
     def _get_section(
         self,
         yaml_path : str,
-        ftree     : str) -> dict:
+        ftree     : str) -> dict[str,list[str]]:
         '''
         This method should return the different sections (friend/main tree)
         needed to make the JSON file taken by FromSpec
@@ -323,6 +323,10 @@ class RDFGetter:
         --------------------
         yaml_path : Path to YAML file specifying samples:trigger:files
         ftree     : Friend tree name, e.g mva, main
+
+        Returns
+        --------------------
+        Dictionary between the string 'files' and a list of files
         '''
         d_section = {'trees' : [self._tree_name]}
 
@@ -371,9 +375,25 @@ class RDFGetter:
             raise ValueError(f'Could not find any sample matching {self._sample} with friend tree {ftree} in {yaml_path}')
 
         self._l_path      += l_path
+        l_path             = self._reformat_paths(paths=l_path)
         d_section['files'] = l_path
 
         return d_section
+    # ----------------------
+    def _reformat_paths(self, paths : list[str]) -> list[str]:
+        '''
+        Parameters
+        -------------
+        paths: List of paths to ROOT files
+
+        Returns
+        -------------
+        Same list with optional reformatting, e.g.
+
+        - Adding root://eoslhcb.cern.ch/ for paths in EOS
+        '''
+
+        return paths
     # ---------------------------------------------------
     def _skip_ftree(self, ftree : str) -> bool:
         '''
