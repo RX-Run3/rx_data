@@ -68,12 +68,14 @@ class RDFGetter:
         self,
         sample  : str,
         trigger : str,
+        project : str = 'none',
         tree    : str = 'DecayTree'):
         '''
         Parameters
         ----------------
         sample : Sample's nickname, e.g. DATA_24_MagDown_24c2
         trigger: HLT2 trigger, e.g. Hlt2RD_BuToKpEE_MVA
+        project: Project name, if not passed, trigger will be used to deduce project
         tree   : E.g. DecayTree or MCDecayTree, default DecayTree
         '''
         os.makedirs(RDFGetter._cache_dir, exist_ok=True)
@@ -84,7 +86,13 @@ class RDFGetter:
         self._trigger         = trigger
         self._tree_name       = tree
 
-        self._analysis        = info.project_from_trigger(trigger=trigger, lower_case=True) 
+        if project == 'none':
+            log.debug(f'Deducing project from trigger: {trigger}')
+            self._project     = info.project_from_trigger(trigger=trigger, lower_case=True) 
+        else:
+            log.debug(f'Using user defined project: {project}')
+            self._project     = project
+
         self._samples         : dict[str,str]
         self._l_columns       : list[str]
         self._s_ftree         : set[str] # list of friend trees actually used
@@ -163,7 +171,7 @@ class RDFGetter:
         new columns in dataframe
         '''
         cfg_com = gut.load_conf(package='rx_data_data', fpath='rdf_getter/common.yaml')
-        cfg_ana = gut.load_conf(package='rx_data_data', fpath=f'rdf_getter/{self._analysis}.yaml')
+        cfg_ana = gut.load_conf(package='rx_data_data', fpath=f'rdf_getter/{self._project}.yaml')
         cfg     = OmegaConf.merge(cfg_com, cfg_ana)
         if not isinstance(cfg, DictConfig):
             raise ValueError('Merged config not a DictConfig')
@@ -185,7 +193,7 @@ class RDFGetter:
         value: Path to JSON file with the directory structure needed to make an RDataFrame
         '''
         data_dir     = os.environ['ANADIR']
-        ftree_wc     = f'{data_dir}/Data/{self._analysis}/*'
+        ftree_wc     = f'{data_dir}/Data/{self._project}/*'
         l_ftree_dir  = glob.glob(ftree_wc)
         if len(l_ftree_dir) == 0:
             raise ValueError(f'No directories with samples found in: {ftree_wc}')
