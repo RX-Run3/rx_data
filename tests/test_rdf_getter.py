@@ -602,6 +602,41 @@ def test_data(sample : str, trigger : str):
         trigger  =trigger,
         test_name=f'data_{sample}_{trigger}')
 # ------------------------------------------------
+@pytest.mark.parametrize(
+    'sample' , [
+    'DATA_24_MagDown_24c2',
+    'DATA_24_MagDown_24c3',
+    'DATA_24_MagDown_24c4',
+    'DATA_24_MagUp_24c2',
+    'DATA_24_MagUp_24c3',
+    'DATA_24_MagUp_24c4'])
+@pytest.mark.parametrize('trigger', 
+    ['Hlt2RD_BuToKpEE_MVA', 
+     'Hlt2RD_BuToKpMuMu_MVA',
+     'Hlt2RD_B0ToKpPimEE_MVA',
+     'Hlt2RD_B0ToKpPimMuMu_MVA'])
+def test_data_no_refit(sample : str, trigger : str):
+    '''
+    Test of getter class in data without refitting
+    '''
+    project = 'rk_no_refit' if 'BuToKp' in trigger else 'rkst_no_refit'
+    gtr     = RDFGetter(sample=sample, trigger=trigger, project = project)
+
+    rdf = gtr.get_rdf(per_file=False)
+
+    rdf = _apply_selection(rdf=rdf, trigger=trigger, sample=sample)
+    rep = rdf.Report()
+    rep.Print()
+
+    if 'B0ToKpPim' in trigger:
+        return
+
+    _run_default_checks(
+        rdf      =rdf,
+        sample   =sample,
+        trigger  =trigger,
+        test_name=f'data_{sample}_{trigger}')
+# ------------------------------------------------
 @pytest.mark.parametrize('sample', ['Bu_Kee_eq_btosllball05_DPC'])
 @pytest.mark.parametrize('trigger', ['Hlt2RD_BuToKpEE_MVA', 'Hlt2RD_B0ToKpPimEE_MVA'])
 def test_mc(sample : str, trigger : str):
