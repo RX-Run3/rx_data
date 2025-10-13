@@ -1,6 +1,19 @@
 # JPSI_PDG_MASS = 3096.90 # https://pdg.lbl.gov/2018/listings/rpp2018-list-J-psi-1S.pdf
 # BPLS_PDG_MASS = 5279.34 # https://pdg.lbl.gov/2022/tables/rpp2022-tab-mesons-bottom.pdf
 
+temporary_definitions:
+  mva_cmb                 : '1.0'
+  mva_prc                 : '1.0'
+  q2_smr                  : q2
+  Jpsi_Mass               : Jpsi_M
+  Jpsi_Mass_smr           : Jpsi_M
+  B_Mass                  : B_M
+  B_Mass_smr              : B_M
+  B_M_brem_track_2        : B_M
+  hop_mass                : B_M
+  hop_alpha               : '1.0'
+  swp_cascade_mass_swp    : B_M
+  swp_jpsi_misid_mass_swp : B_M
 TRUEM:
   Bu : 'ROOT::Math::XYZVector L1_3D(L1_TRUEPX, L1_TRUEPY, L1_TRUEPZ); auto L1_truept=L1_3D.Rho(); auto L1_trueeta=L1_3D.Eta(); auto L1_truephi=L1_3D.Phi();
         ROOT::Math::XYZVector L2_3D(L2_TRUEPX, L2_TRUEPY, L2_TRUEPZ); auto L2_truept=L2_3D.Rho(); auto L2_trueeta=L2_3D.Eta(); auto L2_truephi=L2_3D.Phi();
