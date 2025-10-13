@@ -646,6 +646,12 @@ class RDFGetter:
             log.debug('No temporary definitions found')
             return rdf
 
+        if     self._sample.startswith('DATA') and 'data' not in self._cfg.temporary_definitions:
+            return rdf
+
+        if not self._sample.startswith('DATA') and 'mc'   not in self._cfg.temporary_definitions:
+            return rdf
+
         log.warning('Found temporary definitions')
         for name, expr in self._cfg.temporary_definitions.items():
             log.debug(f'{name:20}{expr}')
