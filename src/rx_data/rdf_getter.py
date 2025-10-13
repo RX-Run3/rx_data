@@ -739,7 +739,7 @@ class RDFGetter:
             log.warning(f'Found empty dataframe for {fpath}')
             return rdf 
 
-        self._l_columns = [ name.c_str() for name in rdf.GetColumnNames() ]
+        self._l_columns = [ name for name in rdf.GetColumnNames() ]
         log.debug(f'Dataframe at: {id(rdf)}')
 
         rdf = self._filter_dataframe(rdf=rdf)
