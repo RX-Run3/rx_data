@@ -1,0 +1,20 @@
+# JPSI_PDG_MASS = 3096.90 # https://pdg.lbl.gov/2018/listings/rpp2018-list-J-psi-1S.pdf
+# BPLS_PDG_MASS = 5279.34 # https://pdg.lbl.gov/2022/tables/rpp2022-tab-mesons-bottom.pdf
+
+TRUEM:
+  Bu : 'ROOT::Math::XYZVector L1_3D(L1_TRUEPX, L1_TRUEPY, L1_TRUEPZ); auto L1_truept=L1_3D.Rho(); auto L1_trueeta=L1_3D.Eta(); auto L1_truephi=L1_3D.Phi();
+        ROOT::Math::XYZVector L2_3D(L2_TRUEPX, L2_TRUEPY, L2_TRUEPZ); auto L2_truept=L2_3D.Rho(); auto L2_trueeta=L2_3D.Eta(); auto L2_truephi=L2_3D.Phi();
+        ROOT::Math::XYZVector  H_3D( H_TRUEPX,  H_TRUEPY,  H_TRUEPZ); auto  H_truept= H_3D.Rho(); auto  H_trueeta= H_3D.Eta(); auto  H_truephi= H_3D.Phi();
+
+        ROOT::Math::PtEtaPhiM4D<double> L1_4DP(L1_truept, L1_trueeta, L1_truephi, 0.511);
+        ROOT::Math::PtEtaPhiM4D<double> L2_4DP(L2_truept, L2_trueeta, L2_truephi, 0.511);
+        ROOT::Math::PtEtaPhiM4D<double>  H_4DP( H_truept,  H_trueeta,  H_truephi, 493.7);
+
+        ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double>> L1_4D(L1_4DP);
+        ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double>> L2_4D(L2_4DP);
+        ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double>>  H_4D( H_4DP);
+
+        auto bpls_4d = L1_4D + L2_4D + H_4D;
+        auto val     = bpls_4d.M(); return val!=val ? 5279.34 : val'
+  # -------------------
+
