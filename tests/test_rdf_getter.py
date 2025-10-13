@@ -86,7 +86,7 @@ def initialize(out_dir):
     os.makedirs(Data.out_dir, exist_ok=True)
 # ------------------------------------------------
 def _check_truem_columns(rdf : RDF.RNode):
-    l_name = [ name.c_str() for name in rdf.GetColumnNames() if name.endswith('_TRUEM') ]
+    l_name = [ name for name in rdf.GetColumnNames() if name.endswith('_TRUEM') ]
     d_data = rdf.AsNumpy(l_name)
     df     = pnd.DataFrame(d_data)
     nnan   = df.isna().sum().sum()
@@ -119,7 +119,7 @@ def _name_from_raw_name(name : str) -> str:
     return l_name[-1]
 # ------------------------------------------------
 def _check_branches(
-    rdf          : RDataFrame,
+    rdf          : RDF.RNode,
     is_ee        : bool,
     is_mc        : bool,
     friends      : bool = True,
@@ -146,7 +146,7 @@ def _check_branches(
         raise ValueError(f'Branch missing: {branch}')
 # ------------------------------------------------
 def _print_dotted_branches(rdf : RDF.RNode) -> None:
-    l_name = [ name.c_str() for name in rdf.GetColumnNames() ]
+    l_name = [ name for name in rdf.GetColumnNames() ]
 
     for name in l_name:
         if '.' not in name:
@@ -186,10 +186,10 @@ def _plot_block(rdf : RDF.RNode, name : str) -> None:
     plt.close()
 # ------------------------------------------------
 def _plot_bmass(
-        rdf         : RDataFrame,
-        is_electron : bool,
-        brem_track_2: bool,
-        test_name   : str) -> None:
+    rdf         : RDF.RNode,
+    is_electron : bool,
+    brem_track_2: bool,
+    test_name   : str) -> None:
     test_dir = f'{Data.out_dir}/{test_name}'
     os.makedirs(test_dir, exist_ok=True)
 
@@ -285,10 +285,10 @@ def _plot_hop(rdf : RDF.RNode, test : str) -> None:
     plt.close()
 # ------------------------------------------------
 def _apply_selection(
-        rdf      : RDataFrame,
-        trigger  : str,
-        sample   : str,
-        override : None|dict[str,str] = None) -> RDataFrame:
+    rdf      : RDF.RNode,
+    trigger  : str,
+    sample   : str,
+    override : None|dict[str,str] = None) -> RDF.RNode:
     '''
     Apply full selection but q2 and mass
     '''
@@ -423,7 +423,7 @@ def _check_mcdt(rdf : RDF.RNode, name : str) -> None:
     plt.close()
 # ------------------------------------------------
 def _run_default_checks(
-    rdf          : RDataFrame,
+    rdf          : RDF.RNode,
     test_name    : str,
     trigger      : str,
     sample       : str,
@@ -757,7 +757,7 @@ def test_custom_columns(trigger : str):
         obj = RDFGetter(trigger=trigger, sample='DATA_24_MagDown_24c2')
         rdf = obj.get_rdf(per_file=False)
 
-    l_col = [ col.c_str() for col in rdf.GetColumnNames() ]
+    l_col = [ col for col in rdf.GetColumnNames() ]
 
     assert 'xbrem' in l_col
 # ------------------------------------------------
@@ -824,8 +824,8 @@ def test_exclude_friends(sample : str, trigger : str):
         gtr = RDFGetter(sample=sample, trigger=trigger)
         rdf = gtr.get_rdf(per_file=False)
 
-    l_col = [ name.c_str() for name in rdf.GetColumnNames()        ]
-    l_mva = [ name         for name in l_col if ('mva_cmb' in name) or ('mva_prc' in name) ]
+    l_col = [ name for name in rdf.GetColumnNames()        ]
+    l_mva = [ name for name in l_col if ('mva_cmb' in name) or ('mva_prc' in name) ]
 
     assert l_mva == []
 # ------------------------------------------------
@@ -960,8 +960,8 @@ def test_skip_adding_columns(sample : str):
     assert not isinstance(rdf_1, dict)
     assert not isinstance(rdf_2, dict)
 
-    l_col_1 = [ name.c_str() for name in rdf_1.GetColumnNames() ]
-    l_col_2 = [ name.c_str() for name in rdf_2.GetColumnNames() ]
+    l_col_1 = [ name for name in rdf_1.GetColumnNames() ]
+    l_col_2 = [ name for name in rdf_2.GetColumnNames() ]
 
     assert len(l_col_1) > len(l_col_2)
 # ------------------------------------------------
