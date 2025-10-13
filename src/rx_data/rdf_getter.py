@@ -463,7 +463,7 @@ class RDFGetter:
         log.debug('Splitting per file')
         return self._split_per_file(data=d_data, main=self._main_tree)
     # ---------------------------------------------------
-    def _get_samples(self) -> dict:
+    def _get_samples(self) -> dict[str,dict]:
         '''
         Returns a dictionary with information on the main samples and the friend trees, needed to build dataframes
         '''
