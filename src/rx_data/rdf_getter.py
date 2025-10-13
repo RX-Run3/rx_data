@@ -13,7 +13,8 @@ from typing              import Any, Final, overload, Literal
 import yaml
 import dmu.generic.utilities as gut
 
-from ROOT                  import RDF, GetThreadPoolSize, TFile, EnableImplicitMT, DisableImplicitMT # type: ignore
+from ROOT                  import RDF
+from ROOT                  import GetThreadPoolSize, TFile, EnableImplicitMT, DisableImplicitMT # type: ignore
 from dmu.generic           import version_management as vmn
 from dmu.generic           import hashing
 from dmu.logging.log_store import LogStore
