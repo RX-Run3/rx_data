@@ -5,8 +5,10 @@ mva_prc:
 qsq_bin:
   - low
   - central
+  - high
 project:
   - rk
   - rkst
 channel:
   - mm
+  - ee
