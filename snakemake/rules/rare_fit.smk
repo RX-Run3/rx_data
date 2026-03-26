@@ -38,8 +38,8 @@ rule all:
     input : paths
 # ---------------------
 rule fits:
-    output: f'{out_path}/{group_name}/{{cmb}}_{{prc}}_all/{mode}/{{prj}}/{{chn}}/{{qsq}}/data_24/fit/{{brem}}/{{brem}}/fit_linear.png'
-    log:    f'{out_path}/{group_name}/{{cmb}}_{{prc}}_all/{mode}/logs/{{prj}}_{{chn}}_{{qsq}}_{{brem}}.log',
+    output: f'{out_path}/{group_name}/{{cmb}}_{{prc}}_all/{{mode}}/{{prj}}/{{chn}}/{{qsq}}/data_24/fit/{{brem}}/{{brem}}/fit_linear.png'
+    log:    f'{out_path}/{group_name}/{{cmb}}_{{prc}}_all/{{mode}}/logs/{{prj}}_{{chn}}_{{qsq}}_{{brem}}.log',
     params:
         group_name = group_name,
         home       = HOME,
