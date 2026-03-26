@@ -102,7 +102,7 @@ class MVAConf(BaseModel):
         Tuple with low bound and optionally high bound
         '''
         ivalue = int(value)
-        if not (0 < ivalue < 1000):
+        if not (0 <= ivalue < 1000):
             raise ValueError(f'Invalid working point: {value}')
 
         return ivalue / 1000.
