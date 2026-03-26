@@ -35,10 +35,10 @@ for qsq in qsq_bin:
                     paths.append(path)
 # ---------------------------------------
 rule all:
-    input : f'{out_path}/{group_name}/{cmb}_{prc}_all/{mode}/{prj}/{chn}/{qsq}/prefit_postfit/mean.png'
+    input : f'{out_path}/{group_name}/{cmb}_{prc}_all/{mode}/{prj}/{chn}/{qsq}/prefit_postfit/{brem}/mean.png'
 rule prefit_postfit:
     input : paths
-    output: f'{out_path}/{group_name}/{cmb}_{prc}_all/{mode}/{prj}/{chn}/{qsq}/prefit_postfit/mean.png'
+    output: f'{out_path}/{group_name}/{cmb}_{prc}_all/{mode}/{prj}/{chn}/{qsq}/prefit_postfit/{brem}/mean.png'
     params:
         home = HOME,
         env  = ENV,

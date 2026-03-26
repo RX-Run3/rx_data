@@ -282,7 +282,7 @@ def run(update : bool) -> None:
             log.warning(f'Cannot find {pre_path}, skipping')
             continue
 
-        out_path = root_path / 'prefit_postfit'
+        out_path = root_path / 'prefit_postfit/brem_x12'
         if out_path.exists() and not update:
             log.info(f'Skipping already found: {out_path}')
             continue
