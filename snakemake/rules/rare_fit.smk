@@ -50,7 +50,7 @@ rule prefit_postfit:
         '''
         source setup.sh {params.env} {params.home} 
 
-        rxfitter prefit_postfit
+        rxfitter prefit-postfit
         '''
 # ---------------------
 rule fits:
