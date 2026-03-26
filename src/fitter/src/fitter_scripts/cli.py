@@ -82,7 +82,7 @@ def wp_translator(
     print (val)
 # ----------------------
 @app.command()
-def fit_plots(
+def prefit_postfit(
     update : bool = typer.Option(False, '--update', '-u', help='Will remake all plots')) -> None:
     '''
     Makes prefit and postfit plots of fit parameters

@@ -22,7 +22,6 @@ def _get_path(cmb, prc, prj, chn, qsq):
         raise ValueError(f'Invalid channel: {chn}')
 
     val = f'{out_path}/{group_name}/{cmb}_{prc}_all/{mode}/{prj}/{chn}/{qsq}/data_24/fit/{brem}/{brem}/fit_linear.png'
-    val = val.replace(' ', '')
 
     return val
 # ---------------------------------------
@@ -36,11 +35,23 @@ for qsq in qsq_bin:
                     paths.append(path)
 # ---------------------------------------
 rule all:
-    input: paths
+    input : f'{out_path}/{group_name}/{cmb}_{prc}_all/{mode}/{prj}/{chn}/{qsq}/prefit_postfit/mean.png'
+rule prefit_postfit:
+    input : paths
+    output: f'{out_path}/{group_name}/{cmb}_{prc}_all/{mode}/{prj}/{chn}/{qsq}/prefit_postfit/mean.png'
+    params:
+        home = HOME,
+        env  = ENV,
+    shell :
+        '''
+        source setup.sh {params.env} {params.home} 
+
+        rxfitter prefit_postfit
+        '''
 # ---------------------
 rule fits:
-    output: str(f'{out_path}/{group_name}' + '/{cmb}_{prc}_all/{mode}/{prj}/{chn}/{qsq}/data_24/fit/{brem}/{brem}/fit_linear.png').replace(' ', ''),
-    log:    str(f'{out_path}/{group_name}' + '/{cmb}_{prc}_all/{mode}/logs/{prj}_{chn}_{qsq}_{brem}.log').replace(' ', ''),
+    output: f'{out_path}/{group_name}/{cmb}_{prc}_all/{mode}/{prj}/{chn}/{qsq}/data_24/fit/{brem}/{brem}/fit_linear.png',
+    log:    f'{out_path}/{group_name}/{cmb}_{prc}_all/{mode}/logs/{prj}_{chn}_{qsq}_{brem}.log',
     wildcard_constraints:
         cmb   = r'\d{3}',
         prc   = r'\d{3}',
