@@ -13,7 +13,7 @@ out_path  = f'{ANADIR}/fits/data'
 group_name= 'rare'
 mode      = 'rare'
 # ---------------------------------------
-def _get_path(cmb, prc, prj, chn, qsq):
+def _brem_from_chan(chn):
     if   chn == 'ee':
         brem = 'brem_x12'
     elif chn == 'mm':
@@ -21,9 +21,7 @@ def _get_path(cmb, prc, prj, chn, qsq):
     else:
         raise ValueError(f'Invalid channel: {chn}')
 
-    val = f'{out_path}/{group_name}/{cmb}_{prc}_all/{mode}/{prj}/{chn}/{qsq}/data_24/fit/{brem}/{brem}/fit_linear.png'
-
-    return val
+    return brem
 # ---------------------------------------
 paths = []
 for qsq in qsq_bin:
@@ -31,14 +29,20 @@ for qsq in qsq_bin:
         for prc in mva_prc:
             for prj in project:
                 for chn in channel:
-                    path = _get_path(cmb, prc, prj, chn, qsq)
+                    brem = _brem_from_chan(chn = chn)
+                    path = f'{out_path}/{group_name}/{cmb}_{prc}_all/{mode}/{prj}/{chn}/{qsq}/prefit_postfit/{brem}/mean.png'
+
                     paths.append(path)
 # ---------------------------------------
 rule all:
-    input : f'{out_path}/{group_name}/{cmb}_{prc}_all/{mode}/{prj}/{chn}/{qsq}/prefit_postfit/{brem}/mean.png'
-rule prefit_postfit:
     input : paths
-    output: f'{out_path}/{group_name}/{cmb}_{prc}_all/{mode}/{prj}/{chn}/{qsq}/prefit_postfit/{brem}/mean.png'
+rule prefit_postfit:
+    input : f'{out_path}/{group_name}/{{cmb}}_{{prc}}_all/{mode}/{{prj}}/{{chn}}/{{qsq}}/data_24/fit/{{brem}}/{{brem}}/fit_linear.png',
+    output: f'{out_path}/{group_name}/{{cmb}}_{{prc}}_all/{mode}/{{prj}}/{{chn}}/{{qsq}}/prefit_postfit/{{brem}}/mean.png'
+    wildcard_constraints:
+        cmb  = r'\d{3}',
+        prc  = r'\d{3}',
+        qsq  = '[a-z]+',
     params:
         home = HOME,
         env  = ENV,
@@ -50,12 +54,8 @@ rule prefit_postfit:
         '''
 # ---------------------
 rule fits:
-    output: f'{out_path}/{group_name}/{cmb}_{prc}_all/{mode}/{prj}/{chn}/{qsq}/data_24/fit/{brem}/{brem}/fit_linear.png',
-    log:    f'{out_path}/{group_name}/{cmb}_{prc}_all/{mode}/logs/{prj}_{chn}_{qsq}_{brem}.log',
-    wildcard_constraints:
-        cmb   = r'\d{3}',
-        prc   = r'\d{3}',
-        qsq   = '[a-z]+',
+    output: f'{out_path}/{group_name}/{{cmb}}_{{prc}}_all/{mode}/{{prj}}/{{chn}}/{{qsq}}/data_24/fit/{{brem}}/{{brem}}/fit_linear.png'
+    log:    f'{out_path}/{group_name}/{{cmb}}_{{prc}}_all/{mode}/logs/{{prj}}_{{chn}}_{{qsq}}_{{brem}}.log',
     params:
         group_name = group_name,
         home       = HOME,
