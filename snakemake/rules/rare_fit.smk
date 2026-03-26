@@ -30,28 +30,12 @@ for qsq in qsq_bin:
             for prj in project:
                 for chn in channel:
                     brem = _brem_from_chan(chn = chn)
-                    path = f'{out_path}/{group_name}/{cmb}_{prc}_all/{mode}/{prj}/{chn}/{qsq}/prefit_postfit/{brem}/mean.png'
+                    path = f'{out_path}/{group_name}/{cmb}_{prc}_all/{mode}/{prj}/{chn}/{qsq}/data_24/fit/{brem}/{brem}/fit_linear.png',
 
                     paths.append(path)
 # ---------------------------------------
 rule all:
     input : paths
-rule prefit_postfit:
-    input : f'{out_path}/{group_name}/{{cmb}}_{{prc}}_all/{mode}/{{prj}}/{{chn}}/{{qsq}}/data_24/fit/{{brem}}/{{brem}}/fit_linear.png',
-    output: f'{out_path}/{group_name}/{{cmb}}_{{prc}}_all/{mode}/{{prj}}/{{chn}}/{{qsq}}/prefit_postfit/{{brem}}/mean.png'
-    wildcard_constraints:
-        cmb  = r'\d{3}',
-        prc  = r'\d{3}',
-        qsq  = '[a-z]+',
-    params:
-        home = HOME,
-        env  = ENV,
-    shell :
-        '''
-        source setup.sh {params.env} {params.home} 
-
-        rxfitter prefit-postfit
-        '''
 # ---------------------
 rule fits:
     output: f'{out_path}/{group_name}/{{cmb}}_{{prc}}_all/{mode}/{{prj}}/{{chn}}/{{qsq}}/data_24/fit/{{brem}}/{{brem}}/fit_linear.png'
