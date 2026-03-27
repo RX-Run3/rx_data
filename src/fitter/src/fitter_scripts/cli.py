@@ -38,13 +38,12 @@ def make_dummy_plot(
     This will check if a plot exists and if not, will create a placeholder
     '''
     if path.exists():
-        log.info(f'Path found: {path}')
+        log.debug(f'Path found: {path}')
         return
 
-    log.info(f'Making: {path.parent}')
     path.parent.mkdir(parents = True, exist_ok=True)
 
-    log.info(f'Path not found, making it: {path}')
+    log.debug(f'Path not found, making it: {path}')
     plt.figure(figsize=(15, 10))
     plt.text(0.5, 0.5, text,
         fontsize = 72,
