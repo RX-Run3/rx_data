@@ -51,6 +51,8 @@ awkward-cpp==51
     # via awkward
 awkward-pandas==2023.8.0
     # via -r requirements-dep.in
+blinker==1.9.0
+    # via sigal
 bokeh==3.8.1
     # via -r requirements-dep.in
 boost-histogram==1.6.1
@@ -74,6 +76,7 @@ click==8.3.1
     #   dask
     #   distributed
     #   histoprint
+    #   sigal
     #   typer
 click-log==0.4.0
     # via apd
@@ -217,6 +220,7 @@ jinja2==3.1.6
     #   bokeh
     #   distributed
     #   junit2html
+    #   sigal
     #   snakemake
 jmespath==1.0.1
     # via asdf
@@ -266,7 +270,9 @@ luigi==3.8.0
 mako==1.3.10
     # via alembic
 markdown==3.10
-    # via tensorboard
+    # via
+    #   sigal
+    #   tensorboard
 markdown-it-py==4.0.0
     # via rich
 markupsafe==3.0.3
@@ -302,6 +308,8 @@ namex==0.1.0
     # via keras
 narwhals==2.14.0
     # via bokeh
+natsort==8.4.0
+    # via sigal
 nbformat==5.10.4
     # via snakemake
 nodeenv==1.10.0
@@ -401,10 +409,14 @@ pdg==0.2.2
     # via -r requirements-dep.in
 pidcalib2==1.4.0
     # via -r requirements-dep.in
+pilkit==3.0
+    # via sigal
 pillow==12.0.0
     # via
     #   bokeh
     #   matplotlib
+    #   pilkit
+    #   sigal
     #   tensorboard
 platformdirs==4.5.1
     # via
@@ -521,6 +533,8 @@ setuptools==80.9.0
     #   tensorflow
 shellingham==1.5.4
     # via typer
+sigal==2.6.1
+    # via -r requirements-dep.in
 six==1.17.0
     # via
     #   astunparse
