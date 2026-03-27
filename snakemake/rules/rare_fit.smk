@@ -45,8 +45,8 @@ rule fits:
         home       = HOME,
         env        = ENV,
     resources:
-        htcondor_request_mem_mb = 4000,
-        htcondor_request_disk_mb= 1000,
+        htcondor_request_mem_mb = 6000,
+        htcondor_request_disk_mb= 2000,
     shell :
         '''
         source setup.sh {params.env} {params.home} 
