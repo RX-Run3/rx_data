@@ -51,7 +51,7 @@ rule metadata:
         echo "Title: {wildcards.prc}-{wildcards.cmb}"  > {output}
         echo "Thumbnail: data.png"   >> {output}
         '''
-rule link:
+rule copy:
     output: _OUTPUTDIR / '{q2bin}/{prc}_{cmb}/{component}.png'
     params:
         root_dir = _INPUT_DIR,
@@ -61,8 +61,8 @@ rule link:
         mkdir -p $(dirname {output})
 
         COMP={wildcards.component}
-        WP={wildcards.cmb}_{wildcards.prc}_all
-        OUTDIR='{params.root_dir}/$WP/rare/rkst/ee/{wildcards.q2bin}/{wildcards.component}/fit/brem_x12/brem_x12'
+        WP="{wildcards.cmb}_{wildcards.prc}_all"
+        OUTDIR="{params.root_dir}/$WP/rare/rkst/ee/{wildcards.q2bin}/{wildcards.component}/fit/brem_x12/brem_x12"
 
         if   [[ $COMP == "ccbar" ]]; then
             SOURCE=$OUTDIR/c-bar-c-X.png
@@ -75,8 +75,10 @@ rule link:
         fi
 
         if [[ ! -f $SOURCE ]]; then
+            echo "Path not found $SOURCE"
             rxfitter make-dummy-plot -p {output} -t "{wildcards.component}"
         else
+            echo "Path found $SOURCE"
             cp $SOURCE {output}
         fi
         '''
