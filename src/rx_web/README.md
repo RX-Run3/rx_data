@@ -17,7 +17,7 @@ In order to build the site
 
 Therefore there are a few workflows that can be used to organize them:
 
-## Scans
+## Collect plots 
 
 If scanning the BDT, the PID, etc. Once the fits have been done, extract the
 plots with:
@@ -28,7 +28,7 @@ rxweb collect-plots -n rare
 
 where `rare` is the name of the directory inside `$ANADIR/fits/data/`
 
-### All components per page
+## Build directory structure 
 
 Here all the components of the fit appear in the same page. To do this run:
 
@@ -38,27 +38,11 @@ snakemake -s src/rx_web/rules/fit_components.smk --cores 10 -q all
 
 which will create `$ANADIR/plots_for_web/scan/components/`
 
-# Building site 
+## Create site and open it
 
-The outputs of the analysis will go to a directory pointed to by `ANADIR`.
-This directory should contain the images and is expected to be in:
-
-```bash
-/eos/lhcb/wg/RD/RX_run3
-```
-
-To create the site:
-
-- Build `www` with
+For this run:
 
 ```bash
-sigal build -c src/rx_web/sigal.conf.py $ANADIR/plots/web $ANADIR/www
+rxweb make-html
 ```
 
-- Test the site by doing:
-
-```bash
-sigal serve $ANADIR/www
-```
-
-and open [this](http://localhost:8000/)
