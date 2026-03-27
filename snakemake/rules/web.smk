@@ -11,7 +11,7 @@ _COMPONENTS = [
     'signal',
     ]
 _Q2BINS    = ['low', 'central', 'high']
-_INPUT_DIR = Path('/home/acampove/Downloads/scan_003')
+_INPUT_DIR = Path('/home/acampove/Tests/web/rare')
 _OUTPUTDIR = os.environ['ANADIR'] + '/plots_for_web/scan/components'
 # ----------------------------
 def _get_wc() -> tuple[list[str], list[str]]:
@@ -64,15 +64,12 @@ rule link:
 
         COMP={wildcards.component}
         WP={wildcards.cmb}_{wildcards.prc}_all
+        OUTDIR='{params.root_dir}/$WP/rare/rkst/ee/{wildcards.q2bin}/{wildcards.component}/fit/brem_x12/brem_x12'
 
-        if [[ $COMP == "data" ]]; then
-            SOURCE={params.root_dir}/$WP/rare/rkst/electron/{wildcards.component}/{wildcards.q2bin}/brem_x12/fit_linear.png
-        elif [[ $COMP == "ccbar" ]]; then
-            SOURCE={params.root_dir}/$WP/rare/rkst/electron/{wildcards.component}/{params.trigger}_{wildcards.q2bin}/c-bar-c-X.png
-        elif [[ $COMP == "combinatorial" ]]; then
-            SOURCE={params.root_dir}/$WP/rare/rkst/electron/{wildcards.component}/{params.trigger}_{wildcards.q2bin}/fit_linear.png
+        if   [[ $COMP == "ccbar" ]]; then
+            SOURCE=$OUTDIR/c-bar-c-X.png
         else
-            SOURCE={params.root_dir}/$WP/rare/rkst/electron/{wildcards.component}/{params.trigger}_{wildcards.q2bin}/main/fit_linear.png
+            SOURCE=$OUTDIR/fit_linear.png
         fi
 
         if [[ -f $SOURCE ]] && ! identify "$SOURCE" >/dev/null 2>&1; then
