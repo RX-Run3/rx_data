@@ -10,8 +10,9 @@ import subprocess
 from pathlib               import Path
 from dmu.logging.log_store import LogStore
 
-app = typer.Typer(help=__doc__)
-log = LogStore.add_logger('rx_web:cli')
+app    = typer.Typer(help=__doc__)
+log    = LogStore.add_logger('rx_web:cli')
+ANADIR = Path(os.environ['ANADIR'])
 # ----------------------
 @app.command()
 def dummy():
@@ -23,8 +24,7 @@ def collect_plots(
     '''
     This will collect in a tarball the directory structure with plots of fits 
     '''
-    ana_dir  = Path(os.environ['ANADIR'])
-    fit_dir  = ana_dir / 'fits/data' / name
+    fit_dir  = ANADIR / 'fits/data' / name
 
     log.info(f'Picking files from: {fit_dir}')
 
