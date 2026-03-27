@@ -31,36 +31,20 @@ def fit_summary(
     LogStore.set_level('rx_fitter:fit_summary', log_lvl)
 # ----------------------
 @app.command()
-def post_process(
+def make_dummy_plot(
     text : str = typer.Option('Placeholder', '--text', '-t', help='Text that will go in plot'),
-    value: str = typer.Option(...          , '--path', '-p', help='Path to PNG file with leading period added')) -> None:
+    path : Path= typer.Option(...          , '--path', '-p', help='Path to PNG file with leading period added')) -> None:
     '''
-    This will:
-
-    - Check if a plot exists and if not, will create a placeholder
-    - Make a local hidden directory with a dummy output to allow snakemake relase the job
-
-    The input path will be the actual path with a leading period added, e.g. .eos/lhcb/.../file.png
+    This will check if a plot exists and if not, will create a placeholder
     '''
-    if not value.startswith('.'):
-        raise ValueError(f'Path is expected to start with a period, found: {value}')
-
-    local_path = Path(value)
-    log.info(f'Making: {local_path.parent}')
-    local_path.parent.mkdir(parents = True, exist_ok=True)
-    log.info(f'Touching: {local_path}')
-    local_path.touch()
-
-    value       = '/' + value.lstrip('.')
-    remote_path = Path(value)
-
-    if remote_path.exists():
-        log.info(f'Path found: {remote_path}')
+    if path.exists():
+        log.info(f'Path found: {path}')
         return
 
-    remote_path.parent.mkdir(parents=True, exist_ok=True)
+    log.info(f'Making: {path.parent}')
+    path.parent.mkdir(parents = True, exist_ok=True)
 
-    log.info(f'Path not found, making it: {remote_path}')
+    log.info(f'Path not found, making it: {path}')
     plt.figure(figsize=(15, 10))
     plt.text(0.5, 0.5, text,
         fontsize = 72,
@@ -69,7 +53,7 @@ def post_process(
         va       = 'center',
         weight   = 'bold')
     plt.axis('off')
-    plt.savefig(remote_path)
+    plt.savefig(path)
     plt.close('all')
 # ----------------------
 @app.command()
