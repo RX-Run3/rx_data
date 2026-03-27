@@ -2,17 +2,15 @@ import os
 from pathlib import Path
 
 _COMPONENTS = [
-    'data', 
-    'combinatorial', 
-    'ccbar', 
-    'prec', 
-    'jpsi_leakage', 
-    'psi2_leakage',
-    'signal',
+    'data_24', 
+    'comb', 
     ]
 _Q2BINS    = ['low', 'central', 'high']
 _INPUT_DIR = Path('/home/acampove/Tests/web/rare')
-_OUTPUTDIR = os.environ['ANADIR'] + '/plots_for_web/scan/components'
+ANADIR     = Path(os.environ['ANADIR'])
+_OUTPUTDIR = ANADIR / 'plots/web/scan/components'
+
+_OUTPUTDIR.mkdir(parents=True, exist_ok=True)
 # ----------------------------
 def _get_wc() -> tuple[list[str], list[str]]:
     '''
@@ -32,7 +30,7 @@ cmb, prc = _get_wc()
 rule all:
     input: 
         expand(
-        _OUTPUTDIR + '/{q2bin}/{prc}_{cmb}/{component}.png',
+        _OUTPUTDIR / '{q2bin}/{prc}_{cmb}/{component}.png',
         cmb       = cmb, 
         prc       = prc, 
         component = _COMPONENTS,
@@ -40,21 +38,21 @@ rule all:
         ),
         # ----------
         expand(
-        _OUTPUTDIR + '/{q2bin}/{prc}_{cmb}/index.md',
+        _OUTPUTDIR / '{q2bin}/{prc}_{cmb}/index.md',
         cmb       = cmb, 
         prc       = prc, 
         component = _COMPONENTS,
         q2bin     = _Q2BINS,
         )
 rule metadata:
-    output: _OUTPUTDIR + '/{q2bin}/{prc}_{cmb}/index.md'
+    output: _OUTPUTDIR / '{q2bin}/{prc}_{cmb}/index.md'
     shell :
         '''
         echo "Title: {wildcards.prc}-{wildcards.cmb}"  > {output}
         echo "Thumbnail: data.png"   >> {output}
         '''
 rule link:
-    output: _OUTPUTDIR + '/{q2bin}/{prc}_{cmb}/{component}.png'
+    output: _OUTPUTDIR / '{q2bin}/{prc}_{cmb}/{component}.png'
     params:
         root_dir = _INPUT_DIR,
         trigger  = 'Hlt2RD_B0ToKpPimEE_MVA',
@@ -77,7 +75,7 @@ rule link:
         fi
 
         if [[ ! -f $SOURCE ]]; then
-            rxfitter make-dummy-plot -p {output} -t "{wildcards.component}" -l 30
+            rxfitter make-dummy-plot -p {output} -t "{wildcards.component}"
         else
             cp $SOURCE {output}
         fi
