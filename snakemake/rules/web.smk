@@ -4,6 +4,11 @@ from pathlib import Path
 _COMPONENTS = [
     'data_24', 
     'comb', 
+    'ccbar',
+    'bdkstkpiee',
+    'bpkpipiee',
+    'bdkstkpijpsiee',
+    'bdkstkpipsi2ee',
     ]
 _Q2BINS    = ['low', 'central', 'high']
 _INPUT_DIR = Path('/home/acampove/Tests/web/rare')
