@@ -281,14 +281,16 @@ class CategoryMerger:
         '''
         s_brem : set[Brem] | None = None
         fail = False
-        for cat_in_block in categories.values():
+        for block, cat_in_block in categories.items():
             current_brems = { cat.brem for cat in cat_in_block }
             if s_brem is None:
                 s_brem = current_brems 
                 continue
 
             if s_brem != current_brems:
+                log.error(block)
                 log.error(current_brems)
+                log.error('-----------')
                 fail = True
 
         if fail:
