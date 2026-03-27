@@ -62,5 +62,7 @@ rule fits:
                     -P $PRC_WP         \
                     > {log} 2>&1        \
                     || true
+
+        rxfitter make-dummy-plot -p {output} -t {wildcards.cmb}_{wildcards.prc}
         '''
 # ---------------------
