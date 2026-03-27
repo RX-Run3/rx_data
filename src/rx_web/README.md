@@ -52,7 +52,7 @@ To create the site:
 - Build `www` with
 
 ```bash
-sigal build -c src/rx_web/sigal.conf.py $ANADIR/plots_for_web $ANADIR/www
+sigal build -c src/rx_web/sigal.conf.py $ANADIR/plots/web $ANADIR/www
 ```
 
 - Test the site by doing:
