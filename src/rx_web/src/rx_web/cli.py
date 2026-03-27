@@ -41,6 +41,19 @@ def collect_plots(
     stdout.close()  # let find_proc receive SIGPIPE if tar exits early
     tar_proc.communicate()
 # ----------------------
+@app.command()
+def make_html(
+    browser : str = typer.Option('firefox', '--browser', '-b', help='Name of browser to open website')) -> None:
+    '''
+    Creates website from path to plots and opens site
+    '''
+    create_cmd = ['sigal', 'build', '-c', 'src/rx_web/sigal.conf.py', f'{ANADIR}/plots/web', f'{ANADIR}/www']
+    server_cmd = ['sigal', 'serve', f'{ANADIR}/www']
+
+    subprocess.Popen(create_cmd)
+    subprocess.Popen(server_cmd)
+    subprocess.Popen(['firefox', 'http://127.0.0.1:8000/'])
+# ----------------------
 if __name__ == '__main__':
     app()
 
