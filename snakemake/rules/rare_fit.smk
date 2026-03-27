@@ -30,7 +30,7 @@ for qsq in qsq_bin:
             for prj in project:
                 for chn in channel:
                     brem = _brem_from_chan(chn = chn)
-                    path = f'{out_path}/{group_name}/{cmb}_{prc}_all/{mode}/{prj}/{chn}/{qsq}/data_24/fit/{brem}/{brem}/fit_linear.png',
+                    path = f'{out_path}/{group_name}/{cmb}_{prc}_all/{mode}/{prj}/{chn}/{qsq}/data_24/fit/{brem}/{brem}/fit_linear.png'
 
                     paths.append(path)
 # ---------------------------------------
