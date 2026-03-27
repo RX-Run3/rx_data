@@ -1,0 +1,83 @@
+{% from 'description.html' import img_description %}
+<div class="icons">
+  <a id="fullscreen"><img src="{{ theme.url }}/img/fullscreen.png"
+                          title="Fullscreen" alt="Fullscreen (f)" /></a>
+</div>
+{% include 'map.html' %}
+{% if album.medias %}
+<div id="gallery"></div>
+{% endif %}
+
+{% include 'download_zip.html' %}
+
+{% if album.description %}
+<div id="description">
+  {{ album.description }}
+</div>
+{% endif %}
+
+{% block late_js %}
+  {% if album.medias %}
+    <script src="{{ theme.url }}/jquery-3.3.1.min.js"></script>
+    <script src="{{ theme.url }}/galleria.min.js"></script>
+    <script src="{{ theme.url }}/themes/{{ settings.galleria_theme }}/galleria.{{ settings.galleria_theme }}.min.js"></script>
+    <script src="{{ theme.url }}/plugins/history/galleria.history.min.js"></script>
+    <script>
+    var data = [
+      {% for media in album.medias -%}
+      {
+        title: "{{ media.title }}",
+        description: "{{ img_description(media) | e }}",
+        thumb: "{{ media.thumbnail }}",
+        {% if media.big %}
+        big: "{{ media.big_url }}",
+        {% endif %}
+        {% if media.type == "image" %}
+        image: "{{ media.url }}"
+        {% endif %}
+        {% if media.type == "video" %}
+        image: "{{ theme.url }}/img/empty.png",
+        layer: "<video controls><source src='{{ media.url }}' type='{{ media.mime }}' /></video>"
+        {% endif %}
+      },
+      {% endfor %}
+    ]
+
+    Galleria.ready(function() {
+        /*
+        load thumbnails after gallery setup, and download has started
+        for the main images, but before the loading of map tiles starts
+        in the background. This ensures visible elements are prioritised
+        over non-visible elements
+
+        The choice to lazy load thumbnails in batches of 50 was not made
+        scientifically. Other numbers may yield better performance.
+        */
+        this.lazyLoadChunks( 50 );
+
+        this.attachKeyboard({
+            right: this.next,
+            left: this.prev,
+            /* Toggle fullscreen display on press of 'f' key */
+            0x46: this.toggleFullscreen,
+        });
+
+        var gallery = this;
+        $('#fullscreen').click(function() {
+          gallery.toggleFullscreen();
+        });
+
+        $('.icons').appendTo(this.$('container'));
+    });
+
+    Galleria.configure({
+        {% if settings.autoplay %}autoplay: true,{% endif %}
+        imageCrop: false,
+        transition: "fade",
+        thumbnails: "lazy"
+    });
+    Galleria.run("#gallery", {dataSource: data});
+
+    </script>
+  {% endif %}
+{% endblock %}
