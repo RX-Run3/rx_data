@@ -28,7 +28,7 @@ def collect_plots(
 
     log.info(f'Picking files from: {fit_dir}')
 
-    find_cmd = ['find', fit_dir, '-path', '*/.*', '-prune', '-o', '-name', '*.png', '-print0']
+    find_cmd = ['find', '-L', fit_dir, '-path', '*/.*', '-prune', '-o', '-name', '*.png', '-print0']
     tar_cmd  = ['tar', '--null', '-h', '-czf', 'images.tar.gz', '-T', '-']
 
     find_proc = subprocess.Popen(find_cmd, stdout=subprocess.PIPE)
