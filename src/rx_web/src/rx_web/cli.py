@@ -22,7 +22,7 @@ def dummy():
 def collect_plots(
     name : str = typer.Option(..., '--name', '-n', help='Name of fits, e.g. rare'))-> None:
     '''
-    This will collect in a tarball the directory structure with plots of fits 
+    This will collect in a tarball the directory structure with plots of fits
     '''
     fit_dir  = ANADIR / 'fits/data' / name
 
@@ -51,9 +51,17 @@ def make_html(
     create_cmd = ['sigal', 'build', '-n', ncpu, '-c', 'src/rx_web/sigal.conf.py', f'{ANADIR}/plots/web', f'{ANADIR}/www']
     server_cmd = ['sigal', 'serve', f'{ANADIR}/www']
 
-    subprocess.Popen(create_cmd)
-    subprocess.Popen(server_cmd)
-    subprocess.Popen(['firefox', 'http://127.0.0.1:8000/'])
+    result = subprocess.run(create_cmd)
+    if result.returncode != 0:
+        raise RuntimeError(f'sigal build failed with code {result.returncode}')
+
+    server = subprocess.Popen(server_cmd)
+    if server.poll() is not None:  # process already exited
+        raise RuntimeError('sigal serve failed to start')
+
+    subprocess.run([browser, 'http://127.0.0.1:8000/'])
+    server.terminate()
+    server.wait()
 # ----------------------
 if __name__ == '__main__':
     app()
