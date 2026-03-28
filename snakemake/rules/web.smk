@@ -5,7 +5,6 @@ _COMPONENTS = [
     'data_24', 
     'comb', 
     'ccbar',
-    'bdkstkpiee',
     'bpkpipiee',
     'bdkstkpijpsiee',
     'bdkstkpipsi2ee',
@@ -36,18 +35,17 @@ rule all:
     input: 
         expand(
         _OUTPUTDIR / '{q2bin}/{prc}_{cmb}/{component}.png',
-        cmb       = cmb, 
-        prc       = prc, 
-        component = _COMPONENTS,
         q2bin     = _Q2BINS,
+        prc       = prc, 
+        cmb       = cmb, 
+        component = _COMPONENTS,
         ),
         # ----------
         expand(
         _OUTPUTDIR / '{q2bin}/{prc}_{cmb}/index.md',
-        cmb       = cmb, 
-        prc       = prc, 
-        component = _COMPONENTS,
         q2bin     = _Q2BINS,
+        prc       = prc, 
+        cmb       = cmb, 
         )
 rule metadata:
     output: _OUTPUTDIR / '{q2bin}/{prc}_{cmb}/index.md'
@@ -67,11 +65,18 @@ rule copy:
 
         COMP={wildcards.component}
         WP="{wildcards.cmb}_{wildcards.prc}_all"
-        OUTDIR="{params.root_dir}/$WP/rare/rkst/ee/{wildcards.q2bin}/{wildcards.component}/fit/brem_x12/brem_x12"
 
-        if   [[ $COMP == "ccbar" ]]; then
+        if   [[ $COMP == "data_24" ]]; then
+            OUTDIR="{params.root_dir}/$WP/rare/rkst/ee/{wildcards.q2bin}/{wildcards.component}/fit/brem_x12/brem_x12"
+            SOURCE=$OUTDIR/fit_linear.png
+        elif [[ $COMP == "comb"    ]]; then
+            OUTDIR="{params.root_dir}/$WP/rare/rkst/ee/{wildcards.q2bin}/{wildcards.component}/fit/comb"
+            SOURCE=$OUTDIR/fit_linear.png
+        elif [[ $COMP == "ccbar"   ]]; then
+            OUTDIR="{params.root_dir}/$WP/rare/rkst/ee/{wildcards.q2bin}/{wildcards.component}/fit/main"
             SOURCE=$OUTDIR/c-bar-c-X.png
         else
+            OUTDIR="{params.root_dir}/$WP/rare/rkst/ee/{wildcards.q2bin}/{wildcards.component}/fit/main"
             SOURCE=$OUTDIR/fit_linear.png
         fi
 
@@ -80,10 +85,8 @@ rule copy:
         fi
 
         if [[ ! -f $SOURCE ]]; then
-            echo "Path not found $SOURCE"
-            rxfitter make-dummy-plot -p {output} -t "{wildcards.component}"
+            rxfitter make-dummy-plot -p {output} -t "{wildcards.component}" -s $SOURCE
         else
-            echo "Path found $SOURCE"
             cp $SOURCE {output}
         fi
         '''
