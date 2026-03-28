@@ -1,0 +1,9 @@
+default:
+  strategy:
+    ntries        : 10
+    pvalue_thresh : 0.05
+    ignore_status : False
+  observable:
+    name : B_Mass
+    minx : 4600
+    maxx : 7000
