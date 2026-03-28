@@ -52,7 +52,7 @@ rule metadata:
     shell :
         '''
         echo "Title: {wildcards.prc}-{wildcards.cmb}"  > {output}
-        echo "Thumbnail: data.png"   >> {output}
+        echo "Thumbnail: data_24.png"   >> {output}
         '''
 rule copy:
     output: _OUTPUTDIR / '{q2bin}/{prc}_{cmb}/{component}.png'
