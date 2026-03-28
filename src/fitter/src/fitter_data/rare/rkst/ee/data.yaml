@@ -9,17 +9,17 @@ observable:
   low:
     name : B_Mass_smr
     range:
-      - 4600 
+      - 4600
       - 6996
   central:
     name : B_Mass_smr
     range:
-      - 4600 
+      - 4600
       - 6996
   high:
     name : B_Mass_smr
     range:
-      - 4600 
+      - 4600
       - 6996
 components:
   comb           : rare/rkst/ee/comb.yaml
@@ -37,7 +37,7 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
   d_leg :
     comb           : Combinatorial
     ccbar          : $B\to c\bar{c}(\to e^+e^-) + X$
-    bdkstkpijpsiee : $B^0\to K^*(\to K^+\pi^-) J/\psi(\to e^+e^-)$ 
-    bdkstkpipsi2ee : $B^0\to K^*(\to K^+\pi^-) \psi(2S)(\to e^+e^-)$ 
+    bdkstkpijpsiee : $B^0\to K^*(\to K^+\pi^-) J/\psi(\to e^+e^-)$
+    bdkstkpipsi2ee : $B^0\to K^*(\to K^+\pi^-) \psi(2S)(\to e^+e^-)$
     bpkpipiee      : $B^+\to K_1^+(1270)(\to K^+\pi^+\pi^-)e^+e^-$
-    bdkstkpiee     : $B^0\to K^*(\to K^+\pi^-)e^+e^-$ 
+    bdkstkpiee     : $B^0\to K^*(\to K^+\pi^-)e^+e^-$

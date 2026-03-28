@@ -6,7 +6,7 @@ cleanup      : &cleanup
   psi2s veto : "TMath::Abs(B_const_mass_psi2S_M - 5280) > 100"
   cmb        : mva_cmb > 0.4 && mva_cmb < 0.9
 fit_strat: &fit_strat
-  strategy : 
+  strategy :
     ntries : 20
     pvalue : 0.05
 plot_conf: &plot_conf
@@ -20,7 +20,7 @@ constraints_high: &cons_hi
   parameters : # Will constrain parameters starting
     - mu       # with any of these strings
     - sg       # E.g mu_hypexp_combinatorial_1
-  selection  : 
+  selection  :
     <<: *cleanup
   fit:
     <<: *fit_strat
@@ -34,7 +34,7 @@ constraints_low_central: &cons_lc
     - mu       # with any of these strings
     - ap       # E.g mu_hypexp_combinatorial_1
     - bt
-  selection  : 
+  selection  :
     <<: *cleanup
   fit:
     <<: *fit_strat
