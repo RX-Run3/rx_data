@@ -43,11 +43,12 @@ def collect_plots(
 # ----------------------
 @app.command()
 def make_html(
+    ncpu    : str = typer.Option(      '4', '--ncpu'   , '-n', help='Number of CPUs to use'),
     browser : str = typer.Option('firefox', '--browser', '-b', help='Name of browser to open website')) -> None:
     '''
     Creates website from path to plots and opens site
     '''
-    create_cmd = ['sigal', 'build', '-c', 'src/rx_web/sigal.conf.py', f'{ANADIR}/plots/web', f'{ANADIR}/www']
+    create_cmd = ['sigal', 'build', '-n', ncpu, '-c', 'src/rx_web/sigal.conf.py', f'{ANADIR}/plots/web', f'{ANADIR}/www']
     server_cmd = ['sigal', 'serve', f'{ANADIR}/www']
 
     subprocess.Popen(create_cmd)
