@@ -448,6 +448,7 @@ pycparser==2.23
 pydantic==2.12.5
     # via
     #   -r requirements-dep.in
+    #   snakemake-logger-plugin-rich
     #   sqlmodel
     #   zfit
 pydantic-core==2.41.5
@@ -509,6 +510,7 @@ rich==14.2.0
     # via
     #   apd
     #   keras
+    #   snakemake-logger-plugin-rich
     #   typer
 root==0.1a10
     # via -r requirements-dep.in
@@ -569,14 +571,19 @@ snakemake-interface-executor-plugins==9.4.0
     #   snakemake
     #   snakemake-executor-plugin-htcondor
     #   snakemake-executor-plugin-ihep
+    #   snakemake-logger-plugin-rich
 snakemake-interface-logger-plugins==2.0.1
-    # via snakemake
+    # via
+    #   snakemake
+    #   snakemake-logger-plugin-rich
 snakemake-interface-report-plugins==1.3.0
     # via snakemake
 snakemake-interface-scheduler-plugins==2.0.2
     # via snakemake
 snakemake-interface-storage-plugins==4.4.1
     # via snakemake
+snakemake-logger-plugin-rich==0.4.1
+    # via -r requirements-dep.in
 sortedcontainers==2.4.0
     # via distributed
 sqlalchemy==2.0.45

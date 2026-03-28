@@ -1,4 +1,5 @@
 sigal
+snakemake-logger-plugin-rich
 junit2html
 junitparser
 ihep-utilities>=0.0.3
