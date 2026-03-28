@@ -8,9 +8,6 @@ import matplotlib.pyplot as plt
 
 from dmu       import LogStore
 from pathlib   import Path
-from fitter    import FitSummary
-from fitter    import MVAConf
-from fitter    import plot_prefit_postfit
 
 app = typer.Typer(help=__doc__)
 log = LogStore.add_logger('rx_fitter:cli')
@@ -23,6 +20,8 @@ def fit_summary(
     '''
     This will create a fit summary for a given fit
     '''
+    from fitter    import FitSummary
+
     smr = FitSummary(
         signal = signal,
         name   = name)
@@ -61,6 +60,8 @@ def wp_translator(
     '''
     This will print the signal probability (i.e. MVA working point) given a string
     '''
+    from fitter    import MVAConf
+
     val = MVAConf.str_to_wp(value = wp)
     print (val)
 # ----------------------
@@ -70,6 +71,8 @@ def prefit_postfit(
     '''
     Makes prefit and postfit plots of fit parameters
     '''
+    from fitter    import plot_prefit_postfit
+
     plot_prefit_postfit(update = update)
 # ----------------------
 if __name__ == '__main__':
