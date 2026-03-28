@@ -14,7 +14,7 @@ _COMPONENTS = [
 _Q2BINS    = ['low', 'central', 'high']
 _INPUT_DIR = Path('/home/acampove/Tests/web/rare')
 ANADIR     = Path(os.environ['ANADIR'])
-_OUTPUTDIR = ANADIR / 'plots/web/scan/components'
+_OUTPUTDIR = ANADIR / 'plots/web/scan/components/rk'
 
 _OUTPUTDIR.mkdir(parents=True, exist_ok=True)
 # ----------------------------
@@ -89,6 +89,6 @@ rule copy:
         if [[ ! -f $SOURCE ]]; then
             rxfitter make-dummy-plot -p {output} -t "{wildcards.component}" -s $SOURCE
         else
-            cp $SOURCE {output}
+            ln -s $SOURCE {output}
         fi
         '''
