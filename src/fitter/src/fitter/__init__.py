@@ -4,7 +4,7 @@ from .likelihood_factory import LikelihoodFactory
 from .toy_maker          import ToyMaker
 from .toy_maker          import ToyConf
 from .toy_plotter        import ToyPlotter
-from .data_fitter        import DataFitter 
+from .data_fitter        import DataFitter
 from .data_model         import DataModel
 from .sim_fitter         import SimFitter
 from .data_preprocessor  import DataPreprocessor
@@ -16,7 +16,7 @@ from .signal_constraints import SignalConstraints
 from .scale_reader       import ScaleReader
 from .pars_loader        import ParsLoader
 from .holders            import ChannelHolder
-from .holders            import ComponentHolder 
+from .holders            import ComponentHolder
 from .misid_constraints  import MisIDConstraints
 from .types              import CCbarWeight
 from .prec               import PRec
@@ -27,11 +27,11 @@ from .prefit_postfit     import run as plot_prefit_postfit
 # ----------
 from .mva_conf import MVAConf, MVAWp
 from .configs  import FitModelConf
-from .configs  import MisIDConf 
-from .configs  import CombinatorialConf 
-from .configs  import CCbarConf 
-from .configs  import NonParametricConf 
-from .configs  import ParametricConf 
+from .configs  import MisIDConf
+from .configs  import CombinatorialConf
+from .configs  import CCbarConf
+from .configs  import NonParametricConf
+from .configs  import ParametricConf
 from .configs  import RXFitConfig
 
 __all__ = [
@@ -58,14 +58,14 @@ __all__ = [
     'ChannelHolder',
     'ComponentHolder',
     'DataModel',
-    'FitSummary', 
+    'FitSummary',
     'ParsLoader',
     'RXFitConfig',
     'MisIDConstraints',
     'ConstraintReader',
     'CmbConstraints',
     'DataPreprocessor',
-    'ParameterReader', 
+    'ParameterReader',
     'SimFitter',
     'DataFitter',
     'ToyMaker',
