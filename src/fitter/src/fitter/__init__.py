@@ -22,6 +22,8 @@ from .types              import CCbarWeight
 from .prec               import PRec
 from .prec_scales        import PrecScales
 from .prefit_postfit     import run as plot_prefit_postfit
+from .cmb_validator      import CmbValidatorConf
+from .cmb_validator      import CmbValidator
 # ----------
 # Configs
 # ----------
@@ -36,6 +38,9 @@ from .configs  import RXFitConfig
 
 __all__ = [
     'plot_prefit_postfit',
+    # ------------------
+    'CmbValidatorConf',
+    'CmbValidator',
     # ------------------
     'MVAConf',
     'MVAWp',
