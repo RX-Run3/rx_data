@@ -8,6 +8,7 @@ from dmu         import LogStore
 from dmu.stats   import zfit
 from dmu.stats   import print_pdf
 from dmu.stats   import ModelFactory, MethodRegistry
+from dmu.stats   import ModelFactoryConf
 from dmu.stats   import ParameterLibrary
 from dmu.stats   import Model
 from dmu.stats   import CorrectionImplementation
@@ -326,4 +327,20 @@ def test_shared_parameters():
     print_pdf(pdf_2)
 
     _add_pdfs(l_pdf=[pdf_1, pdf_2])
+#--------------------------
+def test_from_conf():
+    '''
+    Test building ModelFactory from configuration
+    '''
+    obs = zfit.Space('mass', limits=(4500, 7000))
+
+    cfg = ModelFactoryConf.default(pdfs = [Model.gauss])
+    obj = ModelFactory.from_conf(
+        prefix = 'test', 
+        cfg    = cfg,
+        obs    = obs)
+
+    pdf = obj.get_pdf()
+
+    assert isinstance(pdf, zpdf)
 #--------------------------

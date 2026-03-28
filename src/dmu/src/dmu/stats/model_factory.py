@@ -2,6 +2,7 @@
 Module storing ZModel class
 '''
 
+from typing          import Self
 from contextlib      import contextmanager
 from contextvars     import ContextVar
 from pydantic        import BaseModel, ConfigDict, Field
@@ -618,6 +619,34 @@ class ModelFactory:
         pdf   =   self._fix_parameters(pdf)
 
         return pdf
+    #-----------------------------------------
+    @classmethod
+    def from_conf(
+        cls, 
+        obs    : zobs,
+        prefix : str,
+        cfg    : ModelFactoryConf) -> Self:
+        '''
+        Parameters
+        ----------------
+        prefix: Prefix for parameters
+        obs   : Observable
+        cfg   : Configuration needed to build factory
+
+        Returns
+        ----------------
+        Model factory, build from configuration
+        '''
+        return cls(
+            obs     = obs,
+            preffix = prefix,
+            l_pdf   = cfg.pdfs,
+            d_fix   = cfg.fix,
+            d_rep   = cfg.reparametrize,
+            values  = cfg.values,
+            l_shared= cfg.shared,
+            l_float = cfg.floating,
+            l_reuse = cfg.reuse)
     #-----------------------------------------
     @classmethod
     def correction(cls, fixed : bool):
