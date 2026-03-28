@@ -215,14 +215,14 @@ class Fitter:
         return obs_bin
     #------------------------------
     def _get_nll(
-        self, 
-        data   : zdat, 
+        self,
+        data   : zdat,
         frange : tuple[float,float] | None) -> Loss:
 
         NLL = zfit.loss.ExtendedUnbinnedNLL if self._pdf.is_extended else zfit.loss.UnbinnedNLL
         nll = NLL(
-            model      = self._pdf, 
-            data       = data, 
+            model      = self._pdf,
+            data       = data,
             fit_range  = frange)
 
         return nll
@@ -260,9 +260,9 @@ class Fitter:
         plt.show()
     #------------------------------
     def _update_par_bounds(
-        self, 
-        res    : FitResult, 
-        nsigma : float, 
+        self,
+        res    : FitResult,
+        nsigma : float,
         yields : list[str]) -> None:
 
         s_shape_par = self._pdf.get_params(is_yield=False, floating=True)
@@ -289,7 +289,7 @@ class Fitter:
         return self._nll
     #------------------------------
     def fit(
-        self, 
+        self,
         cfg : FitConf | None = None) -> FitResult:
         '''
         Runs the fit using the configuration specified by the cfg dictionary
