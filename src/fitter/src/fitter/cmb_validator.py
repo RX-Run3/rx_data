@@ -34,4 +34,21 @@ class CmbValidatorConf(BaseModel):
         '''
         return FitConf.default()
 # ----------------------
-
+class CmbValidator:
+    '''
+    Class meant to validate combinatorial model
+    '''
+    # ---------------------------
+    def __init__(self, cfg : CmbValidatorConf):
+        '''
+        Parameters
+        ----------------
+        cfg: Configuration needed for fits, etc
+        '''
+        self._cfg = cfg
+    # ---------------------------
+    def run(self) -> None:
+        '''
+        Runs validation
+        '''
+# ---------------------------
