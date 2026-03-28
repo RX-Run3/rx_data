@@ -31,8 +31,9 @@ def fit_summary(
 # ----------------------
 @app.command()
 def make_dummy_plot(
-    text : str = typer.Option('Placeholder', '--text', '-t', help='Text that will go in plot'),
-    path : Path= typer.Option(...          , '--path', '-p', help='Path to PNG file with leading period added')) -> None:
+    text   : str = typer.Option('Placeholder', '--text'  , '-t', help='Text that will go in plot'),
+    source : str = typer.Option('Placeholder', '--source', '-s', help='Path to source of file to be copied'),
+    path   : Path= typer.Option(...          , '--path'  , '-p', help='Path to PNG file to be made')) -> None:
     '''
     This will check if a plot exists and if not, will create a placeholder
     '''
@@ -47,6 +48,12 @@ def make_dummy_plot(
     plt.text(0.5, 0.5, text,
         fontsize = 72,
         color    = 'red',
+        ha       = 'center',
+        va       = 'center',
+        weight   = 'bold')
+    plt.text(0.5, 0.1, source,
+        fontsize = 12,
+        color    = 'blue',
         ha       = 'center',
         va       = 'center',
         weight   = 'bold')
