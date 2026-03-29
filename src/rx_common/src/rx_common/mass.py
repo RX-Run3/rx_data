@@ -1,8 +1,12 @@
 '''
 Module holding Mass class
 '''
-from enum   import StrEnum
+from enum      import StrEnum
+from dmu.stats import zfit
+from functools import cached_property
 
+zobs = zfit.Space
+# -----------------------------------
 class Mass(StrEnum):
     '''
     Class meant to represent variables found in ROOT trees
@@ -38,6 +42,18 @@ class Mass(StrEnum):
     bd_bcor_smr  = 'B_Mass_smr'
     bd_kk        = 'B_Mass_hdkk'
     bd_pipi      = 'B_Mass_hdpipi'
+    # ------------------------------
+    @cached_property
+    def obs(self) -> zobs:
+        '''
+        zfit observable associated with mass
+        '''
+        obs = zfit.Space(
+            obs    = self.latex, 
+            label  = self,
+            limits = self.limits)
+
+        return obs
     # ------------------------------
     @property
     def latex(self) -> str:
