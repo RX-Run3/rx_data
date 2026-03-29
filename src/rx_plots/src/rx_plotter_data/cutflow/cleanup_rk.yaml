@@ -17,6 +17,9 @@ styling: &style
   $J/\psi$ misID:
     histtype : step
     linestyle: '-'
+  Leakage:
+    histtype : step
+    linestyle: '-'
 general:
   size : [15, 10]
 selection:
@@ -41,6 +44,7 @@ cutflow:
     HOP                      : hop_mass >  4500
     Cascade                  : swp_cascade_mass_swp    > 1900
     $J/\psi$ misID           : swp_jpsi_misid_mass_swp > 3150 || swp_jpsi_misid_mass_swp < 3050
+    Leakage                  : TMath::Abs(B_const_mass_M - 5280) > 200
   jpsi:
     None                     : hop_mass >  0
     $\text{MVA}_{CMB} > 0.3$ : mva_cmb  > 0.3
