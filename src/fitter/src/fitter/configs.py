@@ -419,12 +419,19 @@ class RXFitConfig(BaseModel):
         Dictionary mapping cut name with expression
         Needed to override default selection
         '''
-        return {
+        selection : dict[str,str] = {
             'block' : self.block_cut,
             'brem'  : self.brem_cut,
             'cmb'   : self.cmb_cut,
             'prc'   : self.prc_cut,
         }
+
+        # Due to: https://github.com/microsoft/pyright/issues/11354
+        new_selection = { key.value : value for key, value in self.mod_cfg.selection.items()} 
+
+        selection.update(new_selection)
+
+        return selection
     # ----------------------
     @cached_property
     def is_electron(self) -> bool:
