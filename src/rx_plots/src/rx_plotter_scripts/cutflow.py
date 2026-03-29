@@ -40,7 +40,7 @@ class Data:
     l_keep     = []
     l_col      = []
 # ---------------------------------
-def _apply_definitions(rdf : RDataFrame) -> RDataFrame:
+def _apply_definitions(rdf : RDF.RNode) -> RDF.RNode:
     if 'definitions' not in Data.cfg:
         return rdf
     
@@ -50,8 +50,11 @@ def _apply_definitions(rdf : RDataFrame) -> RDataFrame:
 
     return rdf
 # ---------------------------------
-def _apply_selection(rdf : RDataFrame) -> RDataFrame:
-    d_sel = selection.selection(trigger=Data.trigger, q2bin=Data.q2_bin, process=Data.sample)
+def _apply_selection(rdf : RDF.RNode) -> RDF.RNode:
+    d_sel = selection.selection(
+        trigger=Data.trigger, 
+        q2bin  =Data.q2_bin, 
+        process=Data.component)
 
     if 'selection' in Data.cfg:
         log.debug('Overriding selection')
@@ -75,8 +78,8 @@ def _apply_selection(rdf : RDataFrame) -> RDataFrame:
     return rdf
 # ---------------------------------
 @gut.timeit
-def _get_rdf() -> RDataFrame:
-    gtr = RDFGetter(sample=Data.sample, trigger=Data.trigger)
+def _get_rdf() -> RDF.RNode:
+    gtr = RDFGetter(sample=Data.component, trigger=Data.trigger)
     rdf = gtr.get_rdf(per_file=False)
     rdf = _apply_definitions(rdf=rdf)
     rdf = _apply_selection(rdf=rdf)
@@ -85,22 +88,18 @@ def _get_rdf() -> RDataFrame:
 # ---------------------------------
 def _parse_args() -> None:
     parser = argparse.ArgumentParser(description='Script used to cutflow plots')
-    parser.add_argument('-q', '--q2bin'  , type=str, help='q2 bin' , choices=['low', 'central', 'jpsi', 'psi2', 'high', 'high_dtf'])
-    parser.add_argument('-s', '--sample' , type=str, help='Sample' , required=True)
-    parser.add_argument('-t', '--trigger', type=str, help='Trigger' , required=True)
-    parser.add_argument('-c', '--config' , type=str, help='Configuration', required=True)
-    parser.add_argument('-x', '--substr' , type=str, help='Substring that must be contained in path, e.g. magup')
-    parser.add_argument('-n', '--nthreads',type=int, help='Number of threads, if using multithreading', default=1)
+    parser.add_argument('-q', '--q2bin'  , type=Qsq      , help='q2 bin' , choices=['low', 'central', 'jpsi', 'psi2', 'high', 'high_dtf'])
+    parser.add_argument('-s', '--sample' , type=Component, help='Sample' , required=True)
+    parser.add_argument('-t', '--trigger', type=Trigger  , help='Trigger' , required=True)
+    parser.add_argument('-c', '--config' , type=str      , help='Configuration', required=True)
+    parser.add_argument('-x', '--substr' , type=str      , help='Substring that must be contained in path, e.g. magup')
     args = parser.parse_args()
 
-    project = info.project_from_trigger(trigger=args.trigger, lower_case=True)
-
     Data.q2_bin   = args.q2bin
-    Data.sample   = args.sample
+    Data.component= args.sample
     Data.trigger  = args.trigger
-    Data.config   = f'{args.config}_{project}'
+    Data.config   = f'{args.config}_{Data.trigger.project}'
     Data.substr   = args.substr
-    Data.nthreads = args.nthreads
 # ---------------------------------
 def _get_cfg() -> DictConfig:
     cfg           = gut.load_conf(package='rx_plotter_data', fpath=f'cutflow/{Data.config}.yaml')
@@ -116,20 +115,20 @@ def _get_cfg() -> DictConfig:
     return cfg
 # ---------------------------------
 def _add_title(cfg : DictConfig) -> DictConfig:
-    title = f'{Data.sample}; {Data.trigger}; {Data.q2_bin}'
+    title = f'{Data.component}; {Data.trigger}; {Data.q2_bin}'
     for cfg_var in cfg.plots.values():
         cfg_var.title = title
 
     return cfg
 # ---------------------------------
 def _get_out_dir(plt_dir : str) -> str:
-    out_dir = f'{Data.ana_dir}/plots/{plt_dir}/{Data.sample}_{Data.trigger}_{Data.q2_bin}'
+    out_dir = f'{Data.ana_dir}/plots/{plt_dir}/{Data.component}_{Data.trigger}_{Data.q2_bin}'
     if Data.substr is not None:
         out_dir = f'{out_dir}/{Data.substr}'
 
     return out_dir
 # ---------------------------------
-def _get_inp() -> dict[str,RDataFrame]:
+def _get_inp() -> dict[str,RDF.RNode]:
     rdf   = _get_rdf()
 
     if 'cutflow' not in Data.cfg:
@@ -162,7 +161,7 @@ def _fix_ranges(cfg : DictConfig) -> DictConfig:
 
     return cfg
 # ---------------------------------
-def _plot(d_rdf : dict[str,RDataFrame]) -> None:
+def _plot(d_rdf : dict[str,RDF.RNode]) -> None:
     cfg= _get_cfg()
     cfg= _fix_ranges(cfg=cfg)
 
@@ -175,14 +174,12 @@ def _set_config(settings : DictConfig) -> None:
     -------------
     settings: Dictionary with settings needed when used as a module
     '''
-    project = info.project_from_trigger(trigger=settings.trigger, lower_case=True)
 
     Data.q2_bin   = settings.q2bin
-    Data.sample   = settings.sample
+    Data.component= settings.sample
     Data.trigger  = settings.trigger
-    Data.config   = f'{settings.config}_{project}'
+    Data.config   = f'{settings.config}_{Data.trigger.project}'
     Data.substr   = settings.substr
-    Data.nthreads = settings.nthreads
 # ---------------------------------
 def main(settings : DictConfig|None = None):
     '''
@@ -194,8 +191,7 @@ def main(settings : DictConfig|None = None):
         _set_config(settings=settings)
 
     Data.cfg = _get_cfg()
-    with RDFGetter.multithreading(nthreads=Data.nthreads),\
-         RDFGetter.max_entries(value=-1),\
+    with RDFGetter.max_entries(value=-1),\
          RDFGetter.custom_columns(columns=Data.d_def):
 
         d_rdf = _get_inp()
