@@ -1,10 +1,10 @@
 
 from pydantic    import BaseModel
 from functools   import cached_property
+from dmu         import LogStore
 from dmu.stats   import FitConf, ModelFactoryConf
 from dmu.generic import utilities as gut
-
-from dmu import LogStore
+from rx_common   import Mass
 
 log=LogStore.add_logger('fitter:cmb_validator')
 # ----------------------
@@ -13,6 +13,7 @@ class CmbValidatorConf(BaseModel):
     Configuration needed to validate
     combinatorial model
     '''
+    mass: Mass
     mod : str
     sel : str
     cut : str

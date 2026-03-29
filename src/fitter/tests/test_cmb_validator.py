@@ -3,10 +3,10 @@ Module needed to test Combinatorial validator class
 '''
 import pytest
 
-from fitter import CmbValidatorConf
-from fitter import CmbValidator
-
-from dmu import LogStore
+from fitter    import CmbValidatorConf
+from fitter    import CmbValidator
+from rx_common import Mass
+from dmu       import LogStore
 
 log=LogStore.add_logger('fitter:test_cmb_validator')
 # ----------------------
@@ -17,11 +17,13 @@ def initialize():
     '''
     LogStore.set_level('fitter:cmb_validator', 10)
 # ----------------------
-@pytest.mark.parametrize('sel', ['default'])
-@pytest.mark.parametrize('fit', ['default'])
-@pytest.mark.parametrize('cut', ['cmb'    ])
-@pytest.mark.parametrize('mod', ['expo'   ])
+@pytest.mark.parametrize('mass', Mass)
+@pytest.mark.parametrize('sel' , ['default'])
+@pytest.mark.parametrize('fit' , ['default'])
+@pytest.mark.parametrize('cut' , ['cmb'    ])
+@pytest.mark.parametrize('mod' , ['expo'   ])
 def test_simple(
+    mass: Mass,
     mod : str,
     sel : str, 
     fit : str, 
@@ -30,6 +32,7 @@ def test_simple(
     Entry point
     '''
     cfg = CmbValidatorConf(
+        mass= mass,
         mod = mod,
         sel = sel,
         fit = fit,
