@@ -3,17 +3,17 @@ Script used to plot cutflows
 '''
 import os
 import argparse
-
 import mplhep
-import dmu.generic.utilities as gut
-from ROOT                    import RDataFrame # type: ignore
-from dmu.plotting.plotter_1d import Plotter1D
-from dmu.logging.log_store   import LogStore
-from dmu.generic             import naming
-from omegaconf               import DictConfig
-from rx_data.rdf_getter      import RDFGetter
-from rx_selection            import selection
-from rx_common               import info
+
+from ROOT          import RDF # type: ignore
+from dmu           import LogStore
+from dmu.generic   import utilities as gut
+from dmu.plotting  import Plotter1D
+from dmu.generic   import naming
+from omegaconf     import DictConfig
+from rx_data       import RDFGetter
+from rx_selection  import selection
+from rx_common     import Component, Qsq, Trigger
 
 log=LogStore.add_logger('rx_selection:cutflow')
 # ---------------------------------
