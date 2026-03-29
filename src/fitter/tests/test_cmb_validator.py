@@ -19,12 +19,18 @@ def initialize():
 # ----------------------
 @pytest.mark.parametrize('sel', ['default'])
 @pytest.mark.parametrize('fit', ['default'])
-@pytest.mark.parametrize('cut', ['cmb'])
-def test_simple(sel : str, fit : str, cut : str):
+@pytest.mark.parametrize('cut', ['cmb'    ])
+@pytest.mark.parametrize('mod', ['expo'   ])
+def test_simple(
+    mod : str,
+    sel : str, 
+    fit : str, 
+    cut : str):
     '''
     Entry point
     '''
     cfg = CmbValidatorConf(
+        mod = mod,
         sel = sel,
         fit = fit,
         cut = cut)
