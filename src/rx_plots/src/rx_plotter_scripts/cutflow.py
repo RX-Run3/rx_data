@@ -21,23 +21,20 @@ class Data:
     '''
     Class used to share attributes
     '''
-    trigger_mm = 'Hlt2RD_BuToKpMuMu_MVA'
-    trigger_ee = 'Hlt2RD_BuToKpEE_MVA'
     d_reso     = {'jpsi' : 'B_const_mass_M', 'psi2' : 'B_const_mass_psi2S_M'}
     ana_dir    = os.environ['ANADIR']
 
     mplhep.style.use('LHCb2')
 
-    sample  : str
-    chanel  : str
-    substr  : str
-    trigger : str
-    q2_bin  : str
-    config  : str
-    plt_dir : str
-    nthreads: int
-    cfg     : DictConfig 
-    d_def   : dict[str,str] = {}
+    chanel    : str
+    substr    : str
+    component : Component 
+    trigger   : Trigger 
+    q2_bin    : Qsq 
+    config    : str
+    plt_dir   : str
+    cfg       : DictConfig 
+    d_def     : dict[str,str] = {}
 
     l_ee_trees = ['brem_track_2', 'ecalo_bias']
     l_keep     = []
