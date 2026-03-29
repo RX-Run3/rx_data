@@ -62,7 +62,7 @@ cutflow:
 plots:
     otk_mas:
         binning    : [4000, 8000, 60]
-        yscale     : 'log'
+        yscale     : log
         labels     : ['$\text{Iso}_{1Trk}^{Mass}\;[\text{MeV}]$', 'Entries']
         title      : ''
         name       : '1Trk_mas'
@@ -71,7 +71,7 @@ plots:
           <<: *style
     ttk_mas:
         binning    : [4000, 8000, 60]
-        yscale     : 'log'
+        yscale     : log
         labels     : ['$\text{Iso}_{2Trk}^{Mass}\;[\text{MeV}]$', 'Entries']
         title      : ''
         name       : '2Trk_mas'
@@ -80,7 +80,7 @@ plots:
           <<: *style
     swp_cascade_mass_swp:
         binning    : [1600, 2200, 60]
-        yscale     : 'linear'
+        yscale     : linear
         labels     : ['M$(K,\ell_{\to\pi})\;[\text{MeV}]$', 'Entries']
         title      : ''
         name       : 'mass_cascade'
@@ -89,7 +89,7 @@ plots:
           <<: *style
     swp_jpsi_misid_mass_swp:
         binning    : [2900, 3300, 60]
-        yscale     : 'linear'
+        yscale     : linear
         labels     : ['M$(K_{\to\ell},\ell)\;[\text{MeV}]$', 'Entries']
         title      : ''
         name       : 'mass_jpsi_misid'
@@ -98,7 +98,7 @@ plots:
           <<: *style
     hop_mass:
         binning    : [0, 7000, 60]
-        yscale     : 'linear'
+        yscale     : linear
         labels     : ['$M_{HOP}(B^+)\;[\text{MeV}]$', 'Entries']
         title      : ''
         name       : 'bmass_hop'
@@ -107,7 +107,7 @@ plots:
           <<: *style
     B_M:
         binning    : [4500, 6500, 60]
-        yscale     : log
+        yscale     : linear
         labels     : ['$M(B^+)\;[\text{MeV}]$', 'Entries']
         title      : ''
         name       : 'bmass'
@@ -116,7 +116,7 @@ plots:
           <<: *style
     B_Mass:
         binning    : [4500, 6500, 60]
-        yscale     : log
+        yscale     : linear
         labels     : ['$M_{corr}(B^+)\;[\text{MeV}]$', 'Entries']
         title      : ''
         name       : 'bmass_brem_corr'
@@ -125,7 +125,7 @@ plots:
           <<: *style
     mva_cmb:
         binning    : [0.7, 1.0, 60]
-        yscale     : 'linear'
+        yscale     : linear
         labels     : ['$\text{MVA}_{CMB}$', 'Entries']
         title      : ''
         name       : 'mva_cmb'
@@ -134,7 +134,7 @@ plots:
           <<: *style
     q2:
         binning    : [0.0, 22000000, 60]
-        yscale     : 'linear'
+        yscale     : linear
         labels     : ['$q^2\;[\text{GeV}^2]$', 'Entries']
         title      : ''
         name       : 'q2'
