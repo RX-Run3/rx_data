@@ -1,7 +1,7 @@
 
 from pydantic    import BaseModel
 from functools   import cached_property
-from dmu.stats   import FitConf
+from dmu.stats   import FitConf, ModelFactoryConf
 from dmu.generic import utilities as gut
 
 from dmu import LogStore
@@ -13,9 +13,27 @@ class CmbValidatorConf(BaseModel):
     Configuration needed to validate
     combinatorial model
     '''
+    mod : str
     sel : str
     cut : str
     fit : str
+    # ----------------------
+    @cached_property
+    def model_conf(self) -> ModelFactoryConf:
+        '''
+        Configuration used to build model
+        '''
+        key  = self.mod
+        data = gut.load_data(package = 'fitter_data', fpath = 'combinatorial/models.yaml')
+        if key in data:
+            for val in data:
+                log.error(f'\"{val}\"')
+            raise ValueError(f'Cutflow \"{key}\" not found in config')
+
+        log.debug(f'Picking selection: {key}')
+
+        conf_data = data[key] 
+        return ModelFactoryConf(**conf_data)
     # ----------------------
     @cached_property
     def selection(self) -> dict[str,str]:
@@ -24,14 +42,14 @@ class CmbValidatorConf(BaseModel):
         '''
         key  = self.sel
         data = gut.load_data(package = 'fitter_data', fpath = 'combinatorial/selections.yaml')
-        if self.sel not in data:
+        if key not in data:
             for val in data:
                 log.error(f'\"{val}\"')
             raise ValueError(f'Cutflow \"{key}\" not found in config')
 
-        log.debug(f'Picking selection: {self.sel}')
+        log.debug(f'Picking selection: {key}')
 
-        return data[self.sel] 
+        return data[key] 
     # ----------------------
     @cached_property
     def cutflow(self) -> dict[str,str]:
