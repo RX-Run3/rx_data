@@ -1,0 +1,7 @@
+expo:
+  pdfs:
+    - expo
+  shared       : []
+  reparametrize: {}
+  fix          : {}
+  floating     : []
