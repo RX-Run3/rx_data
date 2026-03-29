@@ -15,6 +15,8 @@ class Region(StrEnum):
     e.g. hadronic misID control region
     '''
     # ---------------------
+    bpee   = auto()
+    bdee   = auto()
     bpkk   = auto()
     bppipi = auto()
     # ---------------------
@@ -28,6 +30,10 @@ class Region(StrEnum):
                 return Component.bpkkk
             case Region.bppipi:
                 return Component.bpkpipi
+            case Region.bdee:
+                return Component.bdkstkpiee
+            case Region.bpee:
+                return Component.bpkpee
     # ---------------------
     @property
     def obs(self) -> zfit.Space:
@@ -50,6 +56,10 @@ class Region(StrEnum):
                 return Mass.bp_kk
             case Region.bppipi:
                 return Mass.bp_pipi
+            case Region.bpee:
+                return Mass.bp_bcor
+            case Region.bdee:
+                return Mass.bd_bcor
     # ---------------------
     @staticmethod
     def hadronic_misid() -> list['Region']:
