@@ -88,9 +88,9 @@ def _get_rdf() -> RDF.RNode:
 # ---------------------------------
 def _parse_args() -> None:
     parser = argparse.ArgumentParser(description='Script used to cutflow plots')
-    parser.add_argument('-q', '--q2bin'  , type=Qsq      , help='q2 bin' , choices=['low', 'central', 'jpsi', 'psi2', 'high', 'high_dtf'])
-    parser.add_argument('-s', '--sample' , type=Component, help='Sample' , required=True)
-    parser.add_argument('-t', '--trigger', type=Trigger  , help='Trigger' , required=True)
+    parser.add_argument('-q', '--q2bin'  , type=Qsq      , help='q2 bin'       , required=True, choices=Qsq)
+    parser.add_argument('-s', '--sample' , type=Component, help='Sample'       , required=True, choices=Component)
+    parser.add_argument('-t', '--trigger', type=Trigger  , help='Trigger'      , required=True, choices=Trigger)
     parser.add_argument('-c', '--config' , type=str      , help='Configuration', required=True)
     parser.add_argument('-x', '--substr' , type=str      , help='Substring that must be contained in path, e.g. magup')
     args = parser.parse_args()
@@ -115,7 +115,7 @@ def _get_cfg() -> DictConfig:
     return cfg
 # ---------------------------------
 def _add_title(cfg : DictConfig) -> DictConfig:
-    title = f'{Data.component}; {Data.trigger}; {Data.q2_bin}'
+    title = f'{Data.component.latex}; {Data.trigger}; {Data.q2_bin}'
     for cfg_var in cfg.plots.values():
         cfg_var.title = title
 
