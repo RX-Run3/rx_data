@@ -3,12 +3,8 @@ Script with functions meant to test Enums
 '''
 import pytest
 
-from rx_common import Correction
-from rx_common import Component
-from rx_common import Brem 
-from rx_common import Channel 
 from dmu       import LogStore
-
+from rx_common import Correction
 from rx_common import Component
 from rx_common import Brem 
 from rx_common import Channel 
