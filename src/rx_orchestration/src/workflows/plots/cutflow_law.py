@@ -2,15 +2,15 @@
 Script used to orchestrate plots made by the `cutflow` script
 '''
 import os
-import json
-from pathlib               import Path
-from functools             import cache
-
 import law
-from law.parameter         import Parameter
-from omegaconf             import DictConfig, OmegaConf
-from dmu.generic           import utilities as gut
-from dmu.logging.log_store import LogStore
+import json
+
+from pathlib       import Path
+from functools     import cache
+from law.parameter import Parameter
+from dmu           import LogStore
+from dmu.generic   import utilities as gut
+from omegaconf     import DictConfig, OmegaConf
 
 log=LogStore.add_logger('rx_orchestration:cutflow_law')
 # -------------------------------------
