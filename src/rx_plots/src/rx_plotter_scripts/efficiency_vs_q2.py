@@ -10,41 +10,88 @@ import mplhep
 import matplotlib.pyplot   as plt
 import pandas              as pnd
 
+from pathlib      import Path
 from typing       import Final
 from hist         import Hist
 from hist.axis    import Regular
 from ROOT         import RDF # type: ignore
-from omegaconf    import DictConfig
 from dmu          import LogStore
 from dmu.generic  import utilities as gut
+from pydantic     import BaseModel
 from rx_common    import Qsq, Component, Trigger, QsqDef
 from rx_data      import RDFGetter
 from rx_selection import selection as sel
 
 log=LogStore.add_logger('rx_plots:efficiency_vs_q2')
-XVAR : Final[str  ] = 'q2_true'
-RAN  : Final[float] = random.random()
-# ----------------------
-class Data:
-    '''
-    Class meant to be used to share attributes
-    '''
-    cfg     : DictConfig
-    channel : str|None        = None
-    analysis: str|None        = None
 
-    mplhep.style.use('LHCb2')
-
-    ana_dir  = os.environ['ANADIR']
+ANADIR : Final[Path ] = Path(os.environ['ANADIR'])
+RAN    : Final[float] = random.random()
+mplhep.style.use('LHCb2')
 # ----------------------
-def _parse_args() -> None:
+class StyleConf(BaseModel):
+    '''
+    Class meant to configure line style
+    '''
+    color : str
+    ls    : str
+    lw    : int
+# ----------------------
+class HistConf(BaseModel):
+    '''
+    Class with configuration needed to build histogram
+    '''
+    name  : str 
+    bins  : int 
+    start : int 
+    stop  : int 
+    label : str 
+# ----------------------
+class FigConf(BaseModel):
+    '''
+    Config used to create figure
+    '''
+    size : tuple[int,int]
+# ----------------------
+class PlotConfig(BaseModel):
+    '''
+    Class meant to represent plotting configuration
+    '''
+    component : Component
+    trigger   : Trigger
+    qsqdef    : QsqDef
+    hist_conf : dict[QsqDef,HistConf]
+    figure    : FigConf
+    line_style: StyleConf
+    bounds    : dict[Qsq,float]
+# ----------------------
+def _parse_args() -> PlotConfig:
     parser = argparse.ArgumentParser(description='Script needed to plot efficiency vs true q2')
-    parser.add_argument('-c', '--channel' , type=str, help='Channel' , choices=['ee', 'mm'])
-    parser.add_argument('-a', '--analysis', type=str, help='Analysis', choices=['rk', 'rkst'])
+    parser.add_argument(
+        '-c', 
+        '--component', 
+        type=Component, 
+        help='Component')
+
+    parser.add_argument(
+        '-t', 
+        '--trigger', 
+        type=Trigger, 
+        help='Trigger')
+
+    parser.add_argument(
+        '-d', 
+        '--definition', 
+        type=QsqDef, 
+        help='Q2 definition')
+
     args = parser.parse_args()
 
-    Data.channel  = args.channel
-    Data.analysis = args.analysis
+    data = gut.load_data(package = 'rx_plotter_data', fpath = 'efficiency/vs_q2.yaml')
+    return PlotConfig(
+        component = args.component,
+        qsqdef    = args.definition,
+        trigger   = args.trigger,
+        **data)
 # ----------------------
 def _add_flags(
     rdf   : RDF.RNode,
@@ -117,10 +164,13 @@ def _get_mcdt_q2(sample : Component, trigger : Trigger) -> numpy.ndarray:
 
     return arr_q2
 # ----------------------
-def _get_data(q2bin : Qsq) -> pnd.DataFrame:
+def _get_data(
+    cfg   : PlotConfig,
+    q2bin : Qsq) -> pnd.DataFrame:
     '''
     Parameters
     -------------
+    cfg  : Plotting configuration
     q2bin: Bin for which the data is needed
 
     Returns
@@ -134,31 +184,29 @@ def _get_data(q2bin : Qsq) -> pnd.DataFrame:
 
     log.debug('Loading data')
 
-    [sample, trigger_str] = Data.cfg.input[f'{Data.analysis}_{Data.channel}']
-    component = Component.from_sample(sample)
-    trigger   = Trigger(trigger_str)
-
     gtr = RDFGetter(
-        sample = component, 
-        trigger= trigger)
+        sample = cfg.component, 
+        trigger= cfg.trigger)
     rdf = gtr.get_rdf(per_file=False)
-    rdf = _preselect(rdf = rdf, component = component, trigger = trigger)
+    rdf = _preselect(rdf = rdf, component = cfg.component, trigger = cfg.trigger)
     rdf = _add_flags(rdf=rdf, q2bin = q2bin)
 
-    data= rdf.AsNumpy([ qsqdef for qsqdef in QsqDef ] + [XVAR])
+    data= rdf.AsNumpy([ qsqdef for qsqdef in QsqDef ] + [cfg.qsqdef.branch_name])
     df  = pnd.DataFrame(data)
-    df.attrs['total'] = _get_mcdt_q2(sample=component, trigger=trigger)
+    df.attrs['total'] = _get_mcdt_q2(sample=cfg.component, trigger=cfg.trigger)
 
     return df
 # ----------------------
 def _get_hist(
     df  : pnd.DataFrame,
+    cfg : PlotConfig,
     axis: Regular,
     flag: QsqDef | None) -> Hist:
     '''
     Parameters
     -------------
     df  : DataFrame with q2_true column and flags
+    cfg : Plotting configuration
     axis: Hist's X axis, needed to make histogram
     var : q2 name, for numerator histogram, q2 or q2_true
     flag: Either None, or q2 definition 
@@ -173,7 +221,7 @@ def _get_hist(
         arr_q2  = df.attrs['total']
     else:
         df_filt = df.query(f'{flag} == 1')
-        arr_q2  = df_filt[XVAR].to_numpy()
+        arr_q2  = df_filt[cfg.qsqdef].to_numpy()
 
     arr_q2    = arr_q2 / 1000_000.
     histogram = Hist(axis)
@@ -181,63 +229,26 @@ def _get_hist(
 
     return histogram
 # ----------------------
-def _check_none(obj : DictConfig|None, kind : str) -> DictConfig:
-    '''
-    Parameters
-    -------------
-    obj : omegaconf dictionary with configuration
-    kind: Key that has to exist in config
-
-    Returns
-    -------------
-    The config if it passes checks
-    '''
-    if obj is None:
-        raise ValueError(f'Config {kind} not found')
-
-    if kind not in obj:
-        raise ValueError(f'Cannot find key {kind} in config')
-
-    return obj
-# ----------------------
-def _add_lines() -> None:
-    '''
-    Parameters
-    -------------
-    None
-
-    Returns
-    -------------
-    None
-    '''
-    if 'lines' not in Data.cfg:
-        log.warning('Not adding lines')
-        return
-
-    cfg   = _check_none(obj=Data.cfg, kind='lines')
-    for bound in cfg.lines.bounds.values():
-        plt.axvline(x=bound, **cfg.lines.styling)
-# ----------------------
 def _plot_efficiencies(
     df     : pnd.DataFrame,
+    cfg    : PlotConfig,
     qsqdef : QsqDef) -> None:
     '''
     Parameters
     -------------
     df  : Pandas dataframe with: q2_true, pass_all and pass_def/dtf/tru
         with numpy array with q2 from MCDecayTree attached with key `total`
+    cfg : Plotting configuration
     kind: Type of q2 variable to use for selection
 
     Returns
     -------------
     Nothing, this should only plot efficiencies
     '''
-    cfg       = _check_none(obj=Data.cfg, kind='hist_conf')
-    hist_conf = cfg.hist_conf
-
-    axis  = Regular(**hist_conf[XVAR])
-    h_all = _get_hist(df=df, axis=axis, flag= qsqdef)
-    h_den = _get_hist(df=df, axis=axis, flag= None  )
+    hist_conf = cfg.hist_conf[cfg.qsqdef]
+    axis  = Regular(**hist_conf.model_dump())
+    h_all = _get_hist(df=df, axis=axis, flag= qsqdef, cfg = cfg)
+    h_den = _get_hist(df=df, axis=axis, flag= None  , cfg = cfg)
 
     h_eff_tot = RAN * h_all / h_den
 
@@ -250,47 +261,28 @@ def _plot_efficiencies(
     else:
         h_eff_tot.plot(histtype='step', label=qsqdef.latex, color = qsqdef.color)
 # ----------------------
-def _get_out_path(q2bin : str) -> str:
-    '''
-    Parameters
-    -------------
-    var  : Name of variable in function of which efficiency is measured
-    q2bin: E.g. central
-
-    Returns
-    -------------
-    Path to PNG file where plot should go
-    '''
-    out_dir = f'{Data.ana_dir}/plots/checks/efficiency_vs_q2/{Data.analysis}_{Data.channel}/{q2bin}'
-    os.makedirs(out_dir, exist_ok=True)
-
-    out_path = f'{out_dir}/{XVAR}.png'
-
-    return out_path
-# ----------------------
 def _plot(
     df   : pnd.DataFrame,
+    cfg  : PlotConfig,
     q2bin: Qsq) -> None:
     '''
     Parameters
     -------------
     df   : Pandas dataframe with q2 and MVA scores
+    cfg  : Plotting configuration
     q2bin: E.g. central, high
     '''
-    plt.figure(figsize = Data.cfg.figure.size)
+    plt.figure(figsize = cfg.figure.size)
     for qsqdef in QsqDef:
-        _plot_efficiencies(df=df, qsqdef = qsqdef)
+        _plot_efficiencies(df=df, qsqdef = qsqdef, cfg = cfg)
 
-    out_path = _get_out_path(q2bin=q2bin)
+    out_path = ANADIR / f'plots/checks/efficiency_vs_q2/{cfg.component}_{cfg.trigger}/{q2bin}/{cfg.qsqdef}.png'
+    out_path.parent.mkdir(parents=True, exist_ok=True)
 
-    _add_lines()
+    for bound in cfg.bounds.values():
+        plt.axvline(x=bound, **cfg.line_style.model_dump())
 
-    cfg = _check_none(obj=Data.cfg, kind='input')
-    [sample, trigger] = cfg.input[f'{Data.analysis}_{Data.channel}']
-
-    component = Component.from_sample(sample)
-
-    plt.title(f'{component.latex}; {trigger}')
+    plt.title(f'{cfg.component.latex}; {cfg.trigger}')
     plt.ylabel('A.U.')
     plt.legend()
 
@@ -306,28 +298,21 @@ def _set_logs() -> None:
     LogStore.set_level('rx_selection:selection'     , 30)
     LogStore.set_level('rx_data:rdf_getter'         , 30)
 # ----------------------
-def main(cfg : DictConfig | None = None) -> None:
+def main() -> None:
     '''
-    Parameters
-    ------------------
-    cfg: Config storing settings if used as module instead of script 
+    Entry point
     '''
-    if cfg is None:
-        _parse_args()
-    else:
-        Data.analysis = cfg.analysis
-        Data.channel  = cfg.channel
+    cfg = _parse_args()
 
     _set_logs()
     log.debug('Loading configuration')
-    Data.cfg = gut.load_conf(package='rx_plotter_data', fpath='efficiency/vs_q2.yaml')
 
     for q2bin in Qsq: 
         if q2bin in {Qsq.none, Qsq.all}:
             continue
 
-        df = _get_data(q2bin = q2bin)
-        _plot(df = df, q2bin= q2bin)
+        df = _get_data(q2bin = q2bin, cfg = cfg)
+        _plot(df = df, q2bin= q2bin, cfg = cfg)
 # ----------------------
 if __name__ == '__main__':
     main()
