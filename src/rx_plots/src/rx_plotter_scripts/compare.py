@@ -4,20 +4,21 @@ Script used to compare variables in the same dataframe
 # pylint: disable=no-name-in-module, logging-fstring-interpolation, line-too-long
 
 import os
+import mplhep
+import argparse
+
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
-import argparse
-from dataclasses         import dataclass
-from pathlib             import Path
-
-import mplhep
-import dmu.generic.utilities as gut
-from omegaconf               import DictConfig, OmegaConf
-from ROOT                    import RDataFrame # type: ignore
-from dmu.plotting.plotter_1d import Plotter1D
-from dmu.logging.log_store   import LogStore
-from rx_data.rdf_getter      import RDFGetter
-from rx_selection            import selection as sel
+from rx_common    import Component, Qsq, Trigger
+from dataclasses  import dataclass
+from pathlib      import Path
+from omegaconf    import DictConfig
+from ROOT         import RDF # type: ignore
+from dmu          import LogLevels, LogStore
+from dmu.generic  import utilities as gut
+from dmu.plotting import Plotter1D
+from rx_data      import RDFGetter
+from rx_selection import selection as sel
 
 log=LogStore.add_logger('rx_plots:compare')
 # ---------------------------------
@@ -35,16 +36,15 @@ class Config:
     '''
     Class used to store configuration
     '''
-    q2_bin  : str
-    sample  : str
-    trigger : str
+    q2_bin  : Qsq 
+    sample  : Component 
+    trigger : Trigger 
     config  : str
     substr  : str
     brem    : int
     block   : int
     nomva   : bool
     emulate : bool
-    nthread : int = 1
 
     trigger_bukee = 'Hlt2RD_BuToKpEE_MVA'
     trigger_bukmm = 'Hlt2RD_BuToKpMuMu_MVA'
@@ -89,8 +89,8 @@ def _get_plot_cfg(cfg : Config) -> DictConfig:
     return cfg_plt
 # ---------------------------------
 def _apply_definitions(
-    rdf    : RDataFrame,
-    cfg_plt: DictConfig) -> RDataFrame:
+    rdf    : RDF.RNode,
+    cfg_plt: DictConfig) -> RDF.RNode:
 
     if 'definitions' not in cfg_plt:
         return rdf
@@ -104,7 +104,7 @@ def _apply_definitions(
 
     return rdf
 # ---------------------------------
-def _check_entries(rdf : RDataFrame) -> None:
+def _check_entries(rdf : RDF.RNode) -> None:
     nentries = rdf.Count().GetValue()
 
     if nentries > 0:
@@ -169,8 +169,8 @@ def _update_with_block(
 # ---------------------------------
 @gut.timeit
 def _get_rdf(
-        cfg     : Config, 
-        cfg_plt : DictConfig) -> RDataFrame:
+    cfg     : Config, 
+    cfg_plt : DictConfig) -> RDF.RNode:
     '''
     Parameters
     ----------------
@@ -233,18 +233,16 @@ def _cfg_from_args() -> Config:
     Configuration instance built from arguments passed by user
     '''
     parser = argparse.ArgumentParser(description='Script used to make comparison plots between distributions in the same dataframe')
-    parser.add_argument('-q', '--q2bin'  , type=str, help='q2 bin' , choices=['low', 'central', 'jpsi', 'psi2', 'high'], required=True)
-    parser.add_argument('-s', '--sample' , type=str, help='Sample' , required=True)
-    parser.add_argument('-t', '--trigger', type=str, help='Trigger' , required=True, choices=Config.l_trigger)
-    parser.add_argument('-c', '--config' , type=str, help='Configuration', required=True)
-    parser.add_argument('-x', '--substr' , type=str, help='Substring that must be contained in path, e.g. magup')
-    parser.add_argument('-b', '--brem'   , type=int, help='Brem category, 12 = 1 or 2, -1 = all' , choices=[-1, 0, 1, 2, 12], required=True)
-    parser.add_argument('-n', '--nthread', type=int, help='Number of threads' , default=Config.nthread)
-    parser.add_argument('-B', '--block'  , type=int, help='Block to which data belongs, -1 will put all the data together', choices=[-1, 0, 12, 3, 4, 5, 6, 78], required=True)
-    parser.add_argument('-l', '--log_lvl', type=int, help='Logging level', choices=[10, 20, 30, 40], default=20)
-    parser.add_argument('-r', '--nomva'  ,           help='If used, it will remove the MVA requirement', action='store_true')
-    parser.add_argument('-e', '--emulate',           help='If used, it will emulate Run1/2 conditions', action='store_true')
-
+    parser.add_argument('-q', '--q2bin'  , type=Qsq      , help='q2 bin' , choices=['low', 'central', 'jpsi', 'psi2', 'high'], required=True)
+    parser.add_argument('-s', '--sample' , type=Component, help='Sample' , required=True)
+    parser.add_argument('-t', '--trigger', type=Trigger  , help='Trigger' , required=True, choices=Config.l_trigger)
+    parser.add_argument('-c', '--config' , type=str      , help='Configuration', required=True)
+    parser.add_argument('-x', '--substr' , type=str      , help='Substring that must be contained in path, e.g. magup')
+    parser.add_argument('-b', '--brem'   , type=int      , help='Brem category, 12 = 1 or 2, -1 = all' , choices=[-1, 0, 1, 2, 12], required=True)
+    parser.add_argument('-B', '--block'  , type=int      , help='Block to which data belongs, -1 will put all the data together', choices=[-1, 0, 12, 3, 4, 5, 6, 78], required=True)
+    parser.add_argument('-l', '--log_lvl', type=int      , help='Logging level', choices=[10, 20, 30, 40], default=20)
+    parser.add_argument('-r', '--nomva'  ,                 help='If used, it will remove the MVA requirement', action='store_true')
+    parser.add_argument('-e', '--emulate',                 help='If used, it will emulate Run1/2 conditions', action='store_true')
     args = parser.parse_args()
 
     LogStore.set_level('rx_plots:compare', args.log_lvl)
@@ -258,8 +256,7 @@ def _cfg_from_args() -> Config:
     brem   = args.brem,
     block  = args.block,
     nomva  = args.nomva,
-    emulate= args.emulate,
-    nthread= args.nthread)
+    emulate= args.emulate)
 
     return cfg
 # ---------------------------------
@@ -289,8 +286,8 @@ def _get_out_dir(
     return out_dir
 # ---------------------------------
 def _rdf_from_def(
-    rdf   : RDataFrame, 
-    d_def : DictConfig) -> RDataFrame:
+    rdf   : RDF.RNode, 
+    d_def : DictConfig) -> RDF.RNode:
     '''
     Parameters
     ------------------
@@ -315,7 +312,7 @@ def _rdf_from_def(
         log.verbose(f'Applying cut: {cut_expr}')
         rdf = rdf.Filter(cut_expr, cut_name)
 
-    if log.getEffectiveLevel() < 20:
+    if log.getEffectiveLevel() < LogLevels.info:
         rep = rdf.Report()
         rep.Print()
 
@@ -323,7 +320,7 @@ def _rdf_from_def(
 
     return rdf
 # ---------------------------------
-def _get_inp(cfg : Config, cfg_plt : DictConfig) -> dict[str,RDataFrame]:
+def _get_inp(cfg : Config, cfg_plt : DictConfig) -> dict[str,RDF.RNode]:
     '''
     Parameters
     -------------------
@@ -346,7 +343,7 @@ def _get_inp(cfg : Config, cfg_plt : DictConfig) -> dict[str,RDataFrame]:
 
     return d_rdf
 # ---------------------------------
-def main(settings : DictConfig|None = None) -> list[Path]:
+def main(settings : Config|None = None) -> list[Path]:
     '''
     Parameters
     ------------------
@@ -359,24 +356,22 @@ def main(settings : DictConfig|None = None) -> list[Path]:
     if settings is None:
         cfg = _cfg_from_args()
     else:
-        data= OmegaConf.to_container(settings, resolve=True)
-        if not isinstance(data, dict):
-            raise ValueError('Data not a dictionary')
-
-        cfg = Config(**data)
+        cfg = settings
 
     cfg_plt = _get_plot_cfg(cfg=cfg)
     mplhep.style.use('LHCb2')
 
     l_path = []
-    with RDFGetter.multithreading(nthreads=cfg.nthread):
-        d_rdf = _get_inp(cfg=cfg, cfg_plt=cfg_plt)
+    d_rdf  = _get_inp(cfg=cfg, cfg_plt=cfg_plt)
+    for rdf in d_rdf.values():
+        rep = rdf.Report()
+        rep.Print()
 
-        log.info('Plotting')
-        ptr  = Plotter1D(d_rdf=d_rdf, cfg=cfg_plt)
-        path = ptr.run()
+    log.info('Plotting')
+    ptr    = Plotter1D(d_rdf=d_rdf, cfg=cfg_plt)
+    path   = ptr.run()
 
-        l_path.append(path)
+    l_path.append(path)
 
     return l_path
 # ---------------------------------
