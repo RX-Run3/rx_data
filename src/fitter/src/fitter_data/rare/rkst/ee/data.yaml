@@ -2,7 +2,6 @@
 # It illustrates how a fit would run for data
 
 trigger          : Hlt2RD_B0ToKpPimEE_MVA
-
 yields           : model/yields/rkst/rare_electron.yaml
 selection        : {}
 observable:
