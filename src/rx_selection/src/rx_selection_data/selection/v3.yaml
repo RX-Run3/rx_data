@@ -33,6 +33,7 @@ q2_common: &q2_common
   jpsi    : (q2       >  6000000) && (q2 < 11000000)
   psi2    : (q2       > 11000000) && (q2 < 15000000)
   high    : (q2       > 15000000) && (q2 < 22000000)
+  all     : q2 > 0
 
 hop_common: &hop_common
   low     : hop_mass > 4500
