@@ -43,3 +43,5 @@ lines:
     color : gray
     ls    : --
     lw    : 2
+figure:
+  size : [20, 10]
