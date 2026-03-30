@@ -371,7 +371,17 @@ class Component(StrEnum):
         ----------------
         Latex string for decay associated to sample
         '''
-        return self.name
+        match self:
+            case Component.bpkpjpsiee:
+                return r'$B^+\to K^+J/\psi(\to e^+e^-)$'
+            case Component.bpkpjpsimm:
+                return r'$B^+\to K^+J/\psi(\to \mu^+\mu^-)$'
+            case Component.bpkpee:
+                return r'$B^+\to K^+e^+e^-$'
+            case Component.bpkpmm:
+                return r'$B^+\to K^+\mu^+\mu^-$'
+            case _:
+                return self.name
     # --------------------------------------------
     @property
     def channel(self) -> Channel:
