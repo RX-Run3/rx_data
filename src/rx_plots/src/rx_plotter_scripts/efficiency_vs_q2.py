@@ -17,7 +17,7 @@ from ROOT         import RDF # type: ignore
 from omegaconf    import DictConfig
 from dmu          import LogStore
 from dmu.generic  import utilities as gut
-from rx_common    import Cuts, Qsq, Component, Trigger, QsqDef
+from rx_common    import Qsq, Component, Trigger, QsqDef
 from rx_data      import RDFGetter
 from rx_selection import selection as sel
 
@@ -241,7 +241,14 @@ def _plot_efficiencies(
 
     h_eff_tot = RAN * h_all / h_den
 
-    h_eff_tot.plot(histtype='step', label=qsqdef.latex)
+    if qsqdef == QsqDef.default:
+        h_eff_tot.plot(
+            histtype= 'fill',
+            alpha   = 0.3,
+            color   = qsqdef.color,
+            label   = qsqdef.latex)
+    else:
+        h_eff_tot.plot(histtype='step', label=qsqdef.latex, color = qsqdef.color)
 # ----------------------
 def _get_out_path(q2bin : str) -> str:
     '''
