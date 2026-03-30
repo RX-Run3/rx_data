@@ -69,6 +69,19 @@ class QsqDef(StrEnum):
     true        = auto()
     # -----------------------
     @property
+    def color(self) -> str:
+        '''
+        Color used for plots
+        '''
+        match self:
+            case QsqDef.default:
+                return 'blue'
+            case QsqDef.constrained:
+                return 'green'
+            case QsqDef.true:
+                return 'red'
+    # -----------------------
+    @property
     def branch_name(self) -> str:
         '''
         Name of branch associated
