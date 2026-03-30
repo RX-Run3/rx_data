@@ -1,47 +1,32 @@
 # This config file is meant to be used with `efficiency_vs_q2`
-
-input:
-   rk_ee:
-    - Bu_Kee_eq_btosllball05_DPC
-    - Hlt2RD_BuToKpEE_MVA
-   rk_mm:
-    - Bu_Kmumu_eq_btosllball05_DPC
-    - Hlt2RD_BuToKpMuMu_MVA
-   rkst_ee:
-    - Bd_Kstee_eq_btosllball05_DPC
-    - Hlt2RD_B0ToKpPimEE_MVA
-   rkst_mm:
-    - Bd_Kstmumu_eq_btosllball05_DPC
-    - Hlt2RD_B0ToKpPimMuMu_MVA
 hist_conf:
-  q2_true:
+  'true':
     name  : q2_true
     bins  : 50
     start : 0
     stop  : 22
     label : $q_{true}^2 [\text{GeV}^2]$
-  q2:
+  default:
     name  : q2
     bins  : 50
     start : 0
     stop  : 22
     label : $q^2 [\text{GeV}^2]$
-  q2_dtf:
+  constrained:
     name  : q2
     bins  : 50
     start : 0
     stop  : 22
     label : $q_{DTF}^2 [\text{GeV}^2]$
-lines:
-  bounds:
-    Low         : 1.1
-    Central     : 6.0
-    $J/\psi$    : 11.0
-    $\psi(2S)$  : 15.0
-    High        : 22.0
-  styling:
-    color : gray
-    ls    : --
-    lw    : 2
+bounds:
+  low     : 1.1
+  central : 6.0
+  jpsi    : 11.0
+  psi2    : 15.0
+  high    : 22.0
+line_style:
+  color : gray
+  ls    : --
+  lw    : 2
 figure:
   size : [20, 10]
