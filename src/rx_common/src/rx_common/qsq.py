@@ -1,8 +1,9 @@
 '''
 Module containing Qsq enum
 '''
-from enum      import StrEnum
+from enum import StrEnum, auto
 
+# -----------------------
 class Qsq(StrEnum):
     '''
     This class represents different q2 bins
@@ -58,4 +59,38 @@ class Qsq(StrEnum):
     # --------------------------
     def __str__(self):
         return self.value
-
+# -----------------------
+class QsqDef(StrEnum):
+    '''
+    Enum meant to symbolize q2 definition
+    '''
+    default     = auto()
+    constrained = auto()
+    true        = auto()
+    # -----------------------
+    @property
+    def branch_name(self) -> str:
+        '''
+        Name of branch associated
+        '''
+        match self:
+            case QsqDef.default:
+                return 'q2'
+            case QsqDef.constrained:
+                return 'q2_dtf'
+            case QsqDef.true:
+                return 'q2_true'
+    # -----------------------
+    @property
+    def latex(self) -> str:
+        '''
+        Latex version for plots
+        '''
+        match self:
+            case QsqDef.default:
+                return '$q^{2}$'
+            case QsqDef.constrained:
+                return '$q_{DTF}^{2}$'
+            case QsqDef.true:
+                return '$q_{True}^{2}$'
+# -----------------------

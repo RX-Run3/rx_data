@@ -17,6 +17,7 @@ from .region    import Region
 from .cuts      import Cuts
 from .mass      import Mass
 from .qsq       import Qsq 
+from .qsq       import QsqDef
 
 __all__ = [
     'CCbarComponent',
@@ -36,6 +37,7 @@ __all__ = [
     'Block',
     'MVA',
     'Qsq', 
+    'QsqDef', 
     # --------------------
     'set_nproc',
     'get_nproc',
