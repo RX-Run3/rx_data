@@ -9,7 +9,7 @@ from pathlib     import Path
 from typing      import Callable, Self
 
 from rx_common   import Channel, Mass, Project, Qsq, MisID, Region
-from rx_common   import Component, Trigger, CCbarComponent
+from rx_common   import Component, Trigger, CCbarComponent, Cuts
 from rx_misid    import MisIDSampleWeights
 from dmu         import LogLevels, LogStore
 from dmu.stats   import ModelFactoryConf
@@ -245,7 +245,7 @@ class FitModelConf(ComponentConf):
     model_config = ConfigDict(frozen = True)
 
     trigger    : Trigger
-    selection  : dict[Region,str]
+    selection  : dict[Region|Cuts,str]
     yields     : YieldsConf 
     observable : dict[Qsq | MisID, ObservableConf]
     components : dict[Component, AnyModelConf]

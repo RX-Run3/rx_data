@@ -14,6 +14,7 @@ from .process   import set_nproc, get_nproc
 from .project   import Project 
 from .channel   import Channel 
 from .region    import Region
+from .cuts      import Cuts
 from .mass      import Mass
 from .qsq       import Qsq 
 
@@ -29,6 +30,7 @@ __all__ = [
     'DataSet',
     'Region',
     'MisID',
+    'Cuts',
     'Mass',
     'Brem',
     'Block',
