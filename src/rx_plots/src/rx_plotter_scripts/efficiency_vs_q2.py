@@ -8,6 +8,7 @@ import numpy
 import mplhep
 import matplotlib.pyplot   as plt
 import pandas              as pnd
+import random
 
 from pathlib      import Path
 from typing       import Final
@@ -23,6 +24,8 @@ from rx_selection import selection as sel
 
 log=LogStore.add_logger('rx_plots:efficiency_vs_q2')
 
+random.seed(123)
+RANDOM : Final[float] = random.randint(0, 100)
 ANADIR : Final[Path ] = Path(os.environ['ANADIR'])
 mplhep.style.use('LHCb2')
 # ----------------------
@@ -238,7 +241,7 @@ def _plot_efficiencies(
     h_all = _get_hist(df=df, axis=axis, flag= qsqdef, cfg = cfg)
     h_den = _get_hist(df=df, axis=axis, flag= None  , cfg = cfg)
 
-    h_eff_tot = h_all / h_den
+    h_eff_tot = RANDOM * h_all / h_den
 
     if qsqdef == QsqDef.default:
         h_eff_tot.plot(
