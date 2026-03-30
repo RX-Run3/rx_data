@@ -26,10 +26,15 @@ hist_conf:
     start : 0
     stop  : 22
     label : $q^2 [\text{GeV}^2]$
+  q2_dtf:
+    name  : q2
+    bins  : 50
+    start : 0
+    stop  : 22
+    label : $q_{DTF}^2 [\text{GeV}^2]$
 lines:
   bounds:
     Low         : 1.1
-    Low central : 4.0
     Central     : 6.0
     $J/\psi$    : 11.0
     $\psi(2S)$  : 15.0
