@@ -221,7 +221,7 @@ def _get_hist(
         arr_q2  = df.attrs['total']
     else:
         df_filt = df.query(f'{flag} == 1')
-        arr_q2  = df_filt[cfg.qsqdef].to_numpy()
+        arr_q2  = df_filt[cfg.qsqdef.branch_name].to_numpy()
 
     arr_q2    = arr_q2 / 1000_000.
     histogram = Hist(axis)
