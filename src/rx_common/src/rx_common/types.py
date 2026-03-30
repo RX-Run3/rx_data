@@ -28,8 +28,8 @@ class Particle(StrEnum):
     '''
     Model meant to store particle properties
     '''
-    kaon = 'kaon'
-    pion = 'pion'
+    kaon = auto() 
+    pion = auto() 
 # ------------------------------
 class Parameter(StrEnum):
     '''
