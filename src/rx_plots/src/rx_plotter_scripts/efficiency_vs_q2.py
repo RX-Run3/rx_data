@@ -3,7 +3,6 @@ This script is meant to make plots of the efficiency in MC
 in function of the true q2
 '''
 import os
-import random
 import argparse
 import numpy
 import mplhep
@@ -25,7 +24,6 @@ from rx_selection import selection as sel
 log=LogStore.add_logger('rx_plots:efficiency_vs_q2')
 
 ANADIR : Final[Path ] = Path(os.environ['ANADIR'])
-RAN    : Final[float] = random.random()
 mplhep.style.use('LHCb2')
 # ----------------------
 class StyleConf(BaseModel):
@@ -78,18 +76,12 @@ def _parse_args() -> PlotConfig:
         type=Trigger, 
         help='Trigger')
 
-    parser.add_argument(
-        '-d', 
-        '--definition', 
-        type=QsqDef, 
-        help='Q2 definition')
-
     args = parser.parse_args()
 
     data = gut.load_data(package = 'rx_plotter_data', fpath = 'efficiency/vs_q2.yaml')
     return PlotConfig(
+        qsqdef    = QsqDef.true,
         component = args.component,
-        qsqdef    = args.definition,
         trigger   = args.trigger,
         **data)
 # ----------------------
@@ -240,26 +232,27 @@ def _plot_efficiencies(
         with numpy array with q2 from MCDecayTree attached with key `total`
     cfg : Plotting configuration
     kind: Type of q2 variable to use for selection
-
-    Returns
-    -------------
-    Nothing, this should only plot efficiencies
     '''
     hist_conf = cfg.hist_conf[cfg.qsqdef]
     axis  = Regular(**hist_conf.model_dump())
     h_all = _get_hist(df=df, axis=axis, flag= qsqdef, cfg = cfg)
     h_den = _get_hist(df=df, axis=axis, flag= None  , cfg = cfg)
 
-    h_eff_tot = RAN * h_all / h_den
+    h_eff_tot = h_all / h_den
 
     if qsqdef == QsqDef.default:
         h_eff_tot.plot(
-            histtype= 'fill',
             alpha   = 0.3,
+            histtype= 'fill',
+            label   = qsqdef.latex,
             color   = qsqdef.color,
-            label   = qsqdef.latex)
+        )
     else:
-        h_eff_tot.plot(histtype='step', label=qsqdef.latex, color = qsqdef.color)
+        h_eff_tot.plot(
+            histtype= 'step', 
+            label   = qsqdef.latex, 
+            color   = qsqdef.color, 
+        )
 # ----------------------
 def _plot(
     df   : pnd.DataFrame,
