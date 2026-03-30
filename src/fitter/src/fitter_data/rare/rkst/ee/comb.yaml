@@ -10,7 +10,7 @@ fit_strat: &fit_strat
     ntries : 20
     pvalue : 0.05
 plot_conf: &plot_conf
-  nbins  : 60
+  nbins  : 30
   stacked: True
   d_leg  : {}
 # -------------------------
