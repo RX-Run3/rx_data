@@ -187,9 +187,11 @@ options:
 For this run:
 
 ```bash
-efficiency_vs_q2 -c ee -a rk
-efficiency_vs_q2 -c mm -a rk
+efficiency_vs_q2 -c bpkpee -t Hlt2RD_BuToKpEE_MVA -d true
 ```
+
+It will plot the true $q^2$ distribution for the $B^+\to K^+e^+e^-$ signal.
+Other samples and $q^2$ definitions can be chosen.
 
 ## Run1,2 and 3 comparisons
 
