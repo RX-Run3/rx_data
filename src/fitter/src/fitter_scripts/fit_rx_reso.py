@@ -154,26 +154,23 @@ def _fit_muon(cfg : RXFitConfig) -> None:
             cfg  = cfg.mod_cfg)
         ftr.run()
 # ----------------------
-def main(args : DictConfig | None = None):
+def main():
     '''
     Entry point
     '''
     _set_logs()
 
-    cfg = _parse_args(args=args) 
+    cfg = _parse_args() 
 
     overriding_selection = {
         'mass'  : '(1)',
         'block' : cfg.block_cut,
         'nobrm0': cfg.brem_cut,
-        'bdt'   : cfg.mva_cut}
+        'bdt'   : cfg.mva_cmb}
 
     Cache.set_cache_root(root=cfg.output_directory)
     with ExitStack() as stack:
-        stack.enter_context(PL.parameter_schema(cfg=cfg.mod_cfg.model.yields))
-        stack.enter_context(RDFGetter.multithreading(nthreads=cfg.nthread))
         stack.enter_context(Cache.turn_off_cache(val=[]))
-        stack.enter_context(sut.blinded_variables(regex_list=['.*signal.*']))
         stack.enter_context(sel.custom_selection(d_sel=overriding_selection))
 
         if cfg.is_electron: 
