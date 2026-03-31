@@ -8,12 +8,9 @@ import argparse
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 from contextlib    import ExitStack
-from omegaconf     import DictConfig
 from dmu           import LogStore
 from dmu.stats     import GofCalculator
-from dmu.stats     import ParameterLibrary as PL
 from dmu.generic   import utilities as gut
-from dmu.stats     import utilities as sut
 from dmu.workflow  import Cache
 from zfit.loss     import ExtendedUnbinnedNLL
 
