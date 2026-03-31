@@ -64,15 +64,14 @@ def _parse_args() -> RXFitConfig:
     Instance of configuration class, built from arguments
     '''
     parser = argparse.ArgumentParser(description='Script used to fit RX data')
-    parser.add_argument('-b', '--block'  , type=int  , help='Block number, if not passed will do all data'    , choices =[1,2,3,4,5,6,7,8], default=-1)
-    parser.add_argument('-c', '--fit_cfg', type=str  , help='Name of configuration, e.g. reso/rkst/ee'        , required=True)
-    parser.add_argument('-t', '--toy_cfg', type=str  , help='Name of toy config, e.g. toys/maker.yaml'        , default =  '')
-    parser.add_argument('-N', '--ntoys'  , type=int  , help='If specified, this will override ntoys in config', default =0)
-    parser.add_argument('-n', '--nthread', type=int  , help='Number of threads'                               , default =1)
-    parser.add_argument('-l', '--log_lvl', type=int  , help='Logging level', choices=[5, 10, 20, 30]          , default =20)
-    parser.add_argument('-q', '--q2bin'  , type=Qsq  , help='q2 bin'      , choices=Qsq                       , required=True)
-    parser.add_argument('-C', '--mva_cmb', type=float, help='Cut on combinatorial MVA working point'          , required=True)
-    parser.add_argument('-P', '--mva_prc', type=float, help='Cut on part reco MVA working point'              , required=True)
+    parser.add_argument('-b', '--block'  , type=int    , help='Block number, if not passed will do all data'    , choices =[1,2,3,4,5,6,7,8], default=-1)
+    parser.add_argument('-c', '--fit_cfg', type=str    , help='Name of configuration, e.g. reso/rkst/ee'        , required=True)
+    parser.add_argument('-t', '--toy_cfg', type=str    , help='Name of toy config, e.g. toys/maker.yaml'        , default =  '')
+    parser.add_argument('-N', '--ntoys'  , type=int    , help='If specified, this will override ntoys in config', default =0)
+    parser.add_argument('-l', '--log_lvl', type=int    , help='Logging level', choices=[5, 10, 20, 30]          , default =20)
+    parser.add_argument('-q', '--q2bin'  , type=Qsq    , help='q2 bin'      , choices=Qsq                       , required=True)
+    parser.add_argument('-C', '--mva_cmb', type=_get_wp, help='Cut on combinatorial MVA working point'          , required=True)
+    parser.add_argument('-P', '--mva_prc', type=_get_wp, help='Cut on part reco MVA working point'              , required=True)
     args = parser.parse_args()
 
     data = gut.load_data(
