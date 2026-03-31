@@ -33,7 +33,8 @@ where `rare` is the name of the directory inside `$ANADIR/fits/data/`
 Here all the components of the fit appear in the same page. To do this run:
 
 ```bash
-snakemake -s snakemake/rules/web.smk --cores 10 -q all
+snakemake -s snakemake/rules/web_rk.smk   --cores 5 --logger rich
+snakemake -s snakemake/rules/web_rkst.smk --cores 5 --logger rich
 ```
 
 which will create `$ANADIR/plots_for_web/scan/components/`
