@@ -5,6 +5,7 @@ Module with Region enum
 from enum       import StrEnum, auto
 from dmu.stats  import zfit
 
+from .cuts      import Cuts
 from .mass      import Mass
 from .component import Component
 
@@ -15,10 +16,36 @@ class Region(StrEnum):
     e.g. hadronic misID control region
     '''
     # ---------------------
+    # Signal regions
+    # ---------------------
     bpee   = auto()
     bdee   = auto()
+    # ---------------------
+    # MisID regions
+    # ---------------------
     bpkk   = auto()
     bppipi = auto()
+    # ---------------------
+    # Brem regions
+    # ---------------------
+    brem_xx0 = auto()
+    brem_xx1 = auto()
+    brem_xx2 = auto()
+    # ---------------------
+    @property
+    def selection(self) -> dict[Cuts,str]:
+        '''
+        Selection associated to this signal/control region
+        '''
+        match self:
+            case Region.brem_xx0:
+                return {Cuts.brem : 'nbrem == 0'}
+            case Region.brem_xx1:
+                return {Cuts.brem : 'nbrem == 1'}
+            case Region.brem_xx2:
+                return {Cuts.brem : 'nbrem == 2'}
+            case _:
+                raise ValueError(f'No cut defined for region: {self}')
     # ---------------------
     @property
     def signal(self) -> Component:
@@ -34,6 +61,8 @@ class Region(StrEnum):
                 return Component.bdkstkpiee
             case Region.bpee:
                 return Component.bpkpee
+            case _:
+                raise ValueError(f'No component associated to region: {self}')
     # ---------------------
     @property
     def obs(self) -> zfit.Space:
@@ -60,6 +89,8 @@ class Region(StrEnum):
                 return Mass.bp_bcor
             case Region.bdee:
                 return Mass.bd_bcor
+            case _:
+                raise ValueError(f'No mass associated to region: {self}')
     # ---------------------
     @staticmethod
     def hadronic_misid() -> list['Region']:
