@@ -1,0 +1,42 @@
+# This is a config file used for tests
+# It illustrates how a fit would run for data
+
+trigger   : Hlt2RD_B0ToKpPimEE_MVA
+yields    : model/yields/rkst/reso_electron.yaml
+selection : 
+  bdee    : TMath::Abs(B_const_mass_M) > 5180
+observable:
+  jpsi:
+    name : B_Mass
+    range:
+      - 4500 
+      - 7000
+  psi2:
+    name : B_Mass 
+    range:
+      - 4500 
+      - 7000
+components:
+  comb            : reso/rkst/ee/comb.yaml
+  ccbar           : reso/rkst/ee/ccbar.yaml
+  lbpkjpsiee      : reso/rkst/ee/lbpkjpsiee_np.yaml
+  bsphijpsiee     : reso/rkst/ee/bsphijpsiee_np.yaml
+  bskstjpsiee     : reso/rkst/ee/bskstjpsiee.yaml
+  bdkstjpsiee_swp : reso/rkst/ee/bdkstjpsiee_swp_np.yaml
+  bdkstkpijpsiee  : reso/rkst/ee/bdkstkpijpsiee.yaml
+  bdkstkpipsi2ee  : reso/rkst/ee/bdkstkpipsi2ee.yaml
+constraints:
+  pre_rare: []
+fit: {}
+plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#fit-plotting
+  nbins           : 50
+  stacked         : True
+  d_leg :
+    combinatorial : Combinatorial
+    ccbar         : $B_{s,d,u}\to c\bar{c} X$
+    lbjpsipk      : $\Lambda_b \to J/\psi pK$
+    bsjpsiphi     : $B_s \to J/\psi\phi(\to KK)$
+    bsjpsikst     : $B_s\to J/\psi K^{*0}(\to K^+\pi^-)$
+    bdjpsikst_swp : $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$ 
+    jpsi          : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$ 
+    psi2          : $B^0\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
