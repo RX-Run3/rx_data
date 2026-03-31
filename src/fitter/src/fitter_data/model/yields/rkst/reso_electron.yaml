@@ -30,24 +30,24 @@ yld_bdkstkpipsi2ee:
 yld_ccbar:
   <<: *yields
 # -------------------------
-yld_bdkstkpijpsiee_brem_001:
+yld_bdkstkpijpsiee_brem_xx1:
   kind: mul
   pars: 
     - yld_bdkstkpijpsiee
     - jpsi_fraction
-yld_bdkstkpijpsiee_brem_002:
+yld_bdkstkpijpsiee_brem_xx2:
   kind: dif 
   pars:
     - yld_bdkstkpijpsiee
-    - yld_bdkstkpijpsiee_brem_001
+    - yld_bdkstkpijpsiee_brem_xx1
 # -------------------------
-yld_bdkstkpipsi2ee_brem_001:
+yld_bdkstkpipsi2ee_brem_xx1:
   kind: mul
   pars: 
     - yld_bdkstkpipsi2ee
     - psi2_fraction
-yld_bdkstkpipsi2ee_brem_002:
+yld_bdkstkpipsi2ee_brem_xx2:
   kind: dif 
   pars:
     - yld_bdkstkpipsi2ee
-    - yld_bdkstkpipsi2ee_brem_001 
+    - yld_bdkstkpipsi2ee_brem_xx1 
