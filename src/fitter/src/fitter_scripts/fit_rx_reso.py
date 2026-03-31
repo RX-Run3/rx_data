@@ -117,22 +117,23 @@ def _fit_electron(cfg : RXFitConfig) -> None:
     '''
     This is where DataFitter is used
     '''
-    d_nll = {}
-    with sel.update_selection(d_sel = {'brem_cat' : 'nbrem == 1'}):
-        cfg.name = 'brem_001'
-        cfg.replace(substring='brem_xxx', value=cfg.name)
-        d_nll[cfg.name] = _get_nll(cfg=cfg)
+    d_nll : dict[Region,tuple[ExtendedUnbinnedNLL, dict[str,dict[str,str]]]] = {}
+    region = Region.brem_xx1
+    with sel.update_selection(d_sel = region.selection):
+        cfg.name      = region 
+        d_nll[region] = _get_nll(cfg=cfg)
 
-    with sel.update_selection(d_sel = {'brem_cat' : 'nbrem == 2'}):
-        cfg.name = 'brem_002'
-        cfg.replace(substring='brem_001', value=cfg.name)
-        d_nll[cfg.name] = _get_nll(cfg=cfg)
+    region = Region.brem_xx2
+    with sel.update_selection(d_sel = region.selection):
+        cfg.name      = region 
+        d_nll[region] = _get_nll(cfg=cfg)
 
     with GofCalculator.disabled(value=True):
         ftr = DataFitter(
-            name = cfg.q2bin,
-            d_nll= d_nll, 
-            cfg  = cfg.mod_cfg)
+            q2bin = cfg.q2bin,
+            d_nll = d_nll, 
+            cfg   = cfg.mod_cfg)
+
         ftr.run()
 # ----------------------
 def _fit_muon(cfg : RXFitConfig) -> None:
@@ -140,13 +141,12 @@ def _fit_muon(cfg : RXFitConfig) -> None:
     This is where DataFitter is used
     '''
     d_nll    = {}
-    cfg.name = 'brem_000'
-    cfg.replace(substring='brem_000', value=cfg.name)
+    cfg.name = Region.brem_xx0 
     d_nll[cfg.name] = _get_nll(cfg=cfg)
 
     with GofCalculator.disabled(value=True):
         ftr = DataFitter(
-            name = cfg.q2bin,
+            q2bin= cfg.q2bin,
             d_nll= d_nll, 
             cfg  = cfg.mod_cfg)
         ftr.run()
