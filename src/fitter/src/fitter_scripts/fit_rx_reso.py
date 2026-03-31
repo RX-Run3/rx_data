@@ -50,28 +50,39 @@ def _parse_args() -> RXFitConfig:
     --------------
     Instance of configuration class, built from arguments
     '''
-    if args is None:
-        parser = argparse.ArgumentParser(description='Script used to fit RX data')
-        parser.add_argument('-b', '--block'  , type=int  , help='Block number, if not passed will do all data'    , choices =[1,2,3,4,5,6,7,8], default=-1)
-        parser.add_argument('-c', '--fit_cfg', type=str  , help='Name of configuration, e.g. reso/rkst/ee'        , required=True)
-        parser.add_argument('-t', '--toy_cfg', type=str  , help='Name of toy config, e.g. toys/maker.yaml'        , default =  '')
-        parser.add_argument('-N', '--ntoys'  , type=int  , help='If specified, this will override ntoys in config', default =0)
-        parser.add_argument('-n', '--nthread', type=int  , help='Number of threads'                               , default =1)
-        parser.add_argument('-l', '--log_lvl', type=int  , help='Logging level', choices=[5, 10, 20, 30]          , default =20)
-        parser.add_argument('-q', '--q2bin'  , type=str  , help='q2 bin'      , choices=['jpsi', 'psi2']          , required=True)
-        parser.add_argument('-C', '--mva_cmb', type=float, help='Cut on combinatorial MVA working point'          , required=True)
-        parser.add_argument('-P', '--mva_prc', type=float, help='Cut on part reco MVA working point'              , required=True)
-        args = parser.parse_args()
+    parser = argparse.ArgumentParser(description='Script used to fit RX data')
+    parser.add_argument('-b', '--block'  , type=int  , help='Block number, if not passed will do all data'    , choices =[1,2,3,4,5,6,7,8], default=-1)
+    parser.add_argument('-c', '--fit_cfg', type=str  , help='Name of configuration, e.g. reso/rkst/ee'        , required=True)
+    parser.add_argument('-t', '--toy_cfg', type=str  , help='Name of toy config, e.g. toys/maker.yaml'        , default =  '')
+    parser.add_argument('-N', '--ntoys'  , type=int  , help='If specified, this will override ntoys in config', default =0)
+    parser.add_argument('-n', '--nthread', type=int  , help='Number of threads'                               , default =1)
+    parser.add_argument('-l', '--log_lvl', type=int  , help='Logging level', choices=[5, 10, 20, 30]          , default =20)
+    parser.add_argument('-q', '--q2bin'  , type=Qsq  , help='q2 bin'      , choices=Qsq                       , required=True)
+    parser.add_argument('-C', '--mva_cmb', type=float, help='Cut on combinatorial MVA working point'          , required=True)
+    parser.add_argument('-P', '--mva_prc', type=float, help='Cut on part reco MVA working point'              , required=True)
+    args = parser.parse_args()
 
-    fit_cfg = gut.load_conf(package='fitter_data', fpath=f'{args.fit_cfg}/data.yaml')
-    toy_cfg = gut.load_conf(package='fitter_data', fpath=args.toy_cfg) if args.toy_cfg else None
+    data = gut.load_data(
+        package='fitter_data', 
+        fpath  =f'{args.fit_cfg}/data.yaml')
+    fit_cfg = FitModelConf(**data)
+
+    if args.toy_cfg:
+        data = gut.load_data(
+            package='fitter_data', 
+            fpath=args.toy_cfg)
+
+        toy_cfg = ToyConf(**data)
+    else:
+        toy_cfg = None
 
     cfg         = RXFitConfig(
         mod_cfg = fit_cfg, 
         toy_cfg = toy_cfg,
+        name    = args.name,
+        group   = args.group,
         block   = args.block,
         q2bin   = args.q2bin,
-        nthread = args.nthread,
         mva_cmb = args.mva_cmb,
         mva_prc = args.mva_prc,
         log_lvl = args.log_lvl,
