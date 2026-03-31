@@ -17,7 +17,7 @@ from dmu.rdataframe         import utilities          as rut
 from dmu.generic            import utilities          as gut
 from rx_selection           import truth_matching     as tm
 from rx_selection           import version_management as vman
-from rx_common              import Component, Qsq, Trigger, info
+from rx_common              import Component, Qsq, Trigger, info, Cuts
 
 log=LogStore.add_logger('rx_selection:selection')
 #-----------------------
@@ -76,7 +76,7 @@ def custom_selection(
         Data.d_custom_selection = org_val
 # ----------------------
 @contextmanager
-def update_selection(d_sel : dict[str,str]):
+def update_selection(d_sel : dict[str,str] | dict[Cuts,str]):
     '''
     This manager will _update_ the **FULL** selection, i.e. default plus custom one.
 

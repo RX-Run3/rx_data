@@ -344,7 +344,7 @@ class RXFitConfig(BaseModel):
         LogStore.set_level('fitter:constraint_reader'             ,         TOOL_LEVEL)
         LogStore.set_level('fitter:fit_rx_data'                   ,         TOOL_LEVEL)
     # ----------------------
-    def save(self, kind : str) -> None:
+    def save(self) -> None:
         '''
         Saves to JSON fit configuration in directory where data fit will be saved
         '''
