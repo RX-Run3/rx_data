@@ -4,7 +4,7 @@ Module containing DataFitter class
 from pathlib         import Path
 from dmu             import LogStore
 from dmu.workflow    import Cache
-from dmu.stats       import AnealingMinimizer, FitConf, FitResult
+from dmu.stats       import AnealingMinimizer, FitConf, FitResult, Retries
 from dmu.stats       import zfit
 from dmu.stats       import utilities as sut
 from rx_common       import Component, Qsq
@@ -104,14 +104,13 @@ class DataFitter(BaseFitter, Cache):
 
         return res
     # ----------------------
-    def run(self, fit_cfg : FitConf | None = None) -> FitResult:
+    def run(self, fit_cfg : FitConf) -> FitResult:
         '''
         Entry point for fitter
 
         Parameters
         -------------
-        kind   : Type of return value, zfit or conf
-        fit_cfg: Fit configuration. If used will not do simple fit, which is done by default
+        fit_cfg: Fit configuration.
 
         Returns
         -------------
@@ -129,12 +128,14 @@ class DataFitter(BaseFitter, Cache):
         if nll is None:
             raise ValueError('Likelihood is missing')
 
-        if fit_cfg is None:
+        if   fit_cfg.strategy is None:
             res  = self._simple_fit(nll = nll)
             fres = FitResult.from_zfit(res = res)
-        else:
+        elif isinstance(fit_cfg.strategy, Retries):
             min  = AnealingMinimizer(cfg = fit_cfg)
             fres = min.get_result(loss = nll)
+        else:
+            raise NotImplementedError(f'Invalid strategy: {fit_cfg.strategy}')
 
         # NOTE: Save fit in each signal region
         # assuming this is a simultaneous fit
