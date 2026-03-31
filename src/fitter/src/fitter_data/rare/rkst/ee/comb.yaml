@@ -4,7 +4,7 @@
 cleanup      : &cleanup
   jpsi veto  : "TMath::Abs(B_const_mass_M       - 5280) > 200"
   psi2s veto : "TMath::Abs(B_const_mass_psi2S_M - 5280) > 100"
-  cmb        : mva_cmb > 0.4 && mva_cmb < 0.9
+  cmb        : mva_cmb > 0.2 && mva_cmb < 0.9
 fit_strat: &fit_strat
   strategy :
     ntries : 20
