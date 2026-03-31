@@ -45,6 +45,18 @@ def _set_logs() -> None:
     LogStore.set_level('fitter:sim_fitter'        , 30)
     LogStore.set_level('fitter:likelihood_factory', 30)
 # ----------------------
+def _get_wp(val : str) -> MVAWp:
+    '''
+    Parameters
+    ------------
+    val: Float representing working point
+
+    Returns
+    ------------
+    MVA wp instance
+    '''
+    return MVAWp(float(val))
+# ----------------------
 def _parse_args() -> RXFitConfig:
     '''
     Returns
