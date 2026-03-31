@@ -44,7 +44,7 @@ def _set_logs() -> None:
     LogStore.set_level('fitter:sim_fitter'        , 30)
     LogStore.set_level('fitter:likelihood_factory', 30)
 # ----------------------
-def _parse_args(args : DictConfig | argparse.Namespace | None) -> RXFitConfig:
+def _parse_args() -> RXFitConfig:
     '''
     Returns
     --------------
@@ -79,7 +79,7 @@ def _parse_args(args : DictConfig | argparse.Namespace | None) -> RXFitConfig:
 
     return cfg
 # ----------------------
-def _get_nll(cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL, DictConfig]:
+def _get_nll(cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL, dict[str,dict[str,str]]]:
     '''
     Parameters
     -------------
@@ -95,8 +95,7 @@ def _get_nll(cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL, DictConfig]:
         name   = cfg.name,
         obs    = cfg.observable,
         q2bin  = cfg.q2bin,
-        sample = 'DATA_24_*',
-        trigger= cfg.mod_cfg.trigger,
+        sample = Component.data_24,
         cfg    = cfg.mod_cfg)
     nll = ftr.run()
     cfg_mod = ftr.get_config()
