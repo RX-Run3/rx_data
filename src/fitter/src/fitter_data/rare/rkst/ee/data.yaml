@@ -9,17 +9,17 @@ observable:
   low:
     name : B_Mass_smr
     range:
-      - 4600
+      - 4500
       - 6996
   central:
     name : B_Mass_smr
     range:
-      - 4600
+      - 4500
       - 6996
   high:
     name : B_Mass_smr
     range:
-      - 4600
+      - 4500
       - 6996
 components:
   comb           : rare/rkst/ee/comb.yaml
