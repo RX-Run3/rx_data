@@ -1,0 +1,25 @@
+
+component : bskstjpsiee 
+categories:
+  main:
+    selection : {}
+    model:
+      pdfs :
+        - dscb
+      shared        : 
+        - mu
+        - sg
+      floating      :
+        - mu
+        - sg
+      reparametrize : {}
+      fix           : {}
+fit:
+  strategy  :
+    ntries : 10
+    pvalue : 0.05
+plots:
+  nbins   : 50
+  stacked : True
+  d_leg :
+    dscb_1 : DSCB 
