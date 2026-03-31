@@ -4,7 +4,7 @@ Module containing DataFitter class
 from pathlib         import Path
 from dmu             import LogStore
 from dmu.workflow    import Cache
-from dmu.stats       import AnealingMinimizer, FitConf, FitResult, Retries
+from dmu.stats       import AnealingMinimizer, FitResult, Retries
 from dmu.stats       import zfit
 from dmu.stats       import utilities as sut
 from rx_common       import Component, Qsq, Region
@@ -30,7 +30,7 @@ class DataFitter(BaseFitter, Cache):
     def __init__(
         self,
         q2bin : Qsq,
-        d_nll : dict[Region,tuple[NLL,dict[str,dict[str,str]]]],
+        d_nll : dict[str,tuple[NLL,dict[str,dict[str,str]]]] | dict[Region,tuple[NLL,dict[str,dict[str,str]]]],
         cfg   : FitModelConf) -> None:
         '''
         Parameters
