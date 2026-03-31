@@ -178,18 +178,13 @@ def main():
     '''
     _set_logs()
 
-    cfg = _parse_args() 
+    with UnpackerModel.package(name = 'fitter_data'):
+        cfg = _parse_args()
 
-    overriding_selection = {
-        'mass'  : '(1)',
-        'block' : cfg.block_cut,
-        'nobrm0': cfg.brem_cut,
-        'bdt'   : cfg.mva_cmb}
-
-    Cache.set_cache_root(root=cfg.output_directory)
     with ExitStack() as stack:
-        stack.enter_context(Cache.turn_off_cache(val=[]))
-        stack.enter_context(sel.custom_selection(d_sel=overriding_selection))
+        stack.enter_context(Cache.cache_root(path=cfg.output_directory))
+        stack.enter_context(PL.parameter_schema(cfg=cfg.mod_cfg.yields))
+        stack.enter_context(sel.custom_selection(d_sel=cfg.overriding_selection))
 
         if cfg.is_electron: 
             _fit_electron(cfg=cfg)
