@@ -5,7 +5,6 @@ and run fits to the resonant mode
 
 import os
 import argparse
-
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 from contextlib    import ExitStack
@@ -23,6 +22,7 @@ from fitter        import ToyConf
 from fitter        import RXFitConfig
 from fitter        import DataFitter
 from fitter        import LikelihoodFactory
+from fitter        import ParametricConf
 from rx_selection  import selection as sel
 from rx_common     import Qsq, Component, Region
 
@@ -79,6 +79,16 @@ def _parse_args() -> RXFitConfig:
         package='fitter_data', 
         fpath  =f'{args.fit_cfg}/data.yaml')
     fit_cfg = FitModelConf(**data)
+
+    # Extract config for signal and add block (e.g. b1) information
+    # as suffix to the category name
+    signal  = fit_cfg.trigger.get_signal_component(qsq = args.q2bin)
+    sig_cfg = fit_cfg.components[signal] 
+    if not isinstance(sig_cfg, ParametricConf):
+        sig_type = type(sig_cfg)
+        raise ValueError(f'Signal configuration is not a parameteric conf, but: {sig_type}')
+
+    sig_cfg.add_category_suffix(suffix = f'b{args.block}')
 
     if args.toy_cfg:
         data = gut.load_data(
