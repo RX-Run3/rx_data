@@ -104,7 +104,7 @@ class DataFitter(BaseFitter, Cache):
 
         return res
     # ----------------------
-    def run(self, fit_cfg : FitConf) -> FitResult:
+    def run(self) -> FitResult:
         '''
         Entry point for fitter
 
@@ -128,14 +128,14 @@ class DataFitter(BaseFitter, Cache):
         if nll is None:
             raise ValueError('Likelihood is missing')
 
-        if   fit_cfg.strategy is None:
+        if   self._cfg.fit.strategy is None:
             res  = self._simple_fit(nll = nll)
             fres = FitResult.from_zfit(res = res)
-        elif isinstance(fit_cfg.strategy, Retries):
-            min  = AnealingMinimizer(cfg = fit_cfg)
+        elif isinstance(self._cfg.fit.strategy, Retries):
+            min  = AnealingMinimizer(cfg = self._cfg.fit)
             fres = min.get_result(loss = nll)
         else:
-            raise NotImplementedError(f'Invalid strategy: {fit_cfg.strategy}')
+            raise NotImplementedError(f'Invalid strategy: {self._cfg.fit.strategy}')
 
         # NOTE: Save fit in each signal region
         # assuming this is a simultaneous fit
