@@ -25,3 +25,4 @@ class Cuts(StrEnum):
     cmb       = auto()
     prc       = auto()
     mass      = auto()
+    brem      = auto()
