@@ -80,15 +80,13 @@ def _parse_args() -> RXFitConfig:
         fpath  =f'{args.fit_cfg}/data.yaml')
     fit_cfg = FitModelConf(**data)
 
-    # Extract config for signal and add block (e.g. b1) information
-    # as suffix to the category name
-    signal  = fit_cfg.trigger.get_signal_component(qsq = args.q2bin)
-    sig_cfg = fit_cfg.components[signal] 
-    if not isinstance(sig_cfg, ParametricConf):
-        sig_type = type(sig_cfg)
-        raise ValueError(f'Signal configuration is not a parameteric conf, but: {sig_type}')
+    # For any parametric config, add block information, e.g. b1
+    # as suffix 
+    for cfg in fit_cfg.components.values():
+        if not isinstance(cfg, ParametricConf):
+            continue
 
-    sig_cfg.add_category_suffix(suffix = f'b{args.block}')
+        cfg.add_category_suffix(suffix = f'b{args.block}')
 
     if args.toy_cfg:
         data = gut.load_data(
