@@ -65,6 +65,7 @@ def _parse_args() -> RXFitConfig:
     '''
     parser = argparse.ArgumentParser(description='Script used to fit RX data')
     parser.add_argument('-b', '--block'  , type=int    , help='Block number, if not passed will do all data'    , choices =[1,2,3,4,5,6,7,8], default=-1)
+    parser.add_argument('-g', '--group'  , type=str    , help='Group to which fits belong, e.g. reso_no_dtf'    , required=True)
     parser.add_argument('-c', '--fit_cfg', type=str    , help='Name of configuration, e.g. reso/rkst/ee'        , required=True)
     parser.add_argument('-t', '--toy_cfg', type=str    , help='Name of toy config, e.g. toys/maker.yaml'        , default =  '')
     parser.add_argument('-N', '--ntoys'  , type=int    , help='If specified, this will override ntoys in config', default =0)
@@ -88,10 +89,15 @@ def _parse_args() -> RXFitConfig:
     else:
         toy_cfg = None
 
+    if fit_cfg.trigger.is_electron:
+        name = 'brem_x12'
+    else:
+        name = 'brem_xx0'
+
     cfg         = RXFitConfig(
         mod_cfg = fit_cfg, 
         toy_cfg = toy_cfg,
-        name    = args.name,
+        name    = name,
         group   = args.group,
         block   = args.block,
         q2bin   = args.q2bin,
