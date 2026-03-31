@@ -13,23 +13,6 @@ psi2_fraction:
   min : 0.0
   max : 1.0 
 # -------------------------
-yld_bdkstjpsiee_swp:
-  <<: *yields
-yld_lbpkjpsiee:
-  <<: *yields
-yld_bsphijpsiee:
-  <<: *yields
-yld_bskstjpsiee:
-  <<: *yields
-yld_comb:
-  <<: *yields
-yld_bdkstkpijpsiee:
-  <<: *yields
-yld_bdkstkpipsi2ee:
-  <<: *yields
-yld_ccbar:
-  <<: *yields
-# -------------------------
 yld_bdkstkpijpsiee_brem_xx1:
   kind: mul
   pars: 
@@ -51,3 +34,36 @@ yld_bdkstkpipsi2ee_brem_xx2:
   pars:
     - yld_bdkstkpipsi2ee
     - yld_bdkstkpipsi2ee_brem_xx1 
+# -------------------------
+yld_bdkstjpsiee_swp_brem_xx1:
+  <<: *yields
+yld_bdkstjpsiee_swp_brem_xx2:
+  <<: *yields
+yld_lbpkjpsiee_brem_xx1:
+  <<: *yields
+yld_lbpkjpsiee_brem_xx2:
+  <<: *yields
+yld_bsphijpsiee_brem_xx1:
+  <<: *yields
+yld_bsphijpsiee_brem_xx2:
+  <<: *yields
+yld_bskstjpsiee_brem_xx1:
+  <<: *yields
+yld_bskstjpsiee_brem_xx2:
+  <<: *yields
+yld_comb_brem_xx1:
+  <<: *yields
+yld_comb_brem_xx2:
+  <<: *yields
+yld_bdkstkpijpsiee_brem_xx1:
+  <<: *yields
+yld_bdkstkpijpsiee_brem_xx2:
+  <<: *yields
+yld_bdkstkpipsi2ee_brem_xx1:
+  <<: *yields
+yld_bdkstkpipsi2ee_brem_xx2:
+  <<: *yields
+yld_ccbar_brem_xx1:
+  <<: *yields
+yld_ccbar_brem_xx2:
+  <<: *yields
