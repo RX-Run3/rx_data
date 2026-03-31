@@ -5,15 +5,19 @@ and run fits to the resonant mode
 
 import os
 import argparse
+
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 from contextlib    import ExitStack
 from dmu           import LogStore
 from dmu.stats     import GofCalculator
-from dmu.generic   import utilities as gut
 from dmu.workflow  import Cache
+from dmu.stats     import ParameterLibrary as PL
+from dmu.generic   import utilities as gut
+from dmu.generic   import UnpackerModel
 from zfit.loss     import ExtendedUnbinnedNLL
 
+from fitter        import MVAWp
 from fitter        import FitModelConf
 from fitter        import ToyConf
 from fitter        import RXFitConfig
