@@ -203,7 +203,7 @@ def _fit(cfg : RXFitConfig) -> None:
         q2bin = cfg.q2bin,
         d_nll = {cfg.name : (nll, cfg_mod)}, 
         cfg   = cfg.mod_cfg)
-    res = ftr.run()
+    res = ftr.run(fit_cfg = cfg.mod_cfg.fit)
 
     if cfg.toy_cfg is None:
         log.info('Not making toys')
