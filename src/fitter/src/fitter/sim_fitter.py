@@ -233,6 +233,10 @@ class SimFitter(BaseFitter, Cache):
         -------------
         PDF for component that does not require MC, e.g. combinatorial
         '''
+        if self._q2bin not in cfg.models:
+            for val in cfg.models:
+                log.error(val)
+            raise ValueError(f'Bin {self._q2bin} not found')
 
         model_cfg = cfg.models[self._q2bin]
         model     = self._get_pdf(
