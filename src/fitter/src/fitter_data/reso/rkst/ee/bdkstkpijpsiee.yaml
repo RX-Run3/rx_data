@@ -14,8 +14,6 @@ categories:
       floating      :
         - mu
         - sg
-        - ar
-        - nr
       reparametrize : {}
       fix           : {}
   brem_xx2:
@@ -31,8 +29,6 @@ categories:
       floating      :
         - mu
         - sg
-        - ar
-        - nr
       reparametrize : {}
       fix           : {}
 fit:
