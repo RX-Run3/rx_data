@@ -440,7 +440,7 @@ class RXFitConfig(BaseModel):
         -------------
         True if using electron trigger, false otherwise
         '''
-        return self.mod_cfg.trigger.channel == 'electron'
+        return self.mod_cfg.trigger.is_electron
     # ----------------------
     @cached_property
     def fit_name(self) -> str:
