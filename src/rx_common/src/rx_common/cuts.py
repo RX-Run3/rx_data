@@ -7,6 +7,9 @@ class Cuts(StrEnum):
     '''
     Class meant to symbolize cuts
     '''
+    truth     = auto()
+    clean     = auto()
+    block     = auto()
     q2        = auto()
     ghost     = auto()
     hlt1      = auto()
@@ -26,3 +29,4 @@ class Cuts(StrEnum):
     prc       = auto()
     mass      = auto()
     brem      = auto()
+    extra     = auto()
