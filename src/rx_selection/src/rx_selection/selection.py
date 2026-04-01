@@ -29,7 +29,7 @@ class Data:
     l_analysis = ['EE', 'MM'  ]
     l_q2bin    = ['low', 'central', 'jpsi', 'psi2S', 'high']
 
-    d_custom_selection : dict[str,str]|None = None
+    d_custom_selection : None | dict[Cuts | str,str] = None
 #-----------------------
 class MultipleSelectionOverriding(Exception):
     '''
@@ -76,7 +76,7 @@ def custom_selection(
         Data.d_custom_selection = org_val
 # ----------------------
 @contextmanager
-def update_selection(d_sel : dict[str,str] | dict[Cuts,str]):
+def update_selection(d_sel : dict[Cuts | str,str]):
     '''
     This manager will _update_ the **FULL** selection, i.e. default plus custom one.
 
