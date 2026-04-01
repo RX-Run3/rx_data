@@ -1,13 +1,12 @@
-
 samples:
-  - bdjpsixmm 
-  - bpjpsixmm 
-  - bsjpsixmm 
+  - bdjpsixmm
+  - bpjpsixmm
+  - bsjpsixmm
 weights:
   dec : True
   sam : True
 fit:
   kind      : KDE1DimFFT
-  bandwidth : 20
-  padding   : 
+  bandwidth : 10
+  padding   :
     flag : False
