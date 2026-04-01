@@ -15,8 +15,8 @@ categories:
       fix           : {}
       values:
         sg:
-          - 30
-          - 20
+          - 60
+          - 40
           - 300
 fit:
   strategy  :
