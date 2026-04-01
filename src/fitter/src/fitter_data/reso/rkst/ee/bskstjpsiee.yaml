@@ -1,31 +1,14 @@
 component : bskstjpsiee 
 categories:
-  brem_xx1:
-    selection :
-      brem : nbrem == 1
+  brem    :
+    selection : {}
     model:
       pdfs :
         - dscb
       shared        : 
         - mu
         - sg
-      floating      :
-        - mu
-        - sg
-      reparametrize : {}
-      fix           : {}
-  brem_xx2:
-    selection :
-      brem : nbrem == 2
-    model:
-      pdfs :
-        - dscb
-      shared        : 
-        - mu
-        - sg
-      floating      :
-        - mu
-        - sg
+      floating      : []
       reparametrize : {}
       fix           : {}
 fit:

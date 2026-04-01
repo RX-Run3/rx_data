@@ -1,23 +1,7 @@
 component : bdkstkpijpsiee 
 categories:
-  brem_xx1:
-    selection :
-      brem : nbrem == 1
-    model:
-      pdfs:
-        - dscb
-        - gauss
-      shared        : 
-        - mu
-        - sg
-      floating      :
-        - mu
-        - sg
-      reparametrize : {}
-      fix           : {}
-  brem_xx2:
-    selection :
-      brem : nbrem == 2
+  brem:
+    selection : {}
     model:
       pdfs:
         - dscb
