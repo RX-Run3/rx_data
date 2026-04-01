@@ -12,6 +12,7 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
   stacked : True
   d_leg :
     bsphijpsimm : PDF 
+  plot_components : []
   plot_range:
     - 5100
     - 5500

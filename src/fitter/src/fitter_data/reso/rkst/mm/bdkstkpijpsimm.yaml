@@ -21,6 +21,7 @@ fit:
 plots:
   nbins   : 60
   stacked : True
+  plot_components : []
   plot_range:
     - 5180
     - 5400

@@ -13,3 +13,7 @@ plots:
   stacked : True
   d_leg :
     gauss_1 : Gauss 
+  plot_components : []
+  plot_range:
+    - 4800
+    - 5500

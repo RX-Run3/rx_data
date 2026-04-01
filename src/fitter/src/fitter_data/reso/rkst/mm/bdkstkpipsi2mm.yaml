@@ -1,5 +1,4 @@
-
-component        : bdkstkpipsi2mm
+component : bdkstkpipsi2mm
 categories:
   brem_xx0:
     selection : {}
@@ -22,6 +21,7 @@ fit:
 plots:
   nbins   : 50
   stacked : True
+  plot_components : []
   plot_range:
     - 5100
     - 5500
