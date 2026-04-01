@@ -46,22 +46,22 @@ hop_common: &hop_common
 
 # B_Mass, as defined in rx_data config.yaml, should be the brem corrected mass
 mass_ee   : &mass_ee
-  low     : B_Mass               > 0
-  central : B_Mass               > 0
-  cen_low : B_Mass               > 0
-  cen_high: B_Mass               > 0
-  jpsi    : B_const_mass_M       > 0
-  psi2    : B_const_mass_psi2S_M > 0
-  high    : B_Mass               > 0
+  low     : B_M > 0
+  central : B_M > 0
+  cen_low : B_M > 0
+  cen_high: B_M > 0
+  jpsi    : B_M > 0
+  psi2    : B_M > 0
+  high    : B_M > 0
 
 mass_mm  : &mass_mm
-  low     : B_Mass               > 0
-  central : B_Mass               > 0
-  cen_low : B_Mass               > 0
-  cen_high: B_Mass               > 0
-  jpsi    : B_const_mass_M       > 0
-  psi2    : B_const_mass_psi2S_M > 0
-  high    : B_Mass               > 0
+  low     : B_M > 0
+  central : B_M > 0
+  cen_low : B_M > 0
+  cen_high: B_M > 0
+  jpsi    : B_M > 0
+  psi2    : B_M > 0
+  high    : B_M > 0
 # --------------------
 RKst: &rkst
   EE:
