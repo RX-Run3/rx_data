@@ -259,7 +259,7 @@ def test_misid(
         ftr.get_model()
 # ---------------------------------------------------
 @pytest.mark.parametrize('mass', [Mass.bp_dtf_jpsi, Mass.bp_bcor_smr])
-def test_ccbar_reso(mass : Mass, tmp_path : Path):
+def test_ccbar_reso_rk(mass : Mass, tmp_path : Path):
     '''
     Tests retriveval of PDF associated to ccbar inclusive decays
     '''
@@ -279,6 +279,34 @@ def test_ccbar_reso(mass : Mass, tmp_path : Path):
             obs      = obs,
             cfg      = cfg,
             trigger  = Trigger.rk_ee_os,
+            q2bin    = Qsq.jpsi)
+        pdf = ftr.get_model()
+
+    assert pdf is not None
+
+    sut.print_pdf(pdf)
+# ---------------------------------------------------
+@pytest.mark.parametrize('mass', [Mass.bp_dtf_jpsi, Mass.bp_bcor_smr])
+def test_ccbar_reso_rkst(mass : Mass, tmp_path : Path):
+    '''
+    Tests retriveval of PDF associated to ccbar inclusive decays
+    '''
+    component = Component.ccbar 
+    obs       = zfit.Space(
+        obs   = mass.latex, 
+        label = mass,
+        limits= mass.limits)
+
+    data = gut.load_data(package='fitter_data', fpath=f'reso/rkst/ee/{component}.yaml')
+    cfg  = CCbarConf(**data)
+
+    with Cache.cache_root(path = tmp_path):
+        ftr = SimFitter(
+            name     = 'main',
+            component= component,
+            obs      = obs,
+            cfg      = cfg,
+            trigger  = Trigger.rkst_ee_os,
             q2bin    = Qsq.jpsi)
         pdf = ftr.get_model()
 
