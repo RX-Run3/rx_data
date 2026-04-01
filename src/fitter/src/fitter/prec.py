@@ -28,7 +28,7 @@ from zfit.pdf              import BasePDF       as zpdf
 from zfit.pdf              import KDE1DimFFT, SumPDF
 
 from rx_data               import RDFGetter
-from rx_common             import Component, Project, Qsq, Trigger, Mass, CCbarComponent
+from rx_common             import Component, Cuts, Project, Qsq, Trigger, Mass, CCbarComponent
 from rx_common             import info
 from rx_selection          import selection     as sel
 
@@ -245,7 +245,7 @@ class PRec(Cache):
         self._trig     = trig
         self._q2bin    = q2bin
         self._d_fstat  = {}
-        self._cut_info : dict[str, tuple[RDF.RCutFlowReport, dict[str,str]]] = {}
+        self._cut_info : dict[str, tuple[RDF.RCutFlowReport, dict[Cuts,str]]] = {}
         d_rdf, uid     = self.__get_samples_rdf()
         self._d_rdf    = d_rdf
 
@@ -323,7 +323,7 @@ class PRec(Cache):
             q2bin  =self._q2bin, 
             process=component)
 
-        d_sel['mass'] = '(1)'
+        d_sel[Cuts.mass] = '(1)'
         for name, expr in d_sel.items():
             rdf = rdf.Filter(expr, name)
 
@@ -339,7 +339,7 @@ class PRec(Cache):
         self, 
         report    : RDF.RCutFlowReport, 
         sample    : str,
-        selection : dict[str,str]) -> None:
+        selection : dict[Cuts,str]) -> None:
         '''
         Parameters
         -------------
