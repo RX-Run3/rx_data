@@ -25,7 +25,7 @@ from dmu.workflow          import Cache
 
 from zfit                  import Space         as zobs
 from zfit.pdf              import BasePDF       as zpdf
-from zfit.pdf              import KDE1DimFFT, KDE1DimISJ, SumPDF
+from zfit.pdf              import KDE1DimFFT, SumPDF
 
 from rx_data               import RDFGetter
 from rx_common             import Component, Project, Qsq, Trigger, Mass, CCbarComponent
@@ -38,9 +38,8 @@ from .inclusive_sample_weights import Reader as SampleWeightReader
 
 log=LogStore.add_logger('fitter:prec')
 
-KDEPDF                       = KDE1DimFFT | KDE1DimISJ
-MIN_ISJ_ENTRIES : Final[int] = 500 # If Fewer entries than this, switch from ISJ to FFT
-MIN_ENTRIES     : Final[int] =  40 # Will not build KDE if fewer entries than this are found
+KDEPDF                   = KDE1DimFFT
+MIN_ENTRIES : Final[int] =  40 # Will not build KDE if fewer entries than this are found
 
 # TODO: Need separate normalization and observable ranges
 # to pick all the dataset in the construction of KDEs and avoid/aliviate
@@ -75,28 +74,39 @@ class CharmoniumComponent(BaseModel):
         if self.nentries < MIN_ENTRIES:
             return
 
-        if self.nentries > MIN_ISJ_ENTRIES:
-            log.debug('Using ISJ KDE for high statistics sample')
-
-            pdf = zfit.pdf.KDE1DimISJ(
-                obs     = self.obs,
-                data    = self.mass, 
-                weights = self.wgt, 
-                padding = self.cfg.padding.value)
-        else:
-            log.debug('Using FFT KDE for low statistics sample')
-
-            pdf = zfit.pdf.KDE1DimFFT(
-                obs       = self.obs,
-                data      = self.mass,
-                weights   = self.wgt, 
-                padding   = self.cfg.padding.value,
-                bandwidth = self.cfg.bandwidth)
+        pdf = zfit.pdf.KDE1DimFFT(
+            norm      = self.obs,
+            obs       = self._extended_obs,
+            data      = self.mass,
+            weights   = self.wgt, 
+            padding   = self.cfg.padding.value,
+            bandwidth = self.cfg.bandwidth)
 
         if not is_pdf_usable(pdf = pdf):
             raise ValueError('PDF is not usable')
 
         return pdf
+    # ---------------------------
+    @property
+    def _extended_obs(self) -> zobs:
+        '''
+        Observable used to build KDE, defined where data exists
+        '''
+        if len(self.mass) < MIN_ENTRIES:
+            log.debug('For small dataset, reusing default observable as normalization observable')
+            return self.obs
+
+        min_obs = numpy.min(self.mass)
+        max_obs = numpy.max(self.mass)
+
+        limits  = min_obs, max_obs
+
+        obs = zfit.Space(
+            obs   = self.obs.obs, 
+            label = self.obs.label,
+            limits= limits)
+
+        return obs
     # ------------------------------
     def get_pdf(self) -> KDEPDF:
         '''
@@ -124,6 +134,11 @@ class CCbarModel(BaseModel):
     '''
     Class meant to represent PDF meant to model all the charmonium components 
     '''
+    model_config = ConfigDict(
+        arbitrary_types_allowed = True,
+        frozen                  = True)
+
+    obs       : zobs
     models    : list[CharmoniumComponent] 
     fractions : list[float]
     # -------------------------
@@ -173,7 +188,10 @@ class CCbarModel(BaseModel):
         pdfs = [ model.pdf for model in  models if model.pdf is not None ]
         
         log.debug('Adding PDFs')
-        pdf  = zfit.pdf.SumPDF(pdfs, fractions)
+        pdf  = zfit.pdf.SumPDF(
+            obs  = self.obs,
+            pdfs = pdfs, 
+            fracs= fractions)
 
         return pdf
     # -------------------------
@@ -682,7 +700,10 @@ class PRec(Cache):
         yields    : list[float   ] = [ self.__yield_in_range(model=model) for    model in models ]
         fractions : list[float   ] = [ wgt_yld / sum(yields)              for  wgt_yld in yields ]
 
-        model = CCbarModel(models = models, fractions = fractions)
+        model = CCbarModel(
+            obs       = self._obs,
+            models    = models, 
+            fractions = fractions)
 
         return model
     #-----------------------------------------------------------
