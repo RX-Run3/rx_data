@@ -7,6 +7,6 @@ weights:
   sam : True
 fit:
   kind      : KDE1DimFFT
-  bandwidth : 10
+  bandwidth : 5 
   padding   :
     flag : False
