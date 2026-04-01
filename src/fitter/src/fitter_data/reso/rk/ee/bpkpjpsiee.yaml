@@ -1,9 +1,8 @@
 
 component : bpkpjpsiee 
 categories:
-  brem_xx1:
-    selection :
-      brem : 'nbrem == 1'
+  brem:
+    selection : {}
     model :
       pdfs:
         - dscb 
@@ -14,25 +13,6 @@ categories:
       floating      :
         - mu
         - sg
-        - ar
-        - nr
-      reparametrize : {}
-      fix           : {}
-  brem_xx2:
-    selection :
-      brem : 'nbrem == 2'
-    model :
-      pdfs:
-        - dscb 
-        - cbl
-      shared        :
-        - mu
-        - sg
-      floating      :
-        - mu
-        - sg
-        - ar
-        - nr
       reparametrize : {}
       fix           : {}
 fit:
