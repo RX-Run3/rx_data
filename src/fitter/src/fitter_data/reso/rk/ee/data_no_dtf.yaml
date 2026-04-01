@@ -2,13 +2,9 @@ trigger          : Hlt2RD_BuToKpEE_MVA
 yields           : model/yields/rk/reso_electron.yaml
 selection : 
   extra   : TMath::Abs(B_const_mass_M) > 5180
+  q2      : (q2_dtf > 6000000) && (q2_dtf < 11000000)
 observable:
   jpsi:
-    name : B_Mass
-    range:
-      - 4500 
-      - 7000
-  psi2:
     name : B_Mass
     range:
       - 4500 
@@ -17,7 +13,7 @@ components:
   comb       : reso/rk/ee/comb.yaml
   #bppijpsiee : reso/rk/ee/bppijpsiee.yaml
   ccbar      : reso/rk/ee/ccbar.yaml
-  bpkpjpsiee : reso/rk/ee/bpkpjpsiee.yaml
+  bpkpjpsiee : reso/rk/ee/bpkpjpsiee_no_dtf.yaml
   bpkppsi2ee : reso/rk/ee/bpkppsi2ee.yaml
 constraints:
   pre_rare : []
