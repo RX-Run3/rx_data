@@ -345,9 +345,9 @@ def apply_full_selection(
     q2bin    : Qsq,
     process  : Component,
     trigger  : Trigger,
-    ext_cut  : str|None = None,
-    uid      : str|None = None,
-    out_path : Path|None= None) -> RDF.RNode:
+    ext_cut  : str |None = None,
+    uid      : str |None = None,
+    out_path : Path|None = None) -> RDF.RNode:
     '''
     Will apply full selection on dataframe.
     IMPORTANT: This HAS to be done lazily or else the rest of the code will be slowed down.
@@ -393,8 +393,8 @@ def apply_full_selection(
 
     log.info('Attaching updated UID and selection to dataframe')
     uid = hashing.hash_object([uid, d_sel])
-    setattr(rdf, 'uid',   uid)
-    setattr(rdf, 'sel', d_sel)
+    setattr(rdf, 'uid',   uid) # noqa: B010
+    setattr(rdf, 'sel', d_sel) # noqa: B010
 
     return rdf
 # ----------------------
@@ -438,8 +438,8 @@ def apply_selection(
 
     log.info('Attaching updated UID and selection to dataframe')
     uid = hashing.hash_object([uid, cuts])
-    setattr(rdf, 'uid',  uid)
-    setattr(rdf, 'sel', cuts)
+    setattr(rdf, 'uid',  uid) # noqa: B010
+    setattr(rdf, 'sel', cuts) # noqa: B010
 
     return rdf
 # ----------------------
