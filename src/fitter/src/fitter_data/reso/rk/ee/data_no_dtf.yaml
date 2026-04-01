@@ -1,7 +1,7 @@
 trigger          : Hlt2RD_BuToKpEE_MVA
 yields           : model/yields/rk/reso_electron.yaml
 selection : 
-  extra   : TMath::Abs(B_const_mass_M) > 5180
+  extra   : TMath::Abs(B_const_mass_M) > 5200
   q2      : (q2_dtf > 6000000) && (q2_dtf < 11000000)
 observable:
   jpsi:
@@ -10,9 +10,9 @@ observable:
       - 4500 
       - 7000
 components:
-  comb       : reso/rk/ee/comb.yaml
+  comb       : reso/rk/ee/comb_no_dtf.yaml
   #bppijpsiee : reso/rk/ee/bppijpsiee.yaml
-  ccbar      : reso/rk/ee/ccbar.yaml
+  #ccbar      : reso/rk/ee/ccbar.yaml
   bpkpjpsiee : reso/rk/ee/bpkpjpsiee_no_dtf.yaml
   bpkppsi2ee : reso/rk/ee/bpkppsi2ee.yaml
 constraints:
@@ -29,5 +29,5 @@ plots:
     bpkppsi2ee : $B^+\to \psi(2S)(\to e^+e^-) K^+$
   plot_components : []
   plot_range:
-    - 4800
-    - 6000
+    - 4500
+    - 7000
