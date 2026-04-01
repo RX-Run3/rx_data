@@ -67,17 +67,23 @@ def _parse_args() -> RXFitConfig:
     parser.add_argument('-b', '--block'  , type=int    , help='Block number, if not passed will do all data'    , choices =[1,2,3,4,5,6,7,8], default=-1)
     parser.add_argument('-g', '--group'  , type=str    , help='Group to which fits belong, e.g. reso_no_dtf'    , required=True)
     parser.add_argument('-c', '--fit_cfg', type=str    , help='Name of configuration, e.g. reso/rkst/ee'        , required=True)
-    parser.add_argument('-t', '--toy_cfg', type=str    , help='Name of toy config, e.g. toys/maker.yaml'        , default =  '')
+    parser.add_argument('-t', '--toy_cfg', type=str    , help='Name of toy config, e.g. toys/maker.yaml'        , default ='')
     parser.add_argument('-N', '--ntoys'  , type=int    , help='If specified, this will override ntoys in config', default =0)
     parser.add_argument('-l', '--log_lvl', type=int    , help='Logging level', choices=[5, 10, 20, 30]          , default =20)
     parser.add_argument('-q', '--q2bin'  , type=Qsq    , help='q2 bin'      , choices=Qsq                       , required=True)
+    parser.add_argument('-r', '--rawmass',               help='If used, will fit with non-DTF mass'             , action  ='store_true') 
     parser.add_argument('-C', '--mva_cmb', type=_get_wp, help='Cut on combinatorial MVA working point'          , required=True)
     parser.add_argument('-P', '--mva_prc', type=_get_wp, help='Cut on part reco MVA working point'              , required=True)
     args = parser.parse_args()
 
+    if args.rawmass:
+        conf_name = 'data_no_dtf.yaml'
+    else:
+        conf_name = 'data.yaml'
+
     data = gut.load_data(
         package='fitter_data',
-        fpath  =f'{args.fit_cfg}/data.yaml')
+        fpath  =f'{args.fit_cfg}/{conf_name}')
     fit_cfg = FitModelConf(**data)
 
     if args.toy_cfg:
