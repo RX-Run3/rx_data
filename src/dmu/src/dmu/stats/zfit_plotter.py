@@ -34,12 +34,13 @@ class ZFitPlotterConf(BaseModel):
     # based on result of fits, e.g. sensitivity of fit
     model_config = ConfigDict(frozen=False)
 
-    nbins      : int
-    stacked    : bool
-    ext_text   : str                       = ''
-    title      : str | None                = None
-    d_leg      : dict[str,str]             = Field(default_factory=dict)
-    plot_range : tuple[float,float] | None = None
+    nbins           : int
+    stacked         : bool
+    plot_components : list[str]
+    plot_range      : tuple[float,float]
+    ext_text        : str                       = ''
+    title           : str | None                = None
+    d_leg           : dict[str,str]             = Field(default_factory=dict)
     # ---------------------------
     @classmethod
     def default(cls) -> Self:
