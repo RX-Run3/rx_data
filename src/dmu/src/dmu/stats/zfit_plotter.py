@@ -607,7 +607,7 @@ class ZFitPlotter:
         ylabel: str       = '',
         d_leg : dict|None = None,
         d_col : dict|None = None,
-        plot_range: tuple | None = None,
+        plot_range: tuple | None           = None,
         plot_components : list[str] | None = None,
         ext_text : str    = '',
         add_pars          = None,
