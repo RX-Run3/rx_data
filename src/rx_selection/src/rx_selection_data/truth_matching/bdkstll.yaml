@@ -10,8 +10,8 @@ not_fail_mes      : 'TMath::Abs(B_TRUEID)  != 0 && TMath::Abs(Jpsi_TRUEID) != 0 
 not_fail_moth_1   : 'TMath::Abs(L1_MC_MOTHER_ID)   != 0 && TMath::Abs(L2_MC_MOTHER_ID) != 0'
 not_fail_moth_2   : 'TMath::Abs(Jpsi_MC_MOTHER_ID) != 0 && TMath::Abs(H1_MC_MOTHER_ID)  != 0 && TMath::Abs(H2_MC_MOTHER_ID)  != 0'
 not_fail          : '{not_fail_lep} && {not_fail_mes} && {not_fail_moth_1} && {not_fail_moth_2}' 
-not_reso_ee       : '({jpsi_ee_kstzero}) == 0 && ({psi2_ee_kstzero}) == 0'
-not_reso_mm       : '({jpsi_mm_kstzero}) == 0 && ({psi2_mm_kstzero}) == 0'
+not_reso_ee       : '({jpsi_ee_kstzero}) == 0 && ({psi2_ee_kstzero}) == 0 && ({jpsi_ee_kpi}) == 0 && ({psi2_ee_kpi}) == 0'
+not_reso_mm       : '({jpsi_mm_kstzero}) == 0 && ({psi2_mm_kstzero}) == 0 && ({jpsi_mm_kpi}) == 0 && ({psi2_mm_kpi}) == 0'
 
 not_reso_ee_swap  : '({jpsi_ee_kstzero_swap}) == 0 && ({psi2_ee_kstzero_swap}) == 0'
 not_reso_mm_swap  : '({jpsi_mm_kstzero_swap}) == 0 && ({psi2_mm_kstzero_swap}) == 0'
@@ -94,21 +94,25 @@ hh_from_bstrn     : 'TMath::Abs(Kst_MC_MOTHER_ID) == 531'
 11144001             : '{b_is_bzero} && {lep_are_muons}     && {ll_is_jpsi} && {ll_from_bzero} && {lep_from_jpsi} && {had_are_kpi} && {hh_is_kstzero} && {hh_from_bzero} && {had_from_kstzero}'
 11144002             : '{b_is_bzero} && {lep_are_muons}     && {ll_is_jpsi} && {ll_from_bzero} && {lep_from_jpsi} && {had_are_kpi} && {hh_is_kstzero} && {hh_from_bzero} && {had_from_kstzero}'
 jpsi_mm_kstzero      : '{b_is_bzero} && {lep_are_muons}     && {ll_is_jpsi} && {ll_from_bzero} && {lep_from_jpsi} && {had_are_kpi} && {hh_is_kstzero} && {hh_from_bzero} && {had_from_kstzero}'
+jpsi_mm_kpi          : '{b_is_bzero} && {lep_are_muons}     && {ll_is_jpsi} && {ll_from_bzero} && {lep_from_jpsi} && {had_are_kpi}                    && {hh_from_bzero}'
 Bd_JpsiKst_mm_had_swp: '{b_is_bzero} && {lep_are_muons}     && {ll_is_jpsi} && {ll_from_bzero} && {lep_from_jpsi} && {had_are_pik} && {hh_is_kstzero} && {hh_from_bzero} && {had_from_kstzero}'
 
 # Bd -> Jpsi(ee) Kst(Kpi)
 11154001             : '{b_is_bzero} && {lep_are_electrons} && {ll_is_jpsi} && {ll_from_bzero} && {lep_from_jpsi} && {had_are_kpi} && {hh_is_kstzero} && {hh_from_bzero} && {had_from_kstzero}'
 11154002             : '{b_is_bzero} && {lep_are_electrons} && {ll_is_jpsi} && {ll_from_bzero} && {lep_from_jpsi} && {had_are_kpi} && {hh_is_kstzero} && {hh_from_bzero} && {had_from_kstzero}'
 jpsi_ee_kstzero      : '{b_is_bzero} && {lep_are_electrons} && {ll_is_jpsi} && {ll_from_bzero} && {lep_from_jpsi} && {had_are_kpi} && {hh_is_kstzero} && {hh_from_bzero} && {had_from_kstzero}'
+jpsi_ee_kpi          : '{b_is_bzero} && {lep_are_electrons} && {ll_is_jpsi} && {ll_from_bzero} && {lep_from_jpsi} && {had_are_kpi}                    && {hh_from_bzero}'
 Bd_JpsiKst_ee_had_swp: '{b_is_bzero} && {lep_are_electrons} && {ll_is_jpsi} && {ll_from_bzero} && {lep_from_jpsi} && {had_are_pik} && {hh_is_kstzero} && {hh_from_bzero} && {had_from_kstzero}'
 
 # Bd -> psi2(mm) Kst(Kpi)
 11144011             : '{b_is_bzero} && {lep_are_muons}     && {ll_is_psi2} && {ll_from_bzero} && {lep_from_psi2} && {had_are_kpi} && {hh_is_kstzero} && {hh_from_bzero} && {had_from_kstzero}'
 psi2_mm_kstzero      : '{b_is_bzero} && {lep_are_muons}     && {ll_is_psi2} && {ll_from_bzero} && {lep_from_psi2} && {had_are_kpi} && {hh_is_kstzero} && {hh_from_bzero} && {had_from_kstzero}'
+psi2_mm_kpi          : '{b_is_bzero} && {lep_are_muons}     && {ll_is_psi2} && {ll_from_bzero} && {lep_from_psi2} && {had_are_kpi}                    && {hh_from_bzero}'
 
 # Bd -> psi2(ee) Kst(Kpi)
 11154011             : '{b_is_bzero} && {lep_are_electrons} && {ll_is_psi2} && {ll_from_bzero} && {lep_from_psi2} && {had_are_kpi} && {hh_is_kstzero} && {hh_from_bzero} && {had_from_kstzero}'
 psi2_ee_kstzero      : '{b_is_bzero} && {lep_are_electrons} && {ll_is_psi2} && {ll_from_bzero} && {lep_from_psi2} && {had_are_kpi} && {hh_is_kstzero} && {hh_from_bzero} && {had_from_kstzero}'
+psi2_ee_kpi          : '{b_is_bzero} && {lep_are_electrons} && {ll_is_psi2} && {ll_from_bzero} && {lep_from_psi2} && {had_are_kpi}                    && {hh_from_bzero}'
 
 jpsi_mm_kstzero_swap : '{b_is_bzero} && {lep_are_muons}     && {ll_is_jpsi} && {ll_from_bzero} && {lep_from_jpsi} && {had_are_pik} && {hh_is_kstzero} && {hh_from_bzero} && {had_from_kstzero}'
 jpsi_ee_kstzero_swap : '{b_is_bzero} && {lep_are_electrons} && {ll_is_jpsi} && {ll_from_bzero} && {lep_from_jpsi} && {had_are_pik} && {hh_is_kstzero} && {hh_from_bzero} && {had_from_kstzero}'
