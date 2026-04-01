@@ -2,42 +2,19 @@
 Module containing functions used for truth matching
 '''
 
-from ap_utilities.decays   import utilities as aput
-from dmu.logging.log_store import LogStore
-from dmu.generic           import utilities as gut
-from dmu.yaml.resolver     import Resolver
+from dmu               import LogStore
+from dmu.generic       import utilities as gut
+from dmu.yaml.resolver import Resolver
+from rx_common         import Component
 
 log=LogStore.add_logger('rx_selection:truth_matching')
 # ----------------------
-def get_event_type(arg : int|str) -> str:
-    '''
-    Parameters
-    -------------
-    arg: Either event type or nickname for decay
-
-    Returns
-    -------------
-    Event type
-    '''
-    if isinstance(arg, int):
-        return str(arg)
-
-    if arg.isdigit():
-        return arg
-
-    try:
-        event_type = aput.read_event_type(nickname=arg)
-    except ValueError as exc:
-        raise ValueError(f'Argument {arg} is neither data nor can be interpreted into an event type') from exc
-
-    return event_type
-# ----------------------------------------------------------
-def get_truth(arg : int|str, kind : str) -> str:
+def get_truth(component : Component, kind : str) -> str:
     r'''
     Parameters:
     --------------------------
-    arg : Event type or decay nickname
-    kind: Either bukll or bdkstll
+    component : MC component, representing process 
+    kind      : Either bukll or bdkstll
 
     Returns:
     --------------------------
@@ -47,17 +24,16 @@ def get_truth(arg : int|str, kind : str) -> str:
     kind = bdkstll -> $B^0\to K^* e^+e^-$ candidates
     kind = bukll   -> $B^+\to K^+ e^+e^-$ candidates
     '''
-    if isinstance(arg, str) and arg.startswith('DATA_'):
+    if not component.is_mc:
         return '(1)'
 
-    event_type = get_event_type(arg=arg)
-    cfg        = gut.load_conf(package='rx_selection_data', fpath=f'truth_matching/{kind}.yaml')
-    yrs        = Resolver(cfg=cfg)
+    cfg = gut.load_conf(package='rx_selection_data', fpath=f'truth_matching/{kind}.yaml')
+    yrs = Resolver(cfg=cfg)
 
-    if event_type not in yrs:
-        raise KeyError(f'Could not find event type {event_type} in config')
+    if component.event_type not in yrs:
+        raise KeyError(f'Could not find event type {component.event_type} in config')
 
-    requirement = yrs[event_type]
+    requirement = yrs[component.event_type]
 
     log.debug(f'Using truth matching: {requirement}')
 
