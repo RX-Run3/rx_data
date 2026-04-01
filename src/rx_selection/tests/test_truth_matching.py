@@ -129,13 +129,13 @@ def test_nopid(sample : Component):
     cut = tm.get_truth(sample, kind='bukll')
 
     fail = False
-    for path, rdf in d_rdf.items():
-        ini = rdf.Count().GetValue()
-        rdf = rdf.Filter(cut, 'truth match')
+    for path, rdf_org in d_rdf.items():
+        ini = rdf_org.Count().GetValue()
+        rdf = rdf_org.Filter(cut, 'truth match')
         try:
             fin = rdf.Count().GetValue()
-        except Exception: 
-            raise RuntimeError(f'Cannot apply cut: "{cut}"')
+        except Exception as exc: 
+            raise RuntimeError(f'Cannot apply cut: "{cut}"') from exc
 
         this_fail = 20 * fin < ini
         if this_fail:
