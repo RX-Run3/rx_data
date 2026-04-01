@@ -122,11 +122,11 @@ def test_nopid(sample : Component):
     '''
     Tests truth matching for noPID samples
     '''
+    cut = tm.get_truth(component=sample, kind='bukll')
+
     with RDFGetter.max_entries(value = -1):
         gtr   = RDFGetter(sample=sample, trigger=Trigger.rk_ee_nopid)
         d_rdf = gtr.get_rdf(per_file=True)
-
-    cut = tm.get_truth(sample, kind='bukll')
 
     fail = False
     for path, rdf_org in d_rdf.items():
@@ -156,17 +156,16 @@ def test_bukee(sample : Component):
     '''
     Tests truth matching
     '''
+    cut = tm.get_truth(component = sample, kind='bukll')
+
     gtr = RDFGetter(sample=sample, trigger=Trigger.rk_ee_os)
     rdf = gtr.get_rdf(per_file=False)
-
-    cut = tm.get_truth(sample, kind='bukll')
     ini = rdf.Count().GetValue()
     rdf = rdf.Filter(cut, 'truth match')
     fin = rdf.Count().GetValue()
 
     if fin == 0:
-        etype = tm.get_event_type(sample)
-        raise ValueError(f'Got no entries for {sample}/{etype} and cut {cut}')
+        raise ValueError(f'Got no entries for {sample} and cut {cut}')
 
     assert 20 * fin > ini
 # --------------------------
@@ -175,10 +174,10 @@ def test_bukmm(sample : Component):
     '''
     Tests truth matching
     '''
+    cut = tm.get_truth(component = sample, kind='bukll')
     gtr = RDFGetter(sample=sample, trigger=Trigger.rk_mm_os)
     rdf = gtr.get_rdf(per_file=False)
 
-    cut = tm.get_truth(sample, kind='bukll')
     ini = rdf.Count().GetValue()
     rdf = rdf.Filter(cut, 'truth match')
     fin = rdf.Count().GetValue()
@@ -190,7 +189,7 @@ def test_bdkstee(sample : Component):
     '''
     Tests truth matching
     '''
-    cut = tm.get_truth(sample, kind='bdkstll')
+    cut = tm.get_truth(component = sample, kind='bdkstll')
     gtr = RDFGetter(sample=sample, trigger=Trigger.rkst_ee_os)
     org = gtr.get_rdf(per_file=False)
 
@@ -210,7 +209,7 @@ def test_bdkstmm(sample : Component):
     '''
     Tests truth matching
     '''
-    cut = tm.get_truth(sample, kind='bdkstll')
+    cut = tm.get_truth(component = sample, kind='bdkstll')
 
     gtr = RDFGetter(sample=sample, trigger=Trigger.rkst_mm_os)
     org = gtr.get_rdf(per_file=False)
