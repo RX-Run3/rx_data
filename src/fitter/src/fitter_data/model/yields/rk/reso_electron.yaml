@@ -12,44 +12,23 @@ psi2_fraction:
   val : 0.5
   min : 0.0
   max : 1.0 
-cabibbo_fraction:
-  val : 0.5
-  min : 0.0
-  max : 1.0 
 # -------------------------
 yld_ccbar_brem_xx1:
   <<: *yields
 yld_comb_brem_xx1:
   <<: *yields
-yld_bpkpjpsiee_brem_xx1:
-  <<: *yields
 yld_bppijpsiee_brem_xx1:
-  <<: *yields
-yld_bpkppsi2ee_brem_xx1:
   <<: *yields
 
 yld_ccbar_brem_xx2:
   <<: *yields
 yld_comb_brem_xx2:
   <<: *yields
-yld_bpkpjpsiee_brem_xx2:
-  <<: *yields
 yld_bppijpsiee_brem_xx2:
   <<: *yields
-yld_bpkppsi2ee_brem_xx2:
+# -------------------------
+yld_bpkpjpsiee:
   <<: *yields
-# -------------------------
-yld_bppijpsiee_brem_xx1:
-  kind : mul
-  pars : 
-    - yld_bppijpsiee
-    - cabibbo_fraction
-yld_bppijpsiee_brem_xx2:
-  kind : dif 
-  pars :
-    - yld_bppijpsiee
-    - yld_bppijpsiee_brem_xx1
-# -------------------------
 yld_bpkpjpsiee_brem_xx1:
   kind : mul
   pars : 
@@ -61,6 +40,8 @@ yld_bpkpjpsiee_brem_xx2:
     - yld_bpkpjpsiee
     - yld_bpkpjpsiee_brem_xx1
 # -------------------------
+yld_bpkppsi2ee:
+  <<: *yields
 yld_bpkppsi2ee_brem_xx1:
   kind : mul
   pars : 
