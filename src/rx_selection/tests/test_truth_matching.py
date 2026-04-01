@@ -98,7 +98,7 @@ def _print_values(rdf : RDF.RNode, cut : str, number : int) -> None:
 
     log.info(arr_val[:number])
 # ----------------------
-def _check_rdf(rdf : RDF.RNode, cut : str) -> None:
+def _check_rdf(rdf : RDF.RNode, selection : str) -> None:
     '''
     This should be ran if zero entries pass the truth matching
 
@@ -107,7 +107,7 @@ def _check_rdf(rdf : RDF.RNode, cut : str) -> None:
     rdf: DataFrame before truth matching
     cut: Truth matching string
     '''
-    l_cut = cut.split('&&')
+    l_cut = selection.split('&&')
 
     log.warning('The following cuts remove all candidates')
     for cut in l_cut:
@@ -118,7 +118,7 @@ def _check_rdf(rdf : RDF.RNode, cut : str) -> None:
             log.info(cut)
 # --------------------------
 @pytest.mark.parametrize('sample', _RK_MISIDSAMPLES)
-def test_nopid(sample : str):
+def test_nopid(sample : Component):
     '''
     Tests truth matching for noPID samples
     '''
@@ -152,7 +152,7 @@ def test_nopid(sample : str):
     assert not fail
 # --------------------------
 @pytest.mark.parametrize('sample', l_sample_kpee)
-def test_bukee(sample : str):
+def test_bukee(sample : Component):
     '''
     Tests truth matching
     '''
@@ -171,7 +171,7 @@ def test_bukee(sample : str):
     assert 20 * fin > ini
 # --------------------------
 @pytest.mark.parametrize('sample', l_sample_kpmm)
-def test_bukmm(sample : str):
+def test_bukmm(sample : Component):
     '''
     Tests truth matching
     '''
@@ -186,7 +186,7 @@ def test_bukmm(sample : str):
     assert 20 * fin > ini
 # --------------------------
 @pytest.mark.parametrize('sample', l_sample_kstee)
-def test_bdkstee(sample : str):
+def test_bdkstee(sample : Component):
     '''
     Tests truth matching
     '''
@@ -206,7 +206,7 @@ def test_bdkstee(sample : str):
     log.info(f'eff={fin/ini=:.3f}')
 # --------------------------
 @pytest.mark.parametrize('sample', l_sample_kstmm)
-def test_bdkstmm(sample : str):
+def test_bdkstmm(sample : Component):
     '''
     Tests truth matching
     '''
