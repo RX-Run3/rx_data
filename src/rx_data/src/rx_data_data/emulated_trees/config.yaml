@@ -15,9 +15,9 @@ Bs_JpsiKst_mm_eq_DPC :
     B_const_mass_M       : B_const_mass_M       + 87.23
     B_const_mass_psi2S_M : B_const_mass_psi2S_M + 87.23
     B_ID                 : '531'
-    B_TRUEID             : 'B_TRUEID          == 511 ? 531 :          B_TRUEID'
-    Kst_MC_MOTHER_ID     : 'Kst_MC_MOTHER_ID  == 511 ? 531 :  Kst_MC_MOTHER_ID'
-    Jpsi_MC_MOTHER_ID    : 'Jpsi_MC_MOTHER_ID == 511 ? 531 : Jpsi_MC_MOTHER_ID'
+    B_TRUEID             : 'TMath::Abs(B_TRUEID)         == 511 ? 531 :          B_TRUEID'
+    Kst_MC_MOTHER_ID     : 'TMath::Abs(Kst_MC_MOTHER_ID) == 511 ? 531 :  Kst_MC_MOTHER_ID'
+    Jpsi_MC_MOTHER_ID    : 'TMath::Abs(Jpsi_MC_MOTHER_ID)== 511 ? 531 : Jpsi_MC_MOTHER_ID'
 Bs_JpsiKst_ee_eq_DPC :
   sample : Bd_JpsiKst_ee_eq_DPC
   redefine :
