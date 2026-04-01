@@ -27,3 +27,7 @@ plots:
     ccbar      : $B_{s,d,u}\to c\bar{c} X$
     bpkpjpsiee : $B^+\to J/\psi(\to e^+e^-) K^+$
     bpkppsi2ee : $B^+\to \psi(2S)(\to e^+e^-) K^+$
+  plot_components : []
+  plot_range:
+    - 4800
+    - 6000
