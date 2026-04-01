@@ -100,11 +100,11 @@ def _print_selection(d_cut : dict[str,str]) -> None:
     for name, expr in d_cut.items():
         log.debug(f'{name:<20}{expr}')
 #-----------------------
-def _get_truth(event_type : int|str, trigger : str) -> str:
+def _get_truth(component : Component, trigger : str) -> str:
     '''
     Parameters
     -----------------
-    event_type: Event type or decay's nickname. For data it should start with `DATA_`
+    component : Represents decay
     trigger   : Hlt2 trigger, needed to pick truth matching method
 
     Returns
@@ -114,10 +114,10 @@ def _get_truth(event_type : int|str, trigger : str) -> str:
     project = info.project_from_trigger(trigger=trigger, lower_case=True)
 
     if project in ['rkst', 'rkst_nopid']:
-        return tm.get_truth(arg=event_type, kind='bdkstll')
+        return tm.get_truth(component=component, kind='bdkstll')
 
     if project in ['rk', 'rk_nopid']:
-        return tm.get_truth(arg=event_type, kind='bukll')
+        return tm.get_truth(component=component, kind='bukll')
 
     raise ValueError(f'Invalid project {project} for trigger: {trigger}')
 #-----------------------
@@ -157,7 +157,7 @@ def selection(
         d_cut['truth'] = '(1)' 
     else:
         log.debug('Adding truth matching requirement for MC')
-        d_cut['truth'] = _get_truth(event_type=event_type, trigger=trigger)
+        d_cut['truth'] = _get_truth(component = process, trigger=trigger)
 
     d_tmp = _get_selection(chan = channel, proj = project, q2_bin = q2bin)
     d_cut.update(d_tmp)
