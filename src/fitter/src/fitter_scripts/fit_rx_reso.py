@@ -80,14 +80,6 @@ def _parse_args() -> RXFitConfig:
         fpath  =f'{args.fit_cfg}/data.yaml')
     fit_cfg = FitModelConf(**data)
 
-    # For any parametric config, add block information, e.g. b1
-    # as suffix 
-    for cfg in fit_cfg.components.values():
-        if not isinstance(cfg, ParametricConf):
-            continue
-
-        cfg.add_category_suffix(suffix = f'b{args.block}')
-
     if args.toy_cfg:
         data = gut.load_data(
             package='fitter_data', 
@@ -134,7 +126,7 @@ def _get_nll(cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL, dict[str,dict[str,
         q2bin  = cfg.q2bin,
         sample = Component.data_24,
         cfg    = cfg.mod_cfg)
-    nll = ftr.run()
+    nll     = ftr.run()
     cfg_mod = ftr.get_config()
 
     if not isinstance(nll, ExtendedUnbinnedNLL):
