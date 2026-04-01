@@ -4,7 +4,7 @@
 trigger   : Hlt2RD_B0ToKpPimEE_MVA
 yields    : model/yields/rkst/reso_electron.yaml
 selection : 
-  bdee    : TMath::Abs(B_const_mass_M) > 5180
+  extra   : TMath::Abs(B_const_mass_M) > 5180
 observable:
   jpsi:
     name : B_Mass
