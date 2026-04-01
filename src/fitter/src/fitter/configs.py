@@ -8,7 +8,7 @@ from pydantic    import BaseModel, ConfigDict
 from pathlib     import Path
 from typing      import Callable, Self
 
-from rx_common   import Channel, Mass, Project, Qsq, MisID, Region
+from rx_common   import Channel, Mass, Project, Qsq, MisID
 from rx_common   import Component, Trigger, CCbarComponent, Cuts
 from rx_misid    import MisIDSampleWeights
 from dmu         import LogLevels, LogStore
@@ -176,6 +176,22 @@ class ParametricConf(ComponentConf):  # Tested
 
         for key, val in new_categories.items():
             self.categories[key] = val
+    # ----------------------
+    def cfg_copy(self, category_suffix : str) -> Self:
+        '''
+        Parameters
+        -----------------
+        category_suffix: String that will be added to every category name in Parametrized configs
+
+        Returns
+        -----------------
+        Copy of config with renaming
+        '''
+        new_categories : dict[str,CategoryConf] = {}
+        for name, conf in self.categories.items():
+            new_categories[f'{name}_{category_suffix}'] = conf.model_copy() 
+
+        return self.model_copy(update = {'categories' : new_categories})
 # ------------------------------
 class NonParametricConf(ComponentConf): # Tested
     '''
@@ -354,6 +370,29 @@ class RXFitConfig(BaseModel):
         string = self.model_dump_json(indent = 2)
 
         path.write_text(string)
+    # ----------------------
+    def cfg_copy(self, category_suffix : str) -> Self:
+        '''
+        Parameters
+        -----------------
+        category_suffix: String that will be added to every category name in Parametrized configs
+
+        Returns
+        -----------------
+        Copy of config with renaming
+        '''
+        new_components : dict[Component, AnyModelConf] = {}
+        for comp, conf in self.mod_cfg.components.items():
+            if not isinstance(conf, ParametricConf):
+                new_conf = conf.model_copy()
+            else:
+                new_conf = conf.cfg_copy(category_suffix = category_suffix)
+
+            new_components[comp] = new_conf
+
+        new_mod_cfg = self.mod_cfg.model_copy(update = {'components' : new_components})
+
+        return self.model_copy(update = {'mod_cfg' : new_mod_cfg})
     # ----------------------
     # Cached properties
     # ----------------------
