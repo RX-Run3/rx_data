@@ -53,6 +53,7 @@ class CharmoniumComponent(BaseModel):
         arbitrary_types_allowed = True,
         frozen                  = True)
 
+    name: str
     cfg : KDEConf 
     obs : zobs
     mass: numpy.ndarray
@@ -75,6 +76,7 @@ class CharmoniumComponent(BaseModel):
             return
 
         pdf = zfit.pdf.KDE1DimFFT(
+            name      = self.name,
             norm      = self.obs,
             obs       = self._extended_obs,
             data      = self.mass,
@@ -563,12 +565,14 @@ class PRec(Cache):
     #-----------------------------------------------------------
     def __model_from_df(
         self, 
+        name : str,
         mass : Mass,
         cfg  : KDEConf,
         df   : pnd.DataFrame) -> CharmoniumComponent:
         '''
         Parameters
         --------------
+        name: Component name, e.g. bpjpsix
         mass: Used to read column in dataframe and extract data to be fitted
         cfg : KDE configuration
         df  : DataFrame with data to be fitted
@@ -593,6 +597,7 @@ class PRec(Cache):
             raise ValueError(f'Cannot access {mass} and wgt_br') from exc
 
         model = CharmoniumComponent(
+            name= name,
             obs = self._obs,
             cfg = cfg,
             mass= arr_mass, 
@@ -620,7 +625,8 @@ class PRec(Cache):
         ------------------
         Model object, holding PDF (or None) and arrays used to build it
         '''
-        model     = self.__model_from_df(
+        model    = self.__model_from_df(
+            name = component_name,
             df   = df, 
             cfg  = cfg,
             mass = mass)
