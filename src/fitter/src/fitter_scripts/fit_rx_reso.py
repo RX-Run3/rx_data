@@ -76,13 +76,13 @@ def _parse_args() -> RXFitConfig:
     args = parser.parse_args()
 
     data = gut.load_data(
-        package='fitter_data', 
+        package='fitter_data',
         fpath  =f'{args.fit_cfg}/data.yaml')
     fit_cfg = FitModelConf(**data)
 
     if args.toy_cfg:
         data = gut.load_data(
-            package='fitter_data', 
+            package='fitter_data',
             fpath=args.toy_cfg)
 
         toy_cfg = ToyConf(**data)
@@ -95,7 +95,7 @@ def _parse_args() -> RXFitConfig:
         name = 'brem_xx0'
 
     cfg         = RXFitConfig(
-        mod_cfg = fit_cfg, 
+        mod_cfg = fit_cfg,
         toy_cfg = toy_cfg,
         name    = name,
         group   = args.group,
@@ -118,7 +118,7 @@ def _get_nll(cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL, dict[str,dict[str,
     -------------
     Tuple with:
         - Negative log likelihood
-        - Config related to model 
+        - Config related to model
     '''
     ftr = LikelihoodFactory(
         name   = cfg.name,
@@ -152,7 +152,7 @@ def _fit_electron(cfg : RXFitConfig) -> None:
     with GofCalculator.disabled(value=True):
         ftr = DataFitter(
             q2bin = cfg.q2bin,
-            d_nll = d_nll, 
+            d_nll = d_nll,
             cfg   = cfg.mod_cfg)
 
         ftr.run()
@@ -162,13 +162,13 @@ def _fit_muon(cfg : RXFitConfig) -> None:
     This is where DataFitter is used
     '''
     d_nll    = {}
-    cfg.name = Region.brem_xx0 
+    cfg.name = Region.brem_xx0
     d_nll[cfg.name] = _get_nll(cfg=cfg)
 
     with GofCalculator.disabled(value=True):
         ftr = DataFitter(
             q2bin= cfg.q2bin,
-            d_nll= d_nll, 
+            d_nll= d_nll,
             cfg  = cfg.mod_cfg)
         ftr.run()
 # ----------------------
@@ -186,7 +186,7 @@ def main():
         stack.enter_context(PL.parameter_schema(cfg=cfg.mod_cfg.yields))
         stack.enter_context(sel.custom_selection(d_sel=cfg.overriding_selection))
 
-        if cfg.is_electron: 
+        if cfg.is_electron:
             _fit_electron(cfg=cfg)
         else:
             _fit_muon(cfg=cfg)
