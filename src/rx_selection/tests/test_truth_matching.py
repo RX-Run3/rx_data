@@ -2,71 +2,67 @@
 Module needed to test truth matching
 '''
 import re
-
 import pytest
+
 from ROOT         import RDF     # type: ignore
-from rx_common    import Trigger # type: ignore
+from rx_common    import Component, Trigger
 from rx_selection import truth_matching as tm
 from rx_data      import RDFGetter
 from dmu          import LogStore
 
 # TODO: Add more samples
 _RK_MISIDSAMPLES=[
-    'Bu_KplKplKmn_eq_sqDalitz_DPC',
-    'Bu_piplpimnKpl_eq_sqDalitz_DPC',
-    'Bu_KplpiplKmn_eq_sqDalitz_DPC',
-    'Bu_Kee_eq_btosllball05_DPC',
+    Component.bpkkk,
+    Component.bpkpipi,
+    Component.bpkpik,
+    Component.bpkpee,
 ]
 
 l_sample_kpee = [
-    'Bd_JpsiX_ee_eq_JpsiInAcc',
-    'Bd_Kstee_eq_btosllball05_DPC',
-    'Bs_JpsiX_ee_eq_JpsiInAcc',
-    'Bs_phiee_eq_Ball_DPC',
-    'Bu_JpsiK_ee_eq_DPC',
-    'Bu_JpsiPi_ee_eq_DPC',
-    'Bu_JpsiX_ee_eq_JpsiInAcc',
-    'Bu_K1ee_eq_DPC',
-    'Bu_K2stee_Kpipi_eq_mK1430_DPC',
-    'Bu_Kee_eq_btosllball05_DPC',
-    'Bu_Kstee_Kpi0_eq_btosllball05_DPC',
-    'Bu_psi2SK_ee_eq_DPC',
+    Component.bpjpsixee,
+    Component.bdjpsixee,
+    Component.bsjpsixee,
+    Component.bdkstkpiee,
+    Component.bpkpee,
+    Component.bsphiee,
+    Component.bpkpjpsiee,
+    Component.bppijpsiee,
+    Component.bpk1kpipiee,
+    Component.bpk2kpipiee,
+    Component.bpkstkpiee,
+    Component.bpkppsi2ee,
 ]
 
 l_sample_kstee = [
-    'Bu_JpsiX_ee_eq_JpsiInAcc',
-    'Bd_JpsiX_ee_eq_JpsiInAcc',
-    'Bs_JpsiX_ee_eq_JpsiInAcc',
-    # ----
-    'Bd_Kstee_eq_btosllball05_DPC',
-    'Bd_JpsiKst_ee_eq_DPC',
-    'Bs_JpsiKst_ee_eq_DPC',
-    # ----
-    'Bs_Jpsiphi_ee_eq_CPV_update2012_DPC',
-    'Lb_JpsipK_ee_eq_phsp_DPC',
-    'Bu_Kpipiee_eq_DPC_LSFLAT',
-    'Bu_K1ee_eq_DPC',
-    'Bu_K2stee_Kpipi_eq_mK1430_DPC',
+    Component.bpjpsixee,
+    Component.bdjpsixee,
+    Component.bsjpsixee,
+    Component.bdkstkpiee,
+    Component.bdkstkpijpsiee,
+    Component.bskstjpsiee,
+    Component.bsphijpsiee,
+    Component.lbpkjpsiee,
+    Component.bpkpipiee,
+    Component.bpk1kpipiee,
+    Component.bpk2kpipiee,
 ]
 
 l_sample_kpmm = [
-    'Bd_Kstmumu_eq_btosllball05_DPC',
-    'Bu_JpsiK_mm_eq_DPC',
-    'Bu_JpsiPi_mm_eq_DPC',
-    'Bu_Kmumu_eq_btosllball05_DPC',
+    Component.bdkstkpimm,
+    Component.bpkpjpsimm,
+    Component.bppijpsimm,
+    Component.bpkpmm,
 ]
 
 l_sample_kstmm = [
-    'Bu_JpsiX_mm_eq_JpsiInAcc',
-    'Bd_JpsiX_mm_eq_JpsiInAcc',
-    'Bs_JpsiX_mm_eq_JpsiInAcc',
-    # ----
-    'Bd_Kstmumu_eq_btosllball05_DPC',
-    'Bd_JpsiKst_mm_eq_DPC',
-    'Bs_JpsiKst_mm_eq_DPC',
-    # ----
-    'Bs_Jpsiphi_mm_eq_CPV_update2012_DPC',
-    'Lb_JpsipK_mm_eq_phsp_DPC',
+    Component.bpjpsixmm,
+    Component.bdjpsixmm,
+    Component.bsjpsixmm,
+    Component.bdkstkpimm,
+    Component.bdkstkpijpsimm,
+    Component.bskstjpsimm,
+    Component.bsphijpsimm,
+    Component.lbpkjpsimm,
 ]
 
 log=LogStore.add_logger('rx_selection:test_truth_matching')
