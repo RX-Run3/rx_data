@@ -21,7 +21,7 @@ components:
   ccbar           : reso/rkst/ee/ccbar.yaml
   lbpkjpsiee      : reso/rkst/ee/lbpkjpsiee_np.yaml
   bsphijpsiee     : reso/rkst/ee/bsphijpsiee_np.yaml
-  bskstjpsiee     : reso/rkst/ee/bskstjpsiee.yaml
+  #bskstjpsiee     : reso/rkst/ee/bskstjpsiee.yaml
   bdkstjpsiee_swp : reso/rkst/ee/bdkstjpsiee_swp_np.yaml
   bdkstkpijpsiee  : reso/rkst/ee/bdkstkpijpsiee.yaml
   bdkstkpipsi2ee  : reso/rkst/ee/bdkstkpipsi2ee.yaml
