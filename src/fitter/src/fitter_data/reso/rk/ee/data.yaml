@@ -1,8 +1,4 @@
-# This is a config file used for tests
-# It illustrates how a fit would run for data
-
 trigger          : Hlt2RD_BuToKpEE_MVA
-
 yields           : model/yields/rk/reso_electron.yaml
 selection        : {}
 observable:
@@ -34,7 +30,7 @@ plots:
     ccbar      : $B_{s,d,u}\to c\bar{c} X$
     bpkpjpsiee : $B^+\to J/\psi(\to e^+e^-) K^+$
     bpkppsi2ee : $B^+\to \psi(2S)(\to e^+e^-) K^+$
-  #yrange:
-  #  log   : [1.0,  1e6]
-  #  linear: [0.0, null]
-  #plot_components : ccbar
+  plot_components : ccbar
+  plot_range:
+    - 4800
+    - 6000

@@ -1,26 +1,7 @@
-
 component : bppijpsiee 
 categories:
-  brem_xx1:
-    selection :
-      brem : 'nbrem == 1'
-    model :
-      pdfs:
-        - dscb 
-        - cbl
-      shared        :
-        - mu
-        - sg
-      floating      :
-        - mu
-        - sg
-        - ar
-        - nr
-      reparametrize : {}
-      fix           : {}
-  brem_xx2:
-    selection :
-      brem : 'nbrem == 2'
+  main:
+    selection : {}
     model :
       pdfs:
         - dscb 
