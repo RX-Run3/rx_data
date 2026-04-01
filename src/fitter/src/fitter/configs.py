@@ -245,7 +245,7 @@ class FitModelConf(ComponentConf):
     model_config = ConfigDict(frozen = True)
 
     trigger    : Trigger
-    selection  : dict[Region|Cuts,str]
+    selection  : dict[Cuts,str]
     yields     : YieldsConf 
     observable : dict[Qsq | MisID, ObservableConf]
     components : dict[Component, AnyModelConf]
@@ -412,24 +412,21 @@ class RXFitConfig(BaseModel):
         raise ValueError(f'Invalid trigger: {self.mod_cfg.trigger}')
     # ----------------------
     @cached_property
-    def overriding_selection(self) -> dict[str,str]:
+    def overriding_selection(self) -> dict[Cuts,str]:
         '''
         Returns
         -------------
         Dictionary mapping cut name with expression
         Needed to override default selection
         '''
-        selection : dict[str,str] = {
-            'block' : self.block_cut,
-            'brem'  : self.brem_cut,
-            'cmb'   : self.cmb_cut,
-            'prc'   : self.prc_cut,
+        selection : dict[Cuts,str] = {
+            Cuts.block : self.block_cut,
+            Cuts.brem  : self.brem_cut,
+            Cuts.cmb   : self.cmb_cut,
+            Cuts.prc   : self.prc_cut,
         }
 
-        # Due to: https://github.com/microsoft/pyright/issues/11354
-        new_selection = { key.value : value for key, value in self.mod_cfg.selection.items()} 
-
-        selection.update(new_selection)
+        selection.update(self.mod_cfg.selection)
 
         return selection
     # ----------------------
