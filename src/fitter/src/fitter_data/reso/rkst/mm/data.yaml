@@ -5,12 +5,12 @@ observable:
   jpsi:
     name : B_const_mass_M
     range:
-      - 4900 
+      - 4900
       - 6000
   psi2:
     name : B_const_mass_psi2S_M
     range:
-      - 4900 
+      - 4900
       - 6000
 components:
   comb            : reso/rkst/mm/comb.yaml
@@ -33,11 +33,9 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
     lbpkjpsimm     : $\Lambda_b \to J/\psi pK$
     bsphijpsimm    : $B_s \to J/\psi\phi(\to KK)$
     bskstjpsimm    : $B_s\to J/\psi K^{*0}(\to K^+\pi^-)$
-    bdkstkpijpsimm : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$ 
-    bdkstjpsimm_swp: $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$ 
-    bdkstkpipsi2mm : $B^0\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
-  #yrange:
-  #  log   : [1.0,  1e5]
-  #  linear: [0.0, null]
-  #plot_components : ccbar
-
+    bdkstkpijpsimm : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$
+    bdkstjpsimm_swp: $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$
+    bdkstkpipsi2mm : $B^0\to \psi(2S) K^{*0}(\to K^+\pi^-)$
+  plot_range:
+    - 5180
+    - 5600
