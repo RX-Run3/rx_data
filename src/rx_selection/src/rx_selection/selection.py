@@ -29,7 +29,7 @@ class Data:
     l_analysis = ['EE', 'MM'  ]
     l_q2bin    = ['low', 'central', 'jpsi', 'psi2S', 'high']
 
-    d_custom_selection : None | dict[Cuts | str,str] = None
+    d_custom_selection : None | dict[Cuts,str] = None
 #-----------------------
 class MultipleSelectionOverriding(Exception):
     '''
@@ -40,7 +40,7 @@ class MultipleSelectionOverriding(Exception):
 #-----------------------
 @contextmanager
 def custom_selection(
-    d_sel          : dict[str,str]|None, 
+    d_sel          : dict[Cuts,str]|None, 
     force_override : bool = False):
     '''
     This is a context manager meant to be used to add and/or overide 
@@ -76,7 +76,7 @@ def custom_selection(
         Data.d_custom_selection = org_val
 # ----------------------
 @contextmanager
-def update_selection(d_sel : dict[Cuts | str,str]):
+def update_selection(d_sel : dict[Cuts,str]):
     '''
     This manager will _update_ the **FULL** selection, i.e. default plus custom one.
 
@@ -96,7 +96,7 @@ def update_selection(d_sel : dict[Cuts | str,str]):
     finally:
         Data.d_custom_selection = org_val
 #-----------------------
-def _print_selection(d_cut : dict[str,str]) -> None:
+def _print_selection(d_cut : dict[Cuts,str]) -> None:
     for name, expr in d_cut.items():
         log.debug(f'{name:<20}{expr}')
 #-----------------------
@@ -126,7 +126,7 @@ def selection(
     process   : Component,
     trigger   : Trigger,
     skip_truth: bool = False,
-    smeared   : bool = True) -> dict[str,str]:
+    smeared   : bool = True) -> dict[Cuts,str]:
     '''
     Picks up sample name, trigger, etc, returns dictionary with selection
 
@@ -143,21 +143,21 @@ def selection(
     project = info.project_from_trigger(trigger=trigger, lower_case=False)
     channel = info.channel_from_trigger(trigger=trigger)
 
-    d_cut : dict[str,str] = {}
+    d_cut : dict[Cuts,str] = {}
 
     event_type = process if not process.is_mc else process.event_type 
     log.info(f'{process:<40}{"->":20}{event_type:<20}')
 
     if not process.is_mc:
         log.debug('Adding cleaning requirement for data')
-        d_cut['clean'] = 'dataq == 1'
-        d_cut['block'] = 'block >= 1'
+        d_cut[Cuts.clean] = 'dataq == 1'
+        d_cut[Cuts.block] = 'block >= 1'
     elif skip_truth:
         log.warning('Not using truth matching')
-        d_cut['truth'] = '(1)' 
+        d_cut[Cuts.truth] = '(1)' 
     else:
         log.debug('Adding truth matching requirement for MC')
-        d_cut['truth'] = _get_truth(component = process, trigger=trigger)
+        d_cut[Cuts.truth] = _get_truth(component = process, trigger=trigger)
 
     d_tmp = _get_selection(chan = channel, proj = project, q2_bin = q2bin)
     d_cut.update(d_tmp)
@@ -196,11 +196,11 @@ def get_q2_cut(q2bin : Qsq) -> str:
     return q2sel[q2bin]
 #-----------------------
 def _update_mass_cuts(
-        d_cut   : dict[str,str],
+        d_cut   : dict[Cuts,str],
         q2bin   : str,
         sample  : str,
         trigger : str,
-        smeared : bool) -> dict[str,str]:
+        smeared : bool) -> dict[Cuts,str]:
 
     should_smear = info.is_mc(sample=sample) and info.is_ee(trigger=trigger)
 
@@ -217,13 +217,13 @@ def _update_mass_cuts(
 
     return d_cut
 #-----------------------
-def _use_smeared_masses(cuts : dict[str,str], q2bin : str) -> dict[str,str]:
+def _use_smeared_masses(cuts : dict[Cuts,str], q2bin : str) -> dict[Cuts,str]:
     log.info('Overriding selection for electron MC to use smeared q2 and mass')
 
-    cut_org = cuts['q2']
+    cut_org = cuts[Cuts.q2]
     if 'q2_track' not in cut_org:
         cut_new    = cut_org.replace('q2', 'q2_smr')
-        cuts['q2'] = cut_new
+        cuts[Cuts.q2] = cut_new
 
         log.debug('Overriding:')
         log.debug(cut_org)
@@ -238,9 +238,9 @@ def _use_smeared_masses(cuts : dict[str,str], q2bin : str) -> dict[str,str]:
         log.debug(f'Not overriding mass cut for resonant bin: {q2bin}')
         return cuts
 
-    cut_org = cuts['mass']
+    cut_org = cuts[Cuts.mass]
     cut_new = cut_org.replace('B_Mass', 'B_Mass_smr')
-    cuts['mass'] = cut_new
+    cuts[Cuts.mass] = cut_new
 
     log.debug('Overriding:')
     log.debug(cut_org)
@@ -275,7 +275,7 @@ def _load_selection_config() -> dict:
 def _get_selection(
     chan   : str, 
     proj   : str, 
-    q2_bin : str) -> dict[str,str]:
+    q2_bin : str) -> dict[Cuts,str]:
     '''
     Parameters
     -----------------
@@ -319,7 +319,7 @@ def _get_selection(
 def _save_cutflow(
     path : Path, 
     rdf  : RDF.RNode, 
-    cuts : dict[str,str]) -> None:
+    cuts : dict[Cuts,str]) -> None:
     '''
     Parameters
     -------------
@@ -370,7 +370,7 @@ def apply_full_selection(
         trigger=trigger)
 
     if ext_cut is not None:
-        d_sel['extra'] = ext_cut
+        d_sel[Cuts.extra] = ext_cut
 
     log.info(60 * '-')
     log.info('Applying cuts')
@@ -400,7 +400,7 @@ def apply_full_selection(
 # ----------------------
 def apply_selection(
     rdf      : RDF.RNode,
-    cuts     : dict[str,str],
+    cuts     : dict[Cuts,str],
     uid      : str |None = None,
     out_path : Path|None = None) -> RDF.RNode:
     '''
