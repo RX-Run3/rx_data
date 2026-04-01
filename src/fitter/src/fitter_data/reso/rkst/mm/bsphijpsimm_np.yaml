@@ -1,18 +1,17 @@
-
 component        : bsphijpsimm
 events_range     :
   - 4200
   - 6500
 fit:
   kind      : KDE1DimFFT
-  bandwidth : 20
+  bandwidth : 10
   padding   :
     flag : False
 plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#fit-plotting
   nbins   : 50
   stacked : True
   d_leg :
-    gauss_1 : Gauss 
-  #plot_range:
-  #  - 5100
-  #  - 5500
+    bsphijpsimm : PDF 
+  plot_range:
+    - 5100
+    - 5500
