@@ -199,7 +199,7 @@ def test_bdkstee(sample : Component):
     fin = rdf.Count().GetValue()
 
     if fin == 0:
-        _check_rdf(rdf=org, cut=cut)
+        _check_rdf(rdf=org, selection=cut)
 
     assert 20 * fin > ini
 
@@ -220,7 +220,7 @@ def test_bdkstmm(sample : Component):
     fin = rdf.Count().GetValue()
 
     if fin == 0:
-        _check_rdf(rdf=org, cut=cut)
+        _check_rdf(rdf=org, selection=cut)
 
     assert 20 * fin > ini
     log.info(f'eff={fin/ini=:.3f}')
