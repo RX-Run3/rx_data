@@ -11,7 +11,7 @@ from dmu.stats   import utilities  as sut
 from dmu.stats   import zfit
 from zfit.data   import Data       as zdata
 from zfit.pdf    import BasePDF    as zpdf
-from rx_common   import Component, Qsq
+from rx_common   import Component, Qsq, Cuts
 from rx_common   import Trigger
 
 log  = LogStore.add_logger('fitter:base_fitter')
@@ -77,7 +77,7 @@ class BaseFitter:
 
         return 100 * error / value
     # --------------------------
-    def _brem_cuts_from_cuts(self, cuts : dict[str,str]) -> str:
+    def _brem_cuts_from_cuts(self, cuts : dict[Cuts,str]) -> str:
         '''
         Parameters
         --------------
@@ -97,7 +97,7 @@ class BaseFitter:
 
         return brem_cuts
     # --------------------------
-    def _get_selection_diff(self, ini : dict[str,str], fit : dict[str,str]) -> str:
+    def _get_selection_diff(self, ini : dict[Cuts,str], fit : dict[Cuts,str]) -> str:
         '''
         Parameters
         -----------------
@@ -132,7 +132,7 @@ class BaseFitter:
 
         return '; '.join(diff)
     # --------------------------
-    def _get_selection_text(self, selection : dict[str,dict[str,str]]) -> tuple[str,str,str]:
+    def _get_selection_text(self, selection : dict[str,dict[Cuts,str]]) -> tuple[str,str,str]:
         '''
         Parameters
         --------------
@@ -153,8 +153,8 @@ class BaseFitter:
         if self._component == Component.undefined:
             return '', '', ''
 
-        cuts_ini : dict[str,str] = selection['default']
-        cuts_fit : dict[str,str] = selection['fit'    ]
+        cuts_ini : dict[Cuts,str] = selection['default']
+        cuts_fit : dict[Cuts,str] = selection['fit'    ]
 
         sel_dif  = self._get_selection_diff(ini = cuts_ini, fit = cuts_fit)
 
@@ -197,7 +197,7 @@ class BaseFitter:
         self,
         data      : zdata,
         res       : FitResult | None,
-        selection : dict[str,dict[str,str]]) -> tuple[str,str,str]:
+        selection : dict[str,dict[Cuts,str]]) -> tuple[str,str,str]:
         '''
         Parameters
         --------------
@@ -223,7 +223,7 @@ class BaseFitter:
     # ------------------------
     def _save_fit(
         self,
-        cut_cfg  : dict[str,dict[str,str]],
+        cut_cfg  : dict[str,dict[Cuts,str]],
         plt_cfg  : ZFitPlotterConf,
         out_path : Path,
         model    : zpdf      | None,

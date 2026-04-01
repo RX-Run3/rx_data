@@ -85,7 +85,7 @@ class CategoryConf(BaseModel):  # Tested
     '''
     Class meant to configure a fit category
     '''
-    selection : dict[str,str]
+    selection : dict[Cuts,str]
     model     : ModelFactoryConf
 # ------------------------------
 # ------------------------------
@@ -243,7 +243,7 @@ class MisIDConf(NonParametricConf): # Tested
     project          : Project
     weights          : MisIDSampleWeights 
     data_fit         : FitConf
-    selection        : dict[str,str]
+    selection        : dict[Cuts,str]
 # ------------------------------
 AnyModelConf = CombinatorialConf | ParametricConf | CCbarConf | MisIDConf | NonParametricConf
 # ------------------------------

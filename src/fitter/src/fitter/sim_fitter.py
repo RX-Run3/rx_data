@@ -11,7 +11,7 @@ from dmu.stats           import zfit
 from dmu.stats           import utilities        as sut
 from dmu.workflow        import Cache
 
-from rx_common           import Correction, Qsq, Trigger, Component
+from rx_common           import Correction, Qsq, Trigger, Component, Cuts
 from rx_selection        import selection        as sel
 
 from zfit.data           import Data             as zdata
@@ -335,7 +335,7 @@ class SimFitter(BaseFitter, Cache):
     def _get_cut_config(
         self, 
         category : str | None,
-        cfg      : ParametricConf | NonParametricConf) -> dict[str,dict[str,str]]:
+        cfg      : ParametricConf | NonParametricConf) -> dict[str,dict[Cuts,str]]:
         '''
         Parameters
         -------------

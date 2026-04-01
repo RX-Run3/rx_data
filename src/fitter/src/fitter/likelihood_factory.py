@@ -3,7 +3,7 @@ Module containing DataFitter class
 '''
 from dmu                import LogStore
 from dmu.stats          import zfit
-from rx_common          import Qsq, Component
+from rx_common          import Qsq, Component, Cuts
 from rx_selection       import selection  as sel
 
 from zfit.loss          import ExtendedUnbinnedNLL
@@ -85,13 +85,11 @@ class LikelihoodFactory:
 
         return nll
     # ----------------------
-    def get_config(self) -> dict[str,dict[str,str]]:
+    def get_config(self) -> dict[str,dict[Cuts,str]]:
         '''
         Returns
         -------------
-        OmegaConf dictionary storing the configuration, which includes:
-
-        - Selection
+        Dictionary storing selection, default and for fit
         '''
         log.debug('Retrieving NLL configuration')
 

@@ -12,7 +12,7 @@ from pydantic    import ConfigDict
 from dmu         import LogStore
 from dmu.stats   import FitResult, Model, zfit
 from dmu.stats   import utilities as sut
-from rx_common   import Block, Brem
+from rx_common   import Block, Brem, Cuts
 
 zpar = zfit.param.Parameter
 zpdf = zfit.pdf.BasePDF
@@ -39,7 +39,7 @@ class Category(BaseModel):
     pdf       : zpdf 
     sumw      : float
     model     : list[Model]
-    selection : dict[str,str]
+    selection : dict[Cuts,str]
     # ----------------------
     def __lt__(self, other : 'Category') -> bool:
         '''

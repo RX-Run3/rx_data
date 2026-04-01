@@ -20,7 +20,7 @@ from zfit            import Space      as zobs
 from zfit.data       import Data
 
 from rx_data         import RDFGetter
-from rx_common       import Component, Qsq, Trigger, Correction
+from rx_common       import Component, Qsq, Trigger, Correction, Cuts
 from rx_selection    import selection  as sel
 from rx_misid        import SampleSplitter
 from rx_misid        import SampleWeighter
@@ -49,8 +49,8 @@ class DataPreprocessor(Cache):
         trigger   : Trigger,
         q2bin     : Qsq,
         wgt_cfg   : dict[Correction,MisIDSampleWeights] | None,
-        is_sig    : bool                 = True,
-        selection : dict[str,str] | None = None):
+        is_sig    : bool                  = True,
+        selection : dict[Cuts,str] | None = None):
         '''
         Parameters
         --------------------
@@ -95,7 +95,7 @@ class DataPreprocessor(Cache):
             wgt_cfg  = '' if self._wgt_cfg is None else {key : val.model_dump() for key, val in self._wgt_cfg.items()}, 
             rdf_uid  = self._rdf.uid)
     # ------------------------
-    def _get_rdf(self, selection : dict[str,str]) -> tuple[RDF.RNode, dict[str,str], pnd.DataFrame]:
+    def _get_rdf(self, selection : dict[Cuts,str]) -> tuple[RDF.RNode, dict[Cuts,str], pnd.DataFrame]:
         '''
         Parameters
         -------------------
