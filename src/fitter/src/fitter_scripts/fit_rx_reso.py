@@ -22,7 +22,6 @@ from fitter        import ToyConf
 from fitter        import RXFitConfig
 from fitter        import DataFitter
 from fitter        import LikelihoodFactory
-from fitter        import ParametricConf
 from rx_selection  import selection as sel
 from rx_common     import Qsq, Component, Region
 
@@ -147,13 +146,15 @@ def _fit_electron(cfg : RXFitConfig) -> None:
     d_nll : dict[Region,tuple[ExtendedUnbinnedNLL, dict[str,dict[str,str]]]] = {}
     region = Region.brem_xx1
     with sel.update_selection(d_sel = region.selection):
-        cfg.name      = region 
-        d_nll[region] = _get_nll(cfg=cfg)
+        cfg.name      = region
+        cfg_copy      = cfg.cfg_copy(category_suffix = f'{region}_b{cfg.block}')
+        d_nll[region] = _get_nll(cfg=cfg_copy)
 
     region = Region.brem_xx2
     with sel.update_selection(d_sel = region.selection):
-        cfg.name      = region 
-        d_nll[region] = _get_nll(cfg=cfg)
+        cfg.name      = region
+        cfg_copy      = cfg.cfg_copy(category_suffix = f'{region}_b{cfg.block}')
+        d_nll[region] = _get_nll(cfg=cfg_copy)
 
     with GofCalculator.disabled(value=True):
         ftr = DataFitter(
