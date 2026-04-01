@@ -20,3 +20,6 @@ plots:
   stacked : True
   d_leg :
     dscb_1 : DSCB 
+  plot_range:
+    - 5200
+    - 5700

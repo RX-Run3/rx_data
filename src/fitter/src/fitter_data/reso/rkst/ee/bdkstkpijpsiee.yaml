@@ -24,3 +24,6 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
   d_leg :
     gauss_1 : Gauss 
     dscb_1  : DSCB 
+  plot_range:
+    - 5000
+    - 5500
