@@ -17,15 +17,26 @@ cabibbo_fraction:
   min : 0.0
   max : 1.0 
 # -------------------------
-yld_ccbar:
+yld_ccbar_brem_xx1:
   <<: *yields
-yld_comb:
+yld_comb_brem_xx1:
   <<: *yields
-yld_bpkpjpsiee:
+yld_bpkpjpsiee_brem_xx1:
   <<: *yields
-yld_bppijpsiee:
+yld_bppijpsiee_brem_xx1:
   <<: *yields
-yld_bpkppsi2ee:
+yld_bpkppsi2ee_brem_xx1:
+  <<: *yields
+
+yld_ccbar_brem_xx2:
+  <<: *yields
+yld_comb_brem_xx2:
+  <<: *yields
+yld_bpkpjpsiee_brem_xx2:
+  <<: *yields
+yld_bppijpsiee_brem_xx2:
+  <<: *yields
+yld_bpkppsi2ee_brem_xx2:
   <<: *yields
 # -------------------------
 yld_bppijpsiee_brem_xx1:
