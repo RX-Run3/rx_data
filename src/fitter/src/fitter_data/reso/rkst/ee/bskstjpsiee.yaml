@@ -5,10 +5,12 @@ categories:
     model:
       pdfs :
         - dscb
-      shared        : 
+      shared   : 
         - mu
         - sg
-      floating      : []
+      floating :
+        - mu
+        - sg
       reparametrize : {}
       fix           : {}
 fit:
@@ -22,4 +24,4 @@ plots:
     dscb_1 : DSCB 
   plot_range:
     - 5200
-    - 5700
+    - 5600
