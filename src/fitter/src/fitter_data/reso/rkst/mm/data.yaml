@@ -39,3 +39,5 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
   plot_range:
     - 5000
     - 5600
+  plot_components:
+    - ccbar
