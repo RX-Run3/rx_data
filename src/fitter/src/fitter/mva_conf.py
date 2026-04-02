@@ -64,8 +64,7 @@ class MVAWp(RootModel[float|tuple[float,float]]):
     @property
     def name(self):
         '''
-        Frientlier name for working point
-        Needed to name directories, etc
+        Friendlier name for working point, e.g. 523 (0.523)
         '''
         if isinstance(self.root, (float, int)):
             val = int(1000 * self.root)
