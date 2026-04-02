@@ -22,7 +22,7 @@ from dmu             import LogStore
 from dmu.generic     import utilities        as gut
 from typing          import Callable, Final
 from matplotlib.axes import Axes
-from fitter          import FitSummary
+from fitter          import FitSummary, MVAWp
 from rx_q2           import ScalesConf
 from rx_q2           import ParameterReader 
 from fitter          import ParameterReader as FitParameterReader
@@ -45,7 +45,8 @@ def _load_config(args : argparse.Namespace) -> ScalesConf:
     '''
     data         = gut.load_data(package='rx_q2_data', fpath=f'plots/scales_{args.kind}.yaml')
     data['kind'] = args.kind
-    data['vers'] = args.vers
+    data['comb'] = args.comb
+    data['prec'] = args.prec
     data['year'] = args.year
     data['proj'] = args.project
 
@@ -430,28 +431,17 @@ def _get_df(cfg : ScalesConf) -> pnd.DataFrame:
 
     return df
 #-------------------------------------
-def main(args : DictConfig | None = None):
+def main():
     '''
-    Parameters
-    ----------------------
-    args: Arguments passed to this script when using it as a module (e.g. with LAW),
-    It should hold:
-
-    - kind
-    - vers
-    - project
-    - year (default 2024)
+    Entry point
     '''
-    global ARGS
-    if   args is not None:
-        ARGS = args
-    else:
-        parser = argparse.ArgumentParser(description='Used to create pandas dataframe with information from fits needed to smear q2')
-        parser.add_argument('-k', '--kind'   , type=str, help='Type of scales' , required=True, choices=['q2', 'B'])
-        parser.add_argument('-v', '--vers'   , type=str, help='Version'        , required=True)
-        parser.add_argument('-p', '--project', type=str, help='Name of project', required=True, choices=PROJECTS)
-        parser.add_argument('-y', '--year'   , type=str, help='Year for data whose corrections are needed', default='2024')
-        ARGS = parser.parse_args()
+    parser = argparse.ArgumentParser(description='Used to create pandas dataframe with information from fits needed to smear q2')
+    parser.add_argument('-k', '--kind'   , type=str           , help='Type of scales'   , required=True, choices=['q2', 'B'])
+    parser.add_argument('-C', '--comb'   , type=MVAWp.from_str, help='Combinatorial WP' , required=True)
+    parser.add_argument('-P', '--prec'   , type=MVAWp.from_str, help='Part reco WP'     , required=True)
+    parser.add_argument('-p', '--project', type=str           , help='Name of project'  , required=True, choices=PROJECTS)
+    parser.add_argument('-y', '--year'   , type=str           , help='Year for data whose corrections are needed', default='2024')
+    args = parser.parse_args()
 
     plt.style.use(mplhep.style.LHCb2)
 
