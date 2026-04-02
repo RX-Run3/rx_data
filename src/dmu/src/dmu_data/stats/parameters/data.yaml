@@ -9,9 +9,9 @@ hypexp:
     min : 4000
     max : 6000
   ap:
-    val : 0.020
+    val : 0.002
     min : 0
-    max : 0.50
+    max : 0.007
   bt:
     val : 0.002
     min : 0.0001
