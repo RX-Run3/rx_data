@@ -4,6 +4,7 @@ Module containing ScalesConf class
 import os
 
 from typing     import Literal
+from fitter     import MVAWp
 from pydantic   import BaseModel, ConfigDict
 from pathlib    import Path
 from dmu        import LogStore
@@ -22,7 +23,8 @@ class ScalesConf(BaseModel):
     ee      : dict[str,list[float]]
 
     kind    : Literal['q2', 'B']
-    vers    : str
+    comb    : MVAWp
+    prec    : MVAWp
     year    : str
     proj    : str
     # ------------------------------
@@ -32,12 +34,13 @@ class ScalesConf(BaseModel):
         Directory where results of fits are located
         '''
         ana_dir = Path(os.environ['ANADIR'])
+        name    = f'{self.comb.name}_{self.prec.name}'
 
         match self.kind:
             case 'q2':
-                out_dir = ana_dir / f'q2/fits/{self.vers}/plots/{self.proj}'
+                out_dir = ana_dir / f'q2/fits/{name}/plots/{self.proj}'
             case 'B':
-                out_dir = ana_dir / f'fits/data/reso_no_dtf/{self.vers}/{self.proj}/plots'
+                out_dir = ana_dir / f'fits/data/reso_no_dtf/{name}/{self.proj}/plots'
 
         out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -49,12 +52,13 @@ class ScalesConf(BaseModel):
         Directory where results of fits are located
         '''
         ana_dir = Path(os.environ['ANADIR'])
+        name    = f'{self.comb.name}_{self.prec.name}'
 
         match self.kind:
             case 'q2':
-                return ana_dir / f'q2/fits/{self.vers}'
+                return ana_dir / f'q2/fits/{name}'
             case 'B':
-                return ana_dir / f'fits/data/reso_no_dtf/{self.vers}/{self.proj}'
+                return ana_dir / f'fits/data/reso_no_dtf/{name}/{self.proj}'
     # ------------------------------
     @property
     def regex(self) -> str:
