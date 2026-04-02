@@ -136,11 +136,13 @@ class FitSummary:
     # ----------------------
     def _get_data(
         self, 
+        brem : Brem,
         kind : str,
         path : Path) -> tuple[dict[str, float], dict[str, str | Brem]]:
         '''
         Parameters
         -------------
+        brem : Brem for which file is read
         kind : dat or sim 
         path : Path to JSON file with fit parameters
 
@@ -153,10 +155,12 @@ class FitSummary:
 
         data : dict[str,float] = {}
         for par in res.parameters:
-            if par.name == 'jpsi_fraction':
+            if   par.name == 'jpsi_fraction':
                 name = f'{self._signal}_fraction'
-            else:
+            elif par.name == f'yld_{self._signal}' or brem.in_string(string = par.name):
                 name = par.name
+            else:
+                continue
 
             data[f'{name}_value'] = par.value
             data[f'{name}_error'] = par.error 
