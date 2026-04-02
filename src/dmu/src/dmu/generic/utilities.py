@@ -441,6 +441,10 @@ def load_json(path : str | Path):
     Parameters
     ------------------
     path: Path to output file where data is saved
+
+    Returns
+    ------------------
+    Python data, e.g. dictionary
     '''
     if isinstance(path, str):
         path = Path(path)
