@@ -45,6 +45,12 @@ class ParameterReader:
 
         self._df = self._get_dataframe(name = name)
     # ----------------------
+    def print(self) -> None:
+        '''
+        Print dataframe with parameters 
+        '''
+        self._print_info(df = self._df)
+    # ----------------------
     def _get_dataframe(self, name : str | None = None) -> pnd.DataFrame:
         '''
         Parameters
