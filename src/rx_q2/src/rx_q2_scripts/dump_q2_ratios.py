@@ -10,7 +10,6 @@ For each brem category and block
 
 - Make plots of the peak positions and the scales
 '''
-import os
 import math
 import argparse
 
@@ -22,9 +21,6 @@ import pandas                as pnd
 from dmu             import LogStore
 from dmu.generic     import utilities        as gut
 from typing          import Callable, Final
-from pathlib         import Path
-from omegaconf       import DictConfig
-from functools       import cache
 from matplotlib.axes import Axes
 from fitter          import FitSummary
 from rx_q2           import ScalesConf
@@ -63,39 +59,6 @@ def _load_config() -> ScalesConf:
     cfg  = ScalesConf(**data)
 
     return cfg 
-#-------------------------------------
-def _add_paths(data : dict) -> None:
-    '''
-    Updates configuration data with paths and regex
-
-    Parameters
-    ---------------
-    data: Dictionary with settings from:
-
-    - Config file
-    - User defined through CLI flags
-    '''
-    if ARGS is None:
-        raise ValueError('Arguments not found')
-
-    ana_dir = Path(os.environ['ANADIR'])
-
-    if   ARGS.kind == 'q2':
-        inp_dir = ana_dir / f'q2/fits/{ARGS.vers}'
-        out_dir = ana_dir / f'q2/fits/{ARGS.vers}/plots/{ARGS.project}'
-        regex   = r'(\d)_(\d)_nom'
-    elif ARGS.kind == 'B':
-        inp_dir = ana_dir / f'fits/data/reso_no_dtf/{ARGS.vers}/{ARGS.project}'
-        out_dir = ana_dir / f'fits/data/reso_no_dtf/{ARGS.vers}/{ARGS.project}/plots'
-        regex   = r'(\d{3})_(\d{3})_b(\d)'
-    else:
-        raise ValueError(f'Invalid scale type: {ARGS.kind}')
-
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    data['inp_dir'] = inp_dir
-    data['out_dir'] = out_dir
-    data['regex'  ] = regex
 #-------------------------------------
 # TODO: This is too hardcoded
 def _get_Bx_df() -> pnd.DataFrame:
