@@ -151,11 +151,8 @@ class FitSummary:
 
         data : dict[str,float] = {}
         for par in res.parameters:
-            refr = par.name.replace('brem_001', 'brem_xx1')
-            refr = refr.replace('brem_002', 'brem_xx2')
-
-            data[f'{refr}_value'] = par.value
-            data[f'{refr}_error'] = par.error 
+            data[f'{par.name}_value'] = par.value
+            data[f'{par.name}_error'] = par.error 
 
         if kind == 'sim':
             data['nentries_value'] = self._get_mc_nentries(path=path)
@@ -201,11 +198,11 @@ class FitSummary:
 
         l_data : list[dict[str, float | str | Brem ]] = []
         for path_brem_1 in tqdm.tqdm(paths, ascii=' -'):
-            if 'brem_002' in str(path_brem_1):
+            if 'brem_xx2' in str(path_brem_1):
                 continue
 
             data_1, meta_1 = self._get_data(path=path_brem_1, kind = kind)
-            path_brem_2    = str(path_brem_1).replace('brem_001', 'brem_002')
+            path_brem_2    = str(path_brem_1).replace('brem_xx1', 'brem_xx2')
             path_brem_2    = Path(path_brem_2)
             data_2, meta_2 = self._get_data(path=path_brem_2, kind = kind)
 
