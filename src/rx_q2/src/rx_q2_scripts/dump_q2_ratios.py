@@ -31,7 +31,7 @@ from rx_q2           import ScalesConf
 from rx_q2           import ParameterReader 
 from fitter          import ParameterReader as FitParameterReader
 from rx_common       import Block, Correction, Project
-from rx_common       import Trigger 
+from rx_common       import Trigger, Component
 from rx_common       import Qsq 
 from rx_common       import Brem 
 from rx_common       import DataSet 
@@ -85,8 +85,8 @@ def _add_paths(data : dict) -> None:
         out_dir = ana_dir / f'q2/fits/{ARGS.vers}/plots/{ARGS.project}'
         regex   = r'(\d)_(\d)_nom'
     elif ARGS.kind == 'B':
-        inp_dir = ana_dir / f'fits/data/reso_non_dtf/{ARGS.vers}/{ARGS.project}'
-        out_dir = ana_dir / f'fits/data/reso_non_dtf/{ARGS.vers}/{ARGS.project}/plots'
+        inp_dir = ana_dir / f'fits/data/reso_no_dtf/{ARGS.vers}/{ARGS.project}'
+        out_dir = ana_dir / f'fits/data/reso_no_dtf/{ARGS.vers}/{ARGS.project}/plots'
         regex   = r'(\d{3})_(\d{3})_b(\d)'
     else:
         raise ValueError(f'Invalid scale type: {ARGS.kind}')
@@ -99,11 +99,10 @@ def _add_paths(data : dict) -> None:
 #-------------------------------------
 # TODO: This is too hardcoded
 def _get_Bx_df() -> pnd.DataFrame:
-    name   = 'reso_non_dtf'
-    signal = 'jpsi'
-    signame= 'jpsik'
-    cmb    = '070'
-    prc    = '060'
+    name   = 'reso_no_dtf'
+    signal = Component.bpkpjpsiee 
+    cmb    = '950'
+    prc    = '400'
     brems  = [Brem.one, Brem.two] 
     blocks = Block.blocks()
     kinds  = ['dat', 'sim']
@@ -112,13 +111,12 @@ def _get_Bx_df() -> pnd.DataFrame:
     smr.get_df()
 
     rdr = FitParameterReader(name = name)
-
     l_data = []
     for brem in brems:
         for block in blocks:
             for kind in kinds:
                 msr = rdr(
-                    signame  = signame,
+                    signame  = signal,
                     brem     = brem, 
                     block    = block, 
                     cmb      = cmb,
