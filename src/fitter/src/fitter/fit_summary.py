@@ -195,6 +195,39 @@ class FitSummary:
 
         return len(df)
     # ----------------------
+    def _brem_2_from_1(self, path : Path) -> Path | None:
+        '''
+        Parameters
+        -------------
+        path: Path to brem 1 parameters.json
+
+        Returns
+        -------------
+        None if input path belongs to brem 2 already
+        Path to brem 2 if input path belongs to brem 1
+        '''
+        dat_end_1 = 'brem_xx1/parameters.json'
+        dat_end_2 = 'brem_xx2/parameters.json'
+        sim_end_1 =r'brem_xx1/main_brem_xx1_b(\d)/parameters.json'
+        sim_end_2 =r'brem_xx2/main_brem_xx2_b(\d)/parameters.json'
+
+        value = str(path)
+        if value.endswith(dat_end_2):
+            return None
+
+        if re.search(sim_end_2, value):
+            return None
+        
+        if value.endswith(dat_end_1):
+            value = value.replace(dat_end_1, dat_end_2)
+            return Path(value)
+
+        if re.search(sim_end_1, value):
+            value = re.sub(sim_end_1, r'brem_xx2/main_brem_xx2_b\1/parameters.json', value)
+            return Path(value)
+
+        raise ValueError(f'Cannot replace brem in: {path}')
+    # ----------------------
     def _get_df(self, kind : str) -> pnd.DataFrame:
         '''
         Parameters
@@ -209,13 +242,18 @@ class FitSummary:
 
         l_data : list[dict[str, float | str | Brem ]] = []
         for path_brem_1 in tqdm.tqdm(paths, ascii=' -'):
-            if 'brem_xx2' in str(path_brem_1):
+            path_brem_2 = self._brem_2_from_1(path = path_brem_1)
+            if path_brem_2 is None: 
                 continue
 
-            data_1, meta_1 = self._get_data(path=path_brem_1, kind = kind)
-            path_brem_2    = str(path_brem_1).replace('brem_xx1', 'brem_xx2')
-            path_brem_2    = Path(path_brem_2)
-            data_2, meta_2 = self._get_data(path=path_brem_2, kind = kind)
+            data_1, meta_1 = self._get_data(
+                brem = Brem.one,
+                path = path_brem_1, 
+                kind = kind)
+            data_2, meta_2 = self._get_data(
+                brem = Brem.two,
+                path = path_brem_2, 
+                kind = kind)
 
             if kind == 'sim':
                 data_1, data_2 = self._post_process_mc(
