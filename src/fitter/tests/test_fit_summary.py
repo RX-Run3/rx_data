@@ -2,8 +2,9 @@
 Module with tests for FitSummary class 
 '''
 import pytest
-from dmu      import LogStore
-from fitter   import FitSummary
+from dmu       import LogStore
+from fitter    import FitSummary
+from rx_common import Component
 
 log=LogStore.add_logger('fitter:test_fit_summary')
 # ----------------------
@@ -19,7 +20,7 @@ def test_simple(name : str) -> None:
     '''
     Simplest test
     '''
-    smr = FitSummary(name = name, signal = 'bpkpjpsiee')
+    smr = FitSummary(name = name, signal = Component.bpkpjpsiee)
     df  = smr.get_df(force_update = True)
 
     assert len(df) > 0
@@ -34,7 +35,7 @@ def test_update(force_update : bool) -> None:
     '''
     Test updating the parquet file
     '''
-    smr = FitSummary(name='reso_non_dtf', signal = 'jpsi')
+    smr = FitSummary(name='reso_no_dtf', signal = Component.bpkpjpsiee)
     df  = smr.get_df(force_update = force_update)
 
     assert len(df) > 0
