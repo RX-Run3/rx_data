@@ -14,12 +14,12 @@ def initialize():
     '''
     LogStore.set_level('fitter:fit_summary', 10)
 # ----------------------
-@pytest.mark.parametrize('name', ['reso_non_dtf'])
+@pytest.mark.parametrize('name', ['reso_no_dtf'])
 def test_simple(name : str) -> None:
     '''
     Simplest test
     '''
-    smr = FitSummary(name = name, signal = 'jpsi')
+    smr = FitSummary(name = name, signal = 'bpkpjpsiee')
     df  = smr.get_df(force_update = True)
 
     assert len(df) > 0
