@@ -26,6 +26,8 @@ log  = LogStore.add_logger('rx_stats:fit_result')
 CHI2_RTOL: Final[float] = 1e-3
 # Relative tolerance used to validate pvalue
 PVAL_RTOL: Final[float] = 1e-7
+# If pvalue is smaller than this, do not validate
+PVAL_MIN : Final[float] = 1e-7
 
 MIN_NDOF : Final[int  ] =  9
 MAX_NDOF : Final[int  ] = 41
@@ -93,6 +95,14 @@ class GoodnessOfFit(BaseModel):
             return data 
         elif math.isnan(pval) and     math.isnan(computed_pval):
             raise ValueError('Cannot compute pvalue')
+        # ----------------
+        # Pvalue too small to be validated, return
+        # ----------------
+        if          pval < PVAL_MIN:
+            return data
+
+        if computed_pval < PVAL_MIN:
+            return data
         # ----------------
         # Got chi2 and pvalue, validate
         # ----------------
