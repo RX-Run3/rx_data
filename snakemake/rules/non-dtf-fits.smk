@@ -5,10 +5,14 @@ CMB    = [
     '950',
     ]
 PRC    = [
+    '400',
+    '500',
     '600',
+    '700',
+    '800',
     ]
 
-BLOCK  = list(range(1, 9))[:1]
+BLOCK  = list(range(1, 9))
 NAME   = 'reso_no_dtf'
 # ---------------------
 rule all:
