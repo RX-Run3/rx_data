@@ -147,15 +147,18 @@ class FitSummary:
         Dictionary mapping quantity and value, error or name for e.g. channel.
         '''
         log.debug(f'Using data from: {path}')
-        unformatted = gut.load_json(path=path)
-        data : dict[str,float] = dict()
+        res = FitResult.from_json(path = path)
 
-        for name, [value, error] in unformatted.items():
-            refr = name.replace('brem_001', 'brem_xx1')
+        data : dict[str,float] = {}
+        for par in res.parameters:
+            refr = par.name.replace('brem_001', 'brem_xx1')
             refr = refr.replace('brem_002', 'brem_xx2')
 
-            data[f'{refr}_value'] = value
-            data[f'{refr}_error'] = error 
+            data[f'{refr}_value'] = par.value
+            data[f'{refr}_error'] = par.error 
+
+        if kind == 'sim':
+            data['nentries_value'] = self._get_mc_nentries(path=path)
 
         meta = self._extra_information(path=path, kind=kind)
 
