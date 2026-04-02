@@ -40,11 +40,11 @@ class FitSummary:
         '''
         self._fit_dir = self._get_fit_dir(name=name)
 
-        dat_regex = r'(\d{3})_(\d{3})_b(\d)/reso/(rk|rkst)/(muon|electron)/data/(psi2|jpsi)/brem_(\d{3})/parameters.json'
-        sim_regex = fr'(\d{{3}})_(\d{{3}})_b(\d)/reso/(rk|rkst)/(muon|electron)/{signal}/brem_(\d{{3}})/.*_(psi2|jpsi)/category/parameters.json'
+        dat_regex = r'(\d{3})_(\d{3})_b(\d)/reso/(rk|rkst)/(mm|ee)/(psi2|jpsi)/data_24/fit/.*/brem_([x,0-9]{3})/parameters.json'
+        sim_regex = fr'(\d{{3}})_(\d{{3}})_b(\d)/reso/(rk|rkst)/(mm|ee)/(psi2|jpsi)/{signal}/fit/brem_([x,0-9]{{3}})/main_brem_[x,0-9]{{3}}_b\d/parameters.json'
 
-        dat_pattern = '*_*_b*/reso/r*/*/data/*/brem_*/parameters.json'
-        sim_pattern = f'*_*_b*/reso/r*/*/{signal}/brem_*/*/category/parameters.json'
+        dat_pattern = '*_*_b*/reso/r*/*/jpsi/data_24/fit/*/brem_*/parameters.json'
+        sim_pattern =f'*_*_b*/reso/r*/*/jpsi/{signal}/fit/brem_*/main_brem_*/parameters.json'
 
         self._patterns : Final[dict[str,str]]  = {'dat' : dat_pattern, 'sim' : sim_pattern}
         self._regexes  : Final[dict[str,str]]  = {'dat' : dat_regex  , 'sim' : sim_regex  }
@@ -125,8 +125,8 @@ class FitSummary:
             data['q2bin'  ] = groups[5]
             data['brem'   ] = str(Brem.from_str(value = groups[6]))
         elif kind == 'sim':
-            data['q2bin'  ] = groups[6]
-            data['brem'   ] = str(Brem.from_str(value = groups[5]))
+            data['q2bin'  ] = groups[5]
+            data['brem'   ] = str(Brem.from_str(value = groups[6]))
         else:
             raise ValueError(f'Invalid kind: {kind}')
 
