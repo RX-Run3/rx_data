@@ -220,6 +220,20 @@ class Brem(Enum):
     brx12   = 1100 
     br012   = 1110 
     # ----------------------
+    def in_string(self, string : str) -> bool:
+        '''
+        Parameters
+        ---------------
+        string: String
+
+        Returns
+        ---------------
+        True if string has substring associated to this brem
+        '''
+        substring = f'brem_{self}'
+
+        return substring in string 
+    # ----------------------
     @property
     def color(self) -> str:
         '''
