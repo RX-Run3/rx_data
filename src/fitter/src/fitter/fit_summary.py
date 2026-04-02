@@ -105,7 +105,8 @@ class FitSummary:
 
         Returns
         -------------
-        Dictionary with non-numerical data 
+        Dictionary with non-numerical data, key is meant to be column name
+        e.g. brem, block, etc
         '''
         regex = self._regexes[kind]
         mtch  = re.match(f'.*/{regex}', str(path))
