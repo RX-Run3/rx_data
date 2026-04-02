@@ -1,6 +1,7 @@
 '''
 Module containing MVAConf class
 '''
+from typing    import Self
 from pydantic  import BaseModel, RootModel, model_validator
 
 # ---------------------
@@ -11,6 +12,20 @@ class MVAWp(RootModel[float|tuple[float,float]]):
     The value of the config is meant to represent a probability
     i.e. val in [0, 1]
     '''
+    # -------------    
+    @classmethod
+    def from_str(cls, val : str) -> Self:
+        '''
+        Parameters
+        -------------
+        val: String representing WP, e.g. 0.3
+
+        Returns
+        -------------
+        Instance of MVAWp
+        '''
+        return cls(float(val))
+    # -------------    
     @model_validator(mode = 'after')
     def validate_value(self) -> 'MVAWp':
         if isinstance(self.root, (float, int)):
