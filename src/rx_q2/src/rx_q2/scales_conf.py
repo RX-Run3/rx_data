@@ -1,7 +1,9 @@
 '''
 Module containing ScalesConf class
 '''
+import os
 
+from typing     import Literal
 from pydantic   import BaseModel, ConfigDict
 from pathlib    import Path
 from dmu        import LogStore
@@ -19,14 +21,51 @@ class ScalesConf(BaseModel):
     mm      : dict[str,list[float]]
     ee      : dict[str,list[float]]
 
-    kind    : str # q2, B
+    kind    : Literal['q2', 'B']
     vers    : str
     year    : str
     proj    : str
+    # ------------------------------
+    @property
+    def out_dir(self) -> Path:
+        '''
+        Directory where results of fits are located
+        '''
+        ana_dir = Path(os.environ['ANADIR'])
 
-    inp_dir : Path
-    out_dir : Path
-    regex   : str
+        match self.kind:
+            case 'q2':
+                out_dir = ana_dir / f'q2/fits/{self.vers}/plots/{self.proj}'
+            case 'B':
+                out_dir = ana_dir / f'fits/data/reso_no_dtf/{self.vers}/{self.proj}/plots'
+
+        out_dir.mkdir(parents=True, exist_ok=True)
+
+        return out_dir
+    # ------------------------------
+    @property
+    def inp_dir(self) -> Path:
+        '''
+        Directory where results of fits are located
+        '''
+        ana_dir = Path(os.environ['ANADIR'])
+
+        match self.kind:
+            case 'q2':
+                return ana_dir / f'q2/fits/{self.vers}'
+            case 'B':
+                return ana_dir / f'fits/data/reso_no_dtf/{self.vers}/{self.proj}'
+    # ------------------------------
+    @property
+    def regex(self) -> str:
+        '''
+        Regular expression used to extract block and MVA WP
+        '''
+        match self.kind:
+            case 'q2':
+                return r'(\d)_(\d)_nom'
+            case 'B':
+                return r'(\d{3})_(\d{3})_b(\d)'
     # ------------------------------
     def get_range(self, var : str) -> tuple[float,float]:
         '''
