@@ -239,6 +239,8 @@ class FitSummary:
         Pandas dataframe with parameters
         '''
         paths = self._get_parameter_paths(kind = kind)
+        npath = len(paths)
+        log.info(f'Loading {kind} dataframe from {npath} paths')
 
         l_data : list[dict[str, float | str | Brem ]] = []
         for path_brem_1 in tqdm.tqdm(paths, ascii=' -'):
