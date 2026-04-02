@@ -55,11 +55,9 @@ def _load_config(args : argparse.Namespace) -> ScalesConf:
     return cfg 
 #-------------------------------------
 # TODO: This is too hardcoded
-def _get_Bx_df() -> pnd.DataFrame:
+def _get_Bx_df(cfg : ScalesConf) -> pnd.DataFrame:
     name   = 'reso_no_dtf'
     signal = Component.bpkpjpsiee 
-    cmb    = '950'
-    prc    = '400'
     brems  = [Brem.one, Brem.two] 
     blocks = Block.blocks()
     kinds  = ['dat', 'sim']
@@ -76,8 +74,8 @@ def _get_Bx_df() -> pnd.DataFrame:
                     signame  = signal,
                     brem     = brem, 
                     block    = block, 
-                    cmb      = cmb,
-                    prc      = prc,
+                    cmb      = cfg.comb.name,
+                    prc      = cfg.prec.name,
                     kind     = kind,
                     trigger  = Trigger.rk_ee_os, 
                     project  = Project.rk,
@@ -425,7 +423,7 @@ def _get_df(cfg : ScalesConf) -> pnd.DataFrame:
     if   cfg.kind == 'q2':
         df = _get_q2_df(cfg = cfg)
     elif cfg.kind ==  'B':
-        df = _get_Bx_df()
+        df = _get_Bx_df(cfg = cfg)
     else:
         raise ValueError(f'Invalid kind: {cfg.kind}')
 
