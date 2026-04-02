@@ -29,6 +29,9 @@ rule fits:
         f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/{{brem}}/fit_linear.png',
     params:
         name = NAME
+    resources:
+        htcondor_request_mem_mb = 6000,
+        htcondor_request_disk_mb= 2000,
     shell :
         '''
         source setup.sh rx_run3 $HOME
