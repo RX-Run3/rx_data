@@ -76,7 +76,17 @@ class ParameterReader:
         -------------
         df: DataFrame with fit information
         '''
-        df_info = df[['brem', 'block', 'q2bin', 'channel']]
+        columns = [
+            'project',
+            'kind',
+            'mva_cmb',
+            'mva_prc',
+            'brem', 
+            'block', 
+            'q2bin', 
+            'channel']
+
+        df_info = df[columns]
         log.info(df_info)
     # ----------------------
     def _query(self, df : pnd.DataFrame, cut : str) -> pnd.DataFrame:
