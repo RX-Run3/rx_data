@@ -1,41 +1,43 @@
 import os
 
 ANADIR = os.environ['ANADIR']
-WP     = [
-    '050_060',     # Loose SR 
-    '070_060',     # Representative of SR 
-    '090_060',     # Tight SR 
-    '010-050_080', # Check combinatorial
+CMB    = [
+    '950',
     ]
-BLOCK  = list(range(1, 9))
-NAME   = 'reso_non_dtf'
+PRC    = [
+    '600',
+    ]
+
+BLOCK  = list(range(1, 9))[:1]
+NAME   = 'reso_no_dtf'
 # ---------------------
 rule all:
     input: 
         expand(
-            [ANADIR + '/fits/data/' + NAME + '/' + '{wp}_b{block}/reso/rk/ee/data/jpsi/brem_001/fit_linear.png',
-             ANADIR + '/fits/data/' + NAME + '/' + '{wp}_b{block}/reso/rk/ee/data/jpsi/brem_002/fit_linear.png'],
-            wp    = WP,
+            [f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx1/fit_linear.png',
+             f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx2/fit_linear.png'],
+            cmb   = CMB,
+            prc   = PRC,
             block = BLOCK)
 # ---------------------
 rule fits:
     output   : 
-        ANADIR + '/fits/data/' + NAME + '/' + '{wp}_b{block}/reso/rk/ee/data/jpsi/brem_001/fit_linear.png',
-        ANADIR + '/fits/data/' + NAME + '/' + '{wp}_b{block}/reso/rk/ee/data/jpsi/brem_002/fit_linear.png',
-    container:
-        'gitlab-registry.cern.ch/lhcb-rd/cal-rx-run3:97024d733'
+        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/{{brem}}/fit_linear.png',
     params:
         name = NAME
-    resources:
-        kubernetes_memory_limit='4000Mi'
     shell :
         '''
-        source setup.sh
+        source setup.sh rx_run3 $HOME
+        CMB_WP=$(rxfitter wp-translator -w {wildcards.cmb})
+        PRC_WP=$(rxfitter wp-translator -w {wildcards.prc})
 
         fit_rx_reso -b {wildcards.block}\
                     -g {params.name}\
-                    -c reso/rk/ee/data_non_dtf.yaml \
+                    -c reso/rk/ee \
                     -q jpsi \
-                    -C $(rxfitter wp-translator -w {wildcards.wp} -k cmb)\
-                    -P $(rxfitter wp-translator -w {wildcards.wp} -k prc) || true
+                    -r \
+                    -C $CMB_WP\
+                    -P $PRC_WP || true
+
+        rxfitter make-dummy-plot -p {output} -t {wildcards.cmb}_{wildcards.prc}
         '''
