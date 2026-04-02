@@ -34,27 +34,20 @@ from rx_common       import DataSet
 
 log=LogStore.add_logger('rx_q2:dump_q2_ratios')
 
-ARGS       : DictConfig | argparse.Namespace | None = None
 PROJECTS   : list[str]        = ['rk_ee', 'rk_mm', 'rkst_ee', 'rkst_mm']
 _FRACTIONS : Final[list[str]] = ['fr']
 #-------------------------------------
-@cache
-def _load_config() -> ScalesConf:
+def _load_config(args : argparse.Namespace) -> ScalesConf:
     '''
     Returns
     -------------
     config class
     '''
-    if ARGS is None:
-        raise ValueError('Arguments not found')
-
-    data         = gut.load_data(package='rx_q2_data', fpath=f'plots/scales_{ARGS.kind}.yaml')
-    data['kind'] = ARGS.kind
-    data['vers'] = ARGS.vers
-    data['year'] = ARGS.year
-    data['proj'] = ARGS.project
-
-    _add_paths(data = data)
+    data         = gut.load_data(package='rx_q2_data', fpath=f'plots/scales_{args.kind}.yaml')
+    data['kind'] = args.kind
+    data['vers'] = args.vers
+    data['year'] = args.year
+    data['proj'] = args.project
 
     cfg  = ScalesConf(**data)
 
@@ -116,22 +109,23 @@ def _get_Bx_df() -> pnd.DataFrame:
 
     return pnd.DataFrame(l_data) 
 #-------------------------------------
-def _get_q2_df(sample : str | None = None) -> pnd.DataFrame:
+def _get_q2_df(
+    cfg    : ScalesConf,
+    sample : str | None = None) -> pnd.DataFrame:
     '''
     Arguments
     --------------
     sample : dat or sim
     '''
     if sample is None:
-        df_dat = _get_q2_df(sample = 'dat')
+        df_dat = _get_q2_df(cfg = cfg, sample = 'dat')
         df_dat['sample'] = 'dat' 
 
-        df_sim = _get_q2_df(sample = 'sim')
+        df_sim = _get_q2_df(cfg = cfg, sample = 'sim')
         df_sim['sample'] = 'sim' 
 
         return pnd.concat([df_dat, df_sim], axis=0, ignore_index=True)
     
-    cfg     = _load_config()
     path_wc = cfg.inp_dir / f'{sample}/{cfg.proj}_{cfg.year}'
     l_path  = list(path_wc.glob(pattern = '*/parameters.json'))
     nfiles  = len(l_path)
@@ -148,11 +142,12 @@ def _get_q2_df(sample : str | None = None) -> pnd.DataFrame:
 
     return df
 #-------------------------------------
-def _get_scales(df : pnd.DataFrame) -> pnd.DataFrame:
+def _get_scales(df : pnd.DataFrame, cfg : ScalesConf) -> pnd.DataFrame:
     '''
     Parameters
     ---------------
-    df: Pandas dataframe with fitting parameters, e.g. mu, sg.
+    df : Pandas dataframe with fitting parameters, e.g. mu, sg.
+    cfg: Configuration
 
     Returns
     ---------------
@@ -178,8 +173,6 @@ def _get_scales(df : pnd.DataFrame) -> pnd.DataFrame:
         raise ValueError('No dataframes found to concatenate')
 
     df = pnd.concat(l_df_scale, ignore_index=True)
-
-    cfg = _load_config()
     df.to_json(cfg.out_dir / 'scales.json', indent = 2)
 
     return df
@@ -316,6 +309,7 @@ def _plot_df(
 #-------------------------------------
 def _plot_corrections(
     df         : pnd.DataFrame, 
+    cfg        : ScalesConf,
     correction : Correction) -> None:
 
     log.info(f'Plotting correction: {correction}')
@@ -334,7 +328,6 @@ def _plot_corrections(
     if correction != Correction.brem_fraction:
         ax.legend()
 
-    cfg = _load_config()
     rng = cfg.get_range(var=correction)
 
     plt.ylabel(correction.latex)
@@ -345,6 +338,7 @@ def _plot_corrections(
 #-------------------------------------
 def _plot_variables(
     df       : pnd.DataFrame, 
+    cfg      : ScalesConf,
     variable : str, 
     kind     : DataSet) -> None:
     '''
@@ -376,7 +370,6 @@ def _plot_variables(
     else:
         plt.legend(labels = [])
 
-    cfg = _load_config()
     if   variable == 'mu':
         plt.ylabel(rf'$\mu^{{{kind.latex}}}$[MeV]')
         ax.axhline(y=cfg.jpsi_mass, color='black', linestyle=':', label='PDG')
@@ -395,7 +388,7 @@ def _plot_variables(
     plt.savefig(cfg.out_dir / f'{variable}_{kind}.png')
     plt.close()
 #-------------------------------------
-def _plot(df : pnd.DataFrame) -> None:
+def _plot(df : pnd.DataFrame, cfg : ScalesConf) -> None:
     '''
     Parameters
     ---------------
@@ -404,17 +397,17 @@ def _plot(df : pnd.DataFrame) -> None:
     for kind, df_kind in df.groupby('sample'):
         skind = DataSet(kind)
 
-        _plot_variables(df=df_kind, variable='mu', kind = skind)
-        _plot_variables(df=df_kind, variable='sg', kind = skind)
-        _plot_variables(df=df_kind, variable='fr', kind = skind)
+        _plot_variables(df=df_kind, variable='mu', kind = skind, cfg = cfg)
+        _plot_variables(df=df_kind, variable='sg', kind = skind, cfg = cfg)
+        _plot_variables(df=df_kind, variable='fr', kind = skind, cfg = cfg)
 
         if kind == DataSet.dat:
-            _plot_variables(df=df_kind, variable='bk', kind = skind)
+            _plot_variables(df=df_kind, variable='bk', kind = skind, cfg = cfg)
 
-    df_scale = _get_scales(df)
-    _plot_corrections(df=df_scale, correction=Correction.mass_resolution)
-    _plot_corrections(df=df_scale, correction=Correction.mass_scale)
-    _plot_corrections(df=df_scale, correction=Correction.brem_fraction)
+    df_scale = _get_scales(df = df, cfg = cfg)
+    _plot_corrections(df=df_scale, cfg = cfg, correction=Correction.mass_resolution)
+    _plot_corrections(df=df_scale, cfg = cfg, correction=Correction.mass_scale)
+    _plot_corrections(df=df_scale, cfg = cfg, correction=Correction.brem_fraction)
 #-------------------------------------
 def _get_df(cfg : ScalesConf) -> pnd.DataFrame:
     '''
@@ -429,7 +422,7 @@ def _get_df(cfg : ScalesConf) -> pnd.DataFrame:
     log.info('Dataframe not found, making it')
 
     if   cfg.kind == 'q2':
-        df = _get_q2_df()
+        df = _get_q2_df(cfg = cfg)
     elif cfg.kind ==  'B':
         df = _get_Bx_df()
     else:
@@ -462,21 +455,21 @@ def main(args : DictConfig | None = None):
 
     plt.style.use(mplhep.style.LHCb2)
 
-    cfg  = _load_config()
+    cfg  = _load_config(args = args)
 
     out_path = cfg.out_dir / 'parameters.json'
     if out_path.exists():
         log.warning(f'Dataframe already found, reusing: {out_path}')
         df = pnd.read_json(out_path)
 
-        _plot(df=df)
+        _plot(df=df, cfg = cfg)
 
         return
 
     df = _get_df(cfg = cfg)
     df.to_json(out_path, indent=2)
 
-    _plot(df=df)
+    _plot(df=df, cfg = cfg)
 #-------------------------------------
 if __name__ == '__main__':
     main()
