@@ -30,7 +30,7 @@ rule fits:
     output   : 
         f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/{{brem}}/fit_linear.png',
     params:
-        name = NAME
+        name = NAME,
         home = HOME,
         env  = ENV,
     resources:
