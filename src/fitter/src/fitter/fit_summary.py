@@ -8,11 +8,11 @@ import math
 import pandas as pnd
 
 from dmu         import LogStore
-from dmu.generic import utilities as gut
+from dmu.stats   import FitResult
 
 from pathlib     import Path
 from typing      import Final
-from rx_common   import Brem
+from rx_common   import Brem, Component
 
 log=LogStore.add_logger('fitter:fit_summary')
 # TODO: Generalize tool to deal with any sample, i.e.
@@ -30,7 +30,7 @@ class FitSummary:
     # ----------------------
     def __init__(
         self, 
-        signal: str,
+        signal: Component,
         name  : str) -> None:
         '''
         Parameters
@@ -113,7 +113,6 @@ class FitSummary:
 
         groups : list[str] = list(mtch.groups())
         channel            = groups[4]
-        channel            = {'electron' : 'ee', 'muon' : 'mm'}[channel]
 
         data : dict[str, str | Brem] = dict()
         data['mva_cmb'] = groups[0]
@@ -275,9 +274,6 @@ class FitSummary:
 
         del val_1['nentries_value']
         del val_2['nentries_value']
-
-        del val_1['nentries_error']
-        del val_2['nentries_error']
 
         val_1['fraction_value'] = fraction
         val_2['fraction_value'] = fraction
