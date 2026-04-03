@@ -55,7 +55,11 @@ class ParameterReader:
         '''
         Print dataframe with parameters 
         '''
-        self._print_info(df = self._df)
+        df = self._df
+        for column in df.columns:
+            df = df.sort_values(by=column, ascending=False)
+
+        self._print_info(df = df, rows = 100)
     # ----------------------
     def _get_dataframe(self, name : str | None = None) -> pnd.DataFrame:
         '''
@@ -84,7 +88,7 @@ class ParameterReader:
 
         return pnd.read_parquet(path = pars_path)
     # ----------------------
-    def _print_info(self, df : pnd.DataFrame) -> None:
+    def _print_info(self, df : pnd.DataFrame, rows : int = 20) -> None:
         '''
         This method will print the sample information
 
@@ -103,7 +107,8 @@ class ParameterReader:
             'channel']
 
         df_info = df[columns]
-        log.info(df_info)
+        with pnd.option_context(pat='display.max_rows', val=rows):
+            log.info(df_info)
     # ----------------------
     def _query(self, df : pnd.DataFrame, cut : str) -> pnd.DataFrame:
         '''
@@ -118,7 +123,10 @@ class ParameterReader:
         df_out = df.query(cut)
 
         if len(df_out) == 0:
+            log.warning('Querying:')
             self._print_info(df = df)
+            log.warning('From main:')
+            self.print()
             raise ValueError(f'No entries pass: {cut}')
 
         return df_out
