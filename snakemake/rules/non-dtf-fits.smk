@@ -32,6 +32,9 @@ rule all:
 # ---------------------
 rule scales:
     output : f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}/rk_ee/plots/scales.json'
+    params:
+        home = HOME,
+        env  = ENV,
     shell  :
         '''
         source setup.sh {params.env} {params.home} 
