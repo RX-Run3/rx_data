@@ -323,21 +323,13 @@ class FitSummary:
 
         log.info(f'Saving summary to: {path}')
     # ----------------------
-    def get_df(
-        self, 
-        suffix       : str | None = None, 
-        force_update : bool       = False) -> pnd.DataFrame:
+    def get_df(self, force_update : bool = False) -> pnd.DataFrame:
         '''
         Parameters
         ---------------
-        suffix      : Used in naming of output files
         force_update: If true (default false) will regenerate file, otherwise will reuse file if found 
         '''
-        if suffix is None:
-            output_path  = self._fit_dir / 'parameters.parquet'
-        else:
-            output_path  = self._fit_dir / f'parameters_{suffix}.parquet'
-
+        output_path  = self._fit_dir / 'parameters.parquet'
         if output_path.exists() and not force_update:
             log.info(f'Reading cached files at: {output_path}')
             return pnd.read_parquet(output_path)
