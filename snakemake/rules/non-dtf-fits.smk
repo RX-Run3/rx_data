@@ -73,5 +73,5 @@ rule fits:
                     -q jpsi \
                     -r \
                     -C $CMB_WP\
-                    -P $PRC_WP  2>&1 | tee -a {log}
+                    -P $PRC_WP || true 2>&1 | tee -a {log}
         '''
