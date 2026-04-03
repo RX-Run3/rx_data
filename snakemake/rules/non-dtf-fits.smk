@@ -20,13 +20,25 @@ NAME   = 'reso_no_dtf'
 rule all:
     input: 
         expand(
-            [f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx1/parameters.json',
+            [
+             f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}/rk_ee/plots/scales.json',
+             f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx1/parameters.json',
              f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx2/parameters.json',
              f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx1/main_brem_xx1_b{{block}}/parameters.json',
              f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx2/main_brem_xx2_b{{block}}/parameters.json'],
             cmb   = CMB,
             prc   = PRC,
             block = BLOCK)
+# ---------------------
+rule scales:
+    output : f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}/rk_ee/plots/scales.json'
+    shell  :
+        '''
+        CMB_WP=$(rxfitter wp-translator -w {wildcards.cmb})
+        PRC_WP=$(rxfitter wp-translator -w {wildcards.prc})
+
+        dump_q2_ratios -k B -p rk_ee -y 2024 -C $CMB_WP -P $PRC_WP
+        '''
 # ---------------------
 rule fits:
     output   : 
@@ -55,6 +67,4 @@ rule fits:
                     -r \
                     -C $CMB_WP\
                     -P $PRC_WP || true
-
-        rxfitter make-dummy-plot -p {output} -t {wildcards.cmb}_{wildcards.prc}
         '''
