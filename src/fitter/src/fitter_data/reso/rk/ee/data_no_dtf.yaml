@@ -10,11 +10,11 @@ observable:
       - 4500 
       - 7000
 components:
-  comb       : reso/rk/ee/comb_no_dtf.yaml
+  #comb       : reso/rk/ee/comb_no_dtf.yaml
   #bppijpsiee : reso/rk/ee/bppijpsiee.yaml
   #ccbar      : reso/rk/ee/ccbar.yaml
   bpkpjpsiee : reso/rk/ee/bpkpjpsiee_no_dtf.yaml
-  bpkppsi2ee : reso/rk/ee/bpkppsi2ee.yaml
+  #bpkppsi2ee : reso/rk/ee/bpkppsi2ee.yaml
 constraints:
   pre_rare : []
 fit: {}
