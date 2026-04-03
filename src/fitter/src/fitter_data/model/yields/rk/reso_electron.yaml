@@ -33,7 +33,7 @@ yld_bpkpjpsiee_brem_xx1:
   kind : mul
   pars : 
     - yld_bpkpjpsiee
-    - jpsi_fraction
+    - bpkpjpsiee_fraction
 yld_bpkpjpsiee_brem_xx2:
   kind : dif 
   pars :

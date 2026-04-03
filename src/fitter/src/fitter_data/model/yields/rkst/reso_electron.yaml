@@ -17,7 +17,7 @@ yld_bdkstkpijpsiee_brem_xx1:
   kind: mul
   pars: 
     - yld_bdkstkpijpsiee
-    - jpsi_fraction
+    - bdkstkpijpsiee_fraction
 yld_bdkstkpijpsiee_brem_xx2:
   kind: dif 
   pars:
