@@ -61,11 +61,12 @@ def _get_Bx_df(cfg : ScalesConf) -> pnd.DataFrame:
     brems  = [Brem.one, Brem.two] 
     blocks = Block.blocks()
     kinds  = ['dat', 'sim']
+    suffix = f'{cfg.kind}_{cfg.comb.name}_{cfg.prec.name}_{cfg.year}'
 
     smr = FitSummary(name = name, signal = signal)
-    smr.get_df()
+    smr.get_df(suffix = suffix)
 
-    rdr = FitParameterReader(name = name)
+    rdr = FitParameterReader(name = name, suffix = suffix)
     l_data = []
     for brem in brems:
         for block in blocks:
