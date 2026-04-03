@@ -34,12 +34,18 @@ class ParameterReader:
     '''
     _pars_path : Path | None = None
     # ----------------------
-    def __init__(self, name : str | None = None):
+    def __init__(
+        self, 
+        suffix : str | None = None,
+        name   : str | None = None):
         '''
         Parameters
         -------------
-        name : Fit name, e.g. mid_window 
+        suffix: Used to pick up parameters_{SUFFIX}.parquet, can be None
+        name  : Fit name, e.g. mid_window 
         '''
+        self._suffix = suffix
+
         if name is None and self._pars_path is None:
             raise ValueError('No name was passed and no path to parameters exists')
 
@@ -66,7 +72,11 @@ class ParameterReader:
             return pnd.read_parquet(self._pars_path)
 
         ana_dir   = Path(os.environ['ANADIR'])
-        pars_path = ana_dir / f'fits/data/{name}/parameters.parquet'
+
+        if self._suffix is None:
+            pars_path = ana_dir / f'fits/data/{name}/parameters.parquet'
+        else:
+            pars_path = ana_dir / f'fits/data/{name}/parameters_{self._suffix}.parquet'
 
         log.debug(f'Using path: {pars_path}')
         if not pars_path.exists():
