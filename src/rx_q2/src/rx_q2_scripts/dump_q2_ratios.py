@@ -419,8 +419,6 @@ def _get_df(cfg : ScalesConf) -> pnd.DataFrame:
     -----------
     Dataframe with fitting parameters, e.g. mu, sg
     '''
-    log.info('Dataframe not found, making it')
-
     if   cfg.kind == 'q2':
         df = _get_q2_df(cfg = cfg)
     elif cfg.kind ==  'B':
@@ -455,6 +453,7 @@ def main():
 
         return
 
+    log.info(f'Dataframe with parameters not found making: {out_path}')
     df = _get_df(cfg = cfg)
     df.to_json(out_path, indent=2)
 
