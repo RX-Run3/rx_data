@@ -34,6 +34,8 @@ rule scales:
     output : f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}/rk_ee/plots/scales.json'
     shell  :
         '''
+        source setup.sh {params.env} {params.home} 
+
         CMB_WP=$(rxfitter wp-translator -w {wildcards.cmb})
         PRC_WP=$(rxfitter wp-translator -w {wildcards.prc})
 
