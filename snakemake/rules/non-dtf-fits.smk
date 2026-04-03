@@ -38,12 +38,12 @@ rule scales:
         env  = ENV,
     shell  :
         '''
-        source setup.sh {params.env} {params.home} 
+        source setup.sh {params.env} {params.home} 2>&1 | tee {log} 
 
         CMB_WP=$(rxfitter wp-translator -w {wildcards.cmb})
         PRC_WP=$(rxfitter wp-translator -w {wildcards.prc})
 
-        dump_q2_ratios -k B -p rk_ee -y 2024 -C $CMB_WP -P $PRC_WP
+        dump_q2_ratios -k B -p rk_ee -y 2024 -C $CMB_WP -P $PRC_WP  2>&1 | tee -a {log}
         '''
 # ---------------------
 rule fits:
@@ -62,7 +62,7 @@ rule fits:
         htcondor_request_disk_mb= 2000,
     shell :
         '''
-        source setup.sh {params.env} {params.home} 
+        source setup.sh {params.env} {params.home}  2>&1 | tee {log}
 
         CMB_WP=$(rxfitter wp-translator -w {wildcards.cmb})
         PRC_WP=$(rxfitter wp-translator -w {wildcards.prc})
@@ -73,5 +73,5 @@ rule fits:
                     -q jpsi \
                     -r \
                     -C $CMB_WP\
-                    -P $PRC_WP || true
+                    -P $PRC_WP  2>&1 | tee -a {log}
         '''
