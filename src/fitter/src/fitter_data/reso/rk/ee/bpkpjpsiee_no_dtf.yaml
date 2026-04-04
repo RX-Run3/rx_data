@@ -15,9 +15,9 @@ categories:
       fix           : {}
       values:
         sg:
-          - 80
           - 120
-          - 300
+          -  50
+          - 200
 fit:
   strategy  :
     ntries : 15
