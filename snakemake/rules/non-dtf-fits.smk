@@ -74,8 +74,7 @@ rule fits:
         htcondor_request_disk_mb= 2000,
     shell :
         '''
-        exec > >(tee {log}) 2>&1
-        set +e
+        (
         source setup.sh {params.env} {params.home}
 
         CMB_WP=$(rxfitter wp-translator -w {wildcards.cmb})
@@ -89,5 +88,6 @@ rule fits:
                     -C $CMB_WP\
                     -P $PRC_WP
 
-        echo "Fit done"
+        echo "Fit done with status: $?" 
+        ) > {log.fits} 2>&1
         '''
