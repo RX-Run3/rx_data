@@ -51,9 +51,15 @@ class ParameterReader:
 
         self._df = self._get_dataframe(name = name)
     # ----------------------
-    def print(self, rows = 100) -> None:
+    def print(
+        self, 
+        extra_columns : list[str] | None = None,
+        rows = 100) -> None:
         '''
-        Print dataframe with parameters 
+        Parameters
+        --------------------
+        rows: Number of rows to print
+        extra_columns: Columns to add to printout beyond metadata
         '''
         df = self._df
         for column in df.columns:
@@ -61,7 +67,10 @@ class ParameterReader:
 
         df = df.reset_index()
 
-        self._print_info(df = df, rows = rows)
+        self._print_info(
+            df            = df, 
+            extra_columns = extra_columns,
+            rows          = rows)
     # ----------------------
     def _get_dataframe(self, name : str | None = None) -> pnd.DataFrame:
         '''
@@ -90,15 +99,22 @@ class ParameterReader:
 
         return pnd.read_parquet(path = pars_path)
     # ----------------------
-    def _print_info(self, df : pnd.DataFrame, rows : int = 20) -> None:
+    def _print_info(
+        self, 
+        df : pnd.DataFrame, 
+        extra_columns : list[str] | None = None,
+        rows          : int              = 20) -> None:
         '''
         This method will print the sample information
 
         Parameters
         -------------
-        df: DataFrame with fit information
+        df  : DataFrame with fit information
+        rows: Number of rows to print
+        extra_columns: Columns to add to printout beyond metadata
         '''
-        columns = [
+        ext_cols = [] if extra_columns is None else extra_columns
+        columns  = [
             'project',
             'kind',
             'mva_cmb',
@@ -106,11 +122,23 @@ class ParameterReader:
             'brem', 
             'block', 
             'q2bin', 
-            'channel']
+            'channel'] + ext_cols
 
-        df_info = df[columns]
-        with pnd.option_context('display.max_rows', rows):
-            log.info(df_info)
+        try:
+            df_info = df[columns]
+        except KeyError as exc:
+            for col in df.columns:
+                log.error(col)
+            raise KeyError('Cannot find at least one column') from exc
+
+        with pnd.option_context(
+            'display.width', 
+            None,
+            'display.max_colwidth',
+            None,
+            'display.max_rows', 
+            rows):
+            log.info('\n' + str(df_info))
     # ----------------------
     def _query(self, df : pnd.DataFrame, cut : str) -> pnd.DataFrame:
         '''
