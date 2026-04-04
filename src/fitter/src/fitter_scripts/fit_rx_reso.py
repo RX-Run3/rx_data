@@ -145,14 +145,14 @@ def _fit_electron(cfg : RXFitConfig) -> None:
     '''
     d_nll : dict[Region,tuple[ExtendedUnbinnedNLL, dict[str,dict[str,str]]]] = {}
     region   = Region.brem_xx1
-    cfg_copy = cfg.pick_category(name = f'brem_{region}')
+    cfg_copy = cfg.pick_category(name = region)
     with sel.update_selection(d_sel = region.selection):
         cfg.name      = region
         cfg_copy      = cfg_copy.cfg_copy(category_suffix = f'b{cfg.block}')
         d_nll[region] = _get_nll(cfg=cfg_copy)
 
     region   = Region.brem_xx2
-    cfg_copy = cfg.pick_category(name = f'brem_{region}')
+    cfg_copy = cfg.pick_category(name = region)
     with sel.update_selection(d_sel = region.selection):
         cfg.name      = region
         cfg_copy      = cfg_copy.cfg_copy(category_suffix = f'b{cfg.block}')
