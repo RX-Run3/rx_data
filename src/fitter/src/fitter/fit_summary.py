@@ -136,7 +136,6 @@ class FitSummary:
     # ----------------------
     def _get_data(
         self, 
-        brem : Brem,
         kind : str,
         path : Path) -> tuple[dict[str, float], dict[str, str | Brem]]:
         '''
@@ -155,18 +154,13 @@ class FitSummary:
 
         data : dict[str,float] = {}
         for par in res.parameters:
-            if   par.name == 'jpsi_fraction':
-                name = f'{self._signal}_fraction'
-            elif par.name == f'yld_{self._signal}' or brem.in_string(string = par.name):
-                name = par.name
-            else:
-                continue
-
-            data[f'{name}_value'] = par.value
-            data[f'{name}_error'] = par.error 
+            data[f'{par.name}_value'] = par.value
+            data[f'{par.name}_error'] = par.error 
 
         if kind == 'sim':
-            data['nentries_value'] = self._get_mc_nentries(path=path)
+            nentries = self._get_mc_nentries(path=path)
+            data[f'yld_{self._signal}_value'] = nentries
+            data[f'yld_{self._signal}_error'] = math.sqrt(nentries)
 
         meta = self._extra_information(path=path, kind=kind)
 
@@ -249,11 +243,9 @@ class FitSummary:
                 continue
 
             data_1, meta_1 = self._get_data(
-                brem = Brem.one,
                 path = path_brem_1, 
                 kind = kind)
             data_2, meta_2 = self._get_data(
-                brem = Brem.two,
                 path = path_brem_2, 
                 kind = kind)
 
@@ -286,15 +278,12 @@ class FitSummary:
         -------------
         Same as input, but with nentries_value/error keys replaced with fraction_value/error
         '''
-        nentries_001 = val_1['nentries_value']
-        nentries_002 = val_2['nentries_value']
+        nentries_001 = val_1[f'yld_{self._signal}_value']
+        nentries_002 = val_2[f'yld_{self._signal}_value']
 
         ntotal   = nentries_001 + nentries_002
         fraction = nentries_001 / ntotal 
         error    = math.sqrt( fraction * (1 - fraction) / ntotal )
-
-        del val_1['nentries_value']
-        del val_2['nentries_value']
 
         val_1[f'{self._signal}_fraction_value'] = fraction
         val_2[f'{self._signal}_fraction_value'] = fraction

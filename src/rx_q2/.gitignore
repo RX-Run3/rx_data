@@ -180,7 +180,6 @@ poetry.toml
 *.tex
 *.txt
 *.log
-*.json
 
 __pycache__
 
