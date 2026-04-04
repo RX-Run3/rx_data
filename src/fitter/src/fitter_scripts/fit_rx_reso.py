@@ -147,13 +147,13 @@ def _fit_electron(cfg : RXFitConfig) -> None:
     region = Region.brem_xx1
     with sel.update_selection(d_sel = region.selection):
         cfg.name      = region
-        cfg_copy      = cfg.cfg_copy(category_suffix = f'{region}_b{cfg.block}')
+        cfg_copy      = cfg.pick_category(name = f'brem_{region}_b{cfg.block}')
         d_nll[region] = _get_nll(cfg=cfg_copy)
 
     region = Region.brem_xx2
     with sel.update_selection(d_sel = region.selection):
         cfg.name      = region
-        cfg_copy      = cfg.cfg_copy(category_suffix = f'{region}_b{cfg.block}')
+        cfg_copy      = cfg.pick_category(name = f'brem_{region}_b{cfg.block}')
         d_nll[region] = _get_nll(cfg=cfg_copy)
 
     with GofCalculator.disabled(value=True):
