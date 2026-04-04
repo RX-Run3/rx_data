@@ -107,7 +107,7 @@ class ParameterReader:
             'channel']
 
         df_info = df[columns]
-        with pnd.option_context(pat='display.max_rows', val=rows):
+        with pnd.option_context('display.max_rows', rows):
             log.info(df_info)
     # ----------------------
     def _query(self, df : pnd.DataFrame, cut : str) -> pnd.DataFrame:
