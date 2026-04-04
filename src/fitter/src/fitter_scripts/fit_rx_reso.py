@@ -144,16 +144,18 @@ def _fit_electron(cfg : RXFitConfig) -> None:
     This is where DataFitter is used
     '''
     d_nll : dict[Region,tuple[ExtendedUnbinnedNLL, dict[str,dict[str,str]]]] = {}
-    region = Region.brem_xx1
+    region   = Region.brem_xx1
+    cfg_copy = cfg.pick_category(name = f'brem_{region}')
     with sel.update_selection(d_sel = region.selection):
         cfg.name      = region
-        cfg_copy      = cfg.pick_category(name = f'brem_{region}_b{cfg.block}')
+        cfg_copy      = cfg_copy.cfg_copy(category_suffix = f'b{cfg.block}')
         d_nll[region] = _get_nll(cfg=cfg_copy)
 
-    region = Region.brem_xx2
+    region   = Region.brem_xx2
+    cfg_copy = cfg.pick_category(name = f'brem_{region}')
     with sel.update_selection(d_sel = region.selection):
         cfg.name      = region
-        cfg_copy      = cfg.pick_category(name = f'brem_{region}_b{cfg.block}')
+        cfg_copy      = cfg_copy.cfg_copy(category_suffix = f'b{cfg.block}')
         d_nll[region] = _get_nll(cfg=cfg_copy)
 
     with GofCalculator.disabled(value=True):
