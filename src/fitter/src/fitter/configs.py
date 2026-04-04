@@ -192,6 +192,28 @@ class ParametricConf(ComponentConf):  # Tested
             new_categories[f'{name}_{category_suffix}'] = conf.model_copy() 
 
         return self.model_copy(update = {'categories' : new_categories})
+    # ----------------------
+    def pick_category(self, name : str) -> Self:
+        '''
+        Parameters
+        -----------------
+        name: Name of category to pick 
+
+        Returns
+        -----------------
+        Copy of config with only that category 
+        '''
+        new_categories : dict[str,CategoryConf] = {}
+        for cat_name, conf in self.categories.items():
+            if cat_name != name:
+                continue
+
+            new_categories[cat_name] = conf
+
+        if not new_categories:
+            raise ValueError(f'No category found with name: {name}')
+
+        return self.model_copy(update = {'categories' : new_categories})
 # ------------------------------
 class NonParametricConf(ComponentConf): # Tested
     '''
@@ -387,6 +409,29 @@ class RXFitConfig(BaseModel):
                 new_conf = conf.model_copy()
             else:
                 new_conf = conf.cfg_copy(category_suffix = category_suffix)
+
+            new_components[comp] = new_conf
+
+        new_mod_cfg = self.mod_cfg.model_copy(update = {'components' : new_components})
+
+        return self.model_copy(update = {'mod_cfg' : new_mod_cfg})
+    # ----------------------
+    def pick_category(self, name : str) -> Self:
+        '''
+        Parameters
+        -----------------
+        name: Name of single category, for parametric model to be picked 
+
+        Returns
+        -----------------
+        Copy of config with that category 
+        '''
+        new_components : dict[Component, AnyModelConf] = {}
+        for comp, conf in self.mod_cfg.components.items():
+            if not isinstance(conf, ParametricConf):
+                new_conf = conf.model_copy()
+            else:
+                new_conf = conf.pick_category(name = name)
 
             new_components[comp] = new_conf
 
