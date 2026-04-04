@@ -51,7 +51,7 @@ class ParameterReader:
 
         self._df = self._get_dataframe(name = name)
     # ----------------------
-    def print(self) -> None:
+    def print(self, rows = 100) -> None:
         '''
         Print dataframe with parameters 
         '''
@@ -59,7 +59,9 @@ class ParameterReader:
         for column in df.columns:
             df = df.sort_values(by=column, ascending=False)
 
-        self._print_info(df = df, rows = 100)
+        df = df.reset_index()
+
+        self._print_info(df = df, rows = rows)
     # ----------------------
     def _get_dataframe(self, name : str | None = None) -> pnd.DataFrame:
         '''
