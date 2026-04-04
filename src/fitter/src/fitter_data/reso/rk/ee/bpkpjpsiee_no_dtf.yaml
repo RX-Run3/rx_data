@@ -1,6 +1,6 @@
 component : bpkpjpsiee 
 categories:
-  main:
+  brem_xx1:
     selection : {}
     model :
       pdfs:
@@ -17,6 +17,24 @@ categories:
         sg:
           - 120
           -  50
+          - 200
+  brem_xx2:
+    selection : {}
+    model :
+      pdfs:
+        - dscb 
+      shared        :
+        - mu
+        - sg
+      floating      :
+        - mu
+        - sg
+      reparametrize : {}
+      fix           : {}
+      values:
+        sg:
+          - 120
+          -  90
           - 200
 fit:
   strategy  :
