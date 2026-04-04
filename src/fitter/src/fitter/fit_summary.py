@@ -136,7 +136,6 @@ class FitSummary:
     # ----------------------
     def _get_data(
         self, 
-        brem : Brem,
         kind : str,
         path : Path) -> tuple[dict[str, float], dict[str, str | Brem]]:
         '''
@@ -249,11 +248,9 @@ class FitSummary:
                 continue
 
             data_1, meta_1 = self._get_data(
-                brem = Brem.one,
                 path = path_brem_1, 
                 kind = kind)
             data_2, meta_2 = self._get_data(
-                brem = Brem.two,
                 path = path_brem_2, 
                 kind = kind)
 
