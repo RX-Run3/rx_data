@@ -66,7 +66,7 @@ def _get_Bx_df(cfg : ScalesConf) -> pnd.DataFrame:
     smr = FitSummary(name = name, signal = signal)
     smr.get_df(suffix = suffix)
 
-    rdr = FitParameterReader(name = name, suffix = suffix)
+    rdr    = FitParameterReader(name = name, suffix = suffix)
     l_data = []
     for brem in brems:
         for block in blocks:
@@ -347,7 +347,6 @@ def _plot_variables(
     kind: dat or sim
     '''
     log.info(f'Plotting {variable} for {kind}')
-
     _, ax = plt.subplots(figsize=(15, 10))
     for val, df_brem_unordered in df.groupby('brem'):
         sval    = str(val)
@@ -394,6 +393,7 @@ def _plot(df : pnd.DataFrame, cfg : ScalesConf) -> None:
     ---------------
     df: Pandas dataframe with fitting parameters, e.g. mu, sg.
     '''
+
     for kind, df_kind in df.groupby('sample'):
         skind = DataSet(kind)
 
