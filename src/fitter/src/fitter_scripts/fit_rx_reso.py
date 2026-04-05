@@ -23,7 +23,7 @@ from fitter        import RXFitConfig
 from fitter        import DataFitter
 from fitter        import LikelihoodFactory
 from rx_selection  import selection as sel
-from rx_common     import Qsq, Component, Region
+from rx_common     import Qsq, Component, Region, Cuts
 
 log=LogStore.add_logger('fitter:fit_rx_reso')
 # ----------------------
@@ -113,7 +113,7 @@ def _parse_args() -> RXFitConfig:
 
     return cfg
 # ----------------------
-def _get_nll(cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL, dict[str,dict[str,str]]]:
+def _get_nll(cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL, dict[str,dict[Cuts,str]]]:
     '''
     Parameters
     -------------
@@ -139,24 +139,32 @@ def _get_nll(cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL, dict[str,dict[str,
 
     return nll, cfg_mod
 # ----------------------
+def _get_region_nll(region : Region, cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL, dict[str,dict[Cuts,str]]]:
+    '''
+    Parameters
+    -------------
+    region: Brem region
+    cfg   : Full configuration
+
+    Returns
+    -------------
+    NLL for fitting region
+    '''
+    cfg = cfg.pick_category(name = region)
+
+    with sel.update_selection(d_sel = region.selection):
+        cfg.name = region
+        cfg      = cfg.cfg_copy(category_suffix = f'b{cfg.block}')
+
+        return _get_nll(cfg=cfg)
+# ----------------------
 def _fit_electron(cfg : RXFitConfig) -> None:
     '''
     This is where DataFitter is used
     '''
-    d_nll : dict[Region,tuple[ExtendedUnbinnedNLL, dict[str,dict[str,str]]]] = {}
-    region   = Region.brem_xx1
-    cfg_copy = cfg.pick_category(name = region)
-    with sel.update_selection(d_sel = region.selection):
-        cfg.name      = region
-        cfg_copy      = cfg_copy.cfg_copy(category_suffix = f'b{cfg.block}')
-        d_nll[region] = _get_nll(cfg=cfg_copy)
-
-    region   = Region.brem_xx2
-    cfg_copy = cfg.pick_category(name = region)
-    with sel.update_selection(d_sel = region.selection):
-        cfg.name      = region
-        cfg_copy      = cfg_copy.cfg_copy(category_suffix = f'b{cfg.block}')
-        d_nll[region] = _get_nll(cfg=cfg_copy)
+    d_nll : dict[Region,tuple[ExtendedUnbinnedNLL, dict[str,dict[Cuts,str]]]] = {}
+    d_nll[Region.brem_xx1] = _get_region_nll(region = Region.brem_xx1, cfg = cfg)
+    d_nll[Region.brem_xx2] = _get_region_nll(region = Region.brem_xx2, cfg = cfg)
 
     with GofCalculator.disabled(value=True):
         ftr = DataFitter(
