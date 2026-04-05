@@ -139,24 +139,32 @@ def _get_nll(cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL, dict[str,dict[Cuts
 
     return nll, cfg_mod
 # ----------------------
+def _get_region_nll(region : Region, cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL, dict[str,dict[Cuts,str]]]:
+    '''
+    Parameters
+    -------------
+    region: Brem region
+    cfg   : Full configuration
+
+    Returns
+    -------------
+    NLL for fitting region
+    '''
+    cfg = cfg.pick_category(name = region)
+
+    with sel.update_selection(d_sel = region.selection):
+        cfg.name = region
+        cfg      = cfg.cfg_copy(category_suffix = f'b{cfg.block}')
+
+        return _get_nll(cfg=cfg)
+# ----------------------
 def _fit_electron(cfg : RXFitConfig) -> None:
     '''
     This is where DataFitter is used
     '''
     d_nll : dict[Region,tuple[ExtendedUnbinnedNLL, dict[str,dict[Cuts,str]]]] = {}
-    region   = Region.brem_xx1
-    cfg_copy = cfg.pick_category(name = region)
-    with sel.update_selection(d_sel = region.selection):
-        cfg.name      = region
-        cfg_copy      = cfg_copy.cfg_copy(category_suffix = f'b{cfg.block}')
-        d_nll[region] = _get_nll(cfg=cfg_copy)
-
-    region   = Region.brem_xx2
-    cfg_copy = cfg.pick_category(name = region)
-    with sel.update_selection(d_sel = region.selection):
-        cfg.name      = region
-        cfg_copy      = cfg_copy.cfg_copy(category_suffix = f'b{cfg.block}')
-        d_nll[region] = _get_nll(cfg=cfg_copy)
+    d_nll[Region.brem_xx1] = _get_region_nll(region = Region.brem_xx1, cfg = cfg)
+    d_nll[Region.brem_xx2] = _get_region_nll(region = Region.brem_xx2, cfg = cfg)
 
     with GofCalculator.disabled(value=True):
         ftr = DataFitter(
