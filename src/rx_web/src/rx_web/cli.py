@@ -43,17 +43,21 @@ def collect_plots(
 # ----------------------
 @app.command()
 def make_html(
+    update  : bool= typer.Option(    False, '--update' , '-u', help='If used, will rebuild site'),
     ncpu    : str = typer.Option(      '4', '--ncpu'   , '-n', help='Number of CPUs to use'),
     browser : str = typer.Option('firefox', '--browser', '-b', help='Name of browser to open website')) -> None:
     '''
     Creates website from path to plots and opens site
     '''
+    www_dir    = ANADIR / 'www'
+    index_path = www_dir / 'index.html'
     create_cmd = ['sigal', 'build', '-n', ncpu, '-c', 'src/rx_web/sigal.conf.py', f'{ANADIR}/plots/web', f'{ANADIR}/www']
-    server_cmd = ['sigal', 'serve', f'{ANADIR}/www']
+    server_cmd = ['sigal', 'serve', www_dir]
 
-    result = subprocess.run(create_cmd)
-    if result.returncode != 0:
-        raise RuntimeError(f'sigal build failed with code {result.returncode}')
+    if not index_path.exists() or update:
+        result = subprocess.run(create_cmd)
+        if result.returncode != 0:
+            raise RuntimeError(f'sigal build failed with code {result.returncode}')
 
     server = subprocess.Popen(server_cmd)
     if server.poll() is not None:  # process already exited
