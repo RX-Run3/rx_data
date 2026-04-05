@@ -159,8 +159,8 @@ class FitSummary:
 
         if kind == 'sim':
             nentries = self._get_mc_nentries(path=path)
-            data[f'yld_{self._signal}_value'] = nentries
-            data[f'yld_{self._signal}_error'] = math.sqrt(nentries)
+            data[f'yld_{self._signal}_brem_x12_value'] = nentries
+            data[f'yld_{self._signal}_brem_x12_error'] = math.sqrt(nentries)
 
         meta = self._extra_information(path=path, kind=kind)
 
@@ -278,8 +278,8 @@ class FitSummary:
         -------------
         Same as input, but with nentries_value/error keys replaced with fraction_value/error
         '''
-        nentries_001 = val_1[f'yld_{self._signal}_value']
-        nentries_002 = val_2[f'yld_{self._signal}_value']
+        nentries_001 = val_1[f'yld_{self._signal}_brem_x12_value']
+        nentries_002 = val_2[f'yld_{self._signal}_brem_x12_value']
 
         ntotal   = nentries_001 + nentries_002
         fraction = nentries_001 / ntotal 

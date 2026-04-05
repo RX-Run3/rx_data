@@ -37,7 +37,7 @@ class ZFitPlotterConf(BaseModel):
     nbins           : int
     stacked         : bool
     plot_components : list[str]
-    plot_range      : tuple[float,float]
+    plot_range      : tuple[float,float] | None = None
     ext_text        : str                       = ''
     title           : str | None                = None
     d_leg           : dict[str,str]             = Field(default_factory=dict)
@@ -47,7 +47,10 @@ class ZFitPlotterConf(BaseModel):
         '''
         Returns default instance of current class
         '''
-        return cls(nbins = 50, stacked = False)
+        return cls(
+            nbins           = 50,
+            plot_components = [],
+            stacked         = False)
 #----------------------------------------
 class ZFitPlotter:
     '''
