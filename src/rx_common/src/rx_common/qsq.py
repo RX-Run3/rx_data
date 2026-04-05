@@ -16,6 +16,13 @@ class Qsq(StrEnum):
     psi2    = 'psi2'
     high    = 'high'
     # --------------------------
+    @classmethod
+    def for_physics(cls) -> list['Qsq']:
+        '''
+        List of Qsq bins for physics
+        '''
+        return [cls.low, cls.central, cls.jpsi, cls.psi2, cls.high]
+    # --------------------------
     @property
     def kind(self) -> str:
         '''
