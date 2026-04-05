@@ -4,7 +4,7 @@ Script with functions needed to test functions in selection.py
 import pytest
 from pathlib      import Path
 from dmu          import LogStore
-from rx_common    import Component, Qsq, Trigger
+from rx_common    import Component, Cuts, Qsq, Trigger
 from rx_selection import selection as sel
 from rx_data      import RDFGetter 
 
@@ -41,11 +41,11 @@ def test_custom_selection(sample : Component, q2bin : Qsq):
     '''
     trigger = Trigger.rk_ee_os
 
-    with sel.custom_selection(d_sel={'cut' : 'val'}):
+    with sel.custom_selection(d_sel={Cuts.extra : 'val'}):
         d_cut = sel.selection(process=sample, q2bin=q2bin, trigger=trigger)
 
-    assert 'cut' in d_cut
-    assert d_cut['cut'] == 'val'
+    assert Cuts.extra in d_cut
+    assert d_cut[Cuts.extra] == 'val'
 # --------------------------
 def test_multiple_custom_selection():
     '''
@@ -56,8 +56,8 @@ def test_multiple_custom_selection():
     trigger= Trigger.rk_ee_os
 
     with pytest.raises(sel.MultipleSelectionOverriding):
-        with sel.custom_selection(d_sel={'cut' : 'val'}):
-            with sel.custom_selection(d_sel={'cut' : 'vol'}):
+        with sel.custom_selection(d_sel={Cuts.extra : 'val'}):
+            with sel.custom_selection(d_sel={Cuts.extra : 'vol'}):
                 sel.selection(process=sample, q2bin=q2bin, trigger=trigger)
 # --------------------------
 def test_multiple_custom_selection_override():
@@ -67,16 +67,17 @@ def test_multiple_custom_selection_override():
     sample = Component.bpkpee 
     q2bin  = Qsq.central
     trigger= Trigger.rk_ee_os 
+    cut    = Cuts.extra
 
-    with sel.custom_selection(d_sel={'cut' : 'val'}, force_override=True):
+    with sel.custom_selection(d_sel={Cuts.extra : 'val'}, force_override=True):
         d_cut_1 = sel.selection(process=sample, q2bin=q2bin, trigger=trigger)
-        assert d_cut_1['cut'] == 'val'
-        with sel.custom_selection(d_sel={'cut' : 'vol'}, force_override=True):
+        assert d_cut_1[Cuts.extra] == 'val'
+        with sel.custom_selection(d_sel={Cuts.extra : 'vol'}, force_override=True):
             d_cut_2 = sel.selection(process=sample, q2bin=q2bin, trigger=trigger)
-            assert d_cut_2['cut'] == 'vol'
+            assert d_cut_2[cut] == 'vol'
 
         d_cut_1 = sel.selection(process=sample, q2bin=q2bin, trigger=trigger)
-        assert d_cut_1['cut'] == 'val'
+        assert d_cut_1[cut] == 'val'
 
     d_cut = sel.selection(process=sample, q2bin=q2bin, trigger=trigger)
     assert 'cut' not in d_cut
@@ -86,11 +87,15 @@ def test_custom_selection_nested():
     Check that nesting of context managers does not break upstream (original) custom selection
     '''
     csel_000 = sel.Data.d_custom_selection
-    with sel.custom_selection(d_sel={'cut_1' : 'val_1'}):
+    cut_1    = Cuts.extra
+    cut_2    = Cuts.mass
+    cut_3    = Cuts.q2
+
+    with sel.custom_selection(d_sel={cut_1 : 'val_1'}):
         csel_001 = sel.Data.d_custom_selection
-        with sel.custom_selection(d_sel={'cut_2' : 'val_2'}, force_override=True):
+        with sel.custom_selection(d_sel={cut_2 : 'val_2'}, force_override=True):
             csel_002 = sel.Data.d_custom_selection
-            with sel.custom_selection(d_sel={'cut_3' : 'val_3'}, force_override=True):
+            with sel.custom_selection(d_sel={cut_3 : 'val_3'}, force_override=True):
                 csel_003 = sel.Data.d_custom_selection
 
             csel_012  = sel.Data.d_custom_selection
@@ -106,15 +111,18 @@ def test_update_selection():
     '''
     Tests that manger can add cuts to existing selection
     '''
-    isel_001 = {'cut_1' : 'val_1'}
+    cut_1    = Cuts.extra
+    cut_2    = Cuts.mass
+
+    isel_001 = {cut_1 : 'val_1'}
     with sel.update_selection(d_sel=isel_001):
         osel_001 = sel.Data.d_custom_selection
 
     assert    isel_001  ==    osel_001
     assert id(isel_001) != id(osel_001)
 
-    csel_001 = {'cut_1' : 'val_1'}
-    isel_001 = {'cut_2' : 'val_2'}
+    csel_001 = {cut_1 : 'val_1'}
+    isel_001 = {cut_2 : 'val_2'}
     with sel.custom_selection(d_sel=csel_001):
         with sel.update_selection(d_sel=isel_001):
             osel_001 = sel.Data.d_custom_selection
@@ -124,8 +132,8 @@ def test_update_selection():
     assert    csel_001  == osel_001
     assert id(isel_001) != id(osel_001)
 
-    isel_001 = {'cut_1' : 'val_1'}
-    isel_002 = {'cut_2' : 'val_2'}
+    isel_001 = {cut_1 : 'val_1'}
+    isel_002 = {cut_2 : 'val_2'}
     with sel.update_selection(d_sel=isel_001):
         with sel.update_selection(d_sel=isel_002):
             osel_002 = sel.Data.d_custom_selection
@@ -148,7 +156,7 @@ def test_no_truth(trigger : str):
         skip_truth= True,
         process   = sample)
 
-    assert d_sel['truth'] == '(1)'
+    assert d_sel[Cuts.truth] == '(1)'
 # --------------------------
 def test_apply_full_selection(tmp_path : Path):
     '''
