@@ -359,10 +359,10 @@ class ParameterReader:
 
         # NOTE: Uncertainties are very small, might not matter if we use
         # covariance between fraction and yield or assume zero correlation
-        arr_yld_val = df[f'yld_{signame}_value'     ].to_numpy()
-        arr_yld_err = df[f'yld_{signame}_error'     ].to_numpy()
-        arr_frc_val = df[f'{signame}_fraction_value'].to_numpy()
-        arr_frc_err = df[f'{signame}_fraction_error'].to_numpy()
+        arr_yld_val = df[f'yld_{signame}_brem_x12_value'].to_numpy()
+        arr_yld_err = df[f'yld_{signame}_brem_x12_error'].to_numpy()
+        arr_frc_val = df[f'{signame}_fraction_value'    ].to_numpy()
+        arr_frc_err = df[f'{signame}_fraction_error'    ].to_numpy()
 
         # Fits are parametrized with total yield and brem 1 fractions 
         # NOTE: Uncertainty on ERR is uncertainty on 1 - ERR
