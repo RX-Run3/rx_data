@@ -14,6 +14,7 @@ PRC    = [
 ENV    = 'rx_run3'
 HOME   = '/afs/ihep.ac.cn/users/c/campoverde'
 ANADIR = '/publicfs/ucas/user/campoverde/Data'
+LOGDIR = '/publicfs/ucas/user/campoverde/Jobs/snakemake'
 BLOCK  = list(range(1, 9))
 NAME   = 'reso_no_dtf'
 # ---------------------
@@ -64,8 +65,13 @@ rule fits:
         f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx2/brem_xx2_b{{block}}/parameters.json',
         directory(f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24'),
         directory(f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/bpkpjpsiee'),
-    log   : f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/fits.log'
+    log   : 
+        prc = f'{LOGDIR}/{{cmb}}_{{prc}}_b{{block}}.prc',
+        err = f'{LOGDIR}/{{cmb}}_{{prc}}_b{{block}}.err',
+        out = f'{LOGDIR}/{{cmb}}_{{prc}}_b{{block}}.out',
+        LOG = f'{LOGDIR}/{{cmb}}_{{prc}}_b{{block}}.log',
     params:
+        LOGD = LOGDIR,
         name = NAME,
         home = HOME,
         env  = ENV,
@@ -89,5 +95,10 @@ rule fits:
                     -P $PRC_WP
 
         echo "Fit done with status: $?" 
-        ) > {log.fits} 2>&1
+        ) > {log.prc} 2>&1
+
+        JOBID=$(grep -m1 '^ClusterId' $_CONDOR_JOB_AD | awk '{{print $3}}')
+        cp {params.LOGD}/$JOBID.err {log.err} || true
+        cp {params.LOGD}/$JOBID.out {log.out} || true
+        cp {params.LOGD}/$JOBID.log {log.LOG} || true
         '''
