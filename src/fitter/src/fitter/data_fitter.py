@@ -7,7 +7,7 @@ from dmu.workflow    import Cache
 from dmu.stats       import AnealingMinimizer, FitResult, Retries
 from dmu.stats       import zfit
 from dmu.stats       import utilities as sut
-from rx_common       import Component, Qsq, Region
+from rx_common       import Component, Qsq, Region, Cuts
 from zfit.exception  import ParamNameNotUniqueError
 from zfit.result     import FitResult           as zres
 from zfit.loss       import ExtendedUnbinnedNLL as NLL
@@ -30,7 +30,7 @@ class DataFitter(BaseFitter, Cache):
     def __init__(
         self,
         q2bin : Qsq,
-        d_nll : dict[str,tuple[NLL,dict[str,dict[str,str]]]] | dict[Region,tuple[NLL,dict[str,dict[str,str]]]],
+        d_nll : dict[str,tuple[NLL,dict[str,dict[Cuts,str]]]] | dict[Region,tuple[NLL,dict[str,dict[Cuts,str]]]],
         cfg   : FitModelConf) -> None:
         '''
         Parameters

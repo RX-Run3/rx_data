@@ -23,7 +23,7 @@ from fitter        import RXFitConfig
 from fitter        import DataFitter
 from fitter        import LikelihoodFactory
 from rx_selection  import selection as sel
-from rx_common     import Qsq, Component, Region
+from rx_common     import Qsq, Component, Region, Cuts
 
 log=LogStore.add_logger('fitter:fit_rx_reso')
 # ----------------------
@@ -113,7 +113,7 @@ def _parse_args() -> RXFitConfig:
 
     return cfg
 # ----------------------
-def _get_nll(cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL, dict[str,dict[str,str]]]:
+def _get_nll(cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL, dict[str,dict[Cuts,str]]]:
     '''
     Parameters
     -------------
@@ -143,7 +143,7 @@ def _fit_electron(cfg : RXFitConfig) -> None:
     '''
     This is where DataFitter is used
     '''
-    d_nll : dict[Region,tuple[ExtendedUnbinnedNLL, dict[str,dict[str,str]]]] = {}
+    d_nll : dict[Region,tuple[ExtendedUnbinnedNLL, dict[str,dict[Cuts,str]]]] = {}
     region   = Region.brem_xx1
     cfg_copy = cfg.pick_category(name = region)
     with sel.update_selection(d_sel = region.selection):
