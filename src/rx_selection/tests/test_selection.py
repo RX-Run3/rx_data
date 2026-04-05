@@ -19,7 +19,7 @@ def initialize():
     LogStore.set_level('rx_selection:test_selection', 10)
 # --------------------------
 @pytest.mark.parametrize('trigger', ['Hlt2RD_BuToKpEE_MVA', 'Hlt2RD_BuToKpMuMu_MVA'])
-@pytest.mark.parametrize('q2bin'  , Qsq)
+@pytest.mark.parametrize('q2bin'  , Qsq.for_physics())
 def test_read_selection(trigger : str, q2bin : str):
     '''
     Test reading the selection
@@ -28,12 +28,15 @@ def test_read_selection(trigger : str, q2bin : str):
     q2bin     = Qsq(q2bin)
     component = Component.data_24
 
-    d_sel = sel.selection(trigger=trigger, q2bin=q2bin, process=component)
+    d_sel = sel.selection(
+        trigger=trigger, 
+        q2bin  =q2bin, 
+        process=component)
     for cut_name, cut_value in d_sel.items():
         log.info(f'{cut_name:<20}{cut_value}')
 # --------------------------
 @pytest.mark.parametrize('sample', [Component.bpkpee, Component.data_24_md_c2])
-@pytest.mark.parametrize('q2bin' , Qsq)
+@pytest.mark.parametrize('q2bin'  , Qsq.for_physics())
 def test_custom_selection(sample : Component, q2bin : Qsq):
     '''
     This function tests the custom_selection
@@ -42,7 +45,10 @@ def test_custom_selection(sample : Component, q2bin : Qsq):
     trigger = Trigger.rk_ee_os
 
     with sel.custom_selection(d_sel={Cuts.extra : 'val'}):
-        d_cut = sel.selection(process=sample, q2bin=q2bin, trigger=trigger)
+        d_cut = sel.selection(
+            process=sample, 
+            q2bin  =q2bin, 
+            trigger=trigger)
 
     assert Cuts.extra in d_cut
     assert d_cut[Cuts.extra] == 'val'
@@ -105,7 +111,7 @@ def test_custom_selection_nested():
     assert csel_000 == csel_010
     assert csel_001 == csel_011
     assert csel_002 == csel_012
-    assert csel_003 == {'cut_3' : 'val_3'}
+    assert csel_003 == {cut_3 : 'val_3'}
 # --------------------------
 def test_update_selection():
     '''
