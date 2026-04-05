@@ -98,7 +98,7 @@ rule fits:
         ) > {log.prc} 2>&1
 
         JOBID=$(grep -m1 '^ClusterId' $_CONDOR_JOB_AD | awk '{{print $3}}')
-        cp {params.LOGD}/$JOBID.err {log.err} || true
-        cp {params.LOGD}/$JOBID.out {log.out} || true
-        cp {params.LOGD}/$JOBID.log {log.LOG} || true
+        ln -s {params.LOGD}/$JOBID.err {log.err} || true
+        ln -s {params.LOGD}/$JOBID.out {log.out} || true
+        ln -s {params.LOGD}/$JOBID.log {log.LOG} || true
         '''
