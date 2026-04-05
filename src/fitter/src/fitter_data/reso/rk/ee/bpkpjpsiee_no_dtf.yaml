@@ -15,9 +15,9 @@ categories:
       fix           : {}
       values:
         sg:
-          - 120
-          -  50
-          - 200
+          -  60
+          -  30
+          - 100
   brem_xx2:
     selection : {}
     model :
