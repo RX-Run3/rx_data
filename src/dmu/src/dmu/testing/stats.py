@@ -12,7 +12,7 @@ from dmu.stats        import Fitter
 from dmu.stats        import FitConf
 from dmu.stats        import FitResult
 from dmu.stats        import print_pdf
-from dmu.stats        import save_fit 
+from dmu.stats        import save_fit
 from dmu.stats        import ZFitPlotter, ZFitPlotterConf
 from zfit.pdf         import BasePDF       as zpdf
 from zfit.data        import Data          as zdata
@@ -38,7 +38,7 @@ def get_model(
     kind   : SumLiteral,
     nsample: int                   = 1000,
     obs    : zobs           | None = None,
-    pars   : dict[str,zpar] | None = None, 
+    pars   : dict[str,zpar] | None = None,
     suffix : str            | None = None,
     lam    : float                 = -0.0001) -> SumPDF:...
 @overload
@@ -46,14 +46,14 @@ def get_model(
     kind   : SingleLiteral,
     nsample: int                   = 1000,
     obs    : zobs           | None = None,
-    pars   : dict[str,zpar] | None = None, 
+    pars   : dict[str,zpar] | None = None,
     suffix : str            | None = None,
     lam    : float                 = -0.0001) -> zpdf:...
 def get_model(
     kind   : AllLiteral,
     nsample: int                   = 1000,
     obs    : zobs           | None = None,
-    pars   : dict[str,zpar] | None = None, 
+    pars   : dict[str,zpar] | None = None,
     suffix : str            | None = None,
     lam    : float                 = -0.0001) -> zpdf | SumPDF:
     '''
@@ -84,7 +84,7 @@ def get_model(
         sg  = zfit.Parameter(f'sg{suffix}',  150,   10, 200)
         pdf = zfit.pdf.Gauss(obs=obs, mu=mu, sigma=sg)
 
-        return pdf 
+        return pdf
 
     if kind == 'signal_alt':
         mu  = zfit.Parameter(f'mu{suffix}', 5200, 4500, 6000)
@@ -95,7 +95,7 @@ def get_model(
         nl  = zfit.Parameter(f'nl{suffix}',    1,  0.2,   50)
         pdf = zfit.pdf.DoubleCB(mu, sg, al, nl, ar, nr, obs)
 
-        return pdf 
+        return pdf
 
     if kind == 'bkg':
         c   = zfit.Parameter(f'c{suffix}', lam, -0.01, +0.01)
@@ -111,16 +111,16 @@ def get_model(
         signal_name = models[kind]
 
         bkg  = get_model(
-            obs    = obs, 
+            obs    = obs,
             pars   = pars,
-            kind   = 'bkg', 
+            kind   = 'bkg',
             suffix = suffix)
 
         sig  = get_model(
-            obs    = obs, 
+            obs    = obs,
             pars   = pars,
-            kind   = signal_name, 
-            suffix = suffix) 
+            kind   = signal_name,
+            suffix = suffix)
 
         bkg  = bkg.create_extended(nbkg)
         sig  = sig.create_extended(nsig)
@@ -131,14 +131,14 @@ def get_model(
     raise NotImplementedError(f'Invalid kind of fit: {kind}')
 # ----------------------
 def _get_signal_yield(
-    pars   : dict[str,zpar] | None, 
+    pars   : dict[str,zpar] | None,
     nsample: int,
     suffix : str) -> zpar:
     '''
     Parameters
     -------------
-    pars   : Dictionary storing parameter names and parameters 
-    nsample: Number of default entries 
+    pars   : Dictionary storing parameter names and parameters
+    nsample: Number of default entries
     suffix : Suffix of paramete(s)
 
     Returns
@@ -154,19 +154,19 @@ def _get_signal_yield(
 # ----------------------
 @overload
 def get_nll(
-    kind     : SumLiteral, 
-    pars     : dict[str,zpar] | None = None, 
+    kind     : SumLiteral,
+    pars     : dict[str,zpar] | None = None,
     suffix   : str                   = '_gaus_test_1',
     nentries : int                   = 1000) -> ExtendedUnbinnedNLL:...
 @overload
 def get_nll(
-    kind     : SingleLiteral, 
-    pars     : dict[str,zpar] | None = None, 
+    kind     : SingleLiteral,
+    pars     : dict[str,zpar] | None = None,
     suffix   : str                   = '_gaus_test_1',
     nentries : int                   = 1000) -> UnbinnedNLL:...
 def get_nll(
-    kind     : AllLiteral, 
-    pars     : dict[str,zpar] | None = None, 
+    kind     : AllLiteral,
+    pars     : dict[str,zpar] | None = None,
     suffix   : str                   = '_gaus_test_1',
     nentries : int                   = 1000) -> Loss:
     '''
@@ -182,7 +182,7 @@ def get_nll(
     Extended NLL from a gaussian plus exponential model
     '''
     pdf = get_model(
-        kind   = kind, 
+        kind   = kind,
         pars   = pars,
         suffix = suffix)
 
@@ -257,10 +257,10 @@ def placeholder_fit(
         obj.plot(nbins=50, stacked=True)
 
     save_fit(
-        data   =data, 
-        model  =pdf, 
-        res    =res, 
-        fit_dir=fit_dir, 
+        data   =data,
+        model  =pdf,
+        res    =res,
+        fit_dir=fit_dir,
         plt_cfg=ZFitPlotterConf.default(),
         d_const={})
 
