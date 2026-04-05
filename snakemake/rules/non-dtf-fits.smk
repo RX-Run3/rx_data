@@ -17,6 +17,7 @@ ANADIR = '/publicfs/ucas/user/campoverde/Data'
 LOGDIR = '/publicfs/ucas/user/campoverde/Jobs/snakemake'
 BLOCK  = list(range(1, 9))
 NAME   = 'reso_no_dtf'
+YEAR   = '2024'
 # ---------------------
 rule all:
     input: 
@@ -32,7 +33,10 @@ rule all:
             block = BLOCK)
 # ---------------------
 rule scales:
-    output : f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}/rk_ee/plots/scales.json'
+    output : 
+        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}/rk_ee/plots/scales.json',
+        f'{ANADIR}/fits/data/{NAME}/parameters_B_{{cmb}}_{{prc}}_{YEAR}.parquet',
+        f'{ANADIR}/fits/data/{NAME}/parameters_B_{{cmb}}_{{prc}}_{YEAR}.md',
     input  : 
         expand(
             [
