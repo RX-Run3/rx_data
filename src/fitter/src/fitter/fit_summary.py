@@ -42,10 +42,10 @@ class FitSummary:
         self._fit_dir = self._get_fit_dir(name=name)
 
         dat_regex = r'(\d{3})_(\d{3})_b(\d)/reso/(rk|rkst)/(mm|ee)/(psi2|jpsi)/data_24/fit/.*/brem_([x,0-9]{3})/parameters.json'
-        sim_regex = fr'(\d{{3}})_(\d{{3}})_b(\d)/reso/(rk|rkst)/(mm|ee)/(psi2|jpsi)/{signal}/fit/brem_([x,0-9]{{3}})/main_brem_[x,0-9]{{3}}_b\d/parameters.json'
+        sim_regex = fr'(\d{{3}})_(\d{{3}})_b(\d)/reso/(rk|rkst)/(mm|ee)/(psi2|jpsi)/{signal}/fit/brem_([x,0-9]{{3}})/brem_[x,0-9]{{3}}_b\d/parameters.json'
 
         dat_pattern = '*_*_b*/reso/r*/*/jpsi/data_24/fit/*/brem_*/parameters.json'
-        sim_pattern =f'*_*_b*/reso/r*/*/jpsi/{signal}/fit/brem_*/main_brem_*/parameters.json'
+        sim_pattern =f'*_*_b*/reso/r*/*/jpsi/{signal}/fit/brem_*/brem_*/parameters.json'
 
         self._patterns : Final[dict[str,str]]  = {'dat' : dat_pattern, 'sim' : sim_pattern}
         self._regexes  : Final[dict[str,str]]  = {'dat' : dat_regex  , 'sim' : sim_regex  }
@@ -202,8 +202,8 @@ class FitSummary:
         '''
         dat_end_1 = 'brem_xx1/parameters.json'
         dat_end_2 = 'brem_xx2/parameters.json'
-        sim_end_1 =r'brem_xx1/main_brem_xx1_b(\d)/parameters.json'
-        sim_end_2 =r'brem_xx2/main_brem_xx2_b(\d)/parameters.json'
+        sim_end_1 =r'brem_xx1/brem_xx1_b(\d)/parameters.json'
+        sim_end_2 =r'brem_xx2/brem_xx2_b(\d)/parameters.json'
 
         value = str(path)
         if value.endswith(dat_end_2):
@@ -217,7 +217,7 @@ class FitSummary:
             return Path(value)
 
         if re.search(sim_end_1, value):
-            value = re.sub(sim_end_1, r'brem_xx2/main_brem_xx2_b\1/parameters.json', value)
+            value = re.sub(sim_end_1, r'brem_xx2/brem_xx2_b\1/parameters.json', value)
             return Path(value)
 
         raise ValueError(f'Cannot replace brem in: {path}')
