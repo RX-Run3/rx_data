@@ -10,7 +10,6 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 from dask.distributed import Client, LocalCluster
 from typing        import Final
 from contextlib    import ExitStack
-from omegaconf     import DictConfig
 from dmu.stats     import ParameterLibrary as PL
 from dmu.generic   import UnpackerModel, utilities as gut
 from dmu.stats     import ConstraintAdder
@@ -79,29 +78,28 @@ def _get_client(cfg : RXFitConfig) -> Client | None:
 
     return Client(cluster)
 # ----------------------
-def _parse_args(args : DictConfig | argparse.Namespace | None = None) -> RXFitConfig:
+def _parse_args() -> RXFitConfig:
     '''
     Returns
     --------------
     Instance of configuration class, built from arguments
     '''
-    if args is None:
-        parser = argparse.ArgumentParser(description='Script used to fit RX data')
-        parser.add_argument('-b', '--block'  , type=int           , help='Block number, if not passed will do all data'    , choices =[-1,1,2,3,4,5,6,7,8], default=-1)
-        parser.add_argument('-g', '--group'  , type=str           , help='Name of group to which fit belongs, e.g. toys'   , required= True)
-        parser.add_argument('-c', '--fit_cfg', type=str           , help='Name of configuration, e.g. rare/rk/ee'          , required= True)
-        parser.add_argument('-t', '--toy_cfg', type=str           , help='Name of toy config, e.g. toys/maker.yaml'        , default =   '')
-        parser.add_argument('-N', '--ntoys'  , type=int           , help='If specified, this will override ntoys in config', default =0)
-        parser.add_argument('-n', '--nproc'  , type=int           , help='Number of processes'                             , default =1)
-        parser.add_argument('-l', '--log_lvl', type=int           , help='Logging level', choices=[5, 10, 20, 30]          , default =20)
-        parser.add_argument('-q', '--q2bin'  , type=str           , help='q2 bin'      , choices=['low', 'central', 'high'], required=True)
-        parser.add_argument('-C', '--mva_cmb', type=MVAWp.from_str, help='MVA working point, e.g. 0.2; 0.1 0.3'            , required=True)
-        parser.add_argument('-P', '--mva_prc', type=MVAWp.from_str, help='MVA working point, e.g. 0.2; 0.1 0.3'            , required=True)
-        args = parser.parse_args()
+    parser = argparse.ArgumentParser(description='Script used to fit RX data')
+    parser.add_argument('-b', '--block'  , type=int           , help='Block number, if not passed will do all data'    , choices =[-1,1,2,3,4,5,6,7,8], default=-1)
+    parser.add_argument('-g', '--group'  , type=str           , help='Name of group to which fit belongs, e.g. toys'   , required= True)
+    parser.add_argument('-c', '--fit_cfg', type=str           , help='Name of configuration, e.g. rare/rk/ee'          , required= True)
+    parser.add_argument('-t', '--toy_cfg', type=str           , help='Name of toy config, e.g. toys/maker.yaml'        , default =   '')
+    parser.add_argument('-N', '--ntoys'  , type=int           , help='If specified, this will override ntoys in config', default =0)
+    parser.add_argument('-n', '--nproc'  , type=int           , help='Number of processes'                             , default =1)
+    parser.add_argument('-l', '--log_lvl', type=int           , help='Logging level', choices=[5, 10, 20, 30]          , default =20)
+    parser.add_argument('-q', '--q2bin'  , type=str           , help='q2 bin'      , choices=['low', 'central', 'high'], required=True)
+    parser.add_argument('-C', '--mva_cmb', type=MVAWp.from_str, help='MVA working point, e.g. 0.2; 0.1 0.3'            , required=True)
+    parser.add_argument('-P', '--mva_prc', type=MVAWp.from_str, help='MVA working point, e.g. 0.2; 0.1 0.3'            , required=True)
+    args = parser.parse_args()
 
     return _cfg_from_args(args = args)
 # ----------------------
-def _cfg_from_args(args : DictConfig | argparse.Namespace) -> RXFitConfig:
+def _cfg_from_args(args : argparse.Namespace) -> RXFitConfig:
     '''
     Parameters
     -------------
@@ -206,12 +204,12 @@ def _fit(cfg : RXFitConfig) -> None:
         cns= cons)
     mkr.get_parameter_information(name = 'rare_ee')
 # ----------------------
-def main(args : DictConfig | None = None):
+def main():
     '''
     Entry point
     '''
     with UnpackerModel.package(name = 'fitter_data'):
-        cfg = _parse_args(args = args)
+        cfg = _parse_args()
 
     _set_logs()
 
