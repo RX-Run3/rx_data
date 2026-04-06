@@ -27,7 +27,7 @@ class ScaleReader:
         version: Version of scales
         '''
         ana_dir   = Path(os.environ['ANADIR'])
-        data_path = ana_dir / f'fits/data/reso_non_dtf/{version}/rk_ee/plots/scales.json'
+        data_path = ana_dir / f'fits/data/reso_no_dtf/{version}/rk_ee/plots/scales.json'
         if not data_path.exists():
             raise FileNotFoundError(f'Cannot find scales file: {data_path}')
 
