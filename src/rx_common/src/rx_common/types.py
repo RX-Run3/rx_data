@@ -9,6 +9,7 @@ from .project    import Project
 from .channel    import Channel
 from .component  import Component
 from .qsq        import Qsq
+from .region     import Region
 
 ALL_BLOCKS : set[str] = {'1', '2', '3', '4', '5', '6', '7', '8'}
 # ------------------------------
@@ -233,6 +234,21 @@ class Brem(Enum):
         substring = f'brem_{self}'
 
         return substring in string 
+    # ----------------------
+    @property
+    def region(self) -> Region:
+        '''
+        Signal region associated to category
+        '''
+        match self:
+            case Brem.one:
+                return Region.brem_xx1
+            case Brem.two:
+                return Region.brem_xx2
+            case Brem.brx12:
+                return Region.brem_x12
+            case _:
+                raise ValueError(f'Cannot find region for brem : {self}')
     # ----------------------
     @property
     def color(self) -> str:
