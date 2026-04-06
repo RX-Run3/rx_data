@@ -31,6 +31,7 @@ class Region(StrEnum):
     brem_xx0 = auto()
     brem_xx1 = auto()
     brem_xx2 = auto()
+    brem_x12 = auto()
     # ---------------------
     @property
     def selection(self) -> dict[Cuts,str]:
@@ -44,6 +45,8 @@ class Region(StrEnum):
                 return {Cuts.brem : 'nbrem == 1'}
             case Region.brem_xx2:
                 return {Cuts.brem : 'nbrem == 2'}
+            case Region.brem_x12:
+                return {Cuts.brem : '(nbrem == 1) || (nbrem == 2)'}
             case _:
                 raise ValueError(f'No cut defined for region: {self}')
     # ---------------------
