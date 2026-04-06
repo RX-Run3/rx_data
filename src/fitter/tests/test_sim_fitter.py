@@ -10,7 +10,7 @@ from dmu.generic   import UnpackerModel, utilities as gut
 from dmu.stats     import utilities as sut
 from dmu.workflow  import Cache
 
-from rx_common     import Component, Mass, Qsq
+from rx_common     import Component, Cuts, Mass, Qsq
 from rx_common     import Trigger
 from rx_data       import RDFGetter
 from rx_selection  import selection as sel
@@ -114,7 +114,7 @@ def test_with_cat(tmp_path : Path):
         return c1 or c2
 
     cfg  = cfg.filter_category(func = _filter)
-    d_sel= {'cmb' : 'mva_cmb > 0.9', 'prc' : 'mva_prc > 0.5'}
+    d_sel= {Cuts.cmb : 'mva_cmb > 0.9', Cuts.prc : 'mva_prc > 0.5'}
 
     with Cache.cache_root(path = tmp_path),\
          RDFGetter.max_entries(value = -1),\
@@ -211,9 +211,9 @@ def test_kde_rkst(component : Component, tmp_path : Path):
     cfg  = NonParametricConf(**data)
 
     cuts = {
-        'brem': 'nbrem != 0',
-        'cmb' : 'mva_cmb > 0.9',
-        'prc' : 'mva_prc > 0.5'}
+        Cuts.brem : 'nbrem != 0',
+        Cuts.cmb  : 'mva_cmb > 0.9',
+        Cuts.prc  : 'mva_prc > 0.5'}
 
     with Cache.cache_root(path = tmp_path),\
          RDFGetter.max_entries(value = -1),\
@@ -330,8 +330,13 @@ def test_ccbar_rare(tmp_path : Path):
     data = gut.load_data(package='fitter_data', fpath=f'rare/rk/ee/{component}.yaml')
     cfg  = CCbarConf(**data)
 
+    d_sel = {
+        Cuts.cmb : 'mva_cmb > 0.8',
+        Cuts.prc : 'mva_prc > 0.8',
+             }
+
     with Cache.cache_root(path = tmp_path),\
-        sel.custom_selection(d_sel={'bdt' : 'mva_cmb > 0.8 && mva_prc > 0.8'}):
+        sel.custom_selection(d_sel=d_sel):
 
         ftr = SimFitter(
             name     = 'main',
