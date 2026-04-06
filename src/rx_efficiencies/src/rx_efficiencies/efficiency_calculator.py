@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from typing             import cast
 from pathlib            import Path
 from ROOT               import RDF # type: ignore
-from dmu                import LogStore
+from dmu                import LogStore, LogLevels
 from dmu.workflow       import Cache
 from dmu.generic        import hashing
 
@@ -137,7 +137,7 @@ class EfficiencyCalculator(Cache):
             log.debug(f'{cut_name:<20}{cut_expr}')
             rdf = rdf.Filter(cut_expr, cut_name)
 
-        if log.getEffectiveLevel() < 20:
+        if log.getEffectiveLevel() < LogLevels.info:
             rep = rdf.Report()
             rep.Print()
 
