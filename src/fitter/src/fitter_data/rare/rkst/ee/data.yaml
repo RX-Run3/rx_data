@@ -4,7 +4,7 @@
 trigger          : Hlt2RD_B0ToKpPimEE_MVA
 yields           : model/yields/rkst/rare_electron.yaml
 selection        : 
-  extra          : TMath::Abs(B_const_mass_M - 5280) > 200
+  leakage        : TMath::Abs(B_const_mass_M - 5280) > 200
 observable:
   low:
     name : B_Mass_smr

@@ -30,6 +30,7 @@ class Cuts(StrEnum):
     prc       = auto()
     mass      = auto()
     brem      = auto()
+    leakage   = auto()
     extra     = auto()
     # -------------------
     # Used to define misID regions
