@@ -5,9 +5,9 @@ Module used to test PrecScales class
 import numpy
 import pytest
 
-from typing        import Any
+from typing        import Any, Final
 from pathlib       import Path
-from rx_common     import Component, Qsq
+from rx_common     import Brem, Component, Qsq, Cuts
 from rx_selection  import selection  as sel
 from fitter        import PrecScales
 
@@ -15,6 +15,8 @@ from dmu           import LogStore
 from dmu.workflow  import Cache
 
 log=LogStore.add_logger('fitter:test_prec_scales')
+
+NSCALES : Final[int] = 2
 # -----------------------------------
 @staticmethod
 def _get_seq_wp(min_cmb : float, min_prc : float, step : float) -> list[str]:
@@ -49,7 +51,7 @@ def _validate_scales(scales : Any) -> None:
     '''
     Validates prec scale and error
     '''
-    assert len(scales) == 2
+    assert len(scales) == NSCALES
     val, err = scales
 
     assert isinstance(val, float)
@@ -63,8 +65,10 @@ def _validate_scales(scales : Any) -> None:
     Component.bdkstkpiee, 
     Component.bpkstkpiee,
     Component.bsphiee])
+@pytest.mark.parametrize('brem', [ Brem.one, Brem.two, Brem.brx12 ])
 def test_all_datasets(
     q2bin    : Qsq, 
+    brem     : Brem,
     component: Component, 
     tmp_path : Path):
     '''
@@ -74,6 +78,7 @@ def test_all_datasets(
     with Cache.cache_root(path = tmp_path):
         obj    = PrecScales(
             output_directory= tmp_path,
+            brem            = brem,
             comp            = component, 
             q2bin           = q2bin)
 
@@ -90,20 +95,23 @@ def test_all_datasets(
     Component.bpkstkpiee,
     Component.bsphiee])
 @pytest.mark.parametrize('mva_cut', _get_seq_wp(min_cmb=0.9, min_prc=0.9, step=0.1))
+@pytest.mark.parametrize('brem', [ Brem.one, Brem.two, Brem.brx12 ])
 def test_seq_scan_scales(
     mva_cut   : str, 
     q2bin     : Qsq, 
+    brem      : Brem,
     component : Component,
     tmp_path  : Path) -> None:
     '''
     Tests retrieval of scales between signal and PRec yields, by cutting first on combinatorial and then on PRec
     '''
     signal = Component.bpkpee
-    with sel.custom_selection(d_sel={'bdt' : mva_cut}),\
+    with sel.custom_selection(d_sel={Cuts.cmb : mva_cut}),\
          Cache.cache_root(path = tmp_path):
         obj    = PrecScales(
             output_directory= tmp_path,
             comp            = component, 
+            brem            = brem,
             q2bin           = q2bin)
         scales = obj.get_scale(signal=signal)
 
