@@ -54,3 +54,4 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
     ccbar       : $B\to c\bar{c}(\to e^+e^-) + X$
     bpkkk       : $B^+\to K^+K^+K^-$ 
     bpkpipi     : $B^+\to K^+\pi^+\pi^-$ 
+  plot_components : []

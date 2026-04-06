@@ -24,3 +24,4 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
     comb    : Combinatorial
     bpkpipi : $B^+\to K^+\pi^-\pi^+$
     bpkkk   : $B^+\to K^+K^-K^+$
+  plot_components : []
