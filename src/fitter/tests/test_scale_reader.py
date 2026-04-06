@@ -35,11 +35,13 @@ def test_all(
         block = block, 
         brem  = brem)
 
-    print(val)
-    print(err)
-    print(block)
-    print(brem)
-    print('')
+    log.info('')
+    log.info('kind:  %s', kind)
+    log.info('val:   %s', val)
+    log.info('err:   %s', err)
+    log.info('block: %s', block)
+    log.info('brem:  %s', brem)
+    log.info('')
 
     assert isinstance(val, float)
     assert isinstance(err, float)
@@ -61,11 +63,12 @@ def test_single_block(
         block = block, 
         brem  = brem)
 
-    print(val)
-    print(err)
-    print(block)
-    print(brem)
-    print('')
+    log.info('')
+    log.info('val:   %s', val)
+    log.info('err:   %s', err)
+    log.info('block: %s', block)
+    log.info('brem:  %s', brem)
+    log.info('')
 
     assert isinstance(val, float)
     assert isinstance(err, float)
