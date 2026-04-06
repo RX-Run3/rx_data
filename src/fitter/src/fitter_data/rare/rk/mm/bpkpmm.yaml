@@ -22,4 +22,3 @@ plots:
   nbins   : 50
   stacked : True
   d_leg   : {}
-  plot_components : []

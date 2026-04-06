@@ -33,4 +33,3 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
   d_leg :
     bpkpmm : $B^+\to K^+\mu^+\mu^-$ 
     comb   : Combinatorial
-  plot_components : []

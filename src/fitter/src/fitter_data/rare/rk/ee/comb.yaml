@@ -13,7 +13,6 @@ plot_conf: &plot_conf
   nbins  : 30
   stacked: True
   d_leg  : {}
-  plot_components : []
 # -------------------------
 constraints_high: &cons_hi
   component  : data_24 

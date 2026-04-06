@@ -17,7 +17,6 @@ plots:
   nbins   : 30
   stacked : True
   d_leg   : {}
-  plot_components : []
 data_fit:
   strategy:
     ntries :   10
