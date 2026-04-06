@@ -66,8 +66,7 @@ class AcceptanceReader:
         prc_path= prc_dir / f'{vers}/{self._project}/acceptances_{energy}.json'
 
         if not prc_path.exists():
-            log.error(f'File not found: {prc_path}')
-            raise FileNotFoundError
+            raise FileNotFoundError(f'File not found: {prc_path}')
 
         df  = pnd.read_json(prc_path)
         df  = df[ df.Sample == self._sample ]
