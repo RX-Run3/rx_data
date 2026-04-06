@@ -31,6 +31,11 @@ class Cuts(StrEnum):
     mass      = auto()
     brem      = auto()
     extra     = auto()
+    # -------------------
+    # Used to define misID regions
+    # -------------------
+    bpkk      = auto()
+    bppipi    = auto()
 
 # NOTE: https://github.com/yaml/pyyaml/issues/722
 yaml.SafeDumper.add_representer(
