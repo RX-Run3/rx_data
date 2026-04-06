@@ -8,7 +8,7 @@ from dmu.stats   import Model, zfit
 from dmu.testing import get_model 
 from fitter      import CategoryMerger
 from fitter      import Category
-from rx_common   import Brem, Block, Component
+from rx_common   import Brem, Block, Component, Cuts
 
 zpdf = zfit.pdf.BasePDF
 log  = LogStore.add_logger('fitter:test_category_merger')
@@ -46,7 +46,7 @@ def _get_category(name : str) -> Category:
         name      = name, 
         pdf       = pdf, 
         sumw      = 1000., 
-        selection = {'mass' : '(1)'},
+        selection = {Cuts.mass : '(1)'},
         model     = [Model.gauss])
 
     return cat

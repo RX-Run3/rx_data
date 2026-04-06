@@ -5,7 +5,7 @@ import pytest
 from dmu       import LogStore
 from dmu.stats import CorrectionImplementation, Model, zfit
 from dmu.stats import ModelFactory
-from rx_common import Block, Brem, Component
+from rx_common import Block, Brem, Component, Cuts
 from zfit.loss import ExtendedUnbinnedNLL
 from fitter    import SignalConstraints
 from fitter    import Category 
@@ -146,7 +146,7 @@ def _get_category(
         name      = f'brem_{brem}_b{block}', 
         pdf       = pdf, 
         sumw      = 1000., 
-        selection = {'mass' : '(1)'},
+        selection = {Cuts.mass : '(1)'},
         model     = [Model.gauss])
 
     return cat

@@ -5,7 +5,7 @@ import zfit
 
 from typing      import Literal, Sequence
 from dmu         import LogStore
-from rx_common   import Brem, Block, Correction, Component
+from rx_common   import Brem, Block, Correction, Component, Cuts
 from dmu.stats   import FitResult, Model, ModelFactory
 from .category   import Category, FitCategory
 
@@ -118,7 +118,7 @@ class CategoryMerger:
             pdf       = pdf,
             sumw      = totalw,
             model     = model, 
-            selection = {'merged' : ''})
+            selection = {Cuts.extra : ''})
 
         return category
     # ----------------------
@@ -199,7 +199,7 @@ class CategoryMerger:
             pdf       = pdf,
             sumw      = sumw,
             model     = model, 
-            selection = {'merged' : ''})
+            selection = {Cuts.extra : ''})
 
         return category
     # ----------------------
