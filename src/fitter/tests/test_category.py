@@ -7,7 +7,7 @@ from fitter      import Category
 from dmu         import LogStore
 from dmu.stats   import Model
 from dmu.testing import get_model
-from rx_common   import Block, Brem
+from rx_common   import Block, Brem, Cuts
 
 log=LogStore.add_logger('fitter:test_category')
 # ----------------------
@@ -21,7 +21,7 @@ def test_simple():
         pdf       = pdf,
         sumw      = 1000.,
         model     = [Model.gauss],
-        selection = {'mass' : '(1)'})
+        selection = {Cuts.mass : '(1)'})
 
     assert cat.pdf == pdf
 
@@ -39,7 +39,7 @@ def test_properties(brem : Brem, block : Block):
         pdf       = pdf,
         sumw      = 1000.,
         model     = [Model.gauss],
-        selection = {'mass' : '(1)'})
+        selection = {Cuts.mass : '(1)'})
 
     assert cat.brem == brem
     assert cat.block== block 
