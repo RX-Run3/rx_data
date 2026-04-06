@@ -13,3 +13,6 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
   nbins   : 30
   stacked : True
   d_leg   : {}
+  plot_range:
+    - 4300
+    - 6000
