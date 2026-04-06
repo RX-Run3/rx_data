@@ -5,7 +5,7 @@ import pytest
 from pathlib         import Path
 from dmu.workflow    import Cache
 from dmu             import LogStore
-from rx_common       import Qsq, Trigger, Component
+from rx_common       import Cuts, Qsq, Trigger, Component
 from rx_data         import RDFGetter
 from rx_selection    import selection as sel
 from rx_efficiencies import EfficiencyCalculator
@@ -38,17 +38,22 @@ def initialize():
         yield
 #-------------------------------------------------
 @pytest.mark.parametrize('sample, trigger',       _SAMPLES_RX)
-@pytest.mark.parametrize('q2bin' , ['low', 'central', 'high'])
-def test_rx_efficiency(q2bin : Qsq, sample : Component, trigger : Trigger, tmp_path : Path):
+@pytest.mark.parametrize('q2bin' , [Qsq.low, Qsq.central, Qsq.high])
+def test_rx_efficiency(
+    q2bin   : Qsq, 
+    sample  : Component, 
+    trigger : Trigger, 
+    tmp_path: Path):
     '''
     Calculates efficiency over one sample at a time
     '''
     with Cache.cache_root(path = tmp_path),\
-         sel.custom_selection(d_sel={'bdt' : '(1)'}):
+         sel.custom_selection(d_sel={Cuts.cmb : '(1)'}):
         obj = EfficiencyCalculator(
-            q2bin  =q2bin, 
-            trigger=trigger, 
-            sample =sample)
+            out_dir = tmp_path,
+            q2bin   = q2bin, 
+            trigger = trigger, 
+            sample  = sample)
 
         eff, err = obj.get_efficiency()
 
@@ -56,15 +61,20 @@ def test_rx_efficiency(q2bin : Qsq, sample : Component, trigger : Trigger, tmp_p
     assert err > 0 or eff == 0
 #-------------------------------------------------
 @pytest.mark.parametrize('sample, trigger',    _SAMPLES_NOPID)
-@pytest.mark.parametrize('q2bin' , ['low', 'central', 'high'])
-def test_nopid_efficiency(q2bin : Qsq, sample : Component, trigger : Trigger, tmp_path : Path):
+@pytest.mark.parametrize('q2bin' , [Qsq.low, Qsq.central, Qsq.high])
+def test_nopid_efficiency(
+    q2bin    : Qsq, 
+    sample   : Component, 
+    trigger  : Trigger, 
+    tmp_path : Path):
     '''
     Tests retrieval of total efficiency (acceptance x reco x selection)
     for RX project samples
     '''
     with Cache.cache_root(path = tmp_path),\
-         sel.custom_selection(d_sel={'bdt' : '(1)'}):
+         sel.custom_selection(d_sel={Cuts.cmb : '(1)'}):
         obj      = EfficiencyCalculator(
+            out_dir = tmp_path,
             q2bin   = q2bin, 
             sample  = sample,
             trigger = trigger)
