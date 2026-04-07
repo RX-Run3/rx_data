@@ -10,7 +10,7 @@ from pathlib         import Path
 from dmu             import LogStore
 from dmu.generic     import hashing
 from dmu.generic     import utilities  as gut
-from rx_common       import Qsq
+from rx_common       import Qsq, Brem
 from rx_common       import Component
 from rx_common       import Trigger 
 from rx_selection    import selection  as sel
@@ -27,6 +27,7 @@ class PrecScales:
         self, 
         output_directory : Path,
         comp             : Component, 
+        brem             : Brem,
         q2bin            : Qsq):
         '''
         output_directory: This is the full path to the directory where outputs will be saved
@@ -35,6 +36,7 @@ class PrecScales:
         '''
         self._out_dir     = output_directory
         self._comp        = comp 
+        self._brem        = brem
         self._q2bin       = q2bin
 
         self._d_frbf      : dict
@@ -132,12 +134,13 @@ class PrecScales:
         sample = Component[proc]
 
         log.debug(f'Calculating efficiencies for {sample}')
-        obj = EfficiencyCalculator(
-            out_dir= self._out_dir,
-            q2bin  = self._q2bin, 
-            sample = sample, 
-            trigger= self._trigger)
-        val = obj.get_efficiency()
+        with sel.custom_selection(d_sel = self._brem.region.selection):
+            obj = EfficiencyCalculator(
+                out_dir= self._out_dir,
+                q2bin  = self._q2bin, 
+                sample = sample, 
+                trigger= self._trigger)
+            val = obj.get_efficiency()
 
         return val
     #------------------------------------------
