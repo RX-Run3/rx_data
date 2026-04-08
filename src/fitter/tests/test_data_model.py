@@ -4,7 +4,7 @@ This module has tests for the DataModel class
 import pytest
 
 from pathlib       import Path
-from rx_common     import Trigger, Qsq, Region
+from rx_common     import Cuts, Trigger, Qsq, Region
 from rx_selection  import selection as sel
 from rx_data       import RDFGetter 
 from dmu           import LogStore
@@ -74,7 +74,7 @@ def test_rare_electron(tmp_path : Path):
 
     with PL.parameter_schema(cfg=cfg.yields),\
         Cache.cache_root(path = tmp_path),\
-        sel.custom_selection(d_sel = {'mass' : '(1)', 'brmp' : 'nbrem != 0'}):
+        sel.custom_selection(d_sel = {Cuts.mass : '(1)', Cuts.brem : 'nbrem != 0'}):
         dmd = DataModel(
             name    = 'main',
             cfg     = cfg,
@@ -106,9 +106,9 @@ def test_misid_rare(
     with PL.parameter_schema(cfg=cfg.yields),\
         Cache.cache_root(path = tmp_path),\
         sel.custom_selection(d_sel = {
-        'nobr0' : 'nbrem != 0',
-        'mass'  : '(1)',
-        'bdt'   : 'mva_cmb > 0.80 && mva_prc > 0.60'}):
+        Cuts.brem : 'nbrem != 0',
+        Cuts.mass : '(1)',
+        Cuts.cmb  : 'mva_cmb > 0.80 && mva_prc > 0.60'}):
         dmd = DataModel(
             name    = region,
             cfg     = cfg,
