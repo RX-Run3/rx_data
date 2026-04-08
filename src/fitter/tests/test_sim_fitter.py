@@ -1,6 +1,9 @@
 '''
 This module is meant to test the SimFitter class
 '''
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
 import pytest
 
 from pathlib       import Path
