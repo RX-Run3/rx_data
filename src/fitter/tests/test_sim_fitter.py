@@ -10,7 +10,7 @@ from dmu.generic   import UnpackerModel, utilities as gut
 from dmu.stats     import utilities as sut
 from dmu.workflow  import Cache
 
-from rx_common     import Component, Cuts, Mass, Qsq
+from rx_common     import Component, Cuts, Mass, Qsq, Region
 from rx_common     import Trigger
 from rx_data       import RDFGetter
 from rx_selection  import selection as sel
@@ -100,12 +100,14 @@ def test_with_cat(tmp_path : Path):
     '''
     Test for components with brem categories
     '''
+    region = Region.brem_xx1
     obs    = zfit.Space(
         obs   = Mass.bp_bcor.latex, 
         label = Mass.bp_bcor,
         limits=(4600, 6900))
     data = gut.load_data(package='fitter_data', fpath='rare/rk/ee/bpkpee.yaml.j2')
     cfg  = ParametricConf(**data)
+    cfg  = cfg.cfg_copy(replacements = {'BREM' : region})
 
     def _filter(name : str) -> bool:
         c1 = name.endswith('_b1')
@@ -114,13 +116,16 @@ def test_with_cat(tmp_path : Path):
         return c1 or c2
 
     cfg  = cfg.filter_category(func = _filter)
-    d_sel= {Cuts.cmb : 'mva_cmb > 0.9', Cuts.prc : 'mva_prc > 0.5'}
+    d_sel= {
+        Cuts.brem: region.selection,
+        Cuts.cmb : 'mva_cmb > 0.9', 
+        Cuts.prc : 'mva_prc > 0.5'}
 
     with Cache.cache_root(path = tmp_path),\
          RDFGetter.max_entries(value = -1),\
         sel.custom_selection(d_sel = d_sel):
         ftr = SimFitter(
-            name     = 'main',
+            name     = region,
             component= cfg.component,
             obs      = obs,
             cfg      = cfg,
