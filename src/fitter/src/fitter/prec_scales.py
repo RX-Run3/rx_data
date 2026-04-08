@@ -134,7 +134,7 @@ class PrecScales:
         sample = Component[proc]
 
         log.debug(f'Calculating efficiencies for {sample}')
-        with sel.custom_selection(d_sel = self._brem.region.selection):
+        with sel.update_selection(d_sel = self._brem.region.selection):
             obj = EfficiencyCalculator(
                 out_dir= self._out_dir,
                 q2bin  = self._q2bin, 
