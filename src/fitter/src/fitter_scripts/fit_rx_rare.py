@@ -19,7 +19,7 @@ from dmu           import LogStore
 from zfit.loss     import ExtendedUnbinnedNLL
 from rx_data       import RDFLoader
 from rx_selection  import selection as sel
-from rx_common     import Brem, Component, Region, Cuts
+from rx_common     import Brem, Component, Cuts
 
 from fitter        import RXFitConfig
 from fitter        import ConstraintReader
