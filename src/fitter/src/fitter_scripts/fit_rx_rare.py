@@ -197,21 +197,21 @@ def _fit(cfg : RXFitConfig) -> None:
     d_nll    = {}
     all_cons = []
 
-    region = Region.brem_xx1
-    with sel.update_selection(d_sel = region.selection):
+    brem = Brem.one
+    with sel.update_selection(d_sel = brem.region.selection):
         cfg_brem           = cfg.cfg_copy(replacements = {'_BREM_' : '_xx1_'})
-        nll, cons, cfg_mod = _get_region_nll(region = region, cfg = cfg_brem)
+        nll, cons, cfg_mod = _get_region_nll(brem = brem, cfg = cfg_brem)
 
-        d_nll[region] = nll, cfg_mod
-        all_cons     += cons
+        d_nll[brem.region] = nll, cfg_mod
+        all_cons          += cons
 
-    region = Region.brem_xx2
-    with sel.update_selection(d_sel = region.selection):
+    brem = Brem.two
+    with sel.update_selection(d_sel = brem.region.selection):
         cfg_brem           = cfg.cfg_copy(replacements = {'_BREM_' : '_xx2_'})
-        nll, cons, cfg_mod = _get_region_nll(region = region, cfg = cfg_brem)
+        nll, cons, cfg_mod = _get_region_nll(brem = brem, cfg = cfg_brem)
 
-        d_nll[region] = nll, cfg_mod
-        all_cons     += cons
+        d_nll[brem.region] = nll, cfg_mod
+        all_cons          += cons
 
     ftr = DataFitter(
         q2bin = cfg.q2bin,
