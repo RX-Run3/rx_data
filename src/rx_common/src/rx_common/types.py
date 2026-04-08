@@ -354,21 +354,7 @@ class Brem(Enum):
         '''
         Returns string representation
         '''
-        match self:
-            case Brem.zero:
-                return 'xx0' 
-            case Brem.one:
-                return 'xx1' 
-            case Brem.two:
-                return 'xx2' 
-            case Brem.br01x:
-                return '01x'
-            case Brem.br02x:
-                return '02x'
-            case Brem.brx12:
-                return 'x12'
-            case Brem.br012:
-                return '012'
+        return str(self.region)
     # ----------------------
     @staticmethod
     def from_str(value : str) -> 'Brem':
