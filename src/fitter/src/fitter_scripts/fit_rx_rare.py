@@ -19,7 +19,7 @@ from dmu           import LogStore
 from zfit.loss     import ExtendedUnbinnedNLL
 from rx_data       import RDFLoader
 from rx_selection  import selection as sel
-from rx_common     import Component, Region, Cuts
+from rx_common     import Brem, Component, Region, Cuts
 
 from fitter        import RXFitConfig
 from fitter        import ConstraintReader
@@ -136,15 +136,15 @@ def _cfg_from_args(args : argparse.Namespace) -> RXFitConfig:
     return cfg
 # ----------------------
 def _add_constraints(
-    reg : Region,
+    brem: Brem,
     nll : ExtendedUnbinnedNLL,
     cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL, list[Constraint]]:
     '''
     Parameters
     -------------
-    reg: Signal region, e.g. brem_xx1
-    nll: Likelihood
-    cfg: Object holding configuration for fit 
+    brem: Brem region
+    nll : Likelihood
+    cfg : Object holding configuration for fit 
 
     Returns
     -------------
@@ -155,10 +155,11 @@ def _add_constraints(
     '''
     signal = cfg.mod_cfg.trigger.get_signal_component(qsq = cfg.q2bin)
     crd  = ConstraintReader(
+        brem   = brem,
         signal = signal,
         nll    = nll, 
         cfg    = cfg)
-    cons = crd.get_constraints(save_to = cfg.output_directory / f'constraints/{reg}.yaml')
+    cons = crd.get_constraints(save_to = cfg.output_directory / f'constraints/{brem.region}.yaml')
 
     if not cons:
         log.warning('Not using any constraints')
