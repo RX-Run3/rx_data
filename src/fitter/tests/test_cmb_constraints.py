@@ -35,6 +35,7 @@ def initialize():
     os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 # ----------------------
 def _get_nll(
+    reg   : Region,
     cfg   : CombinatorialConf,
     q2bin : Qsq) -> zlos:
     '''
@@ -45,7 +46,7 @@ def _get_nll(
     pdfs= cfg.models[q2bin].pdfs
     obs = zfit.Space('B_Mass_smr', limits=(4600, 6900))
     mod = ModelFactory(
-        preffix = Component.comb,
+        preffix = f'{Component.comb}_{reg}',
         obs     = obs,
         l_pdf   = pdfs,
         l_shared= [],
@@ -67,7 +68,7 @@ def test_simple(q2bin : Qsq, tmp_path : Path):
         fpath  = 'rare/rk/ee/comb.yaml')
 
     cfg  = CombinatorialConf(**data)
-    nll  = _get_nll(cfg = cfg, q2bin = q2bin)
+    nll  = _get_nll(cfg = cfg, q2bin = q2bin, reg = region)
 
     d_sel = {
         Cuts.cmb   : 'mva_cmb > 0.6 && mva_cmb < 0.9',
