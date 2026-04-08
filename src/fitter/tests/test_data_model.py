@@ -1,6 +1,9 @@
 '''
 This module has tests for the DataModel class
 '''
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
 import pytest
 
 from pathlib       import Path
