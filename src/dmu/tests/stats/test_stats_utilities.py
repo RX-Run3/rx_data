@@ -2,6 +2,8 @@
 Module with unit tests for functions in dmu.stat.utilities
 '''
 import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
 import re
 import pytest
 import numpy
@@ -111,22 +113,22 @@ def test_print_pdf(tmp_path : Path):
     print_pdf(pdf)
 
     print_pdf(pdf,
-              blind   = ['sg.*', 'mu.*'])
+        blind   = ['sg.*', 'mu.*'])
 
     print_pdf(pdf,
-              d_const = d_const,
-              blind   = ['sg.*', 'mu.*'])
+        d_const = d_const,
+        blind   = ['sg.*', 'mu.*'])
     #-----------------
     print_pdf(pdf,
-              txt_path = f'{tmp_path}/utilities/print_pdf/pdf.txt')
+        txt_path = f'{tmp_path}/utilities/print_pdf/pdf.txt')
 
     print_pdf(pdf,
-              blind    =['sg.*', 'mu.*'],
-              txt_path = f'{tmp_path}/utilities/print_pdf/pdf_blind.txt')
+        blind    =['sg.*', 'mu.*'],
+        txt_path = f'{tmp_path}/utilities/print_pdf/pdf_blind.txt')
 
     print_pdf(pdf,
-              d_const  = d_const,
-              txt_path = f'{tmp_path}/utilities/print_pdf/pdf_const.txt')
+        d_const  = d_const,
+        txt_path = f'{tmp_path}/utilities/print_pdf/pdf_const.txt')
 # ----------------------
 def test_blind_manager():
     '''
