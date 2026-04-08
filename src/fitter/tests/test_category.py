@@ -22,12 +22,13 @@ def test_properties(brem : Brem, block : Block):
     '''
     pdf = get_model(kind = 'signal')
     cat = Category(
-        name      = f'brem_{brem}_b{block}',
+        name      = f'{brem}_b{block}',
         pdf       = pdf,
         sumw      = 1000.,
         model     = [Model.gauss],
         selection = {Cuts.mass : '(1)'})
 
+    assert cat.pdf  == pdf
     assert cat.brem == brem
     assert cat.block== block 
 # ----------------------
