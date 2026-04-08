@@ -360,7 +360,7 @@ class Brem(Enum):
         '''
         Returns string representation
         '''
-        return str(self.region)
+        return self.region
     # ----------------------
     @staticmethod
     def from_str(value : str) -> 'Brem':
