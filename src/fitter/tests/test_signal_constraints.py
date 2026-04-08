@@ -27,6 +27,31 @@ _RK_SHAPE = [
     'sg_bpkpee_brem_xx2_b1_reso_flt',
 ]
 
+_FRACTIONS_BREM_1 = [
+    'block_brem_xx1_b1_flt',
+    'block_brem_xx1_b2_flt',
+    'block_brem_xx1_b3_flt',
+    'block_brem_xx1_b4_flt',
+    'block_brem_xx1_b5_flt',
+    'block_brem_xx1_b6_flt',
+    'block_brem_xx1_b7_flt',
+]
+
+_FRACTIONS_BREM_2 = [
+    'block_brem_xx2_b1_flt',
+    'block_brem_xx2_b2_flt',
+    'block_brem_xx2_b3_flt',
+    'block_brem_xx2_b4_flt',
+    'block_brem_xx2_b5_flt',
+    'block_brem_xx2_b6_flt',
+    'block_brem_xx2_b7_flt',
+]
+
+_FRACTIONS_BY_BREM = {
+    Brem.one : _FRACTIONS_BREM_1,
+    Brem.two : _FRACTIONS_BREM_2,
+}
+
 _RK_FRACTIONS = [
     'fr_bpkpee_block_brem_x12_b1_flt',
     'fr_bpkpee_block_brem_x12_b2_flt',
@@ -226,3 +251,21 @@ def test_rk_shape(shapes : list[str]):
 
     assert ncons == len(shapes) 
 # ----------------------
+@pytest.mark.parametrize('component', [Component.bpkpee, Component.bdkstkpiee])
+@pytest.mark.parametrize('brem'     , [Brem.one, Brem.two])
+def test_fractions_by_brem(component :  Component, brem : Brem):
+    '''
+    Test that we can retrieve constraints
+    for all fractions
+    '''
+    values    = _FRACTIONS_BY_BREM[brem]
+    fractions = [ f'fr_{component}_{value}' for value in values ] 
+
+    nll = ParsHolder(pars = fractions)
+    calc= SignalConstraints(nll = nll, comp = component)
+    constraints = calc.get_constraints()
+
+    for cons in sorted(constraints):
+        log.info(cons)
+
+    assert len(constraints) == len(fractions)
