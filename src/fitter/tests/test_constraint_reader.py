@@ -10,7 +10,7 @@ from dmu            import LogStore
 from dmu.stats      import ModelFactory, print_constraints
 from dmu.stats      import zfit
 from dmu.generic    import UnpackerModel, utilities           as gut
-from rx_common      import Qsq, Component
+from rx_common      import Brem, Qsq, Component, Region
 from fitter         import RXFitConfig
 from zfit.loss      import ExtendedUnbinnedNLL
 from zfit.param     import Parameter           as zpar
@@ -158,11 +158,13 @@ class Parameters:
 # ----------------------
 def _get_nll(
     obs  : zobs, 
+    reg  : Region,
     q2bin: Qsq,
     cfg  : RXFitConfig) -> ExtendedUnbinnedNLL:
     '''
     Parameters
     -------------
+    reg  : Region
     obs  : Observable
     cfg  : Configuration for fit
     q2bin: E.g. central
@@ -178,19 +180,18 @@ def _get_nll(
     if not isinstance(cfg_cmb, CombinatorialConf):
         raise ValueError(f'Expected combinatorial config, found: {cfg_cmb}')
 
-    pdf_names = cfg_cmb.models[q2bin].pdfs
-
     sig_11 = _get_signal(obs = obs, brem = 1, block = 1)
     sig_21 = _get_signal(obs = obs, brem = 2, block = 1)
     sig_12 = _get_signal(obs = obs, brem = 1, block = 2)
     sig_22 = _get_signal(obs = obs, brem = 2, block = 2)
 
+    pdf_names = cfg_cmb.models[q2bin].pdfs
     fct  = ModelFactory(
+        preffix = reg,
         obs     = obs,
         l_pdf   = pdf_names,
         l_shared= [],
-        l_float = [],
-        preffix = 'combinatorial')
+        l_float = [])
     expo = fct.get_pdf()
 
     nexpo = zfit.param.Parameter('nbkg', 1000, 0, 1000_000)
@@ -239,6 +240,7 @@ def test_all_but_cmb(
     kind : Type of parameters
     q2bin: q2 bin
     '''
+    brem = Brem.brx12
 
     obs = zfit.Space('dummy', limits=(4500, 6000))
     nll = Parameters(kind = kind, obs = obs) 
@@ -256,6 +258,7 @@ def test_all_but_cmb(
 
     with Cache.cache_root(path = tmp_path):
         obj        = ConstraintReader(
+            brem   = brem,
             signal = Component.bpkpee,
             nll    = nll, 
             cfg    = cfg)
@@ -280,13 +283,19 @@ def test_only_cmb(
     -------------
     q2bin: q2 bin
     '''
+    brem = Brem.brx12
 
-    obs = zfit.Space('B_Mass_smr', limits=(4500, 7000))
-    cfg = _get_fit_config(q2bin = q2bin)
-    nll = _get_nll(obs=obs, cfg=cfg, q2bin = q2bin) 
+    obs  = zfit.Space('B_Mass_smr', limits=(4500, 7000))
+    cfg  = _get_fit_config(q2bin = q2bin)
+    nll  = _get_nll(
+        obs   = obs, 
+        reg   = brem.region,
+        cfg   = cfg, 
+        q2bin = q2bin) 
 
     with Cache.cache_root(path = tmp_path):
         obj         = ConstraintReader(
+            brem    = brem,
             signal  = Component.bpkpee,
             nll     = nll, cfg=cfg)
         constraints = obj.get_constraints(
@@ -311,15 +320,17 @@ def test_only_misid(
     -------------
     q2bin: q2 bin
     '''
-    obs = zfit.Space('dummy', limits=(4500, 6000))
-    nll = Parameters(kind = 'rare_misid', obs = obs) 
-    nll = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
+    brem = Brem.brx12
+    obs  = zfit.Space('dummy', limits=(4500, 6000))
+    nll  = Parameters(kind = 'rare_misid', obs = obs) 
+    nll  = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
 
     cfg = _get_fit_config(q2bin = q2bin)
     del cfg.mod_cfg.components[Component.comb]
 
     with Cache.cache_root(path = tmp_path):
         obj         = ConstraintReader(
+            brem    = brem,
             signal  = Component.bpkpee,
             nll     = nll, cfg=cfg)
         constraints = obj.get_constraints(
@@ -342,16 +353,18 @@ def test_only_prec(
     -------------
     q2bin: q2 bin
     '''
-    obs = zfit.Space('dummy', limits=(4500, 6000))
-    nll = Parameters(kind = 'rare_prec_rk', obs = obs) 
-    nll = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
-    cfg = _get_fit_config(q2bin = q2bin)
-    del cfg.mod_cfg.components[Component.bpkkk  ]
-    del cfg.mod_cfg.components[Component.bpkpipi]
-    del cfg.mod_cfg.components[Component.comb]
+    brem = Brem.brx12
+    obs  = zfit.Space('dummy', limits=(4500, 6000))
+    nll  = Parameters(kind = 'rare_prec_rk', obs = obs) 
+    nll  = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
+    cfg  = _get_fit_config(q2bin = q2bin)
+    cfg.mod_cfg.components.pop(Component.bpkkk  , None)
+    cfg.mod_cfg.components.pop(Component.bpkpipi, None)
+    cfg.mod_cfg.components.pop(Component.comb   , None)
 
     with Cache.cache_root(path = tmp_path):
         obj         = ConstraintReader(
+            brem    = brem,
             signal  = Component.bpkpee,
             nll     = nll, cfg=cfg)
         constraints = obj.get_constraints(
@@ -377,13 +390,14 @@ def test_save(
     -------------
     q2bin: q2 bin
     '''
-
-    obs = zfit.Space('B_Mass_smr', limits=(4500, 7000))
-    cfg = _get_fit_config(q2bin = q2bin)
-    nll = _get_nll(obs=obs, cfg=cfg, q2bin = q2bin) 
+    brem = Brem.brx12
+    obs  = zfit.Space('B_Mass_smr', limits=(4500, 7000))
+    cfg  = _get_fit_config(q2bin = q2bin)
+    nll  = _get_nll(obs=obs, cfg=cfg, q2bin = q2bin, reg = brem.region) 
 
     with Cache.cache_root(path = tmp_path):
         obj         = ConstraintReader(
+            brem    = brem,
             signal  = Component.bpkpee,
             nll     = nll,
             cfg     = cfg)
