@@ -8,7 +8,7 @@ from pathlib             import Path
 from typing              import Final
 from dmu                 import LogStore
 from dmu.stats           import Constraint, Constraint1D, ConstraintType
-from rx_common           import Component
+from rx_common           import Brem, Component, Region
 from zfit.loss           import ExtendedUnbinnedNLL
 
 from .configs            import CombinatorialConf, RXFitConfig
@@ -28,12 +28,14 @@ class ConstraintReader:
     # ----------------------
     def __init__(
         self, 
+        brem  : Brem,
         nll   : ExtendedUnbinnedNLL, 
         cfg   : RXFitConfig,
         signal: Component):
         '''
         Parameters
         -------------------
+        Brem  : brem category
         nll   : Likelihoood 
         cfg   : Object storing fit configuration
         signal: Process considered as the signal when calculating denominator of rare Partially
@@ -43,6 +45,7 @@ class ConstraintReader:
         if not s_par:
             raise ValueError('No floating parameters found in parameters holder')
 
+        self._brem    = brem 
         self._nll     = nll
         self._l_par   = [ par.name for par in s_par ] 
         self._cfg     = cfg
@@ -67,6 +70,7 @@ class ConstraintReader:
 
             obj      = PrecScales(
                 output_directory = self._cfg.output_directory,
+                brem             = self._brem,
                 comp             = scales[par], 
                 q2bin            = self._cfg.q2bin)
             val, err = obj.get_scale(signal=self._signal)
@@ -130,7 +134,7 @@ class ConstraintReader:
             return
 
         calc      = CmbConstraints(
-            name  = Component.comb,
+            reg   = self._brem.region,
             nll   = self._nll,
             cfg   = cmb_cfg,
             q2bin = self._cfg.q2bin)
