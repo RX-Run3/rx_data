@@ -1,6 +1,8 @@
 '''
 Module used to test CategoryMerger class
 '''
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 import pytest
 
 from dmu         import LogStore
@@ -17,7 +19,6 @@ BREM_012 = [ Brem.zero, Brem.one, Brem.two ]
 BREM_01  = [ Brem.zero, Brem.one           ]
 BREM_02  = [ Brem.zero, Brem.two           ]
 BREM_12  = [ Brem.one , Brem.two           ]
-
 # ----------------------
 @pytest.fixture(scope='module', autouse=True)
 def initialize():
@@ -57,7 +58,7 @@ def test_add_brem(brems : list[Brem]):
     Add only brems for given block 
     '''
     log.info(f'Adding: {brems}')
-    names      = [ f'brem_{brem:03}_b1' for brem in brems ]
+    names      = [ f'{brem}_b1' for brem in brems ]
     categories = [ _get_category(name = name) for name in names ]
 
     mgr = CategoryMerger(
@@ -93,7 +94,7 @@ def test_add_brem_block():
     '''
     Add brems and then blocks
     '''
-    names      = [ f'brem_{brem}_b{block}' for block in Block.blocks() for brem in Brem.brems() ]
+    names      = [ f'{brem}_b{block}' for block in Block.blocks() for brem in Brem.brems() ]
     categories = [ _get_category(name = name) for name in names ]
 
     mgr = CategoryMerger(
