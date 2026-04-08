@@ -19,7 +19,7 @@ from dmu           import LogStore
 from zfit.loss     import ExtendedUnbinnedNLL
 from rx_data       import RDFLoader
 from rx_selection  import selection as sel
-from rx_common     import Component
+from rx_common     import Component, Region, Cuts
 
 from fitter        import RXFitConfig
 from fitter        import ConstraintReader
@@ -172,8 +172,9 @@ def _add_constraints(
 
     return nll, cons
 # ----------------------
+def _get_region_nll(region : Region, cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL, list[Constraint], dict[str,dict[Cuts,str]]]:
     ftr = LikelihoodFactory(
-        name   = 'main',
+        name   = region,
         obs    = cfg.observable,
         q2bin  = cfg.q2bin,
         sample = DATA_SAMPLE,
