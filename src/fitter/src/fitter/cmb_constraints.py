@@ -12,7 +12,7 @@ from dmu.stats    import ConstraintND
 from zfit         import Data                as zdat
 from zfit.pdf     import BasePDF             as zpdf
 from zfit.loss    import ExtendedUnbinnedNLL as zlos
-from rx_common    import Cuts, Qsq, Trigger, Component
+from rx_common    import Cuts, Qsq, Region, Trigger, Component
 from rx_data      import RDFGetter
 from rx_selection import selection as sel
 from .base_fitter import BaseFitter
@@ -27,21 +27,21 @@ class CmbConstraints(BaseFitter, Cache):
     # ----------------------
     def __init__(
         self, 
-        name : str,
+        reg  : Region,
         nll  : zlos,
         cfg  : CombinatorialConf,
         q2bin: Qsq) -> None:
         '''
         Parameters
         -------------
-        name : Name of component, i.e. 'combinatorial'. Used to finc component PDF in NLL
+        reg  : Signal region 
         obs  : Zfit observable
         cfg  : fit configuration
         q2bin: E.g. central
         '''
         BaseFitter.__init__(self)
 
-        self._name  = name
+        self._reg   = reg
         self._q2bin = q2bin
         self._cfg   = cfg
 
@@ -51,12 +51,12 @@ class CmbConstraints(BaseFitter, Cache):
 
         model = self._model_from_models(models = nll.model)
         if model is None:
-            raise ValueError(f'Cannot find combinatorial PDF: {name}')
+            raise ValueError(f'Cannot find combinatorial PDF: {reg}')
 
         self._model = model
         self._obs   = model.space
 
-        self._base_path = Path(Component.comb) / 'fit' / self._name
+        self._base_path = Path(Component.comb) / 'fit' / self._reg
         self._rdf, uid, self._cuts = self._get_rdf()
 
         Cache.__init__(
@@ -76,7 +76,7 @@ class CmbConstraints(BaseFitter, Cache):
         Combinatorial PDF if found, otherwise None
         '''
         for pdf in models: 
-            if self._name in pdf.name:
+            if self._reg in pdf.name:
                 log.info(f'Picking: {pdf.name}')
                 return pdf
 
@@ -228,7 +228,7 @@ class CmbConstraints(BaseFitter, Cache):
         cov    = res.pars_covariance(pars = pars)
 
         cns = ConstraintND(
-            name       = self._name, 
+            name       = self._reg, 
             kind       = ConstraintType.gauss,
             parameters = names, 
             values     = values, 
