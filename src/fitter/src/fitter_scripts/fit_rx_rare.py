@@ -199,7 +199,7 @@ def _fit(cfg : RXFitConfig) -> None:
 
     brem = Brem.one
     with sel.update_selection(d_sel = brem.region.selection):
-        cfg_brem           = cfg.cfg_copy(replacements = {'_BREM_' : '_xx1_'})
+        cfg_brem           = cfg.cfg_copy(replacements = {'BREM' : brem.region})
         nll, cons, cfg_mod = _get_region_nll(brem = brem, cfg = cfg_brem)
 
         d_nll[brem.region] = nll, cfg_mod
@@ -207,7 +207,7 @@ def _fit(cfg : RXFitConfig) -> None:
 
     brem = Brem.two
     with sel.update_selection(d_sel = brem.region.selection):
-        cfg_brem           = cfg.cfg_copy(replacements = {'_BREM_' : '_xx2_'})
+        cfg_brem           = cfg.cfg_copy(replacements = {'BREM' : brem.region})
         nll, cons, cfg_mod = _get_region_nll(brem = brem, cfg = cfg_brem)
 
         d_nll[brem.region] = nll, cfg_mod
