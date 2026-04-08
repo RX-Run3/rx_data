@@ -119,10 +119,10 @@ def test_with_cat(tmp_path : Path):
         return c1 or c2
 
     cfg  = cfg.filter_category(func = _filter)
-    d_sel= {
-        Cuts.brem: region.selection,
+    d_sel : dict[Cuts, str] = {
         Cuts.cmb : 'mva_cmb > 0.9', 
         Cuts.prc : 'mva_prc > 0.5'}
+    d_sel.update(region.selection)
 
     with Cache.cache_root(path = tmp_path),\
          RDFGetter.max_entries(value = -1),\
