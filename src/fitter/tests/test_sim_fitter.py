@@ -100,9 +100,9 @@ def test_with_cat(tmp_path : Path):
     '''
     Test for components with brem categories
     '''
-    obs  = zfit.Space(
-        obs   = Mass.bp_bcor_smr.latex, 
-        label = Mass.bp_bcor_smr,
+    obs    = zfit.Space(
+        obs   = Mass.bp_bcor.latex, 
+        label = Mass.bp_bcor,
         limits=(4600, 6900))
     data = gut.load_data(package='fitter_data', fpath='rare/rk/ee/bpkpee.yaml.j2')
     cfg  = ParametricConf(**data)
