@@ -1,6 +1,9 @@
 '''
 Module with functions needed to test ConstraintReader class
 '''
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
 import pytest
 
 from typing         import Final, cast
