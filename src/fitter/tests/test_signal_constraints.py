@@ -2,6 +2,9 @@
 Module holding functions needed to test SignalConstraints class
 '''
 import pytest
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
 from dmu       import LogStore
 from dmu.stats import CorrectionImplementation, Model, zfit
 from dmu.stats import ModelFactory
