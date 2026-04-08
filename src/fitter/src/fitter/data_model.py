@@ -65,6 +65,7 @@ class DataModel:
         PDF with yield
         '''
         yield_name = f'yld_{component}' if self._name == _MAIN_CATEGORY_NAME else f'yld_{component}_{self._name}'
+        pdf_name   = f'{component}_{self._name}'
 
         nevt = PL.get_yield(name=yield_name)
         kdes = zfit.pdf.KDE1DimFFT, zfit.pdf.KDE1DimExact, zfit.pdf.KDE1DimISJ
@@ -73,7 +74,7 @@ class DataModel:
             return pdf
 
         log.info(f'Extending {component} with {yield_name}')
-        pdf = pdf.create_extended(nevt, name=component)
+        pdf = pdf.create_extended(nevt, name=pdf_name)
 
         return pdf
     # ------------------------

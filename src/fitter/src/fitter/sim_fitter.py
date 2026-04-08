@@ -488,7 +488,7 @@ class SimFitter(BaseFitter, Cache):
 
         pdf = kde_builder(
             data      = data, 
-            name      = self._component, 
+            name      = f'{self._component}_{self._name}', 
             obs       = cfg.get_obs(obs = self._obs), 
             norm      = self._obs,
             bandwidth = cfg.fit.bandwidth,
