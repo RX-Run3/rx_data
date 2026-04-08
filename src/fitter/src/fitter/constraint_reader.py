@@ -8,7 +8,7 @@ from pathlib             import Path
 from typing              import Final
 from dmu                 import LogStore
 from dmu.stats           import Constraint, Constraint1D, ConstraintType
-from rx_common           import Brem, Component, Region
+from rx_common           import Brem, Component
 from zfit.loss           import ExtendedUnbinnedNLL
 
 from .configs            import CombinatorialConf, RXFitConfig
