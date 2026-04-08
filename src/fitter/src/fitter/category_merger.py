@@ -114,7 +114,7 @@ class CategoryMerger:
             categories  = categories)
 
         category      = Category(
-            name      = f'brem_{brem}_b{block}',
+            name      = f'{brem}_b{block}',
             pdf       = pdf,
             sumw      = totalw,
             model     = model, 
@@ -195,7 +195,7 @@ class CategoryMerger:
 
         blok  = categories[0].block
         category      = Category(
-            name      = f'brem_{brem}_b{blok}',
+            name      = f'{brem}_b{blok}',
             pdf       = pdf,
             sumw      = sumw,
             model     = model, 
