@@ -2,6 +2,7 @@
 Module used to test CmbConstraints class
 '''
 
+import os
 import pytest 
 
 from pathlib      import Path
@@ -30,6 +31,8 @@ def initialize():
     LogStore.set_level('fitter:cmb_constraints', 10)
     LogStore.set_level('dmu:stats:fitter'      , 10)
     LogStore.set_level('dmu:stats:minimizers'  , 10)
+
+    os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 # ----------------------
 def _get_nll(
     reg   : Region,
