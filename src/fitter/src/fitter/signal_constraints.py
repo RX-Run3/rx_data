@@ -16,7 +16,7 @@ log=LogStore.add_logger('fitter:signal_constraints')
 # Regex for non-fractions
 _RGXPR : Final[str] = r'brem_(xx\d)_b(\d)_(scale|reso)_flt'
 # Regex for fractions
-_RGXFR : Final[str] = r'(brem|block)_([x12]{3})_b(\d)(_reso)?_flt'
+_RGXFR : Final[str] = r'(brem|block)_brem_([x012]{3})_b(\d)(_reso)?_flt'
 # ------------------------------------------
 class SignalConstraints:
     '''
