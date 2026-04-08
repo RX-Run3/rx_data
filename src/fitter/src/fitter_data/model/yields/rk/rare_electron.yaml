@@ -30,6 +30,12 @@ yld_bpkpee_brem_xx2:
 # --------------------
 # Scales between signal and part-reco
 # --------------------
+s_bsphiee:
+  <<      : *fractions
+s_bdkstkpiee:
+  <<      : *fractions
+s_bpkstkpiee:
+  <<      : *fractions
 # --------------------
 s_bsphiee_brem_xx1:
   <<      : *fractions
@@ -46,6 +52,22 @@ s_bpkstkpiee_brem_xx2:
   <<      : *fractions
 # --------------------
 # Yields of part-reco
+# --------------------
+yld_bdkstkpiee:
+  kind : mul
+  pars :
+    - s_bdkstkpiee
+    - yld_bpkpee
+yld_bpkstkpiee:
+  kind : mul
+  pars :
+    - s_bpkstkpiee
+    - yld_bpkpee
+yld_bsphiee:
+  kind : mul
+  pars :
+    - s_bsphiee
+    - yld_bpkpee
 # --------------------
 yld_bdkstkpiee_brem_xx1:
   kind : mul
@@ -80,6 +102,19 @@ yld_bsphiee_brem_xx2:
     - yld_bpkpee_brem_xx2
 # --------------------
 # Unconstrained background yields
+# --------------------
+yld_ccbar:
+  <<      : *yields
+yld_comb:
+  <<      : *yields
+yld_bpkpjpsiee:
+  <<      : *yields
+yld_bpkppsi2ee: 
+  <<      : *yields
+yld_bpkpipi:
+  <<      : *yields
+yld_bpkkk:
+  <<      : *yields
 # --------------------
 yld_ccbar_brem_xx1:
   <<      : *yields
