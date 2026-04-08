@@ -77,7 +77,7 @@ class CmbConstraintConf(BaseModel):
     component : Component
     trigger   : Trigger
     parameters: list[str]
-    selection : dict[str,str]
+    selection : dict[Cuts,str]
     fit       : FitConf
     plots     : ZFitPlotterConf
 # ------------------------------
