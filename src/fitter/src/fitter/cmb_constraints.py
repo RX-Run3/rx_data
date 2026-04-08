@@ -12,7 +12,7 @@ from dmu.stats    import ConstraintND
 from zfit         import Data                as zdat
 from zfit.pdf     import BasePDF             as zpdf
 from zfit.loss    import ExtendedUnbinnedNLL as zlos
-from rx_common    import Qsq, Trigger, Component
+from rx_common    import Cuts, Qsq, Trigger, Component
 from rx_data      import RDFGetter
 from rx_selection import selection as sel
 from .base_fitter import BaseFitter
@@ -89,7 +89,7 @@ class CmbConstraints(BaseFitter, Cache):
 
         return None 
     # ----------------------
-    def _update_selection(self, cuts : dict[str,str]) -> dict[str,str]:
+    def _update_selection(self, cuts : dict[Cuts,str]) -> dict[Cuts,str]:
         '''
         Parameters
         -------------
@@ -108,7 +108,7 @@ class CmbConstraints(BaseFitter, Cache):
 
         return cuts
     # ---------------------
-    def _get_rdf(self) -> tuple[RDF.RNode, str, dict[str,dict[str,str]]]:
+    def _get_rdf(self) -> tuple[RDF.RNode, str, dict[str,dict[Cuts,str]]]:
         '''
         Returns
         -------------
@@ -150,7 +150,7 @@ class CmbConstraints(BaseFitter, Cache):
                 trigger  = self._trigger,
             )
 
-        all_cuts : dict[str,dict[str,str]] = {'default' : default_cuts, 'fit' : fit_cuts}
+        all_cuts : dict[str,dict[Cuts,str]] = {'default' : default_cuts, 'fit' : fit_cuts}
 
         return rdf, uid, all_cuts
     # ---------------------
