@@ -217,7 +217,7 @@ class Brem(Enum):
     # Composite brem
     # ----------
     br01x   =  110 
-    br02x   = 1010 
+    br0x2   = 1010 
     brx12   = 1100 
     br012   = 1110 
     # ----------------------
@@ -359,7 +359,7 @@ class Brem(Enum):
     @staticmethod
     def from_str(value : str) -> 'Brem':
         '''
-        Returns string representation
+        Returns Brem for given string, e.g. xx0
         '''
         if value == '001':
             value = 'xx1'
@@ -377,7 +377,7 @@ class Brem(Enum):
             case '01x':
                 return Brem.br01x
             case '02x':
-                return Brem.br02x
+                return Brem.br0x2
             case 'x12':
                 return Brem.brx12
             case '012':
