@@ -172,10 +172,6 @@ def _add_constraints(
 
     return nll, cons
 # ----------------------
-def _fit(cfg : RXFitConfig) -> None:
-    '''
-    This is where DataFitter is used
-    '''
     ftr = LikelihoodFactory(
         name   = 'main',
         obs    = cfg.observable,
@@ -191,10 +187,33 @@ def _fit(cfg : RXFitConfig) -> None:
         cfg = cfg)
 
     return nll, cons, cfg_mod
+# ----------------------
+def _fit(cfg : RXFitConfig) -> None:
+    '''
+    This is where DataFitter is used
+    '''
+    d_nll    = {}
+    all_cons = []
+
+    region = Region.brem_xx1
+    with sel.update_selection(d_sel = region.selection):
+        cfg_brem           = cfg.cfg_copy(replacements = {'_BREM_' : '_xx1_'})
+        nll, cons, cfg_mod = _get_region_nll(region = region, cfg = cfg_brem)
+
+        d_nll[region] = nll, cfg_mod
+        all_cons     += cons
+
+    region = Region.brem_xx2
+    with sel.update_selection(d_sel = region.selection):
+        cfg_brem           = cfg.cfg_copy(replacements = {'_BREM_' : '_xx2_'})
+        nll, cons, cfg_mod = _get_region_nll(region = region, cfg = cfg_brem)
+
+        d_nll[region] = nll, cfg_mod
+        all_cons     += cons
 
     ftr = DataFitter(
         q2bin = cfg.q2bin,
-        d_nll = {cfg.name : (nll, cfg_mod)}, 
+        d_nll = d_nll, 
         cfg   = cfg.mod_cfg)
     res = ftr.run()
 
