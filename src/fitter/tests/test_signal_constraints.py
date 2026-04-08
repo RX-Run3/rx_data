@@ -28,8 +28,21 @@ _RK_SHAPE = [
 ]
 
 _RK_FRACTIONS = [
+    'fr_bpkpee_block_x12_b1_flt',
+    'fr_bpkpee_block_x12_b2_flt',
+    'fr_bpkpee_block_x12_b3_flt',
+    'fr_bpkpee_block_x12_b4_flt',
+    'fr_bpkpee_block_x12_b5_flt',
+    'fr_bpkpee_block_x12_b6_flt',
+    'fr_bpkpee_block_x12_b7_flt',
     'fr_bpkpee_brem_xx1_b1_reso_flt',
-    'fr_bpkpee_brem_xx2_b1_reso_flt',
+    'fr_bpkpee_brem_xx1_b2_reso_flt',
+    'fr_bpkpee_brem_xx1_b3_reso_flt',
+    'fr_bpkpee_brem_xx1_b4_reso_flt',
+    'fr_bpkpee_brem_xx1_b5_reso_flt',
+    'fr_bpkpee_brem_xx1_b6_reso_flt',
+    'fr_bpkpee_brem_xx1_b7_reso_flt',
+    'fr_bpkpee_brem_xx1_b8_reso_flt',
 ]
 
 _RKST_FRACTIONS = [
@@ -146,7 +159,7 @@ def _get_category(
         block= block)
 
     cat  = Category(
-        name      = f'brem_{brem}_b{block}', 
+        name      = f'{brem}_b{block}', 
         pdf       = pdf, 
         sumw      = 1000., 
         selection = {Cuts.mass : '(1)'},
