@@ -28,8 +28,8 @@ class SignalConstraints:
 
     Conventions:
 
-    - The signal parameters will be named with `signal_brem_00X_bY`
-      as part of the model name, to indicate the brem category and the block.
+    - The signal parameters will be named with `COMPONENT_brem_xxX_bY`
+      as part of the model name, to indicate the signal type, brem category and the block.
     '''
     # ----------------------
     def __init__(
