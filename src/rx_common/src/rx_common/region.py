@@ -31,7 +31,10 @@ class Region(StrEnum):
     brem_xx0 = auto()
     brem_xx1 = auto()
     brem_xx2 = auto()
+    brem_01x = auto()
+    brem_0x2 = auto()
     brem_x12 = auto()
+    brem_012 = auto()
     # ---------------------
     @property
     def selection(self) -> dict[Cuts,str]:
