@@ -3,7 +3,6 @@ Module with CmbConstraints class
 '''
 
 from pathlib      import Path
-from typing       import cast
 from ROOT         import RDF # type: ignore 
 from dmu          import LogStore
 from dmu.stats    import ConstraintType, zfit
@@ -49,7 +48,8 @@ class CmbConstraints(BaseFitter, Cache):
         self._component = cons.component
         self._trigger   = Trigger(cons.trigger)
 
-        model = self._model_from_models(models = nll.model)
+        models= self._get_basic_models(models = nll.model)
+        model = self._model_from_models(models = models)
         if model is None:
             raise ValueError(f'Cannot find combinatorial PDF: {reg}')
 
@@ -65,7 +65,27 @@ class CmbConstraints(BaseFitter, Cache):
             out_path = self._base_path,
             cfg      = cfg.model_dump())
     # ----------------------
-    def _model_from_models(self, models : list[zpdf]) -> zpdf | None:
+    def _get_basic_models(self, models : list[zpdf]) -> list[zpdf]:
+        '''
+        Parameters
+        -------------
+        models: List of PDFs
+
+        Returns
+        -------------
+        List of PDFs where the SumPDF ones have been unpacked
+        '''
+        basic_models = []
+        for pdf in models:
+            if not isinstance(pdf, zfit.pdf.SumPDF):
+                basic_models.append(pdf)
+                continue
+
+            basic_models += self._get_basic_models(models = pdf.pdfs)
+
+        return basic_models
+    # ----------------------
+    def _model_from_models(self, models : list[zpdf]) -> zpdf:
         '''
         Parameters
         -------------
@@ -73,21 +93,28 @@ class CmbConstraints(BaseFitter, Cache):
 
         Returns
         -------------
-        Combinatorial PDF if found, otherwise None
+        Combinatorial PDF if found one and only one model, 
+        otherwise it will raise ValueError
         '''
+        cmb_models : list[zpdf] = []
+
         for pdf in models: 
-            if self._reg in pdf.name:
-                log.info(f'Picking: {pdf.name}')
-                return pdf
+            if Component.comb not in pdf.name:
+                continue
 
-            if isinstance(pdf, zfit.pdf.SumPDF):
-                # TODO: Change this once https://github.com/zfit/zfit/issues/699#issuecomment-3694682177 be fixed
-                pdfs      = cast(list[zpdf], pdf.pdfs)
-                component = self._model_from_models(models = pdfs)
-                if component is not None:
-                    return component 
+            if self._reg      not in pdf.name:
+                continue
 
-        return None 
+            log.info(f'Picking: {pdf.name}')
+            cmb_models.append(pdf)
+
+        if len(cmb_models) == 1:
+            return cmb_models[0]
+
+        for pdf in models:
+            log.error(pdf.name)
+
+        raise ValueError('Not found one and only one combinatorial model')
     # ----------------------
     def _update_selection(self, cuts : dict[Cuts,str]) -> dict[Cuts,str]:
         '''
