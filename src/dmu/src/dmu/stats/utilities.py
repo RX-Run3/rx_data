@@ -302,7 +302,8 @@ def print_pdf(
     blind += Data.l_blind_vars
 
     l_par_flt, l_par_fix = _get_pars(pdf, blind)
-    l_msg                = _get_messages(pdf, l_par_flt, l_par_fix, d_const)
+    l_msg : list[str]    = _get_messages(pdf, l_par_flt, l_par_fix, d_const)
+    l_msg               += _print_component_pdfs(pdf = pdf)
 
     if txt_path is not None:
         log.debug(f'Saving to: {txt_path}')
@@ -323,6 +324,30 @@ def print_pdf(
             raise ValueError(f'Invalid level: {level}')
 
     return l_msg
+# ----------------------
+def _print_component_pdfs(pdf : zpdf) -> list[str]:
+    '''
+    Parameters
+    -------------
+    pdf: Zfit PDF
+
+    Returns
+    -------------
+    List of strings with names of composite PDFs, if pdf is a sum
+    '''
+    if not isinstance(pdf, zfit.pdf.SumPDF):
+        log.debug('No component PDFs found')
+        return []
+
+    log.debug('Component PDFs found')
+    msg = []
+    msg.append('---------------------------')
+    msg.append('Components')
+    msg.append('---------------------------')
+    for model in pdf.pdfs:
+        msg.append(model.name)
+
+    return msg
 #---------------------------------------------
 def save_nll(loss : Loss) -> Path:
     '''
