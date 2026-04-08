@@ -380,7 +380,7 @@ def test_only_prec(
     print_constraints(constraints = constraints)
     log.error('-------------------------------')
 
-    assert len(constraints) > 0 
+    assert len(constraints) == 3
 # --------------------------------------------------------------
 @pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
 def test_save(
