@@ -2,6 +2,7 @@
 Module containing DataModel class
 '''
 
+from typing         import Final
 from contextlib     import contextmanager
 from dmu            import LogStore
 from dmu.stats      import print_pdf, zfit
@@ -16,6 +17,8 @@ from .configs       import FitModelConf
 from .sim_fitter    import SimFitter
 
 log = LogStore.add_logger('fitter:data_model')
+
+_MAIN_CATEGORY_NAME : Final[str] = 'main'
 # ------------------------
 class DataModel:
     '''
@@ -61,7 +64,7 @@ class DataModel:
         -------------------
         PDF with yield
         '''
-        yield_name = f'yld_{component}' if self._name == 'main' else f'yld_{component}_{self._name}'
+        yield_name = f'yld_{component}' if self._name == _MAIN_CATEGORY_NAME else f'yld_{component}_{self._name}'
 
         nevt = PL.get_yield(name=yield_name)
         kdes = zfit.pdf.KDE1DimFFT, zfit.pdf.KDE1DimExact, zfit.pdf.KDE1DimISJ
