@@ -136,11 +136,13 @@ def _cfg_from_args(args : argparse.Namespace) -> RXFitConfig:
     return cfg
 # ----------------------
 def _add_constraints(
+    reg : Region,
     nll : ExtendedUnbinnedNLL,
     cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL, list[Constraint]]:
     '''
     Parameters
     -------------
+    reg: Signal region, e.g. brem_xx1
     nll: Likelihood
     cfg: Object holding configuration for fit 
 
@@ -156,7 +158,7 @@ def _add_constraints(
         signal = signal,
         nll    = nll, 
         cfg    = cfg)
-    cons = crd.get_constraints(save_to = cfg.output_directory / 'constraints/all.yaml')
+    cons = crd.get_constraints(save_to = cfg.output_directory / f'constraints/{reg}.yaml')
 
     if not cons:
         log.warning('Not using any constraints')
@@ -183,7 +185,12 @@ def _fit(cfg : RXFitConfig) -> None:
     nll     = ftr.run()
     cfg_mod = ftr.get_config()
 
-    nll, cons = _add_constraints(nll=nll, cfg=cfg)
+    nll, cons = _add_constraints(
+        reg = region,
+        nll = nll, 
+        cfg = cfg)
+
+    return nll, cons, cfg_mod
 
     ftr = DataFitter(
         q2bin = cfg.q2bin,
