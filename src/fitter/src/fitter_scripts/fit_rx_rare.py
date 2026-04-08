@@ -228,7 +228,7 @@ def _fit(cfg : RXFitConfig) -> None:
         nll= nll, 
         res= res, 
         cfg= cfg.toy_cfg, 
-        cns= cons)
+        cns= all_cons)
     mkr.get_parameter_information(name = 'rare_ee')
 # ----------------------
 def main():
