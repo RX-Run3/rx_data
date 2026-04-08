@@ -177,11 +177,15 @@ class ParametricConf(ComponentConf):  # Tested
         for key, val in new_categories.items():
             self.categories[key] = val
     # ----------------------
-    def cfg_copy(self, category_suffix : str) -> Self:
+    def cfg_copy(self, replacements : dict[str,str]) -> Self:
         '''
+        This method provides a copy of the configuration with the
+        categories renamed
+
         Parameters
         -----------------
-        category_suffix: String that will be added to every category name in Parametrized configs
+        replacements: Dictionary where key is the the substring to be replaced
+        and value is the replacement
 
         Returns
         -----------------
@@ -189,7 +193,11 @@ class ParametricConf(ComponentConf):  # Tested
         '''
         new_categories : dict[str,CategoryConf] = {}
         for name, conf in self.categories.items():
-            new_categories[f'{name}_{category_suffix}'] = conf.model_copy() 
+            new_name = name
+            for old, new in replacements.items():
+                new_name = new_name.replace(old, new)
+
+            new_categories[new_name] = conf.model_copy() 
 
         return self.model_copy(update = {'categories' : new_categories})
     # ----------------------
@@ -393,11 +401,15 @@ class RXFitConfig(BaseModel):
 
         path.write_text(string)
     # ----------------------
-    def cfg_copy(self, category_suffix : str) -> Self:
+    def cfg_copy(self, replacements : dict[str,str]) -> Self:
         '''
+        This method provides a copy of the configuration with the
+        categories associated to parametric components, renamed
+
         Parameters
         -----------------
-        category_suffix: String that will be added to every category name in Parametrized configs
+        replacements: Dictionary where key is the the substring to be replaced
+        and value is the replacement
 
         Returns
         -----------------
@@ -408,7 +420,7 @@ class RXFitConfig(BaseModel):
             if not isinstance(conf, ParametricConf):
                 new_conf = conf.model_copy()
             else:
-                new_conf = conf.cfg_copy(category_suffix = category_suffix)
+                new_conf = conf.cfg_copy(replacements = replacements )
 
             new_components[comp] = new_conf
 
