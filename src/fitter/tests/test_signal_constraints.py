@@ -214,7 +214,7 @@ def test_full_model():
     constraints = calc.get_constraints()
 
     for cons in sorted(constraints):
-        print(cons)
+        log.info(cons)
 
     ncons = len(constraints)
     log.info(f'Found {ncons} constraints')
@@ -232,7 +232,7 @@ def test_fractions(component :  Component):
     constraints = calc.get_constraints()
 
     for cons in sorted(constraints):
-        print(cons)
+        log.info(cons)
 
     assert len(constraints) == len(fractions)
 # ----------------------
