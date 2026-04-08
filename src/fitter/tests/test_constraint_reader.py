@@ -104,8 +104,14 @@ class Parameters:
         '''
         if   kind == 'dummy':
             return set()
-        elif kind == 'rare_prec_rk':
+        # -----------------------------
+        elif kind == f'rare_prec_rk_{Brem.brx12}':
             l_par_name = [ f's_{comp}' for comp in _PRC_COMPONENTS ]
+        elif kind == f'rare_prec_rk_{Brem.one}':
+            l_par_name = [ f's_{comp}_brem_xx1' for comp in _PRC_COMPONENTS ]
+        elif kind == f'rare_prec_rk_{Brem.two}':
+            l_par_name = [ f's_{comp}_brem_xx2' for comp in _PRC_COMPONENTS ]
+        # -----------------------------
         elif kind == 'rare_prec_rkst':
             l_par_name = []
         elif kind == 'rare_misid':
@@ -346,7 +352,9 @@ def test_only_misid(
     print_constraints(constraints = constraints)
 # --------------------------------------------------------------
 @pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
+@pytest.mark.parametrize('brem' , [Brem.one, Brem.two, Brem.brx12])
 def test_only_prec(
+    brem     : Brem,
     tmp_path : Path, 
     q2bin    : Qsq):
     '''
@@ -356,9 +364,8 @@ def test_only_prec(
     -------------
     q2bin: q2 bin
     '''
-    brem = Brem.brx12
     obs  = zfit.Space('dummy', limits=(4500, 6000))
-    nll  = Parameters(kind = 'rare_prec_rk', obs = obs) 
+    nll  = Parameters(kind = f'rare_prec_rk_{brem}', obs = obs) 
     nll  = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
     cfg  = _get_fit_config(q2bin = q2bin)
     cfg.mod_cfg.components.pop(Component.bpkkk  , None)
