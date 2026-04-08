@@ -173,9 +173,9 @@ def _add_constraints(
 
     return nll, cons
 # ----------------------
-def _get_region_nll(region : Region, cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL, list[Constraint], dict[str,dict[Cuts,str]]]:
+def _get_region_nll(brem : Brem, cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL, list[Constraint], dict[str,dict[Cuts,str]]]:
     ftr = LikelihoodFactory(
-        name   = region,
+        name   = brem.region,
         obs    = cfg.observable,
         q2bin  = cfg.q2bin,
         sample = DATA_SAMPLE,
@@ -184,7 +184,7 @@ def _get_region_nll(region : Region, cfg : RXFitConfig) -> tuple[ExtendedUnbinne
     cfg_mod = ftr.get_config()
 
     nll, cons = _add_constraints(
-        reg = region,
+        brem= brem,
         nll = nll, 
         cfg = cfg)
 
