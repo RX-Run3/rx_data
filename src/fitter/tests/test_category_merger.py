@@ -103,7 +103,7 @@ def test_add_brem_block():
         comp          = Component.bpkpee)
     cat = mgr.get_category()
 
-    assert isinstance(cat, Category)
+    log.info(cat)
 
-    print(cat)
+    assert isinstance(cat, Category)
 # ----------------------------------------
