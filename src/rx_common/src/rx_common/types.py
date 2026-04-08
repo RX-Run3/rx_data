@@ -382,7 +382,7 @@ class Brem(Enum):
                 return Brem.two
             case '01x':
                 return Brem.br01x
-            case '02x':
+            case '0x2':
                 return Brem.br0x2
             case 'x12':
                 return Brem.brx12
