@@ -55,7 +55,6 @@ class SimFitter(BaseFitter, Cache):
         Parameters
         --------------------
         name     : Fit identifier, e.g. bkpp, control, signal
-        obs      : Observable
         component: Nickname of component, e.g. combinatorial, only used for naming
         trigger  : Hlt2RD...
         q2bin    : E.g. central
