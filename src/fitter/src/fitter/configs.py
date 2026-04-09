@@ -268,20 +268,31 @@ class NonParametricConf(ComponentConf): # Tested
     plots        : ZFitPlotterConf 
     events_range : tuple[int,int]
     # ---------------------------
-    def get_obs(self, obs : zobs) -> zobs:
+    @property
+    def obs(self) -> zobs:
         '''
-        Parameters
-        ----------------
-        obs: Original observable, used for full fit
-
         Returns
         ----------------
         Observable used to build KDE
         '''
         obs = zfit.Space(
-            obs   = obs.obs, 
-            label = obs.label,
-            limits=self.events_range)
+            obs   = 'Mass', 
+            label = self.mass,
+            limits= self.events_range)
+
+        return obs
+    # ---------------------------
+    @property
+    def norm(self) -> zobs:
+        '''
+        Returns
+        ----------------
+        Observable where KDE is normalized to 1
+        '''
+        obs = zfit.Space(
+            obs   = 'Mass', 
+            label = self.mass,
+            limits= self.norm_range)
 
         return obs
 # ------------------------------
@@ -613,7 +624,7 @@ class RXFitConfig(BaseModel):
         cfg_obs      = self.mod_cfg.observable[self.q2bin]
         [minx, maxx] = cfg_obs.range
         obs          = zfit.Space(
-            obs   = 'mass',
+            obs   = 'Mass',
             label = cfg_obs.name, 
             limits= (minx, maxx))
     
