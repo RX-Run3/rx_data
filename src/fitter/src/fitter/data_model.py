@@ -99,15 +99,14 @@ class DataModel:
                 log.warning(f'Skipping {component} component')
                 continue
 
-            log.info(f'Building: {component}')
+            log.info(f'Building component {component} with {obs}[{obs.label}]')
             with SpecMaker.project(name = trigger.project):
                 ftr  = SimFitter(
                     name     = self._name,
                     component= component,
                     trigger  = trigger,
                     q2bin    = self._q2bin,
-                    cfg      = cfg,
-                    obs      = self._obs)
+                    cfg      = cfg)
                 pdf = ftr.get_model()
 
             if pdf is None:

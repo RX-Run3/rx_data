@@ -20,7 +20,6 @@ from rx_selection        import selection        as sel
 
 from zfit.data           import Data             as zdata
 from zfit.pdf            import BasePDF          as zpdf
-from zfit                import Space            as zobs
 from zfit.param          import Parameter
 
 from .category           import Category, FitCategory
@@ -51,8 +50,7 @@ class SimFitter(BaseFitter, Cache):
         component : Component,
         trigger   : Trigger,
         q2bin     : Qsq,
-        cfg       : ModelConf,
-        obs       : zobs):
+        cfg       : ModelConf):
         '''
         Parameters
         --------------------
@@ -72,7 +70,6 @@ class SimFitter(BaseFitter, Cache):
         self._trigger   = trigger
         self._q2bin     = q2bin
         self._cfg       = cfg
-        self._obs       = obs
         self._name      = name
 
         self._l_rdf_uid = []
@@ -121,7 +118,7 @@ class SimFitter(BaseFitter, Cache):
             prp = DataPreprocessor(
                 name      = cat_name,
                 wgt_cfg   = dict(),
-                obs       = self._obs,
+                obs       = self._cfg.obs,
                 trigger   = self._trigger,
                 q2bin     = self._q2bin,
                 selection = cat_cfg.selection,
@@ -151,7 +148,7 @@ class SimFitter(BaseFitter, Cache):
         d_data = {}
         prp   = DataPreprocessor(
             wgt_cfg   = wgt_cfg,
-            obs       = cfg.get_obs(obs = self._obs),
+            obs       = cfg.obs,
             trigger   = self._trigger,
             q2bin     = self._q2bin,
             selection = cut,
@@ -184,7 +181,7 @@ class SimFitter(BaseFitter, Cache):
 
         mod         = ModelFactory(
             preffix = f'{self._component}_{category}',
-            obs     = self._obs,
+            obs     = self._cfg.obs,
             l_pdf   = cfg.pdfs,
             l_reuse = cfg.reuse,
             l_shared= cfg.shared,
@@ -479,7 +476,7 @@ class SimFitter(BaseFitter, Cache):
         '''
 
         data     = self._d_data[self._name]
-        nentries = self._entries_from_data(data = data, obs = self._obs)
+        nentries = self._entries_from_data(data = data, obs = self._cfg.obs)
         if nentries < MIN_KDE_ENTRIES:
             log.info(f'Not bulding KDE, found too few entries: {nentries} < {MIN_KDE_ENTRIES}')
             return 
@@ -489,12 +486,12 @@ class SimFitter(BaseFitter, Cache):
         pdf = kde_builder(
             data      = data, 
             name      = f'{self._component}_{self._name}', 
-            obs       = cfg.get_obs(obs = self._obs), 
-            norm      = self._obs,
+            obs       = cfg.obs, 
+            norm      = cfg.norm,
             bandwidth = cfg.fit.bandwidth,
             padding   = cfg.fit.padding.value)
 
-        data_observed = data.with_obs(obs = self._obs)
+        data_observed = data.with_obs(obs = self._cfg.obs)
 
         self._save_fit(
             cut_cfg  = self._get_cut_config(cfg = cfg, category = None),
@@ -526,7 +523,7 @@ class SimFitter(BaseFitter, Cache):
         '''
         ftr=PRec(
             name    = self._name,
-            obs     = self._obs,
+            obs     = self._cfg.obs,
             trig    = self._trigger,
             q2bin   = self._q2bin  ,
             cfg     = cfg)
