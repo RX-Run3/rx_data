@@ -26,8 +26,10 @@ def initialize():
     '''
     This runs before any test
     '''
-    LogStore.set_level('fitter:data_model' , 10)
-    LogStore.set_level('rx_data:rdf_getter', 30)
+    LogStore.set_level('fitter:data_preprocessor' , 10)
+    LogStore.set_level('fitter:data_model'        , 10)
+    LogStore.set_level('fitter:sim_fitter'        , 10)
+    LogStore.set_level('rx_data:rdf_getter'       , 30)
 
     with RDFGetter.max_entries(value = 30_000),\
          DataModel.skip_components(names = ['kkk', 'kpipi']):
