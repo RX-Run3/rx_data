@@ -280,7 +280,7 @@ def print_pdf(
     pdf      : zpdf,
     d_const  : None|dict[str,tuple[float, float]] = None,
     txt_path : str|None                           = None,
-    level    : int                                = 20,
+    level    : int                                = LogLevels.info,
     blind    : None|list[str]                     = None) -> list[str]:
     '''
     Function used to print zfit PDFs
@@ -317,7 +317,9 @@ def print_pdf(
         return l_msg
 
     for msg in l_msg:
-        if   level == LogLevels.info:
+        if   level == LogLevels.error:
+            log.error(msg)
+        elif level == LogLevels.info:
             log.info(msg)
         elif level == LogLevels.debug:
             log.debug(msg)
