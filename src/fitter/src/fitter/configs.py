@@ -319,7 +319,7 @@ AnyModelConf = CombinatorialConf | ParametricConf | CCbarConf | MisIDConf | NonP
 # ------------------------------
 # Fits
 # ------------------------------
-class FitModelConf(ComponentConf):
+class FitModelConf(UnpackerModel):
     '''
     Class representing fitting model
 
