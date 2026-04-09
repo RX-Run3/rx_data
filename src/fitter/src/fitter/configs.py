@@ -335,14 +335,14 @@ class FitModelConf(ComponentConf):
         used mainly for fits
         '''
         return cls(
-            trigger          = Trigger.rk_ee_os,
-            selection        = {},
-            yields           = YieldsConf(root = {}),
-            observable       = {},
-            components       = {},
-            constraints      = ConstraintsCfg.default(),
-            plots            = ZFitPlotterConf.default(),
-            fit              = FitConf.default())
+            trigger     = Trigger.rk_ee_os,
+            selection   = {},
+            yields      = YieldsConf(root = {}),
+            observable  = {},
+            components  = {},
+            constraints = ConstraintsCfg.default(),
+            plots       = ZFitPlotterConf.default(),
+            fit         = FitConf.default())
 # ------------------------------
 # Full config
 # ----------------------
