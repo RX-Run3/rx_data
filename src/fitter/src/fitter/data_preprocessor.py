@@ -231,9 +231,10 @@ class DataPreprocessor(Cache):
         '''
         log.debug(f'Extracting data through RDFGetter for sample {self._sample}')
 
-        rdf  = self._rdf
-        log.debug('Retrieving data')
-        arr  = rdf.AsNumpy([self._obs.label])[self._obs.label]
+        rdf         = self._rdf
+        branch_name = self._obs.label
+        log.debug(f'Retrieving masses/weights from: {branch_name}/{_WEIGHT_BRANCH}')
+        arr  = rdf.AsNumpy([branch_name])[branch_name]
         wgt  = rdf.AsNumpy([_WEIGHT_BRANCH])[_WEIGHT_BRANCH]
         wgt  = wgt.astype(float)
         wgt  = self._add_extra_weights(wgt=wgt)
