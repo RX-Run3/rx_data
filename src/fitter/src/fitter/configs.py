@@ -110,6 +110,23 @@ class ComponentConf(UnpackerModel):         # Tested
         if it does not exist
         '''
         return getattr(self, 'trigger', None)
+    # ---------------------------
+    @property
+    def obs(self) -> zobs:
+        '''
+        Returns
+        ----------------
+        Observable used to build PDF
+        '''
+        if self.norm_range is None:
+            raise ValueError('Normalization range was not initialized')
+
+        obs = zfit.Space(
+            obs   = 'Mass', 
+            label = self.mass,
+            limits= self.norm_range)
+
+        return obs
 # ------------------------------
 class CCbarConf(ComponentConf):         # Tested
     '''
