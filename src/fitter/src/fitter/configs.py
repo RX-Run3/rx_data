@@ -339,6 +339,19 @@ class FitModelConf(UnpackerModel):
     plots      : ZFitPlotterConf
     fit        : FitConf
     # ------------------------
+    def set_norm_range(self, norm_range : tuple[float,float]) -> None:
+        '''
+        Parameters
+        --------------
+        norm_range: Range in which PDF will be normalized to 1
+        '''
+        new_components : dict[Component, AnyModelConf] = {}
+        for key, val in self.components.items():
+            new_val = val.model_copy(update = {'norm_range' : norm_range})
+            new_components[key] = new_val
+
+        self.components = new_components
+    # ------------------------
     @classmethod
     def default(cls) -> 'FitModelConf':
         '''
@@ -380,6 +393,9 @@ class RXFitConfig(BaseModel):
         '''
         self._set_logs()
         self._initialize_toy_config()
+
+        cfg_obs = self.mod_cfg.observable[self.q2bin]
+        self.mod_cfg.set_norm_range(norm_range = cfg_obs.range)
 
         try:
             self.block = int(self.block)
