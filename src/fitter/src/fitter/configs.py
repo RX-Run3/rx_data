@@ -92,8 +92,16 @@ class CategoryConf(BaseModel):  # Tested
 class ComponentConf(UnpackerModel):         # Tested
     '''
     Class meant to configure the fit for different components
+
+    Attributes
+    ------------------
+    mass      : Mass used to build PDF, e.g. bp, bp_dtf_jpsi, etc
+    norm_range: Range where PDF is normalized to 1
     '''
     model_config = ConfigDict(frozen=True)
+
+    mass      : Mass
+    norm_range: tuple[float,float] | None = None
     # ----------------------------------
     @property
     def component_trigger(self) -> Trigger | None:
