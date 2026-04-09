@@ -11,7 +11,6 @@ from rx_common      import Component, Qsq, Trigger
 from rx_data        import SpecMaker
 from zfit           import Space         as zobs
 from zfit.pdf       import BasePDF       as zpdf
-from zfit.exception import ParamNameNotUniqueError
 
 from .configs       import FitModelConf
 from .sim_fitter    import SimFitter
@@ -124,7 +123,7 @@ class DataModel:
 
         try:
             pdf = zfit.pdf.SumPDF(obs = self._obs, pdfs = l_pdf)
-        except ParamNameNotUniqueError as exc:
+        except Exception as exc:
             for pdf in l_pdf:
                 log.error('-----------------')
                 print_pdf(pdf = pdf, level = LogLevels.error)
