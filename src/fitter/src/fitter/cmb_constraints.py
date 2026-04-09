@@ -197,10 +197,10 @@ class CmbConstraints(BaseFitter, Cache):
             rep.Print()
             raise ValueError('Found no entries in dataset')
 
-        if self._obs.obs is None:
-            raise ValueError('Cannot extract observable names')
+        if self._obs.label is None:
+            raise ValueError('Cannot extract observable name')
 
-        name  = self._obs.obs[0]
+        name  = self._obs.label
         array = rdf.AsNumpy([name])[name]
         data  = zfit.Data.from_numpy(obs = self._obs, array = array)
 
