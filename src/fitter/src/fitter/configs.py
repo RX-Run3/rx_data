@@ -141,7 +141,9 @@ class CCbarConf(ComponentConf):         # Tested
     @classmethod
     def default(
         cls,
-        channel : Channel) -> Self:
+        norm_range: tuple[float,float],
+        mass      : Mass,
+        channel   : Channel) -> Self:
         '''
         Returns
         -----------
@@ -155,9 +157,11 @@ class CCbarConf(ComponentConf):         # Tested
         }
 
         return cls(
-            samples          = samples,
-            weights          = weights,
-            fit              = KDEConf.default())
+            mass      = mass,
+            norm_range= norm_range,
+            samples   = samples,
+            weights   = weights,
+            fit       = KDEConf.default())
 # ------------------------------
 class ParametricConf(ComponentConf):  # Tested
     '''
