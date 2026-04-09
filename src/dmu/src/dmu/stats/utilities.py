@@ -304,6 +304,7 @@ def print_pdf(
     l_par_flt, l_par_fix = _get_pars(pdf, blind)
     l_msg : list[str]    = _get_messages(pdf, l_par_flt, l_par_fix, d_const)
     l_msg               += _print_component_pdfs(pdf = pdf)
+    l_msg               += _print_obs(obs = pdf.space)
 
     if txt_path is not None:
         log.debug(f'Saving to: {txt_path}')
@@ -324,6 +325,32 @@ def print_pdf(
             raise ValueError(f'Invalid level: {level}')
 
     return l_msg
+# ----------------------
+def _print_obs(obs : zobs) -> list[str]:
+    '''
+    Parameters
+    -------------
+    obs: PDF observable
+
+    Returns
+    -------------
+    List of strings to print
+    '''
+    val = obs.obs
+    if val is None:
+        raise ValueError('Observable is None')
+
+    name         = val[0]
+    lower, upper = range_from_obs(obs = obs)  
+
+    msg : list[str] = []
+    msg.append('---------------------------')
+    msg.append('Observable')
+    msg.append('---------------------------')
+    msg += [f'Name : {name}']
+    msg += [f'Range: {lower:.0f}; {upper:.0f}']
+
+    return msg
 # ----------------------
 def _print_component_pdfs(pdf : zpdf) -> list[str]:
     '''
