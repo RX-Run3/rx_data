@@ -4,7 +4,7 @@ Module containing DataModel class
 
 from typing         import Final
 from contextlib     import contextmanager
-from dmu            import LogStore
+from dmu            import LogLevels, LogStore
 from dmu.stats      import print_pdf, zfit
 from dmu.stats      import ParameterLibrary as PL
 from rx_common      import Component, Qsq, Trigger
@@ -127,7 +127,7 @@ class DataModel:
         except ParamNameNotUniqueError as exc:
             for pdf in l_pdf:
                 log.error('-----------------')
-                print_pdf(pdf = pdf)
+                print_pdf(pdf = pdf, level = LogLevels.error)
             raise ValueError('Cannot add PDFs') from exc
 
         return pdf
