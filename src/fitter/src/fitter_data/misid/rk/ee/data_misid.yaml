@@ -1,6 +1,14 @@
-# This config is used to control how the data model
-# is built for the fit to the misID control regions
-
+# --------------------------------------------------
+# Aliases
+# --------------------------------------------------
+plots_settings: &plots_settings
+  nbins   : 30
+  stacked : True
+  d_leg :
+    comb    : Combinatorial
+    bpkpipi : $B^+\to K^+\pi^-\pi^+$
+    bpkkk   : $B^+\to K^+K^-K^+$
+# --------------------------------------------------
 trigger          : Hlt2RD_BuToKpEE_MVA_noPID
 yields           : model/yields/rk/misid_electron.yaml
 selection:
@@ -17,10 +25,8 @@ fit:
   strategy :
     retry :
       ntries : 15
-plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#fit-plotting
-  nbins   : 30
-  stacked : True
-  d_leg :
-    comb    : Combinatorial
-    bpkpipi : $B^+\to K^+\pi^-\pi^+$
-    bpkkk   : $B^+\to K^+K^-K^+$
+plots:
+  merging : {}
+  regions :
+    brem_xx1 : *plots_settings
+    brem_xx2 : *plots_settings

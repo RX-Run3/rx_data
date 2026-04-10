@@ -1,46 +1,7 @@
-# This is a config file used for tests
-# It illustrates how a fit would run for data
-
-trigger          : Hlt2RD_BuToKpEE_MVA
-
-yields           : model/yields/rk/rare_electron.yaml
-selection        : 
-  leakage        : TMath::Abs(B_const_mass_M - 5280) > 200
-observable:
-  low:
-    name : B_Mass
-    range:
-      - 4600 
-      - 6996
-  central:
-    name : B_Mass
-    range:
-      - 4600 
-      - 6996
-  high:
-    name : B_Mass
-    range:
-      - 4600 
-      - 6996
-components:
-  ccbar      : rare/rk/ee/ccbar.yaml
-  comb       : rare/rk/ee/comb.yaml
-  bdkstkpiee : rare/rk/ee/bdkstkpiee_np.yaml
-  bpkstkpiee : rare/rk/ee/bpkstkpiee_np.yaml
-  bsphiee    : rare/rk/ee/bsphiee_np.yaml
-  bpkpjpsiee : rare/rk/ee/bpkpjpsiee_np.yaml
-  bpkppsi2ee : rare/rk/ee/bpkppsi2ee_np.yaml
-  #bpkkk      : rare/rk/ee/bpkkk_np.yaml
-  #bpkpipi    : rare/rk/ee/bpkpipi_np.yaml
-  bpkpee     : rare/rk/ee/bpkpee.yaml.j2
-constraints:
-  misid    : misid/rk/ee/data_misid.yaml
-  pre_rare :
-    - bdkstkpiee
-    - bpkstkpiee
-    - bsphiee
-fit: {}
-plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#fit-plotting
+# ----------------------------------------------------
+# Aliases
+# ----------------------------------------------------
+plots_settings: &plots_settings
   nbins   : 30
   stacked : True
   plot_range : 
@@ -86,3 +47,50 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
     bpkpipi             : $B^+\to K^+\pi^+\pi^-$
     bpkpipi_brem_xx1    : $B^+\to K^+\pi^+\pi^-$
     bpkpipi_brem_xx2    : $B^+\to K^+\pi^+\pi^-$
+# ----------------------------------------------------
+trigger          : Hlt2RD_BuToKpEE_MVA
+yields           : model/yields/rk/rare_electron.yaml
+selection        : 
+  leakage        : TMath::Abs(B_const_mass_M - 5280) > 200
+observable:
+  low:
+    name : B_Mass
+    range:
+      - 4600 
+      - 6996
+  central:
+    name : B_Mass
+    range:
+      - 4600 
+      - 6996
+  high:
+    name : B_Mass
+    range:
+      - 4600 
+      - 6996
+components:
+  ccbar      : rare/rk/ee/ccbar.yaml
+  comb       : rare/rk/ee/comb.yaml
+  bdkstkpiee : rare/rk/ee/bdkstkpiee_np.yaml
+  bpkstkpiee : rare/rk/ee/bpkstkpiee_np.yaml
+  bsphiee    : rare/rk/ee/bsphiee_np.yaml
+  bpkpjpsiee : rare/rk/ee/bpkpjpsiee_np.yaml
+  bpkppsi2ee : rare/rk/ee/bpkppsi2ee_np.yaml
+  #bpkkk      : rare/rk/ee/bpkkk_np.yaml
+  #bpkpipi    : rare/rk/ee/bpkpipi_np.yaml
+  bpkpee     : rare/rk/ee/bpkpee.yaml.j2
+constraints:
+  misid    : misid/rk/ee/data_misid.yaml
+  pre_rare :
+    - bdkstkpiee
+    - bpkstkpiee
+    - bsphiee
+fit  : {}
+plots:
+  merging:
+    both_brem:
+      - brem_xx1
+      - brem_xx2
+  regions:
+    brem_xx1 : *plots_settings
+    brem_xx2 : *plots_settings
