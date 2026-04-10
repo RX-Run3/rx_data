@@ -1,6 +1,11 @@
 # This is a config file used for tests
 # It illustrates how a fit would run for data
-
+plot_cfg: &plots
+  nbins   : 50
+  stacked : True
+  d_leg :
+    Gauss_ext       : Signal
+    Exponential_ext : Combinatorial
 
 trigger   : Hlt2RD_BuToKpEE_MVA
 selection : {}
@@ -42,10 +47,6 @@ components:
 constraints:
   pre_rare : []
 fit: {}
-plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#fit-plotting
-  nbins   : 50
-  stacked : True
-  d_leg :
-    Gauss_ext       : Signal
-    Exponential_ext : Combinatorial
-
+plots:
+  region_001 : *plots
+  region_002 : *plots
