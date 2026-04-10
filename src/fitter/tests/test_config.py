@@ -11,14 +11,42 @@ from dmu         import LogStore
 from dmu.stats   import YieldConf
 from dmu.generic import utilities as gut
 from rx_misid    import MisIDSampleWeights, MisIDSampleSplitting
-from rx_common   import Channel, Component, Project, Mass
+from rx_common   import Channel, Component, Project, Mass, Qsq
 from fitter      import NonParametricConf 
-from fitter      import CCbarConf, CombinatorialConf, MisIDConf, ObservableConf
+from fitter      import CCbarConf, CombinatorialConf, MisIDConf, ObservableConf, RXFitConfig
 from fitter      import ParametricConf
 from fitter      import FitModelConf
+from fitter      import MVAWp
 
 log=LogStore.add_logger('fitter:test_config')
+# ----------------------
+@pytest.mark.parametrize('channel', [Channel.ee, Channel.mm  ])
+@pytest.mark.parametrize('project', [Project.rk, Project.rkst])
+@pytest.mark.parametrize('kind'   , ['reso'    , 'rare'      ])
+def test_full_config(
+    tmp_path: Path,
+    kind    : str,
+    channel : Channel, 
+    project : Project):
+    '''
+    Test fitting model for data
+    '''
+    path = f'{kind}/{project}/{channel}/data.yaml'
+    cfg  = FitModelConf.from_yaml(path = path, package = 'fitter_data')
+    cfg.to_yaml(path = tmp_path / 'config.yaml')
 
+    qsq = Qsq.central if kind == 'rare' else Qsq.jpsi
+
+    cfg = RXFitConfig(
+        name    = 'test',
+        group   = 'test',
+        mva_cmb = MVAWp(0.5),
+        mva_prc = MVAWp(0.5),
+        q2bin   = qsq,
+        mod_cfg = cfg)
+
+    for cfg_cmp in cfg.mod_cfg.components.values():
+        assert isinstance(cfg_cmp.cfg_obs, ObservableConf)
 # ----------------------
 @pytest.mark.parametrize('mass', Mass)
 def test_observable_conf(mass : Mass):
