@@ -82,7 +82,11 @@ def get_model(
     if kind == 'signal':
         mu  = zfit.Parameter(f'mu{suffix}', 5200, 4500, 6000)
         sg  = zfit.Parameter(f'sg{suffix}',  150,   10, 200)
-        pdf = zfit.pdf.Gauss(obs=obs, mu=mu, sigma=sg)
+        pdf = zfit.pdf.Gauss(
+            obs  = obs, 
+            mu   = mu, 
+            sigma= sg, 
+            name = 'signal')
 
         return pdf
 
@@ -93,13 +97,24 @@ def get_model(
         al  = zfit.Parameter(f'al{suffix}',    1,    0,    5)
         nr  = zfit.Parameter(f'nr{suffix}',    1,  0.2,   50)
         nl  = zfit.Parameter(f'nl{suffix}',    1,  0.2,   50)
-        pdf = zfit.pdf.DoubleCB(mu, sg, al, nl, ar, nr, obs)
+        pdf = zfit.pdf.DoubleCB(
+            mu    = mu, 
+            sigma = sg, 
+            alphal= al, 
+            nl    = nl, 
+            alphar= ar, 
+            nr    = nr, 
+            obs   = obs, 
+            name  = 'signal')
 
         return pdf
 
     if kind == 'bkg':
         c   = zfit.Parameter(f'c{suffix}', lam, -0.01, +0.01)
-        pdf = zfit.pdf.Exponential(obs=obs, lam=c)
+        pdf = zfit.pdf.Exponential(
+            obs  = obs, 
+            lam  = c, 
+            name = 'background')
 
         return pdf
 
