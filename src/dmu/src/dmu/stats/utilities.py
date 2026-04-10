@@ -460,16 +460,9 @@ def save_fit(
         cfg    =plt_cfg, 
         fit_dir=fit_dir)
 
-    if model and not model.extended:
-        # TODO: Update this when the issue with this property be fixed in zfit
-        nentries = data.samplesize.numpy() # type: ignore
-    else:
-        nentries = None
-
     pars  = _save_result(
         res      = res, 
-        fit_dir  = fit_dir, 
-        nentries = nentries)
+        fit_dir  = fit_dir)
 
     df    = data.to_pandas(weightsname=Data.weight_name)
     opath = f'{fit_dir}/data.json'
@@ -533,7 +526,6 @@ def _save_fit_plot(
     plt.close()
 #-------------------------------------------------------
 def _save_result(
-    nentries: float | None,
     fit_dir : Path, 
     res     : FitResult | None) -> None:
     '''
