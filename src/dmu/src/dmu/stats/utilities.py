@@ -779,11 +779,13 @@ def val_from_zres(
 # Mergers
 #---------------------------------------------
 def merge_sum_models(
+    obs    : zobs,
     pair   : Literal['by_name', 'by_order'],
     models : list[zfit.pdf.SumPDF]) -> zfit.pdf.SumPDF:
     '''
     Parameters
     --------------
+    obs   : Observable needed for full PDF, to specify normalization
     models: List of models, each representing a full fit model, made of multiple components
     pair  : Criterion used to merge PDFs
 
@@ -803,16 +805,19 @@ def merge_sum_models(
         raise ValueError(f'Models with different sizes found: {sizes}')
 
     if   pair == 'by_name':
-        merged_components = _merge_by_name(models = models)
+        merged_components = _merge_by_name(models = models, obs = obs)
     elif pair == 'by_order':
-        merged_components = _merge_by_order(models = models)
+        merged_components = _merge_by_order(models = models, obs = obs)
 
-    return zfit.pdf.SumPDF(merged_components)
+    return zfit.pdf.SumPDF(pdfs = merged_components, obs = obs)
 #---------------------------------------------
-def _merge_by_name(models : list[zfit.pdf.SumPDF]) -> list[zfit.pdf.SumPDF]:
+def _merge_by_name(
+    obs    : zobs, 
+    models : list[zfit.pdf.SumPDF]) -> list[zfit.pdf.SumPDF]:
     '''
     Parameters
     ----------------
+    obs   : Observable needed for full PDF, to specify normalization
     models: List of PDFs, each a sum of components
 
     Returns
@@ -837,15 +842,18 @@ def _merge_by_name(models : list[zfit.pdf.SumPDF]) -> list[zfit.pdf.SumPDF]:
         
             pdfs.append(pdf)
 
-        merged_component = zfit.pdf.SumPDF(pdfs, name = name)
+        merged_component = zfit.pdf.SumPDF(pdfs = pdfs, obs = obs, name = name)
         merged_components.append(merged_component)
 
     return merged_components
 #---------------------------------------------
-def _merge_by_order(models : list[zfit.pdf.SumPDF]) -> list[zfit.pdf.SumPDF]:
+def _merge_by_order(
+    obs    : zobs, 
+    models : list[zfit.pdf.SumPDF]) -> list[zfit.pdf.SumPDF]:
     '''
     Parameters
     ----------------
+    obs   : Observable needed for full PDF, to specify normalization
     models: List of PDFs, each a sum of components
 
     Returns
@@ -856,7 +864,7 @@ def _merge_by_order(models : list[zfit.pdf.SumPDF]) -> list[zfit.pdf.SumPDF]:
     merged_components : list[zfit.pdf.SumPDF] = []
     for icomp in range(ncomp):
         components = [ model.pdfs[icomp] for model in models ]
-        merged_component = zfit.pdf.SumPDF(components, name = components[0].name)
+        merged_component = zfit.pdf.SumPDF(pdfs = components, obs = obs, name = components[0].name)
         merged_components.append(merged_component)
 
     return merged_components

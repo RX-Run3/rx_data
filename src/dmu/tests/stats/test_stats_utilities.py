@@ -297,6 +297,7 @@ def test_merge_sum_models(pair : Literal['by_name', 'by_order']):
     pdf_c = get_model(kind = 's+b', suffix = 'c', obs = obs, suffix_pdfs = pair == 'by_order')
 
     pdf   = sut.merge_sum_models(
+        obs    = obs,
         pair   = pair,
         models = [pdf_a, pdf_b, pdf_c])
 
