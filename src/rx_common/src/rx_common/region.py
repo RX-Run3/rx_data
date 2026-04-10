@@ -7,6 +7,7 @@ from dmu.stats  import zfit
 
 from .cuts      import Cuts
 from .mass      import Mass
+from .project   import Project
 from .component import Component
 
 # ------------------------
@@ -23,8 +24,16 @@ class Region(StrEnum):
     # ---------------------
     # Signal regions
     # ---------------------
-    bpee   = auto()
-    bdee   = auto()
+    bpmm_xx0   = auto()
+    bdmm_xx0   = auto()
+
+    bpee_xx1   = auto()
+    bpee_xx2   = auto()
+    bpee_x12   = auto()
+
+    bdee_xx1   = auto()
+    bdee_xx2   = auto()
+    bdee_x12   = auto()
     # ---------------------
     # MisID regions
     # ---------------------
@@ -68,9 +77,9 @@ class Region(StrEnum):
                 return Component.bpkkk
             case Region.bppipi:
                 return Component.bpkpipi
-            case Region.bdee:
+            case Region.bdee_xx1 | Region.bdee_xx2 | Region.bdee_x12:
                 return Component.bdkstkpiee
-            case Region.bpee:
+            case Region.bpee_xx1 | Region.bpee_xx2 | Region.bpee_x12:
                 return Component.bpkpee
             case _:
                 raise ValueError(f'No component associated to region: {self}')
@@ -96,9 +105,9 @@ class Region(StrEnum):
                 return Mass.bp_kk
             case Region.bppipi:
                 return Mass.bp_pipi
-            case Region.bpee:
+            case Region.bpee_xx1 | Region.bpee_xx2 | Region.bpee_x12:
                 return Mass.bp_bcor
-            case Region.bdee:
+            case Region.bdee_xx1 | Region.bdee_xx2 | Region.bdee_x12:
                 return Mass.bd_bcor
             case _:
                 raise ValueError(f'No mass associated to region: {self}')
