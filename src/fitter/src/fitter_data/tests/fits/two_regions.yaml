@@ -1,12 +1,5 @@
 # This is a config file used for tests
 # It illustrates how a fit would run for data
-plot_cfg: &plots
-  nbins   : 50
-  stacked : True
-  d_leg :
-    Gauss_ext       : Signal
-    Exponential_ext : Combinatorial
-
 trigger   : Hlt2RD_BuToKpEE_MVA
 selection : {}
 yields    :
@@ -26,7 +19,6 @@ observable:
       - 7000
 components:
   comb   :
-
     models:
       central :
         pdfs :
@@ -37,7 +29,6 @@ components:
         floating      : []
     constraints: {}
   bpkpee :
-
     component : bpkpee
     fit       : {}
     categories: {}
@@ -48,5 +39,18 @@ constraints:
   pre_rare : []
 fit: {}
 plots:
-  region_001 : *plots
-  region_002 : *plots
+  region_001 :
+    title   : Region 1
+    nbins   : 50
+    stacked : True
+    d_leg :
+      Gauss_ext       : Signal
+      Exponential_ext : Combinatorial
+  region_002 :
+    title   : Region 2
+    nbins   : 50
+    stacked : True
+    d_leg :
+      Gauss_ext       : Signal
+      Exponential_ext : Combinatorial
+
