@@ -55,6 +55,16 @@ class ObservableConf(BaseModel):
         needed for tests
         '''
         return cls(name = Mass.bp_bcor, range = (4500, 7000))
+    # ------------------------
+    @property
+    def obs(self) -> zobs:
+        '''
+        Fit observable needed by zfit
+        '''
+        return zfit.Space(
+            obs    = 'Mass',
+            label  = self.name,
+            limits = self.range)
 # ------------------------------
 # Constraints
 # ------------------------------
@@ -140,12 +150,7 @@ class ComponentConf(UnpackerModel):         # Tested
         if self.cfg_obs is None:
             raise ValueError('Normalization range was not initialized')
 
-        obs = zfit.Space(
-            obs   = 'Mass',
-            label = self.cfg_obs.name,
-            limits= self.cfg_obs.range)
-
-        return obs
+        return self.cfg_obs.obs
 # ------------------------------
 class CCbarConf(ComponentConf):         # Tested
     '''
@@ -311,12 +316,7 @@ class NonParametricConf(ComponentConf): # Tested
         if self.cfg_obs is None:
             raise ValueError('Observable configuration not set')
 
-        obs = zfit.Space(
-            obs   = 'Mass',
-            label = self.cfg_obs.name,
-            limits= self.cfg_obs.range)
-
-        return obs
+        return self.cfg_obs.obs
 # ------------------------------
 class CombinatorialConf(ComponentConf): # Tested
     '''
