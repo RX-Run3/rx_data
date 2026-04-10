@@ -1,6 +1,7 @@
 '''
 Module containing DataFitter class
 '''
+from typing          import Final
 from pathlib         import Path
 from dmu             import LogStore
 from dmu.workflow    import Cache
@@ -16,6 +17,7 @@ from .base_fitter    import BaseFitter
 from .configs        import FitModelConf
 
 log=LogStore.add_logger('fitter:data_fitter')
+_MIN_REGIONS_IN_CAT : Final[int] = 2 # Minimum number of signal regions to plot when merging them
 # ----------------------
 class DataFitter(BaseFitter, Cache):
     '''
@@ -157,9 +159,6 @@ class DataFitter(BaseFitter, Cache):
         else:
             raise NotImplementedError(f'Invalid strategy: {self._cfg.fit.strategy}')
 
-        # NOTE: Save fit in each signal region
-        # assuming this is a simultaneous fit
-        for model, data, cfg, region in zip(nll.model, nll.data, l_cfg, l_nam, strict = True):
         return fres
     # ---------------------------------------------
     def _save_by_category(
