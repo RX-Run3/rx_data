@@ -32,7 +32,7 @@ from fitter        import MVAWp
 
 log=LogStore.add_logger('fitter:fit_rx_rare')
 
-DATA_SAMPLE : Final[Component] = Component.data_24 
+DATA_SAMPLE : Final[Component] = Component.data_24
 # ----------------------
 def _set_logs() -> None:
     '''
@@ -71,9 +71,9 @@ def _get_client(cfg : RXFitConfig) -> Client | None:
         return None
 
     cluster = LocalCluster(
-       n_workers         =cfg.nproc, 
-       threads_per_worker=1, 
-       processes         =True, 
+       n_workers         =cfg.nproc,
+       threads_per_worker=1,
+       processes         =True,
        memory_limit      ='4GiB')
 
     return Client(cluster)
@@ -144,7 +144,7 @@ def _add_constraints(
     -------------
     brem: Brem region
     nll : Likelihood
-    cfg : Object holding configuration for fit 
+    cfg : Object holding configuration for fit
 
     Returns
     -------------
@@ -157,7 +157,7 @@ def _add_constraints(
     crd  = ConstraintReader(
         brem   = brem,
         signal = signal,
-        nll    = nll, 
+        nll    = nll,
         cfg    = cfg)
     cons = crd.get_constraints(save_to = cfg.output_directory / f'constraints/{brem.region}.yaml')
 
@@ -185,7 +185,7 @@ def _get_region_nll(brem : Brem, cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL
 
     nll, cons = _add_constraints(
         brem= brem,
-        nll = nll, 
+        nll = nll,
         cfg = cfg)
 
     return nll, cons, cfg_mod
@@ -215,7 +215,7 @@ def _fit(cfg : RXFitConfig) -> None:
 
     ftr = DataFitter(
         q2bin = cfg.q2bin,
-        d_nll = d_nll, 
+        d_nll = d_nll,
         cfg   = cfg.mod_cfg)
     res = ftr.run()
 
@@ -226,9 +226,9 @@ def _fit(cfg : RXFitConfig) -> None:
     log.info(f'Making {cfg.toy_cfg.ntoys} toys')
 
     mkr = ToyMaker(
-        nll= nll, 
-        res= res, 
-        cfg= cfg.toy_cfg, 
+        nll= nll,
+        res= res,
+        cfg= cfg.toy_cfg,
         cns= all_cons)
     mkr.get_parameter_information(name = 'rare_ee')
 # ----------------------
