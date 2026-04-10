@@ -13,7 +13,7 @@ from dmu.stats       import gof_calculator   as goc
 from dmu.generic     import utilities        as gut
 from dmu.workflow    import Cache
 from dmu.testing     import get_model
-from rx_common       import Qsq
+from rx_common       import Qsq, Region
 from fitter          import DataFitter
 from fitter          import ToyMaker
 from fitter          import ToyPlotter
@@ -51,7 +51,7 @@ def test_single_region(tmp_path : Path) -> None:
     dat = pdf.create_sampler(10_000)
     nll = zfit.loss.ExtendedUnbinnedNLL(data=dat, model=pdf)
 
-    d_nll= {'signal_region' : (nll, _SEL_CFG)}
+    d_nll= {Region.region_001 : (nll, _SEL_CFG)}
     data = gut.load_data(package='fitter_data', fpath='tests/fits/single_region.yaml')
     cfg  = FitModelConf(**data)
 
@@ -77,8 +77,8 @@ def test_two_regions(tmp_path : Path) -> None:
     nll_002 = zfit.loss.ExtendedUnbinnedNLL(data=dat_002, model=pdf_002)
 
     d_nll   = {
-        'region_001' : (nll_001, _SEL_CFG),
-        'region_002' : (nll_002, _SEL_CFG),
+        Region.region_001 : (nll_001, _SEL_CFG),
+        Region.region_002 : (nll_002, _SEL_CFG),
     }
 
     with goc.GofCalculator.disabled(True),\
@@ -111,8 +111,8 @@ def test_two_regions_common_pars(tmp_path : Path) -> None:
     nll_002 = zfit.loss.ExtendedUnbinnedNLL(data=dat_002, model=pdf_002)
 
     d_nll   = {
-        'region_001' : (nll_001, _SEL_CFG),
-        'region_002' : (nll_002, _SEL_CFG),
+        Region.region_001 : (nll_001, _SEL_CFG),
+        Region.region_002 : (nll_002, _SEL_CFG),
     }
 
     with goc.GofCalculator.disabled(True),\
@@ -134,7 +134,7 @@ def test_with_constraints(tmp_path : Path) -> None:
     dat   = pdf.create_sampler(10_000)
     nll   = zfit.loss.ExtendedUnbinnedNLL(data=dat, model=pdf)
 
-    d_nll = {'signal_region' : (nll, _SEL_CFG)}
+    d_nll = {Region.region_001 : (nll, _SEL_CFG)}
     cons  = Constraint1D(**_CONSTRAINTS)
 
     adr   = cad.ConstraintAdder(nll=nll, constraints = [cons])
@@ -164,7 +164,7 @@ def test_with_toys(ntoys : int, tmp_path : Path) -> None:
     dat = pdf.create_sampler(10_000)
     nll = zfit.loss.ExtendedUnbinnedNLL(data=dat, model=pdf)
 
-    d_nll   = {'signal_region' : (nll, _SEL_CFG)}
+    d_nll   = {Region.region_001 : (nll, _SEL_CFG)}
 
     data    = gut.load_data(package='fitter_data', fpath='tests/fits/single_region.yaml')
     cfg_fit = FitModelConf(**data)

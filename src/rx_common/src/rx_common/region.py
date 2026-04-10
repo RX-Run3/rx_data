@@ -16,6 +16,11 @@ class Region(StrEnum):
     e.g. hadronic misID control region
     '''
     # ---------------------
+    # Regions for tests
+    # ---------------------
+    region_001 = auto()
+    region_002 = auto()
+    # ---------------------
     # Signal regions
     # ---------------------
     bpee   = auto()
