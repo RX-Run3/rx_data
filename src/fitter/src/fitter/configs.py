@@ -35,6 +35,16 @@ class ObservableConf(BaseModel):
 
     name : Mass
     range: tuple[int,int]
+    # ------------------------
+    @classmethod
+    def default(cls) -> Self:
+        '''
+        Returns
+        -------------
+        Default instance of observable config
+        needed for tests
+        '''
+        return cls(name = Mass.bp_bcor, range = (4500, 7000))
 # ------------------------------
 # Constraints
 # ------------------------------
@@ -140,15 +150,13 @@ class CCbarConf(ComponentConf):         # Tested
     @classmethod
     def default(
         cls,
-        norm_range: tuple[float,float],
-        mass      : Mass,
-        channel   : Channel) -> Self:
+        channel : Channel) -> Self:
         '''
         Returns
         -----------
         Default instance of config, used for tests 
         '''
-
+        cfg_obs = ObservableConf.default()
         samples = Component.inclusive(channel = channel)
         weights = {
             CCbarWeight.dec : True,
@@ -156,8 +164,7 @@ class CCbarConf(ComponentConf):         # Tested
         }
 
         return cls(
-            mass      = mass,
-            norm_range= norm_range,
+            cfg_obs   = cfg_obs,
             samples   = samples,
             weights   = weights,
             fit       = KDEConf.default())
