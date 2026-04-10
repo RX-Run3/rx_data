@@ -46,6 +46,30 @@ class Mass(StrEnum):
     bd_kk        = 'B_Mass_hdkk'
     bd_pipi      = 'B_Mass_hdpipi'
     # ------------------------------
+    @property
+    def is_dtf(self) -> bool:
+        '''
+        True if it is a mass with DTF constraints
+        '''
+        return '_const_' in self
+    # ------------------------------
+    @property
+    def smeared_version(self) -> 'Mass':
+        '''
+        Smeared version of mass
+        '''
+        if self.endswith('_smr'):
+            raise ValueError(f'Current mass is already smeared: {self}')
+
+        smeared_value = f'{self.value}_smr'
+
+        try:
+            mass = Mass(value = smeared_value)
+        except Exception as exc:
+            raise ValueError(f'Cannot find mass: {smeared_value}') from exc
+
+        return mass
+    # ------------------------------
     @cached_property
     def obs(self) -> zobs:
         '''
