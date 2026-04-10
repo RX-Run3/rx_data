@@ -248,7 +248,7 @@ class BaseFitter:
         # There will not be PDF
         title, sel_fit, sel_dif = self._get_text(data=data, res=res, selection=cut_cfg)
         text                    = '\n'.join(textwrap.wrap(sel_dif, width=40))
-        plt_cfg.title    = title
+        plt_cfg.title    = f'{plt_cfg.title}; {title}' 
         plt_cfg.ext_text = text
 
         sel_path = out_path / 'selection.yaml'
