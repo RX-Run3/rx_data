@@ -776,3 +776,48 @@ def val_from_zres(
 
     raise ValueError(f'Parameter {name} not found in results')
 #---------------------------------------------
+# Mergers
+#---------------------------------------------
+def merge_sum_models(models : list[zfit.pdf.SumPDF]) -> zfit.pdf.SumPDF:
+    '''
+    Parameters
+    --------------
+    models: List of models, each representing a full fit model, made of multiple components
+
+    Returns
+    --------------
+    Single SumPDF made of components that are the sum of models
+    '''
+    nmodel = len(models)
+    if nmodel < _MIN_MERGE_MODELS:
+        raise ValueError(f'Need at least two models to merge, found: {nmodel}')
+
+    sizes = { len(model.pdfs) for model in models }
+    if len(sizes) != 1:
+        for model in models:
+            print_pdf(pdf = model, level = LogLevels.error)
+
+        raise ValueError(f'Models with different sizes found: {sizes}')
+
+    components = [ component.name for component in models[0].pdfs ]
+    for this_model in models:
+        these_components = [ component.name for component in this_model.pdfs ]
+        if these_components != components:
+            for model in models:
+                print_pdf(pdf = model, level = LogLevels.error)
+
+            raise ValueError('Models with different components found')
+
+    merged_components = []
+    for name in components:
+        pdfs = []
+        for model in models:
+            [pdf] = [ component for component in model.pdfs if component.name == name ]
+        
+            pdfs.append(pdf)
+
+        merged_component = zfit.pdf.SumPDF(pdfs, name = name)
+        merged_components.append(merged_component)
+
+    return zfit.pdf.SumPDF(merged_components)
+#---------------------------------------------

@@ -20,7 +20,7 @@ from dmu.stats    import pdf_to_tex
 from dmu.stats    import is_pdf_usable
 from dmu.stats    import ZFitPlotterConf
 from dmu.generic  import rxran
-from dmu.testing  import get_nll
+from dmu.testing  import get_nll, get_model
 from zfit.data    import Data     as zdata
 from zfit.pdf     import BasePDF  as zpdf
 from zfit         import dill
@@ -285,3 +285,15 @@ def test_save_nll():
     res = minimizer.minimize(loss = nll)
     print(res)
 #----------------------------------
+def test_merge_sum_models():
+    '''
+    Test merging models
+    '''
+    obs   = zfit.Space(obs = 'mass', limits = (-10, 10))
+    pdf_a = get_model(kind = 's+b', suffix = 'a', obs = obs)
+    pdf_b = get_model(kind = 's+b', suffix = 'b', obs = obs)
+    pdf_c = get_model(kind = 's+b', suffix = 'c', obs = obs)
+
+    pdf   = sut.merge_sum_models(models = [pdf_a, pdf_b, pdf_c])
+
+    print_pdf(pdf = pdf)
