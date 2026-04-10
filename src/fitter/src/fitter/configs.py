@@ -15,8 +15,8 @@ from dmu         import LogLevels, LogStore
 from dmu.stats   import ModelFactoryConf
 from dmu.stats   import KDEConf
 from dmu.stats   import FitConf
-from dmu.stats   import ZFitPlotterConf 
-from dmu.stats   import YieldsConf 
+from dmu.stats   import ZFitPlotterConf
+from dmu.stats   import YieldsConf
 from dmu.stats   import zfit
 from dmu.generic import UnpackerModel
 from zfit        import Space      as zobs
@@ -62,14 +62,14 @@ class ConstraintsCfg(UnpackerModel):
         '''
         Returns
         -------------
-        Default configuration, mostly needed for tests 
+        Default configuration, mostly needed for tests
         '''
         return cls(pre_rare = [])
     # ---------------------
     @property
     def is_empty(self) -> bool:
         '''
-        True if no constraints are present 
+        True if no constraints are present
         '''
         return self.misid is None and self.pre_rare is None
 # ------------------------------
@@ -131,7 +131,7 @@ class ComponentConf(UnpackerModel):         # Tested
             raise ValueError('Normalization range was not initialized')
 
         obs = zfit.Space(
-            obs   = 'Mass', 
+            obs   = 'Mass',
             label = self.cfg_obs.name,
             limits= self.cfg_obs.range)
 
@@ -154,7 +154,7 @@ class CCbarConf(ComponentConf):         # Tested
         '''
         Returns
         -----------
-        Default instance of config, used for tests 
+        Default instance of config, used for tests
         '''
         cfg_obs = ObservableConf.default()
         samples = Component.inclusive(channel = channel)
@@ -171,12 +171,12 @@ class CCbarConf(ComponentConf):         # Tested
 # ------------------------------
 class ParametricConf(ComponentConf):  # Tested
     '''
-    Class mean to control configuration of fit to parametric models 
+    Class mean to control configuration of fit to parametric models
     '''
     component  : Component
-    fit        : FitConf 
+    fit        : FitConf
     categories : dict[str, CategoryConf]
-    plots      : ZFitPlotterConf 
+    plots      : ZFitPlotterConf
     # ----------------------
     def filter_category(self, func : Callable) -> Self:
         '''
@@ -186,9 +186,9 @@ class ParametricConf(ComponentConf):  # Tested
 
         Returns
         -------------
-        Copy of input config with categories filtered 
+        Copy of input config with categories filtered
         '''
-        new_categories = { name : cat for name, cat in self.categories.items() if func(name) } 
+        new_categories = { name : cat for name, cat in self.categories.items() if func(name) }
 
         return self.model_copy(update = {'categories' : new_categories})
     # ------------------------------
@@ -232,7 +232,7 @@ class ParametricConf(ComponentConf):  # Tested
             for old, new in replacements.items():
                 new_name = new_name.replace(old, new)
 
-            new_categories[new_name] = conf.model_copy() 
+            new_categories[new_name] = conf.model_copy()
 
         return self.model_copy(update = {'categories' : new_categories})
     # ----------------------
@@ -240,11 +240,11 @@ class ParametricConf(ComponentConf):  # Tested
         '''
         Parameters
         -----------------
-        name: Name of category to pick 
+        name: Name of category to pick
 
         Returns
         -----------------
-        Copy of config with only that category 
+        Copy of config with only that category
         '''
         new_categories : dict[str,CategoryConf] = {}
         for cat_name, conf in self.categories.items():
@@ -260,7 +260,7 @@ class ParametricConf(ComponentConf):  # Tested
 # ------------------------------
 class NonParametricConf(ComponentConf): # Tested
     '''
-    Class mean to control configuration of fit to non parametric models 
+    Class mean to control configuration of fit to non parametric models
 
     Attributes
     -------------------
@@ -271,7 +271,7 @@ class NonParametricConf(ComponentConf): # Tested
     '''
     component    : Component
     fit          : KDEConf
-    plots        : ZFitPlotterConf 
+    plots        : ZFitPlotterConf
     events_range : tuple[int,int]
     # ---------------------------
     @property
@@ -285,7 +285,7 @@ class NonParametricConf(ComponentConf): # Tested
             raise ValueError('Observable configuration not set')
 
         obs = zfit.Space(
-            obs   = 'Mass', 
+            obs   = 'Mass',
             label = self.cfg_obs.name,
             limits= self.events_range)
 
@@ -302,7 +302,7 @@ class NonParametricConf(ComponentConf): # Tested
             raise ValueError('Observable configuration not set')
 
         obs = zfit.Space(
-            obs   = 'Mass', 
+            obs   = 'Mass',
             label = self.cfg_obs.name,
             limits= self.cfg_obs.range)
 
@@ -323,7 +323,7 @@ class MisIDConf(NonParametricConf): # Tested
     '''
     trigger          : Trigger
     project          : Project
-    weights          : MisIDSampleWeights 
+    weights          : MisIDSampleWeights
     data_fit         : FitConf
     selection        : dict[Cuts,str]
 # ------------------------------
@@ -344,7 +344,7 @@ class FitModelConf(UnpackerModel):
 
     trigger    : Trigger
     selection  : dict[Cuts,str]
-    yields     : YieldsConf 
+    yields     : YieldsConf
     observable : dict[Qsq | MisID, ObservableConf]
     components : dict[Component, AnyModelConf]
     constraints: ConstraintsCfg
@@ -375,12 +375,12 @@ class RXFitConfig(BaseModel):
     '''
     name    : str
     group   : str        # E.g. toys, needed to name directory where fit outputs will go
-    mva_cmb : MVAWp 
-    mva_prc : MVAWp 
+    mva_cmb : MVAWp
+    mva_prc : MVAWp
     q2bin   : Qsq
 
-    mod_cfg : FitModelConf 
-    block   : int             = -1 
+    mod_cfg : FitModelConf
+    block   : int             = -1
     nproc   : int             = 1
     log_lvl : int             = 20
     ntoys   : int             = 0
@@ -500,11 +500,11 @@ class RXFitConfig(BaseModel):
         '''
         Parameters
         -----------------
-        name: Name of single category, for parametric model to be picked 
+        name: Name of single category, for parametric model to be picked
 
         Returns
         -----------------
-        Copy of config with that category 
+        Copy of config with that category
         '''
         new_components : dict[Component, AnyModelConf] = {}
         for comp, conf in self.mod_cfg.components.items():
@@ -609,7 +609,7 @@ class RXFitConfig(BaseModel):
         Builds fit identifier from MVA working points
         '''
         name = f'{self.mva_cmb.name}_{self.mva_prc.name}'
-    
+
         return name
     # ----------------------
     @cached_property
@@ -627,7 +627,7 @@ class RXFitConfig(BaseModel):
             block_name = 'all'
         else:
             block_name = f'b{self.block}'
-    
+
         ana_dir = os.environ.get('ANADIR')
         if ana_dir is None:
             raise RuntimeError('ANADIR variable not set')
@@ -639,7 +639,7 @@ class RXFitConfig(BaseModel):
         log.debug(f'Using output directory: {out_dir}')
 
         out_dir.mkdir(parents = True, exist_ok = True)
-    
+
         return out_dir
     # ----------------------
     @cached_property
@@ -653,8 +653,8 @@ class RXFitConfig(BaseModel):
         [minx, maxx] = cfg_obs.range
         obs          = zfit.Space(
             obs   = 'Mass',
-            label = cfg_obs.name, 
+            label = cfg_obs.name,
             limits= (minx, maxx))
-    
+
         return obs
 # ----------------------
