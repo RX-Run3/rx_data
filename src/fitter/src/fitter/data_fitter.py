@@ -106,8 +106,6 @@ class DataFitter(BaseFitter, Cache):
     # ----------------------
     def run(self) -> FitResult:
         '''
-        Entry point for fitter
-
         Parameters
         -------------
         fit_cfg: Fit configuration.
