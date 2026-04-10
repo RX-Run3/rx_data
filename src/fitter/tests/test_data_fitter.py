@@ -8,7 +8,7 @@ from pathlib         import Path
 from dmu             import LogStore
 from dmu.stats       import FitParameter, zfit
 from dmu.stats       import Constraint1D
-from dmu.stats       import constraint_adder as cad 
+from dmu.stats       import constraint_adder as cad
 from dmu.stats       import gof_calculator   as goc
 from dmu.generic     import utilities        as gut
 from dmu.workflow    import Cache
@@ -58,7 +58,7 @@ def test_single_region(tmp_path : Path) -> None:
     with Cache.cache_root(path = tmp_path):
         ftr = DataFitter(
             q2bin= Qsq.jpsi,
-            d_nll= d_nll, 
+            d_nll= d_nll,
             cfg  = cfg)
         ftr.run()
 # ----------------------
@@ -88,7 +88,7 @@ def test_two_regions(tmp_path : Path) -> None:
 
         ftr = DataFitter(
             q2bin= Qsq.jpsi,
-            d_nll= d_nll, 
+            d_nll= d_nll,
             cfg  = cfg)
         ftr.run()
 # ----------------------
@@ -122,7 +122,7 @@ def test_two_regions_common_pars(tmp_path : Path) -> None:
 
         ftr = DataFitter(
             q2bin= Qsq.jpsi,
-            d_nll= d_nll, 
+            d_nll= d_nll,
             cfg  = cfg)
         ftr.run()
 # ----------------------
@@ -138,7 +138,7 @@ def test_with_constraints(tmp_path : Path) -> None:
     cons  = Constraint1D(**_CONSTRAINTS)
 
     adr   = cad.ConstraintAdder(nll=nll, constraints = [cons])
-    nll   = adr.get_nll() 
+    nll   = adr.get_nll()
 
     data  = gut.load_data(package='fitter_data', fpath='tests/fits/single_region.yaml')
     cfg   = FitModelConf(**data)
@@ -146,7 +146,7 @@ def test_with_constraints(tmp_path : Path) -> None:
     with Cache.cache_root(path = tmp_path):
         ftr = DataFitter(
             q2bin= Qsq.jpsi,
-            d_nll= d_nll, 
+            d_nll= d_nll,
             cfg  = cfg)
 
         ftr.run()
@@ -156,7 +156,7 @@ def test_with_toys(ntoys : int, tmp_path : Path) -> None:
     '''
     Integration test
 
-    - Fitting 
+    - Fitting
     - Making toys
     - Plotting
     '''
@@ -175,7 +175,7 @@ def test_with_toys(ntoys : int, tmp_path : Path) -> None:
     with Cache.cache_root(path = tmp_path):
         ftr = DataFitter(
             q2bin= Qsq.jpsi,
-            d_nll= d_nll, 
+            d_nll= d_nll,
             cfg  = cfg_fit)
         res = ftr.run()
 
@@ -183,9 +183,9 @@ def test_with_toys(ntoys : int, tmp_path : Path) -> None:
         cfg_toy = cfg_toy.model_copy(update = {'ntoys' : ntoys, 'output' : tmp_path / 'toys.parquet'})
 
         mkr = ToyMaker(
-            nll = nll, 
-            res = res, 
-            cfg = cfg_toy, 
+            nll = nll,
+            res = res,
+            cfg = cfg_toy,
             cns = [])
         df  = mkr.get_parameter_information(name = 'nominal')
 
