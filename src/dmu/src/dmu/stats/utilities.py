@@ -16,7 +16,7 @@ import dmu.pdataframe.utilities  as put
 from zfit             import dill
 from dmu              import LogStore, LogLevels
 from .imports         import zfit
-from typing           import Union, Any, Literal, overload
+from typing           import Any, Literal, overload, Final
 from pathlib          import Path
 from contextlib       import contextmanager
 
@@ -33,7 +33,7 @@ from .measurement     import Measurement
 from .zfit_plotter    import ZFitPlotter, ZFitPlotterConf
 
 log           = LogStore.add_logger('dmu:stats:utilities')
-Loss          = Union[ExtendedUnbinnedNLL, UnbinnedNLL]
+Loss          = ExtendedUnbinnedNLL | UnbinnedNLL
 SumPDF        = zfit.pdf.SumPDF
 
 SingleLiteral = Literal['signal', 'signal_alt', 'bkg']
@@ -147,7 +147,7 @@ def is_pdf_usable(pdf : zpdf) -> bool:
 #-------------------------------------------------------
 #Zfit/print_pdf
 #-------------------------------------------------------
-def _get_const(par : zpar , d_const : Union[None, dict[str, tuple[float,float]]]) -> str:
+def _get_const(par : zpar , d_const : None | dict[str, tuple[float,float]]) -> str:
     '''
     Takes zfit parameter and dictionary of constraints
     Returns a formatted string with the value of the constraint on that parameter
