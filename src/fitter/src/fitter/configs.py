@@ -427,6 +427,18 @@ class FitModelConf(UnpackerModel):
         # If fit uses electron non-DTF AND non-parametric PDF
         # use smeared mass
         return cfg_obs.model_copy(update = {'name' : cfg_obs.name.smeared_version })
+    # ----------------------
+    @property
+    def obs(self) -> zobs:
+        '''
+        Observable needed for specialized model config fit
+        '''
+        if self.q2bin is None:
+            raise ValueError('Cannot access q2bin of unspecialized FitModelConf instance')
+
+        cfg_obs = self.observable[self.q2bin]
+
+        return cfg_obs.obs
 # ------------------------------
 # Full config
 # ----------------------
@@ -691,12 +703,5 @@ class RXFitConfig(BaseModel):
         -------------
         Zfit observable
         '''
-        cfg_obs      = self.mod_cfg.observable[self.q2bin]
-        [minx, maxx] = cfg_obs.range
-        obs          = zfit.Space(
-            obs   = 'Mass',
-            label = cfg_obs.name,
-            limits= (minx, maxx))
-
-        return obs
+        return self.mod_cfg.obs
 # ----------------------
