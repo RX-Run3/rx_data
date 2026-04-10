@@ -39,6 +39,10 @@ SumPDF        = zfit.pdf.SumPDF
 SingleLiteral = Literal['signal', 'signal_alt', 'bkg']
 SumLiteral    = Literal['s+b', 's_alt+b']
 AllLiteral    = Literal['signal', 'signal_alt', 'bkg', 's+b', 's_alt+b']
+
+_MIN_MERGE_MODELS : Final[int] = 2    # Cannot merge fewer than 2 models
+_MIN_LIMITS       : Final[int] = 2    # Need at least upper and lower limit in observable
+_MIN_INT_PRINT    : Final[int] = 1000 # Minimum value of a float that would be printed without decimals
 #-------------------------------------------------------
 class Data:
     '''
@@ -85,7 +89,7 @@ def range_from_obs(obs : zobs) -> tuple[float,float]:
     if not isinstance(obs.limits, tuple):
         raise ValueError(f'Cannot retrieve name for: {obs}')
 
-    if len(obs.limits) != 2:
+    if len(obs.limits) != _MIN_LIMITS:
         raise ValueError(f'Observable has more than one range: {obs.limits}')
 
     minx, maxx = obs.limits
@@ -566,7 +570,7 @@ def _format_float_str(val : str) -> str:
     '''
 
     fval = float(val)
-    if abs(fval) > 1000:
+    if abs(fval) > _MIN_INT_PRINT:
         return f'{fval:,.0f}'
 
     val = f'{fval:.3g}'
