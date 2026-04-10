@@ -17,6 +17,7 @@ from rx_common     import Component, Cuts, Mass, Qsq, Region
 from rx_common     import Trigger
 from rx_data       import RDFGetter
 from rx_selection  import selection as sel
+from fitter        import ObservableConf
 from fitter        import CombinatorialConf
 from fitter        import SimFitter
 from fitter        import ParametricConf
@@ -66,16 +67,18 @@ def test_nomc(tmp_path : Path):
     '''
     Test for components that have no MC associated
     '''
-    obs = zfit.Space(obs = 'B_Mass_smr', limits=(4500, 7000), label = 'nomc')
+    cfg_obs = ObservableConf(
+        name  = Mass.bp_bcor,
+        range = (4500, 7000))
 
     data = gut.load_data(package='fitter_data', fpath='rare/rk/ee/comb.yaml')
     cfg  = CombinatorialConf(**data)
+    cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
 
     with Cache.cache_root(path = tmp_path):
         ftr = SimFitter(
             name     = 'main',
             component= Component.comb,
-            obs      = obs,
             cfg      = cfg,
             trigger  = Trigger.rk_ee_os,
             q2bin    = Qsq.low)
@@ -85,16 +88,18 @@ def test_nocat(tmp_path : Path):
     '''
     Test for components without categories, e.g. muon
     '''
-    obs   = zfit.Space('B_Mass_smr', limits=(5000, 5800))
+    cfg_obs = ObservableConf(
+        name  = Mass.b,
+        range = (4800, 6000))
     data  = gut.load_data(package='fitter_data', fpath='rare/rk/mm/bpkpmm.yaml')
     cfg   = ParametricConf(**data)
+    cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
 
     with Cache.cache_root(path = tmp_path),\
          RDFGetter.max_entries(value=30_000):
         ftr = SimFitter(
             name     = 'main',
             component= cfg.component,
-            obs      = obs,
             cfg      = cfg,
             trigger  = Trigger.rk_mm_os,
             q2bin    = Qsq.jpsi)
@@ -104,14 +109,15 @@ def test_with_cat(tmp_path : Path):
     '''
     Test for components with brem categories
     '''
-    region = Region.brem_xx1
-    obs    = zfit.Space(
-        obs   = Mass.bp_bcor.latex, 
-        label = Mass.bp_bcor,
-        limits=(4600, 6900))
+    region  = Region.brem_xx1
+    cfg_obs = ObservableConf(
+        name  = Mass.bp_bcor,
+        range = (4500, 7000))
+
     data = gut.load_data(package='fitter_data', fpath='rare/rk/ee/bpkpee.yaml.j2')
     cfg  = ParametricConf(**data)
     cfg  = cfg.cfg_copy(replacements = {'BREM' : region})
+    cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
 
     def _filter(name : str) -> bool:
         c1 = name.endswith('_b1')
@@ -131,7 +137,6 @@ def test_with_cat(tmp_path : Path):
         ftr = SimFitter(
             name     = region,
             component= cfg.component,
-            obs      = obs,
             cfg      = cfg,
             trigger  = Trigger.rk_ee_os,
             q2bin    = Qsq.high)
@@ -146,19 +151,21 @@ def test_with_cat_constrained(tmp_path : Path):
     '''
     Test for signal and add constraints
     '''
-    obs  = zfit.Space(
-        obs   = Mass.bp_bcor_smr.latex, 
-        label = Mass.bp_bcor_smr,
-        limits=(4500, 7000))
+    region  = Region.brem_xx2
+    cfg_obs = ObservableConf(
+        name  = Mass.bp_bcor,
+        range = (4500, 7000))
+
     data = gut.load_data(package='fitter_data', fpath='rare/rk/ee/bpkpee.yaml.j2')
     cfg  = ParametricConf(**data)
+    cfg  = cfg.cfg_copy(replacements = {'BREM' : region})
+    cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
 
     with Cache.cache_root(path = tmp_path),\
          RDFGetter.max_entries(value = -1):
         ftr = SimFitter(
-            name     = 'main',
+            name     = region,
             component= cfg.component,
-            obs      = obs,
             cfg      = cfg,
             trigger  = Trigger.rk_ee_os,
             q2bin    = Qsq.central)
@@ -184,21 +191,19 @@ def test_kde_rk(component : Component, tmp_path : Path):
     '''
     Test fitting with KDE
     '''
-    mass = Mass.bp_bcor_smr
+    cfg_obs = ObservableConf(
+        name  = Mass.bp_bcor_smr,
+        range = (4500, 7000))
 
-    obs = zfit.Space(
-        obs   = mass.latex,
-        label = mass,
-        limits= mass.limits)
     data = gut.load_data(package='fitter_data', fpath=f'rare/rk/ee/{component}_np.yaml')
     cfg  = NonParametricConf(**data)
+    cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
 
     with Cache.cache_root(path = tmp_path),\
          RDFGetter.max_entries(value = -1):
         ftr = SimFitter(
             name     = 'main',
             component= cfg.component,
-            obs      = obs,
             cfg      = cfg,
             trigger  = Trigger.rk_ee_os,
             q2bin    = Qsq.central)
@@ -209,15 +214,12 @@ def test_kde_rkst(component : Component, tmp_path : Path):
     '''
     Test fitting with KDE
     '''
-    mass   = Mass.bp_bcor_smr
-    limits = 4600, 6900
-
-    obs       = zfit.Space(
-        obs   = mass.latex,
-        label = mass,
-        limits= limits)
+    cfg_obs = ObservableConf(
+        name  = Mass.bp_bcor_smr,
+        range = (4500, 7000))
     data = gut.load_data(package='fitter_data', fpath=f'rare/rkst/ee/{component}_np.yaml')
     cfg  = NonParametricConf(**data)
+    cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
 
     cuts = {
         Cuts.brem : 'nbrem != 0',
@@ -230,7 +232,6 @@ def test_kde_rkst(component : Component, tmp_path : Path):
         ftr = SimFitter(
             name     = 'main',
             component= cfg.component,
-            obs      = obs,
             cfg      = cfg,
             trigger  = Trigger.rkst_ee_os,
             q2bin    = Qsq.central)
@@ -245,23 +246,20 @@ def test_misid(
     '''
     Test fitting misID simulation 
     '''
-
-    mass = Mass.bp_bcor
-    obs  = zfit.Space(
-        obs   = mass.latex,
-        label = mass, 
-        limits= mass.limits)
+    cfg_obs = ObservableConf(
+        name  = Mass.bp_bcor_smr,
+        range = (5000, 6000))
 
     data = gut.load_data(package='fitter_data', fpath=f'rare/rk/ee/{component}_np.yaml')
 
     with UnpackerModel.package('fitter_data'):
-        cfg  = MisIDConf(**data)
+        cfg = MisIDConf(**data)
+        cfg = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
 
     with Cache.cache_root(path = tmp_path):
         ftr = SimFitter(
             name     = 'main',
             component= cfg.component,
-            obs      = obs,
             cfg      = cfg,
             trigger  = Trigger.rk_ee_nopid,
             q2bin    = q2bin)
@@ -272,20 +270,19 @@ def test_ccbar_reso_rk(mass : Mass, tmp_path : Path):
     '''
     Tests retriveval of PDF associated to ccbar inclusive decays
     '''
-    component = Component.ccbar 
-    obs       = zfit.Space(
-        obs   = mass.latex, 
-        label = mass,
-        limits= mass.limits)
+    cfg_obs = ObservableConf(
+        name  = mass,
+        range = (4500, 6000))
 
+    component = Component.ccbar 
     data = gut.load_data(package='fitter_data', fpath=f'reso/rk/ee/{component}.yaml')
     cfg  = CCbarConf(**data)
+    cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
 
     with Cache.cache_root(path = tmp_path):
         ftr = SimFitter(
             name     = 'main',
             component= component,
-            obs      = obs,
             cfg      = cfg,
             trigger  = Trigger.rk_ee_os,
             q2bin    = Qsq.jpsi)
@@ -300,20 +297,19 @@ def test_ccbar_reso_rkst(mass : Mass, tmp_path : Path):
     '''
     Tests retriveval of PDF associated to ccbar inclusive decays
     '''
-    component = Component.ccbar 
-    obs       = zfit.Space(
-        obs   = mass.latex, 
-        label = mass,
-        limits= mass.limits)
+    cfg_obs = ObservableConf(
+        name  = mass,
+        range = (4500, 6000))
 
+    component = Component.ccbar 
     data = gut.load_data(package='fitter_data', fpath=f'reso/rkst/ee/{component}.yaml')
     cfg  = CCbarConf(**data)
+    cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
 
     with Cache.cache_root(path = tmp_path):
         ftr = SimFitter(
             name     = 'main',
             component= component,
-            obs      = obs,
             cfg      = cfg,
             trigger  = Trigger.rkst_ee_os,
             q2bin    = Qsq.jpsi)
@@ -331,13 +327,13 @@ def test_ccbar_rare(tmp_path : Path):
     component = Component.ccbar
     mass      = Mass.bp_bcor_smr 
     q2bin     = Qsq.high
-    obs       = zfit.Space(
-        obs   = mass.latex,
-        label = mass,
-        limits= mass.limits)
+    cfg_obs   = ObservableConf(
+        name  = mass,
+        range = (4500, 6000))
 
     data = gut.load_data(package='fitter_data', fpath=f'rare/rk/ee/{component}.yaml')
     cfg  = CCbarConf(**data)
+    cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
 
     d_sel = {
         Cuts.cmb : 'mva_cmb > 0.8',
@@ -350,7 +346,6 @@ def test_ccbar_rare(tmp_path : Path):
         ftr = SimFitter(
             name     = 'main',
             component= component,
-            obs      = obs,
             cfg      = cfg,
             trigger  = Trigger.rk_ee_os,
             q2bin    = q2bin)
@@ -363,20 +358,19 @@ def test_reso_rk_ee(
     '''
     Test electron resonant with rk trigger
     '''
-    obs  = zfit.Space(
-        obs   = Mass.bp_dtf_jpsi.latex,
-        label = Mass.bp_dtf_jpsi,
-        limits= Mass.bp_dtf_jpsi.limits)
+    cfg_obs   = ObservableConf(
+        name  = Mass.bp_dtf_jpsi,
+        range = (4500, 6000))
 
     data = gut.load_data(package='fitter_data', fpath=f'reso/rk/ee/{component}.yaml')
     cfg  = ParametricConf(**data)
     cfg.add_category_suffix(suffix = 'b1')
+    cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
 
     with Cache.cache_root(path = tmp_path):
         ftr = SimFitter(
             name     = 'main',
             component= cfg.component,
-            obs      = obs,
             cfg      = cfg,
             trigger  = Trigger.rk_ee_os,
             q2bin    = Qsq.jpsi)
@@ -403,19 +397,18 @@ def test_reso_rkst_mm(
         Qsq.psi2 : Mass.bd_dtf_psi2
     }[q2bin]
 
-    obs = zfit.Space(
-        obs   = mass.latex, 
-        label = mass,
-        limits= mass.limits)
+    cfg_obs   = ObservableConf(
+        name  = mass,
+        range = (4800, 6000))
 
     data = gut.load_data(package='fitter_data', fpath=f'reso/rkst/mm/{component}.yaml')
     cfg  = ParametricConf(**data)
+    cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
 
     with Cache.cache_root(path = tmp_path):
         ftr = SimFitter(
             name     = 'main',
             component= cfg.component,
-            obs      = obs,
             cfg      = cfg,
             trigger  = Trigger.rkst_mm_os,
             q2bin    = q2bin)
@@ -438,19 +431,18 @@ def test_reso_rkst_ee(
         Qsq.psi2 : Mass.bd_dtf_psi2
     }[q2bin]
 
-    obs = zfit.Space(
-        obs   = mass.latex, 
-        label = mass,
-        limits= mass.limits)
+    cfg_obs   = ObservableConf(
+        name  = mass,
+        range = (4500, 6000))
 
     data = gut.load_data(package='fitter_data', fpath=f'reso/rkst/ee/{component}.yaml')
     cfg  = ParametricConf(**data)
+    cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
 
     with Cache.cache_root(path = tmp_path):
         ftr = SimFitter(
             name     = 'main',
             component= cfg.component,
-            obs      = obs,
             cfg      = cfg,
             trigger  = Trigger.rkst_ee_os,
             q2bin    = q2bin)
