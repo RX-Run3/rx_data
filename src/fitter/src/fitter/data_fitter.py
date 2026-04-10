@@ -196,7 +196,7 @@ class DataFitter(BaseFitter, Cache):
             cut_cfg  = dict(),
             plt_cfg  = self._cfg.plots.regions[name],
             data     = zfit.data.concat(datasets),
-            model    = sut.merge_sum_models(models = models),
+            model    = sut.merge_sum_models(models = models, pair = 'by_order'),
             res      = fres,
             out_path = out_path)
     # ---------------------------------------------
