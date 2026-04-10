@@ -17,7 +17,7 @@ class Mass(StrEnum):
     lb/b_dtf_jpsi: Lambda/B meson mass with DTF constraint on Jpsi mass
     b_bcor       : B meson mass with brem corrected electrons
     b_bcor_smr   : B meson mass with brem correction and smearing
-    
+
     Attributes for MisID
     -----------------
     b_bcorr_pipi : B meson mass with electrons reconstructed as pions
@@ -49,7 +49,7 @@ class Mass(StrEnum):
         zfit observable associated with mass
         '''
         obs = zfit.Space(
-            obs    = 'mass', 
+            obs    = 'mass',
             label  = self,
             limits = self.limits)
 
@@ -115,40 +115,40 @@ class Mass(StrEnum):
             # Lambda_b
             # ------------
             case Mass.lb_dtf_jpsi:
-                return generic 
+                return generic
             case Mass.lb:
-                return generic 
+                return generic
             # ------------
             # B+
             # ------------
             case Mass.bp:
-                return 4500, 7000 
+                return 4500, 7000
             case Mass.bp_dtf_jpsi:
-                return 5080, 5680 
+                return 5080, 5680
             case Mass.bp_dtf_psi2:
-                return 5150, 5850 
+                return 5150, 5850
             case Mass.bp_bcor:
-                return Mass.bp.limits 
+                return Mass.bp.limits
             case Mass.bp_bcor_smr:
-                return Mass.bp.limits 
+                return Mass.bp.limits
             case Mass.bp_kk:
-                return 4800, 6500 
+                return 4800, 6500
             case Mass.bp_pipi:
                 return Mass.bp_kk.limits
             # ------------
             # B0
             # ------------
             case Mass.bd:
-                return 4500, 7000 
+                return 4500, 7000
             case Mass.bd_dtf_jpsi:
-                return 5080, 5680 
+                return 5080, 5680
             case Mass.bd_dtf_psi2:
-                return 5150, 5850 
+                return 5150, 5850
             case Mass.bd_bcor:
                 return Mass.bd.limits
             case Mass.bd_bcor_smr:
                 return Mass.bd.limits
             case Mass.bd_kk:
-                return 4800, 6500 
+                return 4800, 6500
             case Mass.bd_pipi:
                 return Mass.bd_kk.limits
