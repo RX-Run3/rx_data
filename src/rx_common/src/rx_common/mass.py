@@ -15,6 +15,7 @@ class Mass(StrEnum):
     -----------------
     lb/b         : Lambda/B meson mass
     lb/b_dtf_jpsi: Lambda/B meson mass with DTF constraint on Jpsi mass
+    b            : Generic B mass as taken from DaVinci, no corrections
     b_bcor       : B meson mass with brem corrected electrons
     b_bcor_smr   : B meson mass with brem correction and smearing
 
@@ -26,6 +27,8 @@ class Mass(StrEnum):
 
     lb_dtf_jpsi  = 'Lb_cons_Jpsi_M'
     lb           = 'Lb_M'
+
+    b            = 'B_M'
 
     bp           = 'B_M'
     bp_dtf_jpsi  = 'B_const_mass_M'
