@@ -442,7 +442,7 @@ class RXFitConfig(BaseModel):
         # use smeared mass
         return cfg_obs.model_copy(update = {'name' : cfg_obs.name.smeared_version })
     # ----------------------
-    def __post_init__(self):
+    def model_post_init(self, _):
         '''
         This runs after initialization
         '''
@@ -451,11 +451,6 @@ class RXFitConfig(BaseModel):
 
         cfg_obs = self.mod_cfg.observable[self.q2bin]
         self._set_cfg_obs(cfg = cfg_obs)
-
-        try:
-            self.block = int(self.block)
-        except Exception as exc:
-            raise TypeError(f'Cannot cast block {self.block} as int') from exc
     # ----------------------
     def _initialize_toy_config(self) -> None:
         if self.toy_cfg is None:
