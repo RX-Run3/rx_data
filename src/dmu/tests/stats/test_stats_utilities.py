@@ -10,6 +10,7 @@ import numpy
 
 from importlib.resources    import files
 from pathlib                import Path
+from typing                 import Literal
 
 from dmu          import LogStore
 from dmu.stats    import utilities as sut
@@ -285,15 +286,18 @@ def test_save_nll():
     res = minimizer.minimize(loss = nll)
     print(res)
 #----------------------------------
-def test_merge_sum_models():
+@pytest.mark.parametrize('pair', ['by_name', 'by_order'])
+def test_merge_sum_models(pair : Literal['by_name', 'by_order']):
     '''
     Test merging models
     '''
     obs   = zfit.Space(obs = 'mass', limits = (-10, 10))
-    pdf_a = get_model(kind = 's+b', suffix = 'a', obs = obs)
-    pdf_b = get_model(kind = 's+b', suffix = 'b', obs = obs)
-    pdf_c = get_model(kind = 's+b', suffix = 'c', obs = obs)
+    pdf_a = get_model(kind = 's+b', suffix = 'a', obs = obs, suffix_pdfs = pair == 'by_order')
+    pdf_b = get_model(kind = 's+b', suffix = 'b', obs = obs, suffix_pdfs = pair == 'by_order')
+    pdf_c = get_model(kind = 's+b', suffix = 'c', obs = obs, suffix_pdfs = pair == 'by_order')
 
-    pdf   = sut.merge_sum_models(models = [pdf_a, pdf_b, pdf_c])
+    pdf   = sut.merge_sum_models(
+        pair   = pair,
+        models = [pdf_a, pdf_b, pdf_c])
 
     print_pdf(pdf = pdf)

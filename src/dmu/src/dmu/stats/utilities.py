@@ -778,11 +778,14 @@ def val_from_zres(
 #---------------------------------------------
 # Mergers
 #---------------------------------------------
-def merge_sum_models(models : list[zfit.pdf.SumPDF]) -> zfit.pdf.SumPDF:
+def merge_sum_models(
+    pair   : Literal['by_name', 'by_order'],
+    models : list[zfit.pdf.SumPDF]) -> zfit.pdf.SumPDF:
     '''
     Parameters
     --------------
     models: List of models, each representing a full fit model, made of multiple components
+    pair  : Criterion used to merge PDFs
 
     Returns
     --------------
@@ -799,7 +802,25 @@ def merge_sum_models(models : list[zfit.pdf.SumPDF]) -> zfit.pdf.SumPDF:
 
         raise ValueError(f'Models with different sizes found: {sizes}')
 
+    if   pair == 'by_name':
+        merged_components = _merge_by_name(models = models)
+    elif pair == 'by_order':
+        merged_components = _merge_by_order(models = models)
+
+    return zfit.pdf.SumPDF(merged_components)
+#---------------------------------------------
+def _merge_by_name(models : list[zfit.pdf.SumPDF]) -> list[zfit.pdf.SumPDF]:
+    '''
+    Parameters
+    ----------------
+    models: List of PDFs, each a sum of components
+
+    Returns
+    ----------------
+    List of PDFs, each a sum of components
+    '''
     components = [ component.name for component in models[0].pdfs ]
+
     for this_model in models:
         these_components = [ component.name for component in this_model.pdfs ]
         if these_components != components:
@@ -819,5 +840,24 @@ def merge_sum_models(models : list[zfit.pdf.SumPDF]) -> zfit.pdf.SumPDF:
         merged_component = zfit.pdf.SumPDF(pdfs, name = name)
         merged_components.append(merged_component)
 
-    return zfit.pdf.SumPDF(merged_components)
+    return merged_components
+#---------------------------------------------
+def _merge_by_order(models : list[zfit.pdf.SumPDF]) -> list[zfit.pdf.SumPDF]:
+    '''
+    Parameters
+    ----------------
+    models: List of PDFs, each a sum of components
+
+    Returns
+    ----------------
+    List of PDFs, each a sum of components
+    '''
+    ncomp = len(models[0].pdfs)
+    merged_components : list[zfit.pdf.SumPDF] = []
+    for icomp in range(ncomp):
+        components = [ model.pdfs[icomp] for model in models ]
+        merged_component = zfit.pdf.SumPDF(components, name = components[0].name)
+        merged_components.append(merged_component)
+
+    return merged_components
 #---------------------------------------------
