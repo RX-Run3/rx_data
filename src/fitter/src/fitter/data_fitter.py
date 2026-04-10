@@ -30,7 +30,7 @@ class DataFitter(BaseFitter, Cache):
     def __init__(
         self,
         q2bin : Qsq,
-        d_nll : dict[str,tuple[NLL,dict[str,dict[Cuts,str]]]] | dict[Region,tuple[NLL,dict[str,dict[Cuts,str]]]],
+        d_nll : dict[Region,tuple[NLL,dict[str,dict[Cuts,str]]]],
         cfg   : FitModelConf) -> None:
         '''
         Parameters
@@ -139,14 +139,14 @@ class DataFitter(BaseFitter, Cache):
 
         # NOTE: Save fit in each signal region
         # assuming this is a simultaneous fit
-        for model, data, cfg, category in zip(nll.model, nll.data, l_cfg, l_nam, strict = True):
-            out_path = self._out_path / category
+        for model, data, cfg, region in zip(nll.model, nll.data, l_cfg, l_nam, strict = True):
+            out_path = self._out_path / region
 
             log.info(f'Saving fit to: {out_path}')
 
             self._save_fit(
                 cut_cfg  = cfg,
-                plt_cfg  = self._cfg.plots,
+                plt_cfg  = self._cfg.plots[region],
                 data     = data,
                 model    = model,
                 res      = fres,
