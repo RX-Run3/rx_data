@@ -51,6 +51,19 @@ class Region(StrEnum):
     brem_012 = auto()
     # ---------------------
     @property
+    def project(self) -> Project:
+        '''
+        E.g. RK
+        '''
+        match self:
+            case Region.bpee_xx1 | Region.bpee_xx2 | Region.bpee_x12:
+                return Project.rk
+            case Region.bdee_xx1 | Region.bdee_xx2 | Region.bdee_x12:
+                return Project.rkst
+            case _:
+                raise ValueError(f'Cannot determine project for region: {self}')
+    # ---------------------
+    @property
     def selection(self) -> dict[Cuts,str]:
         '''
         Selection associated to this signal/control region
