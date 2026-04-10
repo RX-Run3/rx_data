@@ -393,11 +393,44 @@ class RXFitConfig(BaseModel):
         cfg: Obeservable configuration used for data
         '''
         new_components : dict[Component, AnyModelConf] = {}
-        for key, val in self.components.items():
-            new_val = val.model_copy(update = {'cfg_obs' : cfg })
-            new_components[key] = new_val
+        for component, cfg_cmp in self.mod_cfg.components.items():
+            new_cfg             = self._update_cfg_obs(cfg_obs = cfg, cfg_cmp = cfg_cmp)
+            new_val             = cfg_cmp.model_copy(update = {'cfg_obs' : new_cfg })
+            new_components[component] = new_val
 
-        self.components = new_components
+        self.mod_cfg = self.mod_cfg.model_copy(update = {'components' : new_components})
+    # ----------------------
+    def _update_cfg_obs(
+        self,
+        cfg_cmp : AnyModelConf,
+        cfg_obs : ObservableConf) -> ObservableConf:
+        '''
+        Parameters
+        ----------------
+        cfg_obs: Configuration for observable in fit to data
+        cfg_cmp: Configuration for fit component
+
+        Returns
+        ----------------
+        Configuration for observable of component
+        '''
+        # If fit is to DTF mass, all components should use DTF mass
+        # when fitting MC
+        if cfg_obs.name.is_dtf:
+            return cfg_obs
+
+        # If fit uses muon non-DTF, use default mass from DaVinci
+        if self.mod_cfg.trigger.is_muon:
+            return cfg_obs.model_copy(update = {'name' : Mass.b})
+
+        # If fit uses electron non-DTF AND parametric PDF 
+        # use unsmeared mass
+        if not isinstance(cfg_cmp, (NonParametricConf, CCbarConf)):
+            return cfg_obs
+
+        # If fit uses electron non-DTF AND non-parametric PDF
+        # use smeared mass
+        return cfg_obs.model_copy(update = {'name' : cfg_obs.name.smeared_version })
     # ----------------------
     def __post_init__(self):
         '''
