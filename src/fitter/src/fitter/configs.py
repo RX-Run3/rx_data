@@ -100,8 +100,7 @@ class ComponentConf(UnpackerModel):         # Tested
     '''
     model_config = ConfigDict(frozen=True)
 
-    mass      : Mass
-    norm_range: tuple[float,float] | None = None
+    cfg_obs : ObservableConf | None = None
     # ----------------------------------
     @property
     def component_trigger(self) -> Trigger | None:
@@ -118,13 +117,13 @@ class ComponentConf(UnpackerModel):         # Tested
         ----------------
         Observable used to build PDF
         '''
-        if self.norm_range is None:
+        if self.cfg_obs is None:
             raise ValueError('Normalization range was not initialized')
 
         obs = zfit.Space(
             obs   = 'Mass', 
-            label = self.mass,
-            limits= self.norm_range)
+            label = self.cfg_obs.name,
+            limits= self.cfg_obs.range)
 
         return obs
 # ------------------------------
@@ -275,9 +274,12 @@ class NonParametricConf(ComponentConf): # Tested
         ----------------
         Observable used to build KDE
         '''
+        if self.cfg_obs is None:
+            raise ValueError('Observable configuration not set')
+
         obs = zfit.Space(
             obs   = 'Mass', 
-            label = self.mass,
+            label = self.cfg_obs.name,
             limits= self.events_range)
 
         return obs
@@ -289,10 +291,13 @@ class NonParametricConf(ComponentConf): # Tested
         ----------------
         Observable where KDE is normalized to 1
         '''
+        if self.cfg_obs is None:
+            raise ValueError('Observable configuration not set')
+
         obs = zfit.Space(
             obs   = 'Mass', 
-            label = self.mass,
-            limits= self.norm_range)
+            label = self.cfg_obs.name,
+            limits= self.cfg_obs.range)
 
         return obs
 # ------------------------------
