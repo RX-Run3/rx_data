@@ -99,7 +99,7 @@ class DataModel:
                 log.warning(f'Skipping {component} component')
                 continue
 
-            log.info(f'Building component {component} with {obs}[{obs.label}]')
+            log.info(f'Building component {component} with {cfg.cfg_obs}')
             with SpecMaker.project(name = trigger.project):
                 ftr  = SimFitter(
                     name     = self._name,
