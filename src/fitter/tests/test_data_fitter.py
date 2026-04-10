@@ -69,7 +69,7 @@ def test_two_regions(tmp_path : Path) -> None:
     '''
     Test simultaneous fit with two regions
     '''
-    obs     = None
+    obs     = zfit.Space(obs = 'mass', limits = (4500, 7000)) 
 
     pdf_001 = get_model(obs=obs, kind='s+b', suffix='001')
     dat_001 = pdf_001.create_sampler(10_000)
