@@ -40,6 +40,7 @@ def get_model(
     obs    : zobs           | None = None,
     pars   : dict[str,zpar] | None = None,
     suffix : str            | None = None,
+    suffix_pdfs : bool             = False,
     lam    : float                 = -0.0001) -> SumPDF:...
 @overload
 def get_model(
@@ -48,6 +49,7 @@ def get_model(
     obs    : zobs           | None = None,
     pars   : dict[str,zpar] | None = None,
     suffix : str            | None = None,
+    suffix_pdfs : bool             = False,
     lam    : float                 = -0.0001) -> zpdf:...
 def get_model(
     kind   : AllLiteral,
@@ -55,6 +57,7 @@ def get_model(
     obs    : zobs           | None = None,
     pars   : dict[str,zpar] | None = None,
     suffix : str            | None = None,
+    suffix_pdfs : bool             = False,
     lam    : float                 = -0.0001) -> zpdf | SumPDF:
     '''
     Parameters
@@ -64,6 +67,7 @@ def get_model(
     nsample: Number of entries for normalization of each component, default 1000
     obs    : If provided, will use it, by default None and will be built in function
     suffix : Optional, can be used in case multiple models are needed
+    suffix_pdfs: If True, will add suffix to PDF names
     lam    : Decay constant of exponential component, set to -0.0001 by default
 
     Returns
@@ -80,17 +84,21 @@ def get_model(
         obs  = zfit.Space(f'mass{suffix}', limits=(4500, 7000))
 
     if kind == 'signal':
+        pdf_suffix = suffix if suffix_pdfs else ''
+
         mu  = zfit.Parameter(f'mu{suffix}', 5200, 4500, 6000)
         sg  = zfit.Parameter(f'sg{suffix}',  150,   10, 200)
         pdf = zfit.pdf.Gauss(
             obs  = obs, 
             mu   = mu, 
             sigma= sg, 
-            name = 'signal')
+            name = f'signal{pdf_suffix}')
 
         return pdf
 
     if kind == 'signal_alt':
+        pdf_suffix = suffix if suffix_pdfs else ''
+
         mu  = zfit.Parameter(f'mu{suffix}', 5200, 4500, 6000)
         sg  = zfit.Parameter(f'sg{suffix}',  150,   10,  200)
         ar  = zfit.Parameter(f'ar{suffix}',    1,    0,    5)
@@ -105,16 +113,18 @@ def get_model(
             alphar= ar, 
             nr    = nr, 
             obs   = obs, 
-            name  = 'signal')
+            name  = f'signal{pdf_suffix}')
 
         return pdf
 
     if kind == 'bkg':
+        pdf_suffix = suffix if suffix_pdfs else ''
+
         c   = zfit.Parameter(f'c{suffix}', lam, -0.01, +0.01)
         pdf = zfit.pdf.Exponential(
             obs  = obs, 
             lam  = c, 
-            name = 'background')
+            name = f'background{pdf_suffix}')
 
         return pdf
 
@@ -129,12 +139,14 @@ def get_model(
             obs    = obs,
             pars   = pars,
             kind   = 'bkg',
+            suffix_pdfs = suffix_pdfs,
             suffix = suffix)
 
         sig  = get_model(
             obs    = obs,
             pars   = pars,
             kind   = signal_name,
+            suffix_pdfs = suffix_pdfs,
             suffix = suffix)
 
         bkg  = bkg.create_extended(nbkg)
