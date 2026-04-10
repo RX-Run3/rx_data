@@ -126,6 +126,19 @@ class DataFitter(BaseFitter, Cache):
         if nll is None:
             raise ValueError('Likelihood is missing')
 
+        fres = self._minimize_nll(nll = nll)
+
+    # ---------------------------------------------
+    def _minimize_nll(self, nll : NLL) -> FitResult:
+        '''
+        Parameters
+        ---------------
+        nll: Full likelihood
+
+        Returns
+        ---------------
+        Fit result
+        '''
         if   self._cfg.fit.strategy is None:
             res  = self._simple_fit(nll = nll)
             fres = FitResult.from_zfit(res = res)
@@ -138,6 +151,7 @@ class DataFitter(BaseFitter, Cache):
         # NOTE: Save fit in each signal region
         # assuming this is a simultaneous fit
         for model, data, cfg, region in zip(nll.model, nll.data, l_cfg, l_nam, strict = True):
+        return fres
             out_path = self._out_path / region
 
             log.info(f'Saving fit to: {out_path}')
