@@ -7,17 +7,17 @@ selection        :
   leakage        : TMath::Abs(B_const_mass_M - 5280) > 200
 observable:
   low:
-    name : B_Mass_smr
+    name : B_Mass
     range:
       - 4500
       - 6996
   central:
-    name : B_Mass_smr
+    name : B_Mass
     range:
       - 4500
       - 6996
   high:
-    name : B_Mass_smr
+    name : B_Mass
     range:
       - 4500
       - 6996

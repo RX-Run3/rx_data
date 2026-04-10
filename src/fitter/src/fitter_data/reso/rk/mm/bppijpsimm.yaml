@@ -1,5 +1,4 @@
-
-component        : bppijpsimm
+component : bppijpsimm
 categories:
   brem_xx0:
     selection : {}

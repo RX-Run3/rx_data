@@ -1,5 +1,4 @@
-
-component        : bpkppsi2ee
+component    : bpkppsi2ee
 events_range : 
   - 4000
   - 7200

@@ -1,5 +1,4 @@
-
-component        : bpkppsi2mm
+component : bpkppsi2mm
 categories:
   brem_xx0:
     selection : {}
