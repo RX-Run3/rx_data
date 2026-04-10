@@ -35,6 +35,7 @@ from .configs  import CCbarConf
 from .configs  import NonParametricConf
 from .configs  import ParametricConf
 from .configs  import RXFitConfig
+from .configs  import ObservableConf 
 
 __all__ = [
     'plot_prefit_postfit',
@@ -49,6 +50,7 @@ __all__ = [
     'Category',
     'CategoryMerger',
     # ------------------
+    'ObservableConf',
     'RXFitConfig',
     'FitModelConf',
     'NonParametricConf',

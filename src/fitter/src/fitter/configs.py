@@ -36,6 +36,16 @@ class ObservableConf(BaseModel):
     name : Mass
     range: tuple[int,int]
     # ------------------------
+    def __str__(self):
+        lower, upper = self.range
+
+        val = '\n------------------------\n'
+        val+= f'Observable: {self.name}\n'
+        val+= f'Range     : [{lower}, {upper}]\n'
+        val+= '------------------------'
+
+        return val
+    # ------------------------
     @classmethod
     def default(cls) -> Self:
         '''

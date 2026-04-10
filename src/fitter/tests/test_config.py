@@ -11,13 +11,25 @@ from dmu         import LogStore
 from dmu.stats   import YieldConf
 from dmu.generic import utilities as gut
 from rx_misid    import MisIDSampleWeights, MisIDSampleSplitting
-from rx_common   import Channel, Component, Project
+from rx_common   import Channel, Component, Project, Mass
 from fitter      import NonParametricConf 
-from fitter      import CCbarConf, CombinatorialConf, MisIDConf
+from fitter      import CCbarConf, CombinatorialConf, MisIDConf, ObservableConf
 from fitter      import ParametricConf
 from fitter      import FitModelConf
 
 log=LogStore.add_logger('fitter:test_config')
+
+# ----------------------
+@pytest.mark.parametrize('mass', Mass)
+def test_observable_conf(mass : Mass):
+    '''
+    Test observable configuration
+    '''
+    cfg = ObservableConf(
+        name  = mass, 
+        range = (4000, 7000))
+
+    log.info(cfg)
 # ----------------------
 @pytest.mark.parametrize('analysis', [Project.rk, Project.rkst])
 @pytest.mark.parametrize('fname'   , [
