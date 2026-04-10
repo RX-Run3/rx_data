@@ -119,15 +119,24 @@ class DataFitter(BaseFitter, Cache):
             fres = FitResult.from_json(path = result_path)
             return fres
 
-        nll    = self._get_full_nll()
-        l_cfg  = [ cfg for _, cfg in self._d_nll.values() ]
-        l_nam  = list(self._d_nll)
-
+        nll = self._get_full_nll()
         if nll is None:
             raise ValueError('Likelihood is missing')
 
         fres = self._minimize_nll(nll = nll)
 
+        self._save_by_region(nll = nll, fres = fres)
+
+        for cat, regions in self._cfg.plots.merging.items():
+            self._save_by_category(
+                name    = cat, 
+                fres    = fres,
+                regions = regions)
+
+        fres.to_json(path = result_path)
+        self._cache()
+
+        return fres
     # ---------------------------------------------
     def _minimize_nll(self, nll : NLL) -> FitResult:
         '''
@@ -152,22 +161,71 @@ class DataFitter(BaseFitter, Cache):
         # assuming this is a simultaneous fit
         for model, data, cfg, region in zip(nll.model, nll.data, l_cfg, l_nam, strict = True):
         return fres
+    # ---------------------------------------------
+    def _save_by_category(
+        self, 
+        name    : str, 
+        fres    : FitResult,
+        regions : list[Region]) -> None:
+        '''
+        Parameters
+        ---------------
+        name   : Name of category
+        fres   : Fit result
+        regions: List of regions associated
+        '''
+        if len(regions) < _MIN_REGIONS_IN_CAT:
+            raise ValueError(f'Cannot create category with fewer than two regions, found: {regions}')
+
+        out_path = self._out_path / name 
+
+        log.info(f'Saving fit to: {out_path}')
+
+        nlls = [ nll for region, (nll, _) in self._d_nll.items() if region in regions ]
+
+        datasets = [ nll.data[0]  for nll in nlls ]
+
+        models : list[zfit.pdf.SumPDF]  = []
+        for nll in nlls:
+            pdf = nll.model[0]
+            if not isinstance(pdf, zfit.pdf.SumPDF):
+                raise ValueError('Found non SumPDF model')
+
+            models.append(pdf)
+
+        self._save_fit(
+            cut_cfg  = dict(),
+            plt_cfg  = self._cfg.plots.regions[name],
+            data     = zfit.data.concat(datasets),
+            model    = sut.merge_sum_models(models = models),
+            res      = fres,
+            out_path = out_path)
+    # ---------------------------------------------
+    def _save_by_region(
+        self, 
+        nll  : NLL, 
+        fres : FitResult) -> None:
+        '''
+        Parameters
+        ----------------
+        nll : Likelihood for all regions, merged
+        fres: Fit result object
+        '''
+        l_cfg  = [ cfg for _, cfg in self._d_nll.values() ]
+        l_reg  = list(self._d_nll)
+
+        for model, data, cfg, region in zip(nll.model, nll.data, l_cfg, l_reg, strict = True):
             out_path = self._out_path / region
 
             log.info(f'Saving fit to: {out_path}')
 
             self._save_fit(
                 cut_cfg  = cfg,
-                plt_cfg  = self._cfg.plots[region],
+                plt_cfg  = self._cfg.plots.regions[region],
                 data     = data,
                 model    = model,
                 res      = fres,
                 out_path = out_path)
 
             self._save_config(out_dir=out_path)
-
-        fres.to_json(path = result_path)
-        self._cache()
-
-        return fres
 # ----------------------
