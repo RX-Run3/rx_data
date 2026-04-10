@@ -685,7 +685,7 @@ class RXFitConfig(BaseModel):
         return out_dir
     # ----------------------
     @cached_property
-    def observable(self) -> zobs:
+    def obs(self) -> zobs:
         '''
         Returns
         -------------

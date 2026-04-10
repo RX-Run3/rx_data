@@ -127,7 +127,7 @@ def _get_nll(cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL, dict[str,dict[Cuts
     '''
     ftr = LikelihoodFactory(
         name   = cfg.name,
-        obs    = cfg.observable,
+        obs    = cfg.obs,
         q2bin  = cfg.q2bin,
         sample = Component.data_24,
         cfg    = cfg.mod_cfg)
