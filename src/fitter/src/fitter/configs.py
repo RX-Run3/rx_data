@@ -360,6 +360,7 @@ class FitModelConf(UnpackerModel):
     constraints: ConstraintsCfg
     plots      : ZFitPlotterConf
     fit        : FitConf
+    q2bin      : Qsq | None = None
     # ------------------------
     @classmethod
     def default(cls) -> 'FitModelConf':
@@ -394,7 +395,7 @@ class FitModelConf(UnpackerModel):
             new_val             = cfg_cmp.model_copy(update = {'cfg_obs' : new_cfg })
             new_components[component] = new_val
 
-        return self.model_copy(update = {'components' : new_components})
+        return self.model_copy(update = {'components' : new_components, 'q2bin' : q2bin})
     # ----------------------
     def _update_cfg_obs(
         self,
