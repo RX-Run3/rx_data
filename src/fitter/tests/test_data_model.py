@@ -43,22 +43,23 @@ def test_resonant(kind : str, trigger : Trigger, tmp_path : Path):
     '''
     Simplest test
     '''
-    obs = zfit.Space('B_const_mass_M', limits=(5000, 6000))
     data= gut.load_data(
         package='fitter_data',
         fpath  =f'{kind}/data.yaml')
 
+    q2bin = Qsq.jpsi
     with UnpackerModel.package(name = 'fitter_data'):
         cfg = FitModelConf(**data)
+        cfg = cfg.specialize(q2bin = q2bin)
 
     with Cache.cache_root(path = tmp_path),\
         PL.parameter_schema(cfg=cfg.yields):
         dmd = DataModel(
-            name    = 'main',
+            name    = Region.brem_xx0,
             cfg     = cfg,
-            obs     = obs,
+            obs     = cfg.obs,
             trigger = trigger, 
-            q2bin   = Qsq.jpsi)
+            q2bin   = q2bin)
         pdf = dmd.get_model()
 
     sut.print_pdf(pdf)
@@ -68,14 +69,13 @@ def test_rare_electron(tmp_path : Path):
     Simplest test for rare electron mode
     '''
     q2bin = Qsq.central
-
-    obs = zfit.Space('B_Mass_smr', limits=(4500, 7000))
-    data= gut.load_data(
+    data  = gut.load_data(
         package='fitter_data',
         fpath  ='rare/rk/ee/data.yaml')
 
     with UnpackerModel.package(name = 'fitter_data'):
         cfg = FitModelConf(**data)
+        cfg = cfg.specialize(q2bin = q2bin)
 
     with PL.parameter_schema(cfg=cfg.yields),\
         Cache.cache_root(path = tmp_path),\
@@ -83,7 +83,7 @@ def test_rare_electron(tmp_path : Path):
         dmd = DataModel(
             name    = 'main',
             cfg     = cfg,
-            obs     = obs,
+            obs     = cfg.obs,
             trigger = Trigger.rk_ee_os,
             q2bin   = q2bin)
         pdf = dmd.get_model()
