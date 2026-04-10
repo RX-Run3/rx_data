@@ -8,7 +8,7 @@ from pydantic    import BaseModel, ConfigDict
 from pathlib     import Path
 from typing      import Callable, Self
 
-from rx_common   import Channel, Mass, Project, Qsq, MisID
+from rx_common   import Channel, Mass, Project, Qsq, MisID, Region
 from rx_common   import Component, Trigger, CCbarComponent, Cuts
 from rx_misid    import MisIDSampleWeights
 from dmu         import LogLevels, LogStore
@@ -357,8 +357,8 @@ class FitModelConf(UnpackerModel):
     yields     : YieldsConf
     observable : dict[Qsq | MisID, ObservableConf]
     components : dict[Component, AnyModelConf]
+    plots      : dict[Region, ZFitPlotterConf]
     constraints: ConstraintsCfg
-    plots      : ZFitPlotterConf
     fit        : FitConf
     q2bin      : Qsq | None = None
     # ------------------------
