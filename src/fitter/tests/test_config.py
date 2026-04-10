@@ -1,6 +1,9 @@
 '''
 Module with functions that test config classes
 '''
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = '1'
+
 import pytest
 
 from pathlib     import Path
@@ -42,9 +45,9 @@ def test_yield_conf(
 @pytest.mark.parametrize('kind'    , ['reso', 'rare'])
 @pytest.mark.parametrize('channel' , ['ee'  ,   'mm'])
 def test_combinatorial_sr(
-        analysis : str, 
-        channel  : str,
-        kind     : str):
+    analysis : str, 
+    channel  : str,
+    kind     : str):
     '''
     Test for combinatorial in signal region
     '''
