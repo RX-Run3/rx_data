@@ -60,6 +60,8 @@ class Region(StrEnum):
                 return Project.rk
             case Region.bdee_xx1 | Region.bdee_xx2 | Region.bdee_x12:
                 return Project.rkst
+            case Region.region_001 | Region.region_002:
+                return Project.test
             case _:
                 raise ValueError(f'Cannot determine project for region: {self}')
     # ---------------------

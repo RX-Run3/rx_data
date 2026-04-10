@@ -2,13 +2,15 @@
 Module with Project enum
 '''
 
-from enum       import StrEnum
+from enum       import StrEnum, auto
 from .component import Component
 
 class Project(StrEnum):
     '''
     This class represents the projects
     '''
+    test          = auto() # needed for tests
+    # ---------------
     rk            = 'rk'
     rk_no_pid     = 'rk_nopid'
     rk_no_refit   = 'rk_no_refit'
