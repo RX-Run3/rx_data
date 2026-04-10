@@ -8,7 +8,7 @@ import pytest
 
 from pathlib       import Path
 from dmu           import LogStore
-from dmu.stats     import ParsHolder, print_pdf, zfit
+from dmu.stats     import ParsHolder, print_pdf
 from dmu.generic   import UnpackerModel, utilities as gut
 from dmu.stats     import utilities as sut
 from dmu.workflow  import Cache
@@ -47,11 +47,11 @@ def _float_fix_pars(pdf : ParsHolder) -> ParsHolder:
     '''
     Parameters
     -------------
-    pdf: Holder of parameters    
+    pdf: Holder of parameters
 
     Returns
     -------------
-    PDF with parameters ending in _flt floating and everything else fixed 
+    PDF with parameters ending in _flt floating and everything else fixed
     '''
     par_flt = pdf.get_params(floating =  True)
     par_fix = pdf.get_params(floating = False)
@@ -127,7 +127,7 @@ def test_with_cat(tmp_path : Path):
 
     cfg  = cfg.filter_category(func = _filter)
     d_sel : dict[Cuts, str] = {
-        Cuts.cmb : 'mva_cmb > 0.9', 
+        Cuts.cmb : 'mva_cmb > 0.9',
         Cuts.prc : 'mva_prc > 0.5'}
     d_sel.update(region.selection)
 
@@ -240,11 +240,11 @@ def test_kde_rkst(component : Component, tmp_path : Path):
 @pytest.mark.parametrize('component', [Component.bpkkk, Component.bpkpipi])
 @pytest.mark.parametrize('q2bin'    , [Qsq.low, Qsq.central, Qsq.high])
 def test_misid(
-    component : Component, 
-    q2bin     : Qsq, 
+    component : Component,
+    q2bin     : Qsq,
     tmp_path  : Path):
     '''
-    Test fitting misID simulation 
+    Test fitting misID simulation
     '''
     cfg_obs = ObservableConf(
         name  = Mass.bp_bcor_smr,
@@ -274,7 +274,7 @@ def test_ccbar_reso_rk(mass : Mass, tmp_path : Path):
         name  = mass,
         range = (4500, 6000))
 
-    component = Component.ccbar 
+    component = Component.ccbar
     data = gut.load_data(package='fitter_data', fpath=f'reso/rk/ee/{component}.yaml')
     cfg  = CCbarConf(**data)
     cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
@@ -301,7 +301,7 @@ def test_ccbar_reso_rkst(mass : Mass, tmp_path : Path):
         name  = mass,
         range = (4500, 6000))
 
-    component = Component.ccbar 
+    component = Component.ccbar
     data = gut.load_data(package='fitter_data', fpath=f'reso/rkst/ee/{component}.yaml')
     cfg  = CCbarConf(**data)
     cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
@@ -325,7 +325,7 @@ def test_ccbar_rare(tmp_path : Path):
     for rare modes, i.e. without jpsi mass constraint
     '''
     component = Component.ccbar
-    mass      = Mass.bp_bcor_smr 
+    mass      = Mass.bp_bcor_smr
     q2bin     = Qsq.high
     cfg_obs   = ObservableConf(
         name  = mass,
@@ -353,7 +353,7 @@ def test_ccbar_rare(tmp_path : Path):
 # ---------------------------------------------------
 @pytest.mark.parametrize('component', [Component.bpkpjpsiee, Component.bppijpsiee])
 def test_reso_rk_ee(
-    component : Component, 
+    component : Component,
     tmp_path  : Path):
     '''
     Test electron resonant with rk trigger
@@ -382,7 +382,7 @@ def test_reso_rk_ee(
 # ---------------------------------------------------
 @pytest.mark.parametrize('component', [Component.bdkstkpijpsimm, Component.bdkstkpipsi2mm])
 def test_reso_rkst_mm(
-    component : Component, 
+    component : Component,
     tmp_path  : Path):
     '''
     Test resonant jpsi and psi2S in rkst muon channel
@@ -393,7 +393,7 @@ def test_reso_rkst_mm(
     }[component]
 
     mass = {
-        Qsq.jpsi : Mass.bd_dtf_jpsi, 
+        Qsq.jpsi : Mass.bd_dtf_jpsi,
         Qsq.psi2 : Mass.bd_dtf_psi2
     }[q2bin]
 
@@ -416,7 +416,7 @@ def test_reso_rkst_mm(
 # ---------------------------------------------------
 @pytest.mark.parametrize('component', [Component.bdkstkpijpsiee, Component.bdkstkpipsi2ee])
 def test_reso_rkst_ee(
-    component : Component, 
+    component : Component,
     tmp_path  : Path):
     '''
     Test resonant jpsi and psi2S in rkst muon channel
@@ -427,7 +427,7 @@ def test_reso_rkst_ee(
     }[component]
 
     mass = {
-        Qsq.jpsi : Mass.bd_dtf_jpsi, 
+        Qsq.jpsi : Mass.bd_dtf_jpsi,
         Qsq.psi2 : Mass.bd_dtf_psi2
     }[q2bin]
 
