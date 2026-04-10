@@ -339,6 +339,22 @@ class MisIDConf(NonParametricConf): # Tested
 # ------------------------------
 AnyModelConf = CombinatorialConf | ParametricConf | CCbarConf | MisIDConf | NonParametricConf
 # ------------------------------
+class PlotConf(BaseModel):
+    merging : dict[str,list[Region]]
+    regions : dict[str, ZFitPlotterConf]
+    # -----------------------------
+    @classmethod
+    def default(cls) -> Self:
+        '''
+        Returns default config, useful for tests
+        '''
+        merging = {'category' : []}
+        regions = {Region.bpee_xx1.value : ZFitPlotterConf.default()}
+
+        return cls(
+            merging = merging,
+            regions = regions)
+# ------------------------------
 # Fits
 # ------------------------------
 class FitModelConf(UnpackerModel):
@@ -357,7 +373,7 @@ class FitModelConf(UnpackerModel):
     yields     : YieldsConf
     observable : dict[Qsq | MisID, ObservableConf]
     components : dict[Component, AnyModelConf]
-    plots      : dict[Region, ZFitPlotterConf]
+    plots      : PlotConf 
     constraints: ConstraintsCfg
     fit        : FitConf
     q2bin      : Qsq | None = None
@@ -375,7 +391,7 @@ class FitModelConf(UnpackerModel):
             observable  = {},
             components  = {},
             constraints = ConstraintsCfg.default(),
-            plots       = ZFitPlotterConf.default(),
+            plots       = PlotConf.default(),
             fit         = FitConf.default())
     # ------------------------
     def specialize(self, q2bin : Qsq) -> Self:

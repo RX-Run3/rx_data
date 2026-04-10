@@ -39,18 +39,29 @@ constraints:
   pre_rare : []
 fit: {}
 plots:
-  region_001 :
-    title   : Region 1
-    nbins   : 50
-    stacked : True
-    d_leg :
-      Gauss_ext       : Signal
-      Exponential_ext : Combinatorial
-  region_002 :
-    title   : Region 2
-    nbins   : 50
-    stacked : True
-    d_leg :
-      Gauss_ext       : Signal
-      Exponential_ext : Combinatorial
-
+  merging:
+    cat1:
+      - region_001
+      - region_002
+  regions:
+    cat1:
+      title   : Region 1 and 2
+      nbins   : 50
+      stacked : True
+      d_leg :
+        Gauss_ext       : Signal
+        Exponential_ext : Combinatorial
+    region_001 :
+      title   : Region 1
+      nbins   : 50
+      stacked : True
+      d_leg :
+        Gauss_ext       : Signal
+        Exponential_ext : Combinatorial
+    region_002 :
+      title   : Region 2
+      nbins   : 50
+      stacked : True
+      d_leg :
+        Gauss_ext       : Signal
+        Exponential_ext : Combinatorial
