@@ -376,39 +376,25 @@ class FitModelConf(UnpackerModel):
             constraints = ConstraintsCfg.default(),
             plots       = ZFitPlotterConf.default(),
             fit         = FitConf.default())
-# ------------------------------
-# Full config
-# ----------------------
-class RXFitConfig(BaseModel):
-    '''
-    Class used to store configuration needed for fits
-    '''
-    name    : str
-    group   : str        # E.g. toys, needed to name directory where fit outputs will go
-    mva_cmb : MVAWp
-    mva_prc : MVAWp
-    q2bin   : Qsq
-
-    mod_cfg : FitModelConf
-    block   : int             = -1
-    nproc   : int             = 1
-    log_lvl : int             = 20
-    ntoys   : int             = 0
-    toy_cfg : ToyConf |  None = None
     # ------------------------
-    def _set_cfg_obs(self, cfg : ObservableConf) -> None:
+    def specialize(self, q2bin : Qsq) -> Self:
         '''
         Parameters
-        --------------
-        cfg: Obeservable configuration used for data
+        ------------
+        q2bin: q2 bin for which this config will be used
+
+        Returns
+        ------------
+        Config needed for actual fit
         '''
+        cfg = self.observable[q2bin]
         new_components : dict[Component, AnyModelConf] = {}
-        for component, cfg_cmp in self.mod_cfg.components.items():
+        for component, cfg_cmp in self.components.items():
             new_cfg             = self._update_cfg_obs(cfg_obs = cfg, cfg_cmp = cfg_cmp)
             new_val             = cfg_cmp.model_copy(update = {'cfg_obs' : new_cfg })
             new_components[component] = new_val
 
-        self.mod_cfg = self.mod_cfg.model_copy(update = {'components' : new_components})
+        return self.model_copy(update = {'components' : new_components})
     # ----------------------
     def _update_cfg_obs(
         self,
@@ -430,7 +416,7 @@ class RXFitConfig(BaseModel):
             return cfg_obs
 
         # If fit uses muon non-DTF, use default mass from DaVinci
-        if self.mod_cfg.trigger.is_muon:
+        if self.trigger.is_muon:
             return cfg_obs.model_copy(update = {'name' : Mass.b})
 
         # If fit uses electron non-DTF AND parametric PDF 
@@ -441,6 +427,25 @@ class RXFitConfig(BaseModel):
         # If fit uses electron non-DTF AND non-parametric PDF
         # use smeared mass
         return cfg_obs.model_copy(update = {'name' : cfg_obs.name.smeared_version })
+# ------------------------------
+# Full config
+# ----------------------
+class RXFitConfig(BaseModel):
+    '''
+    Class used to store configuration needed for fits
+    '''
+    name    : str
+    group   : str        # E.g. toys, needed to name directory where fit outputs will go
+    mva_cmb : MVAWp
+    mva_prc : MVAWp
+    q2bin   : Qsq
+
+    mod_cfg : FitModelConf
+    block   : int             = -1
+    nproc   : int             = 1
+    log_lvl : int             = 20
+    ntoys   : int             = 0
+    toy_cfg : ToyConf |  None = None
     # ----------------------
     def model_post_init(self, _):
         '''
@@ -449,8 +454,7 @@ class RXFitConfig(BaseModel):
         self._set_logs()
         self._initialize_toy_config()
 
-        cfg_obs = self.mod_cfg.observable[self.q2bin]
-        self._set_cfg_obs(cfg = cfg_obs)
+        self.mod_cfg = self.mod_cfg.specialize(q2bin = self.q2bin)
     # ----------------------
     def _initialize_toy_config(self) -> None:
         if self.toy_cfg is None:
