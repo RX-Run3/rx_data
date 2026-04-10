@@ -49,7 +49,7 @@ class DataFitter(BaseFitter, Cache):
         self._d_nll   = d_nll
         self._cfg     = cfg
         self._trigger = cfg.trigger
-        
+
         regions = '_'.join(d_nll)
 
         BaseFitter.__init__(self)
@@ -157,5 +157,5 @@ class DataFitter(BaseFitter, Cache):
         fres.to_json(path = result_path)
         self._cache()
 
-        return fres 
+        return fres
 # ----------------------
