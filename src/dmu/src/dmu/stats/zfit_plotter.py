@@ -142,7 +142,7 @@ class ZFitPlotter:
     def _get_errors(
             self,
             nbins  : int = 100,
-            l_range: list[tuple[float,float]]|None = None) -> list[float]:
+            l_range: list[tuple[float,float]]|None = None) -> list[tuple[float,float]]:
         '''
         Parameters
         ---------------------
@@ -288,7 +288,7 @@ class ZFitPlotter:
         pull_errors = [[], []]
         pulls       = []
 
-        for [low, up], pdf_val, dat_val in zip(self.errors, pdf_values, data_values):
+        for (low, up), pdf_val, dat_val in zip(self.errors, pdf_values, data_values, strict = True):
             res = float(dat_val - pdf_val)
             err = low if res > 0 else up
             pul = res / err
