@@ -10,7 +10,6 @@ from ROOT        import RDF # type:ignore
 from dmu         import LogStore
 from dmu.testing import utilities as ut
 
-
 log = LogStore.add_logger('dmu:tests:test_utilities')
 # ----------------------------------------------
 @pytest.fixture(scope='module', autouse=True)
