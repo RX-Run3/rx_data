@@ -13,33 +13,27 @@ out_path  = f'{ANADIR}/fits/data'
 group_name= 'rare'
 mode      = 'rare'
 # ---------------------------------------
-def _brem_from_chan(chn):
-    if   chn == 'ee':
-        brem = 'brem_x12'
-    elif chn == 'mm':
-        brem = 'brem_xx0'
-    else:
-        raise ValueError(f'Invalid channel: {chn}')
-
-    return brem
-# ---------------------------------------
 paths = []
 for qsq in qsq_bin:
     for cmb in mva_cmb:
         for prc in mva_prc:
             for prj in project:
                 for chn in channel:
-                    brem = _brem_from_chan(chn = chn)
-                    path = f'{out_path}/{group_name}/{cmb}_{prc}_all/{mode}/{prj}/{chn}/{qsq}/data_24/fit/{brem}/{brem}/fit_linear.png'
-
-                    paths.append(path)
+                    paths += [
+                        f'{out_path}/{group_name}/{cmb}_{prc}_all/{mode}/{prj}/{chn}/{qsq}/data_24/fit/brem_xx1_brem_xx2/brem_xx1/fit_linear.png',
+                        f'{out_path}/{group_name}/{cmb}_{prc}_all/{mode}/{prj}/{chn}/{qsq}/data_24/fit/brem_xx1_brem_xx2/brem_xx2/fit_linear.png',
+                        f'{out_path}/{group_name}/{cmb}_{prc}_all/{mode}/{prj}/{chn}/{qsq}/data_24/fit/brem_xx1_brem_xx2/both_brem/fit_linear.png',
+                        ]
 # ---------------------------------------
 rule all:
     input : paths
 # ---------------------
 rule fits:
-    output: f'{out_path}/{group_name}/{{cmb}}_{{prc}}_all/{{mode}}/{{prj}}/{{chn}}/{{qsq}}/data_24/fit/{{brem}}/{{brem}}/fit_linear.png'
-    log:    f'{out_path}/{group_name}/{{cmb}}_{{prc}}_all/{{mode}}/logs/{{prj}}_{{chn}}_{{qsq}}_{{brem}}.log',
+    output:
+         f'{out_path}/{group_name}/{{cmb}}_{{prc}}_all/{{mode}}/{{prj}}/{{chn}}/{{qsq}}/data_24/fit/brem_xx1_brem_xx2/brem_xx1/fit_linear.png',
+         f'{out_path}/{group_name}/{{cmb}}_{{prc}}_all/{{mode}}/{{prj}}/{{chn}}/{{qsq}}/data_24/fit/brem_xx1_brem_xx2/brem_xx2/fit_linear.png',
+         f'{out_path}/{group_name}/{{cmb}}_{{prc}}_all/{{mode}}/{{prj}}/{{chn}}/{{qsq}}/data_24/fit/brem_xx1_brem_xx2/both_brem/fit_linear.png',
+    log: f'{out_path}/{group_name}/{{cmb}}_{{prc}}_all/{{mode}}/logs/{{prj}}_{{chn}}_{{qsq}}.log'
     params:
         group_name = group_name,
         home       = HOME,
@@ -49,7 +43,7 @@ rule fits:
         htcondor_request_disk_mb= 2000,
     shell :
         '''
-        source setup.sh {params.env} {params.home} 
+        source setup.sh {params.env} {params.home}
 
         CMB_WP=$(rxfitter wp-translator -w {wildcards.cmb})
         PRC_WP=$(rxfitter wp-translator -w {wildcards.prc})
