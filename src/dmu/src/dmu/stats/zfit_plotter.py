@@ -155,12 +155,12 @@ class ZFitPlotter:
         '''
         dat, wgt  = self._get_range_data(l_range=l_range, blind=False)
         data_hist = hist.Hist.new.Regular(
-                nbins,
-                self.lower,
-                self.upper,
-                name       =self._obs_name,
-                underflow  =False,
-                overflow   =False)
+            nbins,
+            self.lower,
+            self.upper,
+            name       =self._obs_name,
+            underflow  =False,
+            overflow   =False)
 
         data_hist = data_hist.Weight()
         data_hist.fill(dat, weight=wgt)
@@ -196,9 +196,9 @@ class ZFitPlotter:
         return l_error
     #----------------------------------------
     def _get_range_data(
-            self,
-            l_range : list[tuple[float,float]]|None,
-            blind   : bool =True) -> tuple[np.ndarray, np.ndarray]:
+        self,
+        l_range : list[tuple[float,float]]|None,
+        blind   : bool =True) -> tuple[np.ndarray, np.ndarray]:
         '''
         Parameters
         -----------------
@@ -252,7 +252,6 @@ class ZFitPlotter:
         ------------
         Numpy arrays with data and weights
         '''
-
         if dat.shape != wgt.shape:
             raise ValueError(f'Shapes or data and weights differ: {dat.shape}/{wgt.shape}')
 
