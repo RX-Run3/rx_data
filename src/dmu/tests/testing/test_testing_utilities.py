@@ -2,12 +2,13 @@
 Module with unit tests for testing/utilities.py functions
 '''
 
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 import pytest
-from ROOT import RDF # type:ignore
 
-import dmu.testing.utilities as ut
-
-from dmu.logging.log_store import LogStore
+from ROOT        import RDF # type:ignore
+from dmu         import LogStore
+from dmu.testing import utilities as ut
 
 log = LogStore.add_logger('dmu:tests:test_utilities')
 # ----------------------------------------------
@@ -66,3 +67,4 @@ def test_get_models():
 
     assert len(l_model) == 3
 # ----------------------------------------------
+

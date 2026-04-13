@@ -4,19 +4,28 @@ Module with BkkChecker class
 
 import os
 import re
-from concurrent.futures import ThreadPoolExecutor
-
-import subprocess
-from typing import Final
 import yaml
-
+import subprocess
+import pandas                        as pnd
 import ap_utilities.decays.utilities as aput
+
+from typing                          import Final
+from concurrent.futures              import ThreadPoolExecutor
 from ap_utilities.logging.log_store  import LogStore
 from omegaconf                       import DictConfig
 
 log=LogStore.add_logger('ap_utilities:bkk_checker')
 
-FALLBACK : Final[str] = '/tmp/ap_utilities/output'
+FALLBACK    : Final[str] = '/tmp/ap_utilities/output'
+SAMPLE_INFO : Final[str] = ''' 
+For BK query: {'ConfigName': 'MC', 'ConfigVersion': '2024', 'ConditionDescription': 'Beam6800GeV-2024.W41.42-MagUp-Nu7.6-25ns-Pythia8', 'ProcessingPass': '/Sim10g/HLT2-2024.W40.42', 'EventType': '12113002', 'FileType': 'HLT2.DST', 'Visible': 'Yes', 'SimulationConditions': 'Beam6800GeV-2024.W41.42-MagUp-Nu7.6-25ns-Pythia8'}
+Nb of Files      :  51
+Nb of Events     :  413'644
+Total size       :  286.865 GB (693.5 kB per evt)
+Total size (1024):  267.164 GiB (677.3 kiB per evt)
+Luminosity       :  0.000 
+Size per /pb     :  0.0 GB
+'''
 # ---------------------------------
 class BkkChecker:
     '''
@@ -141,7 +150,7 @@ class BkkChecker:
             stdout  = result.stdout
         else:
             found   = True
-            stdout  = 'from dry-run'
+            stdout  = SAMPLE_INFO 
 
         if not found:
             log.error(f'Missing: {bkk}')
@@ -221,6 +230,6 @@ class BkkChecker:
         npased = len(self._l_event_type)
 
         log.info(f'Found: {nfound}/{npased}')
-        self._save_info_yaml(l_event_type)
-        self._save_validation_config(l_event_type)
+        self._save_info_yaml(l_event_type = l_event_type)
+        self._save_validation_config(l_event_type = l_event_type)
 # ---------------------------------

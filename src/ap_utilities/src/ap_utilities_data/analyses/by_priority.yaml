@@ -169,8 +169,6 @@ no_pid:
   11104000 : $B^0 \to K^{*0}(\to K^+\pi^-) \pi^+\pi^-$ 
   13104048 : $B_s \to K^{*0}(\to K^+\pi^-) \rho(\to \pi^+\pi^-)$
   11104041 : $B_d \to K^{*0}(\to K^+\pi^-) \rho(\to \pi^+\pi^-)$
-pending_sim10f:
-  11584030  : Bd_Dstplenu_eq_PHSP_TC
 charmonium:
   12952000  : $B^+ \to J/\psi(\to e^+ e^-) X$
   11453001  : $B^0 \to J/\psi(\to e^+ e^-) X$
@@ -179,6 +177,23 @@ charmonium:
   12442001  : $B^+ \to J/\psi(\to \mu^+ \mu^-) X$
   11442001  : $B^0 \to J/\psi(\to \mu^+ \mu^-) X$
   13442001  : $B_s \to J/\psi(\to \mu^+ \mu^-) X$
+sim10g:
+  11154001 : $B^0 \to J/\psi(\to e^+ e^-) K^{*0}$
+  12153001 : $B^+ \to J/\psi(\to e^+ e^-) K^+$
+  11144001 : $B^0 \to J/\psi(\to \mu^+ \mu^-) K^{*0}$
+  12143001 : $B^+ \to J/\psi(\to \mu^+ \mu^-) K^+$ 
+  # ----------
+  12123003 : $B^+ \to K^+ e^+ e^-$
+  11124002 : $B^0 \to K^{*0} e^+ e^-$
+  12113002 : $B^+ \to K^+ \mu^+ \mu^-$
+  11114002 : $B^0 \to K^{*0} \mu^+ \mu^-$
+  # ----------
+  11154011 : $B^0 \to \psi(2S)(\to e^+ e^-) K^{*0}$
+  12153012 : $B^+ \to \psi(2S)(\to e^+ e^-) K^+$
+  11144011 : $B^0 \to \psi(2S)(\to \mu^+ \mu^-) K^{*0}$
+  12143020 : $B^+ \to \psi(2S)(\to \mu^+ \mu^-) K^+$
+  # ----------
+  12143031 : $B^+\to \psi(2S)(\to \mu^+ \mu^-) \pi^+$
 sim10f:
   12143031 : $B^+\to \psi(2S)(\to \mu^+ \mu^-) \pi^+$
   13144025 : Bs_JpsiKst_update2012_mm_eq_DPC

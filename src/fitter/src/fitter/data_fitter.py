@@ -192,11 +192,21 @@ class DataFitter(BaseFitter, Cache):
 
             models.append(pdf)
 
+        # Model names start with component, i.e. bpkpee_bremxx1...
+        # Extract component names and use them as preffix to merge pdfs
+        # In order to plot combined model
+        prefixes : set[str] = { component for component in self._cfg.components }
+        model = sut.merge_sum_models(
+            obs      = self._cfg.obs, 
+            models   = models, 
+            prefixes = prefixes,
+            pair     = 'by_prefix')
+
         self._save_fit(
             cut_cfg  = dict(),
             plt_cfg  = self._cfg.plots.regions[name],
             data     = zfit.data.concat(datasets),
-            model    = sut.merge_sum_models(obs = self._cfg.obs, models = models, pair = 'by_order'),
+            model    = model,
             res      = fres,
             out_path = out_path)
     # ---------------------------------------------

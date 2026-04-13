@@ -2,16 +2,17 @@
 Script used to check which MC samples are found in grid
 '''
 import argparse
+import pandas    as pnd
+
 from dataclasses                            import dataclass
 from typing                                 import Final
-
 from ap_utilities.logging.log_store         import LogStore
 from ap_utilities.bookkeeping.bkk_checker   import BkkChecker
 from ap_utilities.bookkeeping.sample_config import SampleConfig
 
 log=LogStore.add_logger('ap_utilities_scripts:check_samples')
 
-SETTINGS   : Final[list[str]] = ['2024_sim10d', '2024_sim10f']
+SETTINGS   : Final[list[str]] = ['2024_sim10d', '2024_sim10f', '2024_sim10g']
 PRIORITIES : Final[list[str]] = [
         'high_priority', 
         'medium_priority', 
