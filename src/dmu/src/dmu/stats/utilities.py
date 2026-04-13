@@ -454,6 +454,10 @@ def save_fit(
     if isinstance(fit_dir, str):
         fit_dir = Path(fit_dir)
 
+    if data.n_events == 0:
+        log.warning('Empty dataset found, not saving fit plot')
+        return
+
     _save_fit_plot(
         data   =data, 
         model  =model, 
