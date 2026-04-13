@@ -11,7 +11,7 @@ from ap_utilities.bookkeeping.sample_config import SampleConfig
 
 log=LogStore.add_logger('ap_utilities_scripts:check_samples')
 
-SETTINGS   : Final[list[str]] = ['2024_sim10d', '2024_sim10f']
+SETTINGS   : Final[list[str]] = ['2024_sim10d', '2024_sim10f', '2024_sim10g']
 PRIORITIES : Final[list[str]] = [
         'high_priority', 
         'medium_priority', 
