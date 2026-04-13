@@ -10,7 +10,7 @@ import numpy
 
 from importlib.resources    import files
 from pathlib                import Path
-from typing                 import Literal
+from typing                 import Literal, Final
 
 from dmu          import LogStore
 from dmu.stats    import utilities as sut
@@ -27,6 +27,8 @@ from zfit.pdf     import BasePDF  as zpdf
 from zfit         import dill
 
 log = LogStore.add_logger('dmu:tests:stats:test_utilities')
+
+FLOAT_TOLERANCE : Final[float] = 1e-5
 #----------------------------------
 class Data:
     '''
@@ -271,11 +273,14 @@ def test_range_from_obs():
     '''
     Tests retrieval of range from observable
     '''
-    obs        = zfit.Space('xyz', limits=(0, 10))
+    MAX = 10
+    MIN =  0
+
+    obs        = zfit.Space('xyz', limits=(MIN, MAX))
     minx, maxx = sut.range_from_obs(obs=obs)
 
-    assert minx ==  0
-    assert maxx == 10
+    assert minx == MIN 
+    assert maxx == MAX
 #----------------------------------
 @pytest.mark.parametrize('weighted', [True, False])
 def test_yield_from_zdata(weighted : bool):
@@ -286,7 +291,7 @@ def test_yield_from_zdata(weighted : bool):
 
     val = sut.yield_from_zdata(data=data)
 
-    assert abs(val - target) < 1e-5
+    assert abs(val - target) < FLOAT_TOLERANCE
 #----------------------------------
 def test_save_nll():
     '''
