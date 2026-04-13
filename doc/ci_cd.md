@@ -35,7 +35,7 @@ gitlab-registry.cern.ch/lhcb-rd/cal-rx-run3:v1
 which holds the basic dependencies, ROOT, python, etc. On top of it, the analysis code is build
 in the CI/CD step in the gitlab through the:
 
-**docker/env.Dockerfile** : Creates image which will be tagged as v*. It installs analysis code on top of dependencies   
+**docker/env.Dockerfile** : Creates image which will be tagged as v*. It installs analysis code on top of dependencies
 **docker/ana.Dockerfile** : Creates image on top of tagged image. Installs only analysis code.
 
 files. The latest tag of the image will contain
@@ -67,9 +67,9 @@ where `-v` in the last step will expose `ANADIR` (the path to the inputs) to the
 
 The following files exist:
 
-**requirements-dev.txt** Contains the analysis packages and development packages, e.g. pytest   
-**requirements-ana.txt** Conlains only the analysis packages, would be used to run code in HTCondor, REANA, etc   
-**requirements-dep.txt** Contains dependencies, pinned to a given version for reproducibility.   
+**requirements-dev.txt** Contains the analysis packages and development packages, e.g. pytest
+**requirements-ana.txt** Conlains only the analysis packages, would be used to run code in HTCondor, REANA, etc
+**requirements-dep.txt** Contains dependencies, pinned to a given version for reproducibility.
 **requirements-dep.in** Same as above, but without pinning most packages, used as input for dependency resolver (e.g. uv).
 
 # Further documentation
