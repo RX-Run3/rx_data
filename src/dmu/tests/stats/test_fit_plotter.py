@@ -2,6 +2,7 @@
 Module with tests for zutils.plot plot class
 '''
 import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 import numpy
 import pytest
