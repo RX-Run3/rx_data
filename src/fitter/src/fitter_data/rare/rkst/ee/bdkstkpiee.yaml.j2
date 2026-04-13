@@ -1,9 +1,8 @@
 component : bdkstkpiee 
 categories:
 {% for block in range(1, 9) %}
-  brem_xx1_b{{ block }}:
+  BREM_b{{ block }}:
     selection : 
-      brem : nbrem == 1
       block: block == {{ block }}
     model:
       pdfs :
@@ -16,31 +15,6 @@ categories:
         - mu
         - sg
       floating      : []
-      values :
-        sg :
-          - 40
-          - 30
-          - 120 
-  brem_xx2_b{{ block }}: 
-    selection :
-      brem : nbrem == 2
-      block: block == {{ block }}
-    model:
-      pdfs :
-        - dscb
-      fix           : {}
-      reparametrize :
-        mu : scale
-        sg : reso 
-      shared        :
-        - mu
-        - sg
-      floating      : []
-      values :
-        sg :
-          - 80
-          - 60
-          - 160
 {% endfor %}
 fit:
   strategy  :
