@@ -328,3 +328,30 @@ def test_merge_sum_models(pair : Literal['by_name', 'by_order']):
 
     print_pdf(pdf = pdf)
 #----------------------------------
+@pytest.mark.parametrize('pair', ['by_name', 'by_order', 'by_prefix'])
+def test_merge_sum_models_missing(pair : Literal['by_name', 'by_order', 'by_prefix']):
+    '''
+    Test merging models with one component missing in one region
+    '''
+    obs   = zfit.Space(obs = 'mass'  , limits = (-10, 10))
+    pdf_a = get_model(kind = 's+b+x' , suffix = 'a', obs = obs, suffix_pdfs = pair != 'by_name')
+    pdf_b = get_model(kind = 's+b'   , suffix = 'b', obs = obs, suffix_pdfs = pair != 'by_name')
+    pdf_c = get_model(kind = 's+b'   , suffix = 'c', obs = obs, suffix_pdfs = pair != 'by_name')
+
+    prefixes = {'signal', 'signal_alt', 'bkg'}
+
+    if pair != 'by_prefix':
+        with pytest.raises(ValueError):
+            pdf = sut.merge_sum_models(
+                obs    = obs,
+                models = [pdf_a, pdf_b, pdf_c],
+                pair   = pair)
+    else:
+        pdf = sut.merge_sum_models(
+            obs      = obs,
+            pair     = pair,
+            prefixes = prefixes,
+            models   = [pdf_a, pdf_b, pdf_c])
+
+        print_pdf(pdf = pdf)
+#----------------------------------
