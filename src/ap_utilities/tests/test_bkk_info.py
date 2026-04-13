@@ -1,0 +1,27 @@
+'''
+This module holds tests for BkkInfo class
+'''
+
+from typing                   import Final
+from ap_utilities.bookkeeping import BkkInfo
+
+
+SAMPLE_INFO : Final[str] = ''' 
+For BK query: {'ConfigName': 'MC', 'ConfigVersion': '2024', 'ConditionDescription': 'Beam6800GeV-2024.W41.42-MagUp-Nu7.6-25ns-Pythia8', 'ProcessingPass': '/Sim10g/HLT2-2024.W40.42', 'EventType': '12113002', 'FileType': 'HLT2.DST', 'Visible': 'Yes', 'SimulationConditions': 'Beam6800GeV-2024.W41.42-MagUp-Nu7.6-25ns-Pythia8'}
+Nb of Files      :  51
+Nb of Events     :  413'644
+Total size       :  286.865 GB (693.5 kB per evt)
+Total size (1024):  267.164 GiB (677.3 kiB per evt)
+Luminosity       :  0.000 
+Size per /pb     :  0.0 GB
+'''
+
+def test_simple():
+    '''
+    Simplest test
+    '''
+    obj = BkkInfo(data = SAMPLE_INFO)
+
+    assert obj.found
+    assert obj.et == '12113002'
+    assert isinstance(obj.row_data, dict)
