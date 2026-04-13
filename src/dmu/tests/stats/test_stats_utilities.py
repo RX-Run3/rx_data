@@ -199,6 +199,26 @@ def test_save_fit_simple(tmp_path : Path, is_extended : bool):
         plt_cfg=cfg,
         fit_dir=tmp_path)
 #----------------------------------
+def test_save_fit_empty(tmp_path : Path):
+    '''
+    Simplest case
+    '''
+    pdf = _get_pdf_simple()
+    dat = pdf.create_sampler(n=0)
+
+    cfg = ZFitPlotterConf(
+        nbins      = 50,
+        stacked    = True,
+        plot_range = (-5, +6),
+    )
+
+    sut.save_fit(
+        data    = dat,
+        model   = pdf,
+        res     = None,
+        plt_cfg = cfg,
+        fit_dir = tmp_path)
+#----------------------------------
 def test_save_fit_param(tmp_path : Path):
     '''
     Tests saving fit with parameters
@@ -302,3 +322,4 @@ def test_merge_sum_models(pair : Literal['by_name', 'by_order']):
         models = [pdf_a, pdf_b, pdf_c])
 
     print_pdf(pdf = pdf)
+#----------------------------------
