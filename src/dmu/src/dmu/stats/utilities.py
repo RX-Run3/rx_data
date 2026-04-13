@@ -782,10 +782,26 @@ def val_from_zres(
 #---------------------------------------------
 # Mergers
 #---------------------------------------------
+@overload
 def merge_sum_models(
-    obs    : zobs,
-    pair   : Literal['by_name', 'by_order'],
-    models : list[zfit.pdf.SumPDF]) -> zfit.pdf.SumPDF:
+    *,
+    obs     : zobs,
+    models  : list[zfit.pdf.SumPDF],
+    pair    : Literal['by_prefix'],
+    prefixes: set[str]) -> zfit.pdf.SumPDF: ...
+@overload
+def merge_sum_models(
+    *,
+    obs     : zobs,
+    models  : list[zfit.pdf.SumPDF],
+    pair    : Literal['by_name', 'by_order'],
+    prefixes: None = ...)-> zfit.pdf.SumPDF: ...
+def merge_sum_models(
+    *,
+    obs     : zobs,
+    models  : list[zfit.pdf.SumPDF],
+    pair    : Literal['by_name', 'by_order', 'by_prefix'],
+    prefixes: set[str] | None = None) -> zfit.pdf.SumPDF:
     '''
     Parameters
     --------------
@@ -801,12 +817,18 @@ def merge_sum_models(
     if nmodel < _MIN_MERGE_MODELS:
         raise ValueError(f'Need at least two models to merge, found: {nmodel}')
 
-    sizes = { len(model.pdfs) for model in models }
-    if len(sizes) != 1:
+    if pair == 'by_prefix':
+        if prefixes is None:
+            raise ValueError('Prefixes are needed when merging by prefix')
+
+        return _merge_by_prefix(models = models, obs = obs, prefixes = prefixes)
+
+    ncomponents = { len(model.pdfs) for model in models }
+    if len(ncomponents) != 1:
         for model in models:
             print_pdf(pdf = model, level = LogLevels.error)
 
-        raise ValueError(f'Models with different sizes found: {sizes}')
+        raise ValueError(f'Models with different sizes found: {ncomponents}')
 
     if   pair == 'by_name':
         merged_components = _merge_by_name(models = models, obs = obs)
@@ -814,6 +836,71 @@ def merge_sum_models(
         merged_components = _merge_by_order(models = models, obs = obs)
 
     return zfit.pdf.SumPDF(pdfs = merged_components, obs = obs)
+#---------------------------------------------
+def _merge_by_prefix(
+    obs      : zobs, 
+    prefixes : set[str],
+    models   : list[zfit.pdf.SumPDF]) -> zfit.pdf.SumPDF:
+    '''
+    Parameters
+    --------------
+    obs     : Observable needed for full PDF, to specify normalization
+    models  : List of models, each representing a full fit model, made of multiple components
+    prefixes: Each component of each model starts with one of these prefixes and only one
+    Same prefix components get merged
+
+    Returns
+    --------------
+    Single SumPDF made of components that are the sum of models
+    '''
+    groups = _group_components(models = models, prefixes = prefixes)
+
+    components : list[zpdf] = []
+    for prefix, pdfs in groups.items():
+        if len(pdfs) == 1:
+            component = pdfs[0]
+        else:
+            component = zfit.pdf.SumPDF(pdfs = pdfs, obs = obs, name = prefix) 
+
+        components.append(component)
+
+    return zfit.pdf.SumPDF(pdfs = components, obs = obs) 
+#---------------------------------------------
+def _group_components(
+    models   : list[zfit.pdf.SumPDF], 
+    prefixes : set[str]) -> dict[str,list[zpdf]]:
+    '''
+    Group components by prefix, i.e. all components with a given prefix
+    would be in same list of PDFs
+    '''
+    components : list[zpdf] = []
+    for model in models:
+        components += model.pdfs
+
+    fail = False
+    groups : dict[str, list[zpdf]] = {}
+    for component in components:
+        succeed = False
+        for prefix in prefixes:
+            if not component.name.startswith(prefix):
+                continue
+
+            if prefix in groups:
+                groups[prefix].append(component)
+            else:
+                groups[prefix] = [component]
+
+            succeed = True
+            break
+
+        if not succeed:
+            log.error(component.name)
+            fail = True
+
+    if fail:
+        raise ValueError('Model names found that do not match any prefix')
+
+    return groups
 #---------------------------------------------
 def _merge_by_name(
     obs    : zobs, 
