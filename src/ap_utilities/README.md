@@ -2,11 +2,11 @@
 
 For:
 
-- Instructions on how to install this project, check [this](doc/installation.md)   
+- Instructions on how to install this project, check [this](doc/installation.md)
 - Instuctions on how to create a new production from `rd_ap_2024`, check [this](doc/new_production.md)
 - Tools to deal with nicknames check [this](doc/nicknames.md)
 - Instructions to mount EOS in your laptop check [this](doc/mounting_eos.md)
-- Documentation specific to MVA lines of the RD group, check [this](doc/mva_lines.md)   
+- Documentation specific to MVA lines of the RD group, check [this](doc/mva_lines.md)
 
 # Objectives
 
