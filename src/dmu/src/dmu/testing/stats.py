@@ -85,7 +85,7 @@ def get_model(
 
     if kind == 'signal':
         pdf_suffix = suffix if suffix_pdfs else ''
-        pdf_name   = f'signal{pdf_suffix}'
+        pdf_name   = f'{kind}{pdf_suffix}'
 
         mu  = zfit.Parameter(f'mu{suffix}', 5200, 4500, 6000)
         sg  = zfit.Parameter(f'sg{suffix}',  150,   10, 200)
@@ -104,7 +104,7 @@ def get_model(
 
     if kind == 'signal_alt':
         pdf_suffix = suffix if suffix_pdfs else ''
-        pdf_name   = f'signal{pdf_suffix}'
+        pdf_name   = f'{kind}{pdf_suffix}'
 
         mu  = zfit.Parameter(f'mu{suffix}', 5200, 4500, 6000)
         sg  = zfit.Parameter(f'sg{suffix}',  150,   10,  200)
@@ -131,7 +131,7 @@ def get_model(
 
     if kind == 'bkg':
         pdf_suffix = suffix if suffix_pdfs else ''
-        pdf_name   = f'background{pdf_suffix}'
+        pdf_name   = f'{kind}{pdf_suffix}'
 
         c   = zfit.Parameter(f'c{suffix}', lam, -0.01, +0.01)
         pdf = zfit.pdf.Exponential(
@@ -181,8 +181,7 @@ def get_model(
         if kind in ['s+b', 's_alt+b']:
             return zfit.pdf.SumPDF([bkg, sig])
 
-        suffix= f'{suffix}_x'
-
+        suffix = f'{suffix}_x'
         sig_x = get_model(
             obs         = obs,
             pars        = pars,
