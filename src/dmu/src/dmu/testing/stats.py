@@ -25,8 +25,8 @@ _WEIGHT_NAME  = 'weight'
 
 Loss          = ExtendedUnbinnedNLL | UnbinnedNLL
 SingleLiteral = Literal['signal', 'signal_alt', 'bkg']
-SumLiteral    = Literal['s+b', 's_alt+b']
-AllLiteral    = Literal['signal', 'signal_alt', 'bkg', 's+b', 's_alt+b']
+SumLiteral    = Literal['s+b', 's+b+x', 's_alt+b']
+AllLiteral    = Literal['signal', 'signal_alt', 'bkg', 's+b', 's+b+x', 's_alt+b']
 SumPDF        = zfit.pdf.SumPDF
 
 log = LogStore.add_logger('rx_testing:stats')
@@ -53,7 +53,7 @@ def get_model(
     lam    : float                 = -0.0001) -> zpdf:...
 def get_model(
     kind   : AllLiteral,
-    nsample: int                   = 1000,
+    nsample: int | None            = None,
     obs    : zobs           | None = None,
     pars   : dict[str,zpar] | None = None,
     suffix : str            | None = None,
@@ -85,6 +85,7 @@ def get_model(
 
     if kind == 'signal':
         pdf_suffix = suffix if suffix_pdfs else ''
+        pdf_name   = f'signal{pdf_suffix}'
 
         mu  = zfit.Parameter(f'mu{suffix}', 5200, 4500, 6000)
         sg  = zfit.Parameter(f'sg{suffix}',  150,   10, 200)
@@ -92,12 +93,18 @@ def get_model(
             obs  = obs, 
             mu   = mu, 
             sigma= sg, 
-            name = f'signal{pdf_suffix}')
+            name = pdf_name)
 
-        return pdf
+        if nsample is None:
+            return pdf
+        
+        nevt = zfit.param.Parameter(f'n{pdf_name}', nsample, 0, 1000_000)
+
+        return pdf.create_extended(nevt, name = pdf_name)
 
     if kind == 'signal_alt':
         pdf_suffix = suffix if suffix_pdfs else ''
+        pdf_name   = f'signal{pdf_suffix}'
 
         mu  = zfit.Parameter(f'mu{suffix}', 5200, 4500, 6000)
         sg  = zfit.Parameter(f'sg{suffix}',  150,   10,  200)
@@ -113,47 +120,83 @@ def get_model(
             alphar= ar, 
             nr    = nr, 
             obs   = obs, 
-            name  = f'signal{pdf_suffix}')
+            name  = pdf_name)
 
-        return pdf
+        if nsample is None:
+            return pdf
+
+        nevt = zfit.param.Parameter(f'n{pdf_name}', nsample, 0, 1000_000)
+
+        return pdf.create_extended(nevt, name = pdf_name)
 
     if kind == 'bkg':
         pdf_suffix = suffix if suffix_pdfs else ''
+        pdf_name   = f'background{pdf_suffix}'
 
         c   = zfit.Parameter(f'c{suffix}', lam, -0.01, +0.01)
         pdf = zfit.pdf.Exponential(
             obs  = obs, 
             lam  = c, 
-            name = f'background{pdf_suffix}')
+            name = pdf_name)
 
-        return pdf
+        if nsample is None:
+            return pdf
 
-    if kind in ['s+b', 's_alt+b']:
+        nevt = zfit.param.Parameter(f'n{pdf_name}', nsample, 0, 1000_000)
+
+        return pdf.create_extended(nevt, name = pdf_name)
+    # --------------------
+    # Section below for composite PDFs with extended components
+    # --------------------
+    if nsample is None:
+        nsample = 1000
+
+    if kind in ['s+b', 's_alt+b', 's+b+x']:
         nbkg = zfit.param.Parameter(f'nbkg{suffix}', nsample, 0, 1000_000)
         nsig = _get_signal_yield(pars = pars, suffix = suffix, nsample = nsample)
 
-        models : dict[AllLiteral, AllLiteral] = {'s+b' : 'signal', 's_alt+b' : 'signal_alt'}
+        models : dict[AllLiteral, AllLiteral] = {
+            's+b'     : 'signal', 
+            's+b+x'   : 'signal', 
+            's_alt+b' : 'signal_alt'}
         signal_name = models[kind]
 
-        bkg  = get_model(
-            obs    = obs,
-            pars   = pars,
-            kind   = 'bkg',
-            suffix_pdfs = suffix_pdfs,
-            suffix = suffix)
+        bkg = get_model(
+            obs         = obs,
+            pars        = pars,
+            kind        = 'bkg',
+            suffix      = suffix,
+            suffix_pdfs = suffix_pdfs)
 
-        sig  = get_model(
-            obs    = obs,
-            pars   = pars,
-            kind   = signal_name,
-            suffix_pdfs = suffix_pdfs,
-            suffix = suffix)
+        sig = get_model(
+            obs         = obs,
+            pars        = pars,
+            kind        = signal_name,
+            suffix      = suffix,
+            suffix_pdfs = suffix_pdfs)
 
-        bkg  = bkg.create_extended(nbkg)
-        sig  = sig.create_extended(nsig)
-        pdf  = zfit.pdf.SumPDF([bkg, sig])
+        bkg = bkg.create_extended(nbkg)
+        sig = sig.create_extended(nsig)
 
-        return pdf
+        if kind in ['s+b', 's_alt+b']:
+            return zfit.pdf.SumPDF([bkg, sig])
+
+        suffix= f'{suffix}_x'
+
+        sig_x = get_model(
+            obs         = obs,
+            pars        = pars,
+            kind        = 'signal_alt',
+            suffix      = suffix,
+            suffix_pdfs = suffix_pdfs)
+
+        nsig = _get_signal_yield(
+            pars    = pars, 
+            suffix  = suffix, 
+            nsample = nsample)
+
+        sig_x = sig_x.create_extended(nsig)
+        return zfit.pdf.SumPDF([bkg, sig, sig_x])
 
     raise NotImplementedError(f'Invalid kind of fit: {kind}')
 # ----------------------
