@@ -1,6 +1,37 @@
-# This is a config file used for tests
-# It illustrates how a fit would run for data
-
+# ----------------------------------------------------
+# Aliases
+# ----------------------------------------------------
+plots_settings: &plots_settings 
+  nbins   : 30
+  stacked : True
+  plot_range : 
+    - 4600
+    - 6900
+  d_leg :
+    comb                    : Combinatorial
+    comb_brem_xx1           : Combinatorial
+    comb_brem_xx2           : Combinatorial
+    # ---------
+    ccbar                   : $B\to c\bar{c}(\to e^+e^-) + X$
+    ccbar_brem_xx1          : $B\to c\bar{c}(\to e^+e^-) + X$
+    ccbar_brem_xx2          : $B\to c\bar{c}(\to e^+e^-) + X$
+    # ---------
+    bdkstkpijpsiee          : $B^0\to K^*(\to K^+\pi^-) J/\psi(\to e^+e^-)$
+    bdkstkpijpsiee_brem_xx1 : $B^0\to K^*(\to K^+\pi^-) J/\psi(\to e^+e^-)$
+    bdkstkpijpsiee_brem_xx2 : $B^0\to K^*(\to K^+\pi^-) J/\psi(\to e^+e^-)$
+    # ---------
+    bdkstkpipsi2ee          : $B^0\to K^*(\to K^+\pi^-) \psi(2S)(\to e^+e^-)$
+    bdkstkpipsi2ee_brem_xx1 : $B^0\to K^*(\to K^+\pi^-) \psi(2S)(\to e^+e^-)$
+    bdkstkpipsi2ee_brem_xx2 : $B^0\to K^*(\to K^+\pi^-) \psi(2S)(\to e^+e^-)$
+    # ---------
+    bpkpipiee               : $B^+\to K_1^+(1270)(\to K^+\pi^+\pi^-)e^+e^-$
+    bpkpipiee_brem_xx1      : $B^+\to K_1^+(1270)(\to K^+\pi^+\pi^-)e^+e^-$
+    bpkpipiee_brem_xx2      : $B^+\to K_1^+(1270)(\to K^+\pi^+\pi^-)e^+e^-$
+    # ---------
+    bdkstkpiee              : $B^0\to K^*(\to K^+\pi^-)e^+e^-$
+    bdkstkpiee_brem_xx1     : $B^0\to K^*(\to K^+\pi^-)e^+e^-$
+    bdkstkpiee_brem_xx2     : $B^0\to K^*(\to K^+\pi^-)e^+e^-$
+# ----------------------------------------------------
 trigger          : Hlt2RD_B0ToKpPimEE_MVA
 yields           : model/yields/rkst/rare_electron.yaml
 selection        : 
@@ -31,13 +62,12 @@ components:
 constraints :
   pre_rare : []
 fit: {}
-plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#fit-plotting
-  nbins   : 30
-  stacked : True
-  d_leg :
-    comb           : Combinatorial
-    ccbar          : $B\to c\bar{c}(\to e^+e^-) + X$
-    bdkstkpijpsiee : $B^0\to K^*(\to K^+\pi^-) J/\psi(\to e^+e^-)$
-    bdkstkpipsi2ee : $B^0\to K^*(\to K^+\pi^-) \psi(2S)(\to e^+e^-)$
-    bpkpipiee      : $B^+\to K_1^+(1270)(\to K^+\pi^+\pi^-)e^+e^-$
-    bdkstkpiee     : $B^0\to K^*(\to K^+\pi^-)e^+e^-$
+plots:
+  merging:
+    both_brem:
+      - brem_xx1
+      - brem_xx2
+  regions:
+    both_brem: *plots_settings
+    brem_xx1 : *plots_settings
+    brem_xx2 : *plots_settings
