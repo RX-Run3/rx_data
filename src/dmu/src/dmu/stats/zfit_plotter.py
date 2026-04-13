@@ -26,6 +26,12 @@ from .imports               import zfit
 
 log = LogStore.add_logger('dmu:zfit_plotter')
 #----------------------------------------
+class EmptyDataSet(Exception):
+    '''
+    Meant to be used when there is no data to be plotted
+    '''
+    ...
+#----------------------------------------
 class ZFitPlotterConf(BaseModel):
     '''
     Class meant to hold configuration for ZFitPlotter
@@ -256,7 +262,7 @@ class ZFitPlotter:
             raise ValueError(f'Shapes or data and weights differ: {dat.shape}/{wgt.shape}')
 
         if len(dat) == 0:
-            raise ValueError('Dataset is empty')
+            raise EmptyDataSet('Dataset is empty')
     #----------------------------------------
     def _plot_data(self, ax, nbins=100, l_range=None):
         dat, wgt  = self._get_range_data(l_range, blind=True)
@@ -666,7 +672,13 @@ class ZFitPlotter:
         self.axs      = self._get_axis(add_pars, skip_pulls) if axs is None else axs
         self._l_blind = blind
         total_entries = self._get_data_yield(plot_range)
-        self.errors   = self._get_errors(nbins, ranges)
+
+        try:
+            self.errors   = self._get_errors(nbins, ranges)
+        except EmptyDataSet as exc:
+            log.warning('Found empty dataset, skipping plot')
+            return
+
 
         if not stacked:
             log.debug('Plotting full model, for non-stacked case')
