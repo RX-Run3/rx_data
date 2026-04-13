@@ -2,12 +2,16 @@
 Module with unit tests for testing/utilities.py functions
 '''
 
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 import pytest
-from ROOT import RDF # type:ignore
 
-import dmu.testing.utilities as ut
-
-from dmu.logging.log_store import LogStore
+from typing      import Literal
+from ROOT        import RDF # type:ignore
+from dmu         import LogStore
+from dmu.testing import utilities as ut
+from dmu.testing import stats
+from dmu.stats   import zfit
 
 log = LogStore.add_logger('dmu:tests:test_utilities')
 # ----------------------------------------------
@@ -65,4 +69,13 @@ def test_get_models():
         rdf_bkg)
 
     assert len(l_model) == 3
+# ----------------------------------------------
+@pytest.mark.parametrize('kind', ['s+b', 's+b+x', 's_alt+b'])
+def test_get_pdfs(kind : Literal['s+b', 's+b+x', 's_alt+b']):
+    '''
+    Test PDF getting function 
+    '''
+    pdf = stats.get_model(kind = kind)
+
+    assert isinstance(pdf, zfit.pdf.SumPDF)
 # ----------------------------------------------
