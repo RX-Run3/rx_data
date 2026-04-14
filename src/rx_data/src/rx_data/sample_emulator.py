@@ -3,8 +3,6 @@ Module holding SampleEmulator class
 '''
 
 from ROOT        import RDF # type: ignore
-from omegaconf   import DictConfig
-
 from dmu         import LogStore
 from dmu.generic import utilities as gut
 from pydantic    import BaseModel, RootModel
@@ -12,36 +10,25 @@ from rx_common   import Block, Component
 
 log=LogStore.add_logger('rx_data:sample_emulator')
 # ----------------------
-class EmulationConf(BaseModel):
+class SamplesConf(RootModel):
     '''
-    Class meant to represent configuration needed
-    to emulate a sample
+    Class meant to represent a cocktail of samples
+    and the fractions of each
     '''
-    sample   : dict[str  , float]
-    patching : dict[Block, Block] = dict() 
-    redefine : dict[str  ,   str] = dict() 
+    root : dict[str,float]
     # --------------------------------------
     def model_post_init(self, context) -> None:
-        '''
-        Validates fields
-        '''
-        self._validate_patching()
         self._validate_sample()
 
         return super().model_post_init(context)
     # --------------------------------------
-    def _validate_patching(self):
-        for init, fnal in self.patching.items():
-            if init == fnal:
-                raise ValueError('Initial and final block cannot be the same')
-    # --------------------------------------
     def _validate_sample(self):
-        if len(self.sample) == 1:
-            (name, frac), = self.sample.items()
+        if len(self.root) == 1:
+            (name, frac), = self.root.items()
             if name == 'any' and frac == 1.0:
                 return
 
-        for name, fraction in self.sample.items():
+        for name, fraction in self.root.items():
             self._validate_sample_name(name = name)
 
             if fraction < 0 or fraction > 1.0:
@@ -52,6 +39,28 @@ class EmulationConf(BaseModel):
             Component.from_sample(sample = name)
         except Exception as exc:
             raise ValueError(f'No component associated to sample: {name}') from exc
+# ----------------------
+class EmulationConf(BaseModel):
+    '''
+    Class meant to represent configuration needed
+    to emulate a sample
+    '''
+    samples  : SamplesConf 
+    patching : dict[Block, Block] = dict() 
+    redefine : dict[str  ,   str] = dict() 
+    # --------------------------------------
+    def model_post_init(self, context) -> None:
+        '''
+        Validates fields
+        '''
+        self._validate_patching()
+
+        return super().model_post_init(context)
+    # --------------------------------------
+    def _validate_patching(self):
+        for init, fnal in self.patching.items():
+            if init == fnal:
+                raise ValueError('Initial and final block cannot be the same')
 # ----------------------
 class EmulatorConf(RootModel):
     '''
