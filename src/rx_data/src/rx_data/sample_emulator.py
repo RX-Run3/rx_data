@@ -17,10 +17,37 @@ class SamplesConf(RootModel):
     '''
     root : dict[str,float]
     # --------------------------------------
+    def emulated_only_by(self, sample : str) -> bool:
+        '''
+        Parameters
+        -------------
+        sample: Name of MC sample
+
+        Returns
+        -------------
+        True if current config describes `sample` as the only
+        emulator sample
+        '''
+        if len(self.root) != 1:
+            return False
+
+        (emulator, frac), = self.root.items()
+
+        if frac != 1:
+            raise ValueError(f'Found single emulating sample with fraction: {frac}')
+
+        return emulator == sample
+    # --------------------------------------
     def model_post_init(self, context) -> None:
         self._validate_sample()
 
         return super().model_post_init(context)
+    # --------------------------------------
+    def _validate_fraction(self):
+        fractions = list(self.root.values())
+
+        if sum(fractions) != 1:
+            raise ValueError(f'Sum of sample fractions not 1: {fractions}')
     # --------------------------------------
     def _validate_sample(self):
         if len(self.root) == 1:
