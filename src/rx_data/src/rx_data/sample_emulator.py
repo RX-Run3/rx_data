@@ -18,7 +18,8 @@ class EmulationConf(BaseModel):
     to emulate a sample
     '''
     sample   : dict[str,float] | str
-    patching : dict[Block,  Block] | None = None
+    patching : dict[Block, Block] | None = None
+    redefine : dict[str  ,   str] | None = None
     # --------------------------------------
     def model_post_init(self, context) -> None:
         '''
@@ -38,6 +39,9 @@ class EmulationConf(BaseModel):
                 raise ValueError('Initial and final block cannot be the same')
     # --------------------------------------
     def _validate_sample(self):
+        if self.sample == 'any':
+            return
+
         if isinstance(self.sample, str):
             self._validate_sample_name(name = self.sample)
             return
