@@ -33,7 +33,7 @@ _SWAPPED_MASSES=[
     'B_const_mass_psi2S_M',
 ]
 # ----------------------
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(scope='module', autouse=True)
 def initialize():
     '''
     This will run before any test
