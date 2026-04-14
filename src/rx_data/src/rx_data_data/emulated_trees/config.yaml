@@ -6,6 +6,14 @@ simulation:
     3 : 5
     4 : 5
 # ----------------------------------------
+Bu_KxKpipi:
+  sample:
+    Bu_K1ee_eq_DPC                 : 1.0
+    Bu_K2stee_Kpipi_eq_mK1430_DPC  : 1.0
+# ----------------------------------------
+# Samples starting from Bs decay can be modelled
+# with samples starting from Bd decay
+# ----------------------------------------
 Bs_JpsiKst_mm_eq_DPC : 
   sample : Bd_JpsiKst_mm_eq_DPC
   redefine : &red_001

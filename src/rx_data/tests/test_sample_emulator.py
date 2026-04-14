@@ -11,6 +11,10 @@ from rx_data import SampleEmulator
 
 log=LogStore.add_logger('rx_data:test_sample_emulator')
 
+_SAMPLES_CONCATENATE = [
+    'Bu_KxKpipi',
+]
+
 _SAMPLES_MOTHER_SWAP=[
     'Bs_JpsiKst_mm_eq_DPC' ,
     'Bs_JpsiKst_ee_eq_DPC' ,
@@ -63,6 +67,15 @@ def _get_rdf(size : int = 100) -> RDF.RNode:
     rdf = rdf.Define('H2_PT'               , '20000')
 
     return rdf
+# --------------------------------------------
+@pytest.mark.parametrize('sample', _SAMPLES_CONCATENATE)
+def test_concatenate(sample : str):
+    '''
+    Test with samples resulting from concatenation of other samples
+    '''
+    emu = SampleEmulator(sample=sample)
+    val = emu.get_sample_name()
+
 # --------------------------------------------
 @pytest.mark.parametrize('new_name, old_name', _SAMPLE_PAIRS)
 def test_rename(
