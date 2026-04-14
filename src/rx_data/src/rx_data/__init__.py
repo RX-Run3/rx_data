@@ -16,12 +16,14 @@ from .mass_bias_corrector     import MassBiasCorrector
 from .mass_calculator         import MassCalculator
 from .path_splitter           import PathSplitter
 from .sample_emulator         import SampleEmulator
+from .sample_emulator         import EmulatorConf 
 from .sample_patcher          import SamplePatcher
 from .specification           import Sample
 from .samples                 import SamplesPrinter
 from .rdf_loader              import RDFLoader
 
 __all__ = [
+    'EmulatorConf',
     'Sample',
     'SamplesPrinter',
     'SampleEmulator',

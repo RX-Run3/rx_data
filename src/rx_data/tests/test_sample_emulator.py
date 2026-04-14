@@ -1,13 +1,14 @@
 '''
 Module holding tests for SampleEmulator class
 '''
-
 import numpy
 import pytest
 
-from ROOT    import RDataFrame, RDF # type: ignore
-from dmu     import LogStore
-from rx_data import SampleEmulator
+from ROOT        import RDataFrame, RDF # type: ignore
+from dmu         import LogStore
+from dmu.generic import utilities as gut
+from rx_data     import SampleEmulator
+from rx_data     import EmulatorConf
 
 log=LogStore.add_logger('rx_data:test_sample_emulator')
 
@@ -68,6 +69,15 @@ def _get_rdf(size : int = 100) -> RDF.RNode:
 
     return rdf
 # --------------------------------------------
+def test_emulator_conf():
+    '''
+    Test loading config
+    '''
+    data = gut.load_data(package = 'rx_data_data', fpath = 'emulated_trees/config.yaml')
+    obj  = EmulatorConf(**data)
+
+    assert obj is not None
+# --------------------------------------------
 @pytest.mark.parametrize('sample', _SAMPLES_CONCATENATE)
 def test_concatenate(sample : str):
     '''
@@ -75,7 +85,6 @@ def test_concatenate(sample : str):
     '''
     emu = SampleEmulator(sample=sample)
     val = emu.get_sample_name()
-
 # --------------------------------------------
 @pytest.mark.parametrize('new_name, old_name', _SAMPLE_PAIRS)
 def test_rename(
