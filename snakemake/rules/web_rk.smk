@@ -81,9 +81,9 @@ rule copy_signal:
         mkdir -p $(dirname {output})
 
         WP="{wildcards.cmb}_{wildcards.prc}_all"
-        CAT=brem_{wildcards.brem}_{wildcards.block}
+        CAT={wildcards.brem}_{wildcards.block}
 
-        OUTDIR="{params.root_dir}/$WP/rare/rk/ee/{wildcards.q2bin}/{params.signal}/fit/{brem}/$CAT"
+        OUTDIR="{params.root_dir}/$WP/rare/rk/ee/{wildcards.q2bin}/{params.signal}/fit/{wildcards.brem}/$CAT"
         SOURCE=$OUTDIR/fit_linear.png
 
         if [[ -f $SOURCE ]] && ! identify "$SOURCE" >/dev/null 2>&1; then
@@ -129,7 +129,7 @@ rule copy_non_signal:
         fi
 
         if [[ ! -f $SOURCE ]]; then
-            rxfitter make-dummy-plot -p {output} -t "{wildcards.component}" -s $SOURCE
+            rxfitter make-dummy-plot -p {output} -t "{wildcards.component}, {wildcards.brem}" -s $SOURCE
         else
             ln -s $SOURCE {output}
         fi
