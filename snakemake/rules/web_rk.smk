@@ -83,7 +83,7 @@ rule copy_signal:
         WP="{wildcards.cmb}_{wildcards.prc}_all"
         CAT=brem_{wildcards.brem}_{wildcards.block}
 
-        OUTDIR="{params.root_dir}/$WP/rare/rk/ee/{wildcards.q2bin}/{params.signal}/fit/main/$CAT"
+        OUTDIR="{params.root_dir}/$WP/rare/rk/ee/{wildcards.q2bin}/{params.signal}/fit/{brem}/$CAT"
         SOURCE=$OUTDIR/fit_linear.png
 
         if [[ -f $SOURCE ]] && ! identify "$SOURCE" >/dev/null 2>&1; then
