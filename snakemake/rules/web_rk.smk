@@ -1,8 +1,9 @@
 import os
 from pathlib import Path
 
+SIGNAL      = 'bpkpee'
 _BLOCKS     = [ f'b{block}' for block in range(1, 9) ]
-_BREMS      = ['xx1', 'xx2']
+_BREMS      = ['brem_xx1', 'brem_xx2']
 _COMPONENTS = [
     'data_24', 
     'comb', 
@@ -38,7 +39,7 @@ cmb, prc = _get_wc()
 rule all:
     input: 
         expand(
-        _OUTPUTDIR / '{q2bin}/{prc}_{cmb}/bpkpee_{brem}_{block}.png',
+        _OUTPUTDIR / f'{{q2bin}}/{{prc}}_{{cmb}}/{SIGNAL}_{{brem}}_{{block}}.png',
         q2bin     = _Q2BINS,
         prc       = prc, 
         cmb       = cmb, 
@@ -47,11 +48,12 @@ rule all:
         ),
         # ----------
         expand(
-        _OUTPUTDIR / '{q2bin}/{prc}_{cmb}/{component}.png',
+        _OUTPUTDIR / '{q2bin}/{prc}_{cmb}/{component}_{brem}.png',
         q2bin     = _Q2BINS,
         prc       = prc, 
         cmb       = cmb, 
         component = _COMPONENTS,
+        brem      = _BREMS,
         ),
         # ----------
         expand(
@@ -68,19 +70,19 @@ rule metadata:
         echo "Thumbnail: data_24.png"   >> {output}
         '''
 rule copy_signal:
-    output: _OUTPUTDIR / '{q2bin}/{prc}_{cmb}/{component}_{brem}_{block}.png'
+    output: _OUTPUTDIR / f'{{q2bin}}/{{prc}}_{{cmb}}/{SIGNAL}_{{brem}}_{{block}}.png'
     params:
         root_dir = _INPUT_DIR,
         trigger  = 'Hlt2RD_BuToKpEE_MVA',
+        signal   = SIGNAL,
     shell:
         '''
         mkdir -p $(dirname {output})
 
-        COMP={wildcards.component}
         WP="{wildcards.cmb}_{wildcards.prc}_all"
         CAT=brem_{wildcards.brem}_{wildcards.block}
 
-        OUTDIR="{params.root_dir}/$WP/rare/rk/ee/{wildcards.q2bin}/$COMP/fit/main/$CAT"
+        OUTDIR="{params.root_dir}/$WP/rare/rk/ee/{wildcards.q2bin}/{params.signal}/fit/main/$CAT"
         SOURCE=$OUTDIR/fit_linear.png
 
         if [[ -f $SOURCE ]] && ! identify "$SOURCE" >/dev/null 2>&1; then
@@ -88,13 +90,13 @@ rule copy_signal:
         fi
 
         if [[ ! -f $SOURCE ]]; then
-            rxfitter make-dummy-plot -p {output} -t $COMP -s $SOURCE
+            rxfitter make-dummy-plot -p {output} -t {params.signal} -s $SOURCE
         else
             ln -s $SOURCE {output}
         fi
         '''
 rule copy_non_signal:
-    output: _OUTPUTDIR / '{q2bin}/{prc}_{cmb}/{component}.png'
+    output: _OUTPUTDIR / '{q2bin}/{prc}_{cmb}/{component}_{brem}.png'
     wildcard_constraints:
         component = '|'.join(_COMPONENTS)
     params:
@@ -108,16 +110,16 @@ rule copy_non_signal:
         WP="{wildcards.cmb}_{wildcards.prc}_all"
 
         if   [[ $COMP == "data_24" ]]; then
-            OUTDIR="{params.root_dir}/$WP/rare/rk/ee/{wildcards.q2bin}/{wildcards.component}/fit/brem_x12/brem_x12"
+            OUTDIR="{params.root_dir}/$WP/rare/rk/ee/{wildcards.q2bin}/{wildcards.component}/fit/brem_xx1_brem_xx2/{wildcards.brem}"
             SOURCE=$OUTDIR/fit_linear.png
         elif [[ $COMP == "comb"    ]]; then
-            OUTDIR="{params.root_dir}/$WP/rare/rk/ee/{wildcards.q2bin}/{wildcards.component}/fit/comb"
+            OUTDIR="{params.root_dir}/$WP/rare/rk/ee/{wildcards.q2bin}/{wildcards.component}/fit/{wildcards.brem}"
             SOURCE=$OUTDIR/fit_linear.png
         elif [[ $COMP == "ccbar"   ]]; then
-            OUTDIR="{params.root_dir}/$WP/rare/rk/ee/{wildcards.q2bin}/{wildcards.component}/fit/main"
+            OUTDIR="{params.root_dir}/$WP/rare/rk/ee/{wildcards.q2bin}/{wildcards.component}/fit/{wildcards.brem}"
             SOURCE=$OUTDIR/c-bar-c-X.png
         else
-            OUTDIR="{params.root_dir}/$WP/rare/rk/ee/{wildcards.q2bin}/{wildcards.component}/fit/main"
+            OUTDIR="{params.root_dir}/$WP/rare/rk/ee/{wildcards.q2bin}/{wildcards.component}/fit/{wildcards.brem}"
             SOURCE=$OUTDIR/fit_linear.png
         fi
 
