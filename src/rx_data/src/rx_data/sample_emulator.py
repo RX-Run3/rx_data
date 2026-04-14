@@ -111,14 +111,23 @@ class SampleEmulator:
         ---------------
         sample: Name of sample to emulate, e.g. Bs_JpsiKst_ee_eq_DPC
         '''
-        self._sample  = sample
-        cfg       : DictConfig = gut.load_conf(package='rx_data_data', fpath='emulated_trees/config.yaml')
-        self._cfg : DictConfig = cfg.get(sample, DictConfig({}))
+        fpath= 'emulated_trees/config.yaml'
+        data = gut.load_data(package='rx_data_data', fpath=fpath)
+        cfg  = EmulatorConf(**data)
+
+        if sample in cfg.root:
+            log.warning(f'Emulating {sample}')
+            self._cfg = cfg.root[sample]
+            return
+
+        log.info(f'Not emulating {sample}')
+        samples   = SamplesConf({sample : 1.0})
+        self._cfg = EmulationConf(samples = samples)
     # ----------------------
     def _run_redefine(
         self, 
         rdf         : RDF.RNode, 
-        definitions : DictConfig) -> RDF.RNode:
+        definitions : dict[str,str]) -> RDF.RNode:
         '''
         Parameters
         -------------
@@ -158,9 +167,6 @@ class SampleEmulator:
         for name, expr in redefinitions.items():
             log.debug(f'{name:<20}{expr}')
 
-        if 'redefine' not in self._cfg:
-            self._cfg['redefine'] = dict()
-
         for name, expression in redefinitions.items():
             if name in self._cfg.redefine:
                 log.error(f'Cannot redefine {name}, already in redefine block')
@@ -188,16 +194,7 @@ class SampleEmulator:
             log.warning('Not running emulation for empty dataframe')
             return rdf
 
-        if not self._cfg: 
-            log.debug(f'Not emulating {self._sample}, missing in config')
-            return rdf
-
-        log.info(f'Emulating {self._sample}')
-
-        if 'redefine' in self._cfg:
-            rdf = self._run_redefine(rdf=rdf, definitions=self._cfg.redefine)
-        else:
-            log.debug('Not running redefinitions')
+        rdf = self._run_redefine(rdf=rdf, definitions=self._cfg.redefine)
 
         return rdf
     # ---------------------
