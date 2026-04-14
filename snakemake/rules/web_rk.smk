@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+TRIGGER     = 'Hlt2RD_BuToKpEE_MVA'
 SIGNAL      = 'bpkpee'
 _BLOCKS     = [ f'b{block}' for block in range(1, 9) ]
 _BREMS      = ['brem_xx1', 'brem_xx2']
@@ -73,7 +74,7 @@ rule copy_signal:
     output: _OUTPUTDIR / f'{{q2bin}}/{{prc}}_{{cmb}}/{SIGNAL}_{{brem}}_{{block}}.png'
     params:
         root_dir = _INPUT_DIR,
-        trigger  = 'Hlt2RD_BuToKpEE_MVA',
+        trigger  = TRIGGER,
         signal   = SIGNAL,
     shell:
         '''
@@ -101,7 +102,7 @@ rule copy_non_signal:
         component = '|'.join(_COMPONENTS)
     params:
         root_dir = _INPUT_DIR,
-        trigger  = 'Hlt2RD_BuToKpEE_MVA',
+        trigger  = TRIGGER,
     shell:
         '''
         mkdir -p $(dirname {output})
