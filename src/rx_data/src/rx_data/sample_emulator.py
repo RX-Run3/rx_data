@@ -28,23 +28,6 @@ class SampleEmulator:
         self._sample  = sample
         cfg       : DictConfig = gut.load_conf(package='rx_data_data', fpath='emulated_trees/config.yaml')
         self._cfg : DictConfig = cfg.get(sample, DictConfig({}))
-    # ---------------------
-    def get_sample_name(self) -> str:
-        '''
-        Returns
-        -------------
-        If meant to be emulated, emulating sample, otherwise
-        original sample
-        '''
-
-        if not self._cfg:
-            log.debug(f'Not emulating {self._sample}')
-            return self._sample
-
-        new_sample = self._cfg.sample
-        log.warning(f'Emulating {self._sample} with {new_sample}')
-
-        return new_sample
     # ----------------------
     def _run_redefine(
         self, 
@@ -131,4 +114,21 @@ class SampleEmulator:
             log.debug('Not running redefinitions')
 
         return rdf
+    # ---------------------
+    def get_sample_name(self) -> str:
+        '''
+        Returns
+        -------------
+        If meant to be emulated, emulating sample, otherwise
+        original sample
+        '''
+
+        if not self._cfg:
+            log.debug(f'Not emulating {self._sample}')
+            return self._sample
+
+        new_sample = self._cfg.sample
+        log.warning(f'Emulating {self._sample} with {new_sample}')
+
+        return new_sample
 # ----------------------
