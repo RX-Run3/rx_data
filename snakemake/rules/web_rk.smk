@@ -7,7 +7,7 @@ DATA        = 'data_24'
 _BLOCKS     = [ f'b{block}' for block in range(1, 1) ]
 _BREMS      = ['brem_xx1', 'brem_xx2']
 _COMPONENTS = [
-    'data_24', 
+    DATA, 
     'comb', 
     'ccbar',
     'bdkstkpiee',
@@ -17,7 +17,7 @@ _COMPONENTS = [
     'bpkstkpiee',
     ]
 _Q2BINS    = ['low', 'central']
-_INPUT_DIR = Path('/home/acampove/Tests/web/rare')
+_INPUT_DIR = Path('/home/acampove/external_02/fits/data/rare')
 ANADIR     = Path(os.environ['ANADIR'])
 _OUTPUTDIR = ANADIR / 'plots/web/scan/components/rk'
 
@@ -41,7 +41,7 @@ cmb, prc = _get_wc()
 rule all:
     input: 
         expand(
-        _OUTPUTDIR / '{q2bin}/{prc}_{cmb}/data_24_combined.png',
+        _OUTPUTDIR / f'{{q2bin}}/{{prc}}_{{cmb}}/{DATA}_combined.png',
         q2bin     = _Q2BINS,
         prc       = prc, 
         cmb       = cmb, 
