@@ -28,6 +28,14 @@ plots_settings: &plots_settings
     bpkpipiee_brem_xx1      : $B^+\to K_1^+(1270)(\to K^+\pi^+\pi^-)e^+e^-$
     bpkpipiee_brem_xx2      : $B^+\to K_1^+(1270)(\to K^+\pi^+\pi^-)e^+e^-$
     # ---------
+    bpk1ee                  : $B^+\to K_1^+(1270)(\to K^+\pi^+\pi^-)e^+e^-$
+    bpk1ee_brem_xx1         : $B^+\to K_1^+(1270)(\to K^+\pi^+\pi^-)e^+e^-$
+    bpk1ee_brem_xx2         : $B^+\to K_1^+(1270)(\to K^+\pi^+\pi^-)e^+e^-$
+    # ---------
+    bpk2ee                  : $B^+\to K_2^+(1430)(\to K^+\pi^+\pi^-)e^+e^-$
+    bpk2ee_brem_xx1         : $B^+\to K_2^+(1430)(\to K^+\pi^+\pi^-)e^+e^-$
+    bpk2ee_brem_xx2         : $B^+\to K_2^+(1430)(\to K^+\pi^+\pi^-)e^+e^-$
+    # ---------
     bdkstkpiee              : $B^0\to K^*(\to K^+\pi^-)e^+e^-$
     bdkstkpiee_brem_xx1     : $B^0\to K^*(\to K^+\pi^-)e^+e^-$
     bdkstkpiee_brem_xx2     : $B^0\to K^*(\to K^+\pi^-)e^+e^-$
@@ -55,7 +63,9 @@ observable:
 components:
   comb           : rare/rkst/ee/comb.yaml
   ccbar          : rare/rkst/ee/ccbar.yaml
-  bpkpipiee      : rare/rkst/ee/bpkpipiee_np.yaml
+  #bpkpipiee      : rare/rkst/ee/bpkpipiee_np.yaml
+  bpk1ee         : rare/rkst/ee/bpk1ee_np.yaml
+  #bpk2ee         : rare/rkst/ee/bpk2ee_np.yaml
   bdkstkpijpsiee : rare/rkst/ee/bdkstkpijpsiee_np.yaml
   bdkstkpipsi2ee : rare/rkst/ee/bdkstkpipsi2ee_np.yaml
   bdkstkpiee     : rare/rkst/ee/bdkstkpiee.yaml.j2
