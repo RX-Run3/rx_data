@@ -86,6 +86,7 @@ def test_concatenate(sample : str):
     emu = SampleEmulator(sample=sample)
     val = emu.get_samples()
 
+    assert len(val.root) > 1
 # --------------------------------------------
 @pytest.mark.parametrize('new_name, old_name', _SAMPLE_PAIRS)
 def test_rename(
@@ -100,7 +101,7 @@ def test_rename(
     emu = SampleEmulator(sample=new_name)
     val = emu.get_samples()
 
-    assert old_name == val 
+    assert val.emulated_only_by(sample = old_name)
 # --------------------------------------------
 @pytest.mark.parametrize('sample', _SAMPLES_MOTHER_SWAP)
 @pytest.mark.parametrize('size'  , [0, 100])
