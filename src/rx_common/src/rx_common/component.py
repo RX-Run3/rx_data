@@ -69,6 +69,7 @@ class Component(StrEnum):
     # -----
     bpk1kpipiee    = auto()
     bpk2kpipiee    = auto()
+    bpkxkpipiee    = auto()
     bpkstkpiee     = auto()
     bsphiee        = auto()
     # -----
@@ -219,6 +220,8 @@ class Component(StrEnum):
             return 'Bu_K1ee_eq_DPC'
           case Component.bpk2ee:
             return 'Bu_K2stee_Kpipi_eq_mK1430_DPC'
+          case Component.bpkxkpipiee:
+            return 'Bu_KxKpipi'
           # -----
           case Component.bppijpsimm:
             return 'Bu_JpsiPi_mm_eq_DPC'
