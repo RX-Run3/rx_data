@@ -62,10 +62,6 @@ rule fits:
                     -q {wildcards.qsq} \
                     -C $CMB_WP         \
                     -P $PRC_WP || true
-
-        rxfitter make-dummy-plot -p {output[0]} -t {wildcards.cmb}_{wildcards.prc}
-        rxfitter make-dummy-plot -p {output[1]} -t {wildcards.cmb}_{wildcards.prc}
-        rxfitter make-dummy-plot -p {output[2]} -t {wildcards.cmb}_{wildcards.prc}
         ) > {log.prc} 2>&1
 
         JOBID=$(grep -m1 '^ClusterId' $_CONDOR_JOB_AD | awk '{{print $3}}')
