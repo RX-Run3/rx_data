@@ -247,9 +247,11 @@ class BaseFitter:
         # If no entries were present
         # There will not be PDF
         title, sel_fit, sel_dif = self._get_text(data=data, res=res, selection=cut_cfg)
-        text                    = '\n'.join(textwrap.wrap(sel_dif, width=40))
-        plt_cfg.title    = f'{plt_cfg.title}; {title}' 
-        plt_cfg.ext_text = text
+
+        text       = '\n'.join(textwrap.wrap(sel_dif, width=40))
+        title      = f'{plt_cfg.title}; {title}' 
+        new_fields = {'title' : title, 'ext_text' : text}
+        plt_cfg    = plt_cfg.model_copy(update = new_fields)
 
         sel_path = out_path / 'selection.yaml'
         out_path.mkdir(parents = True, exist_ok = True)

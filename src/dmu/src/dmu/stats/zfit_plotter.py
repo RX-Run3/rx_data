@@ -36,9 +36,7 @@ class ZFitPlotterConf(BaseModel):
     '''
     Class meant to hold configuration for ZFitPlotter
     '''
-    # This cannot be frozen because title will change
-    # based on result of fits, e.g. sensitivity of fit
-    model_config = ConfigDict(frozen=False)
+    model_config = ConfigDict(frozen=True)
 
     nbins           : int
     stacked         : bool
