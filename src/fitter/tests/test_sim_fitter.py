@@ -209,8 +209,12 @@ def test_kde_rk(component : Component, tmp_path : Path):
             q2bin    = Qsq.central)
         ftr.get_model()
 # ---------------------------------------------------
-@pytest.mark.parametrize('component', [Component.bpkpipiee, Component.bdkstkpijpsiee])
-def test_kde_rkst(component : Component, tmp_path : Path):
+@pytest.mark.parametrize('component', [Component.bpkpipiee, Component.bdkstkpijpsiee, Component.bpk1ee, Component.bpk2ee])
+@pytest.mark.parametrize('qsq', Qsq.for_physics())
+def test_kde_rkst(
+    component : Component, 
+    qsq       : Qsq,
+    tmp_path  : Path):
     '''
     Test fitting with KDE
     '''
@@ -234,7 +238,7 @@ def test_kde_rkst(component : Component, tmp_path : Path):
             component= cfg.component,
             cfg      = cfg,
             trigger  = Trigger.rkst_ee_os,
-            q2bin    = Qsq.central)
+            q2bin    = qsq)
         ftr.get_model()
 # ---------------------------------------------------
 @pytest.mark.parametrize('component', [Component.bpkkk, Component.bpkpipi])
