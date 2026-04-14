@@ -58,7 +58,7 @@ def _get_friend_stats(frnd_dir : str, kind : str) -> dict[str,int]:
 
         if not sample.startswith('DATA'):
             event_type= aput.read_event_type(nickname=sample)
-            identifier = f'{chan}/{sample}/{event_type}'
+            identifier = f'{chan}/{event_type}/{sample}'
         else:
             identifier = f'{chan}/{sample}'
 
