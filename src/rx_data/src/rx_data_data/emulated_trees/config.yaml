@@ -2,7 +2,8 @@
 
 # ----------------------------------------
 simulation:
-  sample  : any 
+  sample  : 
+    any : 1.0
   patching:
     3 : 5
     4 : 5
@@ -16,7 +17,8 @@ Bu_KxKpipi:
 # with samples starting from Bd decay
 # ----------------------------------------
 Bs_JpsiKst_mm_eq_DPC : 
-  sample : Bd_JpsiKst_mm_eq_DPC
+  sample : 
+    Bd_JpsiKst_mm_eq_DPC : 1.0
   redefine : &red_001
     B_M                  : B_M                  + 87.23
     B_Mass               : B_Mass               + 87.23
@@ -28,7 +30,8 @@ Bs_JpsiKst_mm_eq_DPC :
     Kst_MC_MOTHER_ID     : 'TMath::Abs(Kst_MC_MOTHER_ID) == 511 ? 531 :  Kst_MC_MOTHER_ID'
     Jpsi_MC_MOTHER_ID    : 'TMath::Abs(Jpsi_MC_MOTHER_ID)== 511 ? 531 : Jpsi_MC_MOTHER_ID'
 Bs_JpsiKst_ee_eq_DPC :
-  sample : Bd_JpsiKst_ee_eq_DPC
+  sample : 
+    Bd_JpsiKst_ee_eq_DPC : 1.0
   redefine :
     <<: *red_001
 # ----------------------------------------
@@ -36,12 +39,15 @@ Bs_JpsiKst_ee_eq_DPC :
 # hadronic swapped (K -> pi and pi -> K) decays
 # ----------------------------------------
 Bd_JpsiKst_mm_had_swp:
-  sample   : Bd_JpsiKst_mm_eq_DPC
+  sample   : 
+    Bd_JpsiKst_mm_eq_DPC : 1.0
 Bd_JpsiKst_ee_had_swp:
-  sample   : Bd_JpsiKst_ee_eq_DPC
+  sample   : 
+    Bd_JpsiKst_ee_eq_DPC : 1.0
 # ----------------------------------------
 Bs_JpsiX_mm_eq_JpsiInAcc:
-  sample : Bs_JpsiX_mm_eq_JpsiInAcc
+  sample : 
+    Bs_JpsiX_mm_eq_JpsiInAcc : 1.0
   patching:
     1 : 5
     2 : 5
@@ -49,7 +55,8 @@ Bs_JpsiX_mm_eq_JpsiInAcc:
     4 : 5
 # ----------------------------------------
 Bu_JpsiX_mm_eq_JpsiInAcc:
-  sample : Bu_JpsiX_mm_eq_JpsiInAcc
+  sample : 
+    Bu_JpsiX_mm_eq_JpsiInAcc : 1.0
   patching:
     1 : 5
     2 : 5
@@ -57,7 +64,8 @@ Bu_JpsiX_mm_eq_JpsiInAcc:
     4 : 5
 # ----------------------------------------
 Bd_psi2SKst_mm_eq_DPC:
-  sample : Bd_psi2SKst_mm_eq_DPC
+  sample : 
+    Bd_psi2SKst_mm_eq_DPC : 1.0
   patching:
     4 : 2
     3 : 2
@@ -65,7 +73,8 @@ Bd_psi2SKst_mm_eq_DPC:
     8 : 6
 # ----------------------------------------
 Bd_psi2SKst_ee_eq_DPC:
-  sample : Bd_psi2SKst_ee_eq_DPC
+  sample :
+    Bd_psi2SKst_mm_eq_DPC : 1.0
   patching:
     4 : 2
     3 : 2
