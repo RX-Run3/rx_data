@@ -17,9 +17,9 @@ class EmulationConf(BaseModel):
     Class meant to represent configuration needed
     to emulate a sample
     '''
-    sample   : dict[str,float] | str
-    patching : dict[Block, Block] | None = None
-    redefine : dict[str  ,   str] | None = None
+    sample   : dict[str  , float]
+    patching : dict[Block, Block] = dict() 
+    redefine : dict[str  ,   str] = dict() 
     # --------------------------------------
     def model_post_init(self, context) -> None:
         '''
@@ -31,25 +31,20 @@ class EmulationConf(BaseModel):
         return super().model_post_init(context)
     # --------------------------------------
     def _validate_patching(self):
-        if self.patching is None:
-            return
-
         for init, fnal in self.patching.items():
             if init == fnal:
                 raise ValueError('Initial and final block cannot be the same')
     # --------------------------------------
     def _validate_sample(self):
-        if self.sample == 'any':
-            return
-
-        if isinstance(self.sample, str):
-            self._validate_sample_name(name = self.sample)
-            return
+        if len(self.sample) == 1:
+            (name, frac), = self.sample.items()
+            if name == 'any' and frac == 1.0:
+                return
 
         for name, fraction in self.sample.items():
             self._validate_sample_name(name = name)
 
-            if fraction < 0:
+            if fraction < 0 or fraction > 1.0:
                 raise ValueError(f'Invalid sample fraction {fraction:.3f} for {name}')
     # --------------------------------------
     def _validate_sample_name(self, name : str):
