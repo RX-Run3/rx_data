@@ -84,7 +84,8 @@ def test_concatenate(sample : str):
     Test with samples resulting from concatenation of other samples
     '''
     emu = SampleEmulator(sample=sample)
-    val = emu.get_sample_name()
+    val = emu.get_samples()
+
 # --------------------------------------------
 @pytest.mark.parametrize('new_name, old_name', _SAMPLE_PAIRS)
 def test_rename(
@@ -97,7 +98,7 @@ def test_rename(
     old_name: Sample that will emulate sample requested 
     '''
     emu = SampleEmulator(sample=new_name)
-    val = emu.get_sample_name()
+    val = emu.get_samples()
 
     assert old_name == val 
 # --------------------------------------------

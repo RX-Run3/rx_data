@@ -60,7 +60,7 @@ class SpecMaker:
         '''
         self._component = component
         self._emulator  = SampleEmulator(sample=component.sample)
-        self._sample    = self._emulator.get_sample_name()
+        self._sample    = self._emulator.get_samples()
 
         cache_dir       = tempfile.mkdtemp(prefix=f'{component}_{trigger}_{tree}')
         self._cache_dir = Path(cache_dir)

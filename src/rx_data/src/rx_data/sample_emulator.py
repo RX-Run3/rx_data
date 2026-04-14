@@ -174,20 +174,11 @@ class SampleEmulator:
 
         return rdf
     # ---------------------
-    def get_sample_name(self) -> str:
+    def get_samples(self) -> SamplesConf:
         '''
         Returns
         -------------
-        If meant to be emulated, emulating sample, otherwise
-        original sample
+        Object specifying how to build sample passed in initializer
         '''
-
-        if not self._cfg:
-            log.debug(f'Not emulating {self._sample}')
-            return self._sample
-
-        new_sample = self._cfg.sample
-        log.warning(f'Emulating {self._sample} with {new_sample}')
-
-        return new_sample
+        return self._cfg.samples
 # ----------------------
