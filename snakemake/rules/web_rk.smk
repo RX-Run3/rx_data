@@ -3,7 +3,8 @@ from pathlib import Path
 
 TRIGGER     = 'Hlt2RD_BuToKpEE_MVA'
 SIGNAL      = 'bpkpee'
-_BLOCKS     = [ f'b{block}' for block in range(1, 9) ]
+DATA        = 'data_24'
+_BLOCKS     = [ f'b{block}' for block in range(1, 1) ]
 _BREMS      = ['brem_xx1', 'brem_xx2']
 _COMPONENTS = [
     'data_24', 
@@ -40,6 +41,13 @@ cmb, prc = _get_wc()
 rule all:
     input: 
         expand(
+        _OUTPUTDIR / '{q2bin}/{prc}_{cmb}/data_24_combined.png',
+        q2bin     = _Q2BINS,
+        prc       = prc, 
+        cmb       = cmb, 
+        ),
+        # ----------
+        expand(
         _OUTPUTDIR / f'{{q2bin}}/{{prc}}_{{cmb}}/{SIGNAL}_{{brem}}_{{block}}.png',
         q2bin     = _Q2BINS,
         prc       = prc, 
@@ -65,10 +73,12 @@ rule all:
         )
 rule metadata:
     output: _OUTPUTDIR / '{q2bin}/{prc}_{cmb}/index.md'
+    params:
+        data = DATA
     shell :
         '''
         echo "Title: {wildcards.prc}-{wildcards.cmb}"  > {output}
-        echo "Thumbnail: data_24.png"   >> {output}
+        echo "Thumbnail: {params.data}_combined.png"   >> {output}
         '''
 rule copy_signal:
     output: _OUTPUTDIR / f'{{q2bin}}/{{prc}}_{{cmb}}/{SIGNAL}_{{brem}}_{{block}}.png'
@@ -99,7 +109,8 @@ rule copy_signal:
 rule copy_non_signal:
     output: _OUTPUTDIR / '{q2bin}/{prc}_{cmb}/{component}_{brem}.png'
     wildcard_constraints:
-        component = '|'.join(_COMPONENTS)
+        component = '|'.join(_COMPONENTS),
+        brem      = '|'.join(_BREMS),
     params:
         root_dir = _INPUT_DIR,
         trigger  = TRIGGER,
@@ -130,6 +141,31 @@ rule copy_non_signal:
 
         if [[ ! -f $SOURCE ]]; then
             rxfitter make-dummy-plot -p {output} -t "{wildcards.component}, {wildcards.brem}" -s $SOURCE
+        else
+            ln -s $SOURCE {output}
+        fi
+        '''
+rule copy_combined:
+    output: _OUTPUTDIR / f'{{q2bin}}/{{prc}}_{{cmb}}/{DATA}_combined.png'
+    params:
+        root_dir = _INPUT_DIR,
+        trigger  = TRIGGER,
+        data     = DATA
+    shell:
+        '''
+        mkdir -p $(dirname {output})
+
+        WP="{wildcards.cmb}_{wildcards.prc}_all"
+
+        OUTDIR="{params.root_dir}/$WP/rare/rk/ee/{wildcards.q2bin}/{params.data}/fit/brem_xx1_brem_xx2/both_brem"
+        SOURCE=$OUTDIR/fit_linear.png
+
+        if [[ -f $SOURCE ]] && ! identify "$SOURCE" >/dev/null 2>&1; then
+            rm "$SOURCE"
+        fi
+
+        if [[ ! -f $SOURCE ]]; then
+            rxfitter make-dummy-plot -p {output} -t "{params.data}, combined" -s $SOURCE
         else
             ln -s $SOURCE {output}
         fi
