@@ -26,7 +26,7 @@ _SAMPLE_PAIRS = [
     ('Bs_JpsiKst_ee_eq_DPC' , 'Bd_JpsiKst_ee_eq_DPC'),
 ]
 
-_SWAPPED_MASSES=[
+_SWAPPED_MASSES = [
     'B_M',
     'B_Mass',
     'B_M_brem_track_2',
