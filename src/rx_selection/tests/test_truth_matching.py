@@ -65,6 +65,10 @@ l_sample_kstmm = [
     Component.lbpkjpsimm,
 ]
 
+l_sample_custom = [
+    Component.bpkxkpipiee,
+]
+
 log=LogStore.add_logger('rx_selection:test_truth_matching')
 # ----------------------
 @pytest.fixture(scope='session', autouse=True)
@@ -212,6 +216,27 @@ def test_bdkstmm(sample : Component):
     cut = tm.get_truth(component = sample, kind='bdkstll')
 
     gtr = RDFGetter(sample=sample, trigger=Trigger.rkst_mm_os)
+    org = gtr.get_rdf(per_file=False)
+
+    ini = org.Count().GetValue()
+    rdf = org.Filter(cut, 'truth match')
+    fin = rdf.Count().GetValue()
+
+    if fin == 0:
+        _check_rdf(rdf=org, selection=cut)
+
+    assert 20 * fin > ini
+    log.info(f'eff={fin/ini=:.3f}')
+# --------------------------
+@pytest.mark.parametrize('sample', l_sample_custom)
+def test_custom(sample : Component):
+    '''
+    Test truth matching for custom samples, e.g. cocktails
+    swapped tracks, etc
+    '''
+    cut = tm.get_truth(component = sample, kind='bdkstll')
+
+    gtr = RDFGetter(sample=sample, trigger=Trigger.rkst_ee_os)
     org = gtr.get_rdf(per_file=False)
 
     ini = org.Count().GetValue()
