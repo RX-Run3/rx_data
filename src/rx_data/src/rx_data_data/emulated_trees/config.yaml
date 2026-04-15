@@ -10,8 +10,8 @@ simulation:
 # ----------------------------------------
 Bu_KxKpipi:
   samples:
-    Bu_K1ee_eq_DPC                 : 1.0
-    Bu_K2stee_Kpipi_eq_mK1430_DPC  : 1.0
+    Bu_K1ee_eq_DPC                 : 0.5
+    Bu_K2stee_Kpipi_eq_mK1430_DPC  : 0.5
 # ----------------------------------------
 # samples starting from Bs decay can be modelled
 # with samples starting from Bd decay
