@@ -19,7 +19,7 @@ from dmu           import LogStore
 from zfit.loss     import ExtendedUnbinnedNLL
 from rx_data       import RDFLoader
 from rx_selection  import selection as sel
-from rx_common     import Brem, Component, Cuts, Region
+from rx_common     import Brem, Component, Region
 
 from fitter        import RXFitConfig
 from fitter        import ConstraintReader
@@ -173,7 +173,7 @@ def _add_constraints(
 
     return nll, cons
 # ----------------------
-def _get_region_nll(brem : Brem, cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL, list[Constraint], dict[str,dict[Cuts,str]]]:
+def _get_region_nll(brem : Brem, cfg : RXFitConfig) -> NLLConf:
     ftr = LikelihoodFactory(
         name   = brem.region,
         obs    = cfg.obs,
@@ -188,29 +188,22 @@ def _get_region_nll(brem : Brem, cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL
         nll = nll,
         cfg = cfg)
 
-    return nll, cons, cfg_mod
+    return NLLConf(
+        nll         = nll, 
+        selection   = cfg_mod, 
+        constraints = cons)
 # ----------------------
 def _get_nll(cfg : RXFitConfig) -> dict[Region,NLLConf]:
     d_nll= {}
     brem = Brem.one
     with sel.update_selection(d_sel = brem.region.selection):
         cfg_brem           = cfg.cfg_copy(replacements = {'BREM' : brem.region})
-        nll, cons, cfg_mod = _get_region_nll(brem = brem, cfg = cfg_brem)
-
-        d_nll[brem.region] = NLLConf(
-            nll         = nll, 
-            selection   = cfg_mod, 
-            constraints = cons)
+        d_nll[brem.region] = _get_region_nll(brem = brem, cfg = cfg_brem)
 
     brem = Brem.two
     with sel.update_selection(d_sel = brem.region.selection):
         cfg_brem           = cfg.cfg_copy(replacements = {'BREM' : brem.region})
-        nll, cons, cfg_mod = _get_region_nll(brem = brem, cfg = cfg_brem)
-
-        d_nll[brem.region] = NLLConf(
-            nll         = nll, 
-            selection   = cfg_mod, 
-            constraints = cons)
+        d_nll[brem.region] = _get_region_nll(brem = brem, cfg = cfg_brem)
 
     return d_nll
 # ----------------------
