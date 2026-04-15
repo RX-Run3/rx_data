@@ -143,8 +143,8 @@ class DataFitter(BaseFitter, Cache):
         self._save_by_region(nll = nll, fres = fres)
 
         for cat, regions in self._cfg.plots.merging.items():
-            self._save_by_category(
-                name    = cat, 
+            self._save_merged_regions(
+                region  = cat, 
                 fres    = fres,
                 regions = regions)
 
@@ -174,22 +174,22 @@ class DataFitter(BaseFitter, Cache):
 
         return fres
     # ---------------------------------------------
-    def _save_by_category(
+    def _save_merged_regions(
         self, 
-        name    : str, 
+        region  : Region, 
         fres    : FitResult,
         regions : list[Region]) -> None:
         '''
         Parameters
         ---------------
-        name   : Name of category
+        region : Merged region 
         fres   : Fit result
         regions: List of regions associated
         '''
         if len(regions) < _MIN_REGIONS_IN_CAT:
             raise ValueError(f'Cannot create category with fewer than two regions, found: {regions}')
 
-        out_path = self._out_path / name 
+        out_path = self._out_path / region 
 
         log.info(f'Saving fit to: {out_path}')
 
@@ -216,7 +216,7 @@ class DataFitter(BaseFitter, Cache):
 
         self._save_fit(
             cut_cfg  = dict(),
-            plt_cfg  = self._cfg.plots.regions[name],
+            plt_cfg  = self._cfg.plots.regions[region],
             data     = zfit.data.concat(datasets),
             model    = model,
             res      = fres,
