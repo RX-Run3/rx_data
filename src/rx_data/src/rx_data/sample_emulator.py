@@ -2,6 +2,7 @@
 Module holding SampleEmulator class
 '''
 
+from fnmatch     import fnmatch
 from ROOT        import RDF # type: ignore
 from dmu         import LogStore
 from dmu.generic import utilities as gut
@@ -43,7 +44,34 @@ class SamplesConf(RootModel):
         ---------------
         True if `sample` is in dictionary
         '''
-        return sample in self.root
+        if sample in self.root:
+            return True
+
+        try:
+            comp = Component.from_sample(sample = sample)
+        except ValueError:
+            # If cannot find sample, then it's MC, real data should always
+            # be associated to component
+            # If MC and not found in config, skip sample 
+            return False
+
+        # If MC and not found skip
+        if comp.is_mc:
+            return False
+
+        # ---------
+        # Below this point `sample` is real data
+        # ---------
+
+        # If sample did not match, root is wildcard
+        # and a single wildcard 
+        if len(self.root) != 1:
+            return False
+
+        (pattern, _), = self.root.items()
+
+        # If matches pattern, pick
+        return fnmatch(name = sample, pat = pattern)
     # --------------------------------------
     def emulated_only_by(self, sample : str) -> bool:
         '''
