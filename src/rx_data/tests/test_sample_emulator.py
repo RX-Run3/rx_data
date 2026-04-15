@@ -7,8 +7,10 @@ import pytest
 from ROOT        import RDataFrame, RDF # type: ignore
 from dmu         import LogStore
 from dmu.generic import utilities as gut
+from rx_common   import Component
 from rx_data     import SampleEmulator
 from rx_data     import EmulatorConf
+from rx_data     import SamplesConf
 
 log=LogStore.add_logger('rx_data:test_sample_emulator')
 
@@ -68,6 +70,18 @@ def _get_rdf(size : int = 100) -> RDF.RNode:
     rdf = rdf.Define('H2_PT'               , '20000')
 
     return rdf
+# --------------------------------------------
+def test_samples_conf():
+    '''
+    Test config used to represent samples
+    '''
+    for component in Component:
+        if not component.has_sample: 
+            continue
+
+        cfg = SamplesConf({component.sample : 1.0})
+        assert cfg.is_data != component.is_mc
+        assert cfg.contains(sample = component.sample)
 # --------------------------------------------
 def test_emulator_conf():
     '''
