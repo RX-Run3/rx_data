@@ -74,7 +74,7 @@ Bd_psi2SKst_mm_eq_DPC:
 # ----------------------------------------
 Bd_psi2SKst_ee_eq_DPC:
   samples :
-    Bd_psi2SKst_mm_eq_DPC : 1.0
+    Bd_psi2SKst_ee_eq_DPC : 1.0
   patching:
     4 : 2
     3 : 2
