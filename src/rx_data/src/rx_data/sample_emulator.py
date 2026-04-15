@@ -14,8 +14,36 @@ class SamplesConf(RootModel):
     '''
     Class meant to represent a cocktail of samples
     and the fractions of each
+
+    Attributes:
+    ------------------
+    root: Dictionary mapping sample name (e.g. Bs_JpsiKst_ee_eq_DPC) to
+          fraction of it in cocktail
     '''
     root : dict[str,float]
+    # --------------------------------------
+    @property
+    def is_data(self) -> bool:
+        '''
+        True if all keys are data samples
+        '''
+        for sample in self.root:
+            if Component.from_sample(sample = sample).is_mc:
+                return False
+
+        return True
+    # --------------------------------------
+    def contains(self, sample : str) -> bool:
+        '''
+        Parameters
+        ---------------
+        sample: E.g. Bs_JpsiKst_ee_eq_DPC
+
+        Returns
+        ---------------
+        True if `sample` is in dictionary
+        '''
+        return sample in self.root
     # --------------------------------------
     def emulated_only_by(self, sample : str) -> bool:
         '''
