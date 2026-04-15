@@ -6,6 +6,7 @@ from .toy_maker          import ToyConf
 from .toy_plotter        import ToyPlotter
 from .data_fitter        import DataFitter
 from .data_model         import DataModel
+from .data_fitter        import NLLConf 
 from .sim_fitter         import SimFitter
 from .data_preprocessor  import DataPreprocessor
 from .constraint_reader  import ConstraintReader
@@ -49,6 +50,7 @@ __all__ = [
     'ScaleReader',
     'Category',
     'CategoryMerger',
+    'NLLConf',
     # ------------------
     'ObservableConf',
     'RXFitConfig',
