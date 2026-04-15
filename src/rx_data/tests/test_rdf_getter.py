@@ -472,6 +472,31 @@ def _run_default_checks(
     _plot_mva(rdf     , f'{test_name}_{sample}', out_dir = tmp_path)
     _plot_hop(rdf     , f'{test_name}_{sample}', out_dir = tmp_path)
 # ------------------------------------------------
+def test_cocktail():
+    '''
+    Test that cocktail samples are actually merged
+    '''
+    gtr_k1 = RDFGetter(sample = Component.bpk1kpipiee, trigger = Trigger.rkst_ee_os)
+    rdf_k1 = gtr_k1.get_rdf(per_file = False)
+
+    gtr_k2 = RDFGetter(sample = Component.bpk2kpipiee, trigger = Trigger.rkst_ee_os)
+    rdf_k2 = gtr_k2.get_rdf(per_file = False)
+
+    gtr_kx = RDFGetter(sample = Component.bpkxkpipiee, trigger = Trigger.rkst_ee_os)
+    rdf_kx = gtr_kx.get_rdf(per_file = False)
+
+    column = 'EVENTNUMBER'
+
+    evt_k1 = rdf_k1.AsNumpy([column])[column]
+    evt_k2 = rdf_k2.AsNumpy([column])[column]
+    evt_kx = rdf_kx.AsNumpy([column])[column]
+    evt_kx = numpy.sort(evt_kx)
+
+    evt_ky = numpy.concatenate([evt_k1, evt_k2])
+    evt_ky = numpy.sort(evt_ky)
+
+    assert numpy.array_equal(evt_kx, evt_ky)
+# ------------------------------------------------
 @pytest.mark.parametrize('per_file', [True, False])
 @pytest.mark.parametrize('trigger' , ['Hlt2RD_BuToKpEE_MVA', 'Hlt2RD_B0ToKpPimEE_MVA'])
 def test_guid(trigger : Trigger, per_file : bool):
