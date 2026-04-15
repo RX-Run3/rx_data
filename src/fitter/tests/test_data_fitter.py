@@ -1,9 +1,6 @@
 '''
 Module used to test DataFitter
 '''
-import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-
 import pytest
 
 from typing          import Final
@@ -22,9 +19,11 @@ from fitter          import ToyMaker
 from fitter          import ToyPlotter
 from fitter          import ToyConf
 from fitter          import FitModelConf
+from fitter          import NLLConf
 
 _SEL_CFG : Final[dict] = {
-    'selection' : {'default' : {}, 'fit' : {}}
+    'default' : {},
+    'fit'     : {},
 }
 
 _CONSTRAINTS : Final[dict] = {
@@ -46,6 +45,14 @@ def initialize():
     with FitParameter.enforce_naming_convention(value = False):
         yield
 # ----------------------
+def _rename_model(pdf : zfit.pdf.SumPDF, signal : str, background : str) -> zfit.pdf.SumPDF:
+    [sig, bkg] = pdf.pdfs
+
+    sig._name = signal     # type: ignore
+    bkg._name = background # type: ignore 
+
+    return pdf
+# ----------------------
 def test_single_region(tmp_path : Path) -> None:
     '''
     Test fitting with single signal region
@@ -54,7 +61,12 @@ def test_single_region(tmp_path : Path) -> None:
     dat = pdf.create_sampler(10_000)
     nll = zfit.loss.ExtendedUnbinnedNLL(data=dat, model=pdf)
 
-    d_nll= {Region.region_001 : (nll, _SEL_CFG)}
+    cfg_nll = NLLConf(
+        nll         = nll, 
+        selection   = _SEL_CFG, 
+        constraints = [])
+
+    d_nll= {Region.region_001 : cfg_nll}
     data = gut.load_data(package='fitter_data', fpath='tests/fits/single_region.yaml')
     cfg  = FitModelConf(**data)
 
@@ -69,62 +81,93 @@ def test_two_regions(tmp_path : Path) -> None:
     '''
     Test simultaneous fit with two regions
     '''
-    obs     = zfit.Space(obs = 'mass', limits = (4500, 7000)) 
+    obs     = zfit.Space(obs = 'Mass', limits = (4500, 7000)) 
 
     pdf_001 = get_model(obs=obs, kind='s+b', suffix='001')
+    pdf_001 = _rename_model(pdf = pdf_001, signal = 'bpkpee_001', background = 'comb_001')
     dat_001 = pdf_001.create_sampler(10_000)
     nll_001 = zfit.loss.ExtendedUnbinnedNLL(data=dat_001, model=pdf_001)
 
     pdf_002 = get_model(obs=obs, kind='s+b', suffix='002')
+    pdf_002 = _rename_model(pdf = pdf_002, signal = 'bpkpee_002', background = 'comb_002')
     dat_002 = pdf_002.create_sampler(10_000)
     nll_002 = zfit.loss.ExtendedUnbinnedNLL(data=dat_002, model=pdf_002)
 
+    cfg_nll_001 = NLLConf(
+        nll         = nll_001, 
+        selection   = _SEL_CFG, 
+        constraints = [])
+
+    cfg_nll_002 = NLLConf(
+        nll         = nll_002, 
+        selection   = _SEL_CFG, 
+        constraints = [])
+
     d_nll   = {
-        Region.region_001 : (nll_001, _SEL_CFG),
-        Region.region_002 : (nll_002, _SEL_CFG),
+        Region.region_001 : cfg_nll_001,
+        Region.region_002 : cfg_nll_002,
     }
 
+    q2bin = Qsq.central
     with goc.GofCalculator.disabled(True),\
          Cache.cache_root(path = tmp_path):
-        data = gut.load_data(package='fitter_data', fpath='tests/fits/two_regions.yaml')
+        data = gut.load_data(
+            package='fitter_data', 
+            fpath  ='tests/fits/two_regions.yaml')
+
         cfg  = FitModelConf(**data)
+        cfg  = cfg.specialize(q2bin = q2bin)
 
         ftr = DataFitter(
-            q2bin= Qsq.jpsi,
+            q2bin= q2bin,
             d_nll= d_nll,
             cfg  = cfg)
         ftr.run()
 # ----------------------
-def test_two_regions_common_pars(tmp_path : Path) -> None:
+def test_two_regions_shared(tmp_path : Path) -> None:
     '''
     Test simultaneous fit with two regions
-    and common parameters
     '''
+    obs     = zfit.Space(obs = 'Mass', limits = (4500, 7000)) 
     nsig    = zfit.param.Parameter('nsig', 0, 0, 1000_000)
-    obs     = None
 
-    pdf_001 = get_model(obs=obs, kind='signal', suffix='001')
-    pdf_001 = pdf_001.create_extended(yield_ = nsig)
+    pdf_001 = get_model(obs=obs, kind='s+b', suffix='001', nsig = nsig)
+    pdf_001 = _rename_model(pdf = pdf_001, signal = 'bpkpee_001', background = 'comb_001')
     dat_001 = pdf_001.create_sampler(10_000)
     nll_001 = zfit.loss.ExtendedUnbinnedNLL(data=dat_001, model=pdf_001)
 
-    pdf_002 = get_model(obs=obs, kind='signal', suffix='002')
-    pdf_002 = pdf_002.create_extended(yield_ = nsig)
+    pdf_002 = get_model(obs=obs, kind='s+b', suffix='002', nsig = nsig)
+    pdf_002 = _rename_model(pdf = pdf_002, signal = 'bpkpee_002', background = 'comb_002')
     dat_002 = pdf_002.create_sampler(10_000)
     nll_002 = zfit.loss.ExtendedUnbinnedNLL(data=dat_002, model=pdf_002)
 
+    cfg_nll_001 = NLLConf(
+        nll         = nll_001, 
+        selection   = _SEL_CFG, 
+        constraints = [])
+
+    cfg_nll_002 = NLLConf(
+        nll         = nll_002, 
+        selection   = _SEL_CFG, 
+        constraints = [])
+
     d_nll   = {
-        Region.region_001 : (nll_001, _SEL_CFG),
-        Region.region_002 : (nll_002, _SEL_CFG),
+        Region.region_001 : cfg_nll_001,
+        Region.region_002 : cfg_nll_002,
     }
 
+    q2bin = Qsq.central
     with goc.GofCalculator.disabled(True),\
          Cache.cache_root(path = tmp_path):
-        data = gut.load_data(package='fitter_data', fpath='tests/fits/two_regions.yaml')
+        data = gut.load_data(
+            package='fitter_data', 
+            fpath  ='tests/fits/two_regions.yaml')
+
         cfg  = FitModelConf(**data)
+        cfg  = cfg.specialize(q2bin = q2bin)
 
         ftr = DataFitter(
-            q2bin= Qsq.jpsi,
+            q2bin= q2bin,
             d_nll= d_nll,
             cfg  = cfg)
         ftr.run()
@@ -134,12 +177,17 @@ def test_with_constraints(tmp_path : Path) -> None:
     Test fitting with constraints
     '''
     pdf   = get_model(kind='s+b')
+    pdf   = _rename_model(pdf = pdf, signal = 'bpkpee', background = 'comb')
     dat   = pdf.create_sampler(10_000)
     nll   = zfit.loss.ExtendedUnbinnedNLL(data=dat, model=pdf)
-
-    d_nll = {Region.region_001 : (nll, _SEL_CFG)}
     cons  = Constraint1D(**_CONSTRAINTS)
 
+    cfg_nll = NLLConf(
+        nll         = nll, 
+        selection   = _SEL_CFG, 
+        constraints = [cons])
+
+    d_nll = {Region.region_001 : cfg_nll}
     adr   = cad.ConstraintAdder(nll=nll, constraints = [cons])
     nll   = adr.get_nll()
 
@@ -163,12 +211,18 @@ def test_with_toys(ntoys : int, tmp_path : Path) -> None:
     - Making toys
     - Plotting
     '''
+    q2bin = Qsq.jpsi
     pdf = get_model(kind='s+b')
+    pdf = _rename_model(pdf = pdf, signal = 'bpkpee', background = 'comb')
     dat = pdf.create_sampler(10_000)
     nll = zfit.loss.ExtendedUnbinnedNLL(data=dat, model=pdf)
 
-    d_nll   = {Region.region_001 : (nll, _SEL_CFG)}
+    cfg_nll = NLLConf(
+        nll         = nll, 
+        selection   = _SEL_CFG, 
+        constraints = [])
 
+    d_nll   = {Region.region_001 : cfg_nll}
     data    = gut.load_data(package='fitter_data', fpath='tests/fits/single_region.yaml')
     cfg_fit = FitModelConf(**data)
 
@@ -177,7 +231,7 @@ def test_with_toys(ntoys : int, tmp_path : Path) -> None:
 
     with Cache.cache_root(path = tmp_path):
         ftr = DataFitter(
-            q2bin= Qsq.jpsi,
+            q2bin= q2bin,
             d_nll= d_nll,
             cfg  = cfg_fit)
         res = ftr.run()
