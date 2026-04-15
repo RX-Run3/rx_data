@@ -92,6 +92,7 @@ def initialize():
     '''
     This will run before any test
     '''
+    LogStore.set_level('rx_data:test_rdf_getter', 10)
     LogStore.set_level('rx_data:rdf_getter'     , 10)
     LogStore.set_level('rx_data:spec_maker'     , 10)
     LogStore.set_level('rx_data:sample_emulator', 10)
@@ -494,6 +495,14 @@ def test_cocktail():
 
     evt_ky = numpy.concatenate([evt_k1, evt_k2])
     evt_ky = numpy.sort(evt_ky)
+
+    # These will be different almost always
+    assert evt_k1.shape != evt_k2.shape
+
+    log.debug(f'K1: {evt_k1.shape}')
+    log.debug(f'K2: {evt_k2.shape}')
+    log.debug(f'KX: {evt_kx.shape}')
+    log.debug(f'KY: {evt_ky.shape}')
 
     assert numpy.array_equal(evt_kx, evt_ky)
 # ------------------------------------------------
