@@ -80,8 +80,16 @@ def test_samples_conf():
             continue
 
         cfg = SamplesConf({component.sample : 1.0})
+        assert not cfg.is_cocktail
         assert cfg.is_data != component.is_mc
         assert cfg.contains(sample = component.sample)
+
+    cfg = SamplesConf({
+            Component.bpk1ee.sample : 0.5,
+            Component.bpk2ee.sample : 0.5,
+         })
+
+    assert cfg.is_cocktail
 # --------------------------------------------
 def test_emulator_conf():
     '''

@@ -24,6 +24,13 @@ class SamplesConf(RootModel):
     root : dict[str,float]
     # --------------------------------------
     @property
+    def is_cocktail(self) -> bool:
+        '''
+        True if this is a set of samples instead of one
+        '''
+        return len(self.root) > 1
+    # --------------------------------------
+    @property
     def is_data(self) -> bool:
         '''
         True if all keys are data samples
