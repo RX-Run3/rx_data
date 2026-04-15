@@ -85,8 +85,8 @@ def test_samples_conf():
         assert cfg.contains(sample = component.sample)
 
     cfg = SamplesConf({
-            Component.bpk1ee.sample : 0.5,
-            Component.bpk2ee.sample : 0.5,
+            Component.bpk1kpipiee.sample : 0.5,
+            Component.bpk2kpipiee.sample : 0.5,
          })
 
     assert cfg.is_cocktail

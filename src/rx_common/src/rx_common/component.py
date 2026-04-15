@@ -51,8 +51,6 @@ class Component(StrEnum):
     bpkpjpsiee     = auto()
     bpkppsi2ee     = auto()
     bpkpipiee      = auto()
-    bpk1ee         = auto()
-    bpk2ee         = auto()
     # -----
     bppijpsimm     = auto()
     bppijpsiee     = auto()
@@ -224,12 +222,6 @@ class Component(StrEnum):
             return 'Bu_psi2SK_ee_eq_DPC'
           case Component.bpkpipiee:
             return 'Bu_Kpipiee_eq_DPC_LSFLAT'
-          case Component.bpk1ee:
-            return 'Bu_K1ee_eq_DPC'
-          case Component.bpk2ee:
-            return 'Bu_K2stee_Kpipi_eq_mK1430_DPC'
-          case Component.bpkxkpipiee:
-            return 'Bu_KxKpipiee'
           # -----
           case Component.bppijpsimm:
             return 'Bu_JpsiPi_mm_eq_DPC'
@@ -261,6 +253,8 @@ class Component(StrEnum):
             return 'Bu_K1ee_eq_DPC'
           case Component.bpk2kpipiee:
             return 'Bu_K2stee_Kpipi_eq_mK1430_DPC'
+          case Component.bpkxkpipiee:
+            return 'Bu_KxKpipiee'
           case Component.bpkstkpiee:
             return 'Bu_Kstee_Kpi0_eq_btosllball05_DPC'
           case Component.bsphiee:

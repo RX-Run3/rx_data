@@ -209,7 +209,7 @@ def test_kde_rk(component : Component, tmp_path : Path):
             q2bin    = Qsq.central)
         ftr.get_model()
 # ---------------------------------------------------
-@pytest.mark.parametrize('component', [Component.bpkpipiee, Component.bdkstkpijpsiee, Component.bpk1ee, Component.bpk2ee])
+@pytest.mark.parametrize('component', [Component.bpkpipiee, Component.bdkstkpijpsiee, Component.bpk1kpipiee, Component.bpk2kpipiee])
 @pytest.mark.parametrize('qsq', Qsq.for_physics())
 def test_kde_rkst(
     component : Component, 
