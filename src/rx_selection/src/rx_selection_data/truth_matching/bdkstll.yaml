@@ -144,12 +144,18 @@ Bs_JpsiKst_ee_eq_DPC : '{b_is_bstrn} && {lep_are_electrons} && {ll_is_jpsi} && {
 #-------------------------------------------------------------
 # Part reco rare
 #-------------------------------------------------------------
-# Bu -> K_1 (-> K+ pi+ pi-) e+ e-
-12425000        : '{b_is_bplus} && {lep_are_electrons} && {lep_from_bplus} && {had_are_kpi} && {had_from_k1plus} && {hh_is_k1plus}'
 # From https://gitlab.cern.ch/lhcb-datapkg/Gen/DecFiles/-/blob/v32r40/dkfiles/Bu_Kpipiee=DecProdCut,LSFLAT.dec
 12125000        : '{b_is_bplus} && {lep_are_electrons} && {lep_from_bplus} && {had_are_kpi} && {had_from_k1plus} && {hh_is_k1plus}'
 
+# Bu -> K_1 (-> K+ pi+ pi-) e+ e-
+# From https://gitlab.cern.ch/lhcb-datapkg/Gen/DecFiles/-/blob/v30r127/dkfiles/Bu_K1ee=DecProdCut.dec
+Bu_K1Kpipiee    : '{b_is_bplus} && {lep_are_electrons} && {lep_from_bplus} && {had_are_kpi} && {had_from_k1plus} && {hh_is_k1plus}'
+12425000        : '{Bu_K1Kpipiee}'
+
 # B+ -> K_2*(1430)+ -> (X ->  K+ pi- pi+) e+ e-
 # From https://gitlab.cern.ch/lhcb-datapkg/Gen/DecFiles/-/blob/v32r36/dkfiles/Bu_K2stee,Kpipi=mK1430,DecProdCut.dec
-12425011        : '{b_is_bplus} && {lep_are_electrons} && {lep_from_bplus} && {had_are_kpi}'
+Bu_K2Kpipiee    : '{b_is_bplus} && {lep_are_electrons} && {lep_from_bplus} && {had_are_kpi}'
+12425011        : '{Bu_K2Kpipiee}'
 
+# Cocktail sample
+Bu_KxKpipiee    : '({Bu_K1Kpipiee}) || ({Bu_K2Kpipiee})'
