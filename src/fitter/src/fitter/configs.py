@@ -340,16 +340,16 @@ class MisIDConf(NonParametricConf): # Tested
 AnyModelConf = CombinatorialConf | ParametricConf | CCbarConf | MisIDConf | NonParametricConf
 # ------------------------------
 class PlotConf(BaseModel):
-    merging : dict[str,list[Region]]
-    regions : dict[str, ZFitPlotterConf]
+    merging : dict[Region,    list[Region]]
+    regions : dict[Region, ZFitPlotterConf]
     # -----------------------------
     @classmethod
     def default(cls) -> Self:
         '''
         Returns default config, useful for tests
         '''
-        merging = {'category' : []}
-        regions = {Region.bpee_xx1.value : ZFitPlotterConf.default()}
+        merging = {}
+        regions = {Region.bpee_xx1 : ZFitPlotterConf.default()}
 
         return cls(
             merging = merging,
