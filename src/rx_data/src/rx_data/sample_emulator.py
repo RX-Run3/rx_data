@@ -95,29 +95,30 @@ class SamplesConf(RootModel):
         return emulator == sample
     # --------------------------------------
     def model_post_init(self, context) -> None:
-        self._validate_sample()
+        self.__validate_sample()
+        self.__validate_fraction()
 
         return super().model_post_init(context)
     # --------------------------------------
-    def _validate_fraction(self):
+    def __validate_fraction(self):
         fractions = list(self.root.values())
 
         if sum(fractions) != 1:
             raise ValueError(f'Sum of sample fractions not 1: {fractions}')
     # --------------------------------------
-    def _validate_sample(self):
+    def __validate_sample(self):
         if len(self.root) == 1:
             (name, frac), = self.root.items()
             if name == 'any' and frac == 1.0:
                 return
 
         for name, fraction in self.root.items():
-            self._validate_sample_name(name = name)
+            self.__validate_sample_name(name = name)
 
             if fraction < 0 or fraction > 1.0:
                 raise ValueError(f'Invalid sample fraction {fraction:.3f} for {name}')
     # --------------------------------------
-    def _validate_sample_name(self, name : str):
+    def __validate_sample_name(self, name : str):
         try:
             Component.from_sample(sample = name)
         except Exception as exc:
