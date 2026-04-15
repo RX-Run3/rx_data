@@ -550,7 +550,7 @@ def _save_result(
 # Make latex table from text file
 #-------------------------------------------------------
 def _reformat_expo(val : str) -> str:
-    regex = r'([\d\.]+)e([+,-,\d]+)'
+    regex = r'([\d,\.]+)e([+,\-,\d]+)'
     mtch  = re.match(regex, val)
     if not mtch:
         raise ValueError(f'Cannot extract value and exponent from: {val}')
