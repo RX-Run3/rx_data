@@ -60,7 +60,7 @@ class SpecMaker:
         '''
         self._component = component
         self._emulator  = SampleEmulator(sample=component.sample)
-        self._sample    = self._emulator.get_samples()
+        self._cfg_samp  = self._emulator.get_samples()
 
         cache_dir       = tempfile.mkdtemp(prefix=f'{component}_{trigger}_{tree}')
         self._cache_dir = Path(cache_dir)
@@ -260,7 +260,7 @@ class SpecMaker:
         if nosamp:
             data = yaml.dump(d_data, sort_keys=False)
             log.error(data)
-            raise ValueError(f'Could not find any sample matching {self._sample} with friend tree {ftree} in {json_path}')
+            raise ValueError(f'Could not find any sample matching {self._cfg_samp} with friend tree {ftree} in {json_path}')
 
         self._l_path += l_path
 
@@ -433,7 +433,7 @@ class SpecMaker:
                 log.warning(20 * '-')
                 log.info(data_string)
                 log.warning(20 * '-')
-                raise KeyError(f'Cannot retrieve file at {ifile} for friend {friend_name}, sample {self._sample}/{self._trigger}/{self._tree_name}') from exc
+                raise KeyError(f'Cannot retrieve file at {ifile} for friend {friend_name}, sample {self._cfg_samp}/{self._trigger}/{self._tree_name}') from exc
 
             data['friends'][friend_name]['files'] = [fpath_friend]
 
