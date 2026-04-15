@@ -8,27 +8,27 @@ import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 from dask.distributed import Client, LocalCluster
-from typing        import Final
-from contextlib    import ExitStack
-from dmu.stats     import ParameterLibrary as PL
-from dmu.generic   import UnpackerModel, utilities as gut
-from dmu.stats     import ConstraintAdder
-from dmu.stats     import Constraint
-from dmu.workflow  import Cache
-from dmu           import LogStore
-from zfit.loss     import ExtendedUnbinnedNLL
-from rx_data       import RDFLoader
-from rx_selection  import selection as sel
-from rx_common     import Brem, Component, Region
+from typing           import Final
+from contextlib       import ExitStack
+from dmu.stats        import ParameterLibrary as PL
+from dmu.generic      import UnpackerModel, utilities as gut
+from dmu.stats        import ConstraintAdder
+from dmu.stats        import Constraint
+from dmu.workflow     import Cache
+from dmu              import LogStore
+from zfit.loss        import ExtendedUnbinnedNLL
+from rx_data          import RDFLoader
+from rx_selection     import selection as sel
+from rx_common        import Brem, Component, Region
 
-from fitter        import RXFitConfig
-from fitter        import ConstraintReader
-from fitter        import DataFitter
-from fitter        import LikelihoodFactory
-from fitter        import FitModelConf
-from fitter        import ToyConf
-from fitter        import MVAWp
-from fitter        import NLLConf
+from fitter           import RXFitConfig
+from fitter           import ConstraintReader
+from fitter           import DataFitter
+from fitter           import LikelihoodFactory
+from fitter           import FitModelConf
+from fitter           import ToyConf
+from fitter           import MVAWp
+from fitter           import NLLConf
 
 log=LogStore.add_logger('fitter:fit_rx_rare')
 
@@ -212,8 +212,7 @@ def _fit(cfg : RXFitConfig) -> None:
     This is where DataFitter is used
     '''
     d_nll = _get_nll(cfg = cfg)
-
-    ftr = DataFitter(
+    ftr   = DataFitter(
         q2bin = cfg.q2bin,
         d_nll = d_nll,
         cfg   = cfg.mod_cfg)
