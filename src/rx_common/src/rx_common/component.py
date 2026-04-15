@@ -34,9 +34,11 @@ class Component(StrEnum):
     # Data
     # -----
     data_24        = auto()
+    data_24_mu_c1  = auto()
     data_24_mu_c2  = auto()
     data_24_mu_c3  = auto()
     data_24_mu_c4  = auto()
+    data_24_md_c1  = auto()
     data_24_md_c2  = auto()
     data_24_md_c3  = auto()
     data_24_md_c4  = auto()
@@ -162,9 +164,11 @@ class Component(StrEnum):
 
         if self in [
             Component.data_24,
+            Component.data_24_mu_c1,
             Component.data_24_mu_c2,
             Component.data_24_mu_c3,
             Component.data_24_mu_c4,
+            Component.data_24_md_c1,
             Component.data_24_md_c2,
             Component.data_24_md_c3,
             Component.data_24_md_c4]:
@@ -188,6 +192,10 @@ class Component(StrEnum):
         match self:
           case Component.data_24:
             return 'DATA_24*'
+          case Component.data_24_mu_c1:
+            return 'DATA_24_MagUp_24c1'
+          case Component.data_24_md_c1:
+            return 'DATA_24_MagDown_24c1'
           case Component.data_24_mu_c2:
             return 'DATA_24_MagUp_24c2'
           case Component.data_24_md_c2:
