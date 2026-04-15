@@ -88,10 +88,10 @@ constraints:
 fit  : {}
 plots:
   merging:
-    both_brem:
+    brem_x12:
       - brem_xx1
       - brem_xx2
   regions:
-    both_brem: *plots_settings
+    brem_x12 : *plots_settings
     brem_xx1 : *plots_settings
     brem_xx2 : *plots_settings
