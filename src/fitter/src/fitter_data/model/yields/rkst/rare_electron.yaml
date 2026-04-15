@@ -47,6 +47,12 @@ yld_ccbar_brem_xx1:
   <<      : *yields
 yld_bpkpipiee_brem_xx1:
   <<      : *yields
+yld_bpk1kpipiee_brem_xx1:
+  <<      : *yields
+yld_bpk2kpipiee_brem_xx1:
+  <<      : *yields
+yld_bpkxkpipiee_brem_xx1:
+  <<      : *yields
 yld_comb_brem_xx1:
   <<      : *yields
 yld_bdkstkpijpsiee_brem_xx1:
@@ -59,6 +65,12 @@ yld_bppsi2ee_brem_xx1:
 yld_ccbar_brem_xx2:
   <<      : *yields
 yld_bpkpipiee_brem_xx2:
+  <<      : *yields
+yld_bpk1kpipiee_brem_xx2:
+  <<      : *yields
+yld_bpk2kpipiee_brem_xx2:
+  <<      : *yields
+yld_bpkxkpipiee_brem_xx2:
   <<      : *yields
 yld_comb_brem_xx2:
   <<      : *yields
