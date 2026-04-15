@@ -147,16 +147,28 @@ def test_with_cat(tmp_path : Path):
 
     print_pdf(pdf = pdf)
 # ---------------------------------------------------
-def test_with_cat_constrained(tmp_path : Path):
+@pytest.mark.parametrize('region' , [Region.brem_xx1 ,    Region.brem_xx2])
+@pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rkst_ee_os])
+def test_with_cat_constrained(
+    tmp_path : Path, 
+    trigger  : Trigger,
+    region   : Region):
     '''
     Test for signal and add constraints
     '''
-    region  = Region.brem_xx2
+    q2bin   = Qsq.central
     cfg_obs = ObservableConf(
         name  = Mass.bp_bcor,
         range = (4500, 7000))
 
-    data = gut.load_data(package='fitter_data', fpath='rare/rk/ee/bpkpee.yaml.j2')
+    if   trigger == Trigger.rk_ee_os:
+        fpath = 'rare/rk/ee/bpkpee.yaml.j2'
+    elif trigger == Trigger.rkst_ee_os:
+        fpath = 'rare/rkst/ee/bdkstkpiee.yaml.j2'
+    else:
+        raise ValueError(f'Invalid trigger: {trigger}')
+
+    data = gut.load_data(package='fitter_data', fpath=fpath)
     cfg  = ParametricConf(**data)
     cfg  = cfg.cfg_copy(replacements = {'BREM' : region})
     cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
@@ -167,8 +179,8 @@ def test_with_cat_constrained(tmp_path : Path):
             name     = region,
             component= cfg.component,
             cfg      = cfg,
-            trigger  = Trigger.rk_ee_os,
-            q2bin    = Qsq.central)
+            trigger  = trigger,
+            q2bin    = q2bin)
 
         pdf = ftr.get_model()
 
