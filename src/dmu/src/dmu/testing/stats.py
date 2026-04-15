@@ -36,6 +36,7 @@ log = LogStore.add_logger('rx_testing:stats')
 @overload
 def get_model(
     kind   : SumLiteral,
+    nsig   : zpar| None            = None,
     nsample: int                   = 1000,
     obs    : zobs           | None = None,
     pars   : dict[str,zpar] | None = None,
@@ -45,7 +46,8 @@ def get_model(
 @overload
 def get_model(
     kind   : SingleLiteral,
-    nsample: int                   = 1000,
+    nsig   : zpar| None            = None,
+    nsample: int            | None = None,
     obs    : zobs           | None = None,
     pars   : dict[str,zpar] | None = None,
     suffix : str            | None = None,
@@ -53,6 +55,7 @@ def get_model(
     lam    : float                 = -0.0001) -> zpdf:...
 def get_model(
     kind   : AllLiteral,
+    nsig   : zpar| None            = None,
     nsample: int | None            = None,
     obs    : zobs           | None = None,
     pars   : dict[str,zpar] | None = None,
@@ -63,6 +66,7 @@ def get_model(
     Parameters
     ---------------------
     kind   : 'signal' for Gaussian, 's+b' for Gaussian plus exponential
+    nsig   : If passed, will be used to extend signal, in case shared parameters are needed
     pars   : Set of parameters used for reparametrization, by default None
     nsample: Number of entries for normalization of each component, default 1000
     obs    : If provided, will use it, by default None and will be built in function
@@ -98,9 +102,10 @@ def get_model(
         if nsample is None:
             return pdf
         
-        nevt = zfit.param.Parameter(f'n{pdf_name}', nsample, 0, 1000_000)
+        if nsig is None:
+            nsig = zfit.param.Parameter(f'n{pdf_name}', nsample, 0, 1000_000)
 
-        return pdf.create_extended(nevt, name = pdf_name)
+        return pdf.create_extended(nsig, name = pdf_name)
 
     if kind == 'signal_alt':
         pdf_suffix = suffix if suffix_pdfs else ''
