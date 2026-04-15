@@ -21,6 +21,7 @@ class Region(StrEnum):
     # ---------------------
     region_001 = auto()
     region_002 = auto()
+    region_003 = auto()
     # ---------------------
     # Signal regions
     # ---------------------
