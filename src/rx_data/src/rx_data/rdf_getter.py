@@ -323,8 +323,8 @@ class RDFGetter(SpecMaker):
         return rdf
     # ---------------------------------------------------
     def _define_mc_columns(self, rdf : RDF.RNode) -> RDF.RNode:
-        if self._sample.startswith('DATA'):
-            log.debug(f'Not adding MC only columns for: {self._sample}')
+        if self._cfg_samp.is_data:
+            log.debug(f'Not adding MC only columns for: {self._cfg_samp}')
             return rdf
 
         log.info('Adding MC only columns')
@@ -335,13 +335,13 @@ class RDFGetter(SpecMaker):
         try:
             rdf = RDFGetter.add_truem(rdf=rdf, cfg=self._cfg)
         except TypeError as exc:
-            raise TypeError(f'Cannot add TRUEM branches to {self._sample}/{self._trigger}') from exc
+            raise TypeError(f'Cannot add TRUEM branches to {self._cfg_samp}/{self._trigger}') from exc
 
         return rdf
     # ---------------------------------------------------
     def _define_data_columns(self, rdf : RDF.RNode) -> RDF.RNode:
-        if not self._sample.startswith('DATA'):
-            log.info(f'Not adding data columns for: {self._sample}')
+        if not self._cfg_samp.is_data:
+            log.info(f'Not adding data columns for: {self._cfg_samp}')
             return rdf
 
         log.info('Adding data only columns')
