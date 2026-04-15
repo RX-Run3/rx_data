@@ -45,7 +45,7 @@ class DataFitter(BaseFitter, Cache):
     def __init__(
         self,
         q2bin : Qsq,
-        d_nll : dict[Region,tuple[NLL,dict[str,dict[Cuts,str]]]],
+        d_nll : dict[Region, NLLConf],
         cfg   : FitModelConf) -> None:
         '''
         Parameters
@@ -81,7 +81,7 @@ class DataFitter(BaseFitter, Cache):
         -------------
         Full likelihood, i.e. sum over all the models
         '''
-        l_nll = [ nll for nll, _ in self._d_nll.values() ]
+        l_nll = [ cfg.nll for cfg in self._d_nll.values() ]
         try:
             nll   = sum(l_nll[1:], l_nll[0])
         except ParamNameNotUniqueError as exc:
@@ -193,8 +193,7 @@ class DataFitter(BaseFitter, Cache):
 
         log.info(f'Saving fit to: {out_path}')
 
-        nlls = [ nll for region, (nll, _) in self._d_nll.items() if region in regions ]
-
+        nlls     = [ cfg.nll for region, cfg in self._d_nll.items() if region in regions ]
         datasets = [ nll.data[0]  for nll in nlls ]
 
         models : list[zfit.pdf.SumPDF]  = []
@@ -233,16 +232,16 @@ class DataFitter(BaseFitter, Cache):
         nll : Likelihood for all regions, merged
         fres: Fit result object
         '''
-        l_cfg  = [ cfg for _, cfg in self._d_nll.values() ]
+        l_sel  = [ cfg.selection for cfg in self._d_nll.values() ]
         l_reg  = list(self._d_nll)
 
-        for model, data, cfg, region in zip(nll.model, nll.data, l_cfg, l_reg, strict = True):
+        for model, data, sel, region in zip(nll.model, nll.data, l_sel, l_reg, strict = True):
             out_path = self._out_path / region
 
             log.info(f'Saving fit to: {out_path}')
 
             self._save_fit(
-                cut_cfg  = cfg,
+                cut_cfg  = sel,
                 plt_cfg  = self._cfg.plots.regions[region],
                 data     = data,
                 model    = model,
