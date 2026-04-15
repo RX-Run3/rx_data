@@ -43,6 +43,12 @@ def initialize():
     with RDFGetter.max_entries(value = 100_000):
         yield
 # ----------------------
+def _filter_category(name : str) -> bool:
+    c1 = name.endswith('_b1')
+    c2 = name.endswith('_b2')
+
+    return c1 or c2
+# ----------------------
 def _float_fix_pars(pdf : ParsHolder) -> ParsHolder:
     '''
     Parameters
@@ -105,27 +111,33 @@ def test_nocat(tmp_path : Path):
             q2bin    = Qsq.jpsi)
         ftr.get_model()
 # ---------------------------------------------------
-def test_with_cat(tmp_path : Path):
+@pytest.mark.parametrize('region' , [Region.brem_xx1 ,    Region.brem_xx2])
+@pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rkst_ee_os])
+def test_param_region(
+    tmp_path : Path,
+    trigger  : Trigger,
+    region   : Region):
     '''
-    Test for components with brem categories
+    Test fit to parametrized model in a single signal region
     '''
-    region  = Region.brem_xx1
+    q2bin   = Qsq.low
     cfg_obs = ObservableConf(
         name  = Mass.bp_bcor,
         range = (4500, 7000))
 
-    data = gut.load_data(package='fitter_data', fpath='rare/rk/ee/bpkpee.yaml.j2')
+    if   trigger == Trigger.rk_ee_os:
+        fpath = 'rare/rk/ee/bpkpee.yaml.j2'
+    elif trigger == Trigger.rkst_ee_os:
+        fpath = 'rare/rkst/ee/bdkstkpiee.yaml.j2'
+    else:
+        raise ValueError(f'Invalid trigger: {trigger}')
+
+    data = gut.load_data(package='fitter_data', fpath=fpath)
     cfg  = ParametricConf(**data)
     cfg  = cfg.cfg_copy(replacements = {'BREM' : region})
     cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
+    cfg  = cfg.filter_category(func = _filter_category)
 
-    def _filter(name : str) -> bool:
-        c1 = name.endswith('_b1')
-        c2 = name.endswith('_b2')
-
-        return c1 or c2
-
-    cfg  = cfg.filter_category(func = _filter)
     d_sel : dict[Cuts, str] = {
         Cuts.cmb : 'mva_cmb > 0.9',
         Cuts.prc : 'mva_prc > 0.5'}
@@ -138,8 +150,8 @@ def test_with_cat(tmp_path : Path):
             name     = region,
             component= cfg.component,
             cfg      = cfg,
-            trigger  = Trigger.rk_ee_os,
-            q2bin    = Qsq.high)
+            trigger  = trigger,
+            q2bin    = q2bin)
 
         pdf = ftr.get_model()
 
@@ -149,12 +161,12 @@ def test_with_cat(tmp_path : Path):
 # ---------------------------------------------------
 @pytest.mark.parametrize('region' , [Region.brem_xx1 ,    Region.brem_xx2])
 @pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rkst_ee_os])
-def test_with_cat_constrained(
+def test_param_region_constrained(
     tmp_path : Path, 
     trigger  : Trigger,
     region   : Region):
     '''
-    Test for signal and add constraints
+    Test fit to parametrized model in a single signal region and with constraints
     '''
     q2bin   = Qsq.central
     cfg_obs = ObservableConf(
@@ -172,6 +184,7 @@ def test_with_cat_constrained(
     cfg  = ParametricConf(**data)
     cfg  = cfg.cfg_copy(replacements = {'BREM' : region})
     cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
+    cfg  = cfg.filter_category(func = _filter_category)
 
     with Cache.cache_root(path = tmp_path),\
          RDFGetter.max_entries(value = -1):
