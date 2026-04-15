@@ -87,7 +87,9 @@ def test_emulator_conf():
     '''
     Test loading config
     '''
-    data = gut.load_data(package = 'rx_data_data', fpath = 'emulated_trees/config.yaml')
+    data = gut.load_data(
+        package = 'rx_data_data', 
+        fpath   = 'emulated_trees/config.yaml')
     obj  = EmulatorConf(**data)
 
     assert obj is not None
