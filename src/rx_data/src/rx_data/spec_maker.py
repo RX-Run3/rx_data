@@ -207,7 +207,10 @@ class SpecMaker:
 
         return l_path
     # ---------------------------------------------------
-    def _get_sample(self, json_path : Path, ftree : str) -> Sample:
+    def _get_sample(
+        self, 
+        json_path : Path, 
+        ftree     : str) -> Sample:
         '''
         Parameters:
         --------------------
