@@ -210,6 +210,25 @@ class SampleEmulator:
 
         return rdf
     # ----------------------
+    def _update_cocktail_weights(self, rdf : RDF.RNode) -> RDF.RNode:
+        '''
+        Parameters
+        -------------
+        rdf: Dataframe
+    
+        Returns
+        -------------
+        Dataframe with cocktail weights added
+        '''
+        if not self._cfg.samples.is_cocktail:
+            return rdf
+
+        # TODO: Needs to be implemented when EVENTTYPE branch be fixed
+        # Hard to pick correct weight per-sample otherwise
+        log.warning(f'Not adding cocktail weights for: {self._cfg.samples}')
+
+        return rdf
+    # ----------------------
     def extend_redefinitions(self, redefinitions : dict[str,str]) -> None:
         '''
         Add extra entries to redefinition section of config
@@ -259,6 +278,7 @@ class SampleEmulator:
             return rdf
 
         rdf = self._run_redefine(rdf=rdf, definitions=self._cfg.redefine)
+        rdf = self._update_cocktail_weights(rdf = rdf)
 
         return rdf
     # ---------------------
