@@ -19,16 +19,16 @@ from dmu           import LogStore
 from zfit.loss     import ExtendedUnbinnedNLL
 from rx_data       import RDFLoader
 from rx_selection  import selection as sel
-from rx_common     import Brem, Component, Cuts
+from rx_common     import Brem, Component, Cuts, Region
 
 from fitter        import RXFitConfig
 from fitter        import ConstraintReader
 from fitter        import DataFitter
 from fitter        import LikelihoodFactory
-from fitter        import ToyMaker
 from fitter        import FitModelConf
 from fitter        import ToyConf
 from fitter        import MVAWp
+from fitter        import NLLConf
 
 log=LogStore.add_logger('fitter:fit_rx_rare')
 
@@ -190,47 +190,41 @@ def _get_region_nll(brem : Brem, cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL
 
     return nll, cons, cfg_mod
 # ----------------------
-def _fit(cfg : RXFitConfig) -> None:
-    '''
-    This is where DataFitter is used
-    '''
-    d_nll    = {}
-    all_cons = []
-
+def _get_nll(cfg : RXFitConfig) -> dict[Region,NLLConf]:
+    d_nll= {}
     brem = Brem.one
     with sel.update_selection(d_sel = brem.region.selection):
         cfg_brem           = cfg.cfg_copy(replacements = {'BREM' : brem.region})
         nll, cons, cfg_mod = _get_region_nll(brem = brem, cfg = cfg_brem)
 
-        d_nll[brem.region] = nll, cfg_mod
-        all_cons          += cons
+        d_nll[brem.region] = NLLConf(
+            nll         = nll, 
+            selection   = cfg_mod, 
+            constraints = cons)
 
     brem = Brem.two
     with sel.update_selection(d_sel = brem.region.selection):
         cfg_brem           = cfg.cfg_copy(replacements = {'BREM' : brem.region})
         nll, cons, cfg_mod = _get_region_nll(brem = brem, cfg = cfg_brem)
 
-        d_nll[brem.region] = nll, cfg_mod
-        all_cons          += cons
+        d_nll[brem.region] = NLLConf(
+            nll         = nll, 
+            selection   = cfg_mod, 
+            constraints = cons)
+
+    return d_nll
+# ----------------------
+def _fit(cfg : RXFitConfig) -> None:
+    '''
+    This is where DataFitter is used
+    '''
+    d_nll = _get_nll(cfg = cfg)
 
     ftr = DataFitter(
         q2bin = cfg.q2bin,
         d_nll = d_nll,
         cfg   = cfg.mod_cfg)
-    res = ftr.run()
-
-    if cfg.toy_cfg is None:
-        log.info('Not making toys')
-        return
-
-    log.info(f'Making {cfg.toy_cfg.ntoys} toys')
-
-    mkr = ToyMaker(
-        nll= nll,
-        res= res,
-        cfg= cfg.toy_cfg,
-        cns= all_cons)
-    mkr.get_parameter_information(name = 'rare_ee')
+    ftr.run()
 # ----------------------
 def main():
     '''
