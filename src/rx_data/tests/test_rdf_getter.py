@@ -19,7 +19,7 @@ from dmu.plotting   import Plotter2D
 from dmu.generic    import utilities as gut
 from dmu.rdataframe import utilities as ut
 
-from rx_common      import Component, Project, Qsq
+from rx_common      import Component, Cuts, Project, Qsq
 from rx_selection   import selection as sel
 from rx_data        import collector as col
 from rx_data        import RDFGetter
@@ -303,7 +303,7 @@ def _apply_selection(
         rdf      : RDF.RNode,
         trigger  : Trigger,
         sample   : Component,
-        override : None|dict[str,str] = None) -> RDF.RNode:
+        override : None | dict[Cuts,str] = None) -> RDF.RNode:
     '''
     Apply full selection but q2 and mass
     '''
@@ -730,7 +730,7 @@ def test_brem_track_2(
 
     gtr = RDFGetter(sample=sample, trigger=trigger)
     rdf = gtr.get_rdf(per_file=False)
-    rdf = _apply_selection(rdf=rdf, trigger=trigger, override = {'mass' : 'B_const_mass_M > 5160'}, sample=sample)
+    rdf = _apply_selection(rdf=rdf, trigger=trigger, override = {Cuts.mass : 'B_const_mass_M > 5160'}, sample=sample)
     rep = rdf.Report()
     rep.Print()
 
