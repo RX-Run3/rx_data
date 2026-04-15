@@ -61,7 +61,6 @@ class RDFGetter(SpecMaker):
 
         self._trigger         = trigger
 
-        self._samples         : dict[str,str]
         self._l_columns       : list[str]
         self._s_ftree         : set[str] # list of friend trees actually used
 
