@@ -40,11 +40,11 @@ constraints:
 fit: {}
 plots:
   merging:
-    cat1:
+    region_003:
       - region_001
       - region_002
   regions:
-    cat1:
+    region_003:
       title   : Region 1 and 2
       nbins   : 50
       stacked : True
