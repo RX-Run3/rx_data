@@ -8,7 +8,7 @@ from dmu.workflow    import Cache
 from dmu.stats       import AnealingMinimizer, Constraint, FitResult, Retries
 from dmu.stats       import zfit
 from dmu.stats       import utilities as sut
-from pydantic        import BaseModel
+from pydantic        import BaseModel, ConfigDict
 from rx_common       import Component, Qsq, Region, Cuts
 from zfit.exception  import ParamNameNotUniqueError
 from zfit.result     import FitResult           as zres
@@ -24,6 +24,10 @@ class NLLConf(BaseModel):
     '''
     Wrapper to NLL and associated objects
     '''
+    model_config = ConfigDict(
+        arbitrary_types_allowed = True,
+        frozen                  = True)
+
     nll        : NLL
     selection  : dict[str, dict[Cuts,str]]
     constraints: list[Constraint]
