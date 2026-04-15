@@ -230,17 +230,12 @@ class SpecMaker:
         nopath = False
         nosamp = True
         for sample in d_data:
-            if not fnmatch.fnmatch(sample, self._sample):
-                log.debug(f'For target {self._sample} skipping {sample}')
+            if not self._cfg_samp.contains(sample = sample):
+                log.debug(f'For target {self._cfg_samp} skipping {sample}')
                 continue
 
-            nosamp = False
-            try:
-                d_trigger = d_data[sample]
-            except KeyError as exc:
-                for val in d_data:
-                    log.info(val)
-                raise KeyError(f'Sample {sample} not found') from exc
+            nosamp    = False
+            d_trigger = d_data[sample]
 
             l_path_sample = self._get_trigger_paths(
                 d_trigger = d_trigger,
