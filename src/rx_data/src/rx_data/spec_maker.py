@@ -5,7 +5,6 @@ import os
 import yaml
 import copy
 import secrets
-import fnmatch
 import pprint
 import tempfile
 
@@ -244,9 +243,9 @@ class SpecMaker:
                 raise KeyError(f'Sample {sample} not found') from exc
 
             l_path_sample = self._get_trigger_paths(
-                d_trigger= d_trigger,
-                ftree    = ftree,
-                sample   = sample)
+                d_trigger = d_trigger,
+                ftree     = ftree,
+                sample    = sample)
 
             nsamp = len(l_path_sample)
             if nsamp == 0:
