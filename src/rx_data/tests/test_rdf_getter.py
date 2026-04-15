@@ -1092,6 +1092,37 @@ def test_full_selection_electron(
 
     _print_dotted_branches(rdf)
 # --------------------------
+@pytest.mark.parametrize('trigger'  , [Trigger.rkst_ee_os])
+@pytest.mark.parametrize('component', [Component.bpk1kpipiee, Component.bpk2kpipiee, Component.bpkxkpipiee])
+@pytest.mark.parametrize('q2bin'    , Data.l_q2bin)
+def test_full_selection_electron_prec(
+    component : Component, 
+    q2bin     : Qsq, 
+    trigger   : Trigger,
+    tmp_path  : Path):
+    '''
+    Applies full selection to part reco electron sample
+    '''
+    with RDFGetter.max_entries(value=100_000):
+        gtr = RDFGetter(sample=component, trigger=trigger)
+        rdf = gtr.get_rdf(per_file=False)
+
+    rdf     = sel.apply_full_selection(
+        rdf     = rdf, 
+        trigger = trigger, 
+        q2bin   = q2bin, 
+        process = component,
+        out_path= tmp_path,
+    )
+    rep     = rdf.Report()
+    rep.Print()
+
+    nentries = rdf.Count().GetValue()
+
+    assert nentries > 0
+
+    _print_dotted_branches(rdf)
+# --------------------------
 @pytest.mark.parametrize('sample' , ['Bd_Kstmumu_eq_btosllball05_DPC', 'DATA_24_MagDown_24c2'])
 @pytest.mark.parametrize('q2bin'  , Data.l_q2bin)
 @pytest.mark.parametrize('trigger', ['Hlt2RD_BuToKpMuMu_MVA', 'Hlt2RD_B0ToKpPimMuMu_MVA'])
