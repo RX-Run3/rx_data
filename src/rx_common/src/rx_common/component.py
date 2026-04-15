@@ -229,7 +229,7 @@ class Component(StrEnum):
           case Component.bpk2ee:
             return 'Bu_K2stee_Kpipi_eq_mK1430_DPC'
           case Component.bpkxkpipiee:
-            return 'Bu_KxKpipi'
+            return 'Bu_KxKpipiee'
           # -----
           case Component.bppijpsimm:
             return 'Bu_JpsiPi_mm_eq_DPC'
