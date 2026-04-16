@@ -11,6 +11,7 @@ from rx_common    import Qsq
 
 from fitter       import RXFitConfig
 from fitter       import FitModelConf
+from fitter       import MVAWp
 
 log=LogStore.add_logger('fitter:test_fit_config')
 # ----------------------
@@ -29,9 +30,9 @@ def test_save(tmp_path : Path):
         cfg = RXFitConfig(
             name    = 'test', 
             group   = 'test',
-            mva_cmb = 0.,
-            mva_prc = 0.,
+            mva_cmb = MVAWp(0.),
+            mva_prc = MVAWp(0.),
             q2bin   = Qsq.central,
             mod_cfg = FitModelConf.default(),
         )
-        cfg.save(kind = 'test')
+        cfg.save()
