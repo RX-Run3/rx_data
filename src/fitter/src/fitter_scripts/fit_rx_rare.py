@@ -193,17 +193,29 @@ def _get_region_nll(brem : Brem, cfg : RXFitConfig) -> NLLConf:
         selection   = cfg_mod, 
         constraints = cons)
 # ----------------------
-def _get_nll(cfg : RXFitConfig) -> dict[Region,NLLConf]:
-    d_nll= {}
-    brem = Brem.one
-    with sel.update_selection(d_sel = brem.region.selection):
-        cfg_brem           = cfg.cfg_copy(replacements = {'BREM' : brem.region})
-        d_nll[brem.region] = _get_region_nll(brem = brem, cfg = cfg_brem)
+def _get_nll(
+    brems: list[Brem],
+    cfg  : RXFitConfig) -> dict[Region,NLLConf]:
+    '''
+    Parameters
+    -----------------
+    brems: List of brem categories
+    cfg  : Configuration for fit
 
-    brem = Brem.two
-    with sel.update_selection(d_sel = brem.region.selection):
-        cfg_brem           = cfg.cfg_copy(replacements = {'BREM' : brem.region})
-        d_nll[brem.region] = _get_region_nll(brem = brem, cfg = cfg_brem)
+    Returns
+    -----------------
+    Dictionary mapping signal region with NLL container
+    '''
+    d_nll = {}
+    for brem in brems:
+        if brem.is_composite:
+            # Put all the elementary regions in same config
+            cfg_brem = cfg.cfg_clone(prefix = 'BREM', regions = [ elm.region for elm in brem.components ])
+        else:
+            # Pick only elementary region 
+            cfg_brem = cfg.cfg_copy(replacements = {'BREM' : brem.region})
+
+            d_nll[brem.region] = _get_region_nll(brem = brem, cfg = cfg_brem)
 
     return d_nll
 # ----------------------
