@@ -260,6 +260,9 @@ class Brem(Enum):
         if self == Brem.br0x2:
             return [Brem.zero, Brem.two]
 
+        if self == Brem.brx12:
+            return [Brem.one , Brem.two]
+
         if self == Brem.br012:
             return [Brem.zero, Brem.one, Brem.two]
 
