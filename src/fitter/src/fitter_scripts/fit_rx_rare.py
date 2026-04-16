@@ -224,7 +224,10 @@ def _fit(cfg : RXFitConfig) -> None:
     '''
     This is where DataFitter is used
     '''
-    d_nll = _get_nll(cfg = cfg)
+    #brems = [Brem.one, Brem.two]
+    brems = [Brem.brx12]
+
+    d_nll = _get_nll(cfg = cfg, brems = brems)
     ftr   = DataFitter(
         q2bin = cfg.q2bin,
         d_nll = d_nll,
