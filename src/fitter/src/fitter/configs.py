@@ -234,6 +234,37 @@ class ParametricConf(ComponentConf):  # Tested
         for key, val in new_categories.items():
             self.categories[key] = val
     # ----------------------
+    def cfg_clone(
+        self, 
+        prefix  : str, 
+        prefixes: list[str]) -> Self:
+        '''
+        Parameters
+        ---------------
+        prefix  : Initial part of category's original name
+        prefixes: Replacements
+
+        Returns
+        ---------------
+        Configuration with _cloned_ sections such that each
+        prefix is repeated with one of the prefixes
+        '''
+        new_categories : dict[str,CategoryConf] = dict()
+        log.debug('Clonning categories')
+        for name, category in self.categories.items():
+            if not name.startswith(prefix):
+                raise ValueError(f'Category {name} does not start with prefix {prefix}')
+
+            cloned_categories : dict[str,CategoryConf] = dict()
+            for new_prefix in prefixes:
+                new_name                    = name.replace(prefix, new_prefix)
+                log.debug(f'{name:<20}{new_name:<20}')
+                cloned_categories[new_name] = category.model_copy()
+
+            new_categories.update(cloned_categories)
+
+        return self.model_copy(update = {'categories' : new_categories})
+    # ----------------------
     def cfg_copy(self, replacements : dict[str,str]) -> Self:
         '''
         This method provides a copy of the configuration with the
