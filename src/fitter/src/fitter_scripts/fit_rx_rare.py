@@ -215,6 +215,7 @@ def _get_nll(
             # Pick only elementary region 
             cfg_brem = cfg.cfg_copy(replacements = {'BREM' : brem.region})
 
+        with sel.update_selection(d_sel = brem.region.selection):
             d_nll[brem.region] = _get_region_nll(brem = brem, cfg = cfg_brem)
 
     return d_nll
