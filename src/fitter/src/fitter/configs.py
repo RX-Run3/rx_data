@@ -287,7 +287,7 @@ class ParametricConf(ComponentConf):  # Tested
         for name, conf in self.categories.items():
             new_name = name
             for old, new in replacements.items():
-                new_name = new_name.replace(old, new)
+                new_name = name.replace(old, new)
 
             new_categories[new_name] = conf.model_copy()
 
