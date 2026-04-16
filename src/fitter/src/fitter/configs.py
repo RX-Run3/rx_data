@@ -609,6 +609,34 @@ class RXFitConfig(BaseModel):
 
         return self.model_copy(update = {'mod_cfg' : new_mod_cfg})
     # ----------------------
+    def cfg_clone(
+        self, 
+        prefix  : str, 
+        regions : list[Region]) -> Self:
+        '''
+        Parameters
+        ---------------
+        prefix  : Initial part of category's original name
+        regions : List of signal regions for which prefixed section will be cloned 
+
+        Returns
+        ---------------
+        Configuration with _cloned_ sections one for each
+        signal region, with selections updated
+        '''
+        new_components : dict[Component, AnyModelConf] = {}
+        for comp, conf in self.mod_cfg.components.items():
+            if not isinstance(conf, ParametricConf):
+                new_conf = conf.model_copy()
+            else:
+                new_conf = conf.cfg_clone(prefix = prefix, regions = regions)
+
+            new_components[comp] = new_conf
+
+        new_mod_cfg = self.mod_cfg.model_copy(update = {'components' : new_components})
+
+        return self.model_copy(update = {'mod_cfg' : new_mod_cfg})
+    # ----------------------
     def pick_category(self, name : str) -> Self:
         '''
         Parameters
