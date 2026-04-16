@@ -128,7 +128,7 @@ def test_param_clone(
     if   trigger == Trigger.rk_ee_os:
         fpath = 'rare/rk/ee/bpkpee_brem_x12.yaml.j2'
     elif trigger == Trigger.rkst_ee_os:
-        fpath = 'rare/rkst/ee/bdkstkpiee.yaml.j2'
+        fpath = 'rare/rkst/ee/bdkstkpiee_brem_x12.yaml.j2'
     else:
         raise ValueError(f'Invalid trigger: {trigger}')
 
