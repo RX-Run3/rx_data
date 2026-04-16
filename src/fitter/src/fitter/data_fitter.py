@@ -142,13 +142,20 @@ class DataFitter(BaseFitter, Cache):
 
         self._save_by_region(nll = nll, fres = fres)
 
+        fres.to_json(path = result_path)
+
+        # If there is one signal region (fit is not simultaneous)
+        # we can skip making plot of merged signal regions 
+        if len(self._d_nll) == 1:
+            self._cache()
+            return fres
+
         for cat, regions in self._cfg.plots.merging.items():
             self._save_merged_regions(
                 region  = cat, 
                 fres    = fres,
                 regions = regions)
 
-        fres.to_json(path = result_path)
         self._cache()
 
         return fres
