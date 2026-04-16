@@ -1,9 +1,6 @@
 # -------------------------
 # Aliases
 # -------------------------
-cleanup    : &cleanup
-  leakage  : (TMath::Abs(B_const_mass_M - 5280) > 200) && (TMath::Abs(B_const_mass_psi2S_M - 5280) > 100)
-  cmb      : mva_cmb > 0.2 && mva_cmb < 0.9
 fit_strat: &fit_strat
   strategy :
     ntries : 20
@@ -13,20 +10,7 @@ plot_conf: &plot_conf
   stacked: True
   d_leg  : {}
 # -------------------------
-constraints_high: &cons_hi
-  component  : data_24
-  trigger    : Hlt2RD_B0ToKpPimEE_SameSign_MVA
-  parameters : # Will constrain parameters starting
-    - mu       # with any of these strings
-    - sg       # E.g mu_hypexp_combinatorial_1
-  selection  :
-    <<: *cleanup
-  fit:
-    <<: *fit_strat
-  plots:
-    <<: *plot_conf
-# -------------------------
-constraints_low_central: &cons_lc
+constraints_low    : &cons_low
   component  : data_24
   trigger    : Hlt2RD_B0ToKpPimEE_SameSign_MVA
   parameters : # Will constrain parameters starting
@@ -34,7 +18,36 @@ constraints_low_central: &cons_lc
     - ap       # E.g mu_hypexp_combinatorial_1
     - bt
   selection  :
-    <<: *cleanup
+    cmb : mva_cmb > 0.2 && mva_cmb < 0.9
+  fit:
+    <<: *fit_strat
+  plots:
+    <<: *plot_conf
+# -------------------------
+constraints_central: &cons_central
+  component  : data_24
+  trigger    : Hlt2RD_B0ToKpPimEE_SameSign_MVA
+  parameters : # Will constrain parameters starting
+    - mu       # with any of these strings
+    - ap       # E.g mu_hypexp_combinatorial_1
+    - bt
+  selection  :
+    leakage: (TMath::Abs(B_const_mass_M - 5280) > 200) && (TMath::Abs(B_const_mass_psi2S_M - 5280) > 100)
+    cmb    : mva_cmb > 0.2 && mva_cmb < 0.9
+  fit:
+    <<: *fit_strat
+  plots:
+    <<: *plot_conf
+# -------------------------
+constraints_high   : &cons_high
+  component  : data_24
+  trigger    : Hlt2RD_B0ToKpPimEE_SameSign_MVA
+  parameters : # Will constrain parameters starting
+    - mu       # with any of these strings
+    - sg       # E.g mu_hypexp_combinatorial_1
+  selection  :
+    leakage: (TMath::Abs(B_const_mass_M - 5280) > 200) && (TMath::Abs(B_const_mass_psi2S_M - 5280) > 100)
+    cmb    : mva_cmb > 0.2 && mva_cmb < 0.9
   fit:
     <<: *fit_strat
   plots:
@@ -42,15 +55,13 @@ constraints_low_central: &cons_lc
 # -------------------------
 # Proper config
 # -------------------------
-
-# -----------------
 constraints:
   low:
-    <<: *cons_lc
+    <<: *cons_low
   central:
-    <<: *cons_lc
+    <<: *cons_central
   high:
-    <<: *cons_hi
+    <<: *cons_high
 # -----------------
 models:
   low:
