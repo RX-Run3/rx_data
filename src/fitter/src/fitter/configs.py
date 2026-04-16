@@ -388,7 +388,7 @@ class FitModelConf(UnpackerModel):
             trigger     = Trigger.rk_ee_os,
             selection   = {},
             yields      = YieldsConf(root = {}),
-            observable  = {},
+            observable  = {Qsq.central : ObservableConf.default()},
             components  = {},
             constraints = ConstraintsCfg.default(),
             plots       = PlotConf.default(),
