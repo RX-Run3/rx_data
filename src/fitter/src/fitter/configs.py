@@ -2,6 +2,7 @@
 Module containing classes representing configurations used for fitting
 '''
 import os
+import yaml
 
 from functools   import cached_property
 from pydantic    import BaseModel, ConfigDict
@@ -139,6 +140,12 @@ class ComponentConf(UnpackerModel):         # Tested
         if it does not exist
         '''
         return getattr(self, 'trigger', None)
+    # ---------------------------
+    def __str__(self):
+        data   = self.model_dump()
+        string = yaml.dump(data, indent = 2)
+
+        return string
     # ---------------------------
     @property
     def obs(self) -> zobs:
