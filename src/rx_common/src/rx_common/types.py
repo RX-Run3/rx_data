@@ -247,6 +247,32 @@ class Brem(Enum):
         return substring in string 
     # ----------------------
     @property
+    def components(self) -> list['Brem']:
+        '''
+        List of elementary brem categories
+        '''
+        if not self.is_composite:
+            return [self]
+
+        if self == Brem.br01x:
+            return [Brem.zero, Brem.one]
+
+        if self == Brem.br0x2:
+            return [Brem.zero, Brem.two]
+
+        if self == Brem.br012:
+            return [Brem.zero, Brem.one, Brem.two]
+
+        raise ValueError(f'Invalid brem: {self}')
+    # ----------------------
+    @property
+    def is_composite(self) -> bool:
+        if self in {Brem.zero, Brem.one, Brem.two}:
+            return False 
+
+        return True 
+    # ----------------------
+    @property
     def region(self) -> Region:
         '''
         Signal region associated to category
