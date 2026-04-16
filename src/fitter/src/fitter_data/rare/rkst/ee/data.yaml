@@ -8,39 +8,39 @@ plots_settings: &plots_settings
     - 4600
     - 6900
   d_leg :
-    comb                    : Combinatorial
+    comb_brem_x12           : Combinatorial
     comb_brem_xx1           : Combinatorial
     comb_brem_xx2           : Combinatorial
     # ---------
-    ccbar                   : $B\to c\bar{c}(\to e^+e^-) + X$
+    ccbar_brem_x12          : $B\to c\bar{c}(\to e^+e^-) + X$
     ccbar_brem_xx1          : $B\to c\bar{c}(\to e^+e^-) + X$
     ccbar_brem_xx2          : $B\to c\bar{c}(\to e^+e^-) + X$
     # ---------
-    bdkstkpijpsiee          : $B^0\to K^*(\to K^+\pi^-) J/\psi(\to e^+e^-)$
+    bdkstkpijpsiee_brem_x12 : $B^0\to K^*(\to K^+\pi^-) J/\psi(\to e^+e^-)$
     bdkstkpijpsiee_brem_xx1 : $B^0\to K^*(\to K^+\pi^-) J/\psi(\to e^+e^-)$
     bdkstkpijpsiee_brem_xx2 : $B^0\to K^*(\to K^+\pi^-) J/\psi(\to e^+e^-)$
     # ---------
-    bdkstkpipsi2ee          : $B^0\to K^*(\to K^+\pi^-) \psi(2S)(\to e^+e^-)$
+    bdkstkpipsi2ee_brem_x12 : $B^0\to K^*(\to K^+\pi^-) \psi(2S)(\to e^+e^-)$
     bdkstkpipsi2ee_brem_xx1 : $B^0\to K^*(\to K^+\pi^-) \psi(2S)(\to e^+e^-)$
     bdkstkpipsi2ee_brem_xx2 : $B^0\to K^*(\to K^+\pi^-) \psi(2S)(\to e^+e^-)$
     # ---------
-    bpkpipiee               : $B^+\to K_1^+(1270)(\to K^+\pi^+\pi^-)e^+e^-$
+    bpkpipiee_brem_x12      : $B^+\to K_1^+(1270)(\to K^+\pi^+\pi^-)e^+e^-$
     bpkpipiee_brem_xx1      : $B^+\to K_1^+(1270)(\to K^+\pi^+\pi^-)e^+e^-$
     bpkpipiee_brem_xx2      : $B^+\to K_1^+(1270)(\to K^+\pi^+\pi^-)e^+e^-$
     # ---------
-    bpk1kpipiee             : $B^+\to K_1^+(1270)(\to K^+\pi^+\pi^-)e^+e^-$
+    bpk1kpipiee_brem_x12    : $B^+\to K_1^+(1270)(\to K^+\pi^+\pi^-)e^+e^-$
     bpk1kpipiee_brem_xx1    : $B^+\to K_1^+(1270)(\to K^+\pi^+\pi^-)e^+e^-$
     bpk1kpipiee_brem_xx2    : $B^+\to K_1^+(1270)(\to K^+\pi^+\pi^-)e^+e^-$
     # ---------
-    bpk2kpipiee             : $B^+\to K_2^+(1430)(\to K^+\pi^+\pi^-)e^+e^-$
+    bpk2kpipiee_brem_x12    : $B^+\to K_2^+(1430)(\to K^+\pi^+\pi^-)e^+e^-$
     bpk2kpipiee_brem_xx1    : $B^+\to K_2^+(1430)(\to K^+\pi^+\pi^-)e^+e^-$
     bpk2kpipiee_brem_xx2    : $B^+\to K_2^+(1430)(\to K^+\pi^+\pi^-)e^+e^-$
     # ---------
-    bpkxkpipiee             : $B^+\to K_{1,2}^+(\to K^+\pi^+\pi^-)e^+e^-$
+    bpkxkpipiee_brem_x12    : $B^+\to K_{1,2}^+(\to K^+\pi^+\pi^-)e^+e^-$
     bpkxkpipiee_brem_xx1    : $B^+\to K_{1,2}^+(\to K^+\pi^+\pi^-)e^+e^-$
     bpkxkpipiee_brem_xx2    : $B^+\to K_{1,2}^+(\to K^+\pi^+\pi^-)e^+e^-$
     # ---------
-    bdkstkpiee              : $B^0\to K^*(\to K^+\pi^-)e^+e^-$
+    bdkstkpiee_brem_x12     : $B^0\to K^*(\to K^+\pi^-)e^+e^-$
     bdkstkpiee_brem_xx1     : $B^0\to K^*(\to K^+\pi^-)e^+e^-$
     bdkstkpiee_brem_xx2     : $B^0\to K^*(\to K^+\pi^-)e^+e^-$
 # ----------------------------------------------------
