@@ -411,8 +411,8 @@ class FitModelConf(UnpackerModel):
     model_config = ConfigDict(frozen = True)
 
     trigger    : Trigger
-    selection  : dict[Cuts,str]
     yields     : YieldsConf
+    selection  : dict[Qsq, dict[Cuts,str]]
     observable : dict[Qsq | MisID, ObservableConf]
     components : dict[Component, AnyModelConf]
     plots      : PlotConf 
@@ -731,7 +731,7 @@ class RXFitConfig(BaseModel):
             Cuts.prc   : self.prc_cut,
         }
 
-        selection.update(self.mod_cfg.selection)
+        selection.update(self.mod_cfg.selection[self.q2bin])
 
         return selection
     # ----------------------

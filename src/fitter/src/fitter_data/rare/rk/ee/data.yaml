@@ -51,7 +51,10 @@ plots_settings: &plots_settings
 trigger          : Hlt2RD_BuToKpEE_MVA
 yields           : model/yields/rk/rare_electron.yaml
 selection        : 
-  leakage        : TMath::Abs(B_const_mass_M - 5280) > 200
+  low    : {}
+  central: 
+    leakage : TMath::Abs(B_const_mass_M - 5280) > 200
+  high   : {}
 observable:
   low:
     name : B_Mass
