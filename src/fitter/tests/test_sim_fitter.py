@@ -112,12 +112,10 @@ def test_nocat(tmp_path : Path):
             q2bin    = Qsq.jpsi)
         ftr.get_model()
 # ---------------------------------------------------
-@pytest.mark.parametrize('region' , [Region.brem_xx1 ])#,    Region.brem_xx2])
-@pytest.mark.parametrize('trigger', [Trigger.rk_ee_os])#, Trigger.rkst_ee_os])
+@pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rkst_ee_os])
 def test_param_clone(
     tmp_path : Path,
-    trigger  : Trigger,
-    region   : Region):
+    trigger  : Trigger):
     '''
     Test fit to parametrized model in a single signal region
     '''
@@ -125,10 +123,10 @@ def test_param_clone(
     cfg_obs = ObservableConf(
         name  = Mass.bp_bcor,
         range = (4500, 7000))
-
-    q2bin   = Qsq.central
+ 
+    q2bin = Qsq.central
     if   trigger == Trigger.rk_ee_os:
-        fpath = 'rare/rk/ee/bpkpee.yaml.j2'
+        fpath = 'rare/rk/ee/bpkpee_brem_x12.yaml.j2'
     elif trigger == Trigger.rkst_ee_os:
         fpath = 'rare/rkst/ee/bdkstkpiee.yaml.j2'
     else:
@@ -136,20 +134,17 @@ def test_param_clone(
 
     data = gut.load_data(package='fitter_data', fpath=fpath)
     cfg  = ParametricConf(**data)
-    cfg  = cfg.cfg_clone(prefix = 'BREM', prefixes = ['brem_xx1', 'brem_xx2'])
     cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
     cfg  = cfg.filter_category(func = _filter_category)
 
     d_sel : dict[Cuts, str] = {
         Cuts.cmb : 'mva_cmb > 0.9',
         Cuts.prc : 'mva_prc > 0.5'}
-    d_sel.update(region.selection)
-
     with Cache.cache_root(path = tmp_path),\
          RDFGetter.max_entries(value = -1),\
         sel.custom_selection(d_sel = d_sel):
         ftr = SimFitter(
-            name     = region,
+            name     = Region.brem_x12,
             component= cfg.component,
             cfg      = cfg,
             trigger  = trigger,
