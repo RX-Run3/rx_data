@@ -237,17 +237,17 @@ class ParametricConf(ComponentConf):  # Tested
     def cfg_clone(
         self, 
         prefix  : str, 
-        prefixes: list[str]) -> Self:
+        regions : list[Region]) -> Self:
         '''
         Parameters
         ---------------
         prefix  : Initial part of category's original name
-        prefixes: Replacements
+        regions : List of signal regions for which prefixed section will be cloned 
 
         Returns
         ---------------
-        Configuration with _cloned_ sections such that each
-        prefix is repeated with one of the prefixes
+        Configuration with _cloned_ sections one for each
+        signal region, with selections updated
         '''
         new_categories : dict[str,CategoryConf] = dict()
         log.debug('Clonning categories')
@@ -256,10 +256,14 @@ class ParametricConf(ComponentConf):  # Tested
                 raise ValueError(f'Category {name} does not start with prefix {prefix}')
 
             cloned_categories : dict[str,CategoryConf] = dict()
-            for new_prefix in prefixes:
-                new_name                    = name.replace(prefix, new_prefix)
+            for region in regions:
+                new_name = name.replace(prefix, region)
                 log.debug(f'{name:<20}{new_name:<20}')
-                cloned_categories[new_name] = category.model_copy()
+                sel = category.selection.copy()
+                sel.update(region.selection)
+
+                cloned_categories[new_name] = category.model_copy(
+                    update = {'selection' : sel})
 
             new_categories.update(cloned_categories)
 
