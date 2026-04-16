@@ -13,7 +13,7 @@ yields: &yields
 # --------------------
 # Signal yield
 # --------------------
-yld_bpkpee:
+yld_bpkpee_brem_x12:
   <<      : *yields
 bpkpee_fraction:
   <<      : *fractions
@@ -30,11 +30,11 @@ yld_bpkpee_brem_xx2:
 # --------------------
 # Scales between signal and part-reco
 # --------------------
-s_bsphiee:
+s_bsphiee_brem_x12:
   <<      : *fractions
-s_bdkstkpiee:
+s_bdkstkpiee_brem_x12:
   <<      : *fractions
-s_bpkstkpiee:
+s_bpkstkpiee_brem_x12:
   <<      : *fractions
 # --------------------
 s_bsphiee_brem_xx1:
@@ -53,17 +53,17 @@ s_bpkstkpiee_brem_xx2:
 # --------------------
 # Yields of part-reco
 # --------------------
-yld_bdkstkpiee:
+yld_bdkstkpiee_brem_x12:
   kind : mul
   pars :
     - s_bdkstkpiee
     - yld_bpkpee
-yld_bpkstkpiee:
+yld_bpkstkpiee_brem_x12:
   kind : mul
   pars :
     - s_bpkstkpiee
     - yld_bpkpee
-yld_bsphiee:
+yld_bsphiee_brem_x12:
   kind : mul
   pars :
     - s_bsphiee
@@ -103,17 +103,17 @@ yld_bsphiee_brem_xx2:
 # --------------------
 # Unconstrained background yields
 # --------------------
-yld_ccbar:
+yld_ccbar_brem_x12:
   <<      : *yields
-yld_comb:
+yld_comb_brem_x12:
   <<      : *yields
-yld_bpkpjpsiee:
+yld_bpkpjpsiee_brem_x12:
   <<      : *yields
-yld_bpkppsi2ee: 
+yld_bpkppsi2ee_brem_x12: 
   <<      : *yields
-yld_bpkpipi:
+yld_bpkpipi_brem_x12:
   <<      : *yields
-yld_bpkkk:
+yld_bpkkk_brem_x12:
   <<      : *yields
 # --------------------
 yld_ccbar_brem_xx1:
