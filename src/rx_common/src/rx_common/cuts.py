@@ -35,7 +35,7 @@ class Cuts(StrEnum):
     brem      = auto()
     leakage   = auto()
     extra     = auto()
-    conv      = auto() # 1 if electrons are not from converted photon
+    convert   = auto() # 1 if electrons are not from converted photon
     # -------------------
     # Used to define misID regions
     # -------------------

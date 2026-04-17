@@ -54,6 +54,7 @@ selection        :
   low    : {}
   central: 
     leakage : TMath::Abs(B_const_mass_M - 5280) > 200
+    convert : L1_not_conv_130 && L2_not_conv_130
   high   : {}
 observable:
   low:
