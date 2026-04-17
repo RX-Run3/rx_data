@@ -107,28 +107,17 @@ class DataModel:
         ----------------
         Fitting model for data fit
         '''
-        l_pdf = []
         npdf  = len(self._cfg.components)
         if npdf == 0:
             raise ValueError('Found zero components in model')
 
         log.debug(f'Found {npdf} components')
 
+        l_pdf = []
         for component, cfg in self._cfg.components.items():
-            if component in self._skipped_components:
-                log.warning(f'Skipping {component} component')
-                continue
-
-            log.info(f'Building component {component} with {cfg.cfg_obs}')
-            proj, trig = self._get_component_project_trigger(cfg = cfg)
-            with SpecMaker.project(project = proj):
-                ftr  = SimFitter(
-                    name     = self._name,
-                    component= component,
-                    trigger  = trig,
-                    q2bin    = self._q2bin,
-                    cfg      = cfg)
-                pdf = ftr.get_model()
+            pdf = self._get_component_pdf(
+                component = component,
+                cfg       = cfg)
 
             if pdf is None:
                 log.warning(f'Cannot build component: {component}')
@@ -137,6 +126,49 @@ class DataModel:
             pdf = self._extend(pdf=pdf, component=component)
             l_pdf.append(pdf)
 
+        return self._add_components(l_pdf = l_pdf)
+    # ------------------------
+    def _get_component_pdf(
+        self, 
+        cfg       : AnyModelConf, 
+        component : Component) -> zpdf | None:
+        '''
+        Parameters
+        ----------------
+        cfg      : Config needed to build model's component
+        component: Fit component
+
+        Returns
+        ----------------
+        zfit PDF representing component or None if component is skipped/not found
+        '''
+        if component in self._skipped_components:
+            log.warning(f'Skipping {component} component')
+            return None
+
+        log.info(f'Building component {component} with {cfg.cfg_obs}')
+        proj, trig = self._get_component_project_trigger(cfg = cfg)
+        with SpecMaker.project(project = proj):
+            ftr  = SimFitter(
+                name     = self._name,
+                component= component,
+                trigger  = trig,
+                q2bin    = self._q2bin,
+                cfg      = cfg)
+            pdf = ftr.get_model()
+
+        return pdf
+    # ------------------------
+    def _add_components(self, l_pdf : list[zpdf]) -> zpdf:
+        '''
+        Parameters
+        ----------------
+        l_pdf: List of PDF, each representing a fitting component
+
+        Returns
+        ----------------
+        Sum of components
+        '''
         if len(l_pdf) == 1:
             log.warning('Found only one PDF, not using it in SumPDF')
             return l_pdf[0]
