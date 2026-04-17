@@ -103,7 +103,7 @@ class DataFitter(BaseFitter, Cache):
         log.info(f'Saving configuration to: {out_path}')
         self._cfg.to_yaml(path = out_path)
     # ----------------------
-    def _simple_fit(self, nll : NLL) -> zres:
+    def _simple_fit(self, nll : NLL) -> FitResult:
         '''
         Parameters
         -------------
@@ -117,7 +117,15 @@ class DataFitter(BaseFitter, Cache):
         res = min.minimize(loss = nll)
         res.hesse(name='minuit_hesse', method = 'minuit_hesse')
 
-        return res
+        try:
+            fres = FitResult.from_zfit(res = res)
+        except Exception as exc:
+            path = sut.save_nll(loss = nll)
+            raise ValueError(
+                f'Failed to transform zfit result to FitResult, nll saved to: {path}'
+            ) from exc
+
+        return fres
     # ----------------------
     def run(self) -> FitResult:
         '''
@@ -171,8 +179,7 @@ class DataFitter(BaseFitter, Cache):
         Fit result
         '''
         if   self._cfg.fit.strategy is None:
-            res  = self._simple_fit(nll = nll)
-            fres = FitResult.from_zfit(res = res)
+            fres = self._simple_fit(nll = nll)
         elif isinstance(self._cfg.fit.strategy, Retries):
             min  = AnealingMinimizer(cfg = self._cfg.fit)
             fres = min.get_result(loss = nll)
