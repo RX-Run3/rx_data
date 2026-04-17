@@ -1,5 +1,22 @@
 # This is a config file used for tests
 # It illustrates how a fit would run for data
+plots_settings: &plots_settings 
+  nbins           : 60
+  stacked         : True
+  d_leg :
+    comb            : Combinatorial
+    ccbar           : $B_{s,d,u}\to c\bar{c} X$
+    lbpkjpsiee      : $\Lambda_b \to J/\psi pK$
+    bsphijpsiee     : $B_s \to J/\psi\phi(\to KK)$
+    bskstjpsiee     : $B_s\to J/\psi K^{*0}(\to K^+\pi^-)$
+    bdkstjpsiee_swp : $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$ 
+    bdkstkpijpsiee  : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$ 
+    bdkstkpipsi2ee  : $B^0\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
+  plot_components : 
+    - ccbar
+  plot_range :
+    - 4700
+    - 6000
 
 trigger          : Hlt2RD_B0ToKpPimEE_MVA
 
@@ -28,20 +45,8 @@ components:
 constraints:
   pre_rare: []
 fit: {}
-plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#fit-plotting
-  nbins           : 60
-  stacked         : True
-  d_leg :
-    comb            : Combinatorial
-    ccbar           : $B_{s,d,u}\to c\bar{c} X$
-    lbpkjpsiee      : $\Lambda_b \to J/\psi pK$
-    bsphijpsiee     : $B_s \to J/\psi\phi(\to KK)$
-    bskstjpsiee     : $B_s\to J/\psi K^{*0}(\to K^+\pi^-)$
-    bdkstjpsiee_swp : $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$ 
-    bdkstkpijpsiee  : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$ 
-    bdkstkpipsi2ee  : $B^0\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
-  plot_components : 
-    - ccbar
-  plot_range :
-    - 4700
-    - 6000
+plots:
+  merging : {}
+  regions :
+    brem_xx1 : *plots_settings
+    brem_xx2 : *plots_settings

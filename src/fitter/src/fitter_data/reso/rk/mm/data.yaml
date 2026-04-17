@@ -25,14 +25,18 @@ constraints:
   pre_rare : []
 fit: {}
 plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#fit-plotting
-  nbins           : 100
-  stacked         : True
-  d_leg :
-    bpkpjpsimm    : $B^+\to J/\psi(\to \mu^+\mu^-) K^+$ 
-    bppijpsimm    : $B^+\to J/\psi(\to \mu^+\mu^-) \pi^+$ 
-    bpkppsi2mm    : $B^+\to \psi(2S)(\to \mu^+\mu^-) K^+$ 
-    comb          : Combinatorial
-  #plot_components : ccbar
-  #yrange:
-  #  log   : [1.0,  1e7]
-  #  linear: [0.0, null]
+  merging : {}
+  regions :
+    brem_xx0:
+      nbins           : 100
+      stacked         : True
+      d_leg :
+        bpkpjpsimm    : $B^+\to J/\psi(\to \mu^+\mu^-) K^+$ 
+        bppijpsimm    : $B^+\to J/\psi(\to \mu^+\mu^-) \pi^+$ 
+        bpkppsi2mm    : $B^+\to \psi(2S)(\to \mu^+\mu^-) K^+$ 
+        comb          : Combinatorial
+      plot_range:
+        - 5000
+        - 5600
+      plot_components:
+        - ccbar

@@ -28,8 +28,11 @@ constraints:
   pre_rare : []
 fit: {}
 plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#fit-plotting
-  nbins   : 50
-  stacked : True
-  d_leg :
-    bpkpmm : $B^+\to K^+\mu^+\mu^-$ 
-    comb   : Combinatorial
+  merging : {}
+  regions :
+    brem_xx0:
+      nbins   : 50
+      stacked : True
+      d_leg :
+        bpkpmm : $B^+\to K^+\mu^+\mu^-$ 
+        comb   : Combinatorial
