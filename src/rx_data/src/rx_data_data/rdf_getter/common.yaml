@@ -23,8 +23,8 @@ definitions:
     L1_not_conv_100   : 8 * TMath::Abs(L1_FMX) + 10 * TMath::Abs(L1_FMY) < 100
     L2_not_conv_100   : 8 * TMath::Abs(L2_FMX) + 10 * TMath::Abs(L2_FMY) < 100
 
-    L1_not_conv_130   : 8 * TMath::Abs(L1_FMX) + 10 * TMath::Abs(L1_FMY) < 150 
-    L2_not_conv_130   : 8 * TMath::Abs(L2_FMX) + 10 * TMath::Abs(L2_FMY) < 150
+    L1_not_conv_130   : 8 * TMath::Abs(L1_FMX) + 10 * TMath::Abs(L1_FMY) < 130 
+    L2_not_conv_130   : 8 * TMath::Abs(L2_FMX) + 10 * TMath::Abs(L2_FMY) < 130
 
     L1_not_conv_150   : 8 * TMath::Abs(L1_FMX) + 10 * TMath::Abs(L1_FMY) < 150 
     L2_not_conv_150   : 8 * TMath::Abs(L2_FMX) + 10 * TMath::Abs(L2_FMY) < 150
