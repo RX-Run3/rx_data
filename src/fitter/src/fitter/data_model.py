@@ -76,6 +76,30 @@ class DataModel:
         pdf = pdf.create_extended(nevt, name=pdf_name)
 
         return pdf
+    # ----------------------
+    def _get_component_project_trigger(self, cfg : AnyModelConf) -> tuple[Project | None, Trigger]:
+        '''
+        Parameters
+        -------------
+        cfg : Configuration associated to component
+
+        Returns
+        -------------
+        Tuple with:
+
+        - Project If different from the one used by Data, otherwise None
+        - Trigger needed for component
+        '''
+        # Component has no trigger specified => Do not override project, use Data trigger
+        if cfg.component_trigger is None:
+            return None, self._cfg.trigger 
+
+        # Component has trigger and is the same as the Data one => Do not override project, use Data trigger
+        if self._cfg.trigger == cfg.component_trigger:
+            return None, self._cfg.trigger
+
+        # Component has trigger and it different from data => Override project and trigger
+        return cfg.component_trigger.project, cfg.component_trigger
     # ------------------------
     def get_model(self) -> zpdf:
         '''
@@ -91,20 +115,17 @@ class DataModel:
         log.debug(f'Found {npdf} components')
 
         for component, cfg in self._cfg.components.items():
-            # If component has its own trigger (e.g. MisID with its noPID) pick that
-            # otherwise pick full model trigger
-            trigger = self._cfg.trigger if cfg.component_trigger is None else cfg.component_trigger 
-
             if component in self._skipped_components:
                 log.warning(f'Skipping {component} component')
                 continue
 
             log.info(f'Building component {component} with {cfg.cfg_obs}')
-            with SpecMaker.project(name = trigger.project):
+            proj, trig = self._get_component_project_trigger(cfg = cfg)
+            with SpecMaker.project(project = proj):
                 ftr  = SimFitter(
                     name     = self._name,
                     component= component,
-                    trigger  = trigger,
+                    trigger  = trig,
                     q2bin    = self._q2bin,
                     cfg      = cfg)
                 pdf = ftr.get_model()
