@@ -198,7 +198,7 @@ class EfficiencyCalculator(Cache):
         df = cast(pnd.DataFrame, df)
 
         if len(df) != 1:
-            log.error(df_org)
+            log.error('\n' + str(df_org))
             log.error('')
             log.error('--->')
             log.error('')
