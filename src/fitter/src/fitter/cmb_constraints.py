@@ -100,8 +100,10 @@ class CmbConstraints(BaseFitter, Cache):
 
         for pdf in models: 
             if Component.comb not in pdf.name:
+                log.debug(f'Skipping non-combinatorial: {pdf.name}')
                 continue
 
+            log.debug(f'Found combinatorial: {pdf.name}')
             if self._reg      not in pdf.name:
                 continue
 
@@ -111,7 +113,14 @@ class CmbConstraints(BaseFitter, Cache):
         if len(cmb_models) == 1:
             return cmb_models[0]
 
+        log.error(20 * '-')
+        log.error('Existing:')
         for pdf in models:
+            log.error(pdf.name)
+
+        log.error(20 * '-')
+        log.error('Found:')
+        for pdf in cmb_models:
             log.error(pdf.name)
 
         raise ValueError('Not found one and only one combinatorial model')
