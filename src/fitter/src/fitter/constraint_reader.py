@@ -58,7 +58,8 @@ class ConstraintReader:
         Appends constraints to _constraints list for parameters in parameter holder
         whose names start with `pscale`
         '''
-        if skip:
+        if skip or not self._cfg.mod_cfg.constraints.pre_rare:
+            log.warning('Dropping part-reco constraints')
             return
 
         scales : dict[str,Component] = {}
@@ -125,7 +126,8 @@ class ConstraintReader:
         '''
         Adds combinatorial constraints
         '''
-        if skip:
+        if skip or not self._cfg.mod_cfg.constraints.combinatorial:
+            log.warning('Dropping combinatorial constraints')
             return
 
         components= self._cfg.mod_cfg.components
@@ -153,7 +155,8 @@ class ConstraintReader:
         '''
         Update _constraints with constraints to the mass scale, resolution
         '''
-        if skip:
+        if skip or not self._cfg.mod_cfg.constraints.signal_shape:
+            log.warning('Dropping signal shape constraints')
             return
 
         calc = SignalConstraints(
