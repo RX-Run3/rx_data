@@ -64,10 +64,7 @@ class ConstraintReader:
         scales : dict[str,Component] = {}
         log.info('Will search constraints for:\n')
         for comp in self._cfg.mod_cfg.constraints.pre_rare:
-            if self._brem == Brem.brx12:
-                scale_name = comp.scale
-            else:
-                scale_name = f'{comp.scale}_{self._brem}'
+            scale_name = f'{comp.scale}_{self._brem}'
                 
             log.debug(scale_name)
             scales[scale_name] = comp
