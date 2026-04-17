@@ -1,3 +1,6 @@
+no_pid: &no_pid
+  bpkk  : (LEP_PID_E < 3.0 || LEP_PROBNN_E < 0.2) && LEP_PROBNN_K > 0.1
+  bppipi: (LEP_PID_E < 3.0 || LEP_PROBNN_E < 0.2) && LEP_PROBNN_K < 0.1
 # --------------------------------------------------
 # Aliases
 # --------------------------------------------------
@@ -12,8 +15,9 @@ plots_settings: &plots_settings
 trigger          : Hlt2RD_BuToKpEE_MVA_noPID
 yields           : model/yields/rk/misid_electron.yaml
 selection:
-  bpkk  : (LEP_PID_E < 3.0 || LEP_PROBNN_E < 0.2) && LEP_PROBNN_K > 0.1
-  bppipi: (LEP_PID_E < 3.0 || LEP_PROBNN_E < 0.2) && LEP_PROBNN_K < 0.1
+  low    : *no_pid
+  central: *no_pid
+  high   : *no_pid
 observable: {}
 components:
   comb   : misid/rk/ee/comb.yaml
