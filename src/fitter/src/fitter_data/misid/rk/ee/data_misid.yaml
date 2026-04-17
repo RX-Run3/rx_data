@@ -24,7 +24,10 @@ components:
   bpkpipi: misid/rk/ee/bpkpipi.yaml
   bpkkk  : misid/rk/ee/bpkkk.yaml
 constraints:
-  pre_rare : []
+  pre_rare      : []
+  combinatorial : false
+  signal_shape  : false
+  misid         : null
 fit:
   strategy :
     retry :
