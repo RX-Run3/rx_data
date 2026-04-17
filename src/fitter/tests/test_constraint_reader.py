@@ -1,9 +1,6 @@
 '''
 Module with functions needed to test ConstraintReader class
 '''
-import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-
 import pytest
 
 from typing         import Final, cast
@@ -106,11 +103,11 @@ class Parameters:
             return set()
         # -----------------------------
         elif kind == f'rare_prec_rk_{Brem.brx12}':
-            l_par_name = [ f's_{comp}' for comp in _PRC_COMPONENTS ]
+            l_par_name = [ f's_{comp}_{Brem.brx12}' for comp in _PRC_COMPONENTS ]
         elif kind == f'rare_prec_rk_{Brem.one}':
-            l_par_name = [ f's_{comp}_brem_xx1' for comp in _PRC_COMPONENTS ]
+            l_par_name = [ f's_{comp}_{Brem.one}' for comp in _PRC_COMPONENTS ]
         elif kind == f'rare_prec_rk_{Brem.two}':
-            l_par_name = [ f's_{comp}_brem_xx2' for comp in _PRC_COMPONENTS ]
+            l_par_name = [ f's_{comp}_{Brem.two}' for comp in _PRC_COMPONENTS ]
         # -----------------------------
         elif kind == 'rare_prec_rkst':
             l_par_name = []
@@ -205,8 +202,8 @@ def _get_nll(
 
     nexpo = zfit.param.Parameter('nbkg', 1000, 0, 1000_000)
 
-    bkg   = expo.create_extended(nexpo)
-    pdf   = zfit.pdf.SumPDF([bkg, sig_11, sig_21, sig_22, sig_12])
+    bkg   = expo.create_extended(nexpo, name = f'{Component.comb}_{reg}')
+    pdf   = zfit.pdf.SumPDF(pdfs = [bkg, sig_11, sig_21, sig_22, sig_12])
     dat   = pdf.create_sampler()
 
     return zfit.loss.ExtendedUnbinnedNLL(model=pdf, data=dat)
@@ -394,7 +391,6 @@ def test_save(
     tmp_path : Path, 
     q2bin    : Qsq):
     '''
-    Tests all the constraints but the combinatorial shape
 
     Parameters
     -------------
