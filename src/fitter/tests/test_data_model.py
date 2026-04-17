@@ -81,7 +81,7 @@ def test_rare_electron(tmp_path : Path):
         Cache.cache_root(path = tmp_path),\
         sel.custom_selection(d_sel = {Cuts.mass : '(1)', Cuts.brem : 'nbrem != 0'}):
         dmd = DataModel(
-            name    = 'main',
+            name    = Region.brem_x12,
             cfg     = cfg,
             obs     = cfg.obs,
             trigger = Trigger.rk_ee_os,
