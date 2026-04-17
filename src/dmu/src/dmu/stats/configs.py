@@ -2,10 +2,13 @@
 Module with classes meant to represent configurations needed to build yields
 '''
 
-from typing   import Literal, Self
+from typing   import Literal, Self, Final
 from pydantic import BaseModel, model_validator
 from pydantic import RootModel, ConfigDict
 
+_MIN_COMPOSITE_PARS : Final[int] = 2
+# TODO: Add validation for parameter building
+# e.g. actually build the parameters
 # ------------------------------
 class SimpleYieldConf(BaseModel):            # Tested
     '''
@@ -36,10 +39,10 @@ class CompositeYieldConf(BaseModel):
     # ----------------------
     @model_validator(mode = 'after')
     def check_size(self) -> Self:
-        if len(self.pars) < 2:
+        if len(self.pars) < _MIN_COMPOSITE_PARS:
             raise ValueError(f'At least two parameters are needed, found: {self.pars}')
 
-        if self.kind == 'dif' and len(self.pars) != 2:
+        if self.kind == 'dif' and len(self.pars) != _MIN_COMPOSITE_PARS:
             raise ValueError(f'Expected two parameters found: {self.pars}')
 
         return self
