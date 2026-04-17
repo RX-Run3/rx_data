@@ -75,8 +75,10 @@ class ConstraintsCfg(UnpackerModel):
     '''
     model_config = ConfigDict(frozen=True)
 
-    pre_rare: list[Component]
-    misid   : 'FitModelConf | None' = None
+    pre_rare      : list[Component]
+    combinatorial : bool
+    signal_shape  : bool
+    misid         : 'FitModelConf | None' = None
     # ---------------------
     @classmethod
     def default(cls) -> 'ConstraintsCfg':
