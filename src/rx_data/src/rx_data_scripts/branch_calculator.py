@@ -292,7 +292,7 @@ def _get_input_rdf(path : Path) -> RDF.RNode:
         s_friend = {'brem_track_2'}
 
     with RDFGetter.only_friends(s_friend=s_friend),\
-         SpecMaker.project(name = Data.proj):
+         SpecMaker.project(project = Data.proj):
         gtr   = RDFGetter(sample=sample, trigger=trigger)
         d_rdf = gtr.get_rdf(per_file=True)
 

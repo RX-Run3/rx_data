@@ -1233,7 +1233,7 @@ def test_project(sample : str, project : Project):
     '''
     component = Component.from_sample(sample = sample)
     with RDFGetter.max_entries(value=1000),\
-         RDFGetter.project(name=project):
+         RDFGetter.project(project=project):
         gtr = RDFGetter(sample=component, trigger=Trigger.rk_ee_os)
         rdf = gtr.get_rdf(per_file=False)
 

@@ -82,7 +82,7 @@ class SamplesPrinter:
 
         log.info('Collecting dataframes')
         with RDFGetter.only_friends(s_friend=set()),\
-             RDFGetter.project(name = self._project):
+             RDFGetter.project(project = self._project):
             for sample, trigger in tqdm.tqdm(input_samples, ascii=' -'):
                 if sample in self._skipped_samples:
                     continue

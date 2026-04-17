@@ -608,16 +608,17 @@ class SpecMaker:
         return _context()
     # ---------------------------------------------------
     @classmethod
-    def project(cls, name : Project):
+    def project(cls, project : Project | None):
         '''
         Parameters
         --------------
-        name : Name of project where ntuples will be taken from, e.g. rk 
+        project : Overrides project where ntuples will be taken from, e.g. rk, rk_nopid
+                  If None, the project will not be overriden
         '''
         if cls._custom_project:
             raise ValueError(f'Custom project already set to: {cls._custom_project}')
 
-        cls._custom_project = name 
+        cls._custom_project = project 
         @contextmanager
         def _context():
             try:

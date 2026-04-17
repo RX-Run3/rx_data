@@ -154,7 +154,7 @@ def test_project(sample : Component, trigger : Trigger, project : Project):
     '''
     Tests getting data with a custom version for a given tree, either friend or main
     '''
-    with SpecMaker.project(name=project):
+    with SpecMaker.project(project=project):
         gtr = SpecMaker(component=sample, trigger=trigger)
         path= gtr.get_spec_path(per_file=False)
 
