@@ -400,6 +400,24 @@ def save_nll(loss : Loss) -> Path:
 
     return path
 #---------------------------------------------
+def load_nll(path : Path) -> Loss:
+    '''
+    Parameters
+    --------------
+    path: Path to pickle file storing NLL
+
+    Returns
+    --------------
+    Zfit NLL
+    '''
+    if not path.exists():
+        raise ValueError(f'Path not found: {path}')
+
+    bts = path.read_bytes()
+    nll = dill.loads(bts)
+
+    return nll
+#---------------------------------------------
 @overload
 def save_fit(
     data    : zdata,
