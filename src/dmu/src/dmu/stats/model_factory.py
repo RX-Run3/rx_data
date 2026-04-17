@@ -410,7 +410,12 @@ class ModelFactory:
         ap = self._get_parameter(kind = Model.hypexp, name = 'ap', suffix = suffix)
         bt = self._get_parameter(kind = Model.hypexp, name = 'bt', suffix = suffix)
 
-        pdf= HypExp(obs=self._obs, mu=mu, alpha=ap, beta=bt, name=f'hypexp_{self._preffix}{suffix}')
+        pdf= HypExp(
+            obs   = self._obs, 
+            mu    = mu, 
+            alpha = ap, 
+            beta  = bt, 
+            name  = f'hypexp_{self._preffix}{suffix}')
 
         return pdf
     # ---------------------------------------------
