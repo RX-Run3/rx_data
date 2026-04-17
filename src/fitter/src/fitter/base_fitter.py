@@ -70,12 +70,16 @@ class BaseFitter:
 
         sig_name = self._trigger.project.signal_name
         if sig_name not in res:
-            log.info('Missing nsig entry, cannot get sensitivity')
+            log.debug(f'Missing {sig_name} entry, cannot get sensitivity')
+            log.debug(res)
             return -1
 
         value, error = res[sig_name]
 
-        return 100 * error / value
+        sensitivity = 100 * error / value
+        log.info(f'Found sensitivity: {sensitivity:.2f}')
+
+        return sensitivity
     # --------------------------
     def _brem_cuts_from_cuts(self, cuts : dict[Cuts,str]) -> str:
         '''
