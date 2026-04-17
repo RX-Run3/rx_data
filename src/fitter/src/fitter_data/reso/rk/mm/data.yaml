@@ -22,7 +22,9 @@ components:
   bpkppsi2mm : reso/rk/mm/bpkppsi2mm.yaml
   bpkpjpsimm : reso/rk/mm/bpkpjpsimm.yaml
 constraints:
-  pre_rare : []
+  pre_rare      : []
+  combinatorial : false
+  signal_shape  : false
 fit: {}
 plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#fit-plotting
   merging : {}
