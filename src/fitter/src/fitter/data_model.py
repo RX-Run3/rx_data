@@ -7,12 +7,12 @@ from contextlib     import contextmanager
 from dmu            import LogLevels, LogStore
 from dmu.stats      import print_pdf, zfit
 from dmu.stats      import ParameterLibrary as PL
-from rx_common      import Component, Qsq, Trigger
+from rx_common      import Component, Project, Qsq, Trigger
 from rx_data        import SpecMaker
 from zfit           import Space         as zobs
 from zfit.pdf       import BasePDF       as zpdf
 
-from .configs       import FitModelConf
+from .configs       import AnyModelConf, FitModelConf
 from .sim_fitter    import SimFitter
 
 log = LogStore.add_logger('fitter:data_model')
