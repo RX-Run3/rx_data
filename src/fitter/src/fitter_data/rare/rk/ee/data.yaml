@@ -51,10 +51,11 @@ plots_settings: &plots_settings
 trigger          : Hlt2RD_BuToKpEE_MVA
 yields           : model/yields/rk/rare_electron.yaml
 selection        : 
-  low    : {}
+  low    :
+    convert : L1_not_conv_150 && L2_not_conv_150
   central: 
     leakage : TMath::Abs(B_const_mass_M - 5280) > 200
-    convert : L1_not_conv_130 && L2_not_conv_130
+    convert : L1_not_conv_150 && L2_not_conv_150
   high   : {}
 observable:
   low:
@@ -89,6 +90,8 @@ constraints:
     - bdkstkpiee
     - bpkstkpiee
     - bsphiee
+  combinatorial: false 
+  signal_shape : true
 fit  : {}
 plots:
   merging:
