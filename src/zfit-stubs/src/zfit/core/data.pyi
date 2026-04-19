@@ -68,7 +68,17 @@ class Data(ZfitUnbinnedData, BaseDimensional, BaseObject, GraphCachable, Seriali
     @classmethod
     def from_root(cls, path: str, treepath: str, obs: ZfitSpace = None, *, weights: ztyping.WeightsStrInputType = None, obs_alias: Mapping[str, str] | None = None, name: str | None = None, label: str | None = None, dtype: tf.DType = None, root_dir_options=None, use_hash: bool | None = None, branches: list[str] | None = None, branches_alias: dict | None = None) -> Data: ...
     @classmethod
-    def from_numpy(cls, obs: ztyping.ObsTypeInput, array: np.ndarray, *, weights: ztyping.WeightsInputType = None, name: str | None = None, label: str | None = None, dtype: tf.DType = None, use_hash=None, guarantee_limits: bool = False) -> Data | ZfitBinnedData: ...
+    def from_numpy(
+        cls, 
+        obs: ztyping.ObsTypeInput, 
+        array: np.ndarray, 
+        *, 
+        weights: ztyping.WeightsInputType = None, 
+        name: str | None = None, 
+        label: str | None = None, 
+        dtype: tf.DType = None, 
+        use_hash : bool | None = None, 
+        guarantee_limits: bool = False) -> Data | ZfitBinnedData: ...
     @classmethod
     def from_tensor(cls, obs: ztyping.ObsTypeInput, tensor: tf.Tensor, *, weights: ztyping.WeightsInputType = None, name: str | None = None, label: str | None = None, dtype: tf.DType = None, use_hash=None, guarantee_limits: bool = False) -> Data | ZfitBinnedData: ...
     def with_obs(self, obs: ztyping.ObsTypeInput, *, guarantee_limits: bool = False) -> Data: ...
