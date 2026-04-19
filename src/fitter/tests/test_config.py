@@ -1,9 +1,6 @@
 '''
 Module with functions that test config classes
 '''
-import os
-os.environ["CUDA_VISIBLE_DEVICES"] = '1'
-
 import pytest
 
 from pathlib     import Path
