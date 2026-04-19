@@ -395,7 +395,7 @@ class PlotConf(BaseModel):
         '''
         Returns default config, useful for tests
         '''
-        merging = {}
+        merging : dict[Region,list[Region]] = {}
         regions = {Region.bpee_xx1 : ZFitPlotterConf.default()}
 
         return cls(
@@ -536,7 +536,10 @@ class RXFitConfig(BaseModel):
         if self.toy_cfg is None:
             return
 
-        update  = {'output' : self.output_directory / 'toys', 'ntoys' : self.ntoys}
+        update : dict[str,Path | int] = {
+            'output' : self.output_directory / 'toys', 
+            'ntoys'  : self.ntoys}
+
         self.toy_cfg.model_copy(update = update)
 
         log.info(f'Sending toys to: {self.output_directory}')
