@@ -87,7 +87,10 @@ class ConstraintsCfg(UnpackerModel):
         -------------
         Default configuration, mostly needed for tests
         '''
-        return cls(pre_rare = [])
+        return cls(
+            combinatorial = True,
+            signal_shape  = True,
+            pre_rare      = [])
     # ---------------------
     @property
     def is_empty(self) -> bool:
