@@ -52,14 +52,15 @@ class MisIDConstraints(Cache):
         d_sel = sel.selection(
             q2bin   = self._q2bin, 
             trigger = self._cfg.trigger, 
-            process = self._data_sample),
+            process = self._data_sample)
 
         Cache.__init__(
             self,
             out_path = Path('constraints'),
-            d_sel    = d_sel, 
+            d_sel    = { cut.name : val for cut, val in d_sel.items() }, 
             config   = cfg.model_dump(),
         )
+
     # ----------------------
     def __get_constraints(self, pars : FitResult) -> dict[str,tuple[float,float]]:
         '''
