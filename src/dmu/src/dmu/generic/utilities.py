@@ -350,7 +350,7 @@ def timeit(f):
     return wrap
 # --------------------------------
 def dump_json(
-    data      : dict|str|list|set|tuple|DictConfig|ListConfig,
+    data      : dict[Any,Any]|str|list[Any]|set[Any]|tuple[Any]|DictConfig|ListConfig,
     path      : str|Path,
     exists_ok : bool = False,
     sort_keys : bool = False) -> None:
