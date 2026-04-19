@@ -378,11 +378,11 @@ class MisIDConf(NonParametricConf): # Tested
     '''
     Configuration needed to build MisID components
     '''
-    trigger          : Trigger
-    project          : Project
-    weights          : MisIDSampleWeights
-    data_fit         : FitConf
-    selection        : dict[Cuts,str]
+    trigger   : Trigger
+    project   : Project
+    weights   : MisIDSampleWeights
+    data_fit  : FitConf
+    selection : dict[Cuts,str]
 # ------------------------------
 AnyModelConf = CombinatorialConf | ParametricConf | CCbarConf | MisIDConf | NonParametricConf
 # ------------------------------
