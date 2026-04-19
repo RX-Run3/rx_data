@@ -18,12 +18,18 @@ class MVAWp(RootModel[float|tuple[float,float]]):
         '''
         Parameters
         -------------
-        val: String representing WP, e.g. 0.3
+        val: String representing WP, e.g. 0.3 or 0.5-0.8
 
         Returns
         -------------
         Instance of MVAWp
         '''
+        if '-' in val:
+            lower, upper = val.split('-')
+            values = float(lower), float(upper)
+
+            return cls(values)
+
         return cls(float(val))
     # -------------    
     @model_validator(mode = 'after')
