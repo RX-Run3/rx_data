@@ -42,8 +42,6 @@ constraints_low_central: &cons_lc
 # -------------------------
 # Proper config
 # -------------------------
-
-# -----------------
 constraints:
   low:
     <<: *cons_lc
