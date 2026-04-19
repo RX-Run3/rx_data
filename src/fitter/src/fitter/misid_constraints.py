@@ -72,7 +72,7 @@ class MisIDConstraints(Cache):
         -------------
         Dictionary with yields in signal region
         '''
-        d_yield   = {}
+        d_yield : dict[str, tuple[float,float]] = {}
         for region in Region.hadronic_misid():
             # Use constraint for signal region
             d_yield[f'yld_{region.signal}'] = self.__get_signal_region_yield(
@@ -136,7 +136,7 @@ class MisIDConstraints(Cache):
                 trigger   = self._cfg.trigger,
                 is_sig    = pid_region == 'signal',
                 wgt_cfg   = {Correction.pid : cfg.weights},
-                selection = {'pid_l' : '(1)'},
+                selection = {Cuts.pid_l : '(1)'},
                 q2bin     = self._q2bin)
             dat = prp.get_data()
             yld = dat.weights.numpy().sum()
@@ -176,7 +176,7 @@ class MisIDConstraints(Cache):
 
         return cut
     # ----------------------
-    def __get_control_nll(self, region : Region) -> tuple[zlos,dict]:
+    def __get_control_nll(self, region : Region) -> NLLConf:
         '''
         Parameters
         -------------
@@ -184,14 +184,12 @@ class MisIDConstraints(Cache):
 
         Returns
         -------------
-        Tuple with:
-            - Likelihood build for requested control region
-            - Configuration used to build that likelihood
+        Object storing NLL and selection
         '''
         pid_cut = self.__get_pid_cut(region=region)
 
         with PL.parameter_schema(cfg=self._cfg.yields),\
-             sel.update_selection(d_sel={'pid_l' : pid_cut}):
+             sel.update_selection(d_sel={Cuts.pid_l : pid_cut}):
 
             ftr = LikelihoodFactory(
                 obs    = region.obs,
@@ -200,9 +198,8 @@ class MisIDConstraints(Cache):
                 q2bin  = self._q2bin,
                 cfg    = self._cfg)
             nll = ftr.run()
-            cfg = ftr.get_config()
 
-        return nll, cfg
+        return nll
     # ----------------------
     def get_constraints(self) -> list[Constraint1D]:
         '''
