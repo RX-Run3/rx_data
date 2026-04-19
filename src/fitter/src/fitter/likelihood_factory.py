@@ -3,17 +3,31 @@ Module containing DataFitter class
 '''
 from dmu                import LogStore
 from dmu.stats          import zfit
+from dmu.stats          import Constraint
 from rx_common          import Qsq, Component, Cuts
 from rx_selection       import selection  as sel
 
 from zfit.loss          import ExtendedUnbinnedNLL
 from zfit               import Space  as zobs
 
+from pydantic           import BaseModel, ConfigDict
 from .configs           import FitModelConf
 from .data_preprocessor import DataPreprocessor
 from .data_model        import DataModel
 
 log=LogStore.add_logger('fitter:likelihood_factory')
+# ----------------------
+class NLLConf(BaseModel):
+    '''
+    Wrapper to NLL and associated objects
+    '''
+    model_config = ConfigDict(
+        arbitrary_types_allowed = True,
+        frozen                  = True)
+
+    nll        : ExtendedUnbinnedNLL 
+    selection  : dict[str, dict[Cuts,str]]
+    constraints: list[Constraint]
 # ------------------------
 class LikelihoodFactory:
     '''
@@ -44,8 +58,31 @@ class LikelihoodFactory:
         self._trigger   = cfg.trigger
         self._q2bin     = q2bin
         self._cfg       = cfg
+    # ----------------------
+    def _get_config(self) -> dict[str,dict[Cuts,str]]:
+        '''
+        Returns
+        -------------
+        Dictionary storing selection, default and for fit
+        '''
+        log.debug('Retrieving NLL configuration')
+
+        cuts_fit = sel.selection(
+            process=self._sample,
+            trigger=self._trigger,
+            q2bin  =self._q2bin)
+
+        with sel.custom_selection(d_sel={}, force_override=True):
+            cuts_def = sel.selection(
+                process=self._sample,
+                trigger=self._trigger,
+                q2bin  =self._q2bin)
+
+        return {
+            'default' : cuts_def,
+            'fit'     : cuts_fit}
     # ------------------------
-    def run(self) -> ExtendedUnbinnedNLL:
+    def run(self) -> NLLConf:
         '''
         Creates negative log-likelihood
 
@@ -83,28 +120,10 @@ class LikelihoodFactory:
 
         nll = zfit.loss.ExtendedUnbinnedNLL(model=model, data=data)
 
-        return nll
-    # ----------------------
-    def get_config(self) -> dict[str,dict[Cuts,str]]:
-        '''
-        Returns
-        -------------
-        Dictionary storing selection, default and for fit
-        '''
-        log.debug('Retrieving NLL configuration')
+        cfg = NLLConf(
+            selection   = self._get_config(),
+            nll         = nll, 
+            constraints = [])
 
-        cuts_fit = sel.selection(
-            process=self._sample,
-            trigger=self._trigger,
-            q2bin  =self._q2bin)
-
-        with sel.custom_selection(d_sel={}, force_override=True):
-            cuts_def = sel.selection(
-                process=self._sample,
-                trigger=self._trigger,
-                q2bin  =self._q2bin)
-
-        return {
-            'default' : cuts_def,
-            'fit'     : cuts_fit}
+        return cfg 
 # ------------------------
