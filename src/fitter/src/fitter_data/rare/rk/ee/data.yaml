@@ -90,7 +90,7 @@ constraints:
     - bdkstkpiee
     - bpkstkpiee
     - bsphiee
-  combinatorial: false 
+  combinatorial: true 
   signal_shape : true
 fit  : {}
 plots:
