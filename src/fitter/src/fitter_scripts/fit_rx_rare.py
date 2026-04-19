@@ -206,7 +206,7 @@ def _get_nll(
     -----------------
     Dictionary mapping signal region with NLL container
     '''
-    d_nll = {}
+    d_nll : dict[Region,NLLConf] = {}
     for brem in brems:
         if brem.is_composite:
             # Put all the elementary regions in same config
