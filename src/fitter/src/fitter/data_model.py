@@ -115,15 +115,10 @@ class DataModel:
 
         l_pdf = []
         for component, cfg in self._cfg.components.items():
-            pdf = self._get_component_pdf(
+            pdf           = self._get_component_pdf(
                 component = component,
                 cfg       = cfg)
 
-            if pdf is None:
-                log.warning(f'Cannot build component: {component}')
-                continue
-
-            pdf = self._extend(pdf=pdf, component=component)
             l_pdf.append(pdf)
 
         return self._add_components(l_pdf = l_pdf)
@@ -156,6 +151,12 @@ class DataModel:
                 q2bin    = self._q2bin,
                 cfg      = cfg)
             pdf = ftr.get_model()
+
+        if pdf is None:
+            log.warning(f'Cannot build component: {component}')
+            return pdf
+
+        pdf = self._extend(pdf=pdf, component=component)
 
         return pdf
     # ------------------------
