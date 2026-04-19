@@ -39,7 +39,7 @@ class Cache:
     _cache_root     : Path     | None = None
     _l_skip_class   : list[str]| None = []
     # ---------------------------
-    def __init__(self, out_path : Path, **kwargs : dict[str,Any]):
+    def __init__(self, out_path : Path, **kwargs : Any):
         '''
         Parameters
         ---------------

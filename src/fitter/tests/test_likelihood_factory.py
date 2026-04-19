@@ -9,7 +9,7 @@ from dmu.stats       import ParameterLibrary as PL
 from dmu.stats       import zfit
 from dmu.generic     import UnpackerModel, utilities  as gut
 from dmu.workflow    import Cache
-from rx_common       import Mass, Qsq, Component, Region
+from rx_common       import Cuts, Mass, Qsq, Component, Region
 from rx_data         import RDFGetter
 from rx_selection    import selection  as sel
 from fitter          import LikelihoodFactory
@@ -105,7 +105,7 @@ def test_config(tmp_path : Path):
 
     obs = zfit.Space('B_Mass', limits=(4500, 7000))
     with PL.parameter_schema(cfg=cfg.yields),\
-         sel.custom_selection(d_sel = {'bdt' : '(1)'}),\
+         sel.custom_selection(d_sel = {Cuts.cmb : '(1)'}),\
          Cache.cache_root(path = tmp_path),\
          RDFGetter.max_entries(value=100_000):
 
@@ -115,10 +115,10 @@ def test_config(tmp_path : Path):
             sample = Component.data_24,
             q2bin  = Qsq.jpsi,
             cfg    = cfg)
-        cfg = ftr.get_config()
+        cfg = ftr.run()
 
-    assert 'default' in cfg
-    assert 'fit'     in cfg
+    assert 'default' in cfg.selection
+    assert 'fit'     in cfg.selection
 # -------------------------------------------
 def test_reso_muon(tmp_path : Path):
     '''
@@ -133,7 +133,7 @@ def test_reso_muon(tmp_path : Path):
 
     obs = zfit.Space(Mass.bp_dtf_jpsi, limits=(5000, 6000))
     with PL.parameter_schema(cfg=cfg.yields),\
-         sel.custom_selection(d_sel = {'bdt' : '(1)'}), \
+         sel.custom_selection(d_sel = {Cuts.cmb : '(1)'}), \
          Cache.cache_root(path = tmp_path),\
          RDFGetter.max_entries(value=20_000):
 
@@ -212,8 +212,9 @@ def test_rare_electron(q2bin : Qsq, tmp_path : Path):
     with PL.parameter_schema(cfg=cfg.yields),\
          Cache.cache_root(path = tmp_path),\
          sel.custom_selection(d_sel={
-            'nobr0' : 'nbrem != 0',
-            'bdt'   : 'mva_cmb > 0.60 && mva_prc > 0.40'}):
+            Cuts.brem : 'nbrem != 0',
+            Cuts.cmb  : 'mva_cmb > 0.60',
+            Cuts.prc  : 'mva_prc > 0.40'}):
         ftr = LikelihoodFactory(
             name   = 'main',
             obs    = obs,
@@ -239,8 +240,9 @@ def test_high_q2_track(tmp_path : Path):
     with PL.parameter_schema(cfg=cfg.yields),\
          Cache.cache_root(path = tmp_path),\
          sel.custom_selection(d_sel={
-            'q2'    : 'q2_track > 14300000 && q2 < 22000000',
-            'bdt'   : 'mva_cmb > 0.8 && mva_prc > 0.8'}):
+            Cuts.q2 : 'q2_track > 14300000 && q2 < 22000000',
+            Cuts.cmb: 'mva_cmb > 0.60',
+            Cuts.prc: 'mva_prc > 0.40'}):
         ftr = LikelihoodFactory(
             name   = 'main',
             obs    = obs,
@@ -274,7 +276,7 @@ def test_rare_misid_electron(
     with PL.parameter_schema(cfg=cfg.yields),\
          RDFGetter.max_entries(value = -1),\
          Cache.cache_root(path = tmp_path),\
-         sel.custom_selection(d_sel={'pid_l' : f'({l1_in_cr}) && ({l2_in_cr})'}):
+         sel.custom_selection(d_sel={Cuts.pid_l : f'({l1_in_cr}) && ({l2_in_cr})'}):
         ftr = LikelihoodFactory(
             obs    = region.obs,
             name   = region,
