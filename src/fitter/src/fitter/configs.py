@@ -540,7 +540,7 @@ class RXFitConfig(BaseModel):
             'output' : self.output_directory / 'toys', 
             'ntoys'  : self.ntoys}
 
-        self.toy_cfg.model_copy(update = update)
+        self.toy_cfg = self.toy_cfg.model_copy(update = update)
 
         log.info(f'Sending toys to: {self.output_directory}')
         log.info(f'Setting number of toys to: {self.ntoys}')
