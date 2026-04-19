@@ -7,6 +7,7 @@ import shutil
 
 from pathlib    import Path
 from contextlib import contextmanager
+from typing     import Any
 
 from dmu.generic           import hashing
 from dmu.logging.log_store import LogStore
@@ -38,7 +39,7 @@ class Cache:
     _cache_root     : Path     | None = None
     _l_skip_class   : list[str]| None = []
     # ---------------------------
-    def __init__(self, out_path : Path, **kwargs):
+    def __init__(self, out_path : Path, **kwargs : dict[str,Any]):
         '''
         Parameters
         ---------------
