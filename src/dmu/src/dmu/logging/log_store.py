@@ -140,7 +140,7 @@ class LogStore:
         return logger
     #--------------------------
     @staticmethod
-    def set_level(name, value):
+    def set_level(name : str, value : int):
         '''
         Will set the level of a logger, it not present yet, it will store the level and set it when created.
         Parameters:
