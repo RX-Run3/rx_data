@@ -113,11 +113,14 @@ class DataModel:
 
         log.debug(f'Found {npdf} components')
 
-        l_pdf = []
+        l_pdf : list[zpdf] = []
         for component, cfg in self._cfg.components.items():
             pdf           = self._get_component_pdf(
                 component = component,
                 cfg       = cfg)
+
+            if pdf is None:
+                continue
 
             l_pdf.append(pdf)
 
