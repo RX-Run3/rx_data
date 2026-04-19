@@ -65,7 +65,7 @@ class MVAWp(RootModel[float|tuple[float,float]]):
 
         min, max = self.root
 
-        return f'({self.root} < {max}) && ({self.root} > {min})'
+        return f'({name} < {max}) && ({name} > {min})'
     # -------------    
     @property
     def name(self):
