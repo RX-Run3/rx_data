@@ -9,7 +9,7 @@ import pytest
 from pathlib     import Path
 from dmu         import LogStore
 from dmu.stats   import YieldConf
-from dmu.generic import utilities as gut
+from dmu.generic import UnpackerModel, utilities as gut
 from rx_misid    import MisIDSampleWeights, MisIDSampleSplitting
 from rx_common   import Channel, Component, Project, Mass, Qsq
 from fitter      import NonParametricConf 
@@ -19,6 +19,14 @@ from fitter      import FitModelConf
 from fitter      import MVAWp
 
 log=LogStore.add_logger('fitter:test_config')
+# ----------------------
+@pytest.fixture(scope='session', autouse=True)
+def initialize():
+    '''
+    This will run before any test
+    '''
+    with UnpackerModel.package(name = 'fitter_data'):
+        yield
 # ----------------------
 @pytest.mark.parametrize('channel', [Channel.ee, Channel.mm  ])
 @pytest.mark.parametrize('project', [Project.rk, Project.rkst])
