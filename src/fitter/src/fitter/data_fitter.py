@@ -5,32 +5,19 @@ from typing          import Final
 from pathlib         import Path
 from dmu             import LogStore
 from dmu.workflow    import Cache
-from dmu.stats       import AnealingMinimizer, Constraint, FitResult, Retries
+from dmu.stats       import AnealingMinimizer, FitResult, Retries
 from dmu.stats       import zfit
 from dmu.stats       import utilities as sut
-from pydantic        import BaseModel, ConfigDict
-from rx_common       import Component, Qsq, Region, Cuts
+from rx_common       import Component, Qsq, Region
 from zfit.exception  import ParamNameNotUniqueError
-from zfit.result     import FitResult           as zres
 from zfit.loss       import ExtendedUnbinnedNLL as NLL
 
-from .base_fitter    import BaseFitter
-from .configs        import FitModelConf
+from .likelihood_factory import NLLConf
+from .base_fitter        import BaseFitter
+from .configs            import FitModelConf
 
 log=LogStore.add_logger('fitter:data_fitter')
 _MIN_REGIONS_IN_CAT : Final[int] = 2 # Minimum number of signal regions to plot when merging them
-# ----------------------
-class NLLConf(BaseModel):
-    '''
-    Wrapper to NLL and associated objects
-    '''
-    model_config = ConfigDict(
-        arbitrary_types_allowed = True,
-        frozen                  = True)
-
-    nll        : NLL
-    selection  : dict[str, dict[Cuts,str]]
-    constraints: list[Constraint]
 # ----------------------
 class DataFitter(BaseFitter, Cache):
     '''
