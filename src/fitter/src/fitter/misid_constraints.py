@@ -3,7 +3,7 @@ Module containing the MisIDConstraints class
 '''
 from pathlib             import Path
 from typing              import Final
-from rx_common           import Component, Correction, Qsq, Region
+from rx_common           import Component, Correction, Cuts, Qsq, Region
 from rx_selection        import selection as sel
 
 from dmu.stats           import ConstraintType, FitResult, GofCalculator
@@ -14,11 +14,9 @@ from dmu                 import LogStore
 from dmu.generic         import utilities        as gut
 from dmu.workflow        import Cache
 
-from zfit.loss           import ExtendedUnbinnedNLL as zlos
-
 from .configs            import FitModelConf, MisIDConf
 from .data_fitter        import DataFitter
-from .likelihood_factory import LikelihoodFactory
+from .likelihood_factory import LikelihoodFactory, NLLConf
 from .data_preprocessor  import DataPreprocessor
 
 log=LogStore.add_logger('fitter:misid_constraints')
