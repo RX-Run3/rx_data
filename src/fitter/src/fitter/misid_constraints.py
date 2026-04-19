@@ -239,7 +239,7 @@ class MisIDConstraints(Cache):
                     tconf = type(cfg)
                     raise ValueError(f'Config for {region} is of the wrong type: {tconf}')
 
-                res = ftr.run(fit_cfg = cfg.data_fit)
+                res = ftr.run()
                 l_res.append(res)
 
         pars  = FitResult.merge(results = l_res)
