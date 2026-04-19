@@ -114,8 +114,8 @@ class DataFitter(BaseFitter, Cache):
         Fit result
         '''
         min = zfit.minimize.Minuit()
-        res = min.minimize(loss = nll)
-        res.hesse(name='minuit_hesse', method = 'minuit_hesse')
+        res = min.minimize(loss = nll)                            # type: ignore[reportUnknownMemberType]
+        res.hesse(name='minuit_hesse', method = 'minuit_hesse')   # type: ignore[reportUnknownMemberType]
 
         try:
             fres = FitResult.from_zfit(res = res)
