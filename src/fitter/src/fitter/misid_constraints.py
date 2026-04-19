@@ -161,8 +161,7 @@ class MisIDConstraints(Cache):
         -------------
         PID cut needed to build control region
         '''
-        cut = self._cfg.selection[region]
-
+        cut    = self._cfg.selection[self._q2bin][Cuts.pid_l]
         cut_l1 = cut.replace('LEP_', 'L1_')
         cut_l2 = cut.replace('LEP_', 'L2_')
 
