@@ -152,19 +152,30 @@ class CmbConstraints(BaseFitter, Cache):
         res = ftr.run()
 
         self._save_fit(
-            data    = cfg_nll.nll.data[0], 
+            data    = cfg_nll.nll.data[0],   # Likelihood factory makes NLL for one single region
+            model   = cfg_nll.nll.model[0],  # Pick the data and model for that region
+            cut_cfg = cfg_nll.selection,
             res     = res, 
             out_path= self._out_path,
             plt_cfg = self._mod_cfg.plots.regions[self._reg],
-            cut_cfg = self._cuts,
-            model   = self._model)
+        )
 
-        params = [ par for par in self._model.get_params() if self._pick_parameter(name = par.name) ] 
-        if not params:
-            raise ValueError('No parameters found to make constraints')
+        return res
+    # ----------------------
+    def get_constraint(self) -> ConstraintND:
+        '''
+        Returns
+        ----------------------
+        N dimensional Gaussian constraint
+        '''
+        log.info('Constraints not found, calculating them')
 
-        values = [ float(par.value().numpy()) for par in params ]
-        names  = [ par.name                   for par in params ]
+        res       = self._fit_cr()
+        par_names = self._cfg.constraints.parameters[self._q2bin]
+        params : list[FitParameter] = [ param for param in res.parameters if param.name in par_names ]
+
+        values = [ par.value for par in params ]
+        names  = [ par.name  for par in params ]
 
         pars   = self._cfg.constraints.parameters[self._q2bin]
         cov    = res.pars_covariance(pars = pars)
