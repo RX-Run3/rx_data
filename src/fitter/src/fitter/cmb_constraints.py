@@ -45,23 +45,13 @@ class CmbConstraints(BaseFitter, Cache):
         self._cfg   = cfg
 
         self._component = COMPONENT
+        self._base_path = Path(Component.comb) / 'fit' / self._reg
         self._mod_cfg   = self._cfg.constraints.mod_cfg
         self._trigger   = Trigger(self._mod_cfg.trigger)
-
-        models= self._get_basic_models(models = nll.model)
-        model = self._model_from_models(models = models)
-        if model is None:
-            raise ValueError(f'Cannot find combinatorial PDF: {reg}')
-
-        self._model = model
-        self._obs   = model.space
-
-        self._base_path = Path(Component.comb) / 'fit' / self._reg
-        self._rdf, uid, self._cuts = self._get_rdf()
+        self._obs       = self._mod_cfg.obs
 
         Cache.__init__(
             self,
-            rdf_uid  = uid,
             out_path = self._base_path,
             cfg      = cfg.model_dump())
     # ----------------------
