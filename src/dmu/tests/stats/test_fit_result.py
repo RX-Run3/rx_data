@@ -6,11 +6,13 @@ import numpy
 import pytest
 
 from pathlib     import Path
+from dmu         import LogStore
 from dmu.stats   import FitResult
 from dmu.stats   import zfit
 from dmu.testing import get_nll
 from dmu.generic import rxran 
 
+log=LogStore.add_logger('dmu:test_fit_result')
 # ----------------------
 @pytest.fixture(scope='module', autouse=True)
 def initialize():
