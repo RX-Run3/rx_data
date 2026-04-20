@@ -180,18 +180,14 @@ def _get_region_nll(brem : Brem, cfg : RXFitConfig) -> NLLConf:
         q2bin  = cfg.q2bin,
         sample = DATA_SAMPLE,
         cfg    = cfg.mod_cfg)
-    nll     = ftr.run()
-    cfg_mod = ftr.get_config()
+    cfg_nll  = ftr.run()
 
     nll, cons = _add_constraints(
-        brem= brem,
-        nll = nll,
-        cfg = cfg)
+        brem  = brem,
+        nll   = cfg_nll.nll,
+        cfg   = cfg)
 
-    return NLLConf(
-        nll         = nll, 
-        selection   = cfg_mod, 
-        constraints = cons)
+    return cfg_nll.model_copy(update = {'nll' : nll, 'constraints' : cons})
 # ----------------------
 def _get_nll(
     brems: list[Brem],
