@@ -3,12 +3,14 @@ Entry point for testing CLI utilities
 '''
 
 import typer
+import tempfile
 import subprocess
 
 from pathlib        import Path
 from ihep_utilities import JobSubmitter
 from rx_tests       import TestConfig
 from rx_tests       import TestJobs
+from rx_tests       import ReportBuilder 
 from dmu            import LogStore
 
 app = typer.Typer(help=__doc__)
@@ -55,6 +57,37 @@ def test_all(
         jobs        = jobs, 
         environment = 'rx_run3')
     sbt.run(skip_submit=dry_run)
+# ----------------------
+@app.command()
+def build_report(
+    path    : Path = typer.Option(..., '--path'   , '-p'),
+    browser : str  = typer.Option(..., '--browser', '-b')) -> None:
+    '''
+    Runs all tests as configured in rx_tests_data/config.yaml
+    '''
+    if not path.exists():
+        raise ValueError(f'Path not found: {path}')
+
+    with tempfile.NamedTemporaryFile(mode = 'w+t', delete=False) as temp_file:
+        json_path = Path(temp_file.name)
+        code_path = str(path)
+
+        log.info('Running type analysis')
+        result = subprocess.run(
+            ['pyright', code_path, '--outputjson'], 
+            capture_output = True,
+            text           = True,
+            check          = False)
+
+        log.info(f'Saving to: {json_path}')
+        json_path.write_text(result.stdout)
+
+    log.info('Building HTML report')
+    bdr = ReportBuilder(json_path = json_path)
+    html_path = bdr.run()
+
+    log.info(f'Opening report with: {browser}')
+    subprocess.run([browser, html_path], check = True)
 # ----------------------
 if __name__ == '__main__':
     app()
