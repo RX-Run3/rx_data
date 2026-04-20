@@ -41,6 +41,7 @@ def get_model(
     obs    : zobs           | None = None,
     pars   : dict[str,zpar] | None = None,
     suffix : str            | None = None,
+    prefix : str            | None = None,
     suffix_pdfs : bool             = False,
     lam    : float                 = -0.0001) -> SumPDF:...
 @overload
@@ -51,6 +52,7 @@ def get_model(
     obs    : zobs           | None = None,
     pars   : dict[str,zpar] | None = None,
     suffix : str            | None = None,
+    prefix : str            | None = None,
     suffix_pdfs : bool             = False,
     lam    : float                 = -0.0001) -> zpdf:...
 def get_model(
@@ -60,6 +62,7 @@ def get_model(
     obs    : zobs           | None = None,
     pars   : dict[str,zpar] | None = None,
     suffix : str            | None = None,
+    prefix : str            | None = None,
     suffix_pdfs : bool             = False,
     lam    : float                 = -0.0001) -> zpdf | SumPDF:
     '''
@@ -72,6 +75,7 @@ def get_model(
     obs    : If provided, will use it, by default None and will be built in function
     suffix : Optional, can be used in case multiple models are needed
     suffix_pdfs: If True, will add suffix to PDF names
+    prefix : same as suffix
     lam    : Decay constant of exponential component, set to -0.0001 by default
 
     Returns
@@ -84,15 +88,21 @@ def get_model(
     else:
         suffix = ''
 
+    if prefix is not None and prefix:
+        prefix = prefix.rstrip('_')
+        prefix = f'{prefix}_'
+    else:
+        prefix = ''
+
     if obs is None:
-        obs  = zfit.Space(f'mass{suffix}', limits=(4500, 7000))
+        obs  = zfit.Space(f'{prefix}mass{suffix}', limits=(4500, 7000))
 
     if kind == 'signal':
         pdf_suffix = suffix if suffix_pdfs else ''
         pdf_name   = f'{kind}{pdf_suffix}'
 
-        mu  = zfit.Parameter(f'mu{suffix}', 5200, 4500, 6000)
-        sg  = zfit.Parameter(f'sg{suffix}',  150,   10, 200)
+        mu  = zfit.Parameter(f'{prefix}mu{suffix}', 5200, 4500, 6000)
+        sg  = zfit.Parameter(f'{prefix}sg{suffix}',  150,   10, 200)
         pdf = zfit.pdf.Gauss(
             obs  = obs, 
             mu   = mu, 
@@ -103,7 +113,7 @@ def get_model(
             return pdf
         
         if nsig is None:
-            nsig = zfit.param.Parameter(f'n{pdf_name}', nsample, 0, 1000_000)
+            nsig = zfit.param.Parameter(f'{prefix}n{pdf_name}', nsample, 0, 1000_000)
 
         return pdf.create_extended(nsig, name = pdf_name)
 
@@ -111,12 +121,12 @@ def get_model(
         pdf_suffix = suffix if suffix_pdfs else ''
         pdf_name   = f'{kind}{pdf_suffix}'
 
-        mu  = zfit.Parameter(f'mu{suffix}', 5200, 4500, 6000)
-        sg  = zfit.Parameter(f'sg{suffix}',  150,   10,  200)
-        ar  = zfit.Parameter(f'ar{suffix}',    1,    0,    5)
-        al  = zfit.Parameter(f'al{suffix}',    1,    0,    5)
-        nr  = zfit.Parameter(f'nr{suffix}',    1,  0.2,   50)
-        nl  = zfit.Parameter(f'nl{suffix}',    1,  0.2,   50)
+        mu  = zfit.Parameter(f'{prefix}mu{suffix}', 5200, 4500, 6000)
+        sg  = zfit.Parameter(f'{prefix}sg{suffix}',  150,   10,  200)
+        ar  = zfit.Parameter(f'{prefix}ar{suffix}',    1,    0,    5)
+        al  = zfit.Parameter(f'{prefix}al{suffix}',    1,    0,    5)
+        nr  = zfit.Parameter(f'{prefix}nr{suffix}',    1,  0.2,   50)
+        nl  = zfit.Parameter(f'{prefix}nl{suffix}',    1,  0.2,   50)
         pdf = zfit.pdf.DoubleCB(
             mu    = mu, 
             sigma = sg, 
@@ -130,7 +140,7 @@ def get_model(
         if nsample is None:
             return pdf
 
-        nevt = zfit.param.Parameter(f'n{pdf_name}', nsample, 0, 1000_000)
+        nevt = zfit.param.Parameter(f'{prefix}n{pdf_name}', nsample, 0, 1000_000)
 
         return pdf.create_extended(nevt, name = pdf_name)
 
@@ -138,7 +148,7 @@ def get_model(
         pdf_suffix = suffix if suffix_pdfs else ''
         pdf_name   = f'{kind}{pdf_suffix}'
 
-        c   = zfit.Parameter(f'c{suffix}', lam, -0.01, +0.01)
+        c   = zfit.Parameter(f'{prefix}c{suffix}', lam, -0.01, +0.01)
         pdf = zfit.pdf.Exponential(
             obs  = obs, 
             lam  = c, 
@@ -147,7 +157,7 @@ def get_model(
         if nsample is None:
             return pdf
 
-        nevt = zfit.param.Parameter(f'n{pdf_name}', nsample, 0, 1000_000)
+        nevt = zfit.param.Parameter(f'{prefix}n{pdf_name}', nsample, 0, 1000_000)
 
         return pdf.create_extended(nevt, name = pdf_name)
     # --------------------
@@ -157,8 +167,12 @@ def get_model(
         nsample = 1000
 
     if kind in ['s+b', 's_alt+b', 's+b+x']:
-        nbkg = zfit.param.Parameter(f'nbkg{suffix}', nsample, 0, 1000_000)
-        nsig = _get_signal_yield(pars = pars, suffix = suffix, nsample = nsample)
+        nbkg = zfit.param.Parameter(f'{prefix}nbkg{suffix}', nsample, 0, 1000_000)
+        nsig = _get_signal_yield(
+            pars    = pars, 
+            suffix  = suffix, 
+            prefix  = prefix,
+            nsample = nsample)
 
         models : dict[AllLiteral, AllLiteral] = {
             's+b'     : 'signal', 
@@ -171,6 +185,7 @@ def get_model(
             pars        = pars,
             kind        = 'bkg',
             suffix      = suffix,
+            prefix      = prefix,
             suffix_pdfs = suffix_pdfs)
 
         sig = get_model(
@@ -178,6 +193,7 @@ def get_model(
             pars        = pars,
             kind        = signal_name,
             suffix      = suffix,
+            prefix      = prefix,
             suffix_pdfs = suffix_pdfs)
 
         bkg = bkg.create_extended(nbkg)
@@ -192,11 +208,13 @@ def get_model(
             pars        = pars,
             kind        = 'signal_alt',
             suffix      = suffix,
+            prefix      = prefix,
             suffix_pdfs = suffix_pdfs)
 
         nsig = _get_signal_yield(
             pars    = pars, 
             suffix  = suffix, 
+            prefix  = prefix,
             nsample = nsample)
 
         sig_x = sig_x.create_extended(nsig)
@@ -207,6 +225,7 @@ def get_model(
 def _get_signal_yield(
     pars   : dict[str,zpar] | None,
     nsample: int,
+    prefix : str,
     suffix : str) -> zpar:
     '''
     Parameters
@@ -220,7 +239,7 @@ def _get_signal_yield(
     Signal yield
     '''
     if pars is None:
-        return zfit.param.Parameter(f'nsig{suffix}', nsample, 0, 1000_000)
+        return zfit.param.Parameter(f'{prefix}nsig{suffix}', nsample, 0, 1000_000)
 
     channel = suffix.lstrip('_')
 
@@ -231,17 +250,20 @@ def get_nll(
     kind     : SumLiteral,
     pars     : dict[str,zpar] | None = None,
     suffix   : str                   = '_gaus_test_1',
+    prefix   : str | None            = None,
     nentries : int                   = 1000) -> ExtendedUnbinnedNLL:...
 @overload
 def get_nll(
     kind     : SingleLiteral,
     pars     : dict[str,zpar] | None = None,
     suffix   : str                   = '_gaus_test_1',
+    prefix   : str | None            = None,
     nentries : int                   = 1000) -> UnbinnedNLL:...
 def get_nll(
     kind     : AllLiteral,
     pars     : dict[str,zpar] | None = None,
     suffix   : str                   = '_gaus_test_1',
+    prefix   : str | None            = None,
     nentries : int                   = 1000) -> Loss:
     '''
     Parameters
@@ -249,6 +271,7 @@ def get_nll(
     kind    : Type of model, e.g. s+b, signal
     pars    : Dictionary of parameters holding yields, in case they have to be reparametrized
     suffix  : String needed to name parameters
+    prefix  : Optional prefix for parameters and models
     nentries: Dataset size
 
     Returns
@@ -258,6 +281,7 @@ def get_nll(
     pdf = get_model(
         kind   = kind,
         pars   = pars,
+        prefix = prefix,
         suffix = suffix)
 
     if kind in ['s+b', 's_alt+b']:
