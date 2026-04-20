@@ -74,7 +74,7 @@ def build_report(
 
         log.info('Running type analysis')
         result = subprocess.run(
-            ['pyright', code_path, '--outputjson'], 
+            ['pyright', '--project', code_path, '--outputjson'], 
             capture_output = True,
             text           = True,
             check          = False)
@@ -86,7 +86,7 @@ def build_report(
     bdr = ReportBuilder(json_path = json_path)
     html_path = bdr.run()
 
-    log.info(f'Opening report with: {browser}')
+    log.info(f'Opening {html_path} with {browser}')
     subprocess.run([browser, html_path], check = True)
 # ----------------------
 if __name__ == '__main__':
