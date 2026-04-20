@@ -128,22 +128,22 @@ class CmbConstraints(BaseFitter, Cache):
         par_names = self._cfg.constraints.parameters[self._q2bin]
 
         return any( name.startswith(par_name) for par_name in par_names )
-    # ----------------------
-    def get_constraint(self) -> ConstraintND:
+    # ---------------------
+    def _fit_cr(self) -> FitResult:
         '''
-        Returns
-        ----------------------
-        N dimensional Gaussian constraint
-        '''
-        log.info('Constraints not found, calculating them')
+        Fits the control region
 
-        ftr        = LikelihoodFactory(
+        Returns
+        --------------
+        Fit result object
+        '''
+        ftr       = LikelihoodFactory(
             name   = self._reg,
             obs    = self._obs,
             q2bin  = self._q2bin,
             sample = DATA_SAMPLE,
             cfg    = self._mod_cfg)
-        cfg_nll    = ftr.run()
+        cfg_nll   = ftr.run()
 
         ftr       = DataFitter(
             q2bin = self._q2bin,
