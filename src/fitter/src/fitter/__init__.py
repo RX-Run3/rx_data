@@ -37,10 +37,11 @@ from .configs  import NonParametricConf
 from .configs  import ParametricConf
 from .configs  import RXFitConfig
 from .configs  import ObservableConf 
-
+from .configs  import CmbConstraintConf
 __all__ = [
     'plot_prefit_postfit',
     # ------------------
+    'CmbConstraintConf',
     'CmbValidatorConf',
     'CmbValidator',
     # ------------------
