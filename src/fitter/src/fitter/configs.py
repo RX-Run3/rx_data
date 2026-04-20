@@ -756,10 +756,10 @@ class RXFitConfig(BaseModel):
         if self.block == -1:
             return '(1)'
 
-        if self.block == 12:
+        if self.block == 12: # noqa
             return  '(block == 1) || (block == 2)'
 
-        if self.block == 78:
+        if self.block == 78: # noqa
             return  '(block == 7) || (block == 8)'
 
         if self.block in [1, 2, 3, 4, 5, 6, 7, 8]:
