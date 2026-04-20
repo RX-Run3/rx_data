@@ -145,7 +145,6 @@ class ConstraintReader:
 
         calc      = CmbConstraints(
             reg   = self._brem.region,
-            nll   = self._nll,
             cfg   = cmb_cfg,
             q2bin = self._cfg.q2bin)
 
