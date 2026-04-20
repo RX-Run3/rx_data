@@ -28,14 +28,13 @@ class CmbConstraints(BaseFitter, Cache):
     def __init__(
         self, 
         reg  : Region,
-        nll  : zlos,
         cfg  : CombinatorialConf,
         q2bin: Qsq) -> None:
         '''
         Parameters
         -------------
         reg  : Signal region 
-        obs  : Zfit observable
+        nll  : Likelihood that needs constraining
         cfg  : fit configuration
         q2bin: E.g. central
         '''
@@ -125,55 +124,6 @@ class CmbConstraints(BaseFitter, Cache):
             log.error(pdf.name)
 
         raise ValueError('Not found one and only one combinatorial model')
-    # ----------------------
-    def _get_rdf(self) -> tuple[RDF.RNode, str, dict[str,dict[Cuts,str]]]:
-        '''
-        Returns
-        -------------
-        Tuple with:
-
-        - DataFrame after full selection 
-        - Unique identifier for input ntuples and selection
-        - Dictionary with selection used
-        '''
-        gtr = RDFGetter(
-            sample  = self._component, 
-            trigger = self._trigger)
-        rdf = gtr.get_rdf(per_file = False)
-
-        if Cache._cache_root is None:
-            raise ValueError('Cache root directory not defined')
-
-        out_path = Cache._cache_root / self._base_path
-
-        fit_cuts = sel.selection(
-            process = self._component,
-            trigger = self._trigger,
-            q2bin   = self._q2bin)
-
-        uid  = gtr.get_uid()
-
-        selection = self._mod_cfg.selection[self._q2bin]
-        fit_cuts.update(selection)
-
-        rdf  = sel.apply_selection(
-            rdf      = rdf, 
-            cuts     = fit_cuts, 
-            uid      = uid,
-            out_path = out_path)
-
-        log.debug(f'Using UID: {rdf.uid}')
-
-        with sel.custom_selection(d_sel = {}, force_override = True):
-            default_cuts = sel.selection(
-                q2bin    = self._q2bin, 
-                process  = self._component,
-                trigger  = self._trigger,
-            )
-
-        all_cuts : dict[str,dict[Cuts,str]] = {'default' : default_cuts, 'fit' : fit_cuts}
-
-        return rdf, uid, all_cuts
     # ---------------------
     def _pick_parameter(self, name : str) -> bool:
         '''
