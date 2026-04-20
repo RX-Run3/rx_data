@@ -697,7 +697,7 @@ class PRec(Cache):
 
         all_models: list[CharmoniumComponent] = [ 
             self.__get_model(
-                mass           = self._obs.label, 
+                mass           = Mass(self._obs.label), 
                 component_name = ltex, 
                 df             = df, 
                 cfg            = self._cfg.fit) for ltex, df in d_df.items() ]
