@@ -28,3 +28,19 @@ rxtests show-report -p /path/to/directory/with/*.xml
 ```
 
 which will show the reports in firefox, by default.
+
+## Type analysis reports
+
+To run type analysis do:
+
+```bash
+rxtests build-report -p src/fitter -b firefox
+```
+
+which will:
+
+- Do type analysis with all the code in `src/fitter`
+- Make a JSON file in `/tmp`
+- Convert file to HTML
+- Open HTML with firefox
+
