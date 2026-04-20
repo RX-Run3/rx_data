@@ -101,29 +101,12 @@ class ConstraintsCfg(UnpackerModel):
 # ------------------------------
 # Components
 # ------------------------------
-class CmbConstraintConf(BaseModel):
-    '''
-    Class meant to represent configuration for combintorial constraints
-
-    Attributes
-    ---------------
-    selection : Selection that sample will go through on top of nominal selection, e.g. vetos
-    parameters: Parameters that will be constrained
-    '''
-    component : Component
-    trigger   : Trigger
-    parameters: list[str]
-    selection : dict[Cuts,str]
-    fit       : FitConf
-    plots     : ZFitPlotterConf
-# ------------------------------
 class CategoryConf(BaseModel):  # Tested
     '''
     Class meant to configure a fit category
     '''
     selection : dict[Cuts,str]
     model     : ModelFactoryConf
-# ------------------------------
 # ------------------------------
 class ComponentConf(UnpackerModel):         # Tested
     '''
@@ -366,6 +349,20 @@ class NonParametricConf(ComponentConf): # Tested
         return self.cfg_obs.obs
 # ------------------------------
 class CombinatorialConf(ComponentConf): # Tested
+class CmbConstraintConf(BaseModel):
+    '''
+    Class meant to represent configuration for combintorial constraints
+
+    Attributes
+    ---------------
+    selection : Selection that sample will go through on top of nominal selection, e.g. vetos
+    parameters: Parameters that will be constrained
+    '''
+    model_config = ConfigDict(frozen=True)
+
+    parameters : dict[Qsq,list[str]]
+    mod_cfg    : 'FitModelConf'
+# ------------------------------
     '''
     Class mean to control configuration of fit to combinatorial
     '''
