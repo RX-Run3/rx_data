@@ -79,8 +79,8 @@ components:
   bdkstkpiee     : rare/rkst/ee/bdkstkpiee.yaml.j2
 constraints :
   pre_rare      : []
-  combinatorial : false
-  signal_shape  : false
+  combinatorial : true 
+  signal_shape  : true 
 fit: {}
 plots:
   merging:
