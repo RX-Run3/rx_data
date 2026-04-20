@@ -274,7 +274,7 @@ class ToyMaker:
         # collect model names
         name_in_nll  = [ model.obs[0] for model in self._nll.model ]
         unique_names = set(name_in_nll)
-        if len(unique_names) < 2:
+        if len(unique_names) != len(samplers):
             raise ValueError(f'Not enough observables found, for {nsamplers} samplers: {unique_names}')
 
         # check for requirements
@@ -369,7 +369,7 @@ class ToyMaker:
         log.debug('Running toys with config:')
         log.debug(self._cfg)
 
-        l_total = []
+        l_total : list[int] = []
         columns = ['Parameter', 'Value', 'Error', 'Gen', 'Toy', 'GOF', 'Valid', 'Hash']
         df      = pnd.DataFrame(columns=columns)
 
