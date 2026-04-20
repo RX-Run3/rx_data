@@ -100,7 +100,10 @@ def test_combinatorial_sr(
         package = 'fitter_data', 
         fpath   = f'{kind}/{analysis}/{channel}/comb.yaml')
 
-    CombinatorialConf(**data)
+    obj = CombinatorialConf(**data)
+
+    assert isinstance(obj.models     , dict)
+    assert isinstance(obj.constraints, CmbConstraintConf)
 # ----------------------
 def test_combinatorial_cr():
     '''
