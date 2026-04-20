@@ -550,7 +550,7 @@ class SimFitter(BaseFitter, Cache):
         if isinstance(self._cfg, CCbarConf):
             return self._get_ccbar_component(cfg = self._cfg)
 
-        if isinstance(self._cfg, CombinatorialConf):
+        if isinstance(self._cfg, (CombinatorialConf, CombinatorialConfUnconstrained)):
             return self._get_nomc_pdf(cfg = self._cfg)
 
         if isinstance(self._cfg, NonParametricConf):
