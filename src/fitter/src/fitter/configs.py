@@ -348,7 +348,6 @@ class NonParametricConf(ComponentConf): # Tested
 
         return self.cfg_obs.obs
 # ------------------------------
-class CombinatorialConf(ComponentConf): # Tested
 class CmbConstraintConf(BaseModel):
     '''
     Class meant to represent configuration for combintorial constraints
@@ -363,13 +362,21 @@ class CmbConstraintConf(BaseModel):
     parameters : dict[Qsq,list[str]]
     mod_cfg    : 'FitModelConf'
 # ------------------------------
+class CombinatorialConfUnconstrained(ComponentConf): # Tested
     '''
     Class mean to control configuration of fit to combinatorial
     '''
     model_config = ConfigDict(frozen=True)
 
     models      : dict[Qsq, ModelFactoryConf ]
-    constraints : dict[Qsq, CmbConstraintConf]
+# ------------------------------
+class CombinatorialConf(CombinatorialConfUnconstrained): # Tested
+    '''
+    Class mean to control configuration of fit to combinatorial
+    '''
+    model_config = ConfigDict(frozen=True)
+
+    constraints : CmbConstraintConf
 # ------------------------------
 class MisIDConf(NonParametricConf): # Tested
     '''
@@ -381,7 +388,7 @@ class MisIDConf(NonParametricConf): # Tested
     data_fit  : FitConf
     selection : dict[Cuts,str]
 # ------------------------------
-AnyModelConf = CombinatorialConf | ParametricConf | CCbarConf | MisIDConf | NonParametricConf
+AnyModelConf = CombinatorialConfUnconstrained | CombinatorialConf | ParametricConf | CCbarConf | MisIDConf | NonParametricConf
 # ------------------------------
 class PlotConf(BaseModel):
     merging : dict[Region,    list[Region]]
