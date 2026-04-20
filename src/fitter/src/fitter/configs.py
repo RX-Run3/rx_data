@@ -370,12 +370,13 @@ class CombinatorialConfUnconstrained(ComponentConf): # Tested
 
     models      : dict[Qsq, ModelFactoryConf ]
 # ------------------------------
-class CombinatorialConf(CombinatorialConfUnconstrained): # Tested
+class CombinatorialConf(ComponentConf): # Tested
     '''
     Class mean to control configuration of fit to combinatorial
     '''
     model_config = ConfigDict(frozen=True)
 
+    models      : dict[Qsq, ModelFactoryConf ]
     constraints : CmbConstraintConf
 # ------------------------------
 class MisIDConf(NonParametricConf): # Tested
