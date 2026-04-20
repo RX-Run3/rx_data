@@ -14,6 +14,7 @@ from fitter      import CCbarConf, CombinatorialConf, MisIDConf, ObservableConf,
 from fitter      import ParametricConf
 from fitter      import FitModelConf
 from fitter      import MVAWp
+from fitter      import CmbConstraintConf
 
 log=LogStore.add_logger('fitter:test_config')
 # ----------------------
