@@ -79,10 +79,8 @@ mod_cfg: &mod_cfg
     comb       : rare/rk/ee/comb_ctrl.yaml
     bdkstkpiee : rare/rk/ee/bdkstkpiee_np.yaml
     bpkstkpiee : rare/rk/ee/bpkstkpiee_np.yaml
-    bsphiee    : rare/rk/ee/bsphiee_np.yaml
     bpkpjpsiee : rare/rk/ee/bpkpjpsiee_np.yaml
-    bpkppsi2ee : rare/rk/ee/bpkppsi2ee_np.yaml
-    bpkpee     : rare/rk/ee/bpkpee.yaml.j2
+    bpkpee     : rare/rk/ee/bpkpee_np.yaml
   constraints:
     misid    : misid/rk/ee/data_misid.yaml
     pre_rare :
@@ -90,7 +88,7 @@ mod_cfg: &mod_cfg
       - bpkstkpiee
       - bsphiee
     combinatorial: false 
-    signal_shape : true
+    signal_shape : false 
   fit  : {}
   plots:
     merging:
