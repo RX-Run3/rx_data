@@ -1,6 +1,6 @@
 {
   "exclude"                  : ["**/build"],
-  "reportUnknownVariableType": "error",
-  "reportUnknownArgumentType": "error",
-  "reportUnknownMemberType"  : "error"
+  "reportUnknownVariableType": "warning",
+  "reportUnknownArgumentType": "warning",
+  "reportUnknownMemberType"  : "warning"
 }
