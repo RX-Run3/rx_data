@@ -3,13 +3,14 @@ Module holding Calculator class
 '''
 import pandas as pnd
 
+from pathlib       import Path
 from dmu.stats     import zfit 
 from dmu.stats     import FitResult
 from zfit.data     import SamplerData
 from typing        import Generic, Literal, TypeVar
 from omegaconf     import DictConfig
 from dmu           import LogStore
-from fitter        import ToyMaker
+from fitter        import ToyConf, ToyMaker
 from fitter        import ChannelHolder 
 
 log    = LogStore.add_logger('rx_stats:systematics')
@@ -35,7 +36,7 @@ class Calculator(Generic[PDF]):
         obj  : 'ChannelHolder[zfit.loss.ExtendedUnbinnedNLL] | zlos',
         poi  : str,
         res  : FitResult,
-        cfg  : DictConfig):
+        cfg  : ToyConf):
         '''
         Parameters
         ---------------
@@ -81,26 +82,6 @@ class Calculator(Generic[PDF]):
 
         return sampler
     # ----------------------
-    def _rename_output(self, label : str) -> DictConfig:
-        '''
-        Parameters
-        -------------
-        label: String needed for output name, e.g. .../toys/{label}.parquet
-
-        Returns
-        -------------
-        Configuration with output renamed to include 'label'
-        '''
-        old_output = str(self._cfg.output)
-
-        rseed = self._cfg.rseed
-        parts = old_output.split('/')
-        parts = parts[:-1] + [f'{label}_{rseed:03d}.parquet']
-
-        self._cfg.output = r'/'.join(parts)
-
-        return self._cfg
-    # ----------------------
     def _make_toys(
         self, 
         label   : str,
@@ -118,15 +99,13 @@ class Calculator(Generic[PDF]):
         DataFrame with fitting parameters
         '''
         nll = self._get_new_nll(model = model, channel = channel)
-        cfg = self._rename_output(label=label)
-
         mkr = ToyMaker(
             nll = nll, 
             cns = [], 
-            cfg = cfg,
+            cfg = self._cfg,
             res = self._res)
 
-        df = mkr.get_parameter_information(samplers = self._sam)
+        df = mkr.get_parameter_information(name = label, samplers = self._sam)
 
         return df
     # ----------------------
@@ -251,8 +230,8 @@ class Calculator(Generic[PDF]):
         '''
         param = self._params.get(name)
         if param is None:
-            for name in self._params:
-                log.warning(name)
+            for par_name in self._params:
+                log.warning(par_name)
             raise ValueError(f'Cannot find parameter: {name}')
 
         if not param.floating:
