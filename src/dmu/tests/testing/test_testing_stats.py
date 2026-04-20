@@ -1,6 +1,3 @@
-import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-
 import pytest
 
 from typing      import Literal
@@ -10,7 +7,7 @@ from dmu.stats   import print_pdf
 
 # ----------------------------------------------
 @pytest.mark.parametrize('kind', ['s+b', 's+b+x', 's_alt+b'])
-def test_get_pdfs(kind : Literal['s+b', 's+b+x', 's_alt+b']):
+def test_get_pdfs_suffix(kind : Literal['s+b', 's+b+x', 's_alt+b']):
     '''
     Test PDF getting function 
     '''
@@ -18,6 +15,20 @@ def test_get_pdfs(kind : Literal['s+b', 's+b+x', 's_alt+b']):
         kind        = kind, 
         suffix      = 'test',
         suffix_pdfs = True)
+
+    assert isinstance(pdf, zfit.pdf.SumPDF)
+
+    print_pdf(pdf)
+# ----------------------------------------------
+@pytest.mark.parametrize('kind', ['s+b', 's+b+x', 's_alt+b'])
+def test_get_pdfs_prefix(kind : Literal['s+b', 's+b+x', 's_alt+b']):
+    '''
+    Test PDF getting function 
+    '''
+    pdf = stats.get_model(
+        kind        = kind, 
+        prefix      = 'test',
+        suffix_pdfs = False)
 
     assert isinstance(pdf, zfit.pdf.SumPDF)
 
