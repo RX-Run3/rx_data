@@ -25,31 +25,8 @@ def initialize():
     This will run before any test
     '''
     LogStore.set_level('fitter:cmb_constraints', 10)
-    LogStore.set_level('dmu:stats:fitter'      , 10)
     LogStore.set_level('dmu:stats:minimizers'  , 10)
-# ----------------------
-def _get_nll(
-    reg   : Region,
-    cfg   : CombinatorialConf,
-    q2bin : Qsq) -> zlos:
-    '''
-    Returns
-    -------------
-    Likelihood with a combinatorial PDF
-    '''
-    pdfs= cfg.models[q2bin].pdfs
-    obs = zfit.Space('B_Mass_smr', limits=(4600, 6900))
-    mod = ModelFactory(
-        preffix = f'{Component.comb}_{reg}',
-        obs     = obs,
-        l_pdf   = pdfs,
-        l_shared= [],
-        l_float = [])
-
-    pdf   = mod.get_pdf()
-    data  = pdf.create_sampler(1000)
-
-    return zlos(model = pdf, data = data)
+    LogStore.set_level('dmu:stats:fitter'      , 10)
 # ----------------------
 @pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
 def test_simple(q2bin : Qsq, tmp_path : Path):
@@ -61,25 +38,23 @@ def test_simple(q2bin : Qsq, tmp_path : Path):
         package= 'fitter_data', 
         fpath  = 'rare/rk/ee/comb.yaml')
 
-    cfg  = CombinatorialConf(**data)
-    nll  = _get_nll(cfg = cfg, q2bin = q2bin, reg = region)
+    with ExitStack() as stack:
+        stack.enter_context(UnpackerModel.package(name = 'fitter_data'))
+        cfg = CombinatorialConf(**data)
+        cfg = cfg.specialize(q2bin = q2bin)
 
-    d_sel = {
-        Cuts.cmb   : 'mva_cmb > 0.6 && mva_cmb < 0.9',
-        Cuts.prc   : 'mva_prc > 0.5',
-        Cuts.brem  : 'nbrem != 0',
-        Cuts.block : '(1)',
-    }
+    d_sel = {Cuts.cmb : 'mva_cmb > 0.6 && mva_cmb < 0.9'}
+    with ExitStack() as stack:
+        stack.enter_context(Cache.cache_root(path = tmp_path))
+        stack.enter_context(sel.custom_selection(d_sel = d_sel))
+        stack.enter_context(PL.parameter_schema(cfg = cfg.constraints.mod_cfg.yields))
 
-    with Cache.cache_root(path = tmp_path),\
-        sel.custom_selection(d_sel = d_sel):
         calc      = CmbConstraints(
             reg   = region,
-            nll   = nll,
             cfg   = cfg,
             q2bin = q2bin)
 
-    constraint = calc.get_constraint()
+        constraint = calc.get_constraint()
 
     assert isinstance(constraint, ConstraintND)
 
