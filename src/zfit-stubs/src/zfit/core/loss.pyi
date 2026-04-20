@@ -89,7 +89,13 @@ class BaseUnbinnedNLL(BaseLoss, SerializableMixin, metaclass=abc.ABCMeta):
         constraints: ztyping.ConstraintsInputType = None, 
         options    : Mapping[str, object] | None  = None) -> None: ...
 
-    def create_new(self, model: ZfitPDF | Iterable[ZfitPDF] | None = ..., data: ZfitData | Iterable[ZfitData] | None = ..., fit_range=..., constraints=..., options=...): ...
+    def create_new(
+        self, 
+        model: ZfitPDF | Iterable[ZfitPDF] | None = ..., 
+        data : ZfitData | Iterable[ZfitData] | None = ..., 
+        fit_range=..., 
+        constraints=..., 
+        options=...) -> Self: ...
 
 class UnbinnedNLL(BaseUnbinnedNLL):
     def __init__(
