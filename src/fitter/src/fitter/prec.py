@@ -182,7 +182,7 @@ class CCbarModel(BaseModel):
             fraction for model, fraction in zip(self.models, self.fractions, strict = True) 
             if model.pdf is not None ]
 
-        arrays = dict()
+        arrays : dict[str,numpy.ndarray] = dict()
         for attr_name in ['mass', 'wgt', 'dec', 'sam']:
             l_value = [ getattr(model, attr_name) for model in self.models ]
             arrays[attr_name] = numpy.concatenate(l_value)
@@ -392,7 +392,7 @@ class PRec(Cache):
         - Key: Name of ccbar sample
         - Value: Pandas dataframe with only the needed columns
         '''
-        d_df = {}
+        d_df : dict[str, pnd.DataFrame] = {}
         log.debug('Building pandas dataframes:')
         for sample, rdf in self._d_rdf.items():
             log.debug(f'    {sample}')
@@ -502,7 +502,7 @@ class PRec(Cache):
         bd          = '(abs(B_TRUEID) == 511)'
         bp          = '(abs(B_TRUEID) == 521)'
 
-        d_cut       = {}
+        d_cut : dict[str,str] = {}
         if info.is_ee(trigger=self._trig):
             d_cut[r'$B_s\to c\bar{c}(\to e^+ e^-)H_s$'] = bs
             d_cut[r'$B_d\to c\bar{c}(\to e^+ e^-)H_s$'] = bd
@@ -540,7 +540,7 @@ class PRec(Cache):
         neg_bp_psjp = bp_psjp.replace('==', '!=').replace('&' , '|')
         bp_ex       = f'(abs(B_TRUEID) == 521) & ({neg_bp_psjp})'
 
-        d_cut       = {}
+        d_cut : dict[str,str] = {}
         d_cut[r'$B^+\to \psi(2S)(\to J/\psi+X)H_{s}$'] = bp_psjp
         if   info.is_ee(trigger = self._trig):
             d_cut[r'$B^+\to c\bar{c}(\to e^+ e^-)H_s$']    = bp_ex
@@ -555,7 +555,7 @@ class PRec(Cache):
 
         return d_cut
     #-----------------------------------------------------------
-    def __normalize_weights(self, arr_wgt):
+    def __normalize_weights(self, arr_wgt : numpy.ndarray):
         tot_wgt = arr_wgt.sum()
         num_wgt = arr_wgt.shape[0]
         fact    = num_wgt / tot_wgt
