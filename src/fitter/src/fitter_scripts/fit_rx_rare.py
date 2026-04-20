@@ -10,8 +10,8 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 from dask.distributed import Client, LocalCluster
 from typing           import Final
 from contextlib       import ExitStack
-from dmu.stats        import ParameterLibrary as PL
 from dmu.generic      import UnpackerModel, utilities as gut
+from dmu.stats        import ParameterLibrary as PL
 from dmu.stats        import ConstraintAdder
 from dmu.stats        import Constraint
 from dmu.workflow     import Cache
