@@ -19,6 +19,7 @@ from .likelihood_factory import LikelihoodFactory
 log=LogStore.add_logger('fitter:cmb_constraints')
 DATA_SAMPLE : Final[Component] = Component.data_24 # What will be used to constrain
 COMPONENT   : Final[Component] = Component.comb    # What will be constrained
+SIG_PREFIX  : Final[str]       = 'BREM'            # Signal category prefix
 # ------------------------------------
 class CmbConstraints(BaseFitter, Cache):
     '''
@@ -42,11 +43,11 @@ class CmbConstraints(BaseFitter, Cache):
 
         self._reg   = reg
         self._q2bin = q2bin
-        self._cfg   = cfg
 
+        self._cfg       = cfg
+        self._mod_cfg   = cfg.constraints.mod_cfg.cfg_clone(prefix = SIG_PREFIX, regions = [reg])
         self._component = COMPONENT
         self._base_path = Path(Component.comb) / 'fit' / self._reg
-        self._mod_cfg   = self._cfg.constraints.mod_cfg
         self._trigger   = Trigger(self._mod_cfg.trigger)
         self._obs       = self._mod_cfg.obs
 
