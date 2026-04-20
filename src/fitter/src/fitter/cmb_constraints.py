@@ -44,7 +44,7 @@ class CmbConstraints(BaseFitter, Cache):
 
         self._cfg_fit   = cfg_fit
         self._cfg_cmb   = cfg_cmb
-        self._mod_cfg   = cfg_cmb.constraints.mod_cfg.cfg_clone(prefix = SIG_PREFIX, regions = [reg])
+        self._mod_cfg   = cfg_cmb.constraints.mod_cfg.cfg_clone(prefix = SIG_PREFIX, regions = [brem.region])
 
         self._brem      = brem
         self._reg       = brem.region 
