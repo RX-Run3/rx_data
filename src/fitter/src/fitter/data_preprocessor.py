@@ -245,11 +245,16 @@ class DataPreprocessor(Cache):
         return arr, wgt
     # ------------------------
     @property
-    def rdf_uid(self) -> str|None:
+    def rdf_uid(self) -> str:
         '''
         Unique identifier of ROOT dataframe after selection
         '''
-        return self._rdf.uid
+        uid = getattr(self._rdf, 'uid', None)
+
+        if not isinstance(uid, str):
+            raise ValueError(f'Dataframe UID expected, got: {uid}')
+
+        return uid
     # ------------------------
     def _data_from_numpy(
         self,
