@@ -71,7 +71,7 @@ class SimFitter(BaseFitter, Cache):
         self._cfg       = cfg
         self._name      = name
 
-        self._l_rdf_uid = []
+        self._l_rdf_uid : list[str] = []
         self._d_data    = self._get_data()
 
         Cache.__init__(
@@ -112,7 +112,7 @@ class SimFitter(BaseFitter, Cache):
         --------------
         cfg: Object storing configuration
         '''
-        d_data = {}
+        d_data : dict[str, zdata] = {}
         for cat_name, cat_cfg in cfg.categories.items():
             prp = DataPreprocessor(
                 name      = cat_name,
@@ -144,7 +144,7 @@ class SimFitter(BaseFitter, Cache):
             cut     = None
             log.debug('Not overriding cuts or using weights')
 
-        d_data = {}
+        d_data : dict[str, zdata] = {}
         prp   = DataPreprocessor(
             wgt_cfg   = wgt_cfg,
             obs       = cfg.obs,
