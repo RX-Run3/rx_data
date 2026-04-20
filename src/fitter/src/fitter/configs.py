@@ -361,6 +361,20 @@ class CmbConstraintConf(BaseModel):
 
     parameters : dict[Qsq,list[str]]
     mod_cfg    : 'FitModelConf'
+    # --------------------------------------
+    def specialize(self, q2bin : Qsq) -> Self:
+        '''
+        Parameters
+        --------------
+        q2bin: E.g. central
+
+        Returns
+        --------------
+        Copy of current config for given q2 bin
+        '''
+        mod_cfg = self.mod_cfg.specialize(q2bin = q2bin)
+
+        return self.model_copy(update = {'mod_cfg' : mod_cfg})
 # ------------------------------
 class CombinatorialConfUnconstrained(ComponentConf): # Tested
     '''
@@ -378,6 +392,20 @@ class CombinatorialConf(ComponentConf): # Tested
 
     models      : dict[Qsq, ModelFactoryConf ]
     constraints : CmbConstraintConf
+    # --------------------------------------
+    def specialize(self, q2bin : Qsq) -> Self:
+        '''
+        Parameters
+        --------------
+        q2bin: E.g. central
+
+        Returns
+        --------------
+        Copy of current config for given q2 bin
+        '''
+        constraints = self.constraints.specialize(q2bin = q2bin)
+
+        return self.model_copy(update = {'constraints' : constraints})
 # ------------------------------
 class MisIDConf(NonParametricConf): # Tested
     '''
