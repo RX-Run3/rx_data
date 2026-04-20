@@ -12,13 +12,12 @@ from contextlib    import ExitStack
 from zfit.loss     import ExtendedUnbinnedNLL
 
 from dmu           import LogStore
-from dmu.stats     import Fitter
 from dmu.stats     import FitResult
 from dmu.testing   import get_nll, get_model
 from dmu.generic   import rxran
 from dmu.generic   import utilities as gut
 
-from fitter        import ChannelHolder
+from fitter        import ChannelHolder, ToyConf
 from systematics   import SystematicsCalculator
 
 log =LogStore.add_logger('rx_stats:test_systematics_calculator')
@@ -45,21 +44,25 @@ def test_model_switch(
     ntoys    : Number of toys to override what is in config
     '''
     log.info('')
-    nll   = get_nll(kind='s+b')
+
+    nll   = get_nll(kind='s+b', suffix = '')
     assert isinstance(nll, ExtendedUnbinnedNLL)
 
-    cfg       = gut.load_conf(package='fitter_data', fpath='tests/toys/toy_maker.yaml')
-    cfg.rseed = 123
+    data = gut.load_data(package='fitter_data', fpath='tests/toys/toy_maker.yaml')
     if ntoys is not None:
-        cfg.ntoys = ntoys
+        data['ntoys'] = ntoys
 
-    obj, _    = Fitter.minimize(nll=nll, cfg={})
-    res       = FitResult.from_zfit(res = obj)
+    minimizer = zfit.minimize.Minuit()
+    res       = minimizer.minimize(loss = nll)
+    res.hesse(name = 'minuit_hesse', method = 'minuit_hesse')
+
+    res       = FitResult.from_zfit(res = res)
     model_alt = get_model(kind = 's_alt+b')
 
     with ExitStack() as stack:
         stack.enter_context(gut.environment(mapping = {'ANADIR' : str(tmp_path)}))
 
+        cfg  = ToyConf(**data)
         scal = SystematicsCalculator(
             poi = 'nsig',
             obj = nll, 
@@ -91,15 +94,18 @@ def test_parameter_fixing(
     nll   = get_nll(kind='s_alt+b', nentries = 10_000)
     assert isinstance(nll, ExtendedUnbinnedNLL)
 
-    cfg       = gut.load_conf(package='fitter_data', fpath='tests/toys/toy_maker.yaml')
-    cfg.rseed = 123
+    data      = gut.load_data(package='fitter_data', fpath='tests/toys/toy_maker.yaml')
     if ntoys is not None:
-        cfg.ntoys = ntoys
+        data['rseed'] = 123
+        data['ntoys'] = ntoys
 
-    obj, _ = Fitter.minimize(nll=nll, cfg={})
-    res    = FitResult.from_zfit(res = obj)
+    cfg       = ToyConf(**data)
+    minimizer = zfit.minimize.Minuit()
+    res       = minimizer.minimize(loss = nll)
+    res.hesse(name = 'minuit_hesse', method = 'minuit_hesse')
+    res       = FitResult.from_zfit(res = res)
 
-    POI : Final[str] = 'nsig'
+    POI : Final[str] = 'nsig_gaus_test_1'
     with ExitStack() as stack:
         stack.enter_context(gut.environment(mapping = {'ANADIR' : str(tmp_path)}))
 
@@ -156,12 +162,13 @@ def test_sim_model_switch(
     obj.hesse(name = 'minuit_hesse')
     res = FitResult.from_zfit(res = obj)
 
-    cfg = gut.load_conf(
+    data = gut.load_data(
         package='fitter_data', 
         fpath  ='tests/toys/toy_maker.yaml')
-    cfg.ntoys = ntoys
+    data['ntoys'] = ntoys
+    cfg = ToyConf(**data)
+    obj = ChannelHolder(ee = nll_ee, mm = nll_mm)
 
-    obj    = ChannelHolder(ee = nll_ee, mm = nll_mm)
     with ExitStack() as stack:
         stack.enter_context(gut.environment(mapping = {'ANADIR' : str(tmp_path)}))
 
@@ -201,11 +208,12 @@ def test_sim_parameter_fixing(
     nll_mm    = get_nll(kind='s+b', suffix = 'mm')
     nll_ee    = get_nll(kind='s+b', suffix = 'ee')
 
-    cfg       = gut.load_conf(package='fitter_data', fpath='tests/toys/toy_maker.yaml')
-    cfg.rseed = 123
+    data          = gut.load_data(package='fitter_data', fpath='tests/toys/toy_maker.yaml')
+    data['rseed'] = 123
     if ntoys is not None:
-        cfg.ntoys = ntoys
+        data['ntoys'] = ntoys
 
+    cfg = ToyConf(**data)
     min = zfit.minimize.Minuit()
     obj = min.minimize(loss = nll_mm + nll_ee)
     obj.hesse(name = 'minuit_hesse')
