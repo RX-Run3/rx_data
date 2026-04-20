@@ -10,7 +10,7 @@ dependencies    = [
 dev = ["pytest"]
 
 [tool.setuptools.package-data]
-'rx_tests_data' = ['**/*.yaml']
+'rx_tests_data' = ['**/*.yaml', '**/*.html']
 
 [project.scripts]
 rxtests = "rx_tests.cli:app"
