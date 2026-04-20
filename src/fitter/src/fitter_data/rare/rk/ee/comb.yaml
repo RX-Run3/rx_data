@@ -1,55 +1,107 @@
-# -------------------------
+# ----------------------------------------------------
 # Aliases
-# -------------------------
-cleanup   : &cleanup
-  cmb     : mva_cmb > 0.5 && mva_cmb < 0.9
-  convert : L1_not_conv_150 && L2_not_conv_150
-fit_strat: &fit_strat
-  strategy : 
-    ntries : 20
-    pvalue : 0.05
-plot_conf: &plot_conf
-  nbins  : 30
-  stacked: True
-  d_leg  : {}
-# -------------------------
-constraints_high: &cons_hi
-  component  : data_24 
-  trigger    : Hlt2RD_BuToKpEE_SameSign_MVA
-  parameters : # Will constrain parameters starting
-    - mu       # with any of these strings
-    - sg       # E.g mu_hypexp_combinatorial_1
-  selection  : 
-    <<: *cleanup
-  fit:
-    <<: *fit_strat
+# ----------------------------------------------------
+plots_settings: &plots_settings
+  nbins   : 30
+  stacked : True
+  plot_range : 
+    - 4600
+    - 6900
+  d_leg :
+    bpkpjpsiee_brem_x12 : $B^+\to K^+ J/\psi(\to e^+e^-)$ 
+    bpkpjpsiee_brem_xx1 : $B^+\to K^+ J/\psi(\to e^+e^-)$ 
+    bpkpjpsiee_brem_xx2 : $B^+\to K^+ J/\psi(\to e^+e^-)$ 
+    # ---------
+    bpkppsi2ee_brem_x12 : $B^+\to K^+ \psi(2S)(\to e^+e^-)$ 
+    bpkppsi2ee_brem_xx1 : $B^+\to K^+ \psi(2S)(\to e^+e^-)$ 
+    bpkppsi2ee_brem_xx2 : $B^+\to K^+ \psi(2S)(\to e^+e^-)$ 
+    # ---------
+    bpkstkpiee_brem_x12 : $B^+\to K^{*+}(\to K^+\pi^0)e^+e^-$ 
+    bpkstkpiee_brem_xx1 : $B^+\to K^{*+}(\to K^+\pi^0)e^+e^-$ 
+    bpkstkpiee_brem_xx2 : $B^+\to K^{*+}(\to K^+\pi^0)e^+e^-$ 
+    # ---------
+    bdkstkpiee_brem_x12 : $B^0\to K^{*0}(\to K^+\pi^-)e^+e^-$ 
+    bdkstkpiee_brem_xx1 : $B^0\to K^{*0}(\to K^+\pi^-)e^+e^-$ 
+    bdkstkpiee_brem_xx2 : $B^0\to K^{*0}(\to K^+\pi^-)e^+e^-$ 
+    # ---------
+    bsphiee_brem_x12    : $B_s\to \phi(\to K^+K^-)e^+e^-$ 
+    bsphiee_brem_xx1    : $B_s\to \phi(\to K^+K^-)e^+e^-$ 
+    bsphiee_brem_xx2    : $B_s\to \phi(\to K^+K^-)e^+e^-$ 
+    # ---------
+    comb_brem_x12       : Combinatorial
+    comb_brem_xx1       : Combinatorial
+    comb_brem_xx2       : Combinatorial
+    # ---------
+    bpkpee_brem_x12     : $B^+\to K^+ e^+e^-$ 
+    bpkpee_brem_xx1     : $B^+\to K^+ e^+e^-$ 
+    bpkpee_brem_xx2     : $B^+\to K^+ e^+e^-$ 
+    # ---------
+    ccbar_brem_x12      : $B\to c\bar{c}(\to e^+e^-) + X$
+    ccbar_brem_xx1      : $B\to c\bar{c}(\to e^+e^-) + X$
+    ccbar_brem_xx2      : $B\to c\bar{c}(\to e^+e^-) + X$
+    # ---------
+    bpkkk_brem_x12      : $B^+\to K^+K^+K^-$ 
+    bpkkk_brem_xx1      : $B^+\to K^+K^+K^-$ 
+    bpkkk_brem_xx2      : $B^+\to K^+K^+K^-$ 
+    # ---------
+    bpkpipi_brem_x12    : $B^+\to K^+\pi^+\pi^-$
+    bpkpipi_brem_xx1    : $B^+\to K^+\pi^+\pi^-$
+    bpkpipi_brem_xx2    : $B^+\to K^+\pi^+\pi^-$
+# ----------------------------------------------------
+mod_cfg: &mod_cfg
+  trigger          : Hlt2RD_BuToKpEE_MVA
+  yields           : model/yields/rk/rare_electron.yaml
+  selection        : 
+    low    :
+      convert : L1_not_conv_150 && L2_not_conv_150
+    central: 
+      leakage : TMath::Abs(B_const_mass_M - 5280) > 200
+      convert : L1_not_conv_150 && L2_not_conv_150
+    high   : {}
+  observable:
+    low:
+      name : B_Mass
+      range:
+        - 4600 
+        - 6996
+    central:
+      name : B_Mass
+      range:
+        - 4600 
+        - 6996
+    high:
+      name : B_Mass
+      range:
+        - 4600 
+        - 6996
+  components:
+    ccbar      : rare/rk/ee/ccbar.yaml
+    comb       : rare/rk/ee/comb_ctrl.yaml
+    bdkstkpiee : rare/rk/ee/bdkstkpiee_np.yaml
+    bpkstkpiee : rare/rk/ee/bpkstkpiee_np.yaml
+    bsphiee    : rare/rk/ee/bsphiee_np.yaml
+    bpkpjpsiee : rare/rk/ee/bpkpjpsiee_np.yaml
+    bpkppsi2ee : rare/rk/ee/bpkppsi2ee_np.yaml
+    bpkpee     : rare/rk/ee/bpkpee.yaml.j2
+  constraints:
+    misid    : misid/rk/ee/data_misid.yaml
+    pre_rare :
+      - bdkstkpiee
+      - bpkstkpiee
+      - bsphiee
+    combinatorial: false 
+    signal_shape : true
+  fit  : {}
   plots:
-    <<: *plot_conf
-# -------------------------
-constraints_low_central: &cons_lc
-  component  : data_24 
-  trigger    : Hlt2RD_BuToKpEE_MVA
-  parameters : # Will constrain parameters starting
-    - mu       # with any of these strings
-    - ap       # E.g mu_hypexp_combinatorial_1
-    - bt
-  selection  : 
-    <<: *cleanup
-  fit:
-    <<: *fit_strat
-  plots:
-    <<: *plot_conf
-# -------------------------
-# Proper config
-# -------------------------
-constraints:
-  low:
-    <<: *cons_lc
-  central:
-    <<: *cons_lc
-  high:
-    <<: *cons_hi
-# -----------------
+    merging:
+      brem_x12:
+        - brem_xx1
+        - brem_xx2
+    regions:
+      brem_x12 : *plots_settings
+      brem_xx1 : *plots_settings
+      brem_xx2 : *plots_settings
+# ----------------------------------------------------
 models:
   low:
     pdfs          : [hypexp]
@@ -72,3 +124,17 @@ models:
       dl_suj : 2.5
       gm_suj : -10
 # -----------------
+constraints:
+  parameters :
+    low:
+      - mu      
+      - ap      
+      - bt
+    central:
+      - mu      
+      - ap      
+      - bt
+    high:
+      - mu      
+      - sg      
+  mod_cfg: *mod_cfg
