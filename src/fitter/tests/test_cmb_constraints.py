@@ -1,23 +1,17 @@
 '''
 Module used to test CmbConstraints class
 '''
-
-import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-
 import pytest 
 
+from contextlib   import ExitStack
 from pathlib      import Path
-from zfit.loss    import ExtendedUnbinnedNLL as zlos
-
 from dmu          import LogStore
 from dmu.workflow import Cache
-from dmu.generic  import utilities           as gut
+from dmu.generic  import UnpackerModel, utilities           as gut
 from dmu.stats    import ConstraintND
-from dmu.stats    import ModelFactory
-from dmu.stats    import zfit
+from dmu.stats    import ParameterLibrary as PL
 
-from rx_common    import Component, Cuts, Qsq, Region
+from rx_common    import Cuts, Qsq, Region
 from rx_selection import selection           as sel
 
 from fitter       import CmbConstraints
