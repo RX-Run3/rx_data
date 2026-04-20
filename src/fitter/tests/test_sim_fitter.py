@@ -6,6 +6,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 import pytest
 
+from contextlib    import ExitStack
 from pathlib       import Path
 from dmu           import LogStore
 from dmu.stats     import ParsHolder, print_pdf
@@ -79,12 +80,16 @@ def test_nomc(tmp_path : Path):
         range = (4500, 7000))
 
     data = gut.load_data(package='fitter_data', fpath='rare/rk/ee/comb.yaml')
-    cfg  = CombinatorialConf(**data)
-    cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
 
-    with Cache.cache_root(path = tmp_path):
+    with ExitStack() as stack:
+        stack.enter_context(Cache.cache_root(path = tmp_path))
+        stack.enter_context(UnpackerModel.package(name = 'fitter_data'))
+
+        cfg  = CombinatorialConf(**data)
+        cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
+
         ftr = SimFitter(
-            name     = 'main',
+            name     = Region.brem_x12,
             component= Component.comb,
             cfg      = cfg,
             trigger  = Trigger.rk_ee_os,
