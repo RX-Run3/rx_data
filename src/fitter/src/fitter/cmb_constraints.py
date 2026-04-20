@@ -2,13 +2,13 @@
 Module with CmbConstraints class
 '''
 
+from typing       import Final
 from pathlib      import Path
 from ROOT         import RDF # type: ignore 
 from dmu          import LogStore
 from dmu.stats    import ConstraintType, zfit
 from dmu.workflow import Cache
 from dmu.stats    import ConstraintND
-from zfit         import Data                as zdat
 from zfit.pdf     import BasePDF             as zpdf
 from zfit.loss    import ExtendedUnbinnedNLL as zlos
 from rx_common    import Cuts, Qsq, Region, Trigger, Component
@@ -17,7 +17,11 @@ from rx_selection import selection as sel
 from .base_fitter import BaseFitter
 from .configs     import CombinatorialConf 
 
+from .data_fitter        import DataFitter
+from .likelihood_factory import LikelihoodFactory
+
 log=LogStore.add_logger('fitter:cmb_constraints')
+DATA_SAMPLE : Final[Component] = Component.data_24
 # ------------------------------------
 class CmbConstraints(BaseFitter, Cache):
     '''
