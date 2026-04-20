@@ -8,7 +8,7 @@ from dmu         import LogStore
 from dmu.stats   import YieldConf
 from dmu.generic import UnpackerModel, utilities as gut
 from rx_misid    import MisIDSampleWeights, MisIDSampleSplitting
-from rx_common   import Channel, Component, Project, Mass, Qsq
+from rx_common   import Channel, Component, Project, Mass, Qsq, Region
 from fitter      import NonParametricConf 
 from fitter      import CCbarConf, CombinatorialConf, MisIDConf, ObservableConf, RXFitConfig
 from fitter      import ParametricConf
@@ -216,6 +216,8 @@ def test_full_model(
     path = f'{kind}/{project}/{channel}/data.yaml'
 
     cfg = FitModelConf.from_yaml(path = path, package = 'fitter_data')
+    if channel == Channel.ee and kind == 'rare':
+        cfg = cfg.cfg_clone(prefix = 'BREM', regions = [Region.brem_xx1, Region.brem_xx2])
 
     cfg.to_yaml(path = tmp_path / 'config.yaml')
 # ----------------------
