@@ -164,8 +164,15 @@ class FitParameter(BaseModel):
         This will return PREFIX
         '''
         parts = self.name.split('_')
+        first = parts[0]
 
-        return parts[0]
+        # If yld_comb_..., yld_sign_...
+        # Use yld_comb as prefix 
+        # Same with scales
+        if first in {'yld', 's'}:
+            return '_'.join(parts[:2])
+
+        return first
     # ----------------------
     def __str__(self) -> str:
         '''

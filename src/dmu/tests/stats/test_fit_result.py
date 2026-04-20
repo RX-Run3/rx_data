@@ -126,3 +126,19 @@ def test_hash():
     val = FitResult.from_zfit(res = res)
     hash(val)
 # -----------------------------
+@pytest.mark.parametrize('prefix', [None, 'yld', 's'])
+def test_prefix(prefix : str | None):
+    nll = get_nll(
+        kind   = 's+b', 
+        prefix = prefix,
+        suffix = 'test')
+    min = zfit.minimize.Minuit()
+
+    res = min.minimize(loss = nll)
+    res.hesse(name = 'minuit_hesse')
+
+    val = FitResult.from_zfit(res = res)
+
+    for par in val.parameters:
+        log.info(f'{par.prefix:<20}{par.name:<20}')
+# -----------------------------
