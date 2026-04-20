@@ -49,9 +49,9 @@ class CmbConstraints(BaseFitter, Cache):
         self._q2bin = q2bin
         self._cfg   = cfg
 
-        cons            = self._cfg.constraints[q2bin]
-        self._component = cons.component
-        self._trigger   = Trigger(cons.trigger)
+        self._component = COMPONENT
+        self._mod_cfg   = self._cfg.constraints.mod_cfg
+        self._trigger   = Trigger(self._mod_cfg.trigger)
 
         models= self._get_basic_models(models = nll.model)
         model = self._model_from_models(models = models)
@@ -189,7 +189,7 @@ class CmbConstraints(BaseFitter, Cache):
         -------------
         True if this parameter is meant to be constrained
         '''
-        par_names = self._cfg.constraints[self._q2bin].parameters
+        par_names = self._cfg.constraints.parameters[self._q2bin]
 
         return any( name.startswith(par_name) for par_name in par_names )
     # ----------------------
@@ -200,15 +200,26 @@ class CmbConstraints(BaseFitter, Cache):
         N dimensional Gaussian constraint
         '''
         log.info('Constraints not found, calculating them')
-        data    = self._get_data(rdf = self._rdf)
-        cfg_fit = self._cfg.constraints[self._q2bin].fit
-        res     = self._fit(data=data, model=self._model, cfg = cfg_fit)
+
+        ftr        = LikelihoodFactory(
+            name   = self._reg,
+            obs    = self._obs,
+            q2bin  = self._q2bin,
+            sample = DATA_SAMPLE,
+            cfg    = self._mod_cfg)
+        cfg_nll    = ftr.run()
+
+        ftr       = DataFitter(
+            q2bin = self._q2bin,
+            d_nll = { self._reg: cfg_nll },
+            cfg   = self._mod_cfg)
+        res = ftr.run()
 
         self._save_fit(
-            data    = data, 
+            data    = cfg_nll.nll.data[0], 
             res     = res, 
             out_path= self._out_path,
-            plt_cfg = self._cfg.constraints[self._q2bin].plots,
+            plt_cfg = self._mod_cfg.plots.regions[self._reg],
             cut_cfg = self._cuts,
             model   = self._model)
 
@@ -219,7 +230,7 @@ class CmbConstraints(BaseFitter, Cache):
         values = [ float(par.value().numpy()) for par in params ]
         names  = [ par.name                   for par in params ]
 
-        pars   = self._cfg.constraints[self._q2bin].parameters
+        pars   = self._cfg.constraints.parameters[self._q2bin]
         cov    = res.pars_covariance(pars = pars)
 
         cns = ConstraintND(
