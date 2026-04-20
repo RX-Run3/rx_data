@@ -379,6 +379,9 @@ class CmbConstraintConf(BaseModel):
 class CombinatorialConfUnconstrained(ComponentConf): # Tested
     '''
     Class mean to control configuration of fit to combinatorial
+    for fits to control region, used to get constraints. I.e. 
+    this fit has no constraints for the combinatorial, because
+    here is where the constraints come from
     '''
     model_config = ConfigDict(frozen=True)
 
