@@ -303,7 +303,9 @@ def test_only_cmb(
         obj         = ConstraintReader(
             brem    = brem,
             signal  = Component.bpkpee,
-            nll     = nll, cfg=cfg)
+            nll     = nll, 
+            cfg     = cfg)
+
         constraints = obj.get_constraints(
             skip_misid  = True,
             skip_signal = True,
