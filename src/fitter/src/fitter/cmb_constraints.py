@@ -34,7 +34,7 @@ class CmbConstraints(BaseFitter, Cache):
         '''
         Parameters
         -------------
-        reg     : Signal region 
+        brem    : Brem category to fit 
         nll     : Likelihood that needs constraining
         cfg_cmb : fit configuration for combinatorial component
         cfg_fit : Full fit configuration
