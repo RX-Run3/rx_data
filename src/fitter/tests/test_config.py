@@ -156,7 +156,9 @@ def test_parametric_rk(component : Component):
         package = 'fitter_data', 
         fpath   = f'rare/rk/{component.channel}/{component}.yaml{suffix}')
 
-    ParametricConf(**data)
+    cfg = ParametricConf(**data)
+    if component.channel == Channel.ee:
+        cfg = cfg.cfg_clone(prefix = 'BREM', regions = [Region.brem_xx1, Region.brem_xx2])
 # ----------------------
 @pytest.mark.parametrize('component', [Component.bdkstkpiee, Component.bdkstkpimm])
 def test_parametric_rkst(component : Component):
@@ -165,7 +167,9 @@ def test_parametric_rkst(component : Component):
         package = 'fitter_data', 
         fpath   = f'rare/rkst/{component.channel}/{component}.yaml{suffix}')
 
-    ParametricConf(**data)
+    cfg = ParametricConf(**data)
+    if component.channel == Channel.ee:
+        cfg = cfg.cfg_clone(prefix = 'BREM', regions = [Region.brem_xx1, Region.brem_xx2])
 # ----------------------
 def test_misid_weights():
     data = gut.load_data(
