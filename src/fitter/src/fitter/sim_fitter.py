@@ -25,7 +25,7 @@ from zfit.param          import Parameter
 from .category           import Category, FitCategory
 from .category_merger    import CategoryMerger, FitCategoryMerger
 from .base_fitter        import BaseFitter
-from .configs            import CombinatorialConf, MisIDConf, NonParametricConf, ParametricConf, CCbarConf 
+from .configs            import CombinatorialConf, CombinatorialConfUnconstrained, MisIDConf, NonParametricConf, ParametricConf, CCbarConf 
 from .data_preprocessor  import DataPreprocessor
 from .prec               import PRec
 
@@ -92,8 +92,9 @@ class SimFitter(BaseFitter, Cache):
         Value: Zfit dataset
         '''
         # Combinatorial does not have MC to fix tails
+        # Constrained combinatorial will pick constraints from separate fit
         # CCbar will be fitted using PRec class, which will pick data
-        SkipDataConf = CombinatorialConf | CCbarConf
+        SkipDataConf = CombinatorialConf | CombinatorialConfUnconstrained | CCbarConf
 
         if isinstance(self._cfg, SkipDataConf):
             return dict() 
