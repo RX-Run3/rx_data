@@ -490,8 +490,12 @@ class FitModelConf(UnpackerModel):
         cfg = self.observable[q2bin]
         new_components : dict[Component, AnyModelConf] = {}
         for component, cfg_cmp in self.components.items():
-            new_cfg             = self._update_cfg_obs(cfg_obs = cfg, cfg_cmp = cfg_cmp)
-            new_val             = cfg_cmp.model_copy(update = {'cfg_obs' : new_cfg })
+            new_cfg = self._update_cfg_obs(cfg_obs = cfg, cfg_cmp = cfg_cmp)
+            new_val = cfg_cmp.model_copy(update = {'cfg_obs' : new_cfg })
+
+            if isinstance(new_val, CombinatorialConf):
+                new_val = new_val.specialize(q2bin = q2bin)
+
             new_components[component] = new_val
 
         return self.model_copy(update = {'components' : new_components, 'q2bin' : q2bin})
