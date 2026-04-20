@@ -21,7 +21,8 @@ from .data_fitter        import DataFitter
 from .likelihood_factory import LikelihoodFactory
 
 log=LogStore.add_logger('fitter:cmb_constraints')
-DATA_SAMPLE : Final[Component] = Component.data_24
+DATA_SAMPLE : Final[Component] = Component.data_24 # What will be used to constrain
+COMPONENT   : Final[Component] = Component.comb    # What will be constrained
 # ------------------------------------
 class CmbConstraints(BaseFitter, Cache):
     '''
@@ -79,7 +80,7 @@ class CmbConstraints(BaseFitter, Cache):
         -------------
         List of PDFs where the SumPDF ones have been unpacked
         '''
-        basic_models = []
+        basic_models : list[zpdf] = []
         for pdf in models:
             if not isinstance(pdf, zfit.pdf.SumPDF):
                 basic_models.append(pdf)
@@ -129,25 +130,6 @@ class CmbConstraints(BaseFitter, Cache):
 
         raise ValueError('Not found one and only one combinatorial model')
     # ----------------------
-    def _update_selection(self, cuts : dict[Cuts,str]) -> dict[Cuts,str]:
-        '''
-        Parameters
-        -------------
-        cuts: Dictionary mapping cut label with expression
-
-        Returns
-        -------------
-        Updated version of cuts dictionary, e.g. adding vetoes
-        '''
-        selection = self._cfg.constraints[self._q2bin].selection
-
-        if selection is None: 
-            return cuts
-
-        cuts.update(selection)
-
-        return cuts
-    # ---------------------
     def _get_rdf(self) -> tuple[RDF.RNode, str, dict[str,dict[Cuts,str]]]:
         '''
         Returns
@@ -174,7 +156,10 @@ class CmbConstraints(BaseFitter, Cache):
             q2bin   = self._q2bin)
 
         uid  = gtr.get_uid()
-        fit_cuts = self._update_selection(cuts = fit_cuts)
+
+        selection = self._mod_cfg.selection[self._q2bin]
+        fit_cuts.update(selection)
+
         rdf  = sel.apply_selection(
             rdf      = rdf, 
             cuts     = fit_cuts, 
@@ -194,36 +179,6 @@ class CmbConstraints(BaseFitter, Cache):
 
         return rdf, uid, all_cuts
     # ---------------------
-    def _get_data(self, rdf : RDF.RNode) -> zdat:
-        '''
-        Parameters
-        -------------
-        rdf: ROOT dataframe with e.g. SS data after selection
-
-        Returns
-        -------------
-        Zfit dataset instance
-        '''
-
-        if rdf.Count().GetValue() == 0:
-            rep = rdf.Report()
-            rep.Print()
-            raise ValueError('Found no entries in dataset')
-
-        if self._obs.label is None:
-            raise ValueError('Cannot extract observable name')
-
-        name  = self._obs.label
-        array = rdf.AsNumpy([name])[name]
-        data  = zfit.Data.from_numpy(obs = self._obs, array = array)
-
-        if not isinstance(data, zdat):
-            raise ValueError('Data is not a zfit.Data instance')
-
-        log.info(f'Found data with shape: {data.shape}')
-
-        return data
-    # ----------------------
     def _pick_parameter(self, name : str) -> bool:
         '''
         Parameters
