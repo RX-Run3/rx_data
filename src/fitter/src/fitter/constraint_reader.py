@@ -143,10 +143,10 @@ class ConstraintReader:
             log.info(f'Not constraining the combinatorial shape for: {self._cfg.q2bin}/{self._cfg.mod_cfg.trigger}')
             return
 
-        calc      = CmbConstraints(
-            reg   = self._brem.region,
-            cfg   = cmb_cfg,
-            q2bin = self._cfg.q2bin)
+        calc        = CmbConstraints(
+            brem    = self._brem,
+            cfg_cmb = cmb_cfg,
+            cfg_fit = self._cfg)
 
         self._constraints.append( calc.get_constraint() )
     # ----------------------

@@ -9,9 +9,9 @@ from dmu.stats    import ConstraintType, FitParameter, zfit, FitResult
 from dmu.workflow import Cache
 from dmu.stats    import ConstraintND
 from zfit.pdf     import BasePDF             as zpdf
-from rx_common    import Qsq, Region, Trigger, Component
+from rx_common    import Brem, Region, Trigger, Component
 
-from .configs            import CombinatorialConf 
+from .configs            import CombinatorialConf, RXFitConfig 
 from .base_fitter        import BaseFitter
 from .data_fitter        import DataFitter
 from .likelihood_factory import LikelihoodFactory
@@ -28,24 +28,27 @@ class CmbConstraints(BaseFitter, Cache):
     # ----------------------
     def __init__(
         self, 
-        reg  : Region,
-        cfg  : CombinatorialConf,
-        q2bin: Qsq) -> None:
+        brem    : Brem,
+        cfg_cmb : CombinatorialConf,
+        cfg_fit : RXFitConfig) -> None:
         '''
         Parameters
         -------------
-        reg  : Signal region 
-        nll  : Likelihood that needs constraining
-        cfg  : fit configuration
-        q2bin: E.g. central
+        reg     : Signal region 
+        nll     : Likelihood that needs constraining
+        cfg_cmb : fit configuration for combinatorial component
+        cfg_fit : Full fit configuration
+        q2bin   : E.g. central
         '''
         BaseFitter.__init__(self)
 
-        self._reg   = reg
-        self._q2bin = q2bin
+        self._cfg_fit   = cfg_fit
+        self._cfg_cmb   = cfg_cmb
+        self._mod_cfg   = cfg_cmb.constraints.mod_cfg.cfg_clone(prefix = SIG_PREFIX, regions = [reg])
 
-        self._cfg       = cfg
-        self._mod_cfg   = cfg.constraints.mod_cfg.cfg_clone(prefix = SIG_PREFIX, regions = [reg])
+        self._brem      = brem
+        self._reg       = brem.region 
+        self._q2bin     = self._cfg_fit.q2bin
         self._component = COMPONENT
         self._base_path = Path(Component.comb) / 'fit' / self._reg
         self._trigger   = Trigger(self._mod_cfg.trigger)
@@ -54,7 +57,7 @@ class CmbConstraints(BaseFitter, Cache):
         Cache.__init__(
             self,
             out_path = self._base_path,
-            cfg      = cfg.model_dump())
+            cfg      = cfg_cmb.model_dump())
     # ----------------------
     def _get_basic_models(self, models : list[zpdf]) -> list[zpdf]:
         '''
@@ -126,7 +129,7 @@ class CmbConstraints(BaseFitter, Cache):
         -------------
         True if this parameter is meant to be constrained
         '''
-        par_names = self._cfg.constraints.parameters[self._q2bin]
+        par_names = self._cfg_cmb.constraints.parameters[self._q2bin]
 
         return any( name.startswith(par_name) for par_name in par_names )
     # ---------------------
@@ -172,13 +175,13 @@ class CmbConstraints(BaseFitter, Cache):
         log.info('Constraints not found, calculating them')
 
         res       = self._fit_cr()
-        par_names = self._cfg.constraints.parameters[self._q2bin]
+        par_names = self._cfg_cmb.constraints.parameters[self._q2bin]
         params : list[FitParameter] = [ param for param in res.parameters if param.name in par_names ]
 
         values = [ par.value for par in params ]
         names  = [ par.name  for par in params ]
 
-        pars   = self._cfg.constraints.parameters[self._q2bin]
+        pars   = self._cfg_cmb.constraints.parameters[self._q2bin]
         cov    = res.pars_covariance(pars = pars)
 
         cns = ConstraintND(
