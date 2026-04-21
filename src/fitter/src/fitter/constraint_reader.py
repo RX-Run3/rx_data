@@ -7,12 +7,12 @@ import yaml
 from pathlib             import Path
 from typing              import Final
 from dmu                 import LogStore
-from dmu.stats           import Constraint, Constraint1D, ConstraintType
+from dmu.stats           import Constraint
 from rx_common           import Brem, Component
 from zfit.loss           import ExtendedUnbinnedNLL
 
 from .configs            import CombinatorialConf, RXFitConfig
-from .prec_scales        import PrecScales
+from .prec_scales        import get_constraints as get_prec_constraints 
 from .misid_constraints  import MisIDConstraints 
 from .cmb_constraints    import CmbConstraints
 from .signal_constraints import SignalConstraints
@@ -58,26 +58,15 @@ class ConstraintReader:
         Appends constraints to _constraints list for parameters in parameter holder
         whose names start with `pscale`
         '''
-        if skip or not self._cfg.mod_cfg.constraints.pre_rare:
+        if skip: 
             log.warning('Dropping part-reco constraints')
             return
-
-        scales = self._cfg.mod_cfg.constraints.pre_scales(suffix = self._brem.name)
-        for par in self._l_par:
-            if par not in scales:
-                log.debug(f'Skipping: {par}')
-                continue
-
-            log.info(f'Adding part reco constraint for: {par}')
-
-            obj = PrecScales(
-                output_directory = self._cfg.output_directory,
-                brem             = self._brem,
-                comp             = scales[par], 
-                q2bin            = self._cfg.q2bin)
-            cns = obj.get_constraint(par = par, signal = self._signal)
-
-            self._constraints.append(cns)
+        
+        self._constraints += get_prec_constraints(
+            cfg    = self._cfg,
+            pars   = self._l_par,
+            signal = self._signal,
+            brem   = self._brem)
     # ----------------------
     def _add_misid_constraints(self, skip : bool) -> None:
         '''
