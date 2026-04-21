@@ -13,18 +13,16 @@ log=LogStore.add_logger('ap_utilities:test_sample_config')
 def initialize():
     LogStore.set_level('ap_utilities:sample_config', 10)
 # ----------------------
-def test_simple():
+@pytest.mark.parametrize('settings', ['2024_sim10d', '2024_sim10f', '2024_sim10g'])
+def test_simple(settings : str):
     '''
     Simplest test
     '''
-    obj = scf.SampleConfig(settings='2024_sim10d', samples='by_priority')
+    obj = SampleConfig(settings=settings, samples='by_priority')
     cfg = obj.get_config(categories=[
         'high_priority', 
         'medium_priority', 
         'low_priority',
         'very_low_priority'])
 
-    yaml_str = OmegaConf.to_yaml(cfg)
-    print(yaml_str)
-
-    assert isinstance(cfg, DictConfig)
+    assert isinstance(cfg, SettingsConf)
