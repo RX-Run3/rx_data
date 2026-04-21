@@ -77,7 +77,8 @@ def custom_selection(
 @contextmanager
 def update_selection(d_sel : dict[Cuts,str]):
     '''
-    This manager will _update_ the **FULL** selection, i.e. default plus custom one.
+    This manager will **current** selection, i.e. whatever is the selection up to
+    the moment the manager is used
 
     Parameters
     -------------
@@ -195,13 +196,21 @@ def get_q2_cut(q2bin : Qsq) -> str:
     return q2sel[q2bin]
 #-----------------------
 def _update_mass_cuts(
-        d_cut   : dict[Cuts,str],
-        q2bin   : str,
-        sample  : str,
-        trigger : str,
-        smeared : bool) -> dict[Cuts,str]:
-
-    should_smear = info.is_mc(sample=sample) and info.is_ee(trigger=trigger)
+    d_cut   : dict[Cuts,str],
+    q2bin   : Qsq,
+    sample  : Component,
+    trigger : Trigger,
+    smeared : bool) -> dict[Cuts,str]:
+    '''
+    Parameters
+    ---------------
+    d_cut   : Dictionary with cuts
+    q2bin   : E.g. central
+    sample  : Sample to which selection will be applied
+    trigger : Hlt2 trigger
+    sameared: If true, override masses and q2 with the smeared version, whenever it makes sense; e.g. not for data
+    '''
+    should_smear = sample.is_mc and trigger.is_electron
 
     if not should_smear:
         log.debug(f'Not using cuts on smeared masses for {sample}/{trigger}')
@@ -216,12 +225,25 @@ def _update_mass_cuts(
 
     return d_cut
 #-----------------------
-def _use_smeared_masses(cuts : dict[Cuts,str], q2bin : str) -> dict[Cuts,str]:
+def _use_smeared_masses(
+    cuts  : dict[Cuts,str], 
+    q2bin : Qsq) -> dict[Cuts,str]:
+    '''
+    Parameters
+    -------------
+    cuts : Selection cuts
+    q2bin: E.g. central
+
+    Returns
+    -------------
+    Dictionary of cuts with q2 and mass cuts updated
+    to use smeared values or not
+    '''
     log.info('Overriding selection for electron MC to use smeared q2 and mass')
 
     cut_org = cuts[Cuts.q2]
     if 'q2_track' not in cut_org:
-        cut_new    = cut_org.replace('q2', 'q2_smr')
+        cut_new       = cut_org.replace('q2', 'q2_smr')
         cuts[Cuts.q2] = cut_new
 
         log.debug('Overriding:')
