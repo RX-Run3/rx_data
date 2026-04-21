@@ -16,6 +16,7 @@ from .prec_scales        import get_constraints as get_prec_constraints
 from .configs            import CombinatorialConf, RXFitConfig 
 from .base_fitter        import BaseFitter
 from .data_fitter        import DataFitter
+from .signal_constraints import SignalConstraints
 from .likelihood_factory import LikelihoodFactory, NLLConf
 
 log=LogStore.add_logger('fitter:cmb_constraints')
@@ -31,13 +32,14 @@ class CmbConstraints(BaseFitter, Cache):
     def __init__(
         self, 
         brem    : Brem,
-        cfg_cmb : CombinatorialConf,
+        signal  : Component,
         cfg_fit : RXFitConfig) -> None:
         '''
         Parameters
         -------------
         brem    : Brem category to fit 
         nll     : Likelihood that needs constraining
+        signal  : Signal component, needed to get constraints for CR fit
         cfg_cmb : fit configuration for combinatorial component
         cfg_fit : Full fit configuration
         q2bin   : E.g. central
@@ -45,8 +47,14 @@ class CmbConstraints(BaseFitter, Cache):
         BaseFitter.__init__(self)
 
         self._cfg_fit   = cfg_fit
+        cfg_cmb         = cfg_fit.mod_cfg.components[COMPONENT]
+        if not isinstance(cfg_cmb, CombinatorialConf):
+            ctype = type(cfg_cmb)
+            raise ValueError(f'Config for {COMPONENT} is of type {ctype}')
+
         self._cfg_cmb   = cfg_cmb
-        self._mod_cfg   = cfg_cmb.constraints.mod_cfg.cfg_clone(prefix = SIG_PREFIX, regions = [brem.region])
+        self._mod_cfg   = self._cfg_cmb.constraints.mod_cfg.cfg_clone(prefix = SIG_PREFIX, regions = [brem.region])
+        self._signal    = signal 
 
         self._brem      = brem
         self._reg       = brem.region 
@@ -186,9 +194,15 @@ class CmbConstraints(BaseFitter, Cache):
         constraints= get_prec_constraints(
             brem   = self._brem,
             pars   = [ par.name for par in cfg_nll.nll.get_params() ],
-            signal = Component.bpkpee,
+            signal = self._signal,
             cfg    = self._cfg_fit, 
         )
+
+        calc       = SignalConstraints(
+            comp   = self._signal,
+            nll    = cfg_nll.nll,
+        )
+        constraints += calc.get_constraints()
 
         cfg_nll     = self._add_constraints(
             cons    = constraints,
