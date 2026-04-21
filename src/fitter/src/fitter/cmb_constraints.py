@@ -11,6 +11,7 @@ from dmu.workflow import Cache
 from dmu.stats    import ConstraintND
 from zfit.pdf     import BasePDF             as zpdf
 from rx_common    import Brem, Trigger, Component
+from rx_selection import selection           as sel
 
 from .prec_scales        import get_constraints as get_prec_constraints
 from .configs            import CombinatorialConf, RXFitConfig 
@@ -233,7 +234,9 @@ class CmbConstraints(BaseFitter, Cache):
         '''
         log.info('Constraints not found, calculating them')
 
-        res    = self._fit_cr()
+        with sel.update_selection(d_sel = self._mod_cfg.selection[self._q2bin]):
+            res = self._fit_cr()
+
         params : list[FitParameter] = [ param for param in res.parameters if self.__pick_parameter(name = param.name) ]
 
         values = [ par.value for par in params ]
