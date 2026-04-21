@@ -8,6 +8,7 @@ import jacobi   as jac
 
 from pathlib         import Path
 from dmu             import LogStore
+from dmu.stats       import Constraint1D, ConstraintType
 from dmu.generic     import hashing
 from dmu.generic     import utilities  as gut
 from rx_common       import Qsq, Brem
@@ -191,4 +192,28 @@ class PrecScales:
         err = math.sqrt(var)
 
         return val, err
+    #------------------------------------------
+    def get_constraint(
+        self, 
+        signal : Component, 
+        par    : str) -> Constraint1D:
+        '''
+        Parameters
+        ---------------
+        signal: Signal component
+        par   : Name of parameter to constrain
+
+        Returns
+        ---------------
+        Constrain
+        '''
+        val, err = self.get_scale(signal = signal)
+
+        cns = Constraint1D(
+            name = par,
+            kind = ConstraintType.gauss,
+            mu   = val,
+            sg   = err)
+        
+        return cns
 #------------------------------------------
