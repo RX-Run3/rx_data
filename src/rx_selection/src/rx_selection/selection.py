@@ -43,8 +43,7 @@ def custom_selection(
     d_sel          : dict[Cuts,str]|None, 
     force_override : bool = False):
     '''
-    This is a context manager meant to be used to add and/or overide 
-    the default selection with the selection specified in `d_sel`.
+    This is a context manager updates the **default** selection
 
     Parameters
     ------------------
@@ -54,7 +53,7 @@ def custom_selection(
         If dictionary is None, will not touch the selection
         If dictionary is empty, will return default (not overriden) selection, if force_override=True
 
-    force_override: If False (default) will raise if manager has been already called
+    force_override: If False (default) will raise exception if manager has been called already
                     This should prevent multiple selections to be used accidentally.
                     However user will have to explicitly force override when this behaviour
                     is intended
