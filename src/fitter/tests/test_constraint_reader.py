@@ -187,7 +187,8 @@ def _get_nll(
     '''
     cfg_cmb = cfg.mod_cfg.components[Component.comb]
     if not isinstance(cfg_cmb, CombinatorialConf):
-        raise ValueError(f'Expected combinatorial config, found: {cfg_cmb}')
+        ctype = type(cfg_cmb)
+        raise ValueError(f'Expected combinatorial config, found: {ctype}')
 
     sig_11 = _get_signal(obs = obs, brem = 1, block = 1)
     sig_21 = _get_signal(obs = obs, brem = 2, block = 1)
