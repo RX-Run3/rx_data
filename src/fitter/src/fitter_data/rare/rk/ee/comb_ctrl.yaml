@@ -19,3 +19,4 @@ models:
     fix           :
       dl_suj : 2.5
       gm_suj : -10
+constraints : null

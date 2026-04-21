@@ -1,7 +1,5 @@
-# -----------------
-constraints: {}
-# -----------------
-models:
+constraints: null
+models     :
   low:
     pdfs          : [exp]
     shared        : []
@@ -20,4 +18,3 @@ models:
     floating      : []
     reparametrize : {}
     fix           : {}
-# -----------------
