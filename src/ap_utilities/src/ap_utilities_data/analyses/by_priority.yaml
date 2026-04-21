@@ -183,17 +183,24 @@ sim10g:
   11144001 : $B^0 \to J/\psi(\to \mu^+ \mu^-) K^{*0}$
   12143001 : $B^+ \to J/\psi(\to \mu^+ \mu^-) K^+$ 
   # ----------
-  12123003 : $B^+ \to K^+ e^+ e^-$
-  11124002 : $B^0 \to K^{*0} e^+ e^-$
-  12113002 : $B^+ \to K^+ \mu^+ \mu^-$
-  11114002 : $B^0 \to K^{*0} \mu^+ \mu^-$
-  # ----------
   11154011 : $B^0 \to \psi(2S)(\to e^+ e^-) K^{*0}$
   12153012 : $B^+ \to \psi(2S)(\to e^+ e^-) K^+$
   11144011 : $B^0 \to \psi(2S)(\to \mu^+ \mu^-) K^{*0}$
   12143020 : $B^+ \to \psi(2S)(\to \mu^+ \mu^-) K^+$
   # ----------
+  12123003 : $B^+ \to K^+ e^+ e^-$
+  11124002 : $B^0 \to K^{*0} e^+ e^-$
+  12113002 : $B^+ \to K^+ \mu^+ \mu^-$
+  11114002 : $B^0 \to K^{*0} \mu^+ \mu^-$
+  # ----------
   12143031 : $B^+\to \psi(2S)(\to \mu^+ \mu^-) \pi^+$
+  # ----------
+  11102202 : bd_kstgamma_eq_highptgamma_dpc_ss_tuple
+  11102441 : bd_ksteta_gg_eq_dpc_ss_tuple
+  11102453 : bd_kstpi0_eq_tc_kst982width100_highptpi0_ss_tuple
+  13102202 : bs_phigamma_eq_highptgamma_dpc_ss_tuple
+  13102464 : bs_phieta_gg_eq_dpc_ss_tuple
+  13102465 : bs_phipi0_gg_eq_dpc_ss_tuple
 sim10f:
   12143031 : $B^+\to \psi(2S)(\to \mu^+ \mu^-) \pi^+$
   13144025 : Bs_JpsiKst_update2012_mm_eq_DPC
