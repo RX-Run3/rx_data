@@ -60,7 +60,6 @@ class MisIDConstraints(Cache):
             d_sel    = { cut.name : val for cut, val in d_sel.items() }, 
             config   = cfg.model_dump(),
         )
-
     # ----------------------
     def __get_constraints(self, pars : FitResult) -> dict[str,tuple[float,float]]:
         '''
