@@ -5,16 +5,17 @@ Module with CmbConstraints class
 from typing       import Final
 from pathlib      import Path
 from dmu          import LogStore
-from dmu.stats    import ConstraintType, FitParameter, zfit, FitResult
+from dmu.stats    import Constraint, ConstraintAdder, ConstraintType, FitParameter, zfit, FitResult
 from dmu.workflow import Cache
 from dmu.stats    import ConstraintND
+from zfit.loss import ExtendedUnbinnedNLL
 from zfit.pdf     import BasePDF             as zpdf
-from rx_common    import Brem, Region, Trigger, Component
+from rx_common    import Brem, Trigger, Component
 
 from .configs            import CombinatorialConf, RXFitConfig 
 from .base_fitter        import BaseFitter
 from .data_fitter        import DataFitter
-from .likelihood_factory import LikelihoodFactory
+from .likelihood_factory import LikelihoodFactory, NLLConf
 
 log=LogStore.add_logger('fitter:cmb_constraints')
 DATA_SAMPLE : Final[Component] = Component.data_24 # What will be used to constrain
