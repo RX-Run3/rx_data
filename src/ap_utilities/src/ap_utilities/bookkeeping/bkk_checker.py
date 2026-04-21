@@ -217,6 +217,13 @@ class BkkChecker:
         ----------------
         nthreads: Number of threads to use for check
         dry     : If True will stop before calling Dirac, default False 
+
+        Returns
+        ----------------
+        Dataframe holding number of entries and with columns:
+
+        sample : Sample name
+        block_x: Block number
         '''
         self._dry = dry
 
