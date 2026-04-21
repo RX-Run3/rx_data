@@ -2,16 +2,17 @@
 Module with CmbConstraints class
 '''
 
-from typing       import Final
+from typing       import Final, Sequence
 from pathlib      import Path
 from dmu          import LogStore
-from dmu.stats    import Constraint, ConstraintAdder, ConstraintType, FitParameter, zfit, FitResult
+from dmu.stats    import ConstraintType, FitParameter, zfit, FitResult
+from dmu.stats    import Constraint, ConstraintAdder
 from dmu.workflow import Cache
 from dmu.stats    import ConstraintND
-from zfit.loss import ExtendedUnbinnedNLL
 from zfit.pdf     import BasePDF             as zpdf
 from rx_common    import Brem, Trigger, Component
 
+from .prec_scales        import get_constraints as get_prec_constraints
 from .configs            import CombinatorialConf, RXFitConfig 
 from .base_fitter        import BaseFitter
 from .data_fitter        import DataFitter
