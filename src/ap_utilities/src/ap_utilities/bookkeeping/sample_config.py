@@ -1,12 +1,45 @@
 '''
 Module containing SampleConfig class
 '''
-
-from omegaconf             import DictConfig
+from typing                import Literal
 from dmu.generic           import utilities as gut
 from dmu.logging.log_store import LogStore
+from pydantic              import BaseModel, RootModel
 
 log=LogStore.add_logger('ap_utilities:sample_config')
+
+Block = Literal[
+'block_12',
+'block_1', 'block_2', 'block_3', 'block_4',
+'block_5', 'block_6', 'block_7', 'block_8',
+]
+# ----------------------
+class BlockConf(BaseModel):
+    '''
+    Class meant to represent block configuration
+    '''
+    year     : int
+    sim_vers : str
+    generator: str
+    dtags    : str
+    block_id : str
+    hlt_conf : str
+    polarity : Literal['MagUp', 'MagDown']
+    nu_path  : str
+    ctags    : str
+    evt_type : list[int] = []
+# ----------------------
+class SettingsConf(RootModel):
+    '''
+    Class meant to represent simulation settings
+    '''
+    root : dict[Block, BlockConf]
+# ----------------------
+class SamplesConf(RootModel):
+    '''
+    Class meant to represent MC samples
+    '''
+    root : dict[str,dict[int,str]]
 # ----------------------
 class SampleConfig:
     '''
@@ -23,11 +56,21 @@ class SampleConfig:
         settings: String describing the name of the file with the simulation configuration, e.g. 2024
         samples : String describinb the name of the file with the event types, e.g. by_priority
         '''
+        data       = gut.load_data(
+            package= 'ap_utilities_data', 
+            fpath  = f'samples/{settings}.yaml')
+        data.pop('settings_common', None)
 
-        self._cfg_set = gut.load_conf(package='ap_utilities_data', fpath=f'samples/{settings}.yaml')
-        self._cfg_sam = gut.load_conf(package='ap_utilities_data', fpath=f'analyses/{samples}.yaml')
+        self._cfg_set = SettingsConf(**data)
+
+        data       = gut.load_data(
+            package= 'ap_utilities_data', 
+            fpath  = f'analyses/{samples}.yaml')
+        data.pop('all', None)
+
+        self._cfg_sam = SamplesConf(root=data)
     # ----------------------
-    def get_config(self, categories : list[str]) -> DictConfig:
+    def get_config(self, categories : list[str]) -> SettingsConf:
         '''
         Parameters
         -------------
@@ -38,7 +81,7 @@ class SampleConfig:
         Configuration with both samples and settings
         '''
         all_event_types = []
-        for name, event_types in self._cfg_sam.items():
+        for name, event_types in self._cfg_sam.root.items():
             if name not in categories:
                 log.debug(f'Skipping {name}')
                 continue
@@ -51,8 +94,8 @@ class SampleConfig:
         else:
             log.info(f'Found {ntypes} event types')
 
-        for section in self._cfg_set.sections.values():
-            section['evt_type'] = all_event_types
+        for section in self._cfg_set.root.values():
+            section.evt_type = all_event_types
 
         return self._cfg_set
 # ----------------------
