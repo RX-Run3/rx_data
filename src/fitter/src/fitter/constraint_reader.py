@@ -121,7 +121,7 @@ class ConstraintReader:
 
         calc        = CmbConstraints(
             brem    = self._brem,
-            cfg_cmb = cmb_cfg,
+            signal  = self._signal,
             cfg_fit = self._cfg)
 
         self._constraints.append( calc.get_constraint() )
