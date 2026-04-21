@@ -129,7 +129,7 @@ class CmbConstraints(BaseFitter, Cache):
 
         raise ValueError('Not found one and only one combinatorial model')
     # ---------------------
-    def _pick_parameter(self, name : str) -> bool:
+    def __pick_parameter(self, name : str) -> bool:
         '''
         Parameters
         -------------
@@ -233,9 +233,8 @@ class CmbConstraints(BaseFitter, Cache):
         '''
         log.info('Constraints not found, calculating them')
 
-        res       = self._fit_cr()
-        par_names = self._cfg_cmb.constraints.parameters[self._q2bin]
-        params : list[FitParameter] = [ param for param in res.parameters if param.name in par_names ]
+        res    = self._fit_cr()
+        params : list[FitParameter] = [ param for param in res.parameters if self.__pick_parameter(name = param.name) ]
 
         values = [ par.value for par in params ]
         names  = [ par.name  for par in params ]
