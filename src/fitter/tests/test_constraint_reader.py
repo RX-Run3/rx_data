@@ -3,12 +3,14 @@ Module with functions needed to test ConstraintReader class
 '''
 import pytest
 
+from contextlib     import ExitStack
 from typing         import Final, cast
 from pathlib        import Path
 from dmu.workflow   import Cache
 from dmu            import LogStore
 from dmu.stats      import ModelFactory, print_constraints
 from dmu.stats      import zfit
+from dmu.stats      import ParameterLibrary as PL
 from dmu.generic    import UnpackerModel, utilities           as gut
 from rx_common      import Brem, Qsq, Component, Region
 from fitter         import RXFitConfig

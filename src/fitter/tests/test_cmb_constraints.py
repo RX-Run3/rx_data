@@ -11,11 +11,12 @@ from dmu.generic  import UnpackerModel, utilities           as gut
 from dmu.stats    import ConstraintND
 from dmu.stats    import ParameterLibrary as PL
 
-from rx_common    import Cuts, Qsq, Region
+from rx_common    import Brem, Component, Cuts, Qsq
 from rx_selection import selection           as sel
 
+from fitter       import MVAWp
 from fitter       import CmbConstraints
-from fitter       import CombinatorialConf
+from fitter       import RXFitConfig, FitModelConf
 
 log=LogStore.add_logger('test_cmb_constraints')
 # ----------------------
