@@ -291,7 +291,8 @@ def test_only_cmb(
     -------------
     q2bin: q2 bin
     '''
-    brem = Brem.brx12
+    brem   = Brem.brx12
+    signal = Component.bpkpee
 
     obs  = zfit.Space('B_Mass_smr', limits=(4500, 7000))
     cfg  = _get_fit_config(q2bin = q2bin)
@@ -301,10 +302,13 @@ def test_only_cmb(
         cfg   = cfg, 
         q2bin = q2bin) 
 
-    with Cache.cache_root(path = tmp_path):
+    with ExitStack() as stack:
+        stack.enter_context(Cache.cache_root(path = tmp_path))
+        stack.enter_context(PL.parameter_schema(cfg = cfg.mod_cfg.yields))
+
         obj         = ConstraintReader(
             brem    = brem,
-            signal  = Component.bpkpee,
+            signal  = signal,
             nll     = nll, 
             cfg     = cfg)
 
