@@ -19,68 +19,59 @@ settings_common: &set
   generator : Pythia8
   dtags     : dddb-20240427
 # -------------------------------------------
-sections:
-  block_1:
-    settings:
-      <<: *set
-      block_id: 2024.W31
-      hlt_conf: 2024.W31.34
-      polarity: MagUp
-      nu_path : Nu6.3
-      ctags   : sim10-2024.Q3.4-v1.3-mu100    
-  block_2:
-    settings:
-      <<: *set
-      block_id: 2024.W32.34
-      hlt_conf: 2024.W31.34
-      polarity: MagUp
-      nu_path : Nu6.3
-      ctags   : sim10-2024.Q3.4-v1.3-mu100    
-  block_3:
-    settings:
-      <<: *set
-      block_id: 2024.W29.30
-      hlt_conf: 2024.W29.30
-      polarity: MagUp
-      nu_path : Nu6.3
-      ctags   : sim10-2024.W29.30-v00.00-mu100
-#  block_4:
-#    settings:
-#      <<: *set
-#      block_id: 2024.W25.27
-#      hlt_conf: 2024.W25.27
-#      polarity: MagDown
-#      nu_path : Nu6.3
-#      ctags   : sim10-2024.W25.27-v00.00-md100
-  block_5:
-    settings:
-      <<: *set
-      block_id: 2024.W35.37
-      hlt_conf: 2024.W35.39
-      polarity: MagUp
-      nu_path : Nu6.3
-      ctags   : sim10-2024.W35.37-v00.00-mu100
-  block_6:
-    settings:
-      <<: *set
-      block_id: 2024.W37.39
-      hlt_conf: 2024.W35.39
-      polarity: MagDown
-      nu_path : Nu6.3
-      ctags   : sim10-2024.W37.39-v00.00-md100
-  block_7:
-    settings:
-      <<: *set
-      block_id: 2024.W40.41
-      hlt_conf: 2024.W40.42
-      polarity: MagDown
-      nu_path : Nu7.6
-      ctags   : sim10-2024.W40.42-v00.00-md100
-  block_8:
-    settings:
-      <<: *set
-      block_id: 2024.W41.42
-      hlt_conf: 2024.W40.42
-      polarity: MagUp
-      nu_path : Nu7.6
-      ctags   : sim10-2024.W40.42-v00.00-mu100
+block_1:
+  <<: *set
+  block_id: 2024.W31
+  hlt_conf: 2024.W31.34
+  polarity: MagUp
+  nu_path : Nu6.3
+  ctags   : sim10-2024.Q3.4-v1.3-mu100    
+block_2:
+  <<: *set
+  block_id: 2024.W32.34
+  hlt_conf: 2024.W31.34
+  polarity: MagUp
+  nu_path : Nu6.3
+  ctags   : sim10-2024.Q3.4-v1.3-mu100    
+block_3:
+  <<: *set
+  block_id: 2024.W29.30
+  hlt_conf: 2024.W29.30
+  polarity: MagUp
+  nu_path : Nu6.3
+  ctags   : sim10-2024.W29.30-v00.00-mu100
+block_4:
+  <<: *set
+  block_id: 2024.W25.27
+  hlt_conf: 2024.W25.27
+  polarity: MagDown
+  nu_path : Nu6.3
+  ctags   : sim10-2024.W25.27-v00.00-md100
+block_5:
+  <<: *set
+  block_id: 2024.W35.37
+  hlt_conf: 2024.W35.39
+  polarity: MagUp
+  nu_path : Nu6.3
+  ctags   : sim10-2024.W35.37-v00.00-mu100
+block_6:
+  <<: *set
+  block_id: 2024.W37.39
+  hlt_conf: 2024.W35.39
+  polarity: MagDown
+  nu_path : Nu6.3
+  ctags   : sim10-2024.W37.39-v00.00-md100
+block_7:
+  <<: *set
+  block_id: 2024.W40.41
+  hlt_conf: 2024.W40.42
+  polarity: MagDown
+  nu_path : Nu7.6
+  ctags   : sim10-2024.W40.42-v00.00-md100
+block_8:
+  <<: *set
+  block_id: 2024.W41.42
+  hlt_conf: 2024.W40.42
+  polarity: MagUp
+  nu_path : Nu7.6
+  ctags   : sim10-2024.W40.42-v00.00-mu100
