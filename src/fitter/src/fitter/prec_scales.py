@@ -241,7 +241,10 @@ def get_constraints(
         return []
 
     pre_scales = cfg.mod_cfg.constraints.pre_rare
-    scales     = {f'{comp}_{brem.name}' : comp for comp in pre_scales}
+    scales     = {f's_{comp}_{brem.region}' : comp for comp in pre_scales}
+    log.debug('Looking for scales:')
+    for scale in scales:
+        log.debug(scale)
 
     constraints : list[Constraint1D] = []
     for par in pars:
