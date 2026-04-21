@@ -4,6 +4,7 @@ Module containing DataFitter class
 from dmu                import LogStore
 from dmu.stats          import zfit
 from dmu.stats          import Constraint
+from typing             import Sequence
 from rx_common          import Qsq, Component, Cuts
 from rx_selection       import selection  as sel
 
@@ -27,7 +28,7 @@ class NLLConf(BaseModel):
 
     nll        : ExtendedUnbinnedNLL 
     selection  : dict[str, dict[Cuts,str]]
-    constraints: list[Constraint]
+    constraints: Sequence[Constraint]
 # ------------------------
 class LikelihoodFactory:
     '''
