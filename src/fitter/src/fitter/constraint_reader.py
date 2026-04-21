@@ -62,14 +62,7 @@ class ConstraintReader:
             log.warning('Dropping part-reco constraints')
             return
 
-        scales : dict[str,Component] = {}
-        log.info('Will search constraints for:\n')
-        for comp in self._cfg.mod_cfg.constraints.pre_rare:
-            scale_name = f'{comp.scale}_{self._brem}'
-                
-            log.debug(scale_name)
-            scales[scale_name] = comp
-
+        scales = self._cfg.mod_cfg.constraints.pre_scales(suffix = self._brem.name)
         for par in self._l_par:
             if par not in scales:
                 log.debug(f'Skipping: {par}')
@@ -77,18 +70,12 @@ class ConstraintReader:
 
             log.info(f'Adding part reco constraint for: {par}')
 
-            obj      = PrecScales(
+            obj = PrecScales(
                 output_directory = self._cfg.output_directory,
                 brem             = self._brem,
                 comp             = scales[par], 
                 q2bin            = self._cfg.q2bin)
-            val, err = obj.get_scale(signal=self._signal)
-
-            cns = Constraint1D(
-                name = par,
-                kind = ConstraintType.gauss,
-                mu   = val,
-                sg   = err)
+            cns = obj.get_constraint(par = par, signal = self._signal)
 
             self._constraints.append(cns)
     # ----------------------
