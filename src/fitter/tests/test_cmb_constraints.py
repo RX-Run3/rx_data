@@ -28,32 +28,52 @@ def initialize():
     LogStore.set_level('fitter:cmb_constraints', 10)
     LogStore.set_level('dmu:stats:minimizers'  , 10)
     LogStore.set_level('dmu:stats:fitter'      , 10)
+
+    with UnpackerModel.package(name = 'fitter_data'):
+        yield
+# --------------------------------------------------------------
+def _get_fit_config(q2bin : Qsq) -> RXFitConfig:
+    '''
+    Parameters
+    -------------
+    q2bin: E.g. central
+
+    Returns
+    -------------
+    Object storing fit configuration
+    '''
+    data    = gut.load_data(package='fitter_data', fpath = 'rare/rk/ee/data.yaml')
+    mod_cfg = FitModelConf(**data)
+
+    return RXFitConfig(
+        name    = 'test',
+        group   = 'test',
+        mod_cfg = mod_cfg, 
+        mva_cmb = MVAWp(0.0),
+        mva_prc = MVAWp(0.0),
+        q2bin   = q2bin,
+        log_lvl = 10,
+    )
 # ----------------------
 @pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
 def test_simple(q2bin : Qsq, tmp_path : Path):
     '''
     Simplest test of CmbConstraints
     '''
-    region = Region.brem_x12
-    data   = gut.load_data(
-        package= 'fitter_data', 
-        fpath  = 'rare/rk/ee/comb.yaml')
+    brem   = Brem.brx12
+    signal = Component.bpkpee
+    cfg_fit= _get_fit_config(q2bin = q2bin)
 
-    with ExitStack() as stack:
-        stack.enter_context(UnpackerModel.package(name = 'fitter_data'))
-        cfg = CombinatorialConf(**data)
-        cfg = cfg.specialize(q2bin = q2bin)
-
-    d_sel = {Cuts.cmb : 'mva_cmb > 0.6 && mva_cmb < 0.9'}
+    d_sel = {Cuts.cmb : 'mva_cmb > 0.3 && mva_cmb < 0.9'}
     with ExitStack() as stack:
         stack.enter_context(Cache.cache_root(path = tmp_path))
         stack.enter_context(sel.custom_selection(d_sel = d_sel))
-        stack.enter_context(PL.parameter_schema(cfg = cfg.constraints.mod_cfg.yields))
+        stack.enter_context(PL.parameter_schema(cfg = cfg_fit.mod_cfg.yields))
 
-        calc      = CmbConstraints(
-            reg   = region,
-            cfg   = cfg,
-            q2bin = q2bin)
+        calc        = CmbConstraints(
+            brem    = brem,
+            signal  = signal,
+            cfg_fit = cfg_fit)
 
         constraint = calc.get_constraint()
 
