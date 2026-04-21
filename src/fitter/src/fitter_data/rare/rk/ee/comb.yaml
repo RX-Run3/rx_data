@@ -54,10 +54,13 @@ mod_cfg: &mod_cfg
   selection        : 
     low    :
       convert : L1_not_conv_150 && L2_not_conv_150
+      cmb     : mva_cmb > 0.5 && mva_cmb < 0.9
     central: 
       leakage : TMath::Abs(B_const_mass_M - 5280) > 200
       convert : L1_not_conv_150 && L2_not_conv_150
-    high   : {}
+      cmb     : mva_cmb > 0.5 && mva_cmb < 0.9
+    high   :
+      cmb     : mva_cmb > 0.5 && mva_cmb < 0.9
   observable:
     low:
       name : B_Mass
