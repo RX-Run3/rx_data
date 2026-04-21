@@ -9,6 +9,8 @@ import subprocess
 import pandas                        as pnd
 import ap_utilities.decays.utilities as aput
 
+from pathlib                         import Path
+from pydantic                        import BaseModel
 from typing                          import Final
 from concurrent.futures              import ThreadPoolExecutor
 from ap_utilities.logging.log_store  import LogStore
@@ -38,8 +40,8 @@ class BkkChecker:
         name : str, 
         cfg  : DictConfig):
         '''
-        Parameters:
-
+        Parameters
+        -------------------
         name     : Name of section, needed to dump output
         d_section: A dictionary representing sections of samples
         '''
@@ -52,10 +54,10 @@ class BkkChecker:
 
         self._l_event_type : list[str] = self._get_event_types()
     # -------------------------
-    def _get_out_dir(self) -> str:
+    def _get_out_dir(self) -> Path:
         ana_dir = os.environ.get('ANADIR', FALLBACK)
-        out_dir = f'{ana_dir}/bkk_checker/{self._name}'
-        os.makedirs(out_dir, exist_ok=True)
+        out_dir = Path(ana_dir) / f'bkk_checker/{self._name}'
+        out_dir.mkdir(parents = True, exist_ok = True)
 
         return out_dir
     # -------------------------
@@ -206,7 +208,7 @@ class BkkChecker:
     def save(
         self, 
         nthreads : int  = 1,
-        dry      : bool = False) -> None:
+        dry      : bool = False) -> pnd.DataFrame:
         '''
         Will check if samples exist in grid
         Will save list of found samples to text file with same name as input YAML, but with txt extension
