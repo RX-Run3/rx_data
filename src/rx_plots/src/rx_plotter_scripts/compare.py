@@ -9,7 +9,7 @@ import argparse
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
-from rx_common    import Component, Qsq, Trigger
+from rx_common    import Component, Cuts, Qsq, Trigger
 from dataclasses  import dataclass
 from pathlib      import Path
 from omegaconf    import DictConfig
@@ -117,7 +117,7 @@ def _check_entries(rdf : RDF.RNode) -> None:
 # ---------------------------------
 def _update_with_brem(
     cfg   : Config,
-    d_sel : dict[str,str]) -> dict[str,str]:
+    d_sel : dict[Cuts,str]) -> dict[Cuts,str]:
     '''
     Parameters
     ---------------
@@ -132,16 +132,16 @@ def _update_with_brem(
         log.info('Not filtering by brem')
         return d_sel
 
-    if cfg.brem == 12:
-        d_sel['nbrem'] = 'nbrem == 1 || nbrem == 2'
+    if cfg.brem == 12: # noqa
+        d_sel[Cuts.brem] = 'nbrem == 1 || nbrem == 2'
     else:
-        d_sel['nbrem'] = f'nbrem == {cfg.brem}'
+        d_sel[Cuts.brem] = f'nbrem == {cfg.brem}'
 
     return d_sel
 # ---------------------------------
 def _update_with_block(
-    d_sel : dict[str,str],
-    cfg   : Config) -> dict[str,str]:
+    d_sel : dict[Cuts,str],
+    cfg   : Config) -> dict[Cuts,str]:
     '''
     Parameters
     ---------------
@@ -156,14 +156,14 @@ def _update_with_block(
         log.info('Not filtering by block')
         return d_sel
 
-    if   cfg.block == 12: 
+    if   cfg.block == 12: # noqa
         cut = '(block == 1) || (block == 2)'
-    elif cfg.block == 78:
+    elif cfg.block == 78: # noqa
         cut = '(block == 7) || (block == 8)'
     else:
         cut = cfg.block
 
-    d_sel['block'] = f'block == {cut}'
+    d_sel[Cuts.block] = f'block == {cut}'
 
     return d_sel
 # ---------------------------------
@@ -194,7 +194,7 @@ def _get_rdf(
 # ----------------------
 def _get_selection(
     cfg     : Config,
-    cfg_plt : DictConfig) -> dict[str,str]:
+    cfg_plt : DictConfig) -> dict[Cuts,str]:
     '''
     Parameters
     -------------
@@ -209,7 +209,7 @@ def _get_selection(
 
     if cfg.nomva:
         log.info('Removing MVA requirement')
-        d_sel['bdt'] = '(1)'
+        d_sel[Cuts.cmb] = '(1)'
 
     if 'selection' in cfg_plt:
         d_cut = cfg_plt.selection
