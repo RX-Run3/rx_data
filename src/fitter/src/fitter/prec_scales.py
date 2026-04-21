@@ -17,6 +17,8 @@ from rx_common       import Trigger
 from rx_selection    import selection  as sel
 from rx_efficiencies import EfficiencyCalculator
 
+from .configs        import RXFitConfig
+
 log=LogStore.add_logger('fitter:prec_scales')
 #------------------------------------------
 class PrecScales:
@@ -217,3 +219,44 @@ class PrecScales:
         
         return cns
 #------------------------------------------
+def get_constraints(
+    brem   : Brem,
+    pars   : list[str],
+    signal : Component,
+    cfg    : RXFitConfig) -> list[Constraint1D]:
+    '''
+    Parameters
+    ------------------
+    brem  : Category needed to name constraints
+    pars  : Parameters known, e.g. in NLL
+    signal: Signal component w.r.t which constraint
+    cfg   : Full fit configuration
+
+    Returns
+    ------------------
+    List of constraints
+    '''
+    if not cfg.mod_cfg.constraints.pre_rare:
+        log.warning('Dropping part-reco constraints')
+        return []
+
+    pre_scales = cfg.mod_cfg.constraints.pre_rare
+    scales     = {f'{comp}_{brem.name}' : comp for comp in pre_scales}
+
+    constraints : list[Constraint1D] = []
+    for par in pars:
+        if par not in scales:
+            log.debug(f'Skipping: {par}')
+            continue
+
+        log.info(f'Adding part reco constraint for: {par}')
+
+        obj = PrecScales(
+            output_directory = cfg.output_directory,
+            brem             = brem,
+            comp             = scales[par], 
+            q2bin            = cfg.q2bin)
+        cns = obj.get_constraint(par = par, signal = signal)
+        constraints.append(cns)
+
+    return constraints 
