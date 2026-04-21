@@ -12,7 +12,8 @@ from dmu.stats      import ModelFactory, print_constraints
 from dmu.stats      import zfit
 from dmu.stats      import ParameterLibrary as PL
 from dmu.generic    import UnpackerModel, utilities           as gut
-from rx_common      import Brem, Qsq, Component, Region
+from rx_common      import Brem, Qsq, Component, Region, Cuts
+from rx_selection   import selection           as sel
 from fitter         import RXFitConfig
 from zfit.loss      import ExtendedUnbinnedNLL
 from zfit.param     import Parameter           as zpar
@@ -305,8 +306,10 @@ def test_only_cmb(
         cfg   = cfg, 
         q2bin = q2bin) 
 
+    d_sel = {Cuts.cmb : 'mva_cmb > 0.3 && mva_cmb < 0.9'}
     with ExitStack() as stack:
         stack.enter_context(Cache.cache_root(path = tmp_path))
+        stack.enter_context(sel.custom_selection(d_sel = d_sel))
         stack.enter_context(PL.parameter_schema(cfg = cfg.mod_cfg.yields))
 
         obj         = ConstraintReader(
