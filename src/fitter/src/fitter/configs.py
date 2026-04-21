@@ -7,7 +7,7 @@ import yaml
 from functools   import cached_property
 from pydantic    import BaseModel, ConfigDict
 from pathlib     import Path
-from typing      import Callable, Self
+from typing      import Callable, Literal, Self
 
 from rx_common   import Channel, Mass, Project, Qsq, MisID, Region
 from rx_common   import Component, Trigger, CCbarComponent, Cuts
@@ -386,6 +386,7 @@ class CombinatorialConfUnconstrained(ComponentConf): # Tested
     model_config = ConfigDict(frozen=True)
 
     models      : dict[Qsq, ModelFactoryConf ]
+    constraints : Literal[None] 
 # ------------------------------
 class CombinatorialConf(ComponentConf): # Tested
     '''
@@ -420,7 +421,7 @@ class MisIDConf(NonParametricConf): # Tested
     data_fit  : FitConf
     selection : dict[Cuts,str]
 # ------------------------------
-AnyModelConf = CombinatorialConfUnconstrained | CombinatorialConf | ParametricConf | CCbarConf | MisIDConf | NonParametricConf
+AnyModelConf = CombinatorialConf | CombinatorialConfUnconstrained | ParametricConf | CCbarConf | MisIDConf | NonParametricConf
 # ------------------------------
 class PlotConf(BaseModel):
     merging : dict[Region,    list[Region]]
