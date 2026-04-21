@@ -134,6 +134,38 @@ class CmbConstraints(BaseFitter, Cache):
         par_names = self._cfg_cmb.constraints.parameters[self._q2bin]
 
         return any( name.startswith(par_name) for par_name in par_names )
+    # ----------------------
+    def _add_constraints(
+        self,
+        cons   : Sequence[Constraint],
+        cfg_nll: NLLConf) -> NLLConf:
+        '''
+        Parameters
+        -------------
+        cons    : List of constraints
+        cfg_nll : Likelihood wrapper
+    
+        Returns
+        -------------
+        Wrapper with constrained NLL
+        '''
+        if not cons:
+            log.warning('Not using any constraints')
+    
+        log.info('Constraints:')
+        for constraint in cons:
+            log.info(constraint)
+    
+        cad  = ConstraintAdder(
+            nll=cfg_nll.nll, 
+            constraints=cons)
+        nll  = cad.get_nll()
+
+        return NLLConf(
+            nll         = nll,
+            constraints = cons,
+            selection   = cfg_nll.selection,
+        )
     # ---------------------
     def _fit_cr(self) -> FitResult:
         '''
@@ -143,13 +175,24 @@ class CmbConstraints(BaseFitter, Cache):
         --------------
         Fit result object
         '''
-        ftr       = LikelihoodFactory(
+        ftr        = LikelihoodFactory(
             name   = self._reg,
             obs    = self._obs,
             q2bin  = self._q2bin,
             sample = DATA_SAMPLE,
             cfg    = self._mod_cfg)
-        cfg_nll   = ftr.run()
+        cfg_nll    = ftr.run()
+
+        constraints= get_prec_constraints(
+            brem   = self._brem,
+            pars   = [ par.name for par in cfg_nll.nll.get_params() ],
+            signal = Component.bpkpee,
+            cfg    = self._cfg_fit, 
+        )
+
+        cfg_nll     = self._add_constraints(
+            cons    = constraints,
+            cfg_nll = cfg_nll)
 
         ftr       = DataFitter(
             q2bin = self._q2bin,
