@@ -230,8 +230,8 @@ def _get_fit_config(q2bin : Qsq) -> RXFitConfig:
         name    = 'test',
         group   = 'test',
         mod_cfg = mod_cfg, 
-        mva_cmb = MVAWp(0.0),
-        mva_prc = MVAWp(0.0),
+        mva_cmb = MVAWp(0.9),
+        mva_prc = MVAWp(0.8),
         q2bin   = q2bin,
         log_lvl = 10,
     )
@@ -306,10 +306,9 @@ def test_only_cmb(
         cfg   = cfg, 
         q2bin = q2bin) 
 
-    d_sel = {Cuts.cmb : 'mva_cmb > 0.5 && mva_cmb < 0.9'}
     with ExitStack() as stack:
         stack.enter_context(Cache.cache_root(path = tmp_path))
-        stack.enter_context(sel.custom_selection(d_sel = d_sel))
+        stack.enter_context(sel.custom_selection(d_sel = cfg.overriding_selection))
         stack.enter_context(PL.parameter_schema(cfg = cfg.mod_cfg.yields))
 
         obj         = ConstraintReader(
