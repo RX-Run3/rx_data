@@ -40,6 +40,7 @@ def initialize():
     '''
     This will run before any test
     '''
+    LogStore.set_level('fitter:prec_scales'       , 10)
     LogStore.set_level('fitter:constraint_reader' , 10)
     LogStore.set_level('fitter:signal_constraints', 10)
     LogStore.set_level('fitter:scale_reader'      , 10)
@@ -228,6 +229,7 @@ def _get_fit_config(q2bin : Qsq) -> RXFitConfig:
         mva_cmb = MVAWp(0.0),
         mva_prc = MVAWp(0.0),
         q2bin   = q2bin,
+        log_lvl = 10,
     )
 # --------------------------------------------------------------
 @pytest.mark.skip(reason = 'Includes misID, too slow')
@@ -375,7 +377,9 @@ def test_only_prec(
         obj         = ConstraintReader(
             brem    = brem,
             signal  = Component.bpkpee,
-            nll     = nll, cfg=cfg)
+            nll     = nll, 
+            cfg     = cfg)
+
         constraints = obj.get_constraints(
             skip_comb   = True,
             skip_signal = True,
