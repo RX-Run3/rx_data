@@ -2,9 +2,10 @@
 Module containing tests for SampleConfig class
 '''
 import pytest
-from omegaconf                  import DictConfig, OmegaConf
-from dmu.logging.log_store      import LogStore
-from ap_utilities.bookkeeping   import sample_config as scf 
+
+from dmu          import LogStore
+from ap_utilities import SampleConfig 
+from ap_utilities import SettingsConf
 
 log=LogStore.add_logger('ap_utilities:test_sample_config')
 # ----------------------
