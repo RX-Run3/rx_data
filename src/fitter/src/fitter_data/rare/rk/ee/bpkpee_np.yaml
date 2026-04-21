@@ -4,7 +4,7 @@ events_range :
   - 6000
 fit:
   kind      : KDE1DimFFT
-  bandwidth : 20
+  bandwidth : 40
   padding   :
     flag : False
 plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#fit-plotting
