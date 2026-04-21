@@ -39,7 +39,7 @@ class PrecScales:
         self._brem        = brem
         self._q2bin       = q2bin
 
-        self._d_frbf      : dict
+        self._d_frbf      : dict[str,dict[str,tuple[float,float]]]
         self._trigger     = Trigger.rk_ee_os
         self._initialized = False
 
@@ -70,20 +70,20 @@ class PrecScales:
 
         self._initialized = True
     #------------------------------------------
-    def _get_fr(self, proc : str) -> float:
+    def _get_fr(self, proc : str) -> tuple[float,float]:
         '''
         Returns hadronization fraction for given process
         '''
         if   proc.startswith('bp'):
-            fx = 'fu'
+            name = 'fu'
         elif proc.startswith('bd'):
-            fx = 'fd'
+            name = 'fd'
         elif proc.startswith('bs'):
-            fx = 'fs'
+            name = 'fs'
         else:
             raise ValueError(f'Cannot find hadronization fraction for: {proc}')
 
-        fx = self._d_frbf['fr'][fx]
+        fx = self._d_frbf['fr'][name]
 
         return fx
     #------------------------------------------
@@ -103,13 +103,13 @@ class PrecScales:
         l_br_err = [ float(br[1]) for br in l_br ] # when using "e" in scientific notation, these numbers are made into strings
 
         br_cov   = numpy.diag(l_br_err) ** 2
-        val, var = jac.propagate(
+        val, var = jac.propagate( # type: ignore
             math.prod,
-            l_br_val, #type: ignore
-            br_cov)   #type: ignore
+            l_br_val,             # type: ignore
+            br_cov)               # type: ignore
 
-        err      = math.sqrt(var)
-        val      = float(val)
+        err = math.sqrt(var)
+        val = float(val)
 
         return val, err
     #------------------------------------------
@@ -150,7 +150,7 @@ class PrecScales:
         log.debug('-' * 20)
         log.debug(f'{"Var":<20}{"Value":<20}{"Error":<20}')
         log.debug('-' * 20)
-        for (val, err), name in zip(l_tup, ['fr', 'br', 'eff']):
+        for (val, err), name in zip(l_tup, ['fr', 'br', 'eff'], strict=True):
             log.debug(f'{name:<20}{val:<20.3e}{err:<20.3e}')
         log.debug('-' * 20)
     #------------------------------------------
