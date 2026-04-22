@@ -3,10 +3,10 @@ Module with tests for BkkChecker class
 '''
 import pytest
 
-from ap_utilities.logging.log_store       import LogStore
-from ap_utilities.bookkeeping.bkk_checker import BkkChecker
-from ap_utilities.bookkeeping             import sample_config as scf 
-from dmu.generic                          import utilities     as gut
+from ap_utilities import LogStore
+from ap_utilities import BkkChecker
+from ap_utilities import SettingsConf
+from dmu.generic  import utilities     as gut
 
 log = LogStore.add_logger('ap_utilities:tests:test_bkk_check')
 # ----------------------------------------
