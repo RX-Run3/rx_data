@@ -1,10 +1,16 @@
 from .bookkeeping.sample_config import SamplesConf
 from .bookkeeping.sample_config import SampleConfig
 from .bookkeeping.sample_config import SettingsConf 
-from .bookkeeping.bkk_checker   import BkkInfo
+from .bookkeeping.sample_config import Block 
+from .bookkeeping.bkk_checker   import BkkInfo, BkkChecker
+
+from .logging.log_store         import LogStore
 
 __all__ = [
+    'LogStore',
+    'Block',
     'BkkInfo',
+    'BkkChecker',
     'SamplesConf', 
     'SampleConfig', 
     'SettingsConf']
