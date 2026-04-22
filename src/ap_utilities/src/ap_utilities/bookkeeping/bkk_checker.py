@@ -25,6 +25,8 @@ Total size (1024):  267.164 GiB (677.3 kiB per evt)
 Luminosity       :  0.000 
 Size per /pb     :  0.0 GB
 '''
+
+log = LogStore.add_logger('ap_utilities:bkk_checker')
 # ---------------------------------
 class BkkInfo(BaseModel):
     '''
@@ -33,17 +35,23 @@ class BkkInfo(BaseModel):
     '''
     block      : str
     sample     : str
+    event_type : int
+    sim_vers   : str
+    nu_path    : str
+    block_id   : str
+    polarity   : str
+    ctags      : str
+    dtags      : str
+    generator  : str
     stdout     : str  | None
     # -----------------------------
     nevents    : int  | None = None
     size       : str  | None = None
-    event_type : int  | None = None
     found      : bool | None = None
     # --------------------------------
     def model_post_init(self, _) -> None:
         self.size       = self._get_size()
         self.nevents    = self._get_nevents()
-        self.event_type = self._get_event_type()
         self.found      = self.stdout is not None 
     # --------------------------------
     def _extract_with_regex(self, regex : str, string : str) -> str:
@@ -72,15 +80,6 @@ class BkkInfo(BaseModel):
 
         return int(val)
     # --------------------------------
-    def _get_event_type(self) -> int:
-        if self.stdout is None:
-            return -1 
-
-        regex = r"'EventType': '(\d{8})'"
-        val   = self._extract_with_regex(regex = regex, string = self.stdout)
-
-        return int(val) 
-    # --------------------------------
     @property
     def row(self) -> pnd.Series:
         '''
@@ -97,6 +96,19 @@ class BkkInfo(BaseModel):
         }
 
         return pnd.Series(data) 
+    # --------------------------------
+    @property
+    def ap_line(self) -> str:
+        '''
+        Line meant to represent sample in info.yaml used for AP
+        '''
+        nu_name   = self.nu_path.replace('.', 'p')
+        nick_name = aput.read_decay_name(self.event_type)
+
+        part_1 = f'({nick_name:<60}, "{self.event_type}" , "{self.block_id}", "{self.polarity}"  , "{self.ctags}"'
+        part_2 = f'"{self.dtags}", "{self.nu_path}", "{nu_name}", {self.sim_vers:<20}, "{self.generator}" )'
+
+        return f'{part_1}, {part_2},\n'
 # ---------------------------------
 class BkkChecker:
     '''
