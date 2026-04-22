@@ -29,6 +29,78 @@ Luminosity       :  0.000
 Size per /pb     :  0.0 GB
 '''
 # ---------------------------------
+class BkkInfo(BaseModel):
+    '''
+    Class meant to represent information associated to
+    MC sample
+    '''
+    block      : str
+    sample     : str
+    stdout     : str  | None
+    # -----------------------------
+    nevents    : int  | None = None
+    size       : str  | None = None
+    event_type : int  | None = None
+    found      : bool | None = None
+    # --------------------------------
+    def model_post_init(self, _) -> None:
+        self.size       = self._get_size()
+        self.nevents    = self._get_nevents()
+        self.event_type = self._get_event_type()
+        self.found      = self.stdout is not None 
+    # --------------------------------
+    def _extract_with_regex(self, regex : str, string : str) -> str:
+        match = re.search(regex, string)
+        if not match:
+            log.error(self.stdout)
+            raise ValueError(f'Cannot find size with regex: {regex}')
+
+        return match.group(1) 
+    # --------------------------------
+    def _get_size(self) -> str:
+        if self.stdout is None:
+            return '0 GB'
+
+        regex = r'Total size\s+:\s+([\d\.]+ GB)'
+
+        return self._extract_with_regex(regex = regex, string = self.stdout)
+    # --------------------------------
+    def _get_nevents(self) -> int:
+        if self.stdout is None:
+            return 0 
+
+        regex = r"Nb of Events\s+:\s+([\d']+)"
+        val   = self._extract_with_regex(regex = regex, string = self.stdout)
+        val   = val.replace("'", '')
+
+        return int(val)
+    # --------------------------------
+    def _get_event_type(self) -> int:
+        if self.stdout is None:
+            return -1 
+
+        regex = r"'EventType': '(\d{8})'"
+        val   = self._extract_with_regex(regex = regex, string = self.stdout)
+
+        return int(val) 
+    # --------------------------------
+    @property
+    def row(self) -> pnd.Series:
+        '''
+        Data used to build row in dataframe
+        This data corresponds to a sample Bkk
+        '''
+        data = {
+            'Size [GB]': self.size,
+            'Block'    : self.block,
+            'Sample'   : self.sample,
+            'EventType': self.event_type,
+            'Events'   : self.nevents,
+            'Found'    : self.found,
+        }
+
+        return pnd.Series(data) 
+# ---------------------------------
 class BkkChecker:
     '''
     Class meant to check if samples exist in Bookkeeping using multithreading.

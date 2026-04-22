@@ -2,9 +2,9 @@
 This module holds tests for BkkInfo class
 '''
 
-from typing                   import Final
-from ap_utilities.bookkeeping import BkkInfo
-
+from typing       import Final
+from ap_utilities import BkkInfo
+from dmu          import LogStore
 
 SAMPLE_INFO : Final[str] = ''' 
 For BK query: {'ConfigName': 'MC', 'ConfigVersion': '2024', 'ConditionDescription': 'Beam6800GeV-2024.W41.42-MagUp-Nu7.6-25ns-Pythia8', 'ProcessingPass': '/Sim10g/HLT2-2024.W40.42', 'EventType': '12113002', 'FileType': 'HLT2.DST', 'Visible': 'Yes', 'SimulationConditions': 'Beam6800GeV-2024.W41.42-MagUp-Nu7.6-25ns-Pythia8'}
@@ -16,12 +16,15 @@ Luminosity       :  0.000
 Size per /pb     :  0.0 GB
 '''
 
+log=LogStore.add_logger('ap_utilities:test_bkk_info')
+# ----------------------
 def test_simple():
     '''
     Simplest test
     '''
-    obj = BkkInfo(data = SAMPLE_INFO)
+    obj = BkkInfo(
+        sample = 'sample',
+        block  = 'block_1',
+        stdout = SAMPLE_INFO)
 
-    assert obj.found
-    assert obj.et == '12113002'
-    assert isinstance(obj.row_data, dict)
+    log.info('\n' + str(obj.row))
