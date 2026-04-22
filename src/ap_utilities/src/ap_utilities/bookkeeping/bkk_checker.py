@@ -8,7 +8,7 @@ import pandas     as pnd
 import subprocess
 
 from pathlib                         import Path
-from pydantic                        import BaseModel
+from pydantic                        import BaseModel, RootModel
 from typing                          import Final
 from concurrent.futures              import ThreadPoolExecutor
 from ap_utilities                    import SettingsConf, Block
@@ -108,7 +108,18 @@ class BkkInfo(BaseModel):
         part_1 = f'({nick_name:<60}, "{self.event_type}" , "{self.block_id}", "{self.polarity}"  , "{self.ctags}"'
         part_2 = f'"{self.dtags}", "{self.nu_path}", "{nu_name}", {self.sim_vers:<20}, "{self.generator}" )'
 
-        return f'{part_1}, {part_2},\n'
+        return f'{part_1}, {part_2},'
+# ---------------------------------
+class DatasetInfo(RootModel[list[BkkInfo]]):
+    def save_info_yaml(self, path : Path) -> None:
+        '''
+        Merge info instances and save YAML with it
+        '''
+        yaml_lines = [ info.ap_line for info in self.root ]
+        text       = '\n'.join(yaml_lines)
+
+        log.info(f'Saving to: {path}')
+        path.write_text(text)
 # ---------------------------------
 class BkkChecker:
     '''
@@ -213,7 +224,7 @@ class BkkChecker:
 
         return info
     # -------------------------
-    def _get_samples_with_threads(self, nthreads : int) -> list[BkkInfo]:
+    def __get_samples_with_threads(self, nthreads : int) -> list[BkkInfo]:
         '''
         Parameters
         ----------------
@@ -228,17 +239,6 @@ class BkkChecker:
             l_info   = [ info  for result in l_result for info in result.result() ]
 
         return l_info
-    # -------------------------
-    def _save_info_yaml(self, l_info : list[BkkInfo]) -> None:
-        '''
-        Merge info instances and save YAML with it
-        '''
-        yaml_lines = [ info.ap_line for info in l_info ]
-        text       = '\n'.join(yaml_lines)
-
-        out_path   = self._out_dir / 'info.yaml'
-        log.info(f'Saving to: {out_path}')
-        out_path.write_text(text)
     # -------------------------
     def save(
         self, 
@@ -266,7 +266,10 @@ class BkkChecker:
             log.info(f'Found {len(l_info)} samples')
         else:
             log.info(f'Using {nthreads} threads')
-            l_info = self._get_samples_with_threads(nthreads)
+            l_info = self.__get_samples_with_threads(nthreads)
+
+        dsinfo = DatasetInfo(root = l_info)
+        dsinfo.save_info_yaml(path = self._out_dir / 'info.yaml')
 
         rows : list[pnd.Series] = [ info.row for info in l_info ]
 
