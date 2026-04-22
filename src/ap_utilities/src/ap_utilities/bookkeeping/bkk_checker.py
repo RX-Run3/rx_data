@@ -56,11 +56,11 @@ class BkkInfo(BaseModel):
         self.nevents    = self._get_nevents()
         self.found      = self.stdout is not None 
     # --------------------------------
-    def _extract_with_regex(self, regex : str, string : str) -> str:
+    def _extract_with_regex(self, regex : str, string : str) -> str | None:
         match = re.search(regex, string)
         if not match:
-            log.error(self.stdout)
-            raise ValueError(f'Cannot find size with regex: {regex}')
+            log.warning(f'Cannot find size with regex: {regex}')
+            return None 
 
         return match.group(1) 
     # --------------------------------
@@ -69,8 +69,12 @@ class BkkInfo(BaseModel):
             return '0 GB'
 
         regex = r'Total size\s+:\s+([\d\.]+ GB)'
+        value = self._extract_with_regex(regex = regex, string = self.stdout)
 
-        return self._extract_with_regex(regex = regex, string = self.stdout)
+        if value is None:
+            return '0 GB'
+
+        return value
     # --------------------------------
     def _get_nevents(self) -> int:
         if self.stdout is None:
@@ -78,6 +82,9 @@ class BkkInfo(BaseModel):
 
         regex = r"Nb of Events\s+:\s+([\d']+)"
         val   = self._extract_with_regex(regex = regex, string = self.stdout)
+        if val is None:
+            return 0
+
         val   = val.replace("'", '')
 
         return int(val)
