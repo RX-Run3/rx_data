@@ -59,7 +59,7 @@ class BkkInfo(BaseModel):
     def _extract_with_regex(self, regex : str, string : str) -> str | None:
         match = re.search(regex, string)
         if not match:
-            log.warning(f'Cannot find size with regex: {regex}')
+            log.debug(f'Cannot find size with regex: {regex}')
             return None 
 
         return match.group(1) 
