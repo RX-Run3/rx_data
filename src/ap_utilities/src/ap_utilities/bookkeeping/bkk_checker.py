@@ -4,19 +4,16 @@ Module with BkkChecker class
 
 import os
 import re
-import yaml
+import pandas     as pnd
 import subprocess
-import pandas                        as pnd
-import ap_utilities.decays.utilities as aput
 
 from pathlib                         import Path
 from pydantic                        import BaseModel
 from typing                          import Final
 from concurrent.futures              import ThreadPoolExecutor
+from ap_utilities                    import SettingsConf, Block
+from ap_utilities.decays             import utilities as aput
 from ap_utilities.logging.log_store  import LogStore
-from omegaconf                       import DictConfig
-
-log=LogStore.add_logger('ap_utilities:bkk_checker')
 
 FALLBACK    : Final[str] = '/tmp/ap_utilities/output'
 SAMPLE_INFO : Final[str] = ''' 
