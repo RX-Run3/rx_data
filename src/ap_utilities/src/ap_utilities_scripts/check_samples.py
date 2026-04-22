@@ -65,10 +65,18 @@ def main():
     obj     = SampleConfig(settings=cfg.config, samples='by_priority')
     sam_cfg = obj.get_config(categories=cfg.priority)
 
+    l_df : list[pnd.DataFrame] = []
     for name, section in sam_cfg.sections.items():
         log.info(f'Processing section: {name}')
-        obj=BkkChecker(name=name, cfg=section)
-        obj.save(nthreads=cfg.nthread)
+        obj= BkkChecker(name=name, cfg=section)
+        df = obj.save(nthreads=cfg.nthread)
+
+        df['section'] = name
+
+        l_df.append(df)
+
+    df = pnd.concat(l_df)
+    df.to_parquet(path = '/tmp/ap_utilities/output/bkk_checker/stats.parquet')
 # --------------------------------
 if __name__ == '__main__':
     main()
