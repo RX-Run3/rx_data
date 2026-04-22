@@ -27,7 +27,7 @@ class BlockConf(BaseModel):
     polarity : Literal['MagUp', 'MagDown']
     nu_path  : str
     ctags    : str
-    evt_type : list[int] = []
+    samples  : dict[int,str] = {}
 # ----------------------
 class SettingsConf(RootModel):
     '''
@@ -38,6 +38,15 @@ class SettingsConf(RootModel):
 class SamplesConf(RootModel):
     '''
     Class meant to represent MC samples
+
+    Attributes
+    ------------------
+    Dictionary with:
+
+    Key  : Category, e.g. sim10d, high, etc
+    Value: Dictionary with
+        key  : EventType
+        Value: Sample identifier, e.g. latex
     '''
     root : dict[str,dict[int,str]]
 # ----------------------
