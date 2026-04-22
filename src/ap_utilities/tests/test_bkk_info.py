@@ -23,8 +23,16 @@ def test_simple():
     Simplest test
     '''
     obj = BkkInfo(
-        sample = 'sample',
-        block  = 'block_1',
-        stdout = SAMPLE_INFO)
+        event_type= 123,
+        sim_vers  = 'sim_vers',
+        block_id  = 'block_id',
+        polarity  = 'MagUp',
+        ctags     = 'ctags',
+        dtags     = 'dtags',
+        nu_path   = 'nupath',
+        generator = 'generator',
+        sample    = 'sample',
+        block     = 'block_1',
+        stdout    = SAMPLE_INFO)
 
     log.info('\n' + str(obj.row))
