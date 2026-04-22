@@ -89,22 +89,22 @@ class SampleConfig:
         -------------
         Configuration with both samples and settings
         '''
-        all_event_types = []
-        for name, event_types in self._cfg_sam.root.items():
-            if name not in categories:
-                log.debug(f'Skipping {name}')
+        all_samples : dict[int,str] = {}
+        for category, samples in self._cfg_sam.root.items():
+            if category not in categories:
+                log.debug(f'Skipping {category}')
                 continue
 
-            all_event_types += list(event_types)
+            all_samples.update(samples)
 
-        ntypes = len(all_event_types)
+        ntypes = len(all_samples)
         if ntypes == 0:
             log.warning(f'Found {ntypes} event types')
         else:
             log.info(f'Found {ntypes} event types')
 
         for section in self._cfg_set.root.values():
-            section.evt_type = all_event_types
+            section.samples = all_samples
 
         return self._cfg_set
 # ----------------------
