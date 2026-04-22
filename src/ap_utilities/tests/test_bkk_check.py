@@ -5,7 +5,7 @@ import pytest
 
 from ap_utilities import LogStore
 from ap_utilities import BkkChecker
-from ap_utilities import SettingsConf
+from ap_utilities import SampleConfig 
 from dmu.generic  import utilities     as gut
 
 log = LogStore.add_logger('ap_utilities:tests:test_bkk_check')
@@ -15,18 +15,26 @@ def initialize():
     '''
     This runs before any test
     '''
-    LogStore.set_level('ap_utilities:Bookkeeping.bkk_checker', 10)
+    LogStore.set_level('ap_utilities:bkk_checker', 10)
 # ----------------------------------------
 def test_simple():
     '''
     Will save list of samples to YAML
     '''
-    d_cfg      = gut.load_conf(package='ap_utilities_data', fpath='tests/rd_samples.yaml')
-    d_sections = d_cfg['sections']
-    for name, d_section in d_sections.items():
-        log.info(f'Processing section: {name}')
-        obj=BkkChecker(name, d_section)
-        obj.save(dry=True)
+    obj = SampleConfig(
+        settings = '2024_sim10g',
+        samples  = 'by_priority')
+    cfg = obj.get_config(categories=['sim10g'])
+
+    obj= BkkChecker(
+        name = 'test', 
+        dry  = True,
+        cfg  = cfg)
+    df = obj.save()
+
+    assert len(df) > 0
+
+    log.info('\n' + str(df))
 # ----------------------------------------
 def test_nick_evt():
     '''
