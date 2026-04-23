@@ -26,6 +26,7 @@ class Conf:
     nthread : int
     log_lvl : int
     priority: str
+    update  : bool
 # ----------------------------------------
 def _parse_args() -> Conf:
     parser = argparse.ArgumentParser(description='Used to filter samples based on what exists in the GRID')
@@ -35,6 +36,7 @@ def _parse_args() -> Conf:
     parser.add_argument('-n', '--nthread' , type =int, help='Number of threads', default=1)
     parser.add_argument('-l', '--log_lvl' , type =int, help='Logging level', default=20, choices=[10,20,30,40])
     parser.add_argument('-p', '--priority', type =str, help='Category, e.g. sim10g, high', required = True)
+    parser.add_argument('-u', '--update'  , action = 'store_true', help='If used, will not use cached information')
     args = parser.parse_args()
 
     cfg  = Conf(
@@ -43,6 +45,7 @@ def _parse_args() -> Conf:
         config   = args.config,
         nthread  = args.nthread,
         log_lvl  = args.log_lvl,
+        update   = args.update,
         priority = args.priority)
 
     return cfg
@@ -109,7 +112,9 @@ def main():
         name= cfg.priority, 
         dry = False,
         cfg = cfg_sam)
-    df = obj.save(nthreads=cfg.nthread)
+    df = obj.save(
+        update  = cfg.update,
+        nthreads= cfg.nthread)
     # Dirac does not show size for some samples
     df = df.drop(columns = ['Size [GB]'])
 
