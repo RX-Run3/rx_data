@@ -26,7 +26,7 @@ Total size (1024):  267.164 GiB (677.3 kiB per evt)
 Luminosity       :  0.000 
 Size per /pb     :  0.0 GB
 '''
-_CACHE_PATH : Final[Path] = Path('/tmp/bkk_checker/data.json')
+_CACHE_DIR : Final[Path] = Path('/tmp/bkk_checker')
 
 log = LogStore.add_logger('ap_utilities:bkk_checker')
 # ---------------------------------
@@ -123,30 +123,34 @@ class DatasetInfo(RootModel[list[BkkInfo]]):
     '''
     # -----------------------------
     @classmethod
-    def from_cache(cls) -> Self | None:
+    def from_cache(cls, name : str) -> Self | None:
         '''
         Return instance or None if not found
         in cache
         '''
-        if not _CACHE_PATH.exists():
+        cache_path = _CACHE_DIR / f'{name}.yaml' 
+
+        if not cache_path.exists():
             log.debug('Data not found cached')
             return None
 
-        log.info(f'Loading cached data from: {_CACHE_PATH}')
-        string = _CACHE_PATH.read_text()
-        data   = json.loads(string)
+        log.info(f'Loading cached data from: {cache_path}')
+        string     = cache_path.read_text()
+        data       = json.loads(string)
 
         return cls(root = data)
     # -----------------------------
-    def to_cache(self) -> None:
+    def to_cache(self, name : str) -> None:
         '''
         Save current instance to JSON
         '''
-        log.info(f'Saving to: {_CACHE_PATH}')
-        _CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
+        cache_path = _CACHE_DIR / f'{name}.yaml' 
+
+        log.info(f'Saving to: {cache_path}')
+        _CACHE_DIR.parent.mkdir(exist_ok=True)
 
         data = self.model_dump_json(indent = 2)
-        _CACHE_PATH.write_text(data = data)
+        cache_path.write_text(data = data)
     # -----------------------------
     def save_info_yaml(self, path : Path) -> None:
         '''
@@ -326,14 +330,14 @@ class BkkChecker:
         Dataframe where each row represents a sample
         '''
         log.info('Filtering input')
-        dsinfo = DatasetInfo.from_cache()
+        dsinfo = DatasetInfo.from_cache(name = self._name)
         if dsinfo is not None and not update:
             return dsinfo.to_df()
 
         l_info = self.__get_info(nthreads = nthreads)
         dsinfo = DatasetInfo(root = l_info)
         dsinfo.save_info_yaml(path = self._out_dir / 'info.yaml')
-        dsinfo.to_cache()
+        dsinfo.to_cache(name = self._name)
 
         return dsinfo.to_df()
 # ---------------------------------
