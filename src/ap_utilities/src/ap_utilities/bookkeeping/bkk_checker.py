@@ -49,7 +49,6 @@ class BkkInfo(BaseModel):
     # -----------------------------
     nevents    : int  | None = None
     size       : str  | None = None
-    found      : bool | None = None
     # --------------------------------
     def model_post_init(self, _) -> None:
         self.size       = self._get_size()
@@ -101,7 +100,6 @@ class BkkInfo(BaseModel):
             'Sample'   : self.sample,
             'EventType': self.event_type,
             'Events'   : self.nevents,
-            'Found'    : self.found,
         }
 
         return pnd.Series(data) 
