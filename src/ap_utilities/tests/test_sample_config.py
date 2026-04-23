@@ -14,15 +14,18 @@ def initialize():
     LogStore.set_level('ap_utilities:sample_config', 10)
 # ----------------------
 @pytest.mark.parametrize('settings', ['2024_sim10d', '2024_sim10f', '2024_sim10g'])
-def test_simple(settings : str):
-    '''
-    Simplest test
-    '''
-    obj = SampleConfig(settings=settings, samples='by_priority')
-    cfg = obj.get_config(categories=[
+@pytest.mark.parametrize('category', [
         'high_priority', 
         'medium_priority', 
         'low_priority',
         'very_low_priority'])
+def test_simple(
+    category : str,
+    settings : str):
+    '''
+    Simplest test
+    '''
+    obj = SampleConfig(settings=settings, samples='by_priority')
+    cfg = obj.get_config(category = category)
 
     assert isinstance(cfg, SettingsConf)
