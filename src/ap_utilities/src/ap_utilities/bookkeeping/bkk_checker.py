@@ -50,6 +50,16 @@ class BkkInfo(BaseModel):
     nevents    : int  | None = None
     size       : str  | None = None
     # --------------------------------
+    @property
+    def exists(self) -> bool:
+        '''
+        True if sample exists
+        '''
+        if self.nevents is None:
+            return False
+
+        return self.nevents > 0
+    # --------------------------------
     def model_post_init(self, _) -> None:
         self.size       = self._get_size()
         self.nevents    = self._get_nevents()
@@ -156,7 +166,7 @@ class DatasetInfo(RootModel[list[BkkInfo]]):
         '''
         Merge info instances and save YAML with it
         '''
-        yaml_lines = [ info.ap_line for info in self.root ]
+        yaml_lines = [ info.ap_line for info in self.root if info.exists]
         text       = '\n'.join(yaml_lines)
 
         log.info(f'Saving to: {path}')
