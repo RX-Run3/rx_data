@@ -53,7 +53,6 @@ class BkkInfo(BaseModel):
     def model_post_init(self, _) -> None:
         self.size       = self._get_size()
         self.nevents    = self._get_nevents()
-        self.found      = self.stdout is not None 
     # --------------------------------
     def _extract_with_regex(self, regex : str, string : str) -> str | None:
         match = re.search(regex, string)
