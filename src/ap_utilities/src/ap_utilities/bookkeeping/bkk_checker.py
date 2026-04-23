@@ -6,6 +6,7 @@ import os
 import re
 import json
 import pandas     as pnd
+import hashlib
 import subprocess
 
 from pathlib                         import Path
@@ -180,17 +181,20 @@ class BkkChecker:
         self, 
         name : str, 
         dry  : bool,
-        cfg  : SettingsConf):
+        cfg  : SettingsConf,
+        rgx  : str | None = None):
         '''
         Parameters
         -------------------
         name : Name of section, needed to dump output
         dry  : If true, do everything but query with dirac, use sample string instead
         cfg  : Configuration controlling sample list
+        rgx  : Regular expression used to filter HLT triggers, optional
         '''
         self._name   = name
         self._dry    = dry 
         self._cfg    = cfg
+        self._rgx    = rgx
         self._out_dir= self.__get_out_dir()
     # -------------------------
     def __get_out_dir(self) -> Path:
@@ -221,6 +225,25 @@ class BkkChecker:
 
         return l_info
     # -------------------------
+    def __get_hash(self) -> str:
+        '''
+        Returns
+        -----------------
+        String representing hash needed to form BKK path
+        '''
+        if self._rgx is None:
+            raise ValueError('No regex specified, cannot get hash')
+
+        lines    = sorted(self._rgx)
+        lines    = "\n".join(lines)
+        encoded  = lines.encode("utf-8")
+        hash_val = hashlib.sha256(encoded)
+        digest   = hash_val.hexdigest()
+        digest   = digest[:8]
+        digest   = digest.upper()
+    
+        return digest
+    # -------------------------
     def __get_block_evt_info(
         self, 
         block       : Block, 
@@ -240,10 +263,13 @@ class BkkChecker:
         cfg   = self._cfg.root[block]
         root  = f'/MC/{cfg.year}/Beam6800GeV-{cfg.block_id}-{cfg.polarity}-{cfg.nu_path}-25ns-{cfg.generator}/{cfg.sim_vers}'
 
-        if cfg.block_id == '2024.W31.34':
-            bkk   = f'{root}/HLT1_2024.W31.34_noUT/HLT2-{cfg.hlt_conf}/{evt}/HLT2.DST'
-        else:
+        if self._rgx is None:
             bkk   = f'{root}/HLT2-{cfg.hlt_conf}/{evt}/HLT2.DST'
+            log.debug(f'Looking for unfiltered sample: {bkk}')
+        else:
+            hash  = self.__get_hash()
+            bkk   = f'{root}/HLT2_FILTERED-{cfg.hlt_conf}/{evt}/HLT2_FILTERED_{hash}.DST'
+            log.debug(f'Looking for filtered sample: {bkk}')
 
         log.info(f'{"":<4}{bkk:<100}')
 
