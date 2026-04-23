@@ -31,10 +31,10 @@ def _parse_args() -> Conf:
     parser = argparse.ArgumentParser(description='Used to filter samples based on what exists in the GRID')
     parser.add_argument('-s', '--samples' , type =str, help='Name of file storing event types, e.g. by_priority', required=True)
     parser.add_argument('-c', '--config'  , type =str, help='Name of file storing configuration', required=True, choices=SETTINGS)
+    parser.add_argument('-k', '--kind'    , type =str, help='Kind of printout'           , choices  = KINDS)
     parser.add_argument('-n', '--nthread' , type =int, help='Number of threads', default=1)
     parser.add_argument('-l', '--log_lvl' , type =int, help='Logging level', default=20, choices=[10,20,30,40])
     parser.add_argument('-p', '--priority', type =str, help='Category, e.g. sim10g, high', required = True)
-    parser.add_argument('-k', '--kind'    , type =str, help='Kind of printout'           , choices  = KINDS)
     args = parser.parse_args()
 
     cfg  = Conf(
@@ -81,11 +81,13 @@ def main():
     cfg = _parse_args()
     _set_logs(cfg=cfg)
 
-    obj     = SampleConfig(settings=cfg.config, samples='by_priority')
-    cfg_sam = obj.get_config(categories=cfg.priority)
+    obj     = SampleConfig(
+        settings=cfg.config, 
+        samples =cfg.samples)
+    cfg_sam = obj.get_config(category=cfg.priority)
 
     obj= BkkChecker(
-        name= 'summary', 
+        name= cfg.priority, 
         dry = False,
         cfg = cfg_sam)
     df = obj.save(nthreads=cfg.nthread)
