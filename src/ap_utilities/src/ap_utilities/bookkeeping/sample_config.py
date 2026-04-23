@@ -14,6 +14,18 @@ Block = Literal[
 'block_5', 'block_6', 'block_7', 'block_8',
 ]
 # ----------------------
+class Samples(BaseModel):
+    '''
+    Class meant to represent group of MC samples
+
+    Attributes
+    -------------
+    filter  : HLT2 filtering regex
+    sampoles: Dictionary mapping event type with sample string, e.g. latex 
+    '''
+    filter  : str | None
+    samples : dict[int,str]
+# ----------------------
 class BlockConf(BaseModel):
     '''
     Class meant to represent block configuration
@@ -48,7 +60,7 @@ class SamplesConf(RootModel):
         key  : EventType
         Value: Sample identifier, e.g. latex
     '''
-    root : dict[str,dict[int,str]]
+    root : dict[str,Samples]
 # ----------------------
 class SampleConfig:
     '''
