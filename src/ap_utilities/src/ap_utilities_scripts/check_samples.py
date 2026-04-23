@@ -54,6 +54,23 @@ def _set_logs(cfg : Conf) -> None:
     LogStore.set_level('ap_utilities:sample_config'        , cfg.log_lvl)
     LogStore.set_level('ap_utilities_scripts:check_samples', cfg.log_lvl)
 # --------------------------------
+def _print_total(df : pnd.DataFrame) -> None:
+    '''
+    Parameters
+    ----------------
+    df: DataFrame with Events column
+    '''
+    col_name = 'Events'
+
+    if col_name not in df.columns:
+        raise ValueError(f'{col_name} column missing')
+
+    sum = df[col_name].sum()
+
+    print(20 * '-')
+    print(f'Total: {sum:,}')
+    print('')
+# --------------------------------
 def _print_by_block(df : pnd.DataFrame) -> None:
     df = df.set_index('Sample', drop = True)
     for block, df_block in df.groupby('Block'):
@@ -63,6 +80,7 @@ def _print_by_block(df : pnd.DataFrame) -> None:
         print(block)
         print(30 * '-')
         print(string)
+        _print_total(df = df_block)
 # --------------------------------
 def _print_by_sample(df : pnd.DataFrame) -> None:
     df = df.set_index('Block', drop = True)
@@ -73,6 +91,7 @@ def _print_by_sample(df : pnd.DataFrame) -> None:
         print(sample)
         print(30 * '-')
         print(string)
+        _print_total(df = df_sample)
 # --------------------------------
 def main():
     '''
