@@ -196,8 +196,6 @@ sim10g_filtered:
   samples:
     12123003 : $B^+ \to K^+ e^+ e^-$
     11124002 : $B^0 \to K^{*0} e^+ e^-$
-    12113002 : $B^+ \to K^+ \mu^+ \mu^-$
-    11114002 : $B^0 \to K^{*0} \mu^+ \mu^-$
 sim10g:
   filter : null
   samples:
