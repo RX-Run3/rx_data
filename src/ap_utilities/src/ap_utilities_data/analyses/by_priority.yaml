@@ -158,7 +158,7 @@ missing for W40_42_md:
 # ----------------
 no_pid:
   filter : null
-  settings :
+  samples:
     11154001 : $B^0 \to J/\psi(\to e^+ e^-) K^{*0}$
     12153001 : $B^+ \to J/\psi(\to e^+ e^-) K^+$
     11144001 : $B^0 \to J/\psi(\to \mu^+ \mu^-) K^{*0}$
