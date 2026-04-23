@@ -121,8 +121,8 @@ class BkkInfo(BaseModel):
         nu_name   = self.nu_path.replace('.', 'p')
         nick_name = aput.read_decay_name(self.event_type)
 
-        part_1 = f'({nick_name:<60}, "{self.event_type}" , "{self.block_id}", "{self.polarity}"  , "{self.ctags}"'
-        part_2 = f'"{self.dtags}", "{self.nu_path}", "{nu_name}", {self.sim_vers:<20}, "{self.generator}" )'
+        part_1 = f'({nick_name!r:<60}, {str(self.event_type)!r:<15} , {self.block_id!r:<15}, {self.polarity!r:<10}, {self.ctags!r:<40}'
+        part_2 = f'{self.dtags!r:<15}, {self.nu_path!r:<10}, {nu_name!r:<10}, {self.sim_vers!r:<10}, {self.generator!r:<10} )'
 
         return f'{part_1}, {part_2},'
 # ---------------------------------
