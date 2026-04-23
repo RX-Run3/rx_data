@@ -70,12 +70,15 @@ class SampleConfig:
     merged with the settings (from `samples/xxx.yaml`)
     '''
     # ----------------------
-    def __init__(self, settings : str, samples : str):
+    def __init__(
+        self, 
+        settings : str, 
+        samples  : str):
         '''
         Parameters
         -------------
-        settings: String describing the name of the file with the simulation configuration, e.g. 2024
-        samples : String describinb the name of the file with the event types, e.g. by_priority
+        settings: Name of file with simulation configuration, e.g. 2024_sim10g
+        samples : Name of file with event types, e.g. by_priority
         '''
         data       = gut.load_data(
             package= 'ap_utilities_data', 
