@@ -14,11 +14,6 @@ log=LogStore.add_logger('ap_utilities_scripts:check_samples')
 
 KINDS      : Final[list[str]] = ['block', 'sample']
 SETTINGS   : Final[list[str]] = ['2024_sim10d', '2024_sim10f', '2024_sim10g']
-PRIORITIES : Final[list[str]] = [
-        'high_priority', 
-        'medium_priority', 
-        'low_priority', 
-        'very_low_priority']
 # --------------------------------
 @dataclass
 class Conf:
@@ -30,7 +25,7 @@ class Conf:
     config  : str
     nthread : int
     log_lvl : int
-    priority: list[str]
+    priority: str
 # ----------------------------------------
 def _parse_args() -> Conf:
     parser = argparse.ArgumentParser(description='Used to filter samples based on what exists in the GRID')
@@ -38,8 +33,8 @@ def _parse_args() -> Conf:
     parser.add_argument('-c', '--config'  , type =str, help='Name of file storing configuration', required=True, choices=SETTINGS)
     parser.add_argument('-n', '--nthread' , type =int, help='Number of threads', default=1)
     parser.add_argument('-l', '--log_lvl' , type =int, help='Logging level', default=20, choices=[10,20,30,40])
-    parser.add_argument('-p', '--priority', nargs='+', help='Priority of the samples to check, default all', default=PRIORITIES)
-    parser.add_argument('-k', '--kind'    , type =str, help='Kind of printout', default=KINDS)
+    parser.add_argument('-p', '--priority', type =str, help='Category, e.g. sim10g, high', required = True)
+    parser.add_argument('-k', '--kind'    , type =str, help='Kind of printout'           , choices  = KINDS)
     args = parser.parse_args()
 
     cfg  = Conf(
