@@ -36,3 +36,27 @@ def test_simple(update : bool):
 
     log.info('\n' + str(df))
 # ----------------------------------------
+@pytest.mark.parametrize('update', [True, False])
+def test_with_hash(update : bool):
+    '''
+    Will save list of samples to YAML
+    '''
+    regex = r'^(Hlt2RD_BuToKpEE|Hlt2RD_BuToKpEE_MVA|Hlt2RD_B0ToKpPimEE|Hlt2RD_B0ToKpKmEE|Hlt2RD_B0ToKpPimEE_MVA|Hlt2RD_LbTopKEE_MVA|Hlt2RD_LbToPKJpsi_JpsiToEE|Hlt2RD_BsToPhiEE_MVA)$'
+
+    obj = SampleConfig(
+        settings = '2024_sim10g',
+        samples  = 'by_priority')
+    cfg = obj.get_config(categories=['sim10g'])
+
+    obj= BkkChecker(
+        name = 'test', 
+        dry  = True,
+        rgx  = regex,
+        cfg  = cfg)
+    df = obj.save(update = update)
+
+    assert len(df) > 0
+
+    log.info('\n' + str(df))
+# ----------------------------------------
+
