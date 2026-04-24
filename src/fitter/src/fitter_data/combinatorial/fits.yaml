@@ -1,5 +1,0 @@
-default:
-  strategy:
-    ntries        : 10
-    pvalue_thresh : 0.05
-    ignore_status : False
