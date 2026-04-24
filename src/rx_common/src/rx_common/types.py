@@ -450,25 +450,25 @@ class Trigger(StrEnum):
     '''
     Class meant to represent MVA HLT2 triggers
     '''
-    rk_ee_os     = 'Hlt2RD_BuToKpEE_MVA'
-    rk_ee_ss     = 'Hlt2RD_BuToKpEE_SameSign_MVA'
-    rk_ee_nopid  = 'Hlt2RD_BuToKpEE_MVA_noPID'
-    rk_ee_cal    = 'Hlt2RD_BuToKpEE_MVA_cal'
-    rk_ee_misid  = 'Hlt2RD_BuToKpEE_MVA_misid'
-    rk_mm_os     = 'Hlt2RD_BuToKpMuMu_MVA'
-    rk_mm_nopid  = 'Hlt2RD_BuToKpMuMu_MVA_noPID'
-    rk_mm_ss     = 'Hlt2RD_BuToKpMuMu_SameSign_MVA'
+    rk_ee_os     = auto()
+    rk_ee_ss     = auto()
+    rk_ee_nopid  = auto()
+    rk_ee_cal    = auto()
+    rk_ee_misid  = auto()
+    rk_mm_os     = auto()
+    rk_mm_nopid  = auto()
+    rk_mm_ss     = auto()
     # -----------
-    rkst_ee_os   = 'Hlt2RD_B0ToKpPimEE_MVA'
-    rkst_ee_ss   = 'Hlt2RD_B0ToKpPimEE_SameSign_MVA'
-    rkst_ee_nopid= 'Hlt2RD_B0ToKpPimEE_MVA_noPID'
-    rkst_ee_cal  = 'Hlt2RD_B0ToKpPimEE_MVA_cal'
-    rkst_ee_misid= 'Hlt2RD_B0ToKpPimEE_MVA_misid'
-    rkst_mm_os   = 'Hlt2RD_B0ToKpPimMuMu_MVA'
-    rkst_mm_nopid= 'Hlt2RD_B0ToKpPimMuMu_MVA_noPID'
-    rkst_mm_ss   = 'Hlt2RD_B0ToKpPimMuMu_SameSign_MVA'
+    rkst_ee_os   = auto()
+    rkst_ee_ss   = auto()
+    rkst_ee_nopid= auto()
+    rkst_ee_cal  = auto()
+    rkst_ee_misid= auto()
+    rkst_mm_os   = auto()
+    rkst_mm_nopid= auto()
+    rkst_mm_ss   = auto()
     # -----------
-    uninitialized= 'uninitialized'
+    uninitialized= auto()
     # -----------
     def get_signal_component(
         self, 
@@ -527,13 +527,44 @@ class Trigger(StrEnum):
         '''
         False for triggers associated to PID removed samples
         '''
-        if self in {Trigger.rk_ee_nopid, Trigger.rkst_ee_nopid}:
-            return False
-
-        return True
+        return 'nopid' not in self.name
     # -----------
     def __str__(self):
-        return self.value
+        match self:
+            case Trigger.rk_ee_os:
+                return 'Hlt2RD_BuToKpEE_MVA'
+            case Trigger.rk_ee_ss:
+                return 'Hlt2RD_BuToKpEE_SameSign_MVA'
+            case Trigger.rk_ee_nopid:
+                return 'Hlt2RD_BuToKpEE_MVA_noPID'
+            case Trigger.rk_ee_cal:
+                return 'Hlt2RD_BuToKpEE_MVA_cal'
+            case Trigger.rk_ee_misid:
+                return 'Hlt2RD_BuToKpEE_MVA_misid'
+            case Trigger.rk_mm_os:
+                return 'Hlt2RD_BuToKpMuMu_MVA'
+            case Trigger.rk_mm_nopid:
+                return 'Hlt2RD_BuToKpMuMu_MVA_noPID'
+            case Trigger.rk_mm_ss:
+                return 'Hlt2RD_BuToKpMuMu_SameSign_MVA'
+            case Trigger.rkst_ee_os:
+                return 'Hlt2RD_B0ToKpPimEE_MVA'
+            case Trigger.rkst_ee_ss:
+                return 'Hlt2RD_B0ToKpPimEE_SameSign_MVA'
+            case Trigger.rkst_ee_nopid:
+                return 'Hlt2RD_B0ToKpPimEE_MVA_noPID'
+            case Trigger.rkst_ee_cal:
+                return 'Hlt2RD_B0ToKpPimEE_MVA_cal'
+            case Trigger.rkst_ee_misid:
+                return 'Hlt2RD_B0ToKpPimEE_MVA_misid'
+            case Trigger.rkst_mm_os:
+                return 'Hlt2RD_B0ToKpPimMuMu_MVA'
+            case Trigger.rkst_mm_nopid:
+                return 'Hlt2RD_B0ToKpPimMuMu_MVA_noPID'
+            case Trigger.rkst_mm_ss:
+                return 'Hlt2RD_B0ToKpPimMuMu_SameSign_MVA'
+            case Trigger.uninitialized:
+                return 'uninitialized'
     # -----------
     @property
     def is_electron(self) -> bool:
@@ -548,18 +579,12 @@ class Trigger(StrEnum):
         '''
         Either 'muon' or 'electron'
         '''
-        if 'EE_MVA'            in self.value:
+        if 'ee' in self.name:
             return Channel.ee
-
-        if 'EE_SameSign_MVA'   in self.value:
-            return Channel.ee
-
-        if 'MuMu_MVA'          in self.value:
+    
+        if 'mm' in self.name:
             return Channel.mm
-        
-        if 'MuMu_SameSign_MVA' in self.value:
-            return Channel.mm
-
+    
         raise ValueError(f'Cannot determine channel for trigger: {self}')
     # -----------
     @property
@@ -567,7 +592,7 @@ class Trigger(StrEnum):
         '''
         True if it is a same sign trigger
         '''
-        return 'SameSign' in self.value
+        return 'ss' in self.name
     # -----------
     @property
     def project(self) -> Project:
