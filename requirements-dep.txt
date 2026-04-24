@@ -343,7 +343,9 @@ numpy==2.3.5
     #   numba
     #   numdifftools
     #   numexpr
+    #   numpy-typing-compat
     #   optuna
+    #   optype
     #   pandas
     #   pandas-stubs
     #   pidcalib2
@@ -360,6 +362,8 @@ numpy==2.3.5
     #   vector
     #   zfit
     #   zfit-interface
+numpy-typing-compat==20251206.2.3
+    # via optype
 omegaconf==2.3.0
     # via -r requirements-dep.in
 opt-einsum==3.4.0
@@ -368,6 +372,8 @@ optree==0.18.0
     # via keras
 optuna==4.6.0
     # via -r requirements-dep.in
+optype==0.17.0
+    # via scipy-stubs
 ordered-set==4.1.0
     # via
     #   formulate
@@ -524,6 +530,8 @@ scipy==1.16.3
     #   numdifftools
     #   scikit-learn
     #   zfit
+scipy-stubs==1.17.1.4
+    # via -r requirements-dep.in
 seaborn==0.13.2
     # via -r requirements-dep.in
 semantic-version==2.10.0
