@@ -3,6 +3,7 @@ Module containing classes meant to be used to validate combinatorial shape
 '''
 import numpy
 
+from ROOT        import RDF # type: ignore
 from functools   import cached_property
 from typing      import Final
 from pydantic    import BaseModel
@@ -13,7 +14,6 @@ from dmu.stats   import zfit
 from dmu.generic import utilities as gut
 from rx_common   import Mass
 from rx_common   import Cuts, Qsq, Component, Trigger
-from rx_data import RDFGetter
 
 log=LogStore.add_logger('fitter:cmb_validator')
 
@@ -92,19 +92,18 @@ class CmbValidator:
     Class meant to validate combinatorial model
     '''
     # ---------------------------
-    def __init__(self, cfg : CmbValidatorConf):
+    def __init__(
+        self, 
+        rdf : RDF.RNode,
+        cfg : CmbValidatorConf):
         '''
         Parameters
         ----------------
+        rdf: DataFrame with data to be fitted
         cfg: Configuration needed for fits, etc
         '''
         self._cfg = cfg
-
-        gtr = RDFGetter(
-            trigger= self._cfg.input.trigger,
-            sample = self._cfg.input.sample)
-
-        self._rdf = gtr.get_rdf(per_file = False)
+        self._rdf = rdf 
     # ---------------------------
     @cached_property
     def model(self) -> zfit.pdf.BasePDF:
