@@ -1,90 +1,66 @@
 
 from pydantic    import BaseModel
-from functools   import cached_property
 from dmu         import LogStore
-from dmu.stats   import FitConf, ModelFactoryConf
+from dmu.stats   import ModelFactoryConf
+from dmu.stats   import Model, Retries
 from dmu.generic import utilities as gut
 from rx_common   import Mass
+from rx_common   import Cuts, Qsq, Component, Trigger
+from fitter      import MVAWp
 
 log=LogStore.add_logger('fitter:cmb_validator')
-# ----------------------
+# --------------------------------
+class FitConf(BaseModel):
+    '''
+    Fitting configuration
+    '''
+    strategy : Retries
+    model    : ModelFactoryConf
+# --------------------------------
+class CmbInputConfig(BaseModel):
+    '''
+    Class meant to configure input for validation
+    of configuration
+    '''
+    q2bin  : Qsq 
+    mass   : Mass 
+    model  : Model 
+    trigger: Trigger 
+    sample : Component 
+    comb   : MVAWp
+    prec   : MVAWp
+# --------------------------------
+class CmbValidationConfig(BaseModel):
+    '''
+    Class meant to configure selection and fits
+    '''
+    selection : dict[Cuts,str]
+    cutflows  : dict[str,dict[str,str]]
+    fits      : FitConf
+    # ---------------------------
+    @classmethod
+    def from_file(cls, fname : str) -> 'CmbValidationConfig':
+        '''
+        Parameters
+        ---------------
+        fname: Yaml file name where configuration is specified 
+
+        Returns
+        ---------------
+        Config object
+        '''
+        data = gut.load_data(
+            package = 'fitter_data',
+            fpath   = fname)
+
+        return cls(**data)
+# --------------------------------
 class CmbValidatorConf(BaseModel):
     '''
-    Configuration needed to validate
-    combinatorial model
+    Class meant to configure validation
     '''
-    mass: Mass
-    mod : str
-    sel : str
-    cut : str
-    fit : str
-    # ----------------------
-    @cached_property
-    def model_conf(self) -> ModelFactoryConf:
-        '''
-        Configuration used to build model
-        '''
-        key  = self.mod
-        data = gut.load_data(package = 'fitter_data', fpath = 'combinatorial/models.yaml')
-        if key in data:
-            for val in data:
-                log.error(f'\"{val}\"')
-            raise ValueError(f'Cutflow \"{key}\" not found in config')
-
-        log.debug(f'Picking selection: {key}')
-
-        conf_data = data[key] 
-        return ModelFactoryConf(**conf_data)
-    # ----------------------
-    @cached_property
-    def selection(self) -> dict[str,str]:
-        '''
-        Dictionary with selection needed to get dataset
-        '''
-        key  = self.sel
-        data = gut.load_data(package = 'fitter_data', fpath = 'combinatorial/selections.yaml')
-        if key not in data:
-            for val in data:
-                log.error(f'\"{val}\"')
-            raise ValueError(f'Cutflow \"{key}\" not found in config')
-
-        log.debug(f'Picking selection: {key}')
-
-        return data[key] 
-    # ----------------------
-    @cached_property
-    def cutflow(self) -> dict[str,str]:
-        '''
-        Dictionary with cutflow to study
-        '''
-        key = self.cut
-
-        data = gut.load_data(package = 'fitter_data', fpath = 'combinatorial/cutflows.yaml')
-        if key not in data:
-            for val in data:
-                log.error(f'\"{val}\"')
-            raise ValueError(f'Cutflow \"{key}\" not found in config')
-
-        log.debug(f'Picking cutflow: \"{key}\"')
-
-        return data[key] 
-    # ----------------------
-    @cached_property
-    def fit_cfg(self) -> FitConf:
-        '''
-        Dictionary with cutflow to study
-        '''
-        key = self.fit
-
-        data = gut.load_data(package = 'fitter_data', fpath = 'combinatorial/fits.yaml')
-        if key not in data:
-            for val in data:
-                log.error(f'\"{val}\"')
-            raise ValueError(f'Fit config \"{key}\" not found')
-
-        log.debug(f'Picking fit config: \"{key}\"')
-
-        return FitConf(**data[key])
+    input      : CmbInputConfig
+    validation : CmbValidationConfig
 # ----------------------
 class CmbValidator:
     '''
