@@ -1,8 +1,7 @@
 selection:
-  jpsi_veto : TMath::Abs(B_const_mass_M - 5280) > 200
-  psi2 veto : TMath::Abs(B_const_mass_psi2S_M - 5280) > 100
-  bdt       : (1)
-  mass      : (1)
+  leakage : (TMath::Abs(B_const_mass_M - 5280) > 200) && (TMath::Abs(B_const_mass_psi2S_M - 5280) > 100)
+  cmb     : (1)
+  mass    : (1)
 cutflows:
   inv_prc_cmb:
     $BDT_{prc} < 0.10 || BDT_{cmb} < 0.00$ : mva_prc < 0.10 || mva_cmb < 0.00
