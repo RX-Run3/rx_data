@@ -45,7 +45,7 @@ def main():
     '''
     cfg = _get_conf()
     obj = CmbValidator(cfg = cfg)
-    obj.run()
+    res = obj.run()
 # --------------------------------
 if __name__ == '__main__':
     main()
