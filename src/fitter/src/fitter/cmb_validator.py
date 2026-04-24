@@ -6,7 +6,6 @@ from dmu.stats   import Model, Retries
 from dmu.generic import utilities as gut
 from rx_common   import Mass
 from rx_common   import Cuts, Qsq, Component, Trigger
-from fitter      import MVAWp
 
 log=LogStore.add_logger('fitter:cmb_validator')
 # --------------------------------
@@ -27,8 +26,7 @@ class CmbInputConfig(BaseModel):
     model  : Model 
     trigger: Trigger 
     sample : Component 
-    comb   : MVAWp
-    prec   : MVAWp
+    cutflow: str 
 # --------------------------------
 class CmbValidationConfig(BaseModel):
     '''
