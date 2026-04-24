@@ -23,8 +23,13 @@ from .types              import CCbarWeight
 from .prec               import PRec
 from .prec_scales        import PrecScales
 from .prefit_postfit     import run as plot_prefit_postfit
+# ----------
+# Combinatorial
+# ----------
 from .cmb_validator      import CmbValidatorConf
 from .cmb_validator      import CmbValidator
+from .cmb_validator      import CmbInputConfig 
+from .cmb_validator      import CmbValidationConfig 
 # ----------
 # Configs
 # ----------
@@ -44,6 +49,8 @@ __all__ = [
     'CmbConstraintConf',
     'CmbValidatorConf',
     'CmbValidator',
+    'CmbInputConfig',
+    'CmbValidationConfig',
     # ------------------
     'MVAConf',
     'MVAWp',
