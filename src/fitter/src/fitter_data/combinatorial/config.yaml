@@ -105,7 +105,7 @@ cutflows:
     $(BDT_{prc} > 0.70 and BDT_{cmb} > 0.40) and (BDT_{prc} < 0.80 || BDT_{cmb} < 0.60)$ : (mva_prc > 0.70 && mva_cmb > 0.40) && (mva_prc < 0.80 || mva_cmb < 0.6)
     $(BDT_{prc} > 0.70 and BDT_{cmb} > 0.50) and (BDT_{prc} < 0.80 || BDT_{cmb} < 0.60)$ : (mva_prc > 0.70 && mva_cmb > 0.50) && (mva_prc < 0.80 || mva_cmb < 0.6)
 fit:
-  configuration:
+  conf:
     strategy:
       ntries : 10
       pvalue : 0.05

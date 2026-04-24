@@ -4,9 +4,10 @@ Module needed to test Combinatorial validator class
 import pytest
 
 from fitter    import CmbValidatorConf
-from fitter    import CmbValidator
-from rx_common import Mass
+from fitter    import CmbInputConfig, CmbValidatorConf, CmbValidationConfig
+from rx_common import Component, Mass, Qsq, Trigger
 from dmu       import LogStore
+from dmu.stats import Model
 
 log=LogStore.add_logger('fitter:test_cmb_validator')
 # ----------------------
@@ -17,31 +18,28 @@ def initialize():
     '''
     LogStore.set_level('fitter:cmb_validator', 10)
 # ----------------------
-@pytest.mark.parametrize('mass', Mass)
-@pytest.mark.parametrize('sel' , ['default'])
-@pytest.mark.parametrize('fit' , ['default'])
-@pytest.mark.parametrize('cut' , ['cmb'    ])
-@pytest.mark.parametrize('mod' , ['expo'   ])
-def test_simple(
-    mass: Mass,
-    mod : str,
-    sel : str, 
-    fit : str, 
-    cut : str):
+@pytest.mark.parametrize('mass'   , [Mass.bp_bcor])
+@pytest.mark.parametrize('model'  , [Model.exp   ])
+@pytest.mark.parametrize('cutflow', ['cmb'       ])
+def test_config(
+    mass   : Mass,
+    model  : Model,
+    cutflow: str):
     '''
-    Entry point
+    Validate configuration
     '''
-    cfg = CmbValidatorConf(
-        mass= mass,
-        mod = mod,
-        sel = sel,
-        fit = fit,
-        cut = cut)
+    input      = CmbInputConfig(
+        q2bin   = Qsq.central,
+        mass    = mass,
+        model   = model,
+        trigger = Trigger.rk_ee_ss,
+        sample  = Component.data_24,
+        cutflow = cutflow,
+    )
 
-    _ = cfg.selection
-    _ = cfg.fit_cfg
-    _ = cfg.cutflow
+    validation = CmbValidationConfig.from_file(fname = 'combinatorial/config.yaml') 
 
-    obj = CmbValidator(cfg = cfg)
-    obj.run()
+    return CmbValidatorConf(
+        input      = input,
+        validation = validation)
 # ----------------------
