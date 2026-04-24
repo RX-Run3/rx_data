@@ -30,6 +30,7 @@ from .cmb_validator      import CmbValidatorConf
 from .cmb_validator      import CmbValidator
 from .cmb_validator      import CmbInputConfig 
 from .cmb_validator      import CmbValidationConfig 
+from .cmb_validator      import CmbOutputConfig 
 # ----------
 # Configs
 # ----------
@@ -51,6 +52,7 @@ __all__ = [
     'CmbValidator',
     'CmbInputConfig',
     'CmbValidationConfig',
+    'CmbOutputConfig',
     # ------------------
     'MVAConf',
     'MVAWp',

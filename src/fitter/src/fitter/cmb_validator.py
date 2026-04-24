@@ -3,12 +3,14 @@ Module containing classes meant to be used to validate combinatorial shape
 '''
 import numpy
 
+from pathlib     import Path
 from ROOT        import RDF # type: ignore
 from functools   import cached_property
 from typing      import Final
 from pydantic    import BaseModel
 from dmu         import LogStore
-from dmu.stats   import FitConf, FitResult, Fitter, ModelFactory, ModelFactoryConf
+from dmu.stats   import ModelFactory, ModelFactoryConf, ZFitPlotter, ZFitPlotterConf
+from dmu.stats   import FitConf, FitResult, Fitter
 from dmu.stats   import Model
 from dmu.stats   import zfit
 from dmu.generic import utilities as gut
@@ -37,6 +39,14 @@ class CmbInputConfig(BaseModel):
     trigger: Trigger 
     sample : Component 
     cutflow: str 
+# --------------------------------
+class CmbOutputConfig(BaseModel):
+    '''
+    Class meant to store configurations
+    to save results, e.g. plots
+    '''
+    plots    : ZFitPlotterConf
+    dir_path : Path
 # --------------------------------
 class CmbValidationConfig(BaseModel):
     '''
@@ -69,6 +79,7 @@ class CmbValidatorConf(BaseModel):
     '''
     input      : CmbInputConfig
     validation : CmbValidationConfig
+    output     : CmbOutputConfig
     # ------------------------
     @property
     def cuts(self) -> dict[str,str]:
