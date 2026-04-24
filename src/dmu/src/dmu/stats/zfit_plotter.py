@@ -722,4 +722,21 @@ class ZFitPlotter:
             self.axs[1].axhline(y= 0, color='gray', linestyle='-', lw=1)
             self.axs[1].axhline(y=+3, color='red' , linestyle='-', lw=2)
             self.axs[1].set_ylim(-5, 5)
+    #----------------------------------------
+    def run(
+        self, 
+        cfg : ZFitPlotterConf) -> None:
+        '''
+        Parameters
+        ----------------
+        cfg: Object storing plotting configuration
+        '''
+        self.plot(
+            nbins           = cfg.nbins,          
+            stacked         = cfg.stacked,        
+            plot_components = cfg.plot_components,
+            plot_range      = cfg.plot_range,     
+            ext_text        = cfg.ext_text,       
+            title           = cfg.title,          
+            d_leg           = cfg.d_leg)
 #----------------------------------------

@@ -2,15 +2,18 @@
 Module with tests for zutils.plot plot class
 '''
 import os
+
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 import numpy
 import pytest
 import matplotlib.pyplot as plt
 
+from pathlib      import Path
 from dmu          import LogStore
 from dmu.stats    import zfit
 from dmu.stats    import ZFitPlotter
+from dmu.stats    import ZFitPlotterConf
 from zfit.data    import Data         as zdat
 
 log = LogStore.add_logger('dmu:test_fit_plotter')
@@ -59,6 +62,33 @@ def test_simple():
 
     plt_dir = _make_dir_path(name = 'simple')
     plt.savefig(f'{plt_dir}/fit.png', bbox_inches='tight')
+#--------------------------------
+def test_run(tmp_path : Path):
+    '''
+    Simplest test of plotting class
+    '''
+    arr = numpy.random.normal(0, 1, size=1000)
+
+    obs = zfit.Space('m', limits=(-10, 10))
+    mu  = zfit.Parameter("mu", 0.0, -5, 5)
+    sg  = zfit.Parameter("sg", 1.0,  0, 5)
+
+    pdf = zfit.pdf.Gauss(obs=obs, mu=mu, sigma=sg, name='gauss')
+    nev = zfit.Parameter('nev', 1000, 0, 10000)
+    pdf = pdf.create_extended(nev,)
+
+    d_leg = {'gauss': 'New Gauss'}
+    cfg = ZFitPlotterConf(
+        stacked   = True,
+        nbins     = 50, 
+        d_leg     = d_leg, 
+        plot_range= (-10, 10), 
+        ext_text  = 'Extra text here')
+
+    obj = ZFitPlotter(data=arr, model=pdf, result=None)
+    obj.run(cfg = cfg)
+
+    plt.savefig(tmp_path / 'fit.png', bbox_inches='tight')
 #--------------------------------
 def test_title():
     '''
