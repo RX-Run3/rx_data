@@ -129,6 +129,8 @@ class Mass(StrEnum):
                 return r'$M^{KK}(B^0)$'
             case Mass.bd_pipi:
                 return r'$M^{\pi\pi}(B^0)$'
+            case _:
+                raise ValueError(f'Cannot determine latex for: {self}')
     # ------------------------------
     @property
     def limits(self) -> tuple[float,float]:
@@ -179,3 +181,5 @@ class Mass(StrEnum):
                 return 4800, 6500
             case Mass.bd_pipi:
                 return Mass.bd_kk.limits
+            case _:
+                raise ValueError(f'Cannot determine mass range for: {self}')
