@@ -2,6 +2,7 @@
 Module containing classes meant to be used to validate combinatorial shape
 '''
 import numpy
+import matplotlib.pyplot as plt
 
 from pathlib     import Path
 from ROOT        import RDF # type: ignore
@@ -138,6 +139,31 @@ class CmbValidator:
 
         return rdf.AsNumpy([mass])[mass]
     # ---------------------------
+    def _fit(
+        self, 
+        name : str,
+        data : numpy.ndarray) -> FitResult:
+        '''
+        Parameters
+        -------------
+        name: Used for naming plots
+        data: Array with data to fit
+        '''
+        obj = Fitter(
+            pdf  = self.model, 
+            data = data)
+        res = obj.fit(cfg = self._cfg.validation.fit.conf)
+
+        ptr = ZFitPlotter(
+            model  = self.model,
+            data   = data)
+        ptr.run(cfg = self._cfg.output.plots)
+
+        plt.savefig(self._cfg.output.dir_path / f'{name}.png')
+        plt.close('all')
+
+        return res
+    # ---------------------------
     def run(self) -> ValidationStatus:
         '''
         Runs validation
@@ -145,8 +171,9 @@ class CmbValidator:
         results : dict[str, FitResult] = {}
         for label, cut in self._cfg.cuts.items():
             data  = self._get_data(cut = cut)
-            obj   = Fitter(pdf = self.model, data = data)
-            results[label] = obj.fit(cfg = self._cfg.validation.fit.conf)
+            results[label] = self._fit(
+                name = label,
+                data = data)
 
         stat = ValidationStatus(
             input      = self._cfg.input, 
