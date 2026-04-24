@@ -2,6 +2,7 @@
 Module containing classes meant to be used to validate combinatorial shape
 '''
 import numpy
+import pandas            as pnd
 import matplotlib.pyplot as plt
 
 from pathlib     import Path
@@ -98,6 +99,22 @@ class ValidationStatus(BaseModel):
     input      : CmbInputConfig
     validation : CmbValidationConfig
     results    : dict[str,FitResult]
+    # ----------------------
+    @property
+    def df(self) -> pnd.DataFrame:
+        '''
+        DataFrame with all the parameters form all the fits
+        '''
+        l_df : list[pnd.DataFrame] = []
+        for label, result in self.results.items():
+            df        = result.df
+            df['Fit'] = label
+            l_df.append(df)
+
+        df = pnd.concat(l_df)
+        df = df.reset_index(drop = True)
+
+        return df
 # ----------------------
 class CmbValidator:
     '''
