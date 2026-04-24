@@ -38,6 +38,7 @@ omegaconf>=2.3.0
 optuna
 pandas
 pandas-stubs
+scipy-stubs
 particle
 pdg
 pidcalib2
