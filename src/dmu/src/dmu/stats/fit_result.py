@@ -7,6 +7,7 @@ import yaml
 import json
 import numpy
 import pprint
+import pandas as pnd
 
 from typing      import Self
 from contextvars import ContextVar
@@ -214,6 +215,24 @@ class FitResult(BaseModel):
     gof        : GoodnessOfFit | None = None
     parameters : tuple[FitParameter,...]
     covariance : list[list[float]] 
+    # ----------------------
+    @property
+    def df(self) -> pnd.DataFrame:
+        '''
+        Dataframe with parameter names values and errors
+        as columns
+        '''
+        l_data : list[dict] = []
+        for parameter in self.parameters:
+            data = {
+                'Parameter' : parameter.name,
+                'Value'     : parameter.value,
+                'Error'     : parameter.error,
+            }
+
+            l_data.append(data)
+
+        return pnd.DataFrame(l_data)
     # ----------------------
     @property
     def cov_status(self) -> int:

@@ -41,6 +41,20 @@ def test_from_zfit():
     cov = numpy.array(val.pars_covariance(pars = ['mu', 'sg']), dtype=int)
     assert cov.tolist() == [[86, 3], [3, 81]]
 # -----------------------------
+def test_dataframe():
+    '''
+    Test getting dataframe with parameter values
+    '''
+    nll = get_nll(kind = 's+b', suffix = '_gaus_test_1')
+    min = zfit.minimize.Minuit()
+
+    res = min.minimize(loss = nll)
+    res.hesse(name = 'minuit_hesse')
+
+    res = FitResult.from_zfit(res = res)
+
+    log.info('\n' + str(res.df))
+# -----------------------------
 def test_serialize(tmp_path : Path):
     '''
     Test conversion from zfit object
