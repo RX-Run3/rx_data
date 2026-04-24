@@ -6,6 +6,7 @@ import argparse
 from dmu       import LogStore
 from dmu.stats import Model
 from rx_common import Mass, Qsq, Component, Trigger
+from rx_data   import RDFGetter
 from fitter    import CmbValidationConfig
 from fitter    import CmbValidatorConf
 from fitter    import CmbInputConfig
@@ -44,7 +45,14 @@ def main():
     Entry point
     '''
     cfg = _get_conf()
-    obj = CmbValidator(cfg = cfg)
+    gtr = RDFGetter(
+        trigger= cfg.input.trigger,
+        sample = cfg.input.sample)
+    rdf = gtr.get_rdf(per_file = False)
+
+    obj = CmbValidator(
+        rdf = rdf,
+        cfg = cfg)
     res = obj.run()
 # --------------------------------
 if __name__ == '__main__':
