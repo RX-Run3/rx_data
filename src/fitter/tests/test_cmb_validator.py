@@ -5,13 +5,15 @@ import numpy
 
 import pytest
 
+from pathlib     import Path
 from scipy.stats import truncexpon
 from ROOT        import RDF # type: ignore
 from fitter      import CmbValidator
 from fitter      import CmbInputConfig, CmbValidatorConf, CmbValidationConfig
+from fitter      import CmbOutputConfig
 from rx_common   import Component, Mass, Qsq, Trigger
 from dmu         import LogStore
-from dmu.stats   import Model
+from dmu.stats   import Model, ZFitPlotterConf
 
 log=LogStore.add_logger('fitter:test_cmb_validator')
 # ----------------------
@@ -30,7 +32,7 @@ def _get_rdf(mass : Mass) -> RDF.RNode:
     data : dict[str,numpy.ndarray] = {
         'mva_cmb' : numpy.random.uniform(0, 1, size = size),
         'mva_prc' : numpy.random.uniform(0, 1, size = size),
-        mass      : truncexpon.rvs(b=1.5, loc=4500, scale=1000, size=size)
+        mass      : truncexpon.rvs(b=2.5, loc=4500, scale=1000, size=size)
     }
 
     rdf = RDF.FromNumpy(data)
@@ -41,9 +43,10 @@ def _get_rdf(mass : Mass) -> RDF.RNode:
 @pytest.mark.parametrize('model'  , [Model.exp   ])
 @pytest.mark.parametrize('cutflow', ['cmb'       ])
 def test_config(
-    mass   : Mass,
-    model  : Model,
-    cutflow: str):
+    tmp_path: Path,
+    mass    : Mass,
+    model   : Model,
+    cutflow : str):
     '''
     Validate configuration
     '''
@@ -56,23 +59,30 @@ def test_config(
         cutflow = cutflow,
     )
 
+    output      = CmbOutputConfig(
+        dir_path= tmp_path,
+        plots   = ZFitPlotterConf.default(),
+    )
+
     validation = CmbValidationConfig.from_file(fname = 'combinatorial/config.yaml') 
 
     return CmbValidatorConf(
         input      = input,
-        validation = validation)
+        validation = validation,
+        output     = output)
 # ----------------------
 @pytest.mark.parametrize('mass'   , [Mass.bp_bcor])
 @pytest.mark.parametrize('model'  , [Model.exp   ])
 @pytest.mark.parametrize('cutflow', ['test'      ])
 def test_validator(
-    mass   : Mass,
-    model  : Model,
-    cutflow: str):
+    tmp_path: Path,
+    mass    : Mass,
+    model   : Model,
+    cutflow : str):
     '''
     Test actual validation
     '''
-    input      = CmbInputConfig(
+    input       = CmbInputConfig(
         q2bin   = Qsq.central,
         mass    = mass,
         model   = model,
@@ -81,11 +91,18 @@ def test_validator(
         cutflow = cutflow,
     )
 
+    output      = CmbOutputConfig(
+        dir_path= tmp_path,
+        plots   = ZFitPlotterConf.default(),
+    )
+
     validation = CmbValidationConfig.from_file(fname = 'combinatorial/config.yaml') 
 
     cfg = CmbValidatorConf(
         input      = input,
-        validation = validation)
+        validation = validation,
+        output     = output,
+    )
 
     rdf = _get_rdf(mass = mass)
 
