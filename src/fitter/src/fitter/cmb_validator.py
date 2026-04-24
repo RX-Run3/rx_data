@@ -122,7 +122,7 @@ class CmbValidator:
         '''
         Array of masses needed for fit
         '''
-        rdf  = self._rdf.Filter('mva', cut)
+        rdf  = self._rdf.Filter(cut)
         mass = self._cfg.input.mass
 
         return rdf.AsNumpy([mass])[mass]
