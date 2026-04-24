@@ -269,7 +269,7 @@ class BkkChecker:
             log.warning('Running dry run')
             stdout  = SAMPLE_INFO 
 
-        out_path = self._out_dir / f'{evt}.txt'
+        out_path = self._out_dir / f'{evt}_{block}.txt'
         out_path.write_text(stdout)
 
         info = BkkInfo(
