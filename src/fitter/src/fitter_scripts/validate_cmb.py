@@ -8,6 +8,8 @@ import pandas   as pnd
 from pathlib      import Path
 from dmu          import LogStore
 from dmu.stats    import Model, ZFitPlotterConf
+from dmu.generic  import utilities as gut
+from dmu.plotting import BandPlotter, BandPlotterConf
 from rx_selection import selection as sel
 from rx_common    import Mass, Qsq, Component, Trigger
 from rx_data      import RDFGetter
@@ -54,7 +56,11 @@ def _get_conf() -> CmbValidatorConf:
         validation = validation)
 # ----------------------
 def _get_pars(cfg : CmbValidatorConf) -> pnd.DataFrame:
-    out_path = cfg.output.dir_path / 'parameters.parquet'
+    model    = '-'.join(cfg.validation.fit.model.pdfs)
+    cutflow  = cfg.input.cutflow
+    extension= f'{model}/{cutflow}'
+    out_path = cfg.output.out_dir(extend = extension) / 'parameters.parquet'
+
     if out_path.exists():
         log.info(f'Parameters found from cache, loading: {out_path}')
         return pnd.read_parquet(path = out_path)
@@ -69,7 +75,7 @@ def _get_pars(cfg : CmbValidatorConf) -> pnd.DataFrame:
     with sel.custom_selection(d_sel = cfg.validation.selection):
         rdf = sel.apply_full_selection(
             rdf     = rdf,
-            out_path= cfg.output.out_dir(),
+            out_path= cfg.output.out_dir(extend = extension),
             q2bin   = cfg.input.q2bin,
             process = cfg.input.sample,
             trigger = cfg.input.trigger)
@@ -84,14 +90,24 @@ def _get_pars(cfg : CmbValidatorConf) -> pnd.DataFrame:
 
     return res.df
 # --------------------------------
+def _plot(df : pnd.DataFrame) -> None:
+    '''
+    Parameters
+    -------------------
+    df: Dataframe with values of parameters and errors
+    '''
+    data= gut.load_data(package = 'fitter_data', fpath = 'combinatorial/plots.yaml')
+    cfg = BandPlotterConf(**data) 
+    ptr = BandPlotter(cfg = cfg, df = df)
+    ptr.plot()
+# --------------------------------
 def main():
     '''
     Entry point
     '''
     cfg = _get_conf()
     df  = _get_pars(cfg = cfg)
-
-    print(df)
+    _plot(df = df)
 # --------------------------------
 if __name__ == '__main__':
     main()
