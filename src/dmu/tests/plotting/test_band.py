@@ -29,21 +29,31 @@ def _get_df(
 def test_simple(tmp_path : Path):
     l_df : list[pnd.DataFrame] = []
     for kind in ['w', 'x', 'y', 'z']:
-        df = _get_df(kind = kind, parameter = 'a')
-        l_df.append(df)
+        for parameter in ['a', 'b', 'c']:
+            df = _get_df(
+                kind      = kind, 
+                parameter = parameter)
+            l_df.append(df)
     df = pnd.concat(l_df)
 
     astyle = Style(
+        ylabel    = r'\alpha',
         yrange    = (5., 15.),
         xrotation = 45,
         alpha     = 0.3,
         color     = 'blue',
     )
 
+    styles = {
+        'a' : astyle,
+        'b' : astyle,
+        'c' : astyle,
+    }
+
     cfg = BandPlotterConf(
         out_dir = tmp_path,
         xname   = 'kind',
-        styles  = {'a' : astyle},
+        styles  = styles,
     )
 
     ptr = BandPlotter(
