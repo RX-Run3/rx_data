@@ -63,8 +63,8 @@ mass_mm  : &mass_mm
   psi2    : B_M > 0
   high    : B_M > 0
 # --------------------
-RKst: &rkst
-  EE:
+rkst: &rkst
+  ee:
     q2:
       <<: *q2_common
     ghost     : H1_TRGHOSTPROB < 0.3 && H2_TRGHOSTPROB < 0.3 && L1_TRACK_GhostProb < 0.3 && L2_TRACK_GhostProb< 0.3
@@ -91,7 +91,7 @@ RKst: &rkst
       <<: *prc_common
     mass:
       <<: *mass_ee
-  MM:
+  mm:
     q2:
       <<: *q2_common
     ghost     : H1_TRGHOSTPROB < 0.3 && H2_TRGHOSTPROB < 0.3 && L1_TRACK_GhostProb < 0.3 && L2_TRACK_GhostProb< 0.3
@@ -124,8 +124,8 @@ RKst: &rkst
       <<: *prc_common
     mass:
       <<: *mass_mm
-RK: &rk
-  EE:
+rk: &rk
+  ee:
     q2:
       <<: *q2_common
     ghost     : H_TRACK_GhostProb<0.3 && L1_TRACK_GhostProb <0.3 && L2_TRACK_GhostProb<0.3
@@ -150,7 +150,7 @@ RK: &rk
       <<: *prc_common
     mass:
       <<: *mass_ee
-  MM:
+  mm:
     q2:
       <<: *q2_common
     ghost     : H_TRGHOSTPROB < 0.3 && L1_TRACK_GhostProb < 0.3 && L2_TRACK_GhostProb< 0.3
@@ -182,7 +182,7 @@ RK: &rk
     mass:
       <<: *mass_mm
 # --------------------
-RKst_noPID:
+rkst_no_pid:
   <<: *rkst
-RK_noPID:
+rk_no_pid:
   <<: *rk
