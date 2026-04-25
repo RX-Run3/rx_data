@@ -15,6 +15,7 @@ class Style(BaseModel):
     '''
     Class meant to configure styling of plot
     '''
+    ylabel   : str
     yrange   : tuple[float,float]
     xrotation: int 
     alpha    : float
@@ -49,7 +50,7 @@ class BandPlotter:
 
         plt.style.use(mplhep.style.LHCb2)
     # ----------------------------
-    def _style(self, parameter : str) -> tuple[float|None, str|None]:
+    def _style(self, parameter : str) -> tuple[float|None, str|None, str|None]:
         '''
         Parameters
         --------------
@@ -64,14 +65,14 @@ class BandPlotter:
         '''
         if parameter not in self._cfg.styles:
             log.warning(f'No styling found for: {parameter}')
-            return None, None
+            return None, None, None
 
         style = self._cfg.styles[parameter]
 
         plt.ylim(style.yrange)
         plt.xticks(rotation = style.xrotation)
 
-        return style.alpha, style.color
+        return style.alpha, style.color, style.ylabel
     # ----------------------------
     def plot(self) -> None:
         '''
@@ -86,7 +87,7 @@ class BandPlotter:
             lower= vals - errs
             upper= vals + errs
 
-            alpha, color = self._style(parameter = parameter)
+            alpha, color, ylabel = self._style(parameter = parameter)
 
             plt.fill_between(
                 x  = xval, 
@@ -96,5 +97,10 @@ class BandPlotter:
                 color = color,
             )
 
-            plt.show()
+            out_path = self._cfg.out_dir / f'{parameter}.png'
+            if ylabel:
+                plt.ylabel(ylabel)
+
+            plt.savefig(out_path)
+            plt.close()
 # ---------------------------------------
