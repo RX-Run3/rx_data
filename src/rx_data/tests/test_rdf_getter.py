@@ -1026,7 +1026,7 @@ def test_only_friends(sample : Component, trigger : Trigger):
 
     assert gtr.friend_trees == s_friend
 # ------------------------------------------------
-@pytest.mark.parametrize('trigger', ['Hlt2RD_BuToKpEE_MVA', 'Hlt2RD_B0ToKpPimEE_MVA'])
+@pytest.mark.parametrize('trigger', [Trigger.rk_ee_os    , Trigger.rkst_ee_os])
 @pytest.mark.parametrize('sample' , [Component.bdkstkpiee, Component.data_24])
 @pytest.mark.parametrize('smeared', [True, False])
 @pytest.mark.parametrize('q2bin'  , [Qsq.low, Qsq.central, Qsq.jpsi, Qsq.psi2, Qsq.high])
@@ -1038,8 +1038,6 @@ def test_selection(
     '''
     Basic test of selection
     '''
-    trigger = Trigger(trigger)
-
     gtr = RDFGetter(sample=sample, trigger=trigger)
     rdf = gtr.get_rdf(per_file=False)
 
