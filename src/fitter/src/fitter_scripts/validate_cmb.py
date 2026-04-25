@@ -37,18 +37,28 @@ def _get_conf() -> CmbValidatorConf:
         'cutflow': args.cutflow,
     }
 
+    ana_dir    = Path(os.environ['ANADIR'])
+
     input      = CmbInputConfig(**data)
     validation = CmbValidationConfig.from_file(fname = 'combinatorial/config.yaml') 
 
+    output     = CmbOutputConfig(
+        plots    = ZFitPlotterConf.default(),
+        dir_path = ana_dir / 'combinatorial/validation'
+    )
+
     return CmbValidatorConf(
         input      = input,
+        output     = output,
         validation = validation)
-# --------------------------------
-def main():
-    '''
-    Entry point
-    '''
-    cfg = _get_conf()
+# ----------------------
+def _get_pars(cfg : CmbValidatorConf) -> pnd.DataFrame:
+    out_path = cfg.output.dir_path / 'parameters.parquet'
+    if out_path.exists():
+        log.info(f'Parameters found from cache, loading: {out_path}')
+        return pnd.read_parquet(path = out_path)
+
+    log.info('Parameters not found from cache')
     gtr = RDFGetter(
         trigger= cfg.input.trigger,
         sample = cfg.input.sample)
@@ -58,6 +68,20 @@ def main():
         rdf = rdf,
         cfg = cfg)
     res = obj.run()
+
+    log.info(f'Caching to: {out_path}')
+    res.df.to_parquet(path = out_path)
+
+    return res.df
+# --------------------------------
+def main():
+    '''
+    Entry point
+    '''
+    cfg = _get_conf()
+    df  = _get_pars(cfg = cfg)
+
+    print(df)
 # --------------------------------
 if __name__ == '__main__':
     main()
