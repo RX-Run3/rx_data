@@ -5,16 +5,17 @@ import os
 import argparse
 import pandas   as pnd
 
-from pathlib   import Path
-from dmu       import LogStore
-from dmu.stats import Model, ZFitPlotterConf
-from rx_common import Mass, Qsq, Component, Trigger
-from rx_data   import RDFGetter
-from fitter    import CmbValidationConfig
-from fitter    import CmbValidatorConf
-from fitter    import CmbInputConfig
-from fitter    import CmbValidator
-from fitter    import CmbOutputConfig
+from pathlib      import Path
+from dmu          import LogStore
+from dmu.stats    import Model, ZFitPlotterConf
+from rx_selection import selection as sel
+from rx_common    import Mass, Qsq, Component, Trigger
+from rx_data      import RDFGetter
+from fitter       import CmbValidationConfig
+from fitter       import CmbValidatorConf
+from fitter       import CmbInputConfig
+from fitter       import CmbValidator
+from fitter       import CmbOutputConfig
 
 log=LogStore.add_logger('rx_fitter:validate_cmb')
 # ----------------------
@@ -59,10 +60,11 @@ def _get_pars(cfg : CmbValidatorConf) -> pnd.DataFrame:
         return pnd.read_parquet(path = out_path)
 
     log.info('Parameters not found from cache')
-    gtr = RDFGetter(
-        trigger= cfg.input.trigger,
-        sample = cfg.input.sample)
-    rdf = gtr.get_rdf(per_file = False)
+    with sel.custom_selection(d_sel = cfg.validation.selection):
+        gtr = RDFGetter(
+            trigger= cfg.input.trigger,
+            sample = cfg.input.sample)
+        rdf = gtr.get_rdf(per_file = False)
 
     obj = CmbValidator(
         rdf = rdf,
