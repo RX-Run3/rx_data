@@ -28,6 +28,7 @@ class BandPlotterConf(BaseModel):
     Configuration needed for BandPlotter
     '''
     out_dir : Path
+    size    : tuple[int,int]
     xname   : str
     styles  : dict[str,Style]
     labels  : dict[str,str]
@@ -84,6 +85,7 @@ class BandPlotter:
         ----------------
         group: Name of group, i.e. set of columns to plot
         '''
+        plt.figure(figsize = self._cfg.size)
         for par, df_par in self._df.groupby(CATEGORY):
             if par not in self._cfg.groups[group]:
                 continue

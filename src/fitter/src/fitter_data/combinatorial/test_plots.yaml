@@ -6,6 +6,7 @@ style : &style
   color     : blue
 # ------------------------
 out_dir : /tmp/cmb
+size    : [30, 10]
 xname   : Fit 
 styles  :
   c_exp_cmb_1 : 
