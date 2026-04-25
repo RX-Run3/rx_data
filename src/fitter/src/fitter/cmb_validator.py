@@ -49,6 +49,9 @@ class CmbOutputConfig(BaseModel):
     '''
     plots    : ZFitPlotterConf
     dir_path : Path
+    # --------------------
+    def model_post_init(self, _) -> None:
+        self.dir_path.mkdir(parents = True, exist_ok = True)
 # --------------------------------
 class CmbValidationConfig(BaseModel):
     '''
