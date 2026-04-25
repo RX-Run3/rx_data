@@ -14,7 +14,7 @@ from fitter    import CmbValidationConfig
 from fitter    import CmbValidatorConf
 from fitter    import CmbInputConfig
 from fitter    import CmbValidator
-from fitter.cmb_validator import CmbOutputConfig
+from fitter    import CmbOutputConfig
 
 log=LogStore.add_logger('rx_fitter:validate_cmb')
 # ----------------------
