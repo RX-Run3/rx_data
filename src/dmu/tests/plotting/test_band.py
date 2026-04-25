@@ -65,3 +65,4 @@ def test_simple(tmp_path : Path):
         cfg = cfg,
         df  = df)
     ptr.plot()
+# ------------------------------
