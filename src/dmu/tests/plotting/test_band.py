@@ -5,25 +5,46 @@ Module with functions to test BandPlotter class
 import numpy
 import pandas as pnd
 
+from pathlib      import Path
+from dmu.plotting import Style 
 from dmu.plotting import BandPlotter
 from dmu.plotting import BandPlotterConf
 
 # ------------------------------
-def _get_df() -> pnd.DataFrame:
-    size = 10_000
+def _get_df(
+    kind      : str, 
+    parameter : str) -> pnd.DataFrame:
+    size = 1
     data = {
         'Value' : numpy.random.normal(loc = 10, scale = 1.0, size = size),
         'Error' : numpy.random.normal(loc =  1, scale = 0.1, size = size),
     }
 
     df = pnd.DataFrame(data)
-    df['Parameter'] = 'a'
+    df['Parameter'] = parameter
+    df['kind'     ] = kind 
 
     return df
 # ------------------------------
-def test_simple():
-    df = _get_df()
-    cfg = BandPlotterConf()
+def test_simple(tmp_path : Path):
+    l_df : list[pnd.DataFrame] = []
+    for kind in ['w', 'x', 'y', 'z']:
+        df = _get_df(kind = kind, parameter = 'a')
+        l_df.append(df)
+    df = pnd.concat(l_df)
+
+    astyle = Style(
+        yrange    = (5., 15.),
+        xrotation = 45,
+        alpha     = 0.3,
+        color     = 'blue',
+    )
+
+    cfg = BandPlotterConf(
+        out_dir = tmp_path,
+        xname   = 'kind',
+        styles  = {'a' : astyle},
+    )
 
     ptr = BandPlotter(
         cfg = cfg,
