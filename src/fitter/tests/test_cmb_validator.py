@@ -30,7 +30,7 @@ def _get_rdf(mass : Mass) -> RDF.RNode:
     '''
     Returns dataframe with fake data
     '''
-    size   = 10000
+    size = 100_000
     data : dict[str,numpy.ndarray] = {
         'mva_cmb' : numpy.random.uniform(0, 1, size = size),
         'mva_prc' : numpy.random.uniform(0, 1, size = size),
@@ -75,7 +75,7 @@ def test_config(
 # ----------------------
 @pytest.mark.parametrize('mass'   , [Mass.bp_bcor])
 @pytest.mark.parametrize('model'  , [Model.exp   ])
-@pytest.mark.parametrize('cutflow', ['test'      ])
+@pytest.mark.parametrize('cutflow', ['cmb'      ])
 def test_validator(
     tmp_path: Path,
     mass    : Mass,
@@ -117,6 +117,7 @@ def test_validator(
         package = 'fitter_data', 
         fpath   = 'combinatorial/test_plots.yaml')
     cfg_plt = BandPlotterConf(**data)
+    cfg_plt = cfg_plt.model_copy(update = {'out_dir' : tmp_path})
 
     ptr = BandPlotter(df = res.df, cfg = cfg_plt)
     ptr.plot()
