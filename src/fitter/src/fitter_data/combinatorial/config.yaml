@@ -1,7 +1,7 @@
 selection:
   leakage : (TMath::Abs(B_const_mass_M - 5280) > 200) && (TMath::Abs(B_const_mass_psi2S_M - 5280) > 100)
   cmb     : (1)
-  prc     : mva_prc > 0.2
+  prc     : mva_prc > 0.6
   mass    : (1)
 cutflows:
   test:
@@ -92,16 +92,19 @@ cutflows:
     $BDT_{cmb} > 0.95 && BDT_{prc} > 0.90$ : mva_cmb > 0.95 && mva_prc > 0.90
     $BDT_{cmb} > 0.95 && BDT_{prc} > 0.95$ : mva_cmb > 0.95 && mva_prc > 0.95
   cmb_window:
-    $BDT_{cmb} > 0.00 && BDT_{cmb} < 0.10$ : mva_cmb > 0.00 && mva_cmb < 0.1
-    $BDT_{cmb} > 0.10 && BDT_{cmb} < 0.20$ : mva_cmb > 0.10 && mva_cmb < 0.2
-    $BDT_{cmb} > 0.20 && BDT_{cmb} < 0.30$ : mva_cmb > 0.20 && mva_cmb < 0.3
-    $BDT_{cmb} > 0.30 && BDT_{cmb} < 0.40$ : mva_cmb > 0.30 && mva_cmb < 0.4
-    $BDT_{cmb} > 0.40 && BDT_{cmb} < 0.50$ : mva_cmb > 0.40 && mva_cmb < 0.5
-    $BDT_{cmb} > 0.50 && BDT_{cmb} < 0.60$ : mva_cmb > 0.50 && mva_cmb < 0.6
-    $BDT_{cmb} > 0.60 && BDT_{cmb} < 0.70$ : mva_cmb > 0.60 && mva_cmb < 0.7
-    $BDT_{cmb} > 0.70 && BDT_{cmb} < 0.80$ : mva_cmb > 0.70 && mva_cmb < 0.8
-    $BDT_{cmb} > 0.80 && BDT_{cmb} < 0.90$ : mva_cmb > 0.80 && mva_cmb < 0.9
-    $BDT_{cmb} > 0.90 && BDT_{cmb} < 1.00$ : mva_cmb > 0.90 && mva_cmb < 1.0
+    0.00-0.02 : mva_cmb > 0.00 && mva_cmb < 0.02
+    0.02-0.04 : mva_cmb > 0.02 && mva_cmb < 0.04
+    0.04-0.07 : mva_cmb > 0.04 && mva_cmb < 0.07
+    0.07-0.10 : mva_cmb > 0.07 && mva_cmb < 0.10
+    0.10-0.20 : mva_cmb > 0.10 && mva_cmb < 0.20
+    0.20-0.30 : mva_cmb > 0.20 && mva_cmb < 0.30
+    0.30-0.40 : mva_cmb > 0.30 && mva_cmb < 0.40
+    0.40-0.50 : mva_cmb > 0.40 && mva_cmb < 0.50
+    0.50-0.60 : mva_cmb > 0.50 && mva_cmb < 0.60
+    0.60-0.70 : mva_cmb > 0.60 && mva_cmb < 0.70
+    0.70-0.80 : mva_cmb > 0.70 && mva_cmb < 0.80
+    0.80-0.90 : mva_cmb > 0.80 && mva_cmb < 0.90
+    0.90-1.00 : mva_cmb > 0.90 && mva_cmb < 1.00
   cmb_prc_window:
     $(BDT_{prc} > 0.10 and BDT_{cmb} > 0.20) and (BDT_{prc} < 0.80 || BDT_{cmb} < 0.60)$ : (mva_prc > 0.10 && mva_cmb > 0.20) && (mva_prc < 0.80 || mva_cmb < 0.6)
     $(BDT_{prc} > 0.20 and BDT_{cmb} > 0.20) and (BDT_{prc} < 0.80 || BDT_{cmb} < 0.60)$ : (mva_prc > 0.20 && mva_cmb > 0.20) && (mva_prc < 0.80 || mva_cmb < 0.6)
@@ -121,8 +124,13 @@ fit:
       pvalue : 0.05
   model:
     pdfs:
-      - exp
+      - hypexp
     shared       : []
     reparametrize: {}
     fix          : {}
     floating     : []
+    values:
+      mu:
+        - 4500
+        - 4200
+        - 4900
