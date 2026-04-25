@@ -58,7 +58,7 @@ def info_from_path(
         raise ValueError(f'File name is not for data or MC: {path.name}')
 
     sample, trigger_str = info
-    trigger = Trigger(value = trigger_str)
+    trigger = Trigger.from_name(name = trigger_str)
     if sample_lowercase:
         return sample, trigger 
 
