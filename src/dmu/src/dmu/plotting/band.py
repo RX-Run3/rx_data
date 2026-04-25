@@ -5,11 +5,13 @@ import mplhep
 import pandas            as pnd
 import matplotlib.pyplot as plt
 
+from typing   import Final
 from pathlib  import Path
 from pydantic import BaseModel
 from dmu      import LogStore
 
 log=LogStore.add_logger('dmu:plotting:band')
+CATEGORY : Final[str] = 'Parameter'
 # ---------------------------------------
 class Style(BaseModel):
     '''
@@ -28,6 +30,8 @@ class BandPlotterConf(BaseModel):
     out_dir : Path
     xname   : str
     styles  : dict[str,Style]
+    labels  : dict[str,str]
+    groups  : dict[str,list[str]]
 # ---------------------------------------
 class BandPlotter:
     '''
@@ -74,11 +78,16 @@ class BandPlotter:
 
         return style.alpha, style.color, style.ylabel
     # ----------------------------
-    def plot(self) -> None:
+    def _plot_group(self, group : str) -> None:
         '''
-        Runs plotting
+        Parameters
+        ----------------
+        group: Name of group, i.e. set of columns to plot
         '''
-        for par, df_par in self._df.groupby('Parameter'):
+        for par, df_par in self._df.groupby(CATEGORY):
+            if par not in self._cfg.groups[group]:
+                continue
+
             parameter = str(par)
             vals = df_par['Value']
             errs = df_par['Error']
@@ -95,12 +104,21 @@ class BandPlotter:
                 y2 = upper,
                 alpha = alpha,
                 color = color,
+                label = self._cfg.labels[par],
             )
 
-            out_path = self._cfg.out_dir / f'{parameter}.png'
             if ylabel:
                 plt.ylabel(ylabel)
 
-            plt.savefig(out_path)
-            plt.close()
+        out_path = self._cfg.out_dir / f'{group}.png'
+        plt.legend()
+        plt.savefig(out_path)
+        plt.close()
+    # ----------------------------
+    def plot(self) -> None:
+        '''
+        Runs plotting
+        '''
+        for group in self._cfg.groups:
+            self._plot_group(group = group)
 # ---------------------------------------
