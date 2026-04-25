@@ -470,6 +470,36 @@ class Trigger(StrEnum):
     # -----------
     uninitialized= auto()
     # -----------
+    @property
+    def misid_version(self) -> 'Trigger':
+        '''
+        MisID version of this trigger, if it exists
+        '''
+        match self:
+            case Trigger.rk_ee_os:
+                return Trigger.rk_ee_misid
+            case Trigger.rkst_ee_os:
+                return Trigger.rkst_ee_misid
+            case _:
+                raise ValueError(f'Cannot find misid version for: {self}')
+    # -----------
+    @property
+    def pid_version(self) -> 'Trigger':
+        '''
+        MisID version of this trigger, if it exists
+        '''
+        match self:
+            case Trigger.rk_ee_nopid:
+                return Trigger.rk_ee_os
+            case Trigger.rkst_ee_nopid:
+                return Trigger.rkst_ee_os
+            case Trigger.rk_mm_nopid:
+                return Trigger.rk_mm_os
+            case Trigger.rkst_mm_nopid:
+                return Trigger.rkst_mm_os
+            case _:
+                raise ValueError(f'Version with PID not defined for: {self}')
+    # -----------
     def get_signal_component(
         self, 
         qsq : Qsq) -> Component:
