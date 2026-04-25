@@ -21,6 +21,22 @@ class Project(StrEnum):
     rkst_no_refit = 'rkst_no_refit'
     rkst_sim10d   = 'rkst_sim10d'
     # ----------------------
+    @classmethod
+    def rk_projects(cls) -> set['Project']:
+         return {
+            cls.rk,
+            cls.rk_no_pid,
+            cls.rk_no_refit,
+            cls.rk_sim10d}
+    # ----------------------
+    @classmethod
+    def rkst_projects(cls) -> set['Project']:
+         return {
+            cls.rkst,
+            cls.rkst_no_pid,
+            cls.rkst_no_refit,
+            cls.rkst_sim10d}
+    # ----------------------
     @property
     def with_pid(self) -> 'Project':
         '''
