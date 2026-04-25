@@ -197,8 +197,8 @@ class SpecMaker:
 
         # NOTE: If it was not explicitly stated that this is 2024 data, ext trigger does not make sense
         log.debug(f'Found extended trigger: {self._trigger}')
-        trig_misid   = self._trigger.replace('_noPID', '_misid')
-        trig_default = self._trigger.replace('_noPID',       '')
+        trig_default = self._trigger.pid_version
+        trig_misid   = trig_default.misid_version
 
         l_path = []
         l_path+= d_trigger[trig_default]
