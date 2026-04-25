@@ -70,12 +70,12 @@ definitions:
     nbrem                        : '0'
     <<: *common
   MCDT:
-    EE:
+    ee:
       q2              : ROOT::Math::PxPyPzEVector l1(E1_PX, E1_PY, E1_PZ, E1_ENERGY);
                         ROOT::Math::PxPyPzEVector l2(E2_PX, E2_PY, E2_PZ, E2_ENERGY);
                         auto ll = l1 + l2;
                         return ll.M2();
-    MM:
+    mm:
       q2              : ROOT::Math::PxPyPzEVector l1(M1_PX, M1_PY, M1_PZ, M1_ENERGY);
                         ROOT::Math::PxPyPzEVector l2(M2_PX, M2_PY, M2_PZ, M2_ENERGY);
                         auto ll = l1 + l2;
