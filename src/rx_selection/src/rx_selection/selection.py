@@ -280,10 +280,10 @@ def _load_selection_config() -> dict:
     sel_dir= os.path.dirname(sel_wc)
 
     yaml_path = vman.get_last_version(
-            dir_path     = sel_dir,
-            extension    = 'yaml',
-            version_only = False ,
-            main_only    = False)
+        dir_path     = sel_dir,
+        extension    = 'yaml',
+        version_only = False ,
+        main_only    = False)
 
     log.info(f'Loading selection from: {yaml_path}')
 
