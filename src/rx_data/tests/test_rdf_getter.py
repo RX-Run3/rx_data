@@ -507,13 +507,11 @@ def test_cocktail():
     assert numpy.array_equal(evt_kx, evt_ky)
 # ------------------------------------------------
 @pytest.mark.parametrize('per_file', [True, False])
-@pytest.mark.parametrize('trigger' , ['Hlt2RD_BuToKpEE_MVA', 'Hlt2RD_B0ToKpPimEE_MVA'])
+@pytest.mark.parametrize('trigger' , [Trigger.rk_ee_os, Trigger.rkst_ee_os])
 def test_guid(trigger : Trigger, per_file : bool):
     '''
     Tests retrieval of unique identifier for underlying data
     '''
-    trigger = Trigger(trigger)
-
     sam1 = Component.bdkstkpiee
     sam2 = Component.bpkstkpiee
 
@@ -545,7 +543,7 @@ def test_guid(trigger : Trigger, per_file : bool):
     assert uid22 != uid23
 # ------------------------------------------------
 @pytest.mark.parametrize('sample'   , [Component.bdkstkpiee])
-@pytest.mark.parametrize('trigger'  , ['Hlt2RD_BuToKpEE_MVA', 'Hlt2RD_B0ToKpPimEE_MVA'])
+@pytest.mark.parametrize('trigger'  , [Trigger.rk_ee_os, Trigger.rkst_ee_os])
 @pytest.mark.parametrize('requested', [1_000, 10_000, 20_000])
 def test_max_entries(
     sample    : Component, 
@@ -554,8 +552,6 @@ def test_max_entries(
     '''
     Check that one can filter randomly entries in dataframe
     '''
-    trigger = Trigger(trigger)
-
     with RDFGetter.max_entries(value=requested):
         gtr = RDFGetter(sample=sample, trigger=trigger)
         rdf = gtr.get_rdf(per_file=False)
@@ -604,13 +600,11 @@ def test_per_file(
         _plot_hop(rdf     , f'{name}_{sample}', out_dir = tmp_path)
 # ------------------------------------------------
 @pytest.mark.parametrize('kind'   , ['data', 'mc'])
-@pytest.mark.parametrize('trigger', ['Hlt2RD_BuToKpEE_MVA', 'Hlt2RD_B0ToKpPimEE_MVA'])
+@pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rkst_ee_os])
 def test_electron(kind : str, trigger : Trigger, tmp_path : Path):
     '''
     Tests for electron samples
     '''
-    trigger = Trigger(trigger)
-
     if   kind == 'data':
         sample = Component.data_24_md_c2
     elif kind == 'mc':
@@ -641,10 +635,10 @@ def test_electron(kind : str, trigger : Trigger, tmp_path : Path):
     Component.data_24_mu_c3,
     Component.data_24_mu_c4])
 @pytest.mark.parametrize('trigger', 
-    ['Hlt2RD_BuToKpEE_MVA', 
-     'Hlt2RD_BuToKpMuMu_MVA',
-     'Hlt2RD_B0ToKpPimEE_MVA',
-     'Hlt2RD_B0ToKpPimMuMu_MVA'])
+    [Trigger.rk_ee_os, 
+     Trigger.rk_mm_os,
+     Trigger.rkst_ee_os,
+     Trigger.rkst_mm_os])
 def test_data(
     sample  : Component,
     trigger : Trigger, 
@@ -652,8 +646,6 @@ def test_data(
     '''
     Test of getter class in data
     '''
-    trigger = Trigger(trigger)
-
     with RDFGetter.max_entries(value=100_000):
         gtr = RDFGetter(sample=sample, trigger=trigger)
         rdf = gtr.get_rdf(per_file=False)
@@ -672,8 +664,8 @@ def test_data(
         tmp_path = tmp_path,
         test_name= f'data_{sample}_{trigger}')
 # ------------------------------------------------
-@pytest.mark.parametrize('sample', [Component.bpkpee])
-@pytest.mark.parametrize('trigger', ['Hlt2RD_BuToKpEE_MVA', 'Hlt2RD_B0ToKpPimEE_MVA'])
+@pytest.mark.parametrize('sample' , [Component.bpkpee])
+@pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rkst_ee_os])
 def test_mc(
     sample  : Component, 
     trigger : Trigger, 
@@ -681,8 +673,6 @@ def test_mc(
     '''
     Test of getter class in mc
     '''
-    trigger = Trigger(trigger)
-
     with RDFGetter.max_entries(value=-1):
         gtr = RDFGetter(sample=sample, trigger=trigger)
         rdf = gtr.get_rdf(per_file=False)
@@ -702,7 +692,7 @@ def test_mc(
     _plot_hop(rdf     , f'test_mc/{sample}', out_dir = tmp_path)
 # ------------------------------------------------
 @pytest.mark.parametrize('sample' , [Component.data_24_md_c2, Component.bdkstkpiee])
-@pytest.mark.parametrize('trigger', ['Hlt2RD_BuToKpEE_MVA', 'Hlt2RD_B0ToKpPimEE_MVA'])
+@pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rkst_ee_os])
 def test_q2_track_electron(
     sample   : Component, 
     trigger  : Trigger, 
@@ -710,8 +700,6 @@ def test_q2_track_electron(
     '''
     Checks the distributions of q2_track vs normal q2
     '''
-    trigger = Trigger(trigger)
-
     gtr = RDFGetter(sample=sample, trigger=trigger)
     rdf = gtr.get_rdf(per_file=False)
     rdf = _apply_selection(rdf=rdf, trigger=trigger, sample=sample)
@@ -726,7 +714,7 @@ def test_q2_track_electron(
     _check_branches(rdf, is_ee=True, is_mc = sample.is_mc)
 # ------------------------------------------------
 @pytest.mark.parametrize('sample' , [Component.data_24_md_c2, Component.bdkstkpimm])
-@pytest.mark.parametrize('trigger', ['Hlt2RD_BuToKpMuMu_MVA', 'Hlt2RD_B0ToKpPimMuMu_MVA'])
+@pytest.mark.parametrize('trigger', [Trigger.rk_mm_os, Trigger.rkst_mm_os])
 def test_q2_track_muon(
     sample   : Component, 
     trigger  : Trigger, 
@@ -734,8 +722,6 @@ def test_q2_track_muon(
     '''
     Checks the distributions of q2_track vs normal q2
     '''
-    trigger = Trigger(trigger)
-
     gtr = RDFGetter(sample=sample, trigger=trigger)
     rdf = gtr.get_rdf(per_file=False)
     rdf = _apply_selection(rdf=rdf, trigger=trigger, sample=sample)
@@ -752,7 +738,7 @@ def test_q2_track_muon(
     _check_branches(rdf, is_ee=False, is_mc=sample.is_mc)
 # ------------------------------------------------
 @pytest.mark.parametrize('sample' , [Component.data_24_md_c2, Component.bpkpjpsiee])
-@pytest.mark.parametrize('trigger', ['Hlt2RD_BuToKpEE_MVA'])
+@pytest.mark.parametrize('trigger', [Trigger.rk_ee_os])
 def test_brem_track_2(
     sample  : Component, 
     trigger : Trigger, 
@@ -760,8 +746,6 @@ def test_brem_track_2(
     '''
     Test brem_track_2 correction
     '''
-    trigger = Trigger(trigger)
-
     gtr = RDFGetter(sample=sample, trigger=trigger)
     rdf = gtr.get_rdf(per_file=False)
     rdf = _apply_selection(rdf=rdf, trigger=trigger, override = {Cuts.mass : 'B_const_mass_M > 5160'}, sample=sample)
@@ -773,7 +757,7 @@ def test_brem_track_2(
     _plot_brem_track_2(rdf, sample, 'brem_track_2', out_dir = tmp_path)
 # ------------------------------------------------
 @pytest.mark.parametrize('sample' , [Component.data_24_md_c2, Component.bdkstkpiee])
-@pytest.mark.parametrize('trigger', ['Hlt2RD_BuToKpEE_MVA', 'Hlt2RD_B0ToKpPimEE_MVA'])
+@pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rkst_ee_os])
 def test_check_vars(sample : Component, trigger : Trigger):
     '''
     Checks that variables from:
@@ -783,8 +767,6 @@ def test_check_vars(sample : Component, trigger : Trigger):
 
     Can be accessed
     '''
-    trigger = Trigger(trigger)
-
     gtr = RDFGetter(sample=sample, trigger=trigger)
     rdf = gtr.get_rdf(per_file=False)
 
@@ -793,9 +775,9 @@ def test_check_vars(sample : Component, trigger : Trigger):
     _print_dotted_branches(rdf)
 # ------------------------------------------------
 @pytest.mark.parametrize('sample, trigger',
-    [(Component.bpkpee    , 'Hlt2RD_BuToKpEE_MVA'),
-     (Component.bdkstkpiee, 'Hlt2RD_B0ToKpPimEE_MVA'),
-     (Component.bpkpmm    , 'Hlt2RD_BuToKpMuMu_MVA')])
+    [(Component.bpkpee    , Trigger.rk_ee_os),
+     (Component.bdkstkpiee, Trigger.rkst_ee_os),
+     (Component.bpkpmm    , Trigger.rk_mm_os)])
 def test_mcdecaytree(
     sample  : Component, 
     trigger : Trigger, 
@@ -803,8 +785,6 @@ def test_mcdecaytree(
     '''
     Builds dataframe from MCDecayTree
     '''
-    trigger = Trigger(trigger)
-
     with RDFGetter.max_entries(value=10_000):
         gtr = RDFGetter(sample=sample, trigger=trigger, tree='MCDecayTree')
         rdf = gtr.get_rdf(per_file=False)
@@ -820,12 +800,11 @@ def test_mcdecaytree(
 # ------------------------------------------------
 @pytest.mark.parametrize('period'  ,['c2','c3','c4'])
 @pytest.mark.parametrize('polarity',['mu', 'md'])
-@pytest.mark.parametrize('trigger', ['Hlt2RD_BuToKpEE_MVA_noPID', 'Hlt2RD_B0ToKpPimEE_MVA_noPID'])
+@pytest.mark.parametrize('trigger', [Trigger.rk_ee_nopid, Trigger.rkst_ee_nopid])
 def test_ext_trigger(period : str, polarity : str, trigger : Trigger, tmp_path : Path):
     '''
     Test of getter class for combination of analysis and misID trigger
     '''
-    trigger = Trigger(trigger)
     sample  = Component(f'data_24_{polarity}_{period}')
     with RDFGetter.max_entries(-1):
         gtr = RDFGetter(sample=sample, trigger=trigger)
@@ -834,14 +813,12 @@ def test_ext_trigger(period : str, polarity : str, trigger : Trigger, tmp_path :
     _check_ext(rdf)
     _plot_ext(rdf, sample=sample, out_dir=tmp_path)
 # ------------------------------------------------
-@pytest.mark.parametrize('trigger', ['Hlt2RD_BuToKpEE_MVA', 'Hlt2RD_B0ToKpPimEE_MVA'])
+@pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rkst_ee_os])
 def test_custom_columns(trigger : Trigger):
     '''
     Tests defining of new custom columns
     '''
     d_def = {'xbrem' : 'int(L1_HASBREMADDED) + int(L2_HASBREMADDED)'}
-
-    trigger = Trigger(trigger)
     with RDFGetter.custom_columns(columns = d_def):
         obj = RDFGetter(trigger=trigger, sample=Component.data_24_md_c2)
         rdf = obj.get_rdf(per_file=False)
@@ -851,7 +828,7 @@ def test_custom_columns(trigger : Trigger):
     assert 'xbrem' in l_col
 # ------------------------------------------------
 @pytest.mark.parametrize('sample' , [Component.bdkstkpijpsiee])
-@pytest.mark.parametrize('trigger', ['Hlt2RD_B0ToKpPimEE_MVA'])
+@pytest.mark.parametrize('trigger', [Trigger.rkst_ee_os])
 def test_block(
     sample  : Component, 
     trigger : Trigger, 
@@ -874,8 +851,8 @@ def test_block(
 
     _plot_block(rdf=rdf, name=name, out_dir = tmp_path)
 # ------------------------------------------------
-@pytest.mark.parametrize('project', ['rk', 'rkst'])
-def test_add_truem(project : str):
+@pytest.mark.parametrize('project', [Project.rk, Project.rkst])
+def test_add_truem(project : Project):
     '''
     Tests function that adds TRUEM columns to dataframe
     '''
@@ -896,8 +873,6 @@ def test_ccbar(sample : Component, trigger : Trigger):
     '''
     Tests reading of ccbar + X samples
     '''
-    sample  = Component(sample)
-    trigger = Trigger(trigger)
     with RDFGetter.max_entries(10_000):
         gtr = RDFGetter(sample=sample, trigger=trigger)
         rdf = gtr.get_rdf(per_file=False)
@@ -907,7 +882,7 @@ def test_ccbar(sample : Component, trigger : Trigger):
     assert nentries > 0
 # ------------------------------------------------
 @pytest.mark.parametrize('sample' , [Component.data_24_md_c2])
-@pytest.mark.parametrize('trigger', ['Hlt2RD_BuToKpEE_MVA', 'Hlt2RD_BuToKpMuMu_MVA' ])
+@pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rk_mm_os])
 def test_exclude_friends(sample : Component, trigger : Trigger):
     '''
     Tests excluding friend trees through a context manager
@@ -923,15 +898,14 @@ def test_exclude_friends(sample : Component, trigger : Trigger):
     assert l_mva == []
 # ------------------------------------------------
 @pytest.mark.parametrize('kind'   , ['data', 'mc'])
-@pytest.mark.parametrize('trigger', ['Hlt2RD_BuToKpEE_MVA'])
+@pytest.mark.parametrize('trigger', [Trigger.rk_ee_os])
 def test_skip_brem_track_2(kind : str, trigger : Trigger, tmp_path : Path):
     '''
     Tests for electron samples
     '''
-    trigger = Trigger(trigger)
     if   kind == 'data':
         sample = Component.data_24_md_c2 
-    elif kind == 'mc' and trigger == 'Hlt2RD_BuToKpEE_MVA':
+    elif kind == 'mc' and trigger == Trigger.rk_ee_os:
         sample = Component.bpkpjpsiee
     else:
         raise ValueError(f'Invalid kind/trigger: {kind}/{trigger}')
@@ -949,7 +923,7 @@ def test_skip_brem_track_2(kind : str, trigger : Trigger, tmp_path : Path):
         sample       = sample)
 # ------------------------------------------------
 @pytest.mark.parametrize('sample' , [Component.data_24_md_c2])
-@pytest.mark.parametrize('trigger', ['Hlt2RD_BuToKpEE_MVA', 'Hlt2RD_BuToKpMuMu_MVA' ])
+@pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rk_mm_os])
 def test_custom_friend(
     sample  : Component, 
     trigger : Trigger, 
@@ -965,14 +939,14 @@ def test_custom_friend(
     _run_default_checks(rdf=rdf, sample=sample, trigger=trigger, test_name='custom_friend', tmp_path = tmp_path)
 # ------------------------------------------------
 @pytest.mark.parametrize('sample, trigger' , [
-    (Component.bpkkk     , 'Hlt2RD_BuToKpEE_MVA_noPID'),
-    (Component.bpkpipi   , 'Hlt2RD_BuToKpEE_MVA_noPID'),
-    (Component.bppijpsiee, 'Hlt2RD_BuToKpEE_MVA_noPID'),
-    (Component.bpkpee    , 'Hlt2RD_BuToKpEE_MVA_noPID'),
-    (Component.bdkstkpiee, 'Hlt2RD_BuToKpEE_MVA_noPID'),
+    (Component.bpkkk     , Trigger.rk_ee_nopid),
+    (Component.bpkpipi   , Trigger.rk_ee_nopid),
+    (Component.bppijpsiee, Trigger.rk_ee_nopid),
+    (Component.bpkpee    , Trigger.rk_ee_nopid),
+    (Component.bdkstkpiee, Trigger.rk_ee_nopid),
     # -------------
-    (Component.bpkpmm    , 'Hlt2RD_BuToKpMuMu_MVA_noPID'),
-    (Component.bdkstkpimm, 'Hlt2RD_BuToKpMuMu_MVA_noPID')])
+    (Component.bpkpmm    , Trigger.rk_mm_nopid),
+    (Component.bdkstkpimm, Trigger.rk_mm_nopid)])
 def test_no_pid(
     sample  : Component, 
     trigger : Trigger, 
@@ -980,8 +954,6 @@ def test_no_pid(
     '''
     Tests loading of noPID samples
     '''
-    trigger = Trigger(trigger)
-
     gtr = RDFGetter(sample=sample, trigger=trigger)
     rdf = gtr.get_rdf(per_file=False)
     _run_default_checks(
@@ -1014,13 +986,12 @@ def test_skip_adding_columns(sample : Component):
     assert len(l_col_1) > len(l_col_2)
 # ------------------------------------------------
 @pytest.mark.parametrize('sample' , [Component.data_24_md_c2])
-@pytest.mark.parametrize('trigger', ['Hlt2RD_BuToKpEE_MVA', 'Hlt2RD_BuToKpMuMu_MVA' ])
+@pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rk_mm_os])
 def test_only_friends(sample : Component, trigger : Trigger):
     '''
     Tests the only_friends manager, which allows only a subset of friend trees
     '''
     s_friend = {'mva', 'hop'}
-    trigger  = Trigger(trigger)
     with RDFGetter.only_friends(s_friend=s_friend):
         gtr = RDFGetter(sample=sample, trigger=trigger)
 
@@ -1063,18 +1034,16 @@ def test_selection(
 
     _print_dotted_branches(rdf)
 # --------------------------
-@pytest.mark.parametrize('trigger', ['Hlt2RD_BuToKpEE_MVA', 'Hlt2RD_B0ToKpPimEE_MVA'])
-@pytest.mark.parametrize('sample', ['Bd_Kstee_eq_btosllball05_DPC', 'DATA_24_MagDown_24c2'])
-@pytest.mark.parametrize('q2bin' , Data.l_q2bin)
+@pytest.mark.parametrize('trigger'  , [Trigger.rk_ee_os    , Trigger.rkst_ee_os])
+@pytest.mark.parametrize('component', [Component.bdkstkpiee, Component.data_24_md_c2])
+@pytest.mark.parametrize('q2bin'    , Data.l_q2bin)
 def test_full_selection_electron(
-    sample  : str, 
-    q2bin   : Qsq, 
-    trigger : Trigger):
+    component : Component, 
+    q2bin     : Qsq, 
+    trigger   : Trigger):
     '''
     Applies full selection to all q2 bins in electron channel
     '''
-    component = Component.from_sample(sample = sample)
-    trigger   = Trigger(trigger)
     with RDFGetter.max_entries(value=100_000):
         gtr = RDFGetter(sample=component, trigger=trigger)
         rdf = gtr.get_rdf(per_file=False)
@@ -1121,15 +1090,16 @@ def test_full_selection_electron_prec(
 
     _print_dotted_branches(rdf)
 # --------------------------
-@pytest.mark.parametrize('sample' , ['Bd_Kstmumu_eq_btosllball05_DPC', 'DATA_24_MagDown_24c2'])
-@pytest.mark.parametrize('q2bin'  , Data.l_q2bin)
-@pytest.mark.parametrize('trigger', ['Hlt2RD_BuToKpMuMu_MVA', 'Hlt2RD_B0ToKpPimMuMu_MVA'])
-def test_full_selection_muon(sample : str, q2bin : Qsq, trigger : Trigger):
+@pytest.mark.parametrize('component' , [Component.bdkstkpimm, Component.data_24_md_c2])
+@pytest.mark.parametrize('q2bin'     , Data.l_q2bin)
+@pytest.mark.parametrize('trigger'   , [Trigger.rk_mm_os, Trigger.rkst_mm_os])
+def test_full_selection_muon(
+        component : Component, 
+        q2bin     : Qsq, 
+        trigger   : Trigger):
     '''
     Applies full selection to all q2 bins in muon channel
     '''
-    component = Component.from_sample(sample = sample)
-    trigger   = Trigger(trigger)
     with RDFGetter.max_entries(value=100_000):
         gtr = RDFGetter(sample=component, trigger=trigger)
         rdf = gtr.get_rdf(per_file=False)
@@ -1146,11 +1116,11 @@ def test_full_selection_muon(sample : str, q2bin : Qsq, trigger : Trigger):
 # --------------------------
 @pytest.mark.parametrize('source, target, trigger', 
     [
-    ('Bd_JpsiKst_mm_eq_DPC', 'Bs_JpsiKst_mm_eq_DPC', 'Hlt2RD_B0ToKpPimMuMu_MVA'),
-    ('Bd_JpsiKst_ee_eq_DPC', 'Bs_JpsiKst_ee_eq_DPC', 'Hlt2RD_B0ToKpPimEE_MVA'  ),
+    ('Bd_JpsiKst_mm_eq_DPC', 'Bs_JpsiKst_mm_eq_DPC', Trigger.rkst_mm_os),
+    ('Bd_JpsiKst_ee_eq_DPC', 'Bs_JpsiKst_ee_eq_DPC', Trigger.rkst_ee_os),
     # -------------
-    ('Bd_JpsiKst_mm_eq_DPC', 'Bd_JpsiKst_mm_had_swp', 'Hlt2RD_B0ToKpPimMuMu_MVA'),
-    ('Bd_JpsiKst_ee_eq_DPC', 'Bd_JpsiKst_ee_had_swp', 'Hlt2RD_B0ToKpPimEE_MVA'  ),
+    ('Bd_JpsiKst_mm_eq_DPC', 'Bd_JpsiKst_mm_had_swp', Trigger.rkst_mm_os),
+    ('Bd_JpsiKst_ee_eq_DPC', 'Bd_JpsiKst_ee_had_swp', Trigger.rkst_ee_os),
     ])
 def test_emulated_samples(
     source  : str, 
@@ -1165,7 +1135,6 @@ def test_emulated_samples(
     source  = Component.from_sample(source)
     target  = Component.from_sample(target)
 
-    trigger = Trigger(trigger)
     with RDFGetter.max_entries(value=100_000):
         gtr_1   = RDFGetter(sample=target, trigger=trigger)
         rdf_tar = gtr_1.get_rdf(per_file=False)
@@ -1219,10 +1188,10 @@ def _validate_emulation(
         plt.close()
 # ------------------------------------------------
 _CUSTOM_PROJECTS=[
-    ('Bd_Kstee_eq_btosllball05_DPC', 'rk'         ),
-    ('Bd_Kstee_eq_btosllball05_DPC', 'rk_nopid'   ),
-    ('Bu_JpsiK_ee_eq_DPC'          , 'rk_sim10d'  ),
-    ('DATA_24_MagUp_24c2'          , 'rk_no_refit'),
+    ('Bd_Kstee_eq_btosllball05_DPC', Project.rk         ),
+    ('Bd_Kstee_eq_btosllball05_DPC', Project.rk_no_pid  ),
+    ('Bu_JpsiK_ee_eq_DPC'          , Project.rk_sim10d  ),
+    ('DATA_24_MagUp_24c2'          , Project.rk_no_refit),
 ]
 @pytest.mark.parametrize('sample, project', _CUSTOM_PROJECTS)
 def test_project(sample : str, project : Project):
