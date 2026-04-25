@@ -50,8 +50,24 @@ class CmbOutputConfig(BaseModel):
     plots    : ZFitPlotterConf
     dir_path : Path
     # --------------------
-    def model_post_init(self, _) -> None:
-        self.dir_path.mkdir(parents = True, exist_ok = True)
+    def out_dir(self, extend : str | None = None) -> Path:
+        '''
+        Parameters
+        -----------------
+        extend: Ending of path to be appended to dir_path, e.g. test/expo/
+
+        Returns
+        -----------------
+        Path to directory, directory has already been made
+        '''
+        if extend is None:
+            self.dir_path.mkdir(parents = True, exist_ok = True)
+            return self.dir_path
+
+        dir_path = self.dir_path / extend
+        dir_path.mkdir(parents = True, exist_ok = True)
+
+        return dir_path
 # --------------------------------
 class CmbValidationConfig(BaseModel):
     '''
@@ -179,7 +195,10 @@ class CmbValidator:
             data   = data)
         ptr.run(cfg = self._cfg.output.plots)
 
-        plt.savefig(self._cfg.output.dir_path / f'{name}.png')
+        model   = '-'.join(self._cfg.validation.fit.model.pdfs)
+        cutflow = self._cfg.input.cutflow
+        out_dir = self._cfg.output.out_dir(extend = f'{model}/{cutflow}')
+        plt.savefig(out_dir / f'{name}.png')
         plt.close('all')
 
         return res
