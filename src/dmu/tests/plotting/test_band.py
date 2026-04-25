@@ -37,23 +37,28 @@ def test_simple(tmp_path : Path):
     df = pnd.concat(l_df)
 
     astyle = Style(
-        ylabel    = r'\alpha',
+        ylabel    = 'Value',
         yrange    = (5., 15.),
         xrotation = 45,
         alpha     = 0.3,
         color     = 'blue',
     )
 
+    bstyle = astyle.model_copy(update = {'color' :   'red'})
+    cstyle = astyle.model_copy(update = {'color' : 'green'})
+
     styles = {
         'a' : astyle,
-        'b' : astyle,
-        'c' : astyle,
+        'b' : bstyle,
+        'c' : cstyle,
     }
 
     cfg = BandPlotterConf(
         out_dir = tmp_path,
         xname   = 'kind',
         styles  = styles,
+        labels  = {'a' : r'$\alpha$', 'b' : r'$\beta$', 'c' : r'$\gamma$'},
+        groups  = {'ab' : ['a', 'b'], 'c' : ['c']},
     )
 
     ptr = BandPlotter(
