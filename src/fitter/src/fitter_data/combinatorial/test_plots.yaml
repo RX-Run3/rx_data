@@ -7,13 +7,13 @@ style : &style
 # ------------------------
 out_dir : /tmp/cmb
 size    : [30, 10]
-xname   : Fit 
+xname   : Fit
 styles  :
-  c_exp_cmb_1 : 
+  c_exp_cmb_1 :
     <<: *style
     color : blue
 labels :
   c_exp_cmb_1 : SS
 groups :
-  c_exp_cmb_1 : 
-    - c_exp_cmb_1 
+  c_exp_cmb_1 :
+    - c_exp_cmb_1
