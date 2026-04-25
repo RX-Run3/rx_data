@@ -99,25 +99,9 @@ class RDFGetter(SpecMaker):
                                             # with the main and friend trees
 
         self._d_info : dict[str,Any] = {} # Used to store information related to transformations done to dataframe (e.g. Range), needed for hashing
-        self._channel                = self._channel_from_trigger()
 
         self._set_logs()
         self._check_multithreading()
-    # ---------------------------------------------------
-    def _channel_from_trigger(self) -> str:
-        '''
-        Returns EE or MM given the HLT2 trigger
-        '''
-        # noPID files should be assigned same channel as PID files
-        trigger = self._trigger.removesuffix('_noPID')
-
-        if trigger in self._l_mm_trigger:
-            return 'MM'
-
-        if trigger in self._l_ee_trigger:
-            return 'EE'
-
-        raise NotImplementedError(f'Cannot deduce channel from trigger: {self._trigger}')
     # ---------------------------------------------------
     def _load_config(self) -> DictConfig:
         '''
@@ -298,7 +282,7 @@ class RDFGetter(SpecMaker):
     def _define_common_columns(self, rdf : RDF.RNode) -> RDF.RNode:
         log.info('Adding common columns')
 
-        d_def = self._cfg['definitions'][self._channel]
+        d_def = self._cfg['definitions'][self._trigger.channel]
         if self._d_custom_columns:
             log.debug('Adding custom column definitions')
             d_def.update(self._d_custom_columns)
@@ -408,7 +392,7 @@ class RDFGetter(SpecMaker):
         '''
         log.debug('Adding MCDT columns')
 
-        q2_def = self._cfg['definitions']['MCDT'][self._channel]['q2']
+        q2_def = self._cfg['definitions']['MCDT'][self._trigger.channel]['q2']
         rdf    = self._add_column(redefine=False, rdf=rdf, name='q2', definition=q2_def)
 
         return rdf
