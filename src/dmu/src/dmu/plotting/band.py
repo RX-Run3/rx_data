@@ -5,6 +5,15 @@ import pandas as pnd
 from pydantic import BaseModel
 
 # ---------------------------------------
+class Style(BaseModel):
+    '''
+    Class meant to configure styling of plot
+    '''
+    yrange   : tuple[float,float]
+    xrotation: int 
+    alpha    : float
+    color    : str
+# ---------------------------------------
 class BandPlotterConf(BaseModel):
     '''
     Configuration needed for BandPlotter
