@@ -566,6 +566,55 @@ class Trigger(StrEnum):
             case Trigger.uninitialized:
                 return 'uninitialized'
     # -----------
+    @classmethod
+    def from_name(cls, name: str) -> 'Trigger':
+        '''
+        Parameters
+        --------------
+        name: Trigger name, i.e. Hlt2RD_BuToKpEE_MVA
+
+        Returns
+        --------------
+        Corresponding trigger object
+        '''
+        match name:
+            case 'Hlt2RD_BuToKpEE_MVA':
+                return cls.rk_ee_os
+            case 'Hlt2RD_BuToKpEE_SameSign_MVA':
+                return cls.rk_ee_ss
+            case 'Hlt2RD_BuToKpEE_MVA_noPID':
+                return cls.rk_ee_nopid
+            case 'Hlt2RD_BuToKpEE_MVA_cal':
+                return cls.rk_ee_cal
+            case 'Hlt2RD_BuToKpEE_MVA_misid':
+                return cls.rk_ee_misid
+            case 'Hlt2RD_BuToKpMuMu_MVA':
+                return cls.rk_mm_os
+            case 'Hlt2RD_BuToKpMuMu_MVA_noPID':
+                return cls.rk_mm_nopid
+            case 'Hlt2RD_BuToKpMuMu_SameSign_MVA':
+                return cls.rk_mm_ss
+            case 'Hlt2RD_B0ToKpPimEE_MVA':
+                return cls.rkst_ee_os
+            case 'Hlt2RD_B0ToKpPimEE_SameSign_MVA':
+                return cls.rkst_ee_ss
+            case 'Hlt2RD_B0ToKpPimEE_MVA_noPID':
+                return cls.rkst_ee_nopid
+            case 'Hlt2RD_B0ToKpPimEE_MVA_cal':
+                return cls.rkst_ee_cal
+            case 'Hlt2RD_B0ToKpPimEE_MVA_misid':
+                return cls.rkst_ee_misid
+            case 'Hlt2RD_B0ToKpPimMuMu_MVA':
+                return cls.rkst_mm_os
+            case 'Hlt2RD_B0ToKpPimMuMu_MVA_noPID':
+                return cls.rkst_mm_nopid
+            case 'Hlt2RD_B0ToKpPimMuMu_SameSign_MVA':
+                return cls.rkst_mm_ss
+            case 'uninitialized':
+                return cls.uninitialized
+            case _:
+                raise ValueError(f'Unknown trigger name: {name!r}')
+    # -----------
     @property
     def is_electron(self) -> bool:
         return self.channel == Channel.ee
