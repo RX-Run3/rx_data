@@ -104,12 +104,13 @@ class BandPlotter:
                 y2 = upper,
                 alpha = alpha,
                 color = color,
-                label = self._cfg.labels[par],
+                label = self._cfg.labels[parameter],
             )
 
             if ylabel:
                 plt.ylabel(ylabel)
 
+        self._cfg.out_dir.mkdir(parents = True, exist_ok = True)
         out_path = self._cfg.out_dir / f'{group}.png'
         plt.legend()
         plt.savefig(out_path)
