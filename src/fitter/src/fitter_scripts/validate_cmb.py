@@ -60,11 +60,19 @@ def _get_pars(cfg : CmbValidatorConf) -> pnd.DataFrame:
         return pnd.read_parquet(path = out_path)
 
     log.info('Parameters not found from cache')
+
+    gtr = RDFGetter(
+        trigger= cfg.input.trigger,
+        sample = cfg.input.sample)
+    rdf = gtr.get_rdf(per_file = False)
+
     with sel.custom_selection(d_sel = cfg.validation.selection):
-        gtr = RDFGetter(
-            trigger= cfg.input.trigger,
-            sample = cfg.input.sample)
-        rdf = gtr.get_rdf(per_file = False)
+        rdf = sel.apply_full_selection(
+            rdf     = rdf,
+            out_path= cfg.output.out_dir(),
+            q2bin   = cfg.input.q2bin,
+            process = cfg.input.sample,
+            trigger = cfg.input.trigger)
 
     obj = CmbValidator(
         rdf = rdf,
