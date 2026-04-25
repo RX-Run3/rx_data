@@ -1,0 +1,33 @@
+style : &style
+  ylabel    : $\lambda$
+  xrotation : 45
+  alpha     : 0.5
+  color     : blue
+# ------------------------
+out_dir : /tmp/cmb
+size    : [30, 10]
+xname   : Fit
+styles  :
+  mu_hypexp_cmb_1:
+    <<: *style
+    color : blue
+    yrange: [4500, 6000]
+  ap_hypexp_cmb_1:
+    <<: *style
+    color : blue
+    yrange: [0., 0.003]
+  bt_hypexp_cmb_1:
+    <<: *style
+    color : blue
+    yrange: [0., 0.003]
+labels :
+  mu_hypexp_cmb_1 : SS
+  ap_hypexp_cmb_1 : SS
+  bt_hypexp_cmb_1 : SS
+groups :
+  mu_hypexp_cmb_1 :
+    - mu_hypexp_cmb_1
+  ap_hypexp_cmb_1 :
+    - ap_hypexp_cmb_1
+  bt_hypexp_cmb_1 :
+    - bt_hypexp_cmb_1
