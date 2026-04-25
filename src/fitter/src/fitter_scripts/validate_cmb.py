@@ -45,8 +45,11 @@ def _get_conf() -> CmbValidatorConf:
     input      = CmbInputConfig(**data)
     validation = CmbValidationConfig.from_file(fname = 'combinatorial/config.yaml') 
 
+    cfg_plt    = ZFitPlotterConf.default()
+    cfg_plt    = cfg_plt.model_copy(update = {'nbins' : 30})
+
     output     = CmbOutputConfig(
-        plots    = ZFitPlotterConf.default(),
+        plots    = cfg_plt,
         dir_path = ana_dir / 'combinatorial/validation'
     )
 
