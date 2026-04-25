@@ -1,0 +1,18 @@
+style : &style
+  ylabel    : $\lambda$
+  yrange    : [-0.002, 0]
+  xrotation : 45
+  alpha     : 0.5
+  color     : blue
+# ------------------------
+out_dir : /tmp/cmb
+xname   : Fit 
+styles  :
+  c_exp_cmb_1 : 
+    <<: *style
+    color : blue
+labels :
+  c_exp_cmb_1 : SS
+groups :
+  c_exp_cmb_1 : 
+    - c_exp_cmb_1 
