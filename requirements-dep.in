@@ -39,6 +39,7 @@ optuna
 pandas
 pandas-stubs
 scipy-stubs
+matplotlib-stubs
 particle
 pdg
 pidcalib2

@@ -284,9 +284,12 @@ matplotlib==3.10.8
     # via
     #   -r requirements-dep.in
     #   hist
+    #   matplotlib-stubs
     #   mplhep
     #   pidcalib2
     #   seaborn
+matplotlib-stubs==0.3.11
+    # via -r requirements-dep.in
 mdurl==0.1.2
     # via markdown-it-py
 memory-profiler==0.61.0
@@ -338,6 +341,7 @@ numpy==2.3.5
     #   jacobi
     #   keras
     #   matplotlib
+    #   matplotlib-stubs
     #   ml-dtypes
     #   mplhep
     #   numba
@@ -402,6 +406,7 @@ pandas==2.3.3
     #   awkward-pandas
     #   bokeh
     #   dask
+    #   matplotlib-stubs
     #   pidcalib2
     #   seaborn
     #   zfit
