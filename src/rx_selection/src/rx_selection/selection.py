@@ -17,7 +17,7 @@ from dmu.rdataframe         import utilities          as rut
 from dmu.generic            import utilities          as gut
 from rx_selection           import truth_matching     as tm
 from rx_selection           import version_management as vman
-from rx_common              import Component, Qsq, Trigger, info, Cuts
+from rx_common              import Channel, Component, Project, Qsq, Trigger, info, Cuts
 
 log=LogStore.add_logger('rx_selection:selection')
 #-----------------------
@@ -100,7 +100,9 @@ def _print_selection(d_cut : dict[Cuts,str]) -> None:
     for name, expr in d_cut.items():
         log.debug(f'{name:<20}{expr}')
 #-----------------------
-def _get_truth(component : Component, trigger : str) -> str:
+def _get_truth(
+    component : Component, 
+    trigger   : Trigger) -> str:
     '''
     Parameters
     -----------------
@@ -111,12 +113,10 @@ def _get_truth(component : Component, trigger : str) -> str:
     -----------------
     Truth matching string
     '''
-    project = info.project_from_trigger(trigger=trigger, lower_case=True)
-
-    if project in ['rkst', 'rkst_nopid']:
+    if trigger.project in Project.rkst_projects():
         return tm.get_truth(component=component, kind='bdkstll')
 
-    if project in ['rk', 'rk_nopid']:
+    if trigger.project in Project.rk_projects():
         return tm.get_truth(component=component, kind='bukll')
 
     raise ValueError(f'Invalid project {project} for trigger: {trigger}')
@@ -140,9 +140,6 @@ def selection(
         log.warning(f'Process {process} recognized as toy sample, returning empty selection')
         return {}
 
-    project = info.project_from_trigger(trigger=trigger, lower_case=False)
-    channel = info.channel_from_trigger(trigger=trigger)
-
     d_cut : dict[Cuts,str] = {}
 
     event_type = process if not process.is_mc else process.event_type 
@@ -159,7 +156,10 @@ def selection(
         log.debug('Adding truth matching requirement for MC')
         d_cut[Cuts.truth] = _get_truth(component = process, trigger=trigger)
 
-    d_tmp = _get_selection(chan = channel, proj = project, q2_bin = q2bin)
+    d_tmp = _get_selection(
+        chan   = trigger.channel, 
+        proj   = trigger.project, 
+        q2_bin = q2bin)
     d_cut.update(d_tmp)
 
     if Data.d_custom_selection is not None:
@@ -294,9 +294,9 @@ def _load_selection_config() -> dict:
 #-----------------------
 # TODO: Add types
 def _get_selection(
-    chan   : str, 
-    proj   : str, 
-    q2_bin : str) -> dict[Cuts,str]:
+    chan   : Channel, 
+    proj   : Project, 
+    q2_bin : Qsq) -> dict[Cuts,str]:
     '''
     Parameters
     -----------------
