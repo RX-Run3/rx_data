@@ -18,13 +18,14 @@ def initialize():
     LogStore.set_level('rx_selection:selection'     , 10)
     LogStore.set_level('rx_selection:test_selection', 10)
 # --------------------------
-@pytest.mark.parametrize('trigger', ['Hlt2RD_BuToKpEE_MVA', 'Hlt2RD_BuToKpMuMu_MVA'])
+@pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rk_mm_os])
 @pytest.mark.parametrize('q2bin'  , Qsq.for_physics())
-def test_read_selection(trigger : str, q2bin : str):
+def test_read_selection(
+    trigger : Trigger, 
+    q2bin   : Qsq):
     '''
     Test reading the selection
     '''
-    trigger   = Trigger(trigger)
     q2bin     = Qsq(q2bin)
     component = Component.data_24
 
@@ -76,7 +77,10 @@ def test_multiple_custom_selection_override():
     cut    = Cuts.extra
 
     with sel.custom_selection(d_sel={Cuts.extra : 'val'}, force_override=True):
-        d_cut_1 = sel.selection(process=sample, q2bin=q2bin, trigger=trigger)
+        d_cut_1 = sel.selection(
+            process= sample, 
+            q2bin  = q2bin, 
+            trigger= trigger)
         assert d_cut_1[Cuts.extra] == 'val'
         with sel.custom_selection(d_sel={Cuts.extra : 'vol'}, force_override=True):
             d_cut_2 = sel.selection(process=sample, q2bin=q2bin, trigger=trigger)
@@ -149,13 +153,12 @@ def test_update_selection():
     assert    isel_001  ==    osel_002
     assert id(isel_001) != id(osel_002)
 # --------------------------
-@pytest.mark.parametrize('trigger', ['Hlt2RD_BuToKpEE_MVA', 'Hlt2RD_B0ToKpPimEE_MVA'])
-def test_no_truth(trigger : str): 
+@pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rkst_ee_os])
+def test_no_truth(trigger : Trigger): 
     '''
     Test reading the selection
     '''
     sample  = Component.bdkstkpiee 
-    trigger = Trigger(trigger)
     d_sel   = sel.selection(
         trigger   = trigger, 
         q2bin     = Qsq.central,
