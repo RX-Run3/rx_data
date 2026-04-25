@@ -50,13 +50,13 @@ definitions:
                         ROOT::Math::PxPyPzEVector l2(L2_TRUEPX, L2_TRUEPY, L2_TRUEPZ, L2_TRUEENERGY);
                         auto ll = l1 + l2;
                         return ll.M();
-  EE:
+  ee:
     Jpsi_Mass         : Jpsi_M_brem_track_2 # Use brem corrected masses only for electron channel
     B_Mass            : B_M_brem_track_2
     # -------
     nbrem             : int(L1_HASBREMADDED_brem_track_2) + int(L2_HASBREMADDED_brem_track_2) # Will use the new definition of brem
     <<: *common
-  MM:
+  mm:
     B_DIRA_OWNPV_brem_track_2    : B_DIRA_OWNPV    # and expects brem corrected features in muon trees
     B_M_brem_track_2             : B_M
     B_Mass                       : B_M
