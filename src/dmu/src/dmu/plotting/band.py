@@ -1,9 +1,15 @@
 '''
 Module containing BandPlotter class
 '''
-import pandas as pnd
-from pydantic import BaseModel
+import mplhep
+import pandas            as pnd
+import matplotlib.pyplot as plt
 
+from pathlib  import Path
+from pydantic import BaseModel
+from dmu      import LogStore
+
+log=LogStore.add_logger('dmu:plotting:band')
 # ---------------------------------------
 class Style(BaseModel):
     '''
@@ -18,6 +24,9 @@ class BandPlotterConf(BaseModel):
     '''
     Configuration needed for BandPlotter
     '''
+    out_dir : Path
+    xname   : str
+    styles  : dict[str,Style]
 # ---------------------------------------
 class BandPlotter:
     '''
@@ -37,9 +46,55 @@ class BandPlotter:
         '''
         self._cfg = cfg
         self._df  = df
+
+        plt.style.use(mplhep.style.LHCb2)
+    # ----------------------------
+    def _style(self, parameter : str) -> tuple[float|None, str|None]:
+        '''
+        Parameters
+        --------------
+        parameter: Parameter name
+
+        Returns
+        --------------
+        Tuple with:
+
+        - alpha (opacity)
+        - color
+        '''
+        if parameter not in self._cfg.styles:
+            log.warning(f'No styling found for: {parameter}')
+            return None, None
+
+        style = self._cfg.styles[parameter]
+
+        plt.ylim(style.yrange)
+        plt.xticks(rotation = style.xrotation)
+
+        return style.alpha, style.color
     # ----------------------------
     def plot(self) -> None:
         '''
         Runs plotting
         '''
+        for par, df_par in self._df.groupby('Parameter'):
+            parameter = str(par)
+            vals = df_par['Value']
+            errs = df_par['Error']
+            xval = df_par[self._cfg.xname]
+
+            lower= vals - errs
+            upper= vals + errs
+
+            alpha, color = self._style(parameter = parameter)
+
+            plt.fill_between(
+                x  = xval, 
+                y1 = lower, 
+                y2 = upper,
+                alpha = alpha,
+                color = color,
+            )
+
+            plt.show()
 # ---------------------------------------
