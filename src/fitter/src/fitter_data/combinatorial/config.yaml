@@ -3,12 +3,6 @@ selection:
   cmb     : (1)
   mass    : (1)
 cutflows:
-  test:
-    $BDT_{cmb} > 0.00$ : mva_cmb > 0.00
-    $BDT_{cmb} > 0.20$ : mva_cmb > 0.20
-    $BDT_{cmb} > 0.50$ : mva_cmb > 0.50
-    $BDT_{cmb} > 0.80$ : mva_cmb > 0.80
-    $BDT_{cmb} > 0.95$ : mva_cmb > 0.95
   inv_prc_cmb:
     $BDT_{prc} < 0.10 || BDT_{cmb} < 0.00$ : mva_prc < 0.10 || mva_cmb < 0.00
     $BDT_{prc} < 0.20 || BDT_{cmb} < 0.00$ : mva_prc < 0.20 || mva_cmb < 0.00
