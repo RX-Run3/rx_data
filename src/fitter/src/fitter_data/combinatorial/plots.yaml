@@ -5,7 +5,7 @@ style : &style
   color     : blue
 # ------------------------
 out_dir : /tmp/cmb
-size    : [30, 10]
+size    : [20, 10]
 xname   : Fit
 styles  :
   mu_hypexp_cmb_1:
