@@ -14,6 +14,8 @@ from fitter      import CmbOutputConfig
 from rx_common   import Component, Mass, Qsq, Trigger
 from dmu         import LogStore
 from dmu.stats   import Model, ZFitPlotterConf
+from dmu.generic  import utilities as gut
+from dmu.plotting import BandPlotter, BandPlotterConf
 
 log=LogStore.add_logger('fitter:test_cmb_validator')
 # ----------------------
@@ -110,4 +112,12 @@ def test_validator(
         rdf = rdf,
         cfg = cfg)
     res = obj.run()
+
+    data    = gut.load_data(
+        package = 'fitter_data', 
+        fpath   = 'combinatorial/test_plots.yaml')
+    cfg_plt = BandPlotterConf(**data)
+
+    ptr = BandPlotter(df = res.df, cfg = cfg_plt)
+    ptr.plot()
 # ----------------------
