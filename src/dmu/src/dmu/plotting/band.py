@@ -113,6 +113,7 @@ class BandPlotter:
         self._cfg.out_dir.mkdir(parents = True, exist_ok = True)
         out_path = self._cfg.out_dir / f'{group}.png'
         plt.legend()
+        log.info(f'Saving parameter summary to: {out_path}')
         plt.savefig(out_path)
         plt.close()
     # ----------------------------
