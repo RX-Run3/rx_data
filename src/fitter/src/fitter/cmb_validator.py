@@ -103,6 +103,16 @@ class CmbValidatorConf(BaseModel):
     output     : CmbOutputConfig
     # ------------------------
     @property
+    def out_dir(self) -> Path:
+        '''
+        Path to directory where output should go
+        '''
+        model    = '-'.join(self.validation.fit.model.pdfs)
+        cutflow  = self.input.cutflow
+
+        return self.output.dir_path / f'{model}/{cutflow}'
+    # ------------------------
+    @property
     def cuts(self) -> dict[str,str]:
         '''
         Dictionary mapping label of cut and value
