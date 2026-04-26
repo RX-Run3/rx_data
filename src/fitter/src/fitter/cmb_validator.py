@@ -210,6 +210,13 @@ class CmbValidator:
         results : dict[str, FitResult] = {}
         for label, cut in self._cfg.cuts.items():
             data  = self._get_data(cut = cut)
+
+            nentries = len(data)
+            if nentries == 0:
+                log.warning(f'No entries found for: {cut}')
+                continue
+
+            log.debug(f'Found {nentries} for: {cut}')
             results[label] = self._fit(
                 name = label,
                 data = data)
