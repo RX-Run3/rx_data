@@ -90,7 +90,8 @@ class BandPlotter:
         categories: List of categories in which this parameter is plotted
         '''
         plt.figure(figsize = self._cfg.size)
-        for category, df_cat in df.groupby(CATEGORY):
+        for tmp, df_cat in df.groupby(CATEGORY):
+            category = str(tmp)
             if category not in categories:
                 log.error(f'Skipping: {category}')
                 continue
@@ -111,7 +112,7 @@ class BandPlotter:
                 y1 = lower, # type: ignore
                 y2 = upper, # type: ignore
                 alpha = alpha,
-                label = self._cfg.labels[par_name],
+                label = self._cfg.labels[category],
             )
 
             if ylabel:

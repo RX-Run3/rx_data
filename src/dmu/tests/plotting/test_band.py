@@ -61,7 +61,7 @@ def test_simple(tmp_path : Path):
         out_dir = tmp_path,
         xname   = 'Kind',
         styles  = styles,
-        labels  = {'a' : r'$\alpha$', 'b' : r'$\beta$', 'c' : r'$\gamma$'},
+        labels  = {'c1' : 'c1' , 'c2' : 'c2'},
         groups  = {'main' : ['c1', 'c2']},
     )
 
