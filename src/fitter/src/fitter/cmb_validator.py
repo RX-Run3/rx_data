@@ -9,7 +9,7 @@ from pathlib     import Path
 from ROOT        import RDF # type: ignore
 from functools   import cached_property
 from typing      import Final
-from pydantic    import BaseModel
+from pydantic    import BaseModel, ConfigDict
 from dmu         import LogStore
 from dmu.stats   import ModelFactory, ModelFactoryConf, ZFitPlotter, ZFitPlotterConf
 from dmu.stats   import FitConf, FitResult, Fitter
@@ -27,6 +27,8 @@ class CmbFitConf(BaseModel):
     '''
     Fitting configuration
     '''
+    model_config = ConfigDict(frozen=True)
+
     conf : FitConf 
     model: ModelFactoryConf
 # --------------------------------
@@ -35,6 +37,8 @@ class CmbInputConfig(BaseModel):
     Class meant to configure input for validation
     of configuration
     '''
+    model_config = ConfigDict(frozen=True)
+
     q2bin  : Qsq 
     mass   : Mass 
     model  : Model 
@@ -47,6 +51,8 @@ class CmbOutputConfig(BaseModel):
     Class meant to store configurations
     to save results, e.g. plots
     '''
+    model_config = ConfigDict(frozen=True)
+
     plots    : ZFitPlotterConf
     dir_path : Path
     # --------------------
@@ -73,6 +79,8 @@ class CmbValidationConfig(BaseModel):
     '''
     Class meant to configure selection and fits
     '''
+    model_config = ConfigDict(frozen=True)
+
     selection : dict[Cuts,str]
     cutflows  : dict[str,dict[str,str]]
     fit       : CmbFitConf
@@ -98,6 +106,8 @@ class CmbValidatorConf(BaseModel):
     '''
     Class meant to configure validation
     '''
+    model_config = ConfigDict(frozen=True)
+
     input      : CmbInputConfig
     validation : CmbValidationConfig
     output     : CmbOutputConfig
