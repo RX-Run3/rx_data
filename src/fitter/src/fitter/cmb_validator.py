@@ -112,6 +112,9 @@ class CmbValidatorConf(BaseModel):
     validation : CmbValidationConfig
     output     : CmbOutputConfig
     # ------------------------
+    def __hash__(self) -> int:
+        return hash(self.model_dump_json())
+    # ------------------------
     @property
     def out_dir(self) -> Path:
         '''
