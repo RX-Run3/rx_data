@@ -11,7 +11,8 @@ from pydantic import BaseModel
 from dmu      import LogStore
 
 log=LogStore.add_logger('dmu:plotting:band')
-CATEGORY : Final[str] = 'Parameter'
+CATEGORY : Final[str] = 'Category'
+PARAMETER: Final[str] = 'Parameter'
 # ---------------------------------------
 class Style(BaseModel):
     '''
@@ -21,7 +22,6 @@ class Style(BaseModel):
     yrange   : tuple[float,float]
     xrotation: int 
     alpha    : float
-    color    : str
 # ---------------------------------------
 class BandPlotterConf(BaseModel):
     '''
@@ -53,9 +53,9 @@ class BandPlotter:
         self._cfg = cfg
         self._df  = df
 
-        plt.style.use(mplhep.style.LHCb2)
+        plt.style.use(mplhep.style.LHCb2) # type: ignore
     # ----------------------------
-    def _style(self, parameter : str) -> tuple[float|None, str|None, str|None]:
+    def _style(self, parameter : str) -> tuple[float|None, str|None]:
         '''
         Parameters
         --------------
@@ -66,31 +66,37 @@ class BandPlotter:
         Tuple with:
 
         - alpha (opacity)
-        - color
+        - y-axis label 
         '''
         if parameter not in self._cfg.styles:
             log.warning(f'No styling found for: {parameter}')
-            return None, None, None
+            return None, None
 
         style = self._cfg.styles[parameter]
 
         plt.ylim(style.yrange)
         plt.xticks(rotation = style.xrotation)
 
-        return style.alpha, style.color, style.ylabel
+        return style.alpha, style.ylabel
     # ----------------------------
-    def _plot_group(self, group : str) -> None:
+    def _plot_group(
+        self, 
+        df         : pnd.DataFrame, 
+        par_name   : str,
+        categories : list[str]) -> None:
         '''
         Parameters
         ----------------
-        group: Name of group, i.e. set of columns to plot
+        categories: List of categories in which this parameter is plotted
         '''
         plt.figure(figsize = self._cfg.size)
-        for par, df_par in self._df.groupby(CATEGORY):
-            if par not in self._cfg.groups[group]:
+        for category, df_cat in df.groupby(CATEGORY):
+            if category not in categories:
+                log.error(f'Skipping: {category}')
                 continue
 
-            parameter = str(par)
+            df_par = df_cat.query(f'{PARAMETER} == \"{par_name}\"')
+
             vals = df_par['Value']
             errs = df_par['Error']
             xval = df_par[self._cfg.xname]
@@ -98,32 +104,36 @@ class BandPlotter:
             lower= vals - errs
             upper= vals + errs
 
-            alpha, color, ylabel = self._style(parameter = parameter)
+            alpha, ylabel = self._style(parameter = par_name)
 
             plt.fill_between(
                 x  = xval, 
-                y1 = lower, 
-                y2 = upper,
+                y1 = lower, # type: ignore
+                y2 = upper, # type: ignore
                 alpha = alpha,
-                color = color,
-                label = self._cfg.labels[parameter],
+                label = self._cfg.labels[par_name],
             )
 
             if ylabel:
                 plt.ylabel(ylabel)
-
-        self._cfg.out_dir.mkdir(parents = True, exist_ok = True)
-        out_path = self._cfg.out_dir / f'{group}.png'
-        plt.legend()
-        log.info(f'Saving parameter summary to: {out_path}')
-        plt.grid()
-        plt.savefig(out_path)
-        plt.close()
     # ----------------------------
     def plot(self) -> None:
         '''
         Runs plotting
         '''
-        for group in self._cfg.groups:
-            self._plot_group(group = group)
+        for tmp, df_par in self._df.groupby(PARAMETER):
+            par_name = str(tmp)
+            for categories in self._cfg.groups.values():
+                self._plot_group(
+                    df         = df_par, 
+                    par_name   = par_name,
+                    categories = categories)
+
+            self._cfg.out_dir.mkdir(parents = True, exist_ok = True)
+            out_path = self._cfg.out_dir / f'{par_name}.png'
+            plt.legend()
+            log.info(f'Saving parameter summary to: {out_path}')
+            plt.grid()
+            plt.savefig(out_path)
+            plt.close()
 # ---------------------------------------

@@ -12,7 +12,6 @@ from dmu.plotting import BandPlotterConf
 
 # ------------------------------
 def _get_df(
-    kind      : str, 
     parameter : str) -> pnd.DataFrame:
     size = 1
     data = {
@@ -22,43 +21,48 @@ def _get_df(
 
     df = pnd.DataFrame(data)
     df['Parameter'] = parameter
-    df['kind'     ] = kind 
+
+    return df
+# ------------------------------
+def _get_all_df():
+    l_df : list[pnd.DataFrame] = []
+    for category in ['c1', 'c2']:
+        for kind in ['w', 'x', 'y', 'z']:
+            for parameter in ['a', 'b', 'c']:
+                df            = _get_df(
+                    parameter = parameter)
+
+                df['Kind'] = kind
+                df['Category'] = category 
+
+                l_df.append(df)
+
+    df = pnd.concat(l_df)
 
     return df
 # ------------------------------
 def test_simple(tmp_path : Path):
-    l_df : list[pnd.DataFrame] = []
-    for kind in ['w', 'x', 'y', 'z']:
-        for parameter in ['a', 'b', 'c']:
-            df = _get_df(
-                kind      = kind, 
-                parameter = parameter)
-            l_df.append(df)
-    df = pnd.concat(l_df)
-
+    df     = _get_all_df()
     astyle = Style(
         ylabel    = 'Value',
         yrange    = (5., 15.),
         xrotation = 45,
         alpha     = 0.3,
-        color     = 'blue',
     )
-
-    bstyle = astyle.model_copy(update = {'color' :   'red'})
-    cstyle = astyle.model_copy(update = {'color' : 'green'})
 
     styles = {
         'a' : astyle,
-        'b' : bstyle,
-        'c' : cstyle,
+        'b' : astyle,
+        'c' : astyle,
     }
 
     cfg = BandPlotterConf(
+        size    = (30, 20),
         out_dir = tmp_path,
-        xname   = 'kind',
+        xname   = 'Kind',
         styles  = styles,
         labels  = {'a' : r'$\alpha$', 'b' : r'$\beta$', 'c' : r'$\gamma$'},
-        groups  = {'ab' : ['a', 'b'], 'c' : ['c']},
+        groups  = {'main' : ['c1', 'c2']},
     )
 
     ptr = BandPlotter(
