@@ -1114,6 +1114,30 @@ def test_full_selection_muon(
 
     _print_dotted_branches(rdf)
 # --------------------------
+@pytest.mark.parametrize('trigger'   , [
+    Trigger.rk_mm_ss, Trigger.rkst_mm_ss,
+    Trigger.rk_ee_ss, Trigger.rkst_ee_ss])
+def test_same_sign(trigger   : Trigger):
+    '''
+    Applies full selection to all q2 bins in muon channel
+    '''
+    COLUMN_NAME = 'total_charge'
+    with RDFGetter.max_entries(value=1000):
+        gtr = RDFGetter(sample=Component.data_24, trigger=trigger)
+        rdf = gtr.get_rdf(per_file=False)
+
+    columns = [ col.c_str() for col in rdf.GetColumnNames() ]
+    assert COLUMN_NAME in columns
+
+    tot_charge = rdf.AsNumpy([COLUMN_NAME])[COLUMN_NAME]
+    tot_charge = tot_charge.tolist()
+    tot_charge = set(tot_charge)
+
+    if trigger in {Trigger.rk_ee_ss, Trigger.rk_mm_ss}:
+        assert tot_charge == {-1, -3, +1, +3}
+    else:
+        assert tot_charge == {+2, -2}
+# --------------------------
 @pytest.mark.parametrize('source, target, trigger', 
     [
     ('Bd_JpsiKst_mm_eq_DPC', 'Bs_JpsiKst_mm_eq_DPC', Trigger.rkst_mm_os),
