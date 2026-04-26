@@ -1130,6 +1130,15 @@ def test_same_sign(trigger   : Trigger):
     assert COLUMN_NAME in columns
 
     tot_charge = rdf.AsNumpy([COLUMN_NAME])[COLUMN_NAME]
+
+    values, counts = numpy.unique(tot_charge, return_counts=True)
+    log.info(30 * '-')
+    log.info('Frequencies')
+    log.info(30 * '-')
+    for value, count in zip(values, counts, strict = True):
+        log.info(f'{value:<20}{count:<20}')
+    log.info(30 * '-')
+
     tot_charge = tot_charge.tolist()
     tot_charge = set(tot_charge)
 
