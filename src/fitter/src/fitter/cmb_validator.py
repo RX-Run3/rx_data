@@ -202,7 +202,7 @@ class CmbValidator:
         self, 
         label: str,
         name : str,
-        data : numpy.ndarray) -> FitResult:
+        data : numpy.ndarray) -> FitResult | None:
         '''
         Parameters
         -------------
@@ -213,7 +213,12 @@ class CmbValidator:
         obj = Fitter(
             pdf  = self.model, 
             data = data)
-        res = obj.fit(cfg = self._cfg.validation.fit.conf)
+
+        try:
+            res = obj.fit(cfg = self._cfg.validation.fit.conf)
+        except Exception:
+            log.warning(f'Fit failed: {label}/{name}')
+            return None
 
         ptr = ZFitPlotter(
             model  = self.model,
@@ -246,10 +251,15 @@ class CmbValidator:
                 continue
 
             log.debug(f'Found {nentries} for: {cut}')
-            results[cut_name] = self._fit(
+            res = self._fit(
                 label= label,
                 name = cut_name,
                 data = data)
+
+            if res is None:
+                continue
+
+            results[cut_name] = res
 
         stat = ValidationStatus(
             input      = self._cfg.input, 

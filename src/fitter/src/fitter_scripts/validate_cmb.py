@@ -143,7 +143,6 @@ def main():
 
     l_df : list[pnd.DataFrame] = []
     for label, cut in categories.items():
-
         df  = _get_pars(
             label = label,
             cut   = cut,
