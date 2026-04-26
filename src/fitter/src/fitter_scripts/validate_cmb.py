@@ -5,6 +5,7 @@ import os
 import argparse
 import pandas   as pnd
 
+from ROOT         import RDF # type: ignore
 from pathlib      import Path
 from dmu          import LogStore
 from dmu.stats    import Model, ZFitPlotterConf
@@ -58,16 +59,7 @@ def _get_conf() -> CmbValidatorConf:
         output     = output,
         validation = validation)
 # ----------------------
-def _get_pars(cfg : CmbValidatorConf) -> pnd.DataFrame:
-    model    = '-'.join(cfg.validation.fit.model.pdfs)
-    cutflow  = cfg.input.cutflow
-    extension= f'{model}/{cutflow}'
-    out_path = cfg.output.out_dir(extend = extension) / 'parameters.parquet'
-
-    if out_path.exists():
-        log.info(f'Parameters found from cache, loading: {out_path}')
-        return pnd.read_parquet(path = out_path)
-
+def _get_rdf(cfg : CmbValidatorConf) -> RDF.RNode:
     log.info('Parameters not found from cache')
 
     gtr = RDFGetter(
@@ -78,15 +70,38 @@ def _get_pars(cfg : CmbValidatorConf) -> pnd.DataFrame:
     with sel.custom_selection(d_sel = cfg.validation.selection):
         rdf = sel.apply_full_selection(
             rdf     = rdf,
-            out_path= cfg.output.out_dir(extend = extension),
+            out_path= cfg.out_dir,
             q2bin   = cfg.input.q2bin,
             process = cfg.input.sample,
             trigger = cfg.input.trigger)
 
+    return rdf
+# ----------------------
+def _get_pars(
+    label : str,
+    rdf   : RDF.RNode, 
+    cfg   : CmbValidatorConf) -> pnd.DataFrame:
+    '''
+    Parameters
+    -----------------
+    label: Label of dataset
+    rdf  : Dataframe with ntuple data
+    cfg  : Config needed to validate
+
+    Returns
+    -----------------
+    dataframe with parameters
+    '''
+    out_path = cfg.out_dir / f'{label}/parameters.parquet'
+
+    if out_path.exists():
+        log.info(f'Parameters found from cache, loading: {out_path}')
+        return pnd.read_parquet(path = out_path)
+
     obj = CmbValidator(
         rdf = rdf,
         cfg = cfg)
-    res = obj.run()
+    res = obj.run(label = label)
 
     log.info(f'Caching to: {out_path}')
     res.df.to_parquet(path = out_path)
@@ -109,8 +124,30 @@ def main():
     Entry point
     '''
     cfg = _get_conf()
-    df  = _get_pars(cfg = cfg)
-    _plot(df = df)
+    rdf = _get_rdf(cfg = cfg)
+
+    categories : dict[str,str] = {
+        '+++' : 'TMath::Abs(total_charge) == 3',
+        '+--' : 'TMath::Abs(total_charge) == 1',
+        'Both': '(1)',
+    }
+
+    l_df : list[pnd.DataFrame] = []
+    for label, cut in categories.items():
+        rdf_cat = rdf.Filter(cut)
+
+        df  = _get_pars(
+            label = label,
+            cfg   = cfg, 
+            rdf   = rdf_cat)
+
+        df['Kind'] = label
+        l_df.append(df)
+
+    df = pnd.concat(l_df)
+    print(df)
+
+    #_plot(df = df)
 # --------------------------------
 if __name__ == '__main__':
     main()
