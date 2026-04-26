@@ -187,13 +187,15 @@ class CmbValidator:
     # ---------------------------
     def _fit(
         self, 
+        label: str,
         name : str,
         data : numpy.ndarray) -> FitResult:
         '''
         Parameters
         -------------
-        name: Used for naming plots
-        data: Array with data to fit
+        label: Identifier for validation run
+        name : Used for naming plots
+        data : Array with data to fit
         '''
         obj = Fitter(
             pdf  = self.model, 
@@ -205,20 +207,24 @@ class CmbValidator:
             data   = data)
         ptr.run(cfg = self._cfg.output.plots)
 
-        model   = '-'.join(self._cfg.validation.fit.model.pdfs)
-        cutflow = self._cfg.input.cutflow
-        out_dir = self._cfg.output.out_dir(extend = f'{model}/{cutflow}')
+        out_dir = self._cfg.out_dir / label
+        out_dir.mkdir(parents = True, exist_ok = True)
+
         plt.savefig(out_dir / f'{name}.png')
         plt.close('all')
 
         return res
     # ---------------------------
-    def run(self) -> ValidationStatus:
+    def run(
+        self,
+        label : str) -> ValidationStatus:
         '''
-        Runs validation
+        Parameters
+        --------------
+        label: Identifier of this validation
         '''
         results : dict[str, FitResult] = {}
-        for label, cut in self._cfg.cuts.items():
+        for cut_name, cut in self._cfg.cuts.items():
             data  = self._get_data(cut = cut)
 
             nentries = len(data)
@@ -227,8 +233,9 @@ class CmbValidator:
                 continue
 
             log.debug(f'Found {nentries} for: {cut}')
-            results[label] = self._fit(
-                name = label,
+            results[cut_name] = self._fit(
+                label= label,
+                name = cut_name,
                 data = data)
 
         stat = ValidationStatus(
