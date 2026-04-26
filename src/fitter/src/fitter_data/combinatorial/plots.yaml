@@ -3,7 +3,6 @@ style : &style
   alpha     : 0.5
   color     : blue
 # ------------------------
-out_dir : /tmp/cmb
 size    : [15, 10]
 xname   : Fit
 styles  :

@@ -108,13 +108,18 @@ def _get_pars(
 
     return res.df
 # --------------------------------
-def _plot(df : pnd.DataFrame) -> None:
+def _plot(
+    cfg_val : CmbValidatorConf,
+    df      : pnd.DataFrame) -> None:
     '''
     Parameters
     -------------------
-    df: Dataframe with values of parameters and errors
+    df     : Dataframe with values of parameters and errors
+    cfg_val: Config used for combinatorial validation
     '''
     data= gut.load_data(package = 'fitter_data', fpath = 'combinatorial/plots.yaml')
+    data['out_dir'] = str(cfg_val.out_dir)
+
     cfg = BandPlotterConf(**data) 
     ptr = BandPlotter(cfg = cfg, df = df)
     ptr.plot()
