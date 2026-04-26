@@ -5,6 +5,7 @@ import os
 import argparse
 import pandas   as pnd
 
+from functools    import cache
 from ROOT         import RDF # type: ignore
 from pathlib      import Path
 from dmu          import LogStore
@@ -59,6 +60,7 @@ def _get_conf() -> CmbValidatorConf:
         output     = output,
         validation = validation)
 # ----------------------
+@cache
 def _get_rdf(cfg : CmbValidatorConf) -> RDF.RNode:
     log.info('Parameters not found from cache')
 
@@ -79,13 +81,13 @@ def _get_rdf(cfg : CmbValidatorConf) -> RDF.RNode:
 # ----------------------
 def _get_pars(
     label : str,
-    rdf   : RDF.RNode, 
+    cut   : str,
     cfg   : CmbValidatorConf) -> pnd.DataFrame:
     '''
     Parameters
     -----------------
     label: Label of dataset
-    rdf  : Dataframe with ntuple data
+    cut  : Cut associated to working point 
     cfg  : Config needed to validate
 
     Returns
@@ -97,6 +99,9 @@ def _get_pars(
     if out_path.exists():
         log.info(f'Parameters found from cache, loading: {out_path}')
         return pnd.read_parquet(path = out_path)
+
+    rdf = _get_rdf(cfg = cfg)
+    rdf = rdf.Filter(cut)
 
     obj = CmbValidator(
         rdf = rdf,
@@ -129,7 +134,6 @@ def main():
     Entry point
     '''
     cfg = _get_conf()
-    rdf = _get_rdf(cfg = cfg)
 
     categories : dict[str,str] = {
         '+++' : 'TMath::Abs(total_charge) == 3',
@@ -139,20 +143,17 @@ def main():
 
     l_df : list[pnd.DataFrame] = []
     for label, cut in categories.items():
-        rdf_cat = rdf.Filter(cut)
 
         df  = _get_pars(
             label = label,
-            cfg   = cfg, 
-            rdf   = rdf_cat)
+            cut   = cut,
+            cfg   = cfg)
 
-        df['Kind'] = label
+        df['Category'] = label
         l_df.append(df)
 
     df = pnd.concat(l_df)
-    print(df)
-
-    #_plot(df = df)
+    _plot(df = df, cfg_val = cfg)
 # --------------------------------
 if __name__ == '__main__':
     main()
