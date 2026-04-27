@@ -25,13 +25,7 @@ fit:
       pvalue : 0.05
   model:
     pdfs:
-      - hypexp
+      - hypexp 
     shared       : []
     reparametrize: {}
-    fix          : {}
     floating     : []
-    values:
-      mu:
-        - 4500
-        - 4200
-        - 4900
