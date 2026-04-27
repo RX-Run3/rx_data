@@ -153,8 +153,9 @@ class ValidationStatus(BaseModel):
             if gof is None:
                 raise ValueError(f'GOF not found: {result}')
 
-            df        = result.df
-            df['Fit'] = label
+            df              = result.df
+            df.loc[len(df)] = ['pvalue', gof.pval, 0.1]
+            df['Fit']       = label
             l_df.append(df)
 
         df = pnd.concat(l_df)
