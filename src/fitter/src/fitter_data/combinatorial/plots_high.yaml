@@ -6,18 +6,14 @@ style : &style
 size    : [15, 10]
 xname   : Fit
 styles  :
-  mu_hypexp_cmb_1:
+  mu_suj_cmb_1:
     <<: *style
     ylabel: $\mu$
-    yrange: [4000, 7000]
-  ap_hypexp_cmb_1:
+    yrange: [4500, 5000]
+  sg_suj_cmb_1:
     <<: *style
-    ylabel: $\alpha$
-    yrange: [0., 0.010]
-  bt_hypexp_cmb_1:
-    <<: *style
-    ylabel: $\beta$
-    yrange: [0., 0.003]
+    ylabel: $\sigma$
+    yrange: [600,  1200]
 labels :
   +++  : +++
   +--  : +--
