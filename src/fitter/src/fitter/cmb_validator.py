@@ -121,8 +121,9 @@ class CmbValidatorConf(BaseModel):
         model    = '-'.join(self.validation.fit.model.pdfs)
         cutflow  = self.input.cutflow
         q2bin    = self.input.q2bin
+        trigger  = self.input.trigger
 
-        return self.output.dir_path / f'{q2bin}/{cutflow}/{model}'
+        return self.output.dir_path / f'{trigger.value}/{q2bin}/{cutflow}/{model}'
     # ------------------------
     @property
     def cuts(self) -> dict[str,str]:
