@@ -9,11 +9,11 @@ styles  :
   mu_suj_cmb_1:
     <<: *style
     ylabel: $\mu$
-    yrange: [4500, 5000]
+    yrange: [4500, 5500]
   sg_suj_cmb_1:
     <<: *style
     ylabel: $\sigma$
-    yrange: [600,  1200]
+    yrange: [  0,  1200]
 labels :
   +++  : +++
   +--  : +--
