@@ -191,12 +191,29 @@ class CmbValidator:
     # ---------------------------
     def _get_data(self, cut : str) -> numpy.ndarray:
         '''
+        Parameters
+        --------------
+        cut: BDT cut
+
+        Returns
+        -------------
         Array of masses needed for fit
         '''
-        rdf  = self._rdf.Filter(cut)
+        rdf  = self._rdf.Filter(cut, 'BDT')
         mass = self._cfg.input.mass
 
-        return rdf.AsNumpy([mass])[mass]
+        data = rdf.AsNumpy([mass])[mass]
+
+        nentries = len(data)
+        if nentries == 0:
+            rep = rdf.Report()
+            rep.Print()
+
+            raise ValueError(f'No entries found for: {cut}')
+
+        log.debug(f'Found {nentries} for: {cut}')
+
+        return data
     # ---------------------------
     def _fit(
         self, 
@@ -243,14 +260,7 @@ class CmbValidator:
         '''
         results : dict[str, FitResult] = {}
         for cut_name, cut in self._cfg.cuts.items():
-            data  = self._get_data(cut = cut)
-
-            nentries = len(data)
-            if nentries == 0:
-                log.warning(f'No entries found for: {cut}')
-                continue
-
-            log.debug(f'Found {nentries} for: {cut}')
+            data= self._get_data(cut = cut)
             res = self._fit(
                 label= label,
                 name = cut_name,
