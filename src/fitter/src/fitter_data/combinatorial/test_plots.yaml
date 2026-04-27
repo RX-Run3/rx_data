@@ -5,7 +5,7 @@ style : &style
   alpha     : 0.5
   color     : blue
 # ------------------------
-out_dir : /tmp/cmb
+out_dir : null 
 size    : [30, 10]
 xname   : Fit
 styles  :
