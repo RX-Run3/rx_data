@@ -19,7 +19,7 @@ class Style(BaseModel):
     Class meant to configure styling of plot
     '''
     ylabel   : str
-    yrange   : tuple[float,float]
+    yrange   : tuple[float|None,float|None]
     xrotation: int 
     alpha    : float
 # ---------------------------------------
@@ -74,7 +74,12 @@ class BandPlotter:
 
         style = self._cfg.styles[parameter]
 
-        plt.ylim(style.yrange)
+        bottom, top = style.yrange
+        if bottom:
+            plt.ylim(bottom = bottom)
+        if top:
+            plt.ylim(top = top)
+
         plt.xticks(rotation = style.xrotation)
 
         return style.alpha, style.ylabel
