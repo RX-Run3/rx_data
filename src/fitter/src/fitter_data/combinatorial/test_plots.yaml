@@ -1,19 +1,31 @@
 style : &style
-  ylabel    : $\lambda$
-  yrange    : [-0.002, 0]
   xrotation : 45
   alpha     : 0.5
-  color     : blue
 # ------------------------
 out_dir : null 
 size    : [30, 10]
 xname   : Fit
 styles  :
-  c_exp_cmb_1 :
+  ap_hypexp_cmb_1 :
     <<: *style
-    color : blue
+    ylabel    : $\alpha$
+    yrange    : [-0.006, 0.006]
+  bt_hypexp_cmb_1 :
+    <<: *style
+    ylabel    : $\beta$
+    yrange    : [-0.0005, 0.0015]
+  nev:
+    <<: *style
+    ylabel    : p-value 
+    yrange    : [0.0, 1.0]
+  pvalue:
+    <<: *style
+    ylabel    : p-value 
+    yrange    : [0.0, 1.0]
 labels :
-  c_exp_cmb_1 : SS
+  c1 : Cat 1 
+  c2 : Cat 2
 groups :
-  c_exp_cmb_1 :
-    - c_exp_cmb_1
+  g1:
+    - c1 
+    - c2 
