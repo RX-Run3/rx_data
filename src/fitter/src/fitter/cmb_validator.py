@@ -149,6 +149,10 @@ class ValidationStatus(BaseModel):
         '''
         l_df : list[pnd.DataFrame] = []
         for label, result in self.results.items():
+            gof = result.gof
+            if gof is None:
+                raise ValueError(f'GOF not found: {result}')
+
             df        = result.df
             df['Fit'] = label
             l_df.append(df)
