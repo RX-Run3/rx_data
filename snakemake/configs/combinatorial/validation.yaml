@@ -1,9 +1,5 @@
 cutflow:
   - cmb_window
-q2bin:
-  - low
-  - central
-  - high
 output:
   low:
     - hypexp/ap_hypexp_cmb_1.png

@@ -11,12 +11,12 @@ def all_targets(wildcards):
     '''
     Expand all output PNGs across every (q2bin, trigger) combination.
     '''
-    targets   = []
+    targets = []
     for q2bin, paths in config['output'].items():
         for cutflow in config['cutflow']:
-            for path in paths:
-                full_path = f'{ROOT_PATH}/{q2bin}/{cutflow}/{path}'
-                targets.append(full_path)
+            full_path = f'{ROOT_PATH}/{q2bin}/{cutflow}/{paths[0]}'
+            targets.append(full_path)
+
     return targets
 # ----------------------
 rule all:
