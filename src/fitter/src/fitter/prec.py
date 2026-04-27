@@ -29,7 +29,6 @@ from zfit.pdf              import KDE1DimFFT, SumPDF
 
 from rx_data               import RDFGetter
 from rx_common             import Component, Cuts, Project, Qsq, Trigger, Mass, CCbarComponent
-from rx_common             import info
 from rx_selection          import selection     as sel
 
 from .configs                  import CCbarConf, CCbarWeight
@@ -428,8 +427,7 @@ class PRec(Cache):
 
         if  dec:
             log.debug(f'Adding decay weights to: {sample}')
-            project          = info.project_from_trigger(trigger=self._trig, lower_case=True)
-            val : pnd.Series = df.apply(read_weight, args=(project,), axis=1)
+            val : pnd.Series = df.apply(read_weight, args=(self._trig.project,), axis=1)
             df['wgt_dec']    = 1. if val.empty else val
         else:
             log.warning(f'Not using decay weights in: {sample}')
@@ -503,14 +501,16 @@ class PRec(Cache):
         bp          = '(abs(B_TRUEID) == 521)'
 
         d_cut : dict[str,str] = {}
-        if info.is_ee(trigger=self._trig):
+        if self._trig.is_electron:
             d_cut[r'$B_s\to c\bar{c}(\to e^+ e^-)H_s$'] = bs
             d_cut[r'$B_d\to c\bar{c}(\to e^+ e^-)H_s$'] = bd
             d_cut[r'$B^+\to c\bar{c}(\to e^+ e^-)H_s$'] = bp
-        else:
+        elif self._trig.is_muon:
             d_cut[r'$B_s\to c\bar{c}(\to \mu^+\mu^-)H_s$'] = bs
             d_cut[r'$B_d\to c\bar{c}(\to \mu^+\mu^-)H_s$'] = bd
             d_cut[r'$B^+\to c\bar{c}(\to \mu^+\mu^-)H_s$'] = bp
+        else:
+            raise ValueError(f'Invalid trigger: {self._trig}')
 
         return d_cut
     #-----------------------------------------------------------
@@ -527,26 +527,25 @@ class PRec(Cache):
         bd = '(abs(B_TRUEID) == 511)'
         bs = '(abs(B_TRUEID) == 531)'
 
-        project    = info.project_from_trigger(trigger=self._trig, lower_case=True)
         common_cut = '(abs(B_TRUEID) == 521) & (abs(Jpsi_TRUEID) == 443) & (abs(Jpsi_MC_MOTHER_ID) == 100443) & (abs(Jpsi_MC_GD_MOTHER_ID) == 521)' 
 
-        if   project == Project.rk:
+        if   self._trig.project == Project.rk:
             bp_psjp = f'{common_cut} & (abs(H_MC_MOTHER_ID)  == 521)'
-        elif project == Project.rkst:
+        elif self._trig.project == Project.rkst:
             bp_psjp = f'{common_cut} & (abs(H1_MC_MOTHER_ID) == 521)'
         else:
-            raise ValueError(f'Invalid project: {project}')
+            raise ValueError(f'Invalid project: {self._trig.project}')
 
         neg_bp_psjp = bp_psjp.replace('==', '!=').replace('&' , '|')
         bp_ex       = f'(abs(B_TRUEID) == 521) & ({neg_bp_psjp})'
 
         d_cut : dict[str,str] = {}
         d_cut[r'$B^+\to \psi(2S)(\to J/\psi+X)H_{s}$'] = bp_psjp
-        if   info.is_ee(trigger = self._trig):
+        if   self._trig.is_electron: 
             d_cut[r'$B^+\to c\bar{c}(\to e^+ e^-)H_s$']    = bp_ex
             d_cut[r'$B_d\to c\bar{c}(\to e^+ e^-)H_s$']    = bd
             d_cut[r'$B_s\to c\bar{c}(\to e^+ e^-)H_s$']    = bs
-        elif info.is_mm(trigger = self._trig):
+        elif self._trig.is_muon: 
             d_cut[r'$B^+\to c\bar{c}(\to \mu^+\mu^-)H_s$'] = bp_ex
             d_cut[r'$B_d\to c\bar{c}(\to \mu^+\mu^-)H_s$'] = bd
             d_cut[r'$B_s\to c\bar{c}(\to \mu^+\mu^-)H_s$'] = bs
