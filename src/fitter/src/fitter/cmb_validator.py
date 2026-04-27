@@ -187,7 +187,12 @@ class CmbValidator:
             prefix = PDF_PREFIX,
             cfg    = cfg)
 
-        return obj.get_pdf()
+        pdf = obj.get_pdf()
+
+        nev = zfit.Parameter('nev', 10, 0, 100_000)
+        pdf = pdf.create_extended(nev, name = 'Model')
+
+        return pdf
     # ---------------------------
     def _get_data(self, cut : str) -> numpy.ndarray:
         '''
