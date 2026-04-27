@@ -28,7 +28,6 @@ def _get_conf() -> CmbValidatorConf:
     parser.add_argument('-c', '--cutflow', type=       str, help='Cutflow name')
     parser.add_argument('-q', '--q2bin'  , type=       Qsq, help='Q2bin'          , choices =     Qsq)
     parser.add_argument('-M', '--mass'   , type=      Mass, help='Mass to fit'    , choices =    Mass)
-    parser.add_argument('-m', '--model'  , type=     Model, help='Fitting model'  , choices =   Model)
     parser.add_argument('-t', '--trigger', type=   Trigger, help='Name of trigger', choices = Trigger)
     parser.add_argument('-s', '--sample' , type= Component, help='Name of sample' , default = Component.data_24)
     args = parser.parse_args()
@@ -36,7 +35,6 @@ def _get_conf() -> CmbValidatorConf:
     data = {
         'q2bin'  : args.q2bin,
         'mass'   : args.mass,
-        'model'  : args.model,
         'trigger': args.trigger,
         'sample' : args.sample,
         'cutflow': args.cutflow,

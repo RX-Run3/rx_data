@@ -13,7 +13,6 @@ from pydantic    import BaseModel, ConfigDict
 from dmu         import LogStore
 from dmu.stats   import ModelFactory, ModelFactoryConf, ZFitPlotter, ZFitPlotterConf
 from dmu.stats   import FitConf, FitResult, Fitter
-from dmu.stats   import Model
 from dmu.stats   import zfit
 from dmu.generic import utilities as gut
 from rx_common   import Mass
@@ -41,7 +40,6 @@ class CmbInputConfig(BaseModel):
 
     q2bin  : Qsq 
     mass   : Mass 
-    model  : Model 
     trigger: Trigger 
     sample : Component 
     cutflow: str 
