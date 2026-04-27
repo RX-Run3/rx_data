@@ -45,7 +45,7 @@ def _get_conf() -> CmbValidatorConf:
     ana_dir    = Path(os.environ['ANADIR'])
 
     input      = CmbInputConfig(**data)
-    validation = CmbValidationConfig.from_file(fname = 'combinatorial/config.yaml') 
+    validation = CmbValidationConfig.from_file(fname = f'combinatorial/config_{args.q2bin}.yaml') 
 
     cfg_plt    = ZFitPlotterConf.default()
     cfg_plt    = cfg_plt.model_copy(update = {'nbins' : 30})
@@ -122,7 +122,7 @@ def _plot(
     df     : Dataframe with values of parameters and errors
     cfg_val: Config used for combinatorial validation
     '''
-    data= gut.load_data(package = 'fitter_data', fpath = 'combinatorial/plots.yaml')
+    data= gut.load_data(package = 'fitter_data', fpath = f'combinatorial/plots_{cfg_val.input.q2bin}.yaml')
     data['out_dir'] = str(cfg_val.out_dir)
 
     cfg = BandPlotterConf(**data) 
