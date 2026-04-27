@@ -1,0 +1,39 @@
+selection:
+  leakage : (TMath::Abs(B_const_mass_M - 5280) > 200) # && (TMath::Abs(B_const_mass_psi2S_M - 5280) > 100)
+  cmb     : (1)
+  prc     : mva_prc > 0.6
+  mass    : (1)
+cutflows:
+  cmb_window:
+    0.00-0.02 : mva_cmb > 0.00 && mva_cmb < 0.02
+    0.02-0.04 : mva_cmb > 0.02 && mva_cmb < 0.04
+    0.04-0.07 : mva_cmb > 0.04 && mva_cmb < 0.07
+    0.07-0.10 : mva_cmb > 0.07 && mva_cmb < 0.10
+    0.10-0.20 : mva_cmb > 0.10 && mva_cmb < 0.20
+    0.20-0.30 : mva_cmb > 0.20 && mva_cmb < 0.30
+    0.30-0.40 : mva_cmb > 0.30 && mva_cmb < 0.40
+    0.40-0.50 : mva_cmb > 0.40 && mva_cmb < 0.50
+    0.50-0.60 : mva_cmb > 0.50 && mva_cmb < 0.60
+    0.60-0.70 : mva_cmb > 0.60 && mva_cmb < 0.70
+    0.70-0.80 : mva_cmb > 0.70 && mva_cmb < 0.80
+    0.80-0.90 : mva_cmb > 0.80 && mva_cmb < 0.90
+    0.90-1.00 : mva_cmb > 0.90 && mva_cmb < 1.00
+fit:
+  conf:
+    strategy:
+      ntries : 10
+      pvalue : 0.05
+  model:
+    pdfs:
+      - suj 
+    shared       : []
+    reparametrize: {}
+    fix          :
+      dl_suj :  2.5
+      gm_suj : -1.5
+    floating     : []
+    values:
+      mu:
+        - 4500
+        - 4200
+        - 4900
