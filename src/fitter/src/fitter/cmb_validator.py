@@ -194,7 +194,7 @@ class CmbValidator:
 
         pdf = obj.get_pdf()
 
-        nev = zfit.Parameter('nev', 10, 0, 100_000)
+        nev = zfit.Parameter('nev', 10, 0, 1000_000)
         pdf = pdf.create_extended(nev, name = 'Model')
 
         return pdf
