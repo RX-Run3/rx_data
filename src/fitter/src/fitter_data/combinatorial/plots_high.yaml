@@ -6,9 +6,10 @@ size    : [15, 10]
 xname   : Fit
 styles  :
   nev:
-    <<: *style
-    ylabel: Entries 
-    yrange: [0, null]
+    xrotation : 45
+    alpha     : 1.0
+    ylabel    : Entries 
+    yrange    : [0, 4000]
   mu_suj_cmb_1:
     <<: *style
     ylabel: $\mu$
