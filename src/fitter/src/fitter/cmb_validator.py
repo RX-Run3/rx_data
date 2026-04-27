@@ -122,7 +122,7 @@ class CmbValidatorConf(BaseModel):
         cutflow  = self.input.cutflow
         q2bin    = self.input.q2bin
 
-        return self.output.dir_path / f'{q2bin}/{model}/{cutflow}'
+        return self.output.dir_path / f'{q2bin}/{cutflow}/{model}'
     # ------------------------
     @property
     def cuts(self) -> dict[str,str]:
