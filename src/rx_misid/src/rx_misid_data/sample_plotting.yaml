@@ -1,5 +1,5 @@
 rdf_getter:
-  trigger : Hlt2RD_BuToKpEE_MVA_noPID
+  trigger : rk_ee_nopid
   analysis: nopid
 wgt_cfg : weights.yaml
 spl_cfg : splitting.yaml

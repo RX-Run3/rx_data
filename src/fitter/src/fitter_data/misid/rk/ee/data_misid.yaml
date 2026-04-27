@@ -12,7 +12,7 @@ plots_settings: &plots_settings
     bpkpipi : $B^+\to K^+\pi^-\pi^+$
     bpkkk   : $B^+\to K^+K^-K^+$
 # --------------------------------------------------
-trigger          : Hlt2RD_BuToKpEE_MVA_noPID
+trigger          : rk_ee_nopid
 yields           : model/yields/rk/misid_electron.yaml
 selection:
   low    : *no_pid
