@@ -13,7 +13,7 @@ from dmu.stats    import Model, ZFitPlotterConf
 from dmu.generic  import utilities as gut
 from dmu.plotting import BandPlotter, BandPlotterConf
 from rx_selection import selection as sel
-from rx_common    import Mass, Qsq, Component, Trigger
+from rx_common    import Mass, Project, Qsq, Component, Trigger
 from rx_data      import RDFGetter
 from fitter       import CmbValidationConfig
 from fitter       import CmbValidatorConf
@@ -99,7 +99,7 @@ def _get_pars(
     log.info(f'Parameters not found from cache: {out_path}')
 
     rdf = _get_rdf(cfg = cfg)
-    rdf = rdf.Filter(cut)
+    rdf = rdf.Filter(cut, label)
 
     obj = CmbValidator(
         rdf = rdf,
@@ -133,11 +133,10 @@ def main():
     '''
     cfg = _get_conf()
 
-    categories : dict[str,str] = {
-        '+++' : 'TMath::Abs(total_charge) == 3',
-        '+--' : 'TMath::Abs(total_charge) == 1',
-        'Both': '(1)',
-    }
+    categories : dict[str,str] = {'Both': '(1)'}
+    if cfg.input.trigger.project == Project.rk:
+        categories['+++'] = 'TMath::Abs(total_charge) == 3'
+        categories['+--'] = 'TMath::Abs(total_charge) == 1'
 
     l_df : list[pnd.DataFrame] = []
     for label, cut in categories.items():
