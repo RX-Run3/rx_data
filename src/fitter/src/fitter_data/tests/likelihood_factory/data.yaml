@@ -1,6 +1,6 @@
 
 selection        : {}
-trigger          : Hlt2RD_B0ToKpPimMuMu_MVA
+trigger          : rkst_mm_os
 yields           : tests/likelihood_factory/rare_muon.yaml
 observable:
   low:

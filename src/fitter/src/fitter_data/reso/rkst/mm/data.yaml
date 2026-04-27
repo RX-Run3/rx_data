@@ -1,4 +1,4 @@
-trigger          : Hlt2RD_B0ToKpPimMuMu_MVA
+trigger          : rkst_mm_os
 yields           : model/yields/rkst/reso_muon.yaml
 selection        : {}
 observable:
