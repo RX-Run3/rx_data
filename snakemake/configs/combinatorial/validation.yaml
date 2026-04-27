@@ -1,6 +1,3 @@
-trigger:
-  - rk_ee_ss
-  - rkst_ee_ss
 cutflow:
   - cmb_window
 q2bin:
