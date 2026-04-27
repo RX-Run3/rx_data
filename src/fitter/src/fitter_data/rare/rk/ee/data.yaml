@@ -48,14 +48,12 @@ plots_settings: &plots_settings
     bpkpipi_brem_xx1    : $B^+\to K^+\pi^+\pi^-$
     bpkpipi_brem_xx2    : $B^+\to K^+\pi^+\pi^-$
 # ----------------------------------------------------
-trigger          : Hlt2RD_BuToKpEE_MVA
+trigger          : rk_ee_os 
 yields           : model/yields/rk/rare_electron.yaml
 selection        : 
-  low    :
-    convert : L1_not_conv_150 && L2_not_conv_150
+  low    : {}
   central: 
     leakage : TMath::Abs(B_const_mass_M - 5280) > 200
-    convert : L1_not_conv_150 && L2_not_conv_150
   high   : {}
 observable:
   low:
@@ -90,7 +88,7 @@ constraints:
     - bdkstkpiee
     - bpkstkpiee
     - bsphiee
-  combinatorial: true 
+  combinatorial: false 
   signal_shape : true
 fit  : {}
 plots:

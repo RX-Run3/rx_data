@@ -9,14 +9,14 @@
 samples     : &sample
   signal    :
     name    : Bu_Kee_eq_btosllball05_DPC
-    trigger : Hlt2RD_BuToKpEE_MVA
+    trigger : rk_ee_os
     q2bin   : high 
     selection :
       bdt   : (1)
       q2    : q2_track > 14300000 && q2 < 22000000
   background:
     name    : DATA*
-    trigger : Hlt2RD_BuToKpEE_MVA
+    trigger : rk_ee_os
     q2bin   : high 
     selection :
       bdt   : (1)

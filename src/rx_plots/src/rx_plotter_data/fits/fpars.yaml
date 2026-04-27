@@ -1,6 +1,6 @@
 # This is what all the plots will have in common
 generic_info: &sel
-  trigger : Hlt2RD_BuToKpEE_MVA
+  trigger : rk_ee_os
   project : rk
   q2bin   : jpsi
   brem    : 1

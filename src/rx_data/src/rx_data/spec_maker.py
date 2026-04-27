@@ -54,7 +54,7 @@ class SpecMaker:
         Parameters
         -------------
         sample    : E.g. Bu_JpsiK_ee_eq_DPC
-        trigger   : Hlt2RD_BuToKpEE_MVA
+        trigger   : rk_ee_os
         skip_patch: If true, it will not patch for missing samples, false by default
         '''
         self._component = component

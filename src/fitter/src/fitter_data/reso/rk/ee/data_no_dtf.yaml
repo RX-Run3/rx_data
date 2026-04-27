@@ -1,4 +1,4 @@
-trigger          : Hlt2RD_BuToKpEE_MVA
+trigger          : rk_ee_os
 yields           : model/yields/rk/reso_electron.yaml
 selection : 
   extra   : TMath::Abs(B_const_mass_M) > 5200

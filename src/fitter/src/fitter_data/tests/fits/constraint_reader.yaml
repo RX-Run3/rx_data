@@ -1,7 +1,7 @@
 # This is a config file used for tests
 # It illustrates how a fit would run for data
 
-trigger          : Hlt2RD_BuToKpEE_MVA
+trigger          : rk_ee_os
 
 model:
   yields    : model/yields/rk/rare_electron.yaml

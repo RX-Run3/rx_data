@@ -2,7 +2,7 @@
 # It illustrates how a fit would run for data
 
 
-trigger   : Hlt2RD_BuToKpEE_MVA
+trigger   : rk_ee_os
 selection : {}
 yields    : 
   nsig001:

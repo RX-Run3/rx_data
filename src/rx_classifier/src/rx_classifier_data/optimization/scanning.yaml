@@ -2,7 +2,7 @@
 samples:
   signal  : Bu_Kee_eq_btosllball05_DPC
   control : Bu_JpsiK_ee_eq_DPC
-  trigger : Hlt2RD_BuToKpEE_MVA
+  trigger : rk_ee_os
 variables:
   mva_cmb:
     - 0.5

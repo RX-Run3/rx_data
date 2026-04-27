@@ -2,7 +2,7 @@
 
 input:
   q2bin   : jpsi
-  trigger : Hlt2RD_BuToKpEE_MVA
+  trigger : rk_ee_os
   sample  : DATA*
   #sample  : Bu_JpsiK_ee_eq_DPC
   samples :

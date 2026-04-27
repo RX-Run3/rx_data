@@ -49,7 +49,7 @@ plots_settings: &plots_settings
     bpkpipi_brem_xx2    : $B^+\to K^+\pi^+\pi^-$
 # ----------------------------------------------------
 mod_cfg: &mod_cfg
-  trigger          : Hlt2RD_BuToKpEE_MVA
+  trigger          : rk_ee_os
   yields           : model/yields/rk/rare_electron.yaml
   selection        : # Put here whavever needs to be added ON TOP of the signal region
     low    :

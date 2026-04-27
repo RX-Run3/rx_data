@@ -5,13 +5,13 @@
 bp : &samp_bp
   signal    : &signal
     name    : Bu_Kee_eq_btosllball05_DPC
-    trigger : Hlt2RD_BuToKpEE_MVA
+    trigger : rk_ee_os
     q2bin   : central
     selection :
       bdt   : mva_cmb > 0.6
   background: 
     name    : Bu_K2stee_Kpipi_eq_mK1430_DPC
-    trigger : Hlt2RD_BuToKpEE_MVA
+    trigger : rk_ee_os
     q2bin   : central
     selection :
       bdt   : mva_cmb > 0.6
@@ -20,7 +20,7 @@ bd : &samp_bd
     <<: *signal
   background: 
     name    : Bd_Kstee_eq_btosllball05_DPC
-    trigger : Hlt2RD_BuToKpEE_MVA
+    trigger : rk_ee_os
     q2bin   : central
     selection :
       bdt   : mva_cmb > 0.6

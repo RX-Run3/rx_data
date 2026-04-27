@@ -9,7 +9,7 @@
 
 signal    : &sig_sam
   name    : Bu_Kee_eq_btosllball05_DPC
-  trigger : Hlt2RD_BuToKpEE_MVA
+  trigger : rk_ee_os
   q2bin   : high 
   selection :
     bdt   : (1)
@@ -17,7 +17,7 @@ signal    : &sig_sam
     mass  : (1) 
 
 background: &bkg_sam
-  trigger : Hlt2RD_BuToKpEE_MVA
+  trigger : rk_ee_os
   q2bin   : high 
   selection :
     bdt   : (1)

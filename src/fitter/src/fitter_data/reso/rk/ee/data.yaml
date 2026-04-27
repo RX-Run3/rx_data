@@ -13,7 +13,7 @@ plots_settings: &plots_settings
     - 4800
     - 6000
 # ------------------------------
-trigger          : Hlt2RD_BuToKpEE_MVA
+trigger          : rk_ee_os
 yields           : model/yields/rk/reso_electron.yaml
 selection        : {}
 observable:
