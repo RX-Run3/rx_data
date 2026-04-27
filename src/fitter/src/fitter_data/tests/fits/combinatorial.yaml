@@ -9,7 +9,7 @@ fit_strategy: &fit_strategy
       ignore_status : False 
 constraints: &cons
     sample     : DATA_24* 
-    trigger    : Hlt2RD_B0ToKpPimEE_SameSign_MVA
+    trigger    : rkst_ee_ss
     selection  : 
       <<: *reso_veto
     parameters : # Will constrain parameters starting
@@ -51,7 +51,7 @@ high:
     gm_suj : -10
   constraints:
       sample     : DATA_24* 
-      trigger    : Hlt2RD_B0ToKpPimEE_SameSign_MVA
+      trigger    : rkst_ee_ss
       selection  : 
         <<: *reso_veto
       parameters : 

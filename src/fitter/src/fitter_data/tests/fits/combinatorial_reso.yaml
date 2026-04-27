@@ -13,7 +13,7 @@ jpsi:
   fix           : {}
   constraints:
     sample     : DATA_24* 
-    trigger    : Hlt2RD_BuToKpEE_SameSign_MVA 
+    trigger    : rk_ee_ss
     selection  :
       mass : (1)
       <<: *reso_veto

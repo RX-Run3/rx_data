@@ -12,7 +12,7 @@ plot_conf: &plot_conf
 # -------------------------
 constraints_low    : &cons_low
   component  : data_24
-  trigger    : Hlt2RD_B0ToKpPimEE_SameSign_MVA
+  trigger    : rkst_ee_ss
   parameters : # Will constrain parameters starting
     - mu       # with any of these strings
     - ap       # E.g mu_hypexp_combinatorial_1
@@ -26,7 +26,7 @@ constraints_low    : &cons_low
 # -------------------------
 constraints_central: &cons_central
   component  : data_24
-  trigger    : Hlt2RD_B0ToKpPimEE_SameSign_MVA
+  trigger    : rkst_ee_ss
   parameters : # Will constrain parameters starting
     - mu       # with any of these strings
     - ap       # E.g mu_hypexp_combinatorial_1
@@ -41,7 +41,7 @@ constraints_central: &cons_central
 # -------------------------
 constraints_high   : &cons_high
   component  : data_24
-  trigger    : Hlt2RD_B0ToKpPimEE_SameSign_MVA
+  trigger    : rkst_ee_ss
   parameters : # Will constrain parameters starting
     - mu       # with any of these strings
     - sg       # E.g mu_hypexp_combinatorial_1
