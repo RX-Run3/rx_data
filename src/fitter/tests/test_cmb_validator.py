@@ -4,6 +4,7 @@ Module needed to test Combinatorial validator class
 import numpy
 
 import pytest
+import pandas as pnd
 
 from pathlib     import Path
 from scipy.stats import truncexpon
@@ -70,6 +71,22 @@ def test_config(
         validation = validation,
         output     = output)
 # ----------------------
+def _get_df(
+    cfg : CmbValidatorConf,
+    cat : str, 
+    mass: Mass) -> pnd.DataFrame:
+
+    rdf = _get_rdf(mass = mass)
+    obj = CmbValidator(
+        rdf = rdf,
+        cfg = cfg)
+    res = obj.run(label = 'test')
+    df  = res.df
+
+    df['Category'] = cat
+
+    return df
+# ----------------------
 @pytest.mark.parametrize('mass'   , [Mass.bp_bcor])
 @pytest.mark.parametrize('cutflow', ['cmb_window'])
 def test_validator(
@@ -100,14 +117,12 @@ def test_validator(
         output     = output,
     )
 
-    rdf = _get_rdf(mass = mass)
+    l_df : list[pnd.DataFrame] = []
+    for cat in ['c1', 'c2']:
+        df = _get_df(cat = cat, cfg = cfg, mass = mass)
+        l_df.append(df)
 
-    obj = CmbValidator(
-        rdf = rdf,
-        cfg = cfg)
-    res = obj.run(label = 'test')
-    df  = res.df
-
+    df      = pnd.concat(l_df)
     data    = gut.load_data(
         package = 'fitter_data', 
         fpath   = 'combinatorial/test_plots.yaml')
