@@ -18,6 +18,10 @@ styles  :
     <<: *style
     ylabel: $\sigma$
     yrange: [  0,  1200]
+  pvalue:
+    <<: *style
+    ylabel    : p-value 
+    yrange    : [0.0, 1.0]
 labels :
   +++  : +++
   +--  : +--
