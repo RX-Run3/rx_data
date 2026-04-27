@@ -29,3 +29,5 @@ fit:
     shared       : []
     reparametrize: {}
     floating     : []
+    fix          :
+      mu : 4700
