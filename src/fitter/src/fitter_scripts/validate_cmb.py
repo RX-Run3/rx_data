@@ -62,8 +62,6 @@ def _get_conf() -> CmbValidatorConf:
 # ----------------------
 @cache
 def _get_rdf(cfg : CmbValidatorConf) -> RDF.RNode:
-    log.info('Parameters not found from cache')
-
     gtr = RDFGetter(
         trigger= cfg.input.trigger,
         sample = cfg.input.sample)
@@ -99,6 +97,8 @@ def _get_pars(
     if out_path.exists():
         log.info(f'Parameters found from cache, loading: {out_path}')
         return pnd.read_parquet(path = out_path)
+
+    log.info(f'Parameters not found from cache: {out_path}')
 
     rdf = _get_rdf(cfg = cfg)
     rdf = rdf.Filter(cut)
