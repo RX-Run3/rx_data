@@ -22,7 +22,7 @@ mm : &samp_mm
     <<: *signal
   background: 
     name    : DATA_* 
-    trigger : Hlt2RD_BuToKpMuMu_MVA
+    trigger : rk_mm_os
     q2bin   : central
     selection :
       bdt   : mva_cmb > 0.6
