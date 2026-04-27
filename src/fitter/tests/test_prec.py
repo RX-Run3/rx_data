@@ -13,7 +13,7 @@ from dmu.stats    import Fitter, KDEConf
 from dmu.stats    import utilities as sut
 from dmu.stats    import zfit
 from dmu.workflow import Cache
-from rx_common    import Mass, Trigger, Qsq, Channel
+from rx_common    import Cuts, Mass, Trigger, Qsq, Channel
 from rx_selection import selection as sel
 from rx_data      import RDFGetter
 from fitter       import PRec
@@ -31,7 +31,7 @@ def initialize():
     LogStore.set_level('rx_fitter:inclusive_sample_weights', 10)
     LogStore.set_level('rx_fitter:prec'                    , 10)
 
-    plt.style.use(mplhep.style.LHCb2)
+    plt.style.use(mplhep.style.LHCb2) # type: ignore
 #-----------------------------------------------
 @pytest.mark.parametrize('trig', [Trigger.rk_ee_os, Trigger.rkst_ee_os])
 def test_electron(tmp_path : Path, trig : Trigger):
@@ -112,7 +112,7 @@ def test_electron_by_block(tmp_path : Path, trig : Trigger, block : int):
     fit_cfg = fit_cfg.model_copy(update = {'padding' : pad_cfg})
     cfg     = cfg.model_copy(update = {'fit' : fit_cfg})
 
-    with sel.custom_selection(d_sel={'block' : f'block == {block}'}),\
+    with sel.custom_selection(d_sel={Cuts.block : f'block == {block}'}),\
          Cache.cache_root(tmp_path):
         obp = PRec(
             name  = 'main',
@@ -230,7 +230,7 @@ def test_bdt(q2bin : str, bdt_cut : str, tmp_path : Path):
 
     with RDFGetter.max_entries(value = 100_000),\
          Cache.cache_root(tmp_path),\
-         sel.custom_selection(d_sel={'bdt' : bdt_cut}):
+         sel.custom_selection(d_sel={Cuts.cmb : bdt_cut}):
 
         obp = PRec(
             name  = 'main',
@@ -255,7 +255,7 @@ def test_brem(brem_cut : str, tmp_path : Path):
 
     cfg = CCbarConf.default(channel = Channel.ee)
 
-    with sel.custom_selection(d_sel={'brem' : brem_cut}),\
+    with sel.custom_selection(d_sel={Cuts.brem : brem_cut}),\
         RDFGetter.max_entries(value = 100_000),\
         Cache.cache_root(tmp_path):
         obp = PRec(
@@ -342,9 +342,14 @@ def test_low_stats(mass : str, tmp_path : Path):
         label = mass,
         limits=(4500, 6000))
 
+    d_sel   = {
+        Cuts.cmb : 'mva_cmb > 0.9',
+        Cuts.prc : 'mva_prc > 0.9',
+               }
+
     cfg = CCbarConf.default(channel = Channel.ee)
     with Cache.cache_root(path=tmp_path),\
-        sel.custom_selection(d_sel={'bdt' : 'mva_cmb > 0.9 && mva_prc > 0.9'}):
+        sel.custom_selection(d_sel=d_sel):
         obp = PRec(
             name  = 'main',
             cfg   = cfg,
