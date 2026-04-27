@@ -18,7 +18,7 @@ plots_settings: &plots_settings
     - 4700
     - 6000
 
-trigger          : Hlt2RD_B0ToKpPimEE_MVA
+trigger          : rkst_ee_os
 
 yields           : model/yields/rkst/reso_electron.yaml
 selection        : {}

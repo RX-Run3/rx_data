@@ -44,7 +44,7 @@ plots_settings: &plots_settings
     bdkstkpiee_brem_xx1     : $B^0\to K^*(\to K^+\pi^-)e^+e^-$
     bdkstkpiee_brem_xx2     : $B^0\to K^*(\to K^+\pi^-)e^+e^-$
 # ----------------------------------------------------
-trigger          : Hlt2RD_B0ToKpPimEE_MVA
+trigger          : rkst_ee_os
 yields           : model/yields/rkst/rare_electron.yaml
 selection        : 
   low    : {}

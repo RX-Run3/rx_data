@@ -1,7 +1,7 @@
 # This is a config file used for tests
 # It illustrates how a fit would run for data
 
-trigger   : Hlt2RD_B0ToKpPimEE_MVA
+trigger   : rkst_ee_os
 yields    : model/yields/rkst/reso_electron.yaml
 selection : 
   extra   : TMath::Abs(B_const_mass_M) > 5180
