@@ -13,7 +13,7 @@ from fitter      import CmbInputConfig, CmbValidatorConf, CmbValidationConfig
 from fitter      import CmbOutputConfig
 from rx_common   import Component, Mass, Qsq, Trigger
 from dmu         import LogStore
-from dmu.stats   import Model, ZFitPlotterConf
+from dmu.stats   import ZFitPlotterConf
 from dmu.generic  import utilities as gut
 from dmu.plotting import BandPlotter, BandPlotterConf
 
@@ -42,12 +42,10 @@ def _get_rdf(mass : Mass) -> RDF.RNode:
     return rdf
 # ----------------------
 @pytest.mark.parametrize('mass'   , [Mass.bp_bcor])
-@pytest.mark.parametrize('model'  , [Model.exp   ])
-@pytest.mark.parametrize('cutflow', ['cmb'       ])
+@pytest.mark.parametrize('cutflow', ['cmb_window'])
 def test_config(
     tmp_path: Path,
     mass    : Mass,
-    model   : Model,
     cutflow : str):
     '''
     Validate configuration
@@ -55,7 +53,6 @@ def test_config(
     input      = CmbInputConfig(
         q2bin   = Qsq.central,
         mass    = mass,
-        model   = model,
         trigger = Trigger.rk_ee_ss,
         sample  = Component.data_24,
         cutflow = cutflow,
@@ -66,7 +63,7 @@ def test_config(
         plots   = ZFitPlotterConf.default(),
     )
 
-    validation = CmbValidationConfig.from_file(fname = 'combinatorial/config.yaml') 
+    validation = CmbValidationConfig.from_file(fname = 'combinatorial/test_config.yaml') 
 
     return CmbValidatorConf(
         input      = input,
@@ -74,12 +71,10 @@ def test_config(
         output     = output)
 # ----------------------
 @pytest.mark.parametrize('mass'   , [Mass.bp_bcor])
-@pytest.mark.parametrize('model'  , [Model.exp   ])
-@pytest.mark.parametrize('cutflow', ['cmb'      ])
+@pytest.mark.parametrize('cutflow', ['cmb_window'])
 def test_validator(
     tmp_path: Path,
     mass    : Mass,
-    model   : Model,
     cutflow : str):
     '''
     Test actual validation
@@ -87,7 +82,6 @@ def test_validator(
     input       = CmbInputConfig(
         q2bin   = Qsq.central,
         mass    = mass,
-        model   = model,
         trigger = Trigger.rk_ee_ss,
         sample  = Component.data_24,
         cutflow = cutflow,
@@ -98,7 +92,7 @@ def test_validator(
         plots   = ZFitPlotterConf.default(),
     )
 
-    validation = CmbValidationConfig.from_file(fname = 'combinatorial/config.yaml') 
+    validation = CmbValidationConfig.from_file(fname = 'combinatorial/test_config.yaml') 
 
     cfg = CmbValidatorConf(
         input      = input,
@@ -111,14 +105,17 @@ def test_validator(
     obj = CmbValidator(
         rdf = rdf,
         cfg = cfg)
-    res = obj.run()
+    res = obj.run(label = 'test')
+    df  = res.df
 
     data    = gut.load_data(
         package = 'fitter_data', 
         fpath   = 'combinatorial/test_plots.yaml')
+    data['out_dir'] = tmp_path
+
     cfg_plt = BandPlotterConf(**data)
     cfg_plt = cfg_plt.model_copy(update = {'out_dir' : tmp_path})
 
-    ptr = BandPlotter(df = res.df, cfg = cfg_plt)
+    ptr = BandPlotter(df = df, cfg = cfg_plt)
     ptr.plot()
 # ----------------------
