@@ -1,0 +1,21 @@
+trigger:
+  - rk_ee_ss
+  - rkst_ee_ss
+cutflow:
+  - cmb_window
+q2bin:
+  - low
+  - central
+  - high
+output:
+  low:
+    - hypexp/ap_hypexp_cmb_1.png
+    - hypexp/bt_hypexp_cmb_1.png
+    - hypexp/mu_hypexp_cmb_1.png
+  central:
+    - hypexp/ap_hypexp_cmb_1.png
+    - hypexp/bt_hypexp_cmb_1.png
+    - hypexp/mu_hypexp_cmb_1.png
+  high:
+    - suj/mu_suj_cmb_1.png
+    - suj/sg_suj_cmb_1.png
