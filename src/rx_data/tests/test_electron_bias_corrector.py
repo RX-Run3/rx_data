@@ -96,14 +96,14 @@ def _plot_correction(
     l2_var = ['L2_ETA', 'L2_PHI', 'L2_PT', 'L2_PX', 'L2_PY', 'L2_PZ', 'L2_HASBREMADDED']
 
     for var in l1_var + l2_var:
+        nentries = len(org)
+        title = f'{name}; Entries={nentries}'
         ax=_plot_brem_kinematics(df=org, var=var, label='Original' )
         ax=_plot_brem_kinematics(df=cor, var=var, label='Corrected', ax=ax)
         if 'PT' in var:
             name= var.replace('PT', 'TRACK_PT')
-            ax  = _plot_brem_kinematics(df=cor, var=name, label='Track', ax=ax)
+            ax  = _plot_brem_kinematics(df=cor, var=title, label='Track', ax=ax)
 
-        nentries = len(org)
-        title = f'Photon veto: {name}; Entries={nentries}'
         plt.title(title)
         plt.legend()
         plt.xlabel(var)
@@ -198,7 +198,7 @@ def test_correction_brem_track(tmp_path : Path, photon_veto : str):
     df_org = _filter_kinematics(df_org)
     df_cor = _filter_kinematics(df_cor)
 
-    text = f'Vetoed {corr.photons_vetoed}/{corr.all_photons} @ version: {photon_veto}'
+    text = f'Vetoed {cor.photons_vetoed}/{cor.all_photons}; version: {photon_veto}'
 
     _plot_correction(
         org =df_org, 
