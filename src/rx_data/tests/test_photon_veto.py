@@ -18,7 +18,7 @@ def initialize():
     LogStore.set_level('rx_data:photon_veto', 10)
 # ----------------------
 @pytest.mark.parametrize('name'   , ['L1', 'L2'])
-@pytest.mark.parametrize('version', ['v1', 'v2'])
+@pytest.mark.parametrize('version', ['v0', 'v1', 'v2'])
 def test_simple(name : str, version : str):
     '''
     Simplest test
