@@ -4,11 +4,14 @@ Module containing PhotonVeto class
 import re
 import pandas as pnd
 
+from dmu         import LogStore
 from typing      import Final
 from pydantic    import BaseModel, ConfigDict, RootModel, model_validator
 from dmu.generic import utilities as gut
 
 REGEX : Final[str] = r'(0|1|2)_(\d+)-(\d+)_(\d+)'
+
+log=LogStore.add_logger('rx_data:photon_veto')
 # ------------------------------------
 class EcalCell(BaseModel):
     '''
@@ -19,6 +22,9 @@ class EcalCell(BaseModel):
     area : int
     row  : int
     col  : int
+    # ------------------------------------
+    def __str__(self):
+        return f'{self.area:03d},{self.row:03d},{self.col:03d}'
     # ------------------------------------
     @classmethod
     def from_series(
@@ -117,6 +123,8 @@ class PhotonVeto:
             package =  'rx_data_data',
             fpath   = f'calorimeter/veto/{self._version}.yaml')
 
+        log.info('Loading cells to veto')
+
         return EcalRegion(root = data)
     # ------------------------------------
     def veto(
@@ -138,6 +146,7 @@ class PhotonVeto:
             lepton_name = lepton_name)
 
         if cell in self._bad_cells.root:
+            log.debug(f'Vetoing: {cell}')
             return True
 
         return False
