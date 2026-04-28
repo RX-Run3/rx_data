@@ -123,7 +123,7 @@ class PhotonVeto:
             package =  'rx_data_data',
             fpath   = f'calorimeter/veto/{self._version}.yaml')
 
-        log.info('Loading cells to veto')
+        log.info(f'Loading cells from version {self._version} to veto')
 
         return EcalRegion(root = data)
     # ------------------------------------
