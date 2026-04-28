@@ -118,12 +118,16 @@ class PhotonVeto:
         self._version   = version
         self._bad_cells = self._load_bad_cells()
     # ------------------------------------
-    def _load_bad_cells(self) -> EcalRegion:
+    def _load_bad_cells(self) -> EcalRegion | None:
         data        = gut.load_data(
             package =  'rx_data_data',
             fpath   = f'calorimeter/veto/{self._version}.yaml')
 
         log.info(f'Loading cells from version {self._version} to veto')
+
+        if data is None: 
+            log.warning(f'Not vetoing any calorimeter region for version: {self._version}')
+            return None
 
         return EcalRegion(root = data)
     # ------------------------------------
@@ -141,6 +145,9 @@ class PhotonVeto:
         ---------------
         True if photon is meant to be picked, False otherwise
         '''
+        if self._bad_cells is None:
+            return False
+
         cell = EcalCell.from_series(
             series      = row,
             lepton_name = lepton_name)
