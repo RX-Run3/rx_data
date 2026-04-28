@@ -1,8 +1,101 @@
 '''
 Module containing PhotonVeto class
 '''
+import re
 import pandas as pnd
 
+from typing      import Final
+from pydantic    import BaseModel, ConfigDict, RootModel, model_validator
+from dmu.generic import utilities as gut
+
+REGEX : Final[str] = r'(0|1|2)_(\d+)-(\d+)_(\d+)'
+# ------------------------------------
+class EcalCell(BaseModel):
+    '''
+    Class meant to represent an ECAL cell
+    '''
+    model_config = ConfigDict(frozen=True)
+
+    area : int
+    row  : int
+    col  : int
+    # ------------------------------------
+    @classmethod
+    def from_series(
+        cls,
+        series      : pnd.Series,
+        lepton_name : str) -> 'EcalCell':
+        '''
+        Parameters
+        ---------------
+        lepton_name: E.g. L1 or L2
+        series     : Pandas series with information on Lepton and its photon
+
+        Return
+        ---------------
+        Cell in calorimeter
+        '''
+        data = series.to_dict()
+
+        area = data[f'{lepton_name}_BREMHYPOAREA']
+        row  = data[f'{lepton_name}_BREMHYPOROW' ]
+        col  = data[f'{lepton_name}_BREMHYPOCOL' ]
+
+        return cls(area = area, row = row, col = col)
+# ------------------------------------
+class EcalRegion(RootModel[list[EcalCell]]):
+    '''
+    Class meant to represent a collection of
+    ECAL cells
+    '''
+    model_config = ConfigDict(frozen=True)
+    # ----------------------
+    @classmethod
+    def _location_from_str(cls, string : str) -> set[tuple[int,int,int]]:
+        '''
+        Parameters
+        ------------
+        string: String representing locations of cells in ECAL
+
+        Returns
+        ------------
+        Set of tuples with the area, row and column
+        '''
+        mtch = re.match(REGEX, string)
+        if not mtch:
+            raise ValueError(f'Cannot extract location from: {string}')
+
+        area    = int(mtch.group(1))
+        min_col = int(mtch.group(2))
+        max_col = int(mtch.group(3))
+        row     = int(mtch.group(4))
+
+        if min_col >= max_col:
+            raise ValueError(f'Column range is invalid: [{min_col},{max_col}]')
+
+        cols = [ col for col in range(min_col, max_col + 1) ]
+
+        return { (area, row, col) for col in cols }
+    # ----------------------
+    @model_validator(mode = 'before')
+    @classmethod
+    def preprocess(cls, data):
+        '''
+        Formats properly the input data
+        '''
+        new_data : list[dict[str,int]] = []
+        for value in data:
+            locations = cls._location_from_str(string = value)
+            for area, row, col in locations:
+                entry = {
+                    'area' : area,
+                    'row'  : row,
+                    'col'  : col,
+                }
+
+                new_data.append(entry)
+
+        return new_data
 # ------------------------------------
 class PhotonVeto:
     '''
@@ -10,11 +103,24 @@ class PhotonVeto:
     location in calorimeter
     '''
     # ------------------------------------
-    def __init__(self):
-        pass
+    def __init__(self, version : str):
+        '''
+        Parameters
+        ---------------
+        version: Version of cells to veto, e.g. v1
+        '''
+        self._version   = version
+        self._bad_cells = self._load_bad_cells()
+    # ------------------------------------
+    def _load_bad_cells(self) -> EcalRegion:
+        data        = gut.load_data(
+            package =  'rx_data_data',
+            fpath   = f'calorimeter/veto/{self._version}.yaml')
+
+        return EcalRegion(root = data)
     # ------------------------------------
     def veto(
-        self, 
+        self,
         lepton_name : str,
         row         : pnd.Series) -> bool:
         '''
@@ -27,6 +133,12 @@ class PhotonVeto:
         ---------------
         True if photon is meant to be picked, False otherwise
         '''
+        cell = EcalCell.from_series(
+            series      = row,
+            lepton_name = lepton_name)
 
-        return True
+        if cell in self._bad_cells.root:
+            return True
+
+        return False
 # ------------------------------------
