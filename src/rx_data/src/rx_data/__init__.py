@@ -22,8 +22,10 @@ from .sample_patcher          import SamplePatcher
 from .specification           import Sample
 from .samples                 import SamplesPrinter
 from .rdf_loader              import RDFLoader
+from .photon_veto             import PhotonVeto
 
 __all__ = [
+    'PhotonVeto',
     'EmulatorConf',
     'Sample',
     'SamplesConf',
