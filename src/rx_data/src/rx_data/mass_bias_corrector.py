@@ -264,6 +264,20 @@ class MassBiasCorrector:
 
         return df
     # ------------------------------------------
+    @property
+    def photons_vetoed(self) -> int:
+        '''
+        Number of photons vetoes in correction
+        '''
+        return self._ebc.photons_vetoed
+    # ------------------------------------------
+    @property
+    def all_photons(self) -> int:
+        '''
+        Number of photons that would have been used if there had not been any veto
+        '''
+        return self._ebc.all_photons
+    # ------------------------------------------
     def get_df(self, suffix: str|None = None) -> pnd.DataFrame:
         '''
         Parameters
