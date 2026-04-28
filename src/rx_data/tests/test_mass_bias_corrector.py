@@ -239,8 +239,13 @@ def _check_size(rdf_org : RDF.RNode, rdf_cor : RDF.RNode) -> None:
 
     log.info(f'Sizes agree at: {in_size}')
 #-----------------------------------------
-@pytest.mark.parametrize('sample, trigger', _SAMPLES_EE)
-def test_simple(sample : Component, trigger : Trigger, tmp_path : Path):
+@pytest.mark.parametrize('sample, trigger'    , _SAMPLES_EE)
+@pytest.mark.parametrize('photon_veto_version', _PHOTON_VETO_VERSIONS)
+def test_simple(
+    photon_veto_version : str,
+    sample              : Component, 
+    trigger             : Trigger, 
+    tmp_path            : Path):
     '''
     Simplest test
     '''
@@ -252,18 +257,20 @@ def test_simple(sample : Component, trigger : Trigger, tmp_path : Path):
     is_mc   = ut.rdf_is_mc(rdf=rdf_org)
 
     cor_1   = MassBiasCorrector(
-        skip_correction= True,
-        df             = df_org, 
-        is_mc          = is_mc,
-        trigger        = trigger,
-        ecorr_kind     = kind)
+        photon_veto_version= photon_veto_version,
+        skip_correction    = True,
+        df                 = df_org, 
+        is_mc              = is_mc,
+        trigger            = trigger,
+        ecorr_kind         = kind)
 
     cor_2   = MassBiasCorrector(
-        skip_correction= False,
-        df             = df_org, 
-        is_mc          = is_mc,
-        trigger        = trigger,
-        ecorr_kind     = kind)
+        photon_veto_version= photon_veto_version,
+        skip_correction    = False,
+        df                 = df_org, 
+        is_mc              = is_mc,
+        trigger            = trigger,
+        ecorr_kind         = kind)
 
     df_unc  = cor_1.get_df()
     rdf_unc = RDF.FromPandas(df_unc)
