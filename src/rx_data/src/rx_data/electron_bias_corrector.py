@@ -2,14 +2,15 @@
 Module with ElectronBiasCorrector class
 '''
 import math
-from typing                 import Final, cast
-
-import pandas as pnd
 import vector
-from vector                 import MomentumObject4D as v4d
-from dmu.logging.log_store  import LogStore
+import pandas as pnd
 
-from rx_data.brem_bias_corrector   import BremBiasCorrector
+from typing               import Final, cast
+from vector               import MomentumObject4D as v4d
+from dmu                  import LogStore
+
+from .brem_bias_corrector import BremBiasCorrector
+from .photon_veto         import PhotonVeto
 
 log=LogStore.add_logger('rx_data:electron_bias_corrector')
 _ELECTRON_MASS : Final[float]=0.511
