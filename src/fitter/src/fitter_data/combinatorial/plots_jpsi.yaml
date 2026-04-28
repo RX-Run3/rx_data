@@ -1,0 +1,37 @@
+style : &style
+  xrotation : 45
+  alpha     : 0.5
+# ------------------------
+size    : [15, 10]
+xname   : Fit
+styles  :
+  nev:
+    xrotation : 45
+    alpha     : 1.0
+    ylabel    : Entries 
+    yrange    : [0, 4000]
+  mu_hypexp_cmb_1:
+    <<: *style
+    ylabel: $\mu$
+    yrange: [4000, 7000]
+  ap_hypexp_cmb_1:
+    <<: *style
+    ylabel: $\alpha$
+    yrange: [0., 0.010]
+  bt_hypexp_cmb_1:
+    <<: *style
+    ylabel: $\beta$
+    yrange: [0., 0.003]
+  pvalue:
+    <<: *style
+    ylabel    : p-value 
+    yrange    : [0.0, 1.0]
+labels :
+  +++  : +++
+  +--  : +--
+  Both : Both
+groups :
+  all:
+    - +++ 
+    - +--
+    - Both
