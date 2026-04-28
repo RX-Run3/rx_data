@@ -11,7 +11,6 @@ import mplhep
 import pandas            as pnd
 import matplotlib.pyplot as plt
 
-from ROOT      import RDataFrame
 from dmu       import LogStore
 from rx_data   import RDFGetter
 from rx_data   import df_from_rdf
@@ -33,7 +32,7 @@ def initialize():
     '''
     LogStore.set_level('rx_data:electron_bias_corrector', 10)
     LogStore.set_level('rx_data:brem_bias_corrector'    , 10)
-    plt.style.use(mplhep.style.LHCb2)
+    plt.style.use(mplhep.style.LHCb2) # type: ignore
 
     os.makedirs(Data.plt_dir, exist_ok=True)
 #-----------------------------------------
