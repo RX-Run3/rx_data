@@ -2,21 +2,36 @@
 Module with tests for PhotonVeto class
 '''
 
+import tqdm
+import numpy
 import pytest
 import pandas as pnd
 
+from dmu     import LogStore
 from rx_data import PhotonVeto
 
+# ----------------------
+@pytest.fixture(scope='session', autouse=True)
+def initialize():
+    '''
+    This will run before any test
+    '''
+    LogStore.set_level('rx_data:photon_veto', 10)
+# ----------------------
 @pytest.mark.parametrize('name', ['L1', 'L2'])
 def test_simple(name : str):
     '''
     Simplest test
     '''
-    row = pnd.Series({
-        f'{name}_BREMHYPOAREA' :  2,
-        f'{name}_BREMHYPOROW'  : 35,
-        f'{name}_BREMHYPOCOL'  : 23,
-    })
+    size = 1000
+    data                         = dict()
+    data[f'{name}_BREMHYPOAREA'] = numpy.random.choice(a = [0, 1, 2], size = size)
+    data[f'{name}_BREMHYPOROW' ] = numpy.random.randint(low = -60, high = 60, size = size)
+    data[f'{name}_BREMHYPOCOL' ] = numpy.random.randint(low =  14, high = 49, size = size)
 
+    df  = pnd.DataFrame(data)
     obj = PhotonVeto(version = 'v1')
-    obj = obj.veto(row = row, lepton_name = name)
+    for _, row in tqdm.tqdm(df.iterrows(), ascii = ' -'):
+        obj.veto(
+            row = row,
+            lepton_name = name)
