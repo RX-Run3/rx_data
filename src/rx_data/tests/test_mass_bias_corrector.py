@@ -286,8 +286,13 @@ def test_simple(
     d_rdf   = {'Original' : rdf_org, 'Corrected' : rdf_cor}
     _compare_masses(d_rdf, f'simple/{trigger}', kind, out_dir = tmp_path)
 #-----------------------------------------
-@pytest.mark.parametrize('sample, trigger', _SAMPLES_DATA) 
-def test_medium_input(sample : Component, trigger : Trigger, tmp_path : Path):
+@pytest.mark.parametrize('sample, trigger'    , _SAMPLES_DATA) 
+@pytest.mark.parametrize('photon_veto_version', _PHOTON_VETO_VERSIONS)
+def test_medium_input(
+    photon_veto_version : str,
+    sample              : Component, 
+    trigger             : Trigger, 
+    tmp_path            : Path):
     '''
     Medium input
     '''
@@ -299,18 +304,20 @@ def test_medium_input(sample : Component, trigger : Trigger, tmp_path : Path):
     is_mc   = ut.rdf_is_mc(rdf=rdf_org)
 
     cor_1   = MassBiasCorrector(
-        skip_correction= True,
-        df             = df_org, 
-        is_mc          = is_mc,
-        trigger        = trigger,
-        ecorr_kind     = kind)
+        photon_veto_version = photon_veto_version,
+        skip_correction     = True,
+        df                  = df_org, 
+        is_mc               = is_mc,
+        trigger             = trigger,
+        ecorr_kind          = kind)
 
     cor_2   = MassBiasCorrector(
-        skip_correction= False,
-        df             = df_org, 
-        is_mc          = is_mc,
-        trigger        = trigger,
-        ecorr_kind     = kind)
+        photon_veto_version = photon_veto_version,
+        skip_correction     = False,
+        df                  = df_org, 
+        is_mc               = is_mc,
+        trigger             = trigger,
+        ecorr_kind          = kind)
 
     df_unc  = cor_1.get_df()
     rdf_unc = RDF.FromPandas(df_unc)
@@ -339,10 +346,11 @@ def test_suffix(sample : Component, trigger : Trigger):
     is_mc   = ut.rdf_is_mc(rdf=rdf_org)
 
     cor     = MassBiasCorrector(
-        df        =df_org, 
-        trigger   =trigger,
-        is_mc     =is_mc,
-        ecorr_kind=kind)
+        photon_veto_version = 'v0',
+        df                  = df_org, 
+        trigger             = trigger,
+        is_mc               = is_mc,
+        ecorr_kind          = kind)
 
     df_cor = cor.get_df(suffix=kind)
     rdf_cor= RDF.FromPandas(df_cor)
@@ -362,6 +370,7 @@ def test_brem_threshold(sample : Component, trigger : Trigger, brem_energy_thres
     is_mc   = ut.rdf_is_mc(rdf=rdf_org)
 
     cor_1   = MassBiasCorrector(
+        photon_veto_version  ='v0',
         df                   =df_org, 
         trigger              =trigger,
         is_mc                =is_mc,
@@ -369,6 +378,7 @@ def test_brem_threshold(sample : Component, trigger : Trigger, brem_energy_thres
         brem_energy_threshold=brem_energy_threshold)
 
     cor_2   = MassBiasCorrector(
+        photon_veto_version  ='v0',
         df                   =df_org, 
         trigger              =trigger,
         is_mc                =is_mc,
