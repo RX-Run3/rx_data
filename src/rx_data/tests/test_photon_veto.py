@@ -9,6 +9,7 @@ import pandas as pnd
 from dmu     import LogStore
 from rx_data import PhotonVeto
 
+log = LogStore.add_logger('rx_data:test_photon_veto')
 # ----------------------
 @pytest.fixture(scope='session', autouse=True)
 def initialize():
@@ -35,3 +36,10 @@ def test_simple(name : str, version : str):
         obj.veto(
             row = row,
             lepton_name = name)
+
+    if version == 'v0':
+        assert obj.nvetoed == 0
+    else:
+        assert obj.nvetoed >  0
+
+    log.info(f'Photons vetoed: {obj.nvetoed}/{obj.ntotal}')

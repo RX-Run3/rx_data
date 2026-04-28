@@ -117,6 +117,9 @@ class PhotonVeto:
         '''
         self._version   = version
         self._bad_cells = self._load_bad_cells()
+
+        self._nvetoed = 0
+        self._ntotal  = 0
     # ------------------------------------
     def _load_bad_cells(self) -> EcalRegion | None:
         data        = gut.load_data(
@@ -130,6 +133,14 @@ class PhotonVeto:
             return None
 
         return EcalRegion(root = data)
+    # ------------------------------------
+    @property
+    def nvetoed(self) -> int:
+        return self._nvetoed
+    # ------------------------------------
+    @property
+    def ntotal(self) -> int:
+        return self._ntotal
     # ------------------------------------
     def veto(
         self,
@@ -145,6 +156,8 @@ class PhotonVeto:
         ---------------
         True if photon is meant to be picked, False otherwise
         '''
+        self._ntotal += 1
+
         if self._bad_cells is None:
             return False
 
@@ -154,6 +167,7 @@ class PhotonVeto:
 
         if cell in self._bad_cells.root:
             log.debug(f'Vetoing: {cell}')
+            self._nvetoed += 1
             return True
 
         return False
