@@ -12,6 +12,7 @@ import mplhep
 import pytest
 import matplotlib.pyplot as plt
 
+from typing              import Final
 from pathlib             import Path
 from importlib.resources import files
 from omegaconf           import OmegaConf
@@ -56,6 +57,8 @@ _SAMPLES_DATA = [
 ]
 
 _SAMPLES = _SAMPLES_MM + _SAMPLES_EE
+_NCOLS : Final[int] = 18
+_PHOTON_VETO_VERSIONS : Final[list[str]] = ['v0', 'v1', 'v2']
 #-----------------------------------------
 class Data:
     '''
@@ -75,7 +78,7 @@ def initialize():
     LogStore.set_level('rx_data:test_mass_bias_corrector', 10)
     LogStore.set_level('rx_data:rdf_getter'              , 10)
 
-    plt.style.use(mplhep.style.LHCb2)
+    plt.style.use(mplhep.style.LHCb2) # type: ignore
 #-----------------------------------------
 def _load_conf() -> dict:
     cfg_path = files('rx_data_data').joinpath('tests/mass_bias_corrector/mass_overlay.yaml')
@@ -189,7 +192,7 @@ def _check_input_columns(rdf : RDF.RNode) -> None:
 def _check_output_columns(rdf : RDF.RNode) -> None:
     l_colname = [ name.c_str() for name in rdf.GetColumnNames() ]
     ncol = len(l_colname)
-    if ncol != 18:
+    if ncol != _NCOLS:
         for colname in l_colname:
             log.info(f'   {colname}')
 
