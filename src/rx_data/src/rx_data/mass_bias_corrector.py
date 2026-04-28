@@ -44,7 +44,8 @@ class MassBiasCorrector:
         self,
         df                    : pnd.DataFrame,
         is_mc                 : bool,
-        trigger               : str,
+        trigger               : Trigger,
+        photon_veto_version   : str,
         skip_correction       : bool  = False,
         nthreads              : int   = 1,
         brem_energy_threshold : float = 400,
@@ -54,6 +55,7 @@ class MassBiasCorrector:
         --------------
         df                   : Pandas dataframe
         trigger              : Hlt2 trigger name
+        photon_veto_version  : Version of file used to veto photons, e.g. v1
         skip_correction      : Will do everything but not correction. Needed to check that only the correction is changing data.
         nthreads             : Number of processes to use 
         brem_energy_threshold: Lowest energy that an ECAL cluster needs to have to be considered a photon, used as argument of ElectronBiasCorrector, default 0 (MeV)
@@ -68,12 +70,12 @@ class MassBiasCorrector:
         if self._skip_correction:
             log.warning('Skipping correction')
 
-        self._ebc             = ElectronBiasCorrector(brem_energy_threshold = brem_energy_threshold)
+        self._ebc             = ElectronBiasCorrector(
+            photon_veto_version   = photon_veto_version,
+            brem_energy_threshold = brem_energy_threshold)
         self._ecorr_kind      = ecorr_kind
 
-        self._project : Final[str] = info.project_from_trigger(trigger=self._trigger, lower_case=True)
-
-        log.info(f'Using project: {self._project}')
+        log.info(f'Using project: {self._trigger.project}')
 
         self._silence_logger(name = 'rx_data:brem_bias_corrector')
         self._silence_logger(name = 'rx_data:electron_bias_corrector')
@@ -85,7 +87,7 @@ class MassBiasCorrector:
 
         # If a logger has been put in debug level
         # then it is not meant to be silenced here
-        if logger.getEffectiveLevel() == 10:
+        if logger.getEffectiveLevel() == LogLevels.debug:
             return
 
         LogStore.set_level(name, 50)
@@ -105,10 +107,10 @@ class MassBiasCorrector:
         Series representing corrected (uncorrected) electron (muon)
         '''
         lep_id = tut.numeric_from_series(row=row, name=f'{name}_ID', numeric=int)
-        if abs(lep_id) == 13:
+        if abs(lep_id) == _MUON_PID:
             return row
 
-        if abs(lep_id) != 11:
+        if abs(lep_id) != _ELECTRON_PID:
             raise InvalidID(f'Unexpected lepton ID: {lep_id}')
 
         if self._skip_correction:
@@ -146,19 +148,19 @@ class MassBiasCorrector:
         ----------------
         Series with recalculated kinematics, after corrections
         '''
-        l1 = self._build_4dvec(particle='L1', row=row, mass=EMASS)
-        l2 = self._build_4dvec(particle='L2', row=row, mass=EMASS)
+        l1 = self._build_4dvec(particle='L1', row=row, mass=_EMASS)
+        l2 = self._build_4dvec(particle='L2', row=row, mass=_EMASS)
 
-        if   self._project in [Project.rk, Project.rk_no_pid]:
-            hd = self._build_4dvec(particle= 'H', row=row, mass=KMASS)
-        elif self._project in [Project.rkst, Project.rkst_no_pid]:
-            h1 = self._build_4dvec(particle='H1', row=row, mass=KMASS)
-            h2 = self._build_4dvec(particle='H2', row=row, mass=PIMASS)
+        if   self._trigger.project in [Project.rk, Project.rk_no_pid]:
+            hd = self._build_4dvec(particle= 'H', row=row, mass=_KMASS)
+        elif self._trigger.project in [Project.rkst, Project.rkst_no_pid]:
+            h1 = self._build_4dvec(particle='H1', row=row, mass=_KMASS)
+            h2 = self._build_4dvec(particle='H2', row=row, mass=_PIMASS)
 
             hd = h1 + h2
             hd = cast(v4d, hd)
         else:
-            raise ValueError(f'Invalid project: {self._project}')
+            raise ValueError(f'Invalid project: {self._trigger.project}')
 
         jp = l1 + l2
         bp = jp + hd
