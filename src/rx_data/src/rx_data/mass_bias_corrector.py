@@ -2,29 +2,31 @@
 Module storing MassBiasCorrector class
 '''
 
-from typing import cast, Final
-
 import numpy
-from dask             import dataframe as dd 
-
 import pandas as pnd
 import vector
-from vector._methods                 import VectorProtocolSpatial
-from vector                          import MomentumObject3D as v3d
-from vector                          import MomentumObject4D as v4d
-from dmu.logging.log_store           import LogStore
-from rx_common                       import Project, info
-from dmu.generic                     import typing_utilities as tut
 
-from rx_data.electron_bias_corrector import ElectronBiasCorrector
+from typing                   import cast, Final
+from dask                     import dataframe as dd 
+from vector._methods          import VectorProtocolSpatial
+from vector                   import MomentumObject3D as v3d
+from vector                   import MomentumObject4D as v4d
+from dmu                      import LogStore
+from dmu                      import LogLevels
+from dmu.generic              import typing_utilities as tut
+from rx_common                import Project, Trigger
+
+from .electron_bias_corrector import ElectronBiasCorrector
 
 # TODO: Remove cast calls once vector be cleaned up
 
 log=LogStore.add_logger('rx_data:mass_bias_corrector')
 
-EMASS  :Final[float] = 0.511
-KMASS  :Final[float] = 493.6
-PIMASS :Final[float] = 137.57
+_EMASS        : Final[float] = 0.511
+_KMASS        : Final[float] = 493.6
+_PIMASS       : Final[float] = 137.57
+_MUON_PID     : Final[int] = 13
+_ELECTRON_PID : Final[int] = 11
 # ------------------------------------------
 class InvalidID(Exception):
     def __init__(self, message : str) -> None:
