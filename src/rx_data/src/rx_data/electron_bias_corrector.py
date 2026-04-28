@@ -288,6 +288,20 @@ class ElectronBiasCorrector:
 
         return e_corr
     # ---------------------------------
+    @property
+    def photons_vetoed(self) -> int:
+        '''
+        Number of photons vetoed when correcting electron brem
+        '''
+        return self._veto.nvetoed
+    # ---------------------------------
+    @property
+    def all_photons(self) -> int:
+        '''
+        Number of photons that could have been added 
+        '''
+        return self._veto.ntotal
+    # ---------------------------------
     def correct(
         self, 
         row  : pnd.Series, 
