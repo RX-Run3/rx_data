@@ -283,9 +283,16 @@ class ElectronBiasCorrector:
 
         return e_corr
     # ---------------------------------
-    def correct(self, row : pnd.Series, name : str, kind : str = 'brem_track_2') -> pnd.Series:
+    def correct(
+        self, 
+        row  : pnd.Series, 
+        name : str, 
+        kind : str = 'brem_track_2') -> pnd.Series:
         '''
         Corrects kinematics and returns row
+
+        Parameters
+        --------------
         row  : Pandas dataframe row
         name : Particle name, e.g. L1
         kind : Type of correction, [ecalo_bias, brem_track_1, brem_track_2]
