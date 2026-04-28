@@ -198,11 +198,13 @@ def test_correction_brem_track(tmp_path : Path, photon_veto : str):
     df_org = _filter_kinematics(df_org)
     df_cor = _filter_kinematics(df_cor)
 
+    text = f'Vetoed {corr.photons_vetoed}/{corr.all_photons} @ version: {photon_veto}'
+
     _plot_correction(
         org =df_org, 
         cor =df_cor, 
         path=tmp_path,
-        name=photon_veto)
+        name=text)
     _check_equal(df_org, df_cor, must_differ = True)
     LogStore.set_level('rx_data:electron_bias_corrector', 10)
 #-----------------------------------------
