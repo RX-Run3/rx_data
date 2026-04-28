@@ -30,17 +30,21 @@ class ElectronBiasCorrector:
     # ---------------------------------
     def __init__(
         self, 
+        photon_veto_version   : str,
         skip_correction       : bool  = False, 
         brem_energy_threshold : float = 300):
         '''
-        skip_correction: If true, will not correct electrons, but run all the code up to the last stage, default False
+        Parameters
+        ---------------------------
+        photon_veto_version  : Version of file with list of cells to veto when adding photon, e.g. v1
+        skip_correction      : If true, will not correct electrons, but run all the code up to the last stage, default False
         brem_energy_threshold: Energy deposits in ECAL will be considered brem if their energy is above this value, default 300 MeV
         '''
         self._skip_correction = skip_correction
         self._min_brem_energy = brem_energy_threshold
         self._bcor            = BremBiasCorrector()
         self._name      : str
-        self._veto            = PhotonVeto()
+        self._veto            = PhotonVeto(version = photon_veto_version)
 
         # None: Uninitizialized
         # -1  : If the electron is not touched
@@ -267,8 +271,9 @@ class ElectronBiasCorrector:
             e_corr = self._get_electron(row, kind='')
             return e_corr
 
-        if self._veto.veto(row = row, lepton = self._name):
-            log.debug('Vetoing photon')
+        if self._veto.veto(row = row, lepton_name = self._name):
+            log.debug('Photon falls in vetoed ECAL region, skipping correction')
+            e_corr = self._get_electron(row, kind='')
             return e_corr
 
         brem_energy = self._attr_from_row(row, f'{self._name}_BREMTRACKBASEDENERGY')
