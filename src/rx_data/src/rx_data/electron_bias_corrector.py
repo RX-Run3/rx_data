@@ -40,6 +40,7 @@ class ElectronBiasCorrector:
         self._min_brem_energy = brem_energy_threshold
         self._bcor            = BremBiasCorrector()
         self._name      : str
+        self._veto            = PhotonVeto()
 
         # None: Uninitizialized
         # -1  : If the electron is not touched
@@ -264,6 +265,10 @@ class ElectronBiasCorrector:
             self._brem_status = -1
             log.debug('Electron has already brem, skipping correction')
             e_corr = self._get_electron(row, kind='')
+            return e_corr
+
+        if self._veto.veto(row = row, lepton = self._name):
+            log.debug('Vetoing photon')
             return e_corr
 
         brem_energy = self._attr_from_row(row, f'{self._name}_BREMTRACKBASEDENERGY')
