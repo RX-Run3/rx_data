@@ -11,6 +11,7 @@ import mplhep
 import pandas            as pnd
 import matplotlib.pyplot as plt
 
+from pathlib   import Path
 from dmu       import LogStore
 from rx_data   import RDFGetter
 from rx_data   import df_from_rdf
@@ -82,9 +83,14 @@ def _plot_brem_kinematics(df : pnd.DataFrame, var : str, label : str, ax=None):
 
     return ax
 #-----------------------------------------
-def _plot_correction(org : pnd.DataFrame, cor : pnd.DataFrame, name : str) -> None:
-    out_dir = f'{Data.plt_dir}/{name}'
-    os.makedirs(out_dir, exist_ok=True)
+def _plot_correction(
+    path : Path,
+    org  : pnd.DataFrame, 
+    cor  : pnd.DataFrame, 
+    name : str) -> None:
+
+    out_dir = path / name
+    out_dir.mkdir(parents = True, exist_ok = True)
 
     l1_var = ['L1_ETA', 'L1_PHI', 'L1_PT', 'L1_PX', 'L1_PY', 'L1_PZ', 'L1_HASBREMADDED']
     l2_var = ['L2_ETA', 'L2_PHI', 'L2_PT', 'L2_PX', 'L2_PY', 'L2_PZ', 'L2_HASBREMADDED']
@@ -97,7 +103,7 @@ def _plot_correction(org : pnd.DataFrame, cor : pnd.DataFrame, name : str) -> No
             ax  = _plot_brem_kinematics(df=cor, var=name, label='Track', ax=ax)
 
         nentries = len(org)
-        title = f'Entries={nentries}'
+        title = f'Photon veto: {name}; Entries={nentries}'
         plt.title(title)
         plt.legend()
         plt.xlabel(var)
@@ -160,7 +166,9 @@ def test_skip_correction():
     '''
     df_org = _get_df()
     df_org = df_org.fillna(-1)
-    cor    = ElectronBiasCorrector(skip_correction=True)
+    cor    = ElectronBiasCorrector(
+        photon_veto_version='v0',
+        skip_correction    =True)
     df_cor = df_org.apply(lambda row : cor.correct(row, 'L1'), axis=1)
     df_cor = cast(pnd.DataFrame, df_cor)
 
@@ -169,7 +177,8 @@ def test_skip_correction():
 
     _check_equal(df_org, df_cor, must_differ = False)
 #-----------------------------------------
-def test_correction_brem_track():
+@pytest.mark.parametrize('photon_veto', ['v0', 'v1', 'v2'])
+def test_correction_brem_track(tmp_path : Path, photon_veto : str):
     '''
     Use brem_track methods
     '''
@@ -178,7 +187,10 @@ def test_correction_brem_track():
     df_org = _get_df(nentries = 10_000)
     df_org = df_org.fillna(-1)
 
-    cor    = ElectronBiasCorrector(skip_correction=False)
+    cor    = ElectronBiasCorrector(
+        photon_veto_version = photon_veto,
+        skip_correction     = False)
+
     df_cor = df_org.apply(lambda row : cor.correct(row, 'L1', kind='brem_track_2'), axis=1)
     df_cor = df_cor.apply(lambda row : cor.correct(row, 'L2', kind='brem_track_2'), axis=1)
     df_cor = cast(pnd.DataFrame, df_cor)
@@ -186,7 +198,11 @@ def test_correction_brem_track():
     df_org = _filter_kinematics(df_org)
     df_cor = _filter_kinematics(df_cor)
 
-    _plot_correction(org=df_org, cor=df_cor, name='brem_track_2')
+    _plot_correction(
+        org =df_org, 
+        cor =df_cor, 
+        path=tmp_path,
+        name=photon_veto)
     _check_equal(df_org, df_cor, must_differ = True)
     LogStore.set_level('rx_data:electron_bias_corrector', 10)
 #-----------------------------------------
