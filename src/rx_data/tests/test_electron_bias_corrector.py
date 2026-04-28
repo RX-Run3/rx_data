@@ -72,7 +72,10 @@ def _get_range(var : str) -> tuple[float|None,float|None]:
 
     return minx, maxx
 #-----------------------------------------
-def _plot_brem_kinematics(df : pnd.DataFrame, var : str, label : str, ax=None):
+def _plot_brem_kinematics(
+    df    : pnd.DataFrame, 
+    var   : str, 
+    label : str, ax=None):
     df         = _add_column(df, var)
     minx, maxx = _get_range(var)
 
@@ -96,14 +99,18 @@ def _plot_correction(
     l2_var = ['L2_ETA', 'L2_PHI', 'L2_PT', 'L2_PX', 'L2_PY', 'L2_PZ', 'L2_HASBREMADDED']
 
     for var in l1_var + l2_var:
-        nentries = len(org)
-        title = f'{name}; Entries={nentries}'
         ax=_plot_brem_kinematics(df=org, var=var, label='Original' )
         ax=_plot_brem_kinematics(df=cor, var=var, label='Corrected', ax=ax)
         if 'PT' in var:
-            name= var.replace('PT', 'TRACK_PT')
-            ax  = _plot_brem_kinematics(df=cor, var=title, label='Track', ax=ax)
+            track_var = var.replace('PT', 'TRACK_PT')
+            ax = _plot_brem_kinematics(
+                df   = cor, 
+                var  = track_var, 
+                label= 'Track', 
+                ax   = ax)
 
+        nentries = len(org)
+        title = f'{name}; Entries={nentries}'
         plt.title(title)
         plt.legend()
         plt.xlabel(var)
