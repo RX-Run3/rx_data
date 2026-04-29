@@ -58,6 +58,16 @@ rule run_independent:
     shell:
         '''
         (
+        touch {log.prc} 
+        touch {params.LOGD}/$JOBID.err
+        touch {params.LOGD}/$JOBID.out
+        touch {params.LOGD}/$JOBID.log
+
+        JOBID=$(grep -m1 '^ClusterId' $_CONDOR_JOB_AD | awk '{{print $3}}')
+        ln -s {params.LOGD}/$JOBID.err {log.err}
+        ln -s {params.LOGD}/$JOBID.out {log.out}
+        ln -s {params.LOGD}/$JOBID.log {log.LOG}
+
         source setup.sh {params.env} {params.home}
         branch_calculator                         \
             -k {wildcards.kind}                   \
@@ -67,11 +77,6 @@ rule run_independent:
             -p {params.part_idx} {params.n_parts} \
             -g {params.phot_veto}
         ) > {log.prc} 2>&1
-
-        JOBID=$(grep -m1 '^ClusterId' $_CONDOR_JOB_AD | awk '{{print $3}}')
-        ln -s {params.LOGD}/$JOBID.err {log.err} || true
-        ln -s {params.LOGD}/$JOBID.out {log.out} || true
-        ln -s {params.LOGD}/$JOBID.log {log.LOG} || true
 
         mkdir -p $(dirname {output.done})
         touch {output.done}
