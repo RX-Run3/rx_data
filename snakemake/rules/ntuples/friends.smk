@@ -58,7 +58,6 @@ rule run_independent:
     shell:
         '''
         (
-        touch {log.prc} 
         touch {params.LOGD}/$JOBID.err
         touch {params.LOGD}/$JOBID.out
         touch {params.LOGD}/$JOBID.log
