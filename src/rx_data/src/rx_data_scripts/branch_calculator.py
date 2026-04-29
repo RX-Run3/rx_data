@@ -304,8 +304,8 @@ def _create_file(path : Path) -> None:
 
     try:
         rdf   = _get_input_rdf(path=path)
-    except MissingComponent:
-        log.warning(f'Not processing: {path}')
+    except MissingComponent as exc:
+        log.warning(f'Not processing: {path}. Reason {exc}', exc_info = True)
         return
 
     nentries = rdf.Count().GetValue()
