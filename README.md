@@ -47,3 +47,21 @@ within a day, to check stability of results and get insights on how to improve t
 
 More details on this can be found [here](doc/ci_cd.md)
 
+## Workflows
+
+To automate the execution of the code this project uses snakemake workflows. Some workflows using
+[LAW](https://github.com/riga/law) are also available in `rx_orchestration` but these should be moved
+to snakemake eventually. The workflows reside in the `snakemake` directory alongside the config files.
+A typical run of these workflows would look like:
+
+```bash
+snakemake -s snakemake/rules/ntuples/friends.smk --configfile snakemake/configs/ntuples/friends.yaml -c 6
+```
+
+which would:
+
+- Run the worklow in the smk file
+- Use the yaml file for configuration
+- Use six cores
+
+For further instructions check [workflows](doc/workflows.md)
