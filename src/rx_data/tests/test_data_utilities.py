@@ -8,6 +8,7 @@ import pytest
 
 from dmu         import LogStore
 from dmu.generic import version_management as vman
+from rx_common   import Trigger
 from rx_data     import utilities as ut
 
 log=LogStore.add_logger('rx_data:test_utilities')
@@ -55,9 +56,9 @@ def _get_test_paths(sample : str, trigger : str) -> list[str]:
     return l_path
 # -----------------------------------------
 @pytest.mark.parametrize('sample, trigger', [
-('DATA_24_MagDown_24c2', 'Hlt2RD_BuToKpEE_MVA'),
-('Bu_JpsiK_mm_eq_DPC'  , 'Hlt2RD_BuToKpMuMu_MVA')])
-def test_info_from_path(sample : str, trigger : str):
+('DATA_24_MagDown_24c2', Trigger.rk_ee_os),
+('Bu_JpsiK_mm_eq_DPC'  , Trigger.rk_mm_os)])
+def test_info_from_path(sample : str, trigger : Trigger):
     '''
     Tests extraction of information from paths to ROOT files
     '''
