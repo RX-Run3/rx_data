@@ -1,8 +1,8 @@
 chunk_size  : 100_000
-photon_veto : v1
+photon_veto : v2
 parts       : 30
 versions:
-  brem_track_2   : v4
+  brem_track_2   : v5
   #hop            : v3
   #mass           : v1
   #swp_cascade    : v3
