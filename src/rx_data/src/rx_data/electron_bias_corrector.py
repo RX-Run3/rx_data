@@ -46,12 +46,6 @@ class ElectronBiasCorrector:
         self._name      : str
         self._veto            = PhotonVeto(version = photon_veto_version)
 
-        # None: Uninitizialized
-        # -1  : If the electron is not touched
-        #  0  : If the electron is not assigned any brem
-        #  1  : If the electron is assigned brem
-        self._brem_status : int | None = None
-
         # This will turn ON/OFF the code that reads the regressor
         # to apply the energy scaling to electrons based on kinematic balance
         self._use_ecal_calibration = True
@@ -125,10 +119,11 @@ class ElectronBiasCorrector:
         ---------------
         Pandas series with updated candidate information, based on corrected electron
         '''
-        # If correction was not applied, do not update anything
         if e_corr is None:
+            log.debug('Electron was not brem corrected')
             return row
 
+        log.debug('Electron was brem corrected')
         l_var = [
                 f'{self._name}_PX',
                 f'{self._name}_PY',
@@ -142,19 +137,7 @@ class ElectronBiasCorrector:
                 f'{self._name}_PHI']
 
         row.loc[l_var] = [e_corr.pt, e_corr.eta, e_corr.phi]
-
-        row = self._update_brem(row)
-
-        return row
-    # ---------------------------------
-    def _update_brem(self, row : pnd.Series) -> pnd.Series:
-        if self._brem_status == -1:
-            return row
-
-        if self._brem_status not in [0, 1]:
-            raise ValueError(f'Invalid brem status: {self._brem_status}')
-
-        row.loc[[f'{self._name}_HASBREMADDED']] = [self._brem_status]
+        row.loc[[f'{self._name}_HASBREMADDED']] = [1]
 
         return row
     # ---------------------------------
@@ -174,7 +157,6 @@ class ElectronBiasCorrector:
         '''
         if self._skip_correction:
             log.warning('Skipping electron correction')
-            self._brem_status = -1
             e_corr = e_track + e_brem
             e_corr = cast(v4d, e_corr)
 
@@ -182,7 +164,6 @@ class ElectronBiasCorrector:
 
         # Will only correct brem, no brem => no correction
         if not self._attr_from_row(row, f'{self._name}_HASBREMADDED'):
-            self._brem_status = -1
             e_corr = e_track + e_brem
             e_corr = cast(v4d, e_corr)
 
@@ -210,7 +191,6 @@ class ElectronBiasCorrector:
 
         self._check_massless_brem(e_brem_corr)
 
-        self._brem_status = 1
         e_corr = e_track + e_brem_corr
         e_corr = cast(v4d, e_corr)
 
@@ -222,13 +202,11 @@ class ElectronBiasCorrector:
         Create brem photon colinear to track, add it to track, return sum
         '''
         if self._skip_correction:
-            self._brem_status = -1
             return None
 
         brem_energy = self._attr_from_row(row, f'{self._name}_BREMTRACKBASEDENERGY')
         if brem_energy < self._min_brem_energy:
-            self._brem_status = 0
-            return e_track
+            return None 
 
         eta = e_track.eta
         phi = e_track.phi
@@ -243,7 +221,6 @@ class ElectronBiasCorrector:
 
         gamma  = vector.obj(px=px, py=py, pz=pz, e=e)
 
-        self._brem_status = 1
         self._check_massless_brem(gamma)
 
         e_corr = e_track + gamma
@@ -266,21 +243,17 @@ class ElectronBiasCorrector:
         - None, if no brem needs/can be added
         '''
         if self._attr_from_row(row, f'{self._name}_HASBREMADDED'):
-            self._brem_status = -1
             log.debug('Electron has already brem, skipping correction')
-            e_corr = self._get_electron(row, kind='')
-            return e_corr
+            return None 
 
         if self._veto.veto(row = row, lepton_name = self._name):
             log.debug('Photon falls in vetoed ECAL region, skipping correction')
-            e_corr = self._get_electron(row, kind='')
-            return e_corr
+            return None 
 
         brem_energy = self._attr_from_row(row, f'{self._name}_BREMTRACKBASEDENERGY')
         if brem_energy <  self._min_brem_energy:
             log.debug(f'Brem energy is below threshold: {brem_energy:.0f} < {self._min_brem_energy:.0f}')
             log.debug('Skipping correction')
-            self._brem_status = -1
             return None
 
         log.debug('Correcting electron')
@@ -331,10 +304,7 @@ class ElectronBiasCorrector:
         else:
             raise NotImplementedError(f'Invalid correction of type: {kind}')
 
-        if self._brem_status not in [-1, 0, 1]:
-            raise ValueError(f'Brem status is invalid: {self._brem_status}')
-
-        row = self._update_row(row, e_corr)
+        row = self._update_row(row = row, e_corr = e_corr)
 
         return row
 # ---------------------------------
