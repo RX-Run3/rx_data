@@ -12,7 +12,7 @@ from ROOT         import RDataFrame, TFileMerger, TFile, TTree, RDF # type: igno
 from dmu          import LogLevels, LogStore
 
 from rx_q2        import Q2SmearCorrector
-from rx_common    import Component, Project, info
+from rx_common    import Component, Project, info, MissingComponent
 from rx_data      import utilities
 from rx_data      import NtuplePartitioner
 from rx_data      import MVACalculator
@@ -302,7 +302,12 @@ def _create_file(path : Path) -> None:
         log.debug(f'Output found, skipping {out_path}')
         return
 
-    rdf   = _get_input_rdf(path=path)
+    try:
+        rdf   = _get_input_rdf(path=path)
+    except MissingComponent:
+        log.warning(f'Not processing: {path}')
+        return
+
     nentries = rdf.Count().GetValue()
     if nentries == 0:
         log.warning(f'Found empty dataframe for: {path}')
