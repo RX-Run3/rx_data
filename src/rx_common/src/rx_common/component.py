@@ -10,6 +10,12 @@ from .channel            import Channel
 from ap_utilities.decays import utilities as aput
 
 # -------------------------------
+class MissingComponent(Exception):
+    '''
+    Exception meant to be raised when a component does
+    not exist for a given MC sample
+    '''
+# -------------------------------
 @cache
 def _get_samples() -> dict[str,'Component']:
     '''
@@ -128,7 +134,7 @@ class Component(StrEnum):
         if sample in samples:
             return samples[sample]
 
-        raise ValueError(f'Cannot find component for: {sample}')
+        raise MissingComponent(f'Cannot find component for: {sample}')
     # --------------------------------------------
     @classmethod
     def has_component(cls, sample :  str) -> bool:

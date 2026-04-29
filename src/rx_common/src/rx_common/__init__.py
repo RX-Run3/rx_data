@@ -8,6 +8,7 @@ from .types import Brem
 from .types import Block
 from .types import MVA 
 
+from .component import MissingComponent
 from .component import CCbarComponent
 from .component import Component
 from .process   import set_nproc, get_nproc 
@@ -20,6 +21,7 @@ from .qsq       import Qsq
 from .qsq       import QsqDef
 
 __all__ = [
+    'MissingComponent',
     'CCbarComponent',
     'Correction',
     'Component', 
