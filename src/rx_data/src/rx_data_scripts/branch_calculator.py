@@ -30,17 +30,18 @@ class Data:
     '''
     Class used to hold shared data
     '''
-    vers : str
-    proj : Project 
-    kind : str
-    nmax : int | None
-    part : tuple[int,int]
-    pbar : bool
-    dry  : bool
-    lvl  : int
-    wild_card : str | None
-    chunk_size: int
-    out_dir   : Path 
+    photon_veto : str
+    vers        : str
+    proj        : Project 
+    kind        : str
+    nmax        : int | None
+    part        : tuple[int,int]
+    pbar        : bool
+    dry         : bool
+    lvl         : int
+    wild_card   : str | None
+    chunk_size  : int
+    out_dir     : Path 
 
     l_kind    = ['mass', 'hop', 'swp_jpsi_misid', 'swp_cascade', 'brem_track_2', 'mva', 'smear']
     tree_name = 'DecayTree'
@@ -51,32 +52,34 @@ def _parse_args() -> None:
     Parse arguments
     '''
     parser = argparse.ArgumentParser(description='Script used to create ROOT files with trees with extra branches by picking up inputs from directory and patitioning them')
-    parser.add_argument('-k', '--kind', type=str, help='Kind of branch to create', choices=Data.l_kind, required=True)
-    parser.add_argument('-P', '--proj', type=str, help='Project'                 , choices=['rk', 'rkst', 'rk_nopid', 'rkst_nopid', 'rk_no_refit'], required=True)
-    parser.add_argument('-v', '--vers', type=str, help='Version of outputs', required=True)
-    parser.add_argument('-w', '--wc'  , type=str, help='Wildcard, if passed will be used to match paths')
-    parser.add_argument('-n', '--nmax', type=int, help='If used, limit number of entries to process to this value')
-    parser.add_argument('-s', '--chunk',type=int, help='It will set the number of entries the dataframes will be split on before processing', default=100_000)
-    parser.add_argument('-p', '--part', nargs= 2, help='Partitioning, first number is the index, second is the number of parts', required=True)
-    parser.add_argument('-b', '--pbar',           help='If used, will show progress bar whenever it is available', action='store_true')
-    parser.add_argument('-d', '--dry' ,           help='If used, will do dry drun, e.g. stop before processing', action='store_true')
-    parser.add_argument('-l', '--lvl' , type=int, help='log level', choices=[5, 10, 20, 30], default=20)
+    parser.add_argument('-g', '--photon_veto', type=str, help='Version of photon veto', required=True)
+    parser.add_argument('-k', '--kind'       , type=str, help='Kind of branch to create', choices=Data.l_kind, required=True)
+    parser.add_argument('-P', '--proj'       , type=str, help='Project'                 , choices=['rk', 'rkst', 'rk_nopid', 'rkst_nopid', 'rk_no_refit'], required=True)
+    parser.add_argument('-v', '--vers'       , type=str, help='Version of outputs', required=True)
+    parser.add_argument('-w', '--wc'         , type=str, help='Wildcard, if passed will be used to match paths')
+    parser.add_argument('-n', '--nmax'       , type=int, help='If used, limit number of entries to process to this value')
+    parser.add_argument('-s', '--chunk'      , type=int, help='It will set the number of entries the dataframes will be split on before processing', default=100_000)
+    parser.add_argument('-p', '--part'       , nargs= 2, help='Partitioning, first number is the index, second is the number of parts', required=True)
+    parser.add_argument('-b', '--pbar'       ,           help='If used, will show progress bar whenever it is available', action='store_true')
+    parser.add_argument('-d', '--dry'        ,           help='If used, will do dry drun, e.g. stop before processing', action='store_true')
+    parser.add_argument('-l', '--lvl'        , type=int, help='log level', choices=[5, 10, 20, 30], default=20)
     args = parser.parse_args()
 
     igroup, ngroup = args.part
     igroup    = int(igroup)
     ngroup    = int(ngroup)
 
-    Data.kind = args.kind
-    Data.proj = args.proj
-    Data.vers = args.vers
-    Data.part = igroup, ngroup 
-    Data.nmax = args.nmax
-    Data.pbar = args.pbar
-    Data.dry  = args.dry
-    Data.lvl  = args.lvl
-    Data.wild_card = args.wc
-    Data.chunk_size= args.chunk
+    Data.photon_veto = args.photon_veto
+    Data.kind        = args.kind
+    Data.proj        = args.proj
+    Data.vers        = args.vers
+    Data.part        = igroup, ngroup 
+    Data.nmax        = args.nmax
+    Data.pbar        = args.pbar
+    Data.dry         = args.dry
+    Data.lvl         = args.lvl
+    Data.wild_card   = args.wc
+    Data.chunk_size  = args.chunk
 # ---------------------------------
 def _set_logs():
     '''
@@ -167,7 +170,7 @@ def _process_rdf(
             is_mc              = is_mc,
             trigger            = trigger,
             ecorr_kind         = Data.kind,
-            photon_veto_version= 'v1')
+            photon_veto_version= Data.photon_veto)
 
         df  = cor.get_df(suffix=Data.kind)
         rdf = RDF.FromPandas(df)
