@@ -5,7 +5,7 @@ Module with MisCalculator class
 from typing    import Final
 from ROOT      import RDF # type: ignore
 from dmu       import LogStore
-from rx_common import Channel, Trigger, info
+from rx_common import Channel, Project, Trigger
 
 log = LogStore.add_logger('rx_data:mis_calculator')
 # ----------------------------------------------
@@ -52,17 +52,15 @@ class MisCalculator:
             name = 'L2_P'
             rdf  = rdf.Define(f'{name}E', f'TMath::Sqrt({name}X * {name}X + {name}Y * {name}Y + {name}Z * {name}Z + {self._lmass} * {self._lmass})')
 
-        project = info.project_from_trigger(trigger=self._trigger, lower_case=True)
-
-        if project == 'rk' and 'H_PE' not in l_col:
+        if self._trigger.project == Project.rk   and 'H_PE' not in l_col:
             name = 'H_P'
             rdf  = rdf.Define(f'{name}E', f'TMath::Sqrt({name}X * {name}X + {name}Y * {name}Y + {name}Z * {name}Z + {self._kmass} * {self._kmass})')
 
-        if project == 'rkst' and 'H1_PE' not in l_col:
+        if self._trigger.project == Project.rkst and 'H1_PE' not in l_col:
             name = 'H1_P'
             rdf  = rdf.Define(f'{name}E', f'TMath::Sqrt({name}X * {name}X + {name}Y * {name}Y + {name}Z * {name}Z + {self._kmass} * {self._kmass})')
 
-        if project == 'rkst' and 'H2_PE' not in l_col:
+        if self._trigger.project == Project.rkst and 'H2_PE' not in l_col:
             name = 'H2_P'
             rdf  = rdf.Define(f'{name}E', f'TMath::Sqrt({name}X * {name}X + {name}Y * {name}Y + {name}Z * {name}Z + {self._kmass} * {self._kmass})')
 
