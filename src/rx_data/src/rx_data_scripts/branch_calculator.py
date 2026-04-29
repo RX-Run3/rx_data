@@ -10,7 +10,6 @@ import tqdm
 from pathlib      import Path
 from ROOT         import RDataFrame, TFileMerger, TFile, TTree, RDF # type: ignore
 from dmu          import LogLevels, LogStore
-from omegaconf    import DictConfig
 
 from rx_q2        import Q2SmearCorrector
 from rx_common    import Component, Project, info
@@ -46,26 +45,6 @@ class Data:
     l_kind    = ['mass', 'hop', 'swp_jpsi_misid', 'swp_cascade', 'brem_track_2', 'mva', 'smear']
     tree_name = 'DecayTree'
     ana_dir   = Path(os.environ['ANADIR'])
-# ---------------------------------
-def _set_config(args : DictConfig) -> None:
-    '''
-    This method uses `args` to initialize fields in class Data
-
-    Parameters
-    ---------------
-    args: Dictionary holding configuration
-    '''
-    Data.kind      = args.kind
-    Data.proj      = args.proj
-    Data.vers      = args.vers
-    Data.part      = args.igroup, args.ngroup
-    # -----------------------
-    Data.nmax      = None 
-    Data.pbar      = False 
-    Data.dry       = False 
-    Data.lvl       = 20 
-    Data.wild_card = None 
-    Data.chunk_size= 100_000 
 # ---------------------------------
 def _parse_args() -> None:
     '''
