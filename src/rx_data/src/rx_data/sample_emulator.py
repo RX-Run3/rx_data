@@ -8,6 +8,7 @@ from dmu         import LogStore
 from dmu.generic import utilities as gut
 from pydantic    import BaseModel, RootModel
 from rx_common   import Block, Component 
+from rx_common   import MissingComponent
 
 log=LogStore.add_logger('rx_data:sample_emulator')
 # ----------------------
@@ -56,9 +57,9 @@ class SamplesConf(RootModel):
 
         try:
             comp = Component.from_sample(sample = sample)
-        except ValueError:
-            # If cannot find sample, then it's MC, real data should always
-            # be associated to component
+        except MissingComponent:
+            # If cannot find sample, then it's MC (real data should always
+            # be associated to component)
             # If MC and not found in config, skip sample 
             return False
 
@@ -128,7 +129,7 @@ class SamplesConf(RootModel):
     def __validate_sample_name(self, name : str):
         try:
             Component.from_sample(sample = name)
-        except Exception as exc:
+        except MissingComponent as exc:
             raise ValueError(f'No component associated to sample: {name}') from exc
 # ----------------------
 class EmulationConf(BaseModel):
