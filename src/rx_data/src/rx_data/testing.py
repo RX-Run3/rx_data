@@ -3,7 +3,7 @@ This module contains functions needed by tests
 '''
 import yaml
 
-from rx_common    import Component
+from rx_common    import Component, Cuts
 from rx_common    import Trigger
 from rx_common    import Qsq 
 from rx_selection import selection as sel
@@ -137,12 +137,12 @@ def rdf_from_sample(
 def _apply_selection(
     rdf     : RDF.RNode, 
     trigger : Trigger, 
-    sample  : Component) -> tuple[RDF.RNode, dict[str,str]]:
+    sample  : Component) -> tuple[RDF.RNode, dict[Cuts,str]]:
     d_sel               = sel.selection(trigger=trigger, q2bin=Qsq.jpsi, process=sample)
-    d_sel['pid_l']      = '(1)'
-    d_sel['jpsi_misid'] = '(1)'
-    d_sel['cascade']    = '(1)'
-    d_sel['hop']        = '(1)'
+    d_sel[Cuts.pid_l]      = '(1)'
+    d_sel[Cuts.jpsi_misid] = '(1)'
+    d_sel[Cuts.cascade]    = '(1)'
+    d_sel[Cuts.hop]        = '(1)'
 
     for cut_name, cut_expr in d_sel.items():
         log.debug(f'{cut_name:<20}{cut_expr}')
@@ -173,5 +173,5 @@ def get_trigger(kind : str, prefix : str) -> Trigger:
     else:
         raise ValueError(f'Invalid kind: {kind}')
 
-    return Trigger(f'{prefix}{suffix}')
+    return Trigger.from_name(name = f'{prefix}{suffix}')
 # ----------------------
