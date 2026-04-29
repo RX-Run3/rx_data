@@ -24,7 +24,6 @@ from rx_data      import SpecMaker
 from rx_data      import SWPCalculator
 from rx_data      import MassCalculator
 from rx_data      import MassBiasCorrector
-from dmu.generic  import utilities as gut
 
 log = LogStore.add_logger('rx_data:branch_calculator')
 # ---------------------------------
@@ -104,7 +103,6 @@ def _set_logs():
     '''
     This method will set the logging level of multiple tools
     '''
-    LogStore.set_level('rx_data:mass_bias_corrector', Data.lvl)
     LogStore.set_level('rx_data:branch_calculator'  , Data.lvl)
     LogStore.set_level('rx_data:mass_calculator'    , Data.lvl)
     LogStore.set_level('rx_data:mva_calculator'     , Data.lvl)
@@ -114,6 +112,8 @@ def _set_logs():
     LogStore.set_level('dmu:ml:cv_predict'          , Data.lvl)
     LogStore.set_level('dmu:ml:CVClassifier'        , Data.lvl)
 
+    LogStore.set_level('rx_data:mass_bias_corrector',       30)
+    LogStore.set_level('rx_data:photon_veto'        ,       30)
     LogStore.set_level('rx_data:path_splitter'      ,       30)
     LogStore.set_level('rx_data:rdf_getter'         ,       30)
     LogStore.set_level('rx_data:sample_emulator'    ,       30)
@@ -160,7 +160,7 @@ def _process_rdf(
     - None, in case it does not make sense to add the columns to this type of file
     '''
     mc_sample, trigger = utilities.info_from_path(path=path, sample_lowercase=False)
-    sample = Component(mc_sample)
+    component = Component.from_sample(sample = mc_sample)
 
     nentries = rdf.Count().GetValue()
     if nentries == 0:
@@ -184,10 +184,12 @@ def _process_rdf(
         df   = utilities.df_from_rdf(rdf=rdf, drop_nans=False)
         is_mc= utilities.rdf_is_mc(rdf=rdf)
         cor  = MassBiasCorrector(
-            df             = df, 
-            is_mc          = is_mc,
-            trigger        = trigger,
-            ecorr_kind     = Data.kind)
+            df                 = df, 
+            is_mc              = is_mc,
+            trigger            = trigger,
+            ecorr_kind         = Data.kind,
+            photon_veto_version= 'v1')
+
         df  = cor.get_df(suffix=Data.kind)
         rdf = RDF.FromPandas(df)
     elif Data.kind in ['swp_cascade', 'swp_jpsi_misid']:
@@ -195,7 +197,7 @@ def _process_rdf(
     elif Data.kind == 'smear':
         rdf = _get_smear_rdf(rdf=rdf, trigger=trigger)
     elif Data.kind == 'mva'   :
-        obj = MVACalculator(rdf=rdf, sample=sample, trigger=trigger, version=Data.vers)
+        obj = MVACalculator(rdf=rdf, sample=component, trigger=trigger, version=Data.vers)
         rdf = obj.get_rdf(kind = 'root')
     elif Data.kind == 'mass':
         obj = MassCalculator(rdf=rdf)
@@ -282,7 +284,7 @@ def _get_input_rdf(path : Path) -> RDF.RNode:
     ROOT dataframe associated
     '''
     mc_sample, trigger = utilities.info_from_path(path=path, sample_lowercase=False)
-    sample = Component(mc_sample)
+    component = Component.from_sample(sample = mc_sample)
 
     s_friend : set[str] = set()
     if Data.kind == 'mva':
@@ -293,7 +295,7 @@ def _get_input_rdf(path : Path) -> RDF.RNode:
 
     with RDFGetter.only_friends(s_friend=s_friend),\
          SpecMaker.project(project = Data.proj):
-        gtr   = RDFGetter(sample=sample, trigger=trigger)
+        gtr   = RDFGetter(sample=component, trigger=trigger)
         d_rdf = gtr.get_rdf(per_file=True)
 
     rdf = d_rdf.get(path)
@@ -390,7 +392,7 @@ def _process_and_merge(
     log.info(f'Merging temporary files into: {out_path}')
     fmrg.Merge()
 # ----------------------
-def main(args : DictConfig | None = None):
+def main():
     '''
     Entry point
 
@@ -399,13 +401,8 @@ def main(args : DictConfig | None = None):
     args: Arguments needed to start calculation when used as module, 
           If not passed, this will be used as an script
     '''
-    if args is None:
-        _parse_args()
-    else:
-        _set_config(args=args)
-
+    _parse_args()
     _set_logs()
-    gut.TIMER_ON=True
 
     prt = NtuplePartitioner(
         kind      = 'main',
@@ -423,7 +420,7 @@ def main(args : DictConfig | None = None):
         log.warning('This is a dry run')
 
     if isinstance(Data.nmax, int):
-        log.warning(f'Limitting dataframe to {Data.nmax} entries')
+        log.info(f'Limitting dataframe to {Data.nmax} entries')
 
     for path in tqdm.tqdm(l_path, ascii=' -'):
         log.debug(f'{"":<4}{path}')
