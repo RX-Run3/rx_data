@@ -1,6 +1,6 @@
 chunk_size  : 100_000
 photon_veto : v1
-parts       : 10
+parts       : 30
 versions:
   brem_track_2   : v4
   #hop            : v3
