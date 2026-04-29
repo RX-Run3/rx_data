@@ -8,7 +8,7 @@ import os
 ENV       = 'rx_run3'
 NAME      = 'branch_calculator' 
 LOGDIR    = '/publicfs/ucas/user/campoverde/Jobs/snakemake'
-HOME      = os.environ['HOME'] 
+HOME      = '/afs/ihep.ac.cn/users/c/campoverde'
 ANADIR    = os.environ['ANADIR']
 CHUNK     = config['chunk_size']
 PHOT_VETO = config['photon_veto']
@@ -65,7 +65,7 @@ rule run_independent:
             -v {params.vers}                      \
             -s {params.chunk}                     \
             -p {params.part_idx} {params.n_parts} \
-            -g {params.phot_veto} || true
+            -g {params.phot_veto}
         ) > {log.prc} 2>&1
 
         JOBID=$(grep -m1 '^ClusterId' $_CONDOR_JOB_AD | awk '{{print $3}}')
