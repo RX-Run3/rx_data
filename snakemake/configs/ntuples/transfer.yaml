@@ -1,0 +1,10 @@
+root:
+  ihep : /publicfs/ucas/user/campoverde/Data
+servers:
+  ihep : campoverde@lxlogin.ihep.ac.cn
+paths:
+  brem_track_2:
+    - Data/rk/brem_track_2/v4
+    - Data/rk/brem_track_2/v5
+    - Data/rkst/brem_track_2/v4
+    - Data/rkst/brem_track_2/v5
