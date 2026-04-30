@@ -63,3 +63,20 @@ def test_real(analysis : str, sample : str):
     assert len(samples.pfns) > 0
     assert len(samples.pfns) == len(samples.lfns)
 # -----------------------------
+@pytest.mark.parametrize('sample', ['sim10g_filtered', 'sim10g_unfiltered', 'sim10g_ss'])
+def test_sim10g(sample : str):
+    '''
+    Test simple reading
+    '''
+    data    = gut.load_data(package='post_ap_data', fpath='post_ap/rx/v15.yaml')
+    cfg     = PFNReaderConf(**data)
+
+    reader  = PFNReader(cfg=cfg)
+    samples = reader.get_samples(production=Production.rx_2024, nickname=sample)
+
+    log.info(samples)
+
+    assert samples.size      > 0
+    assert len(samples.pfns) > 0
+    assert len(samples.pfns) == len(samples.lfns)
+
