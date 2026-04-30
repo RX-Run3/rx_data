@@ -73,7 +73,7 @@ observable:
       - 6996
 components:
   ccbar      : rare/rk/ee/ccbar.yaml
-  comb       : rare/rk/ee/comb.yaml
+  comb       : rare/rk/ee/comb_ctrl_ss.yaml
   bdkstkpiee : rare/rk/ee/bdkstkpiee_np.yaml
   bpkstkpiee : rare/rk/ee/bpkstkpiee_np.yaml
   bsphiee    : rare/rk/ee/bsphiee_np.yaml
@@ -88,7 +88,7 @@ constraints:
     - bdkstkpiee
     - bpkstkpiee
     - bsphiee
-  combinatorial: false 
+  combinatorial: true 
   signal_shape : true
 fit  : {}
 plots:
