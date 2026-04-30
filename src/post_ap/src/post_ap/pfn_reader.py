@@ -1,27 +1,48 @@
 '''
 Module storing PFNReader class
 '''
-
 import apd
 
+from typing    import Literal
+from pydantic  import BaseModel
 from apd       import SampleCollection
-from omegaconf import DictConfig, OmegaConf
-from dmu.logging.log_store import LogStore
+from dmu       import LogStore
+from .types    import Production
 
 log = LogStore.add_logger('post_ap:pfn_reader')
+# ---------------------------------------
+class ProductionConf(BaseModel):
+    '''
+    Class representing configuration for analysis production
+
+    Attributes
+    ----------------
+    versions: Map from group of samples to version, e.g. 'data_turbo_24c1 : v1r1670'
+    samples : Dictionary with 
+        key  : Name of group of samples, e.g. `data_turbo_24c1`
+        value: List of samples as shown in AP, e.g.
+            - data_24_magdown_turbo_24c2
+            - data_24_magup_turbo_24c2
+    '''
+    versions : dict[str,str]
+    samples  : dict[str,list[str]]
+# ---------------------------------------
+class PFNReaderConf(BaseModel):
+    '''
+    Class used to configure PFNReader
+    '''
+    working_group : Literal['rd']
+    productions   : dict[Production,ProductionConf]
 # ---------------------------------------
 class PFNReader:
     '''
     Thin wrapper around apd used to get list of PFNs
     '''
     #------------------------------------
-    def __init__(self, cfg : dict|DictConfig):
+    def __init__(self, cfg : PFNReaderConf):
         '''
         cfg: Dictionary with configuration needed to read PFNs
         '''
-        if isinstance(cfg, dict):
-            cfg = OmegaConf.create(cfg)
-
         self._cfg = cfg
     #------------------------------------
     def _paths_from_collection(
