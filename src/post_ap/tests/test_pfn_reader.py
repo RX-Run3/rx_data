@@ -2,11 +2,13 @@
 Script with tests for PFNReader class
 '''
 import pytest
-from dmu.generic           import utilities as gut
-from dmu.logging.log_store import LogStore
-from post_ap.pfn_reader    import PFNReader
+from post_ap      import PFNReader, PFNReaderConf
+from post_ap      import Production
+from dmu          import LogStore
+from dmu.generic  import utilities as gut
+
 # ----------------------
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(scope='module', autouse=True)
 def initialize():
     '''
     This will run before any test
@@ -28,12 +30,13 @@ def test_simple(nickname : str, expected : int):
     '''
     Test simple reading
     '''
-    production = 'btoxll_mva_2024_nopid'
-
-    cfg    = gut.load_conf(package='post_ap_data', fpath='tests/pfn_reader/simple.yaml')
+    data   = gut.load_data(package='post_ap_data', fpath='tests/pfn_reader/simple.yaml')
+    cfg    = PFNReaderConf(**data)
 
     reader = PFNReader(cfg=cfg)
-    d_pfn  = reader.get_pfns(production=production, nickname=nickname)
+    d_pfn  = reader.get_pfns(
+        production=Production.btoxll_mva_2024_nopid, 
+        nickname  =nickname)
     npfn   = len(d_pfn)
 
     assert npfn == expected
@@ -44,9 +47,10 @@ def test_real(analysis : str, sample : str):
     '''
     Test simple reading
     '''
-    cfg    = gut.load_conf(package='post_ap_data', fpath=f'post_ap/{analysis}/v4.yaml')
+    data   = gut.load_data(package='post_ap_data', fpath=f'post_ap/{analysis}/v4.yaml')
+    cfg    = PFNReaderConf(**data)
 
     reader = PFNReader(cfg=cfg)
-    d_pfn  = reader.get_pfns(production='rx_2024', nickname=sample)
+    d_pfn  = reader.get_pfns(production=Production.rx_2024, nickname=sample)
 
     assert d_pfn
