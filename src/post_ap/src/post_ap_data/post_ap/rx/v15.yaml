@@ -1,0 +1,12 @@
+working_group: rd
+productions:
+  rx_2024:
+    versions:
+      sim10g_unfiltered: v1r5781 
+      sim10g_filtered  : v1r5754
+      sim10g_ss        : v1r5811
+    samples:
+      sim10g_unfiltered: null
+      sim10g_filtered  : null
+      sim10g_ss        : null
+      # ---------
