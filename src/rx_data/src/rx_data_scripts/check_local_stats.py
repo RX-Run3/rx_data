@@ -5,16 +5,15 @@ import os
 import glob
 import math
 import argparse
-from pathlib  import Path
-from colorama import Fore, Style
-
 import pandas   as pnd
+
+from pathlib               import Path
+from colorama              import Fore, Style
 from ap_utilities.decays   import utilities          as aput
+from dmu                   import LogStore
 from dmu.generic           import version_management as vmn
-from dmu.logging.log_store import LogStore
 from dmu.generic           import typing_utilities   as tut
 from rx_data               import utilities          as dut
-from rx_common             import info
 
 log=LogStore.add_logger('rx_data:check_local_stats')
 # --------------------------------------
