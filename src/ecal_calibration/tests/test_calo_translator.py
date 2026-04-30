@@ -1,8 +1,6 @@
 '''
 Module with functions meant to test the row,col <-> x,y translation
 '''
-import os
-
 import pytest
 import pandas             as pnd
 import matplotlib.pyplot  as plt
