@@ -22,7 +22,7 @@ def get_data() -> pnd.DataFrame:
     Returns pandas dataframe with x,y and row and column values
     '''
     data_path = files('ecal_calibration_data').joinpath('brem_correction/coordinates.csv')
-    df      = pnd.read_csv(data_path)
+    df      = pnd.read_csv(str(data_path))
     df['a'] = _cast_column(df.a, int)
     df['x'] = _cast_column(df.x, float)
     df['y'] = _cast_column(df.y, float)
@@ -32,7 +32,23 @@ def get_data() -> pnd.DataFrame:
 
     return df
 # ------------------------------------------------------
-def from_id_to_xy(row : int = None, col : int = None, det : str = None, area : int = None) -> tuple[float,float]:
+@overload
+def from_id_to_xy(
+    row : int, 
+    col : int, 
+    det : str, 
+    area: int) -> tuple[float,float]: ...
+@overload
+def from_id_to_xy(
+    row : int | None = ..., 
+    col : int | None = ..., 
+    det : str | None = ..., 
+    area: int | None = ...) -> pnd.DataFrame: ...
+def from_id_to_xy(
+    row : int | None = None, 
+    col : int | None = None, 
+    det : str | None = None, 
+    area: int | None = None) -> tuple[float,float] | pnd.DataFrame:
     '''
     Function taking position in ECAL
     Parameters
@@ -44,8 +60,9 @@ def from_id_to_xy(row : int = None, col : int = None, det : str = None, area : i
 
     Returns
     --------------
-    tuple[float,float]: With the x,y coordinates, if the region in the detector is fully specified.
-    df : Pandas dataframe with the location information, if the region is not fully specified
+    Either:
+        - tuple[float,float]: With the x,y coordinates, if the region in the detector is fully specified.
+        - df                : Pandas dataframe with the location information, if the region is not fully specified
     '''
     if det not in [
             None,
