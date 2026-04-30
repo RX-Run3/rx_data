@@ -1,3 +1,5 @@
+[TOC]
+
 # Description
 
 This documentation explains:
@@ -5,6 +7,31 @@ This documentation explains:
 - What workflows are available
 - How to run them in a computing cluster
 - How to setup a dashboard with [flowo](https://github.com/zhanghaomiao/flowo)
+
+# Available workflows
+
+## Ntuple transfers
+
+Run:
+
+```bash
+snakemake -s snakemake/rules/ntuples/transfer.smk --configfile snakemake/configs/ntuples/transfer.yaml -c 4
+```
+
+to run the ntuple tranfer from a remote server. The transfer will run:
+
+- Without password authentication but instead public keys
+- To transfer a specific set of files from a specific server.
+This is configured both in the `yaml` file and with the first lines
+in the `smk` file:
+
+```python
+SERVER = 'ihep'
+DATASET= 'brem_track_2'
+SSHOPT = '-o StrictHostKeyChecking=no -o BatchMode=yes -o PasswordAuthentication=no -o PubkeyAuthentication=yes'
+```
+
+and can be changed
 
 # HTCondor plugin
 
