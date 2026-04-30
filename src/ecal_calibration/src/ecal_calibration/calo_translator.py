@@ -2,9 +2,11 @@
 Module with code needed to retrieve X, Y position from ECAL cell ID
 '''
 
-from importlib.resources import files
 import pandas as pnd
-from dmu.logging.log_store import LogStore
+
+from typing              import overload
+from importlib.resources import files
+from dmu                 import LogStore
 
 log=LogStore.add_logger('ecal_calibration:calo_translator')
 # --------------------------------
