@@ -26,22 +26,23 @@ class Sample(BaseModel):
     name    : str
     version : str
     # ------------------------------
-    def sample_size(self) -> GB:
+    @cached_property
+    def sample_size(self) -> float:
         '''
         Sample size in GB
         '''
         value = self.data.byte_count()
-        size  = int(value / 1000_000_000)
+        size  = value / 1000_000_000
 
-        return GB(size)
+        return size
     # ------------------------------
     def __str__(self) -> str:
         value  = '\n'
         value += 40 * '-' + '\n'
         value += f'{"Name     ":<20}{self.name:<40}\n'
         value += f'{"Version  ":<20}{self.version:<10}\n'
-        value += f'{"nFiles   ":<20}{self.size:<10}\n'
-        value += f'{"Size [GB]":<20}{self.sample_size():<10}\n'
+        value += f'{"nFiles   ":<20}{self.nfiles:<10}\n'
+        value += f'{"Size [GB]":<20}{self.sample_size:<10.3f}\n'
         value += 40 * '-' + '\n'
         for pfn in self.pfns[:20]:
             value += f'{pfn}\n'
@@ -54,10 +55,13 @@ class Sample(BaseModel):
         String describing sample. Meant to be called by
         __str__ of Samples
         '''
-        return f'{self.name:<40}{self.version:<10}{self.size:<10}\n'
+        size = self.sample_size
+        val  = f'{self.name:<100}{self.version:<10}{self.nfiles:<10}{size:<10.3f}'
+
+        return val
     # ------------------------------
     @cached_property
-    def size(self) -> int:
+    def nfiles(self) -> int:
         '''
         Number of ntuples in sample
         '''
@@ -83,14 +87,30 @@ class Samples(RootModel[list[Sample]]):
     '''
     # -------------------------
     def __str__(self) -> str:
-        value = '\n' + 60 * '-' + '\n'
-        value+= f'{"Name":<40}{"Version":<10}{"Size":<10}\n'
-        value+= 60 * '-' + '\n'
+        lines : list[str] = []
         for sample in self.root:
-            value += sample.sample_string()
-        value+= 60 * '-'
+            lines.append(sample.sample_string())
+
+        lines.sort()
+
+        value = '\n' + 130 * '-' + '\n'
+        value+= f'{"Name":<100}{"Version":<10}{"Files":<10}{"Size [GB]":<10}\n'
+        value+= 130 * '-' + '\n'
+        value+= '\n'.join(lines)
+        value+= '\n' + 130 * '-' + '\n'
+        value+= f'Total [GB]: {self.total_size:.3f}\n'
+        value+= 130 * '-' + '\n'
 
         return value
+    # -------------------------
+    @cached_property
+    def total_size(self) -> float:
+        '''
+        Size of all samples in GB
+        '''
+        sizes = [ sample.sample_size for sample in self.root ]
+
+        return sum(sizes) 
     # -------------------------
     @cached_property
     def size(self) -> int:
@@ -129,12 +149,14 @@ class ProductionConf(BaseModel):
     versions: Map from group of samples to version, e.g. 'data_turbo_24c1 : v1r1670'
     samples : Dictionary with 
         key  : Name of group of samples, e.g. `data_turbo_24c1`
-        value: List of samples as shown in AP, e.g.
-            - data_24_magdown_turbo_24c2
-            - data_24_magup_turbo_24c2
+        value: Either:
+            - List of samples as shown in AP, e.g.
+                - data_24_magdown_turbo_24c2
+                - data_24_magup_turbo_24c2
+            - None, in which case all the samples would be picked
     '''
     versions : dict[str,str]
-    samples  : dict[str,list[str]]
+    samples  : dict[str,list[str] | None]
 # ---------------------------------------
 class PFNReaderConf(BaseModel):
     '''
@@ -157,13 +179,13 @@ class PFNReader:
     def _samples_from_collection(
         self, 
         collection : SampleCollection, 
-        l_sample   : list[str], 
+        l_sample   : list[str] | None, 
         version    : str) -> Samples:
         '''
         Parameters
         ---------------
         collection: APD object representing set of samples
-        l_sample  : Sample names targetted
+        l_sample  : Sample names targetted or None if one wants all samples
         version   : version targetted
         '''
         samples : list[Sample] = []
@@ -174,7 +196,7 @@ class PFNReader:
             if vers != version:
                 continue
 
-            if name not in l_sample:
+            if l_sample and name not in l_sample:
                 continue
 
             sam = collection.filter(name=name, version = vers)
@@ -210,9 +232,12 @@ class PFNReader:
         l_sample   = self._cfg.productions[production].samples[nickname]
         version    = self._cfg.productions[production].versions[nickname]
 
-        log.info('Using samples from:')
-        for sample in l_sample:
-            log.info(f'  {production}:{version}/{sample}')
+        if l_sample is None:
+            log.info(f'Using all samples for version: {version}')
+        else:
+            log.info('Using samples from:')
+            for sample in l_sample:
+                log.info(f'  {production}:{version}/{sample}')
 
         samples        = self._samples_from_collection(
             collection = collection, 
