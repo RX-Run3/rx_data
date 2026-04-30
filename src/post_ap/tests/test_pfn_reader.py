@@ -7,6 +7,7 @@ from post_ap      import Production
 from dmu          import LogStore
 from dmu.generic  import utilities as gut
 
+log=LogStore.add_logger('post_ap:test_pfn_reader')
 # ----------------------
 @pytest.fixture(scope='module', autouse=True)
 def initialize():
@@ -34,10 +35,10 @@ def test_simple(nickname : str, expected : int):
     cfg    = PFNReaderConf(**data)
 
     reader = PFNReader(cfg=cfg)
-    d_pfn  = reader.get_pfns(
+    samples= reader.get_samples(
         production=Production.btoxll_mva_2024_nopid, 
         nickname  =nickname)
-    npfn   = len(d_pfn)
+    npfn   = samples.size
 
     assert npfn == expected
 # -----------------------------
@@ -47,10 +48,18 @@ def test_real(analysis : str, sample : str):
     '''
     Test simple reading
     '''
-    data   = gut.load_data(package='post_ap_data', fpath=f'post_ap/{analysis}/v4.yaml')
-    cfg    = PFNReaderConf(**data)
+    data    = gut.load_data(package='post_ap_data', fpath=f'post_ap/{analysis}/v4.yaml')
+    cfg     = PFNReaderConf(**data)
 
-    reader = PFNReader(cfg=cfg)
-    d_pfn  = reader.get_pfns(production=Production.rx_2024, nickname=sample)
+    reader  = PFNReader(cfg=cfg)
+    samples = reader.get_samples(production=Production.rx_2024, nickname=sample)
 
-    assert d_pfn
+    for val in samples.root:
+        log.info(val)
+
+    log.info(samples)
+
+    assert samples.size      > 0
+    assert len(samples.pfns) > 0
+    assert len(samples.pfns) == len(samples.lfns)
+# -----------------------------
