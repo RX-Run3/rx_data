@@ -328,7 +328,7 @@ class SpecMaker:
             version     = self._custom_versions[friend_name]
             version_dir = ftree_dir / version
 
-            log.warning(f'{friend_name:<20}{version:<20}')
+            log.info(f'{friend_name:<20}{version:<20}')
 
             return version_dir
 
