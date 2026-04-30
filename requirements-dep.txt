@@ -51,8 +51,6 @@ awkward-cpp==51
     # via awkward
 awkward-pandas==2023.8.0
     # via -r requirements-dep.in
-bitmath==2.0.1
-    # via -r requirements-dep.in
 blinker==1.9.0
     # via sigal
 bokeh==3.8.1
