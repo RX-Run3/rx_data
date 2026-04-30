@@ -103,8 +103,8 @@ def test_load():
     '''
     log.info('')
     df = ctran.get_data()
-    print(df)
-    print(df.dtypes)
+    log.info('\n' + str(df))
+    log.info(df.dtypes)
 # --------------------------------
 def test_read_xy():
     '''
