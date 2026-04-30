@@ -2,7 +2,7 @@ import os
 
 SERVER = 'ihep'
 DATASET= 'brem_track_2'
-SSHOPT = '-o StrictHostKeyChecking=no -o BatchMode=yes -o PasswordAuthentication=no -o PubkeyAuthentication=yes'
+SSHOPT = '-o StrictHostKeyChecking=no -o BatchMode=yes -o PasswordAuthentication=no -o PubkeyAuthentication=yes -o Ciphers=aes128-gcm@openssh.com'
 
 ANADIR = os.environ['ANADIR']
 REMOTE = config['servers'][SERVER]
@@ -40,7 +40,7 @@ rule rsync_directory:
         mkdir -p {params.local_dst}
         mkdir -p $(dirname {log})
 
-        rsync -avz                       \
+        rsync -av                        \
               --partial                  \
               --progress                 \
               --stats                    \
