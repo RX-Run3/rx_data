@@ -121,7 +121,7 @@ which will leave you in a new shell with the required environment variables
 
 - Run the commands shown below
 
-## Submition script
+## Submission script
 
 For this one would run a line like:
 
