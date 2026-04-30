@@ -8,4 +8,5 @@ class Production(StrEnum):
     '''
     Class meant to represent projects in Analysis Productions
     '''
-    rx_2024 = auto()
+    rx_2024               = auto()
+    btoxll_mva_2024_nopid = auto()
