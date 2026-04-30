@@ -6,9 +6,10 @@ import numpy
 import pytest
 import pandas as pnd
 
-from dmu     import LogStore
-from rx_data import PhotonVeto
-from rx_data import EcalCell
+from dmu              import LogStore
+from rx_data          import PhotonVeto
+from rx_data          import EcalCell
+from ecal_calibration import calo_translator as ctran
 
 log = LogStore.add_logger('rx_data:test_photon_veto')
 # ----------------------
@@ -18,6 +19,27 @@ def initialize():
     This will run before any test
     '''
     LogStore.set_level('rx_data:photon_veto', 10)
+# ----------------------
+def _add_veto(
+    row : pnd.Series,
+    vet : PhotonVeto) -> int:
+    '''
+    Parameters
+    --------------
+    row: Series containing row, column, etc
+    ver: PhotonVeto instance 
+
+    Returns
+    --------------
+    1 if cell is meant to be vetoed, 0 otherwise
+    '''
+    cell = EcalCell(
+        row  = row['r'],
+        col  = row['c'],
+        area = row['a'])
+    val = vet.veto_cell(cell = cell)
+
+    return int(val)
 # ----------------------
 @pytest.mark.parametrize('name'   , ['L1', 'L2'])
 @pytest.mark.parametrize('version', ['v0', 'v1', 'v2'])
@@ -62,3 +84,16 @@ def test_from_cell(version : str):
         assert obj.nvetoed >  0
 
     log.info(f'Photons vetoed: {obj.nvetoed}/{obj.ntotal}')
+# ----------------------
+@pytest.mark.parametrize('version', ['v0', 'v1', 'v2'])
+def test_plot_veto(version : str):
+    '''
+    Simplest test
+    '''
+    vet = PhotonVeto(version = version)
+    df  = ctran.from_id_to_xy(det='Inner')
+    df['veto'] = df.apply(_add_veto, args = (vet,), axis = 1)
+
+    df = df.query('veto == 1')
+
+    log.info('\n' + str(df))
