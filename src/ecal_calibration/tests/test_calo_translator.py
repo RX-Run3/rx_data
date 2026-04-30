@@ -19,12 +19,6 @@ subdetectors = [
             'Middle',
             'Outer']
 # --------------------------------
-class Data:
-    '''
-    Data class
-    '''
-    out_dir = '/tmp/tests/rx_data/calo_translator'
-# --------------------------------
 def _plot_boundaries(ax):
     x1 = -2_000
     y1 = -1_200
@@ -50,12 +44,16 @@ def _plot_boundaries(ax):
     rectangle = patches.Rectangle((min(x1, x2), min(y1, y2)), width, height, edgecolor='red', facecolor='none', linewidth=2)
     ax.add_patch(rectangle)
 # --------------------------------
-def _plot_translation(df : pnd.DataFrame, row : int, col : int, det : str, name : str):
+def _plot_translation(
+    df      : pnd.DataFrame, 
+    out_dir : Path,
+    row     : int, 
+    col     : int, 
+    det     : str, 
+    name    : str):
     if len(df) != 1:
         print(df)
         raise ValueError(f'Dataframe does not have one and only one element for: {row}/{col}/{name}')
-
-    os.makedirs(f'{Data.out_dir}/{name}', exist_ok=True)
 
     ax = df.plot.scatter(x='x', y='y', color='blue', title=f'Det={det}; Row={row}; Col={col}')
     ax.set_xlim(-6_000, +6_000)
@@ -64,18 +62,30 @@ def _plot_translation(df : pnd.DataFrame, row : int, col : int, det : str, name 
     _plot_boundaries(ax)
 
     fname = f'{det}_{row:03}_{col:03}.png'
-    plt.savefig(f'{Data.out_dir}/{name}/{fname}')
+    out_path = out_dir / name / fname
+    out_path.parent.mkdir(parents = True, exist_ok=True)
+
+    plt.savefig(out_path)
     plt.close()
 # --------------------------------
-def _plot_region(df : pnd.DataFrame, det : str, name : str, color : str = 'blue', skip_save : bool = False, ax=None):
+def _plot_region(
+    df        : pnd.DataFrame, 
+    det       : str, 
+    name      : str, 
+    out_dir   : Path,
+    color     : str  = 'blue', 
+    skip_save : bool = False, 
+    ax               = None):
     ax=df.plot.scatter(x='x', y='y', color=color, s=0.1, title=det, ax=ax)
     ax.set_xlim(-4_000, +4_000)
     ax.set_ylim(-3_500, +3_500)
 
     if not skip_save:
-        os.makedirs(f'{Data.out_dir}/{name}', exist_ok=True)
+        out_path = out_dir / name / f'{det}.png'
+        out_path.parent.mkdir(parents = True, exist_ok = True)
+
         plt.grid()
-        plt.savefig(f'{Data.out_dir}/{name}/{det}.png')
+        plt.savefig(out_path)
         plt.close()
 
     return ax
@@ -85,7 +95,6 @@ def initialize():
     '''
     This function will execute before the tests
     '''
-    os.makedirs(Data.out_dir, exist_ok=True)
     LogStore.set_level('rx_data:calo_translator', 10)
 # --------------------------------
 def test_load():
@@ -123,7 +132,7 @@ def test_plot_row_col(tmp_path : Path):
     plt.savefig(tmp_path / 'row_col.png')
     plt.close()
 # --------------------------------
-def test_plot_xyz():
+def test_plot_xyz(tmp_path : Path):
     '''
     Tests plotting X and Y coodinates
     '''
@@ -132,30 +141,40 @@ def test_plot_xyz():
     df.y.hist(bins=50, histtype='step', label='y')
     df.z.hist(bins=50, histtype='step', label='z')
     plt.legend()
-    plt.savefig(f'{Data.out_dir}/xyz.png')
+    plt.savefig(tmp_path / 'xyz.png')
     plt.close()
 # --------------------------------
 @pytest.mark.parametrize('det', subdetectors)
-def test_scan_dets(det : str):
+def test_scan_dets(det : str, tmp_path : Path):
     '''
     Tests translation from row and column to x and y
     '''
     df = ctran.from_id_to_xy(det=det)
 
-    _plot_region(df, det, name='detector_scan')
+    _plot_region(
+        df      = df, 
+        det     = det, 
+        out_dir = tmp_path,
+        name    ='detector_scan')
 # --------------------------------
-def test_overlay_detectors():
+def test_overlay_detectors(tmp_path : Path):
     '''
     Tests translation from row and column to x and y
     '''
-
     ax = None
     for det, color in [('Inner', 'red'), ('Middle', 'green'), ('Outer', 'blue')]:
         df = ctran.from_id_to_xy(det=det)
-        ax = _plot_region(df, det, name='detector_scan', color=color, skip_save = True, ax=ax)
+        ax = _plot_region(
+            df, 
+            det, 
+            out_dir   = tmp_path,
+            name      = 'detector_scan', 
+            color     = color, 
+            skip_save = True, 
+            ax        = ax)
 
     plt.grid()
-    plt.savefig(f'{Data.out_dir}/overlay_detectors.png')
+    plt.savefig(tmp_path / 'overlay_detectors.png')
     plt.close()
 # --------------------------------
 def test_fully_defined():
