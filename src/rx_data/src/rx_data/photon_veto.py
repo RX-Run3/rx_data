@@ -2,6 +2,7 @@
 Module containing PhotonVeto class
 '''
 import re
+import numpy
 import pandas as pnd
 
 from dmu         import LogStore
@@ -25,6 +26,17 @@ class EcalCell(BaseModel):
     # ------------------------------------
     def __str__(self):
         return f'{self.area:03d},{self.row:03d},{self.col:03d}'
+    # ------------------------------------
+    @classmethod
+    def random(cls) -> 'EcalCell':
+        '''
+        Returns a random EcalCell, useful for tests
+        '''
+        area = numpy.random.choice([0, 1, 2])
+        row  = numpy.random.randint(low = -60, high = 60)
+        col  = numpy.random.randint(low =  14, high = 49)
+
+        return cls(area = area, row = row, col = col)
     # ------------------------------------
     @classmethod
     def from_series(
@@ -164,6 +176,21 @@ class PhotonVeto:
         cell = EcalCell.from_series(
             series      = row,
             lepton_name = lepton_name)
+
+        return self.veto_cell(cell = cell)
+    # ------------------------------------
+    def veto_cell(self, cell : EcalCell) -> bool:
+        '''
+        Parameters
+        ------------------
+        cell: Instance of EcalCell
+
+        Returns
+        ------------------
+        True if cell is meant to be vetoed
+        '''
+        if self._bad_cells is None:
+            return False
 
         if cell in self._bad_cells.root:
             log.debug(f'Vetoing: {cell}')

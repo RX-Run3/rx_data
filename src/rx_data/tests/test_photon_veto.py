@@ -8,6 +8,7 @@ import pandas as pnd
 
 from dmu     import LogStore
 from rx_data import PhotonVeto
+from rx_data import EcalCell
 
 log = LogStore.add_logger('rx_data:test_photon_veto')
 # ----------------------
@@ -20,7 +21,7 @@ def initialize():
 # ----------------------
 @pytest.mark.parametrize('name'   , ['L1', 'L2'])
 @pytest.mark.parametrize('version', ['v0', 'v1', 'v2'])
-def test_simple(name : str, version : str):
+def test_from_pandas(name : str, version : str):
     '''
     Simplest test
     '''
@@ -36,6 +37,24 @@ def test_simple(name : str, version : str):
         obj.veto(
             row = row,
             lepton_name = name)
+
+    if version == 'v0':
+        assert obj.nvetoed == 0
+    else:
+        assert obj.nvetoed >  0
+
+    log.info(f'Photons vetoed: {obj.nvetoed}/{obj.ntotal}')
+# ----------------------
+@pytest.mark.parametrize('version', ['v0', 'v1', 'v2'])
+def test_from_cell(version : str):
+    '''
+    Simplest test
+    '''
+    size= 1000
+    obj = PhotonVeto(version = version)
+    for _ in range(size):
+        cell = EcalCell.random()
+        obj.veto_cell(cell = cell)
 
     if version == 'v0':
         assert obj.nvetoed == 0
