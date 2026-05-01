@@ -17,7 +17,7 @@ from dmu.stats        import Constraint
 from dmu.workflow     import Cache
 from dmu              import LogStore
 from zfit.loss        import ExtendedUnbinnedNLL
-from rx_data          import RDFLoader
+from rx_data          import RDFGetter, RDFLoader
 from rx_selection     import selection as sel
 from rx_common        import Brem, Component, Region
 
@@ -244,6 +244,7 @@ def main():
         if client is not None:
             stack.enter_context(RDFLoader.client(client = client))
 
+        stack.enter_context(RDFGetter.custom_friends(versions = {}))
         stack.enter_context(Cache.cache_root(path=cfg.output_directory))
         stack.enter_context(PL.parameter_schema(cfg=cfg.mod_cfg.yields))
         stack.enter_context(sel.custom_selection(d_sel=cfg.overriding_selection))
