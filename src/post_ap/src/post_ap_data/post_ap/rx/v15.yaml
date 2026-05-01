@@ -1,4 +1,4 @@
-working_group: rd
+working_group: RD
 productions:
   rx_2024:
     versions:
@@ -9,4 +9,3 @@ productions:
       sim10g_unfiltered: null
       sim10g_filtered  : null
       sim10g_ss        : null
-      # ---------
