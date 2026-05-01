@@ -153,6 +153,16 @@ class Samples(RootModel[list[Sample]]):
 
         return value
     # -------------------------
+    def __iter__(self): # pyright: ignore[reportIncompatibleMethodOverride]
+        return iter(self.root) 
+    # -------------------------
+    @overload
+    def __getitem__(self, item: int) -> Sample: ...
+    @overload
+    def __getitem__(self, item: slice) -> list[Sample]: ...
+    def __getitem__(self, item: int | slice) -> Sample | list[Sample]:
+        return self.root[item]
+    # -------------------------
     @cached_property
     def total_size(self) -> float:
         '''
