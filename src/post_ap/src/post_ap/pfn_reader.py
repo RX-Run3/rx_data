@@ -6,8 +6,8 @@ import re
 
 from functools import cached_property
 from typing    import Final, Literal
-from typing    import overload
-from pydantic  import BaseModel, RootModel
+from typing    import overload, Self
+from pydantic  import BaseModel, RootModel, model_validator
 from pydantic  import ConfigDict 
 from apd       import SampleCollection
 from dmu       import LogStore
@@ -240,6 +240,21 @@ class ProductionConf(BaseModel):
     '''
     versions : dict[str,str]
     samples  : dict[str,list[str] | None]
+    fractions: dict[str,float]
+
+    @model_validator(mode = 'after')
+    def _validate(self) -> Self:
+        fail = False
+        for fraction in self.fractions.values():
+            if 0 < fraction < 1.0:
+                continue
+
+            fail = True
+
+        if not fail:
+            return self 
+
+        raise ValueError('At least one fraction has the wrong value')
 # ---------------------------------------
 class PFNReaderConf(BaseModel):
     '''
