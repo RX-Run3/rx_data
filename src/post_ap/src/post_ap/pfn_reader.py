@@ -3,7 +3,6 @@ Module storing PFNReader class
 '''
 import apd
 
-from bitmath   import GB
 from functools import cached_property
 from typing    import Literal
 from pydantic  import BaseModel, RootModel
@@ -17,6 +16,27 @@ log = LogStore.add_logger('post_ap:pfn_reader')
 class Sample(BaseModel):
     '''
     Class meant to represet a set of MC samples
+
+    The schema is:
+
+    {'wg': 'rd', 
+     'analysis': 'rx_2024', 
+     'version': 'v1r5811', 
+     'name': 'mc_24_w41_42_magup_sim10g_12153001_bu_jpsik_ee_eq_dpc_tuple', 
+     'request_id': 204973, 
+     'sample_id': 77484, 
+     'state': 'ready', 
+     'owners': [], 
+     'lfns': {
+        '/lhcb/MC/2024/TUPLE.ROOT/00380611/0000/00380611_00000001_1.tuple.root': 
+            ['root://eoslhcb.cern.ch//eos/lhcb/grid/prod/lhcb/anaprod/lhcb/MC/2024/TUPLE.ROOT/00380611/0000/00380611_00000001_1.tuple.root']}, 
+        'available_bytes'  : 330983170, 
+        'total_bytes'      : 330983170, 
+        'last_state_update': '2026-04-29T05:23:13', 
+        'validity_start'   : '2026-04-28T19:06:41', 
+        'validity_end'     : None}
+
+    And the fields can be accessed from data.info
     '''
     model_config = ConfigDict(
         arbitrary_types_allowed = True,
