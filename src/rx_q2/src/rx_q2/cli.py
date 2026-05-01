@@ -4,8 +4,8 @@ provided by this project
 '''
 
 import typer
-from dmu.logging.log_store import LogStore
-from rx_q2                 import ScaleCombiner
+from dmu     import LogStore
+from rx_q2   import ScaleCombiner
 
 app = typer.Typer(help=__doc__)
 log = LogStore.add_logger('rx_q2:cli')
