@@ -3,12 +3,7 @@ name        = 'post_ap'
 description = 'Project with code needed to filter, trim and slim ntuples produced by AP'
 version     = '0.3.8'
 readme      = 'README.md'
-dependencies= [
-'tqdm',
-'apd',
-'numba',
-'omegaconf',
-]
+dependencies= []
 
 [project.optional-dependencies]
 dev  = ['pytest']
@@ -28,6 +23,7 @@ run3_download_ntuples='post_ap_scripts.run3_download_ntuples:main'
 job_filter_dirac     ='post_ap_scripts.job_filter_dirac:main'
 job_filter_ganga     ='post_ap_scripts.job_filter_ganga:main'
 validate_slimming    ='post_ap_scripts.validate_slimming:main'
+post_ap              ='post_ap_scripts.cli:app'
 
 [tool.setuptools.package-data]
 post_ap_data = ['**/*.json', '**/*.yaml']
