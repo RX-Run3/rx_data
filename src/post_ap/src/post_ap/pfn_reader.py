@@ -4,7 +4,8 @@ Module storing PFNReader class
 import apd
 
 from functools import cached_property
-from typing    import Literal
+from typing    import Final, Literal
+from typing    import overload
 from pydantic  import BaseModel, RootModel
 from pydantic  import ConfigDict 
 from apd       import SampleCollection
@@ -12,6 +13,20 @@ from dmu       import LogStore
 from .types    import Production
 
 log = LogStore.add_logger('post_ap:pfn_reader')
+
+_SECTION : Final[str] = '''
+{sample}_filter:
+input :
+  wg      : {wg} 
+  analysis: {analysis} 
+  tags:
+    version : {version} 
+    name    : {sample}_tuple
+recipe:
+  name       : filter-trees
+  entrypoint : rx_filter.main:main
+output    : {short_name}.root
+'''
 # ---------------------------------------
 class Sample(BaseModel):
     '''
@@ -46,6 +61,21 @@ class Sample(BaseModel):
     name    : str
     version : str
     # ------------------------------
+    @property
+    def info(self) -> str:
+        '''
+        Object representing section in info.yaml associated
+        to this sample and needed to filter it
+        '''
+        fields = {
+            'short_name' : self.short_name,
+            'analysis'   : self.analysis,
+            'version'    : self.version,
+            'sample'     : self.sample,
+            'wg'         : self.wg,
+        }
+
+        return _SECTION.format(**fields) 
     @cached_property
     def sample_size(self) -> float:
         '''
