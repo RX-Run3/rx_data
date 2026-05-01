@@ -18,14 +18,17 @@ log = LogStore.add_logger('post_ap:pfn_reader')
 _SAMPLE_REGEX : Final[str] = r'.*_\d{8}_(.*)_tuple$'
 _SECTION      : Final[str] = '''
 {sample}_filter:
-  input :
-    wg      : {wg} 
-    analysis: {analysis} 
+  input :{sample_frac}
+    wg              : {wg} 
+    analysis        : {analysis} 
     tags:
       version : {version} 
       name    : {sample}_tuple
-  output    : {short_name}.root
+  output: {short_name}.root
 '''
+_FRACTION : Final[str] = '''
+    sample_fraction : {fraction}
+    sample_seed     : 42'''
 # ---------------------------------------
 class Sample(BaseModel):
     '''
@@ -59,6 +62,7 @@ class Sample(BaseModel):
     data    : SampleCollection
     name    : str
     version : str
+    fraction: float | None
     # ------------------------------
     @property
     def info(self) -> str:
@@ -66,7 +70,13 @@ class Sample(BaseModel):
         Object representing section in info.yaml associated
         to this sample and needed to filter it
         '''
+        if self.fraction is None:
+            sample_frac = ''
+        else:
+            sample_frac = _FRACTION.format(fraction = self.fraction)
+
         fields = {
+            'sample_frac': sample_frac,
             'short_name' : self.sample,
             'analysis'   : self.analysis,
             'version'    : self.version,
@@ -272,7 +282,8 @@ class PFNReader:
         self._cfg = cfg
     #------------------------------------
     def _samples_from_collection(
-        self, 
+        self,
+        production : Production,
         collection : SampleCollection, 
         l_sample   : list[str] | None, 
         version    : str) -> Samples:
@@ -294,8 +305,12 @@ class PFNReader:
             if l_sample and name not in l_sample:
                 continue
 
+            cfg_prod = self._cfg.productions[production]
+            frac = cfg_prod.fractions.get(name, None)
+
             sam = collection.filter(name=name, version = vers)
             elm = Sample(
+                fraction= frac, 
                 name    = name,
                 version = vers,
                 data    = sam)
@@ -335,6 +350,7 @@ class PFNReader:
                 log.info(f'  {production}:{version}/{sample}')
 
         samples        = self._samples_from_collection(
+            production = production,
             collection = collection, 
             l_sample   = l_sample, 
             version    = version)
