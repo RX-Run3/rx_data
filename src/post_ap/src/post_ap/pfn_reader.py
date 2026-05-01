@@ -2,6 +2,7 @@
 Module storing PFNReader class
 '''
 import apd
+import re
 
 from functools import cached_property
 from typing    import Final, Literal
@@ -14,18 +15,19 @@ from .types    import Production
 
 log = LogStore.add_logger('post_ap:pfn_reader')
 
-_SECTION : Final[str] = '''
+_SAMPLE_REGEX : Final[str] = r'.*_\d{8}_(.*)_tuple$'
+_SECTION      : Final[str] = '''
 {sample}_filter:
-input :
-  wg      : {wg} 
-  analysis: {analysis} 
-  tags:
-    version : {version} 
-    name    : {sample}_tuple
-recipe:
-  name       : filter-trees
-  entrypoint : rx_filter.main:main
-output    : {short_name}.root
+  input :
+    wg      : {wg} 
+    analysis: {analysis} 
+    tags:
+      version : {version} 
+      name    : {sample}_tuple
+  recipe:
+    name       : filter-trees
+    entrypoint : rx_filter.main:main
+  output    : {short_name}.root
 '''
 # ---------------------------------------
 class Sample(BaseModel):
@@ -68,14 +70,35 @@ class Sample(BaseModel):
         to this sample and needed to filter it
         '''
         fields = {
-            'short_name' : self.short_name,
+            'short_name' : self.sample,
             'analysis'   : self.analysis,
             'version'    : self.version,
-            'sample'     : self.sample,
+            'sample'     : self.job_name,
             'wg'         : self.wg,
         }
 
         return _SECTION.format(**fields) 
+    # ------------------------------
+    @cached_property
+    def analysis(self) -> str:
+        return self.data.info[0]['analysis']
+    # ------------------------------
+    @cached_property
+    def job_name(self) -> str:
+        return self.name.rstrip('_tuple') 
+    # ------------------------------
+    @cached_property
+    def wg(self) -> str:
+        return self.data.info[0]['wg'].upper()
+    # ------------------------------
+    @cached_property
+    def sample(self) -> str:
+        mtch = re.match(_SAMPLE_REGEX, self.name)
+        if not mtch:
+            raise ValueError(f'Cannot extract sample name from: {self.name}')
+
+        return mtch.group(1)
+    # ------------------------------
     @cached_property
     def sample_size(self) -> float:
         '''
