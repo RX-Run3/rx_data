@@ -222,7 +222,7 @@ class PFNReaderConf(BaseModel):
     '''
     Class used to configure PFNReader
     '''
-    working_group : Literal['rd']
+    working_group : Literal['RD']
     productions   : dict[Production,ProductionConf]
 # ---------------------------------------
 class PFNReader:
