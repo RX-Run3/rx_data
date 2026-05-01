@@ -24,9 +24,6 @@ _SECTION      : Final[str] = '''
     tags:
       version : {version} 
       name    : {sample}_tuple
-  recipe:
-    name       : filter-trees
-    entrypoint : rx_filter.main:main
   output    : {short_name}.root
 '''
 # ---------------------------------------
