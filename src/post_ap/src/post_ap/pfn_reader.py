@@ -253,7 +253,7 @@ class ProductionConf(BaseModel):
     def _validate(self) -> Self:
         fail = False
         for fraction in self.fractions.values():
-            if 0 < fraction < 1.0:
+            if 0 < fraction <= 1.0:
                 continue
 
             fail = True
@@ -320,7 +320,7 @@ class PFNReader:
         return Samples(root = samples)
     # ---------------------------------------
     def get_samples(
-        self, 
+        self,
         production : Production, 
         nickname   : str) -> Samples:
         '''
