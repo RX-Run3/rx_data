@@ -8,27 +8,30 @@ from functools import cached_property
 from typing    import Final, Literal
 from typing    import overload, Self
 from pydantic  import BaseModel, RootModel, model_validator
-from pydantic  import ConfigDict 
+from pydantic  import ConfigDict
 from apd       import SampleCollection
 from dmu       import LogStore
 from .types    import Production
 
 log = LogStore.add_logger('post_ap:pfn_reader')
 
-_SAMPLE_REGEX : Final[str] = r'.*_\d{8}_(.*)_tuple$'
-_SECTION      : Final[str] = '''
-{sample}_filter:
+_MAX_JOB_LENGTH    : Final[int] = 84
+_MAX_OUTPUT_LENGHT : Final[int] = 50
+_SAMPLE_REGEX      : Final[str] = r'.*_\d{8}_(.*)_tuple$'
+_BLOCK_REGEX       : Final[str] = r'mc_24_(w\d{2}(_\d{2})?)_mag.*'
+_SECTION           : Final[str] = '''
+{filter_job_name}:
   input :{sample_frac}
-    wg              : {wg} 
-    analysis        : {analysis} 
+    wg              : {wg}
+    analysis        : {analysis}
     tags:
-      version : {version} 
-      name    : {sample}_tuple
-  output: {short_name}.root
+      version : {version}
+      name    : {ntuple_job_name}
+  output: {output_name}
 '''
 _FRACTION : Final[str] = '''
     sample_fraction : {fraction}
-    sample_seed     : 42'''
+    sample_seed     : "42"'''
 # ---------------------------------------
 class Sample(BaseModel):
     '''
@@ -36,21 +39,21 @@ class Sample(BaseModel):
 
     The schema is:
 
-    {'wg': 'rd', 
-     'analysis': 'rx_2024', 
-     'version': 'v1r5811', 
-     'name': 'mc_24_w41_42_magup_sim10g_12153001_bu_jpsik_ee_eq_dpc_tuple', 
-     'request_id': 204973, 
-     'sample_id': 77484, 
-     'state': 'ready', 
-     'owners': [], 
+    {'wg': 'rd',
+     'analysis': 'rx_2024',
+     'version': 'v1r5811',
+     'name': 'mc_24_w41_42_magup_sim10g_12153001_bu_jpsik_ee_eq_dpc_tuple',
+     'request_id': 204973,
+     'sample_id': 77484,
+     'state': 'ready',
+     'owners': [],
      'lfns': {
-        '/lhcb/MC/2024/TUPLE.ROOT/00380611/0000/00380611_00000001_1.tuple.root': 
-            ['root://eoslhcb.cern.ch//eos/lhcb/grid/prod/lhcb/anaprod/lhcb/MC/2024/TUPLE.ROOT/00380611/0000/00380611_00000001_1.tuple.root']}, 
-        'available_bytes'  : 330983170, 
-        'total_bytes'      : 330983170, 
-        'last_state_update': '2026-04-29T05:23:13', 
-        'validity_start'   : '2026-04-28T19:06:41', 
+        '/lhcb/MC/2024/TUPLE.ROOT/00380611/0000/00380611_00000001_1.tuple.root':
+            ['root://eoslhcb.cern.ch//eos/lhcb/grid/prod/lhcb/anaprod/lhcb/MC/2024/TUPLE.ROOT/00380611/0000/00380611_00000001_1.tuple.root']},
+        'available_bytes'  : 330983170,
+        'total_bytes'      : 330983170,
+        'last_state_update': '2026-04-29T05:23:13',
+        'validity_start'   : '2026-04-28T19:06:41',
         'validity_end'     : None}
 
     And the fields can be accessed from data.info
