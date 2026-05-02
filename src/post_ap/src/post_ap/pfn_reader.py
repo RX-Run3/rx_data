@@ -62,6 +62,7 @@ class Sample(BaseModel):
         arbitrary_types_allowed = True,
         frozen                  = False)
 
+    group   : str
     data    : SampleCollection
     name    : str
     version : str
@@ -79,23 +80,58 @@ class Sample(BaseModel):
             sample_frac = _FRACTION.format(fraction = self.fraction)
 
         fields = {
-            'sample_frac': sample_frac,
-            'short_name' : self.sample,
-            'analysis'   : self.analysis,
-            'version'    : self.version,
-            'sample'     : self.job_name,
-            'wg'         : self.wg,
+            'filter_job_name' : self.filter_job_name,
+            'ntuple_job_name' : self.name,
+            'sample_frac'     : sample_frac,
+            'output_name'     : self.output_name,
+            'analysis'        : self.analysis,
+            'version'         : self.version,
+            'group'           : self.group,
+            'wg'              : self.wg,
         }
 
-        return _SECTION.format(**fields) 
+        return _SECTION.format(**fields)
+    # ------------------------------
+    @cached_property
+    def event_type(self) -> int:
+        tags = list(self.data.itertags())
+
+        return tags[0]['eventtype']
+    # ------------------------------
+    @cached_property
+    def output_name(self) -> str:
+        value = f'{self.group}.root'
+        length= len(value)
+
+        if length > _MAX_OUTPUT_LENGHT:
+            raise ValueError(f'Output went beyond {_MAX_OUTPUT_LENGHT} (> {length}) limit: {value}')
+
+        return value
+    # ------------------------------
+    @cached_property
+    def block_identifier(self) -> str:
+        '''
+        E.g. w31
+        '''
+        mtch = re.match(_BLOCK_REGEX, self.name)
+        if not mtch:
+            raise ValueError(f'Cannot extract block identifier from: {self.name}')
+
+        return mtch.group(1)
     # ------------------------------
     @cached_property
     def analysis(self) -> str:
         return self.data.info[0]['analysis']
     # ------------------------------
     @cached_property
-    def job_name(self) -> str:
-        return self.name.rstrip('_tuple') 
+    def filter_job_name(self) -> str:
+        value = f'mc_{self.block_identifier}_{self.event_type}_{self.group}'
+        length= len(value)
+
+        if length > _MAX_JOB_LENGTH:
+            raise ValueError(f'Job name is too long {length} (> {_MAX_JOB_LENGTH})')
+
+        return value
     # ------------------------------
     @cached_property
     def wg(self) -> str:
