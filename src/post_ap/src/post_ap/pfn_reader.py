@@ -286,12 +286,15 @@ class ProductionConf(BaseModel):
     '''
     versions : dict[str,str]
     samples  : dict[str,list[str] | None]
-    fractions: dict[str,float]
+    fractions: dict[str,float | None]
 
     @model_validator(mode = 'after')
     def _validate(self) -> Self:
         fail = False
         for fraction in self.fractions.values():
+            if fraction is None:
+                continue
+
             if 0 < fraction <= 1.0:
                 continue
 
@@ -322,9 +325,10 @@ class PFNReader:
     #------------------------------------
     def _samples_from_collection(
         self,
+        nickname   : str,
         production : Production,
-        collection : SampleCollection, 
-        l_sample   : list[str] | None, 
+        collection : SampleCollection,
+        l_sample   : list[str] | None,
         version    : str) -> Samples:
         '''
         Parameters
@@ -348,8 +352,13 @@ class PFNReader:
             frac = cfg_prod.fractions.get(name, None)
 
             sam = collection.filter(name=name, version = vers)
+            nsam = len(sam)
+            if nsam != 1:
+                raise ValueError(f'Expected one sample, found: {nsam}')
+
             elm = Sample(
-                fraction= frac, 
+                group   = nickname,
+                fraction= frac,
                 name    = name,
                 version = vers,
                 data    = sam)
@@ -389,9 +398,10 @@ class PFNReader:
                 log.info(f'  {production}:{version}/{sample}')
 
         samples        = self._samples_from_collection(
+            nickname   = nickname,
             production = production,
-            collection = collection, 
-            l_sample   = l_sample, 
+            collection = collection,
+            l_sample   = l_sample,
             version    = version)
 
         log.info(f'Found {samples.size} samples')
