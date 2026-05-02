@@ -4,8 +4,10 @@ Script with tests for PFNReader class
 import pytest
 from post_ap      import PFNReader, PFNReaderConf
 from post_ap      import Production
+from post_ap      import Sample
 from dmu          import LogStore
 from dmu.generic  import utilities as gut
+
 
 log=LogStore.add_logger('post_ap:test_pfn_reader')
 # ----------------------
@@ -25,6 +27,10 @@ class Data:
         ('w35_37_v1r3411', 1),
         ('w37_39_v1r3411', 1),
         ('w40_42_v1r3411', 2)]
+# -----------------------------
+def _print_tags(sample : Sample):
+    for x in sample.data.itertags():
+        log.info(x)
 # -----------------------------
 @pytest.mark.parametrize('nickname, expected', Data.l_arg_nopid)
 def test_simple(nickname : str, expected : int):
@@ -75,6 +81,8 @@ def test_sim10g(sample : str):
     samples = reader.get_samples(production=Production.rx_2024, nickname=sample)
 
     log.info(samples)
+
+    _print_tags(sample = samples[0])
 
     assert samples.size      > 0
     assert len(samples.pfns) > 0
