@@ -223,7 +223,7 @@ class Samples(RootModel[list[Sample]]):
         return value
     # -------------------------
     def __iter__(self): # pyright: ignore[reportIncompatibleMethodOverride]
-        return iter(self.root) 
+        return iter(self.root)
     # -------------------------
     @overload
     def __getitem__(self, item: int) -> Sample: ...
@@ -239,7 +239,7 @@ class Samples(RootModel[list[Sample]]):
         '''
         sizes = [ sample.sample_size for sample in self.root ]
 
-        return sum(sizes) 
+        return sum(sizes)
     # -------------------------
     @cached_property
     def size(self) -> int:
@@ -276,7 +276,7 @@ class ProductionConf(BaseModel):
     Attributes
     ----------------
     versions: Map from group of samples to version, e.g. 'data_turbo_24c1 : v1r1670'
-    samples : Dictionary with 
+    samples : Dictionary with
         key  : Name of group of samples, e.g. `data_turbo_24c1`
         value: Either:
             - List of samples as shown in AP, e.g.
@@ -298,7 +298,7 @@ class ProductionConf(BaseModel):
             fail = True
 
         if not fail:
-            return self 
+            return self
 
         raise ValueError('At least one fraction has the wrong value')
 # ---------------------------------------
@@ -360,7 +360,7 @@ class PFNReader:
     # ---------------------------------------
     def get_samples(
         self,
-        production : Production, 
+        production : Production,
         nickname   : str) -> Samples:
         '''
         Parameters
@@ -396,5 +396,5 @@ class PFNReader:
 
         log.info(f'Found {samples.size} samples')
 
-        return samples 
+        return samples
 # ---------------------------------------
