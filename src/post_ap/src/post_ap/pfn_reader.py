@@ -33,6 +33,7 @@ _SECTION           : Final[str] = '''
     extra_args:
       - '--project=PROJECT'
       - '--job_name={ntuple_job_name}'
+      - '--max_entries=MAX_ENTRIES'
   output: {output_name}
 '''
 _FRACTION : Final[str] = '''
