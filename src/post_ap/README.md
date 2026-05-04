@@ -76,3 +76,53 @@ productions:
       mc_24_w40_41_magdown_sim10g_11144001_bd_jpsikst_mm_eq_dpc_tuple : 0.08 
       mc_24_w41_42_magup_sim10g_11144001_bd_jpsikst_mm_eq_dpc_tuple   : 0.08 
 ```
+
+# Testing locally
+
+In order to test locally:
+
+- Install the code as a package, using:
+
+```toml
+[build-system]
+requires = ["setuptools>=42"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rx_filter"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "pytest",
+    "pytest-xdist",
+    "root",
+    "pyyaml",
+    "numba",
+    "cffi",
+    "pandas",
+    "numpy",
+    "awkward",
+    "pydantic",
+    "jinja2",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["rx_filter*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+```
+which has to be placed in the `AnalysisProduction` directory and:
+
+```bash
+pip install -e .
+```
+
+from the same directory
+
+- Download testing ntuples and update the paths in:
+
+`AnalysisProductions/rx_filter/tests/test_filter_dataframe.py`
+
+- Run pytest on that file and the config test.
