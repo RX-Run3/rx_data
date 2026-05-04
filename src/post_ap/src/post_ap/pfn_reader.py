@@ -27,6 +27,12 @@ _SECTION           : Final[str] = '''
     tags:
       version : {version}
       name    : {ntuple_job_name}
+  recipe:
+    name      : filter-trees
+    entrypoint: rx_filter.main:main
+    extra_args:
+      - '--project=PROJECT'
+      - '--job_name={ntuple_job_name}'
   output: {output_name}
 '''
 _FRACTION : Final[str] = '''
@@ -121,6 +127,9 @@ class Sample(BaseModel):
     # ------------------------------
     @cached_property
     def analysis(self) -> str:
+        '''
+        E.g. rx_2024
+        '''
         return self.data.info[0]['analysis']
     # ------------------------------
     @cached_property
