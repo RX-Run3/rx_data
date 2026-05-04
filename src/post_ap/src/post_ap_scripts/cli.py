@@ -30,6 +30,7 @@ def make_info(
     lines : list[str] = [ sample.info for sample in samples ]
 
     text = '\n'.join(lines)
+    text = text.replace('PROJECT', project)
 
     with open(f'{sample}.yaml', 'w') as ofile:
         ofile.write(text)
