@@ -30,12 +30,12 @@ class FitSummary:
     # ----------------------
     def __init__(
         self, 
-        signal: Component,
+        signal: Component | None,
         name  : str) -> None:
         '''
         Parameters
         -------------
-        signal: Name of signal component, e.g. jpsi, needed to find JSON files
+        signal: Name of signal component needed to find JSON files or None to skip it
         name  : Name of directory in {ANADIR}/fits/data/{name}
         '''
         self._signal  = signal
@@ -332,11 +332,15 @@ class FitSummary:
             return pnd.read_parquet(output_path)
 
         df_dat = self._get_df(kind = 'dat')
-        df_sim = self._get_df(kind = 'sim')
 
-        df     = pnd.concat([df_dat, df_sim], axis=0)
-        df     = df.reset_index(drop=True)
-        df     = df.astype(dtype = {'block' : int})
+        if self._signal is None:
+            df     = df_dat
+        else:
+            df_sim = self._get_df(kind = 'sim')
+            df     = pnd.concat([df_dat, df_sim], axis=0)
+
+        df = df.reset_index(drop=True)
+        df = df.astype(dtype = {'block' : int})
 
         self._save_df(df=df, path = output_path)
 
