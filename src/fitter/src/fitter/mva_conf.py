@@ -13,6 +13,32 @@ class MVAWp(RootModel[float|tuple[float,float]]):
     i.e. val in [0, 1]
     '''
     # -------------    
+    @property
+    def lower(self) -> float:
+        '''
+        Lower bound of working point
+        '''
+        if isinstance(self.root, float):
+            return self.root
+
+        if isinstance(self.root, tuple):
+            return self.root[0]
+
+        raise ValueError(f'Invalid WP: {self.root}')
+    # -------------    
+    @property
+    def upper(self) -> float:
+        '''
+        Upperbound of working point
+        '''
+        if isinstance(self.root, float):
+            return 1.0 
+
+        if isinstance(self.root, tuple):
+            return self.root[1]
+
+        raise ValueError(f'Invalid WP: {self.root}')
+    # -------------    
     @classmethod
     def from_str(cls, val : str) -> Self:
         '''
@@ -31,6 +57,25 @@ class MVAWp(RootModel[float|tuple[float,float]]):
             return cls(values)
 
         return cls(float(val))
+    # -------------    
+    @classmethod
+    def from_label(cls, val : str) -> Self:
+        '''
+        Parameters
+        -------------
+        val: String representing WP, e.g. 030 or 050-080
+
+        Returns
+        -------------
+        Instance of MVAWp
+        '''
+        if '-' in val:
+            lower, upper = val.split('-')
+            values = float(lower) / 100., float(upper) / 100.
+
+            return cls(values)
+
+        return cls(float(val) / 100.)
     # -------------    
     @model_validator(mode = 'after')
     def validate_value(self) -> 'MVAWp':
