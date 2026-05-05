@@ -158,7 +158,7 @@ class FitSummary:
 
         l_data : list[dict[str,str | int | float]] = []
         for path in tqdm.tqdm(paths, ascii=' -'):
-            meta     = FitMetadata.from_path(path = path)
+            meta     = FitMetadata.from_pars_path(path = path)
             data     = self._get_data(
                 path = path, 
                 kind = kind)

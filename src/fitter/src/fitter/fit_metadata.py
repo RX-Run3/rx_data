@@ -25,6 +25,17 @@ class FitMetadata(BaseModel):
     brem    : Brem
     # -------------------
     @classmethod
-    def from_path(cls, path : Path) -> 'FitMetadata':
-        pass
+    def from_pars_path(cls, path : Path) -> 'FitMetadata':
+        '''
+        Parameters
+        --------------
+        path: Path to parameters.json, i.e. file with fit parameters
 
+        Returns
+        --------------
+        Object holding fit metadata
+        '''
+        metadata_path = path.parent / 'metadata.json'
+        if metadata_path.exists():
+            json_string = metadata_path.read_text()
+            return cls.model_validate_json(json_string)

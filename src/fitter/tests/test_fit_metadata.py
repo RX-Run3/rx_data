@@ -129,4 +129,4 @@ _PATHS = [
 
 @pytest.mark.parametrize('path', _PATHS)
 def test_from_path(path : Path):
-    FitMetadata.from_path(path = path)
+    FitMetadata.from_pars_path(path = path)
