@@ -41,14 +41,10 @@ class FitSummary:
         self._signal  = signal
         self._fit_dir = self._get_fit_dir(name=name)
 
-        dat_regex = r'(\d{3})_(\d{3})_b(\d)/reso/(rk|rkst)/(mm|ee)/(psi2|jpsi)/data_24/fit/.*/brem_([x,0-9]{3})/parameters.json'
-        sim_regex = fr'(\d{{3}})_(\d{{3}})_b(\d)/reso/(rk|rkst)/(mm|ee)/(psi2|jpsi)/{signal}/fit/brem_([x,0-9]{{3}})/brem_[x,0-9]{{3}}_b\d/parameters.json'
-
         dat_pattern = '*_*_b*/reso/r*/*/jpsi/data_24/fit/*/brem_*/parameters.json'
         sim_pattern =f'*_*_b*/reso/r*/*/jpsi/{signal}/fit/brem_*/brem_*/parameters.json'
 
         self._patterns : Final[dict[str,str]]  = {'dat' : dat_pattern, 'sim' : sim_pattern}
-        self._regexes  : Final[dict[str,str]]  = {'dat' : dat_regex  , 'sim' : sim_regex  }
     # ----------------------
     def _get_fit_dir(self, name : str) -> Path:
         '''
@@ -93,51 +89,10 @@ class FitSummary:
 
         return files
     # ----------------------
-    def _extra_information(
-        self, 
-        kind : str,
-        path : Path) -> dict[str, str | Brem]:
-        '''
-        Parameters
-        -------------
-        kind : dat or sim 
-        path : Path to JSON file with this information
-
-        Returns
-        -------------
-        Dictionary with non-numerical data, key is meant to be column name
-        e.g. brem, block, etc
-        '''
-        regex = self._regexes[kind]
-        mtch  = re.match(f'.*/{regex}', str(path))
-        if not mtch:
-            raise ValueError(f'Cannot match pattern \"{regex}\" to \"{path}\"')
-
-        groups : list[str] = list(mtch.groups())
-        channel            = groups[4]
-
-        data : dict[str, str | Brem] = dict()
-        data['mva_cmb'] = groups[0]
-        data['mva_prc'] = groups[1]
-        data['block'  ] = groups[2]
-        data['project'] = groups[3]
-        data['channel'] = channel
-
-        if   kind == 'dat':
-            data['q2bin'  ] = groups[5]
-            data['brem'   ] = str(Brem.from_str(value = groups[6]))
-        elif kind == 'sim':
-            data['q2bin'  ] = groups[5]
-            data['brem'   ] = str(Brem.from_str(value = groups[6]))
-        else:
-            raise ValueError(f'Invalid kind: {kind}')
-
-        return data
-    # ----------------------
     def _get_data(
         self, 
         kind : str,
-        path : Path) -> tuple[dict[str, float], dict[str, str | Brem]]:
+        path : Path) -> dict[str, float]:
         '''
         Parameters
         -------------
@@ -162,9 +117,7 @@ class FitSummary:
             data[f'yld_{self._signal}_brem_x12_value'] = nentries
             data[f'yld_{self._signal}_brem_x12_error'] = math.sqrt(nentries)
 
-        meta = self._extra_information(path=path, kind=kind)
-
-        return data, meta
+        return data
     # ----------------------
     def _get_mc_nentries(self, path : Path) -> float:
         '''
@@ -236,29 +189,17 @@ class FitSummary:
         npath = len(paths)
         log.info(f'Loading {kind} dataframe from {npath} paths')
 
-        l_data : list[dict[str, float | str | Brem ]] = []
-        for path_brem_1 in tqdm.tqdm(paths, ascii=' -'):
-            path_brem_2 = self._brem_2_from_1(path = path_brem_1)
-            if path_brem_2 is None: 
-                continue
-
-            data_1, meta_1 = self._get_data(
-                path = path_brem_1, 
-                kind = kind)
-            data_2, meta_2 = self._get_data(
-                path = path_brem_2, 
+        l_data : list[dict[str,str | int | float]] = []
+        for path in tqdm.tqdm(paths, ascii=' -'):
+            meta     = FitMetadata.from_path(path = path)
+            data     = self._get_data(
+                path = path, 
                 kind = kind)
 
-            if kind == 'sim':
-                data_1, data_2 = self._post_process_mc(
-                    val_1 = data_1,
-                    val_2 = data_2)
+            info = meta.model_dump()
+            info.update(data)
 
-            info_1 = dict(**data_1, **meta_1)
-            info_2 = dict(**data_2, **meta_2)
-
-            l_data.append(info_1)
-            l_data.append(info_2)
+            l_data.append(info)
 
         df         = pnd.DataFrame(l_data)
         df['kind'] = kind
