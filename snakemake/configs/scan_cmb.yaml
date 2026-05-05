@@ -20,7 +20,5 @@ qsq_bin:
   - high
 project:
   - rk
-  - rkst
 channel:
-  - mm
   - ee 
