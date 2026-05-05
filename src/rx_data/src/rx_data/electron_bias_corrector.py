@@ -249,10 +249,6 @@ class ElectronBiasCorrector:
             log.debug('Electron has already brem, skipping correction')
             return None 
 
-        if self._veto.veto(row = row, lepton_name = self._name):
-            log.debug('Photon falls in vetoed ECAL region, skipping correction')
-            return None 
-
         brem_energy = self._attr_from_row(row, f'{self._name}_BREMTRACKBASEDENERGY')
         if brem_energy <  self._min_brem_energy:
             log.debug(f'Brem energy is below threshold: {brem_energy:.0f} < {self._min_brem_energy:.0f}')
@@ -296,6 +292,12 @@ class ElectronBiasCorrector:
 
         self._name = name
         e_track    = self._get_electron(row, kind='TRACK_')
+
+        if self._veto.veto(row = row, lepton_name = self._name):
+            log.debug('Photon falls in vetoed ECAL region, skipping correction')
+            row = self._update_row(row = row, e_corr = e_track)
+
+            return row
 
         if   kind == 'ecalo_bias':
             e_brem = self._get_ebrem(row, e_track)
