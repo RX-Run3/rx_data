@@ -142,39 +142,6 @@ class FitSummary:
 
         return len(df)
     # ----------------------
-    def _brem_2_from_1(self, path : Path) -> Path | None:
-        '''
-        Parameters
-        -------------
-        path: Path to brem 1 parameters.json
-
-        Returns
-        -------------
-        None if input path belongs to brem 2 already
-        Path to brem 2 if input path belongs to brem 1
-        '''
-        dat_end_1 = 'brem_xx1/parameters.json'
-        dat_end_2 = 'brem_xx2/parameters.json'
-        sim_end_1 =r'brem_xx1/brem_xx1_b(\d)/parameters.json'
-        sim_end_2 =r'brem_xx2/brem_xx2_b(\d)/parameters.json'
-
-        value = str(path)
-        if value.endswith(dat_end_2):
-            return None
-
-        if re.search(sim_end_2, value):
-            return None
-        
-        if value.endswith(dat_end_1):
-            value = value.replace(dat_end_1, dat_end_2)
-            return Path(value)
-
-        if re.search(sim_end_1, value):
-            value = re.sub(sim_end_1, r'brem_xx2/brem_xx2_b\1/parameters.json', value)
-            return Path(value)
-
-        raise ValueError(f'Cannot replace brem in: {path}')
-    # ----------------------
     def _get_df(self, kind : str) -> pnd.DataFrame:
         '''
         Parameters
