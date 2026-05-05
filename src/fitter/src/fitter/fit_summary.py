@@ -173,34 +173,6 @@ class FitSummary:
 
         return df
     # ----------------------
-    def _post_process_mc(
-        self, 
-        val_1 : dict[str, float ],
-        val_2 : dict[str, float ]) -> tuple[dict[str,float], dict[str, float]]:
-        '''
-        Parameters
-        -------------
-        val_x : Dictionary with fitting parameters for given fit, or other identifier, for brem 'x'
-
-        Returns
-        -------------
-        Same as input, but with nentries_value/error keys replaced with fraction_value/error
-        '''
-        nentries_001 = val_1[f'yld_{self._signal}_brem_x12_value']
-        nentries_002 = val_2[f'yld_{self._signal}_brem_x12_value']
-
-        ntotal   = nentries_001 + nentries_002
-        fraction = nentries_001 / ntotal 
-        error    = math.sqrt( fraction * (1 - fraction) / ntotal )
-
-        val_1[f'{self._signal}_fraction_value'] = fraction
-        val_2[f'{self._signal}_fraction_value'] = fraction
-
-        val_1[f'{self._signal}_fraction_error'] = error 
-        val_2[f'{self._signal}_fraction_error'] = error 
-
-        return val_1, val_2 
-    # ----------------------
     def _save_df(
         self, 
         df   : pnd.DataFrame, 
