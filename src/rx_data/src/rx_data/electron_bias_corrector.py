@@ -228,7 +228,10 @@ class ElectronBiasCorrector:
 
         return e_corr
     # ---------------------------------
-    def _correct_with_track_brem_2(self, e_track : v4d, row : pnd.Series) -> v4d|None:
+    def _correct_with_track_brem_2(
+        self, 
+        e_track : v4d, 
+        row     : pnd.Series) -> v4d | None:
         '''
         Smarter strategy than brem_track_1
 
