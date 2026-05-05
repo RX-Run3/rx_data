@@ -49,20 +49,14 @@ rule fits:
 
         CMB_WP=$(rxfitter wp-translator -w {wildcards.cmb})
         PRC_WP=$(rxfitter wp-translator -w {wildcards.prc})
-        #fit_rx_rare \
-        #            -b -1              \
-        #            -g {params.group_name}   \
-        #            -c {params.mode}/{wildcards.prj}/{wildcards.chn}\
-        #            -q {wildcards.qsq} \
-        #            -C $CMB_WP         \
-        #            -P $PRC_WP || true
-        #) > {log.prc} 2>&1
-
-        echo {params.group_name}                            > {output}
-        echo {params.mode}/{wildcards.prj}/{wildcards.chn} >> {output}
-        echo {wildcards.qsq}                               >> {output}
-        echo $CMB_WP                                       >> {output}
-        echo $PRC_WP                                       >> {output}
+        fit_rx_rare \
+                    -b -1              \
+                    -g {params.group_name}   \
+                    -c {params.mode}/{wildcards.prj}/{wildcards.chn}\
+                    -q {wildcards.qsq} \
+                    -C $CMB_WP         \
+                    -P $PRC_WP || true
+        ) > {log.prc} 2>&1
 
         JOBID=$(grep -m1 '^ClusterId' $_CONDOR_JOB_AD | awk '{{print $3}}')
         ln -s {params.LOGD}/$JOBID.err {log.err} || true
