@@ -9,7 +9,7 @@ from functools    import cache
 from ROOT         import RDF # type: ignore
 from pathlib      import Path
 from dmu          import LogStore
-from dmu.stats    import Model, ZFitPlotterConf
+from dmu.stats    import ZFitPlotterConf
 from dmu.generic  import utilities as gut
 from dmu.plotting import BandPlotter, BandPlotterConf
 from rx_selection import selection as sel
