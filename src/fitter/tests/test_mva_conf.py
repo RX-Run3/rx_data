@@ -3,7 +3,7 @@ Test for MVAConf class
 '''
 import pytest
 
-from fitter    import MVAConf
+from fitter    import MVAConf, MVAWp
 from dmu       import LogStore
 
 log = LogStore.add_logger('fitter:test_mva_conf')
@@ -28,18 +28,37 @@ def test_from_tuple():
     log.info(cfg.cmb.get_cut(name = 'mva_cmb'))
     log.info(cfg.prc.get_cut(name = 'mva_prc'))
 # ----------------------------------------
-def test_str_to_wp():
+@pytest.mark.parametrize('str_val', ['0.3', '0.1-0.2'])
+def test_str_to_wp(str_val : str):
+    '''
+    Test transforming string into floats
+    '''
+    wp = MVAWp.from_str(val = str_val)
+    if str_val == '0.3':
+        assert wp.lower == 0.3 
+        assert wp.upper == 1.0 
+
+    if str_val == '0.1-0.2':
+        assert wp.lower == 0.1 
+        assert wp.upper == 0.2 
+
+    # Invalid string raises
+    with pytest.raises(ValueError):
+        MVAWp.from_str(val = '200')
+# ----------------------------------------
+def test_label_to_wp():
     '''
     Test transforming string into floats
     '''
     # Single WP for both
     flt_val = 0.3
-    int_val = int(1000 * flt_val)
-    str_val = str(int_val)
+    int_val = int(flt_val * 100)
+    str_val = f'{int_val:03d}' 
 
-    assert MVAConf.str_to_wp(value = str_val) == flt_val
+    wp = MVAWp.from_label(val = str_val)
+    assert wp.lower == flt_val
 
     # Invalid string raises
     with pytest.raises(ValueError):
-        MVAConf.str_to_wp(value='2000')
+        MVAWp.from_label(val = '200')
 # ----------------------------------------
