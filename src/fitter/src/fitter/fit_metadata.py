@@ -3,9 +3,10 @@ Module holding FitMetadata class
 '''
 import re
 
+from pathlib    import Path
 from pydantic   import BaseModel
 from rx_common  import Block, Brem, Channel, Project, Qsq
-from fitter     import MVAWp
+from .mva_conf  import MVAWp
 
 #dat_regex = r'(\d{3})_(\d{3})_b(\d)/reso/(rk|rkst)/(mm|ee)/(psi2|jpsi)/data_24/fit/.*/brem_([x,0-9]{3})/parameters.json'
 #sim_regex = fr'(\d{{3}})_(\d{{3}})_b(\d)/reso/(rk|rkst)/(mm|ee)/(psi2|jpsi)/{signal}/fit/brem_([x,0-9]{{3}})/brem_[x,0-9]{{3}}_b\d/parameters.json'

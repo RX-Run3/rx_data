@@ -6,13 +6,13 @@ import tqdm
 import math
 import pandas as pnd
 
-from dmu         import LogStore
-from dmu.stats   import FitResult
+from dmu           import LogStore
+from dmu.stats     import FitResult
 
-from pathlib     import Path
-from typing      import Final
-from rx_common   import Component
-from fitter      import FitMetadata
+from pathlib       import Path
+from typing        import Final
+from rx_common     import Component
+from .fit_metadata import FitMetadata
 
 log=LogStore.add_logger('fitter:fit_summary')
 # TODO: Generalize tool to deal with any sample, i.e.
