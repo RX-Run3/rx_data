@@ -118,13 +118,13 @@ class MVAWp(RootModel[float|tuple[float,float]]):
         Friendlier name for working point, e.g. 523 (0.523)
         '''
         if isinstance(self.root, (float, int)):
-            val = int(1000 * self.root)
+            val = int(100 * self.root)
             return str(val)
 
-        low = int(1000 * self.root[0])
-        hig = int(1000 * self.root[1])
+        low = int(100 * self.root[0])
+        hig = int(100 * self.root[1])
 
-        return f'{low}-{hig}'
+        return f'{low:03d}-{hig:03d}'
     # -------------    
     def __str__(self):
         if isinstance(self.root, float):
