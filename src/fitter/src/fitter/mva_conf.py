@@ -155,23 +155,6 @@ class MVAConf(BaseModel):
 
         return cls(cmb = mva_cmb, prc = mva_prc)
     # ----------------------
-    @staticmethod
-    def str_to_wp(value : str) -> float:
-        '''
-        Parameters
-        -------------
-        value: String representation of Working point, e.g. 300
-
-        Returns
-        -------------
-        Tuple with low bound and optionally high bound
-        '''
-        ivalue = int(value)
-        if not (0 <= ivalue < 1000):
-            raise ValueError(f'Invalid working point: {value}')
-
-        return ivalue / 1000.
-    # -------------    
     def __str__(self):
         value = f'CMB: {self.cmb}\n'
         value+= f'PRC: {self.prc}'
