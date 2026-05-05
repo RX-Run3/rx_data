@@ -43,3 +43,15 @@ def test_update(force_update : bool) -> None:
     print('')
     print(df)
 # ----------------------
+def test_no_signal() -> None:
+    '''
+    Test picking up only data parameters, for e.g. combinatorial studies
+    '''
+    smr = FitSummary(name='reso_no_dtf', signal = None)
+    df  = smr.get_df(force_update = True)
+
+    assert len(df) > 0
+
+    print('')
+    print(df)
+# ----------------------
