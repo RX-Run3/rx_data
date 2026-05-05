@@ -41,8 +41,8 @@ class FitSummary:
         self._signal  = signal
         self._fit_dir = self._get_fit_dir(name=name)
 
-        dat_pattern = '*_*_b*/reso/r*/*/jpsi/data_24/fit/*/brem_*/parameters.json'
-        sim_pattern =f'*_*_b*/reso/r*/*/jpsi/{signal}/fit/brem_*/brem_*/parameters.json'
+        dat_pattern = '*_*_*/*/r*/*/*/data_24/fit/*/brem_*/parameters.json'
+        sim_pattern =f'*_*_*/*/r*/*/*/{signal}/fit/brem_*/brem_*/parameters.json'
 
         self._patterns : Final[dict[str,str]]  = {'dat' : dat_pattern, 'sim' : sim_pattern}
     # ----------------------
