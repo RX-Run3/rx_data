@@ -20,20 +20,14 @@ for qsq in qsq_bin:
         for prc in mva_prc:
             for prj in project:
                 for chn in channel:
-                    paths += [
-                        f'{out_path}/{group_name}/{cmb}_{prc}_all/{mode}/{prj}/{chn}/{qsq}/data_24/fit/brem_xx1_brem_xx2/brem_xx1/fit_linear.png',
-                        f'{out_path}/{group_name}/{cmb}_{prc}_all/{mode}/{prj}/{chn}/{qsq}/data_24/fit/brem_xx1_brem_xx2/brem_xx2/fit_linear.png',
-                        f'{out_path}/{group_name}/{cmb}_{prc}_all/{mode}/{prj}/{chn}/{qsq}/data_24/fit/brem_xx1_brem_xx2/both_brem/fit_linear.png',
-                        ]
+                    path = f'{out_path}/{group_name}/{cmb}_{prc}_all/{mode}/{prj}/{chn}/{qsq}/data_24/fit/brem_x12/brem_x12/fit_linear.png'
+                    paths.append(path)
 # ---------------------------------------
 rule all:
     input : paths
 # ---------------------
 rule fits:
-    output:
-         f'{out_path}/{group_name}/{{cmb}}_{{prc}}_all/{mode}/{{prj}}/{{chn}}/{{qsq}}/data_24/fit/brem_xx1_brem_xx2/brem_xx1/fit_linear.png',
-         f'{out_path}/{group_name}/{{cmb}}_{{prc}}_all/{mode}/{{prj}}/{{chn}}/{{qsq}}/data_24/fit/brem_xx1_brem_xx2/brem_xx2/fit_linear.png',
-         f'{out_path}/{group_name}/{{cmb}}_{{prc}}_all/{mode}/{{prj}}/{{chn}}/{{qsq}}/data_24/fit/brem_xx1_brem_xx2/both_brem/fit_linear.png',
+    output: f'{out_path}/{group_name}/{{cmb}}_{{prc}}_all/{mode}/{{prj}}/{{chn}}/{{qsq}}/data_24/fit/brem_x12/brem_x12/fit_linear.png'
     log: 
         prc = f'{LOGDIR}/{{cmb}}_{{prc}}_{{prj}}_{{chn}}_{{qsq}}.prc',
         err = f'{LOGDIR}/{{cmb}}_{{prc}}_{{prj}}_{{chn}}_{{qsq}}.err',
@@ -55,14 +49,20 @@ rule fits:
 
         CMB_WP=$(rxfitter wp-translator -w {wildcards.cmb})
         PRC_WP=$(rxfitter wp-translator -w {wildcards.prc})
-        fit_rx_rare \
-                    -b -1              \
-                    -g {params.group_name}   \
-                    -c {params.mode}/{wildcards.prj}/{wildcards.chn}\
-                    -q {wildcards.qsq} \
-                    -C $CMB_WP         \
-                    -P $PRC_WP || true
-        ) > {log.prc} 2>&1
+        #fit_rx_rare \
+        #            -b -1              \
+        #            -g {params.group_name}   \
+        #            -c {params.mode}/{wildcards.prj}/{wildcards.chn}\
+        #            -q {wildcards.qsq} \
+        #            -C $CMB_WP         \
+        #            -P $PRC_WP || true
+        #) > {log.prc} 2>&1
+
+        echo {params.group_name}                            > {output}
+        echo {params.mode}/{wildcards.prj}/{wildcards.chn} >> {output}
+        echo {wildcards.qsq}                               >> {output}
+        echo $CMB_WP                                       >> {output}
+        echo $PRC_WP                                       >> {output}
 
         JOBID=$(grep -m1 '^ClusterId' $_CONDOR_JOB_AD | awk '{{print $3}}')
         ln -s {params.LOGD}/$JOBID.err {log.err} || true
