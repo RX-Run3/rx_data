@@ -67,10 +67,11 @@ def wp_translator(
     '''
     This will print the signal probability (i.e. MVA working point) given a string
     '''
-    from fitter    import MVAConf
+    from fitter import MVAWp # noqa 
 
-    val = MVAConf.str_to_wp(value = wp)
-    print (val)
+    val = MVAWp.from_label(val = wp)
+
+    print(val)
 # ----------------------
 @app.command()
 def prefit_postfit(
