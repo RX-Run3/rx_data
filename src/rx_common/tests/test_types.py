@@ -159,6 +159,8 @@ def test_block():
     assert '1'       == str(b1)
     assert '2'       == str(b2)
     assert '12'      == str(b1 + b2)
+
+    assert Block(value = 'all').to_int() == -1
 # -------------------------------------------
 def test_block_from_str():
     '''
