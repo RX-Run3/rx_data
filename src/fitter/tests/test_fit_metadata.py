@@ -3,8 +3,8 @@ Module with tests for FitMetadata class
 '''
 
 import pytest
-from pathlib import Path
 
+from pathlib   import Path
 from rx_common import Component
 from fitter    import FitMetadata
 
