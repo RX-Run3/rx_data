@@ -3,12 +3,15 @@ Module with tests for FitSummary class
 '''
 import pytest
 
-from dmu       import LogStore
-from fitter    import FitSummary
-from pathlib   import Path
-from rx_common import Component
+from dmu         import LogStore
+from typing      import Final
+from fitter      import FitSummary
+from pathlib     import Path
+from rx_common   import Component
+from dmu.generic import utilities as gut
 
 log=LogStore.add_logger('fitter:test_fit_summary')
+_IHEP_ANADIR : Final[str] = '/publicfs/ucas/user/campoverde/Data'
 # ----------------------
 @pytest.fixture(scope='session', autouse=True)
 def initialize():
@@ -16,6 +19,25 @@ def initialize():
     This will run before any test
     '''
     LogStore.set_level('fitter:fit_summary', 10)
+# ----------------------
+@pytest.mark.parametrize('name', ['rare'])
+def test_ihep(name : str) -> None:
+    '''
+    Simplest test
+    '''
+    with gut.environment(mapping = {'ANADIR' : _IHEP_ANADIR}):
+        smr = FitSummary(
+            name   = name, 
+            data   = Component.data_24,
+            signal = None)
+        df  = smr.get_df(force_update = True)
+
+    assert len(df) > 0
+
+    print('')
+    print(df)
+    for column in df.columns:
+        print(column)
 # ----------------------
 @pytest.mark.parametrize('name', ['reso_no_dtf'])
 def test_simple(name : str) -> None:
