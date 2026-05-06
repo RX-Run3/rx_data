@@ -54,12 +54,15 @@ def test_with_signal(
     '''
     Test picking up only data parameters, for e.g. combinatorial studies
     '''
-    smr = FitSummary(name=name, signal = signal)
+    smr = FitSummary(
+        name   = name, 
+        data   = Component.data_24,
+        signal = signal)
     df  = smr.get_df(force_update = True)
 
     assert len(df) > 0
 
-    df.T.to_markdown(buf = tmp_path / f'{name}.md')
+    df.to_markdown(buf = tmp_path / f'{name}.md')
 # ----------------------
 @pytest.mark.parametrize('name'  , ['conv_none', 'photon_veto_v1'])
 def test_no_signal(
@@ -68,10 +71,68 @@ def test_no_signal(
     '''
     Test picking up only data parameters, for e.g. combinatorial studies
     '''
-    smr = FitSummary(name=name, signal = None)
+    smr = FitSummary(
+        name   = name, 
+        data   = Component.data_24,
+        signal = None)
     df  = smr.get_df(force_update = True)
 
     assert len(df) > 0
 
-    df.T.to_markdown(buf = tmp_path / f'{name}.md')
+    df.to_markdown(buf = tmp_path / f'{name}.md')
+# ----------------------
+@pytest.mark.parametrize('name'  , ['conv_none', 'photon_veto_v1'])
+def test_no_data(
+    name     : str,
+    tmp_path : Path) -> None:
+    '''
+    Test without data
+    '''
+    smr = FitSummary(
+        name   = name, 
+        data   = None,
+        signal = Component.bpkpee)
+    df  = smr.get_df(force_update = True)
+
+    assert len(df) > 0
+
+    df.to_markdown(buf = tmp_path / f'{name}.md')
+# ----------------------
+def test_switch() -> None:
+    '''
+    Test picking up only data parameters, for e.g. combinatorial studies
+    '''
+    smr_sig = FitSummary(
+        name   = 'conv_none', 
+        data   = None,
+        signal = Component.bpkpee)
+
+    smr_dat = FitSummary(
+        name   = 'conv_none', 
+        data   = Component.data_24,
+        signal = None)
+
+    df_sig  = smr_sig.get_df(force_update = True)
+    df_dat  = smr_dat.get_df(force_update = True)
+
+    col_sig = df_sig.columns.to_list()
+    col_dat = df_dat.columns.to_list()
+
+    print(40 * '-')
+    print('Only in signal')
+    print(40 * '-')
+    for col in col_sig:
+        if col in col_dat:
+            continue
+
+        print(col)
+
+    print(40 * '-')
+    print('Only in data')
+    print(40 * '-')
+    for col in col_dat:
+        if col in col_sig:
+            continue
+
+        print(col)
 # ----------------------
