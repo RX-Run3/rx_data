@@ -3,7 +3,7 @@ This module contains classes derived from Enum
 '''
 from enum        import StrEnum, Enum, auto
 from dmu.stats   import CorrectionImplementation
-from pydantic    import BaseModel, ConfigDict, model_validator
+from pydantic    import BaseModel, ConfigDict, model_serializer, model_validator
 from .mass       import Mass
 from .project    import Project
 from .channel    import Channel
@@ -56,6 +56,10 @@ class Block(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     value : str 
+    # ----------------
+    @model_serializer
+    def serialize(self) -> str:
+        return self.value
     # ----------------
     @model_validator(mode='before')
     @classmethod
