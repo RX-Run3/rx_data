@@ -11,15 +11,15 @@ class Project(StrEnum):
     '''
     test          = auto() # needed for tests
     # ---------------
-    rk            = 'rk'
-    rk_no_pid     = 'rk_nopid'
-    rk_no_refit   = 'rk_no_refit'
-    rk_sim10d     = 'rk_sim10d'
+    rk            = auto() 
+    rk_no_pid     = auto() 
+    rk_no_refit   = auto() 
+    rk_sim10d     = auto() 
     # ---------------
-    rkst          = 'rkst'
-    rkst_no_pid   = 'rkst_nopid'
-    rkst_no_refit = 'rkst_no_refit'
-    rkst_sim10d   = 'rkst_sim10d'
+    rkst          = auto() 
+    rkst_no_pid   = auto() 
+    rkst_no_refit = auto() 
+    rkst_sim10d   = auto() 
     # ----------------------
     @classmethod
     def rk_projects(cls) -> set['Project']:
