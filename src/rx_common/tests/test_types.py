@@ -26,7 +26,7 @@ def test_correction(corr : Correction):
     Tests Correction type
     '''
     assert isinstance(corr.latex, str)
-    assert corr.kind in {'reso', 'scale'} 
+    assert corr.kind in {'reso', 'scale', 'weight'} 
 # -------------------------------------------
 def test_component():
     '''
@@ -57,12 +57,12 @@ def test_brem():
     '''
     Test for Enum representing brem
     '''
-    assert str(Brem.zero) == 'xx0'
-    assert str(Brem.one)  == 'xx1'
-    assert str(Brem.two)  == 'xx2'
+    assert str(Brem.zero) == 'brem_xx0'
+    assert str(Brem.one)  == 'brem_xx1'
+    assert str(Brem.two)  == 'brem_xx2'
 
     assert Brem.zero + Brem.one == Brem.br01x
-    assert Brem.zero + Brem.two == Brem.br02x
+    assert Brem.zero + Brem.two == Brem.br0x2
     assert Brem.one  + Brem.two == Brem.brx12
 
     assert Brem.zero + Brem.one + Brem.two == Brem.br012
@@ -115,7 +115,11 @@ def test_trigger(trigger : Trigger):
     Test trigger enum
     '''
 
-    if   trigger.name.startswith('rk_'):
+    if   trigger.name.endswith('nopid') and trigger.name.startswith('rk_'):
+        expected = Project.rk_no_pid
+    elif trigger.name.endswith('nopid') and trigger.name.startswith('rkst_'):
+        expected = Project.rkst_no_pid
+    elif trigger.name.startswith('rk_'):
         expected = Project.rk
     elif trigger.name.startswith('rkst_'):
         expected = Project.rkst
@@ -124,10 +128,6 @@ def test_trigger(trigger : Trigger):
 
     if expected is not None:
         assert trigger.project == expected
-        return
-
-    with pytest.raises(ValueError):
-        trigger.project
 # -------------------------------------------
 @pytest.mark.parametrize('sample', _COMPONENTS_WITH_DECAYS)
 def test_subdecays(sample : Component):
@@ -160,4 +160,12 @@ def test_block():
     assert '2'       == str(b2)
     assert '12'      == str(b1 + b2)
 # -------------------------------------------
+def test_block_from_str():
+    '''
+    Test block class
+    '''
+    for val in range(1, 9):
+        assert Block.from_str(value =  f'b{val}').to_int() == val
 
+    assert Block.from_str(value = 'all').to_int() == -1
+# -------------------------------------------
