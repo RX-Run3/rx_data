@@ -22,7 +22,10 @@ def test_simple(name : str) -> None:
     '''
     Simplest test
     '''
-    smr = FitSummary(name = name, signal = Component.bpkpjpsiee)
+    smr = FitSummary(
+        name   = name, 
+        data   = Component.data_24,
+        signal = Component.bpkpjpsiee)
     df  = smr.get_df(force_update = True)
 
     assert len(df) > 0
@@ -37,7 +40,10 @@ def test_update(force_update : bool) -> None:
     '''
     Test updating the parquet file
     '''
-    smr = FitSummary(name='reso_no_dtf', signal = Component.bpkpjpsiee)
+    smr = FitSummary(
+        name   = 'reso_no_dtf', 
+        data   = Component.data_24,
+        signal = Component.bpkpjpsiee)
     df  = smr.get_df(force_update = force_update)
 
     assert len(df) > 0
