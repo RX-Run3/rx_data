@@ -87,22 +87,6 @@ class Block(BaseModel):
 
         return int(self.value)
     # ----------------
-    @field_validator('value')
-    @classmethod
-    def validate_value(cls, value) -> str:
-        '''
-        Validates block value
-        '''
-        values = list(value)
-        values = sorted(values)
-        if len(values) != len(set(values)):
-            raise ValueError(f'Invalid value, repeated blocks: {value}')
-
-        if not set(values).issubset(ALL_BLOCKS):
-            raise ValueError(f'Invalid value, invalid blocks: {values}')
-
-        return value
-    # ----------------
     @classmethod
     def blocks(cls) -> list['Block']:
         '''
@@ -111,6 +95,26 @@ class Block(BaseModel):
         List of elementary blocks
         '''
         return [ cls(value = block) for block in ALL_BLOCKS ]
+    # ----------------
+    @classmethod
+    def from_str(cls, value : str) -> 'Block':
+        '''
+        Parameters
+        --------------
+        value: String symbolizing block, e.g. b3, all
+
+        Returns
+        --------------
+        Block instance
+        '''
+        if value == 'all':
+            return cls(value=value)
+
+        if value.startswith('b'):
+            value = value.lstrip('b')
+            return cls(value=value)
+
+        raise ValueError(f'Invalid string: {value}')
     # ----------------
     def __add__(self, other : 'Block') -> 'Block':
         '''
