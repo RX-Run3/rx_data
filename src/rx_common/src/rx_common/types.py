@@ -67,6 +67,9 @@ class Block(BaseModel):
             data = {'value' : data}
 
         vals = data['value']
+        if vals == 'all':
+            return data
+
         if len(vals) != len(set(vals)):
             raise ValueError(f'Invalid value: {vals}')
 
@@ -79,6 +82,9 @@ class Block(BaseModel):
         '''
         Integer version of block, e.g. b1 -> 1
         '''
+        if self.value == 'all':
+            return -1
+
         return int(self.value)
     # ----------------
     @field_validator('value')
