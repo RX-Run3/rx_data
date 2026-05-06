@@ -23,7 +23,7 @@ def initialize():
 @pytest.mark.parametrize('name', ['rare'])
 def test_ihep(name : str) -> None:
     '''
-    Simplest test
+    Test where overriden path
     '''
     with gut.environment(mapping = {'ANADIR' : _IHEP_ANADIR}):
         smr = FitSummary(
