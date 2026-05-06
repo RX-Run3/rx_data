@@ -44,7 +44,9 @@ class FitSummary:
         dat_pattern = '*_*_*/*/r*/*/*/data_24/fit/*/brem_*/parameters.json'
         sim_pattern =f'*_*_*/*/r*/*/*/{signal}/fit/brem_*/brem_*/parameters.json'
 
-        self._patterns : Final[dict[str,str]]  = {'dat' : dat_pattern, 'sim' : sim_pattern}
+        self._patterns : Final[dict[Component,str]] = {Component.data_24 : dat_pattern}
+        if signal:
+             self._patterns[signal] = sim_pattern
     # ----------------------
     def _get_fit_dir(self, name : str) -> Path:
         '''
@@ -67,17 +69,17 @@ class FitSummary:
 
         return fit_dir
     # ----------------------
-    def _get_parameter_paths(self, kind : str) -> list[Path]:
+    def _get_parameter_paths(self, comp : Component) -> list[Path]:
         '''
         Parameters
         -------------
-        kind: dat or sim 
+        comp: Fit component whose parameters need to be extracted
 
         Returns
         -------------
         List of paths to JSON files with fitting parameters
         '''
-        pattern = self._patterns[kind]
+        pattern = self._patterns[comp]
         gen     = self._fit_dir.glob(pattern=pattern)
         files   = list(gen)
 
@@ -91,7 +93,7 @@ class FitSummary:
     # ----------------------
     def _get_data(
         self, 
-        kind : str,
+        comp : Component,
         path : Path) -> dict[str, float]:
         '''
         Parameters
@@ -112,7 +114,7 @@ class FitSummary:
             data[f'{par.name}_value'] = par.value
             data[f'{par.name}_error'] = par.error 
 
-        if kind == 'sim':
+        if comp.is_mc:
             nentries = self._get_mc_nentries(path=path)
             data[f'yld_{self._signal}_brem_x12_value'] = nentries
             data[f'yld_{self._signal}_brem_x12_error'] = math.sqrt(nentries)
@@ -142,34 +144,37 @@ class FitSummary:
 
         return len(df)
     # ----------------------
-    def _get_df(self, kind : str) -> pnd.DataFrame:
+    def _get_df(self, comp : Component) -> pnd.DataFrame:
         '''
         Parameters
         -------------
-        kind: dat or sim, used to pick input JSON files
+        comp: Component for which dataframe is needed
 
         Returns
         -------------
         Pandas dataframe with parameters
         '''
-        paths = self._get_parameter_paths(kind = kind)
+        paths = self._get_parameter_paths(comp = comp)
         npath = len(paths)
-        log.info(f'Loading {kind} dataframe from {npath} paths')
+        log.info(f'Loading {comp} dataframe from {npath} paths')
 
         l_data : list[dict[str,str | int | float]] = []
         for path in tqdm.tqdm(paths, ascii=' -'):
-            meta     = FitMetadata.from_pars_path(path = path)
+            meta     = FitMetadata.from_pars_path(
+                path = path, 
+                comp = comp)
+
             data     = self._get_data(
                 path = path, 
-                kind = kind)
+                comp = comp)
 
             info = meta.model_dump()
             info.update(data)
 
             l_data.append(info)
 
-        df         = pnd.DataFrame(l_data)
-        df['kind'] = kind
+        df              = pnd.DataFrame(l_data)
+        df['component'] = comp 
 
         return df
     # ----------------------
@@ -211,16 +216,26 @@ class FitSummary:
             log.info(f'Reading cached files at: {output_path}')
             return pnd.read_parquet(output_path)
 
-        df_dat = self._get_df(kind = 'dat')
+        df_dat = self._get_df(comp = Component.data_24)
 
         if self._signal is None:
             df     = df_dat
         else:
-            df_sim = self._get_df(kind = 'sim')
+            df_sim = self._get_df(comp = self._signal)
             df     = pnd.concat([df_dat, df_sim], axis=0)
 
         df = df.reset_index(drop=True)
-        df = df.astype(dtype = {'block' : int})
+
+        casts : dict[str,type] = {
+            'block'     : str,
+            'component' : str,
+            'project'   : str,
+            'channel'   : str,
+            'q2bin'     : str,
+            'brem'      : str,
+        }
+
+        df = df.astype(dtype = casts)
 
         self._save_df(df=df, path = output_path)
 
