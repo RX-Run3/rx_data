@@ -32,24 +32,26 @@ def test_component():
     '''
     Test Enum representing fit component 
     '''
-    assert Component.data_24         == 'DATA_24*'
-    assert Component.ccbar           == 'ccbar'
+    assert Component.data_24.sample         == 'DATA_24*'
 
-    assert Component.bpkpjpsiee      == 'Bu_JpsiK_ee_eq_DPC'
-    assert Component.bpkppsi2ee      == 'Bu_psi2SK_ee_eq_DPC'
-    assert Component.bppijpsiee      == 'Bu_JpsiPi_ee_eq_DPC'
+    assert Component.bpkpjpsiee.sample      == 'Bu_JpsiK_ee_eq_DPC'
+    assert Component.bpkppsi2ee.sample      == 'Bu_psi2SK_ee_eq_DPC'
+    assert Component.bppijpsiee.sample      == 'Bu_JpsiPi_ee_eq_DPC'
     # ------
-    assert Component.bsphijpsimm     == 'Bs_Jpsiphi_mm_eq_CPV_update2012_DPC'
-    assert Component.bsphijpsiee     == 'Bs_Jpsiphi_ee_eq_CPV_update2012_DPC'
+    assert Component.bsphijpsimm.sample     == 'Bs_Jpsiphi_mm_eq_CPV_update2012_DPC'
+    assert Component.bsphijpsiee.sample     == 'Bs_Jpsiphi_ee_eq_CPV_update2012_DPC'
     # ------
-    assert Component.lbpkjpsimm      == 'Lb_JpsipK_mm_eq_phsp_DPC'
-    assert Component.lbpkjpsiee      == 'Lb_JpsipK_ee_eq_phsp_DPC'
+    assert Component.lbpkjpsimm.sample      == 'Lb_JpsipK_mm_eq_phsp_DPC'
+    assert Component.lbpkjpsiee.sample      == 'Lb_JpsipK_ee_eq_phsp_DPC'
     # ------
-    assert Component.bskstjpsimm     == 'Bs_JpsiKst_mm_eq_DPC'
-    assert Component.bskstjpsiee     == 'Bs_JpsiKst_ee_eq_DPC'
+    assert Component.bskstjpsimm.sample     == 'Bs_JpsiKst_mm_eq_DPC'
+    assert Component.bskstjpsiee.sample     == 'Bs_JpsiKst_ee_eq_DPC'
 
-    assert Component.bdkstjpsimm_swp == 'Bd_JpsiKst_mm_had_swp'
-    assert Component.bdkstjpsiee_swp == 'Bd_JpsiKst_ee_had_swp'
+    assert Component.bdkstjpsimm_swp.sample == 'Bd_JpsiKst_mm_had_swp'
+    assert Component.bdkstjpsiee_swp.sample == 'Bd_JpsiKst_ee_had_swp'
+
+    with pytest.raises(ValueError):
+        assert Component.ccbar.sample           == 'ccbar'
 # -------------------------------------------
 def test_brem():
     '''
