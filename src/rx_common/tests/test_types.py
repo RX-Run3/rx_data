@@ -171,3 +171,13 @@ def test_block_from_str():
 
     assert Block.from_str(value = 'all').to_int() == -1
 # -------------------------------------------
+def test_block_dump():
+    '''
+    Test block class
+    '''
+    for block in range(1, 9):
+        str_block = str(block)
+
+        data = Block(value = str_block).model_dump()
+        print(data)
+# -------------------------------------------
