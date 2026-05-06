@@ -223,16 +223,19 @@ class FitSummary:
         df = pnd.concat(l_df, axis=0)
         df = df.reset_index(drop=True)
 
-        casts : dict[str,type] = {
-            'block'     : str,
-            'component' : str,
-            'project'   : str,
-            'channel'   : str,
-            'q2bin'     : str,
-            'brem'      : str,
-        }
+        to_be_casted : list[str] = [
+            'block'    ,
+            'component',
+            'project'  ,
+            'channel'  ,
+            'q2bin'    ,
+            'brem'     ,
+        ]
 
-        df = df.astype(dtype = casts)
+        def _cast_col(col : pnd.Series) -> pnd.Series:
+            return col.map(str)
+
+        df[to_be_casted] = df[to_be_casted].apply(_cast_col)
 
         self._save_df(df=df, path = output_path)
 
