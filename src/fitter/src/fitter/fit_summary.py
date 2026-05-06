@@ -30,23 +30,26 @@ class FitSummary:
     # ----------------------
     def __init__(
         self, 
+        data  : Component | None,
         signal: Component | None,
         name  : str) -> None:
         '''
         Parameters
         -------------
+        data  : Component name associated to data
         signal: Name of signal component needed to find JSON files or None to skip it
         name  : Name of directory in {ANADIR}/fits/data/{name}
         '''
         self._signal  = signal
+        self._data    = data
         self._fit_dir = self._get_fit_dir(name=name)
 
-        dat_pattern = '*_*_*/*/r*/*/*/data_24/fit/*/brem_*/parameters.json'
-        sim_pattern =f'*_*_*/*/r*/*/*/{signal}/fit/brem_*/brem_*/parameters.json'
+        self._patterns : Final[dict[Component,str]] = {}
+        if data:
+            self._patterns[data]    = f'*_*_*/*/r*/*/*/{data}/fit/*/brem_*/parameters.json'
 
-        self._patterns : Final[dict[Component,str]] = {Component.data_24 : dat_pattern}
         if signal:
-             self._patterns[signal] = sim_pattern
+             self._patterns[signal] = f'*_*_*/*/r*/*/*/{signal}/fit/brem_*/brem_*/parameters.json'
     # ----------------------
     def _get_fit_dir(self, name : str) -> Path:
         '''
@@ -216,14 +219,8 @@ class FitSummary:
             log.info(f'Reading cached files at: {output_path}')
             return pnd.read_parquet(output_path)
 
-        df_dat = self._get_df(comp = Component.data_24)
-
-        if self._signal is None:
-            df     = df_dat
-        else:
-            df_sim = self._get_df(comp = self._signal)
-            df     = pnd.concat([df_dat, df_sim], axis=0)
-
+        l_df : list[pnd.DataFrame] = [ self._get_df(comp = comp) for comp in [self._data, self._signal] if comp ]
+        df = pnd.concat(l_df, axis=0)
         df = df.reset_index(drop=True)
 
         casts : dict[str,type] = {
