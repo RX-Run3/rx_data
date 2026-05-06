@@ -3,7 +3,7 @@ This module contains classes derived from Enum
 '''
 from enum        import StrEnum, Enum, auto
 from dmu.stats   import CorrectionImplementation
-from pydantic    import BaseModel, field_validator, ConfigDict, model_validator
+from pydantic    import BaseModel, ConfigDict, model_validator
 from .mass       import Mass
 from .project    import Project
 from .channel    import Channel
@@ -61,10 +61,17 @@ class Block(BaseModel):
     @classmethod
     def coerce_from_primitive(cls, data):
         if isinstance(data, int):
-            return {'value' : str(data)}
+            data = {'value' : str(data)}
 
         if isinstance(data, str):
-            return {'value' : data}
+            data = {'value' : data}
+
+        vals = data['value']
+        if len(vals) != len(set(vals)):
+            raise ValueError(f'Invalid value: {vals}')
+
+        if any(val not in ALL_BLOCKS for val in vals):
+            raise ValueError(f'Invalid value: {vals}')
 
         return data 
     # ----------------
