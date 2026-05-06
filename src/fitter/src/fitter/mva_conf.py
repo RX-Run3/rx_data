@@ -1,9 +1,10 @@
 '''
 Module containing MVAConf class
 '''
-from typing    import Self
+from typing    import Final, Self
 from pydantic  import BaseModel, RootModel, model_validator
 
+_MULT_FACTOR : Final[float] = 1000.
 # ---------------------
 class MVAWp(RootModel[float|tuple[float,float]]):
     '''
@@ -71,11 +72,11 @@ class MVAWp(RootModel[float|tuple[float,float]]):
         '''
         if '-' in val:
             lower, upper = val.split('-')
-            values = float(lower) / 100., float(upper) / 100.
+            values = float(lower) / _MULT_FACTOR, float(upper) / _MULT_FACTOR
 
             return cls(values)
 
-        return cls(float(val) / 100.)
+        return cls(float(val) / _MULT_FACTOR)
     # -------------    
     @model_validator(mode = 'after')
     def validate_value(self) -> 'MVAWp':
@@ -118,11 +119,11 @@ class MVAWp(RootModel[float|tuple[float,float]]):
         Friendlier name for working point, e.g. 523 (0.523)
         '''
         if isinstance(self.root, (float, int)):
-            val = int(100 * self.root)
+            val = int(_MULT_FACTOR * self.root)
             return str(val)
 
-        low = int(100 * self.root[0])
-        hig = int(100 * self.root[1])
+        low = int(_MULT_FACTOR * self.root[0])
+        hig = int(_MULT_FACTOR * self.root[1])
 
         return f'{low:03d}-{hig:03d}'
     # -------------    
