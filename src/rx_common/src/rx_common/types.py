@@ -57,10 +57,6 @@ class Block(BaseModel):
 
     value : str 
     # ----------------
-    @model_serializer
-    def serialize(self) -> str:
-        return self.value
-    # ----------------
     @model_validator(mode='before')
     @classmethod
     def coerce_from_primitive(cls, data):
