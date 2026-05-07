@@ -3,7 +3,7 @@ This module contains classes derived from Enum
 '''
 from enum        import StrEnum, Enum, auto
 from dmu.stats   import CorrectionImplementation
-from pydantic    import BaseModel, ConfigDict, model_serializer, model_validator
+from pydantic    import BaseModel, ConfigDict, model_validator
 from .mass       import Mass
 from .project    import Project
 from .channel    import Channel
