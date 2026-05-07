@@ -10,7 +10,7 @@ from dmu           import LogStore
 from dmu.stats     import FitResult
 
 from pathlib       import Path
-from typing        import Final
+from typing        import Any, Final
 from rx_common     import Component
 from .fit_metadata import FitMetadata
 
@@ -18,6 +18,19 @@ log=LogStore.add_logger('fitter:fit_summary')
 # TODO: Generalize tool to deal with any sample, i.e.
 # - Generalize _regex to match any sample and pick name
 # - For MC, instead of nentries use yld_{sample}
+# ----------------------
+def _cast(row : pnd.Series) -> pnd.Series:
+    to_be_casted : list[str] = [
+        'block'    ,
+        'brem'     ,
+        'mva_cmb'  ,
+        'mva_prc'  ,
+    ]
+
+    if row.name not in to_be_casted:
+        return row
+
+    return row.apply(str)
 # -------------------------------
 class FitSummary:
     '''
@@ -161,19 +174,19 @@ class FitSummary:
         npath = len(paths)
         log.info(f'Loading {comp} dataframe from {npath} paths')
 
-        l_data : list[dict[str,str | int | float]] = []
+        l_data : list[dict[str,Any]] = []
         for path in tqdm.tqdm(paths, ascii=' -'):
             meta     = FitMetadata.from_pars_path(
                 path = path, 
                 comp = comp)
 
-            data     = self._get_data(
+            info     = self._get_data(
                 path = path, 
                 comp = comp)
 
-            info = meta.model_dump()
-            info.update(data)
+            meta_info= {name : getattr(meta,name) for name in meta.model_fields_set}
 
+            info.update(meta_info)
             l_data.append(info)
 
         df              = pnd.DataFrame(l_data)
@@ -221,21 +234,8 @@ class FitSummary:
 
         l_df : list[pnd.DataFrame] = [ self._get_df(comp = comp) for comp in [self._data, self._signal] if comp ]
         df = pnd.concat(l_df, axis=0)
+        df = df.apply(_cast) 
         df = df.reset_index(drop=True)
-
-        to_be_casted : list[str] = [
-            'block'    ,
-            'component',
-            'project'  ,
-            'channel'  ,
-            'q2bin'    ,
-            'brem'     ,
-        ]
-
-        def _cast_col(col : pnd.Series) -> pnd.Series:
-            return col.map(str)
-
-        df[to_be_casted] = df[to_be_casted].apply(_cast_col)
 
         self._save_df(df=df, path = output_path)
 
