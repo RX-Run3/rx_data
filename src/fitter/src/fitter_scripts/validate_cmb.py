@@ -5,7 +5,9 @@ import os
 import argparse
 import pandas   as pnd
 
+from contextlib   import ExitStack
 from functools    import cache
+from typing       import Final
 from ROOT         import RDF # type: ignore
 from pathlib      import Path
 from dmu          import LogStore
@@ -15,13 +17,19 @@ from dmu.plotting import BandPlotter, BandPlotterConf
 from rx_selection import selection as sel
 from rx_common    import Mass, Project, Qsq, Component, Trigger
 from rx_data      import RDFGetter
+from fitter       import FitSummary
 from fitter       import CmbValidationConfig
 from fitter       import CmbValidatorConf
 from fitter       import CmbInputConfig
 from fitter       import CmbValidator
 from fitter       import CmbOutputConfig
+from fitter       import MVAWp
 
 log=LogStore.add_logger('rx_fitter:validate_cmb')
+_IHEP_ANADIR        : Final[str] = '/publicfs/ucas/user/campoverde/Data'
+_CMB_SUFFIX         : Final[str] = '_cmb_1' # end part of string in combinatorial fits parameters
+_OS_DROPPED_COLUMNS : Final[list[str]] = ['q2bin', 'channel', 'brem', 'mva_prc', 'project', 'block', 'component']
+_SIGNAL_PREFIX      : Final[str] = 'yld_bpkpee' 
 # ----------------------
 def _get_conf() -> CmbValidatorConf:
     parser = argparse.ArgumentParser(description='Used to perform fits to validate choice of PDF for combinatorial')
@@ -120,35 +128,130 @@ def _plot(
     df     : Dataframe with values of parameters and errors
     cfg_val: Config used for combinatorial validation
     '''
-    data= gut.load_data(package = 'fitter_data', fpath = f'combinatorial/plots_{cfg_val.input.q2bin}.yaml')
+    data= gut.load_data(
+        package = 'fitter_data', 
+        fpath   = f'combinatorial/plots_{cfg_val.input.q2bin}.yaml')
     data['out_dir'] = str(cfg_val.out_dir)
 
-    cfg = BandPlotterConf(**data) 
+    cfg = BandPlotterConf(**data)
     ptr = BandPlotter(cfg = cfg, df = df)
     ptr.plot()
 # --------------------------------
-def main():
-    '''
-    Entry point
-    '''
-    cfg = _get_conf()
+def _get_renaming(
+    prefixes : set[str],
+    df       : pnd.DataFrame):
 
+    renaming : dict[str,str] = {}
+    parameters = df['Parameter'].to_list()
+    for parameter in parameters:
+        if parameter.startswith(_SIGNAL_PREFIX):
+            renaming[parameter] = 'nev' 
+            continue
+
+        if not any(parameter.startswith(pref) for pref in prefixes):
+            continue
+
+        suffix   = '' if parameter == 'pvalue' else _CMB_SUFFIX
+        [target] = [ f'{prefix}{suffix}' for prefix in prefixes if parameter.startswith(prefix) ]
+
+        renaming[parameter] = target
+
+    return renaming
+# --------------------------------
+def _preprocess_os_df(
+    df       : pnd.DataFrame,
+    cfg      : CmbValidatorConf,
+    prefixes : set[str]) -> pnd.DataFrame:
+    '''
+    Parameters
+    ------------
+    df       : DataFrame from OS fits
+    prefixes : Prefixes of parameters, e.g. ap_hypexp
+
+    Returns
+    ------------
+    DataFrame with columns: Parameter, Value, Error, Fit, Category
+    '''
+    df = df.query(f'q2bin == \"{cfg.input.q2bin}\"')
+    df = df.drop(columns = _OS_DROPPED_COLUMNS)
+    df = df.rename(
+        columns = {'mva_cmb' : 'Fit'},
+        inplace = False)
+
+    df['Category']  = 'OS'
+    vars_dict       = _get_renaming(prefixes = prefixes, df = df)
+    pars            = df['Parameter']
+    flags           = pars.isin(vars_dict)
+    df              = df[flags]
+    df['Parameter'] = df['Parameter'].map(vars_dict)
+    df              = df.sort_values(by = ['Fit', 'Parameter'])
+    df              = df.reset_index(drop = True)
+
+    return df
+# --------------------------------
+def _get_ss_df(cfg : CmbValidatorConf) -> list[pnd.DataFrame]:
+    '''
+    Parameters
+    ------------------
+    cfg: Config object needed to run SS parameter extraction
+
+    Returns
+    ------------------
+    Dataframes with parameters for SS fits
+    '''
+    l_df : list[pnd.DataFrame] = []
     categories : dict[str,str] = {'Both': '(1)'}
     if cfg.input.trigger.project == Project.rk:
         categories['+++'] = 'TMath::Abs(total_charge) == 3'
         categories['+--'] = 'TMath::Abs(total_charge) == 1'
 
-    l_df : list[pnd.DataFrame] = []
     for label, cut in categories.items():
         df  = _get_pars(
             label = label,
             cut   = cut,
             cfg   = cfg)
 
-        df['Category'] = label
+        df['Category'] = 'SS' if label == 'Both' else label
         l_df.append(df)
 
-    df = pnd.concat(l_df)
+    return l_df
+# --------------------------------
+def _get_prefix(param : str) -> str:
+    parts  = param.split('_')
+    parts  = parts[:2]
+    prefix = '_'.join(parts)
+
+    return prefix
+# --------------------------------
+def main():
+    '''
+    Entry point
+    '''
+    cfg  = _get_conf()
+    l_df = _get_ss_df(cfg = cfg)
+    pars = l_df[0]['Parameter'].to_list()
+    prefixes = { _get_prefix(param = par) for par in pars }
+
+    with ExitStack() as stack:
+        stack.enter_context(gut.environment(mapping = {'ANADIR' : _IHEP_ANADIR}))
+        stack.enter_context(MVAWp.mult_factor(value = 100))
+
+        smr= FitSummary(
+            name   = 'rare_fix_cmb_pars',
+            data   = Component.data_24,
+            signal = None)
+        df = smr.get_df(
+            by_fit       = False,
+            force_update = True)
+
+        df = _preprocess_os_df(
+            df       = df,
+            cfg      = cfg,
+            prefixes = prefixes)
+
+        l_df.append(df)
+
+    df = pnd.concat(l_df, ignore_index=True)
     _plot(df = df, cfg_val = cfg)
 # --------------------------------
 if __name__ == '__main__':
