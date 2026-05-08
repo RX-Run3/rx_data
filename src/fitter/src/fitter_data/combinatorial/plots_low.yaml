@@ -7,7 +7,7 @@ xname   : Fit
 styles  :
   nev:
     xrotation : 45
-    alpha     : 1.0
+    alpha     : 0.5
     ylabel    : Entries 
     yrange    : [0, 4000]
   mu_hypexp_cmb_1:
