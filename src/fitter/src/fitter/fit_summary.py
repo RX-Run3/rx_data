@@ -159,6 +159,13 @@ class FitSummary:
             data[f'yld_{self._signal}_brem_x12_value'] = nentries
             data[f'yld_{self._signal}_brem_x12_error'] = math.sqrt(nentries)
 
+        if res.gof is None:
+            data['pvalue_value'] = -1 
+            data['pvalue_error'] =  0 
+        else:
+            data['pvalue_value'] =  res.gof.pval 
+            data['pvalue_error'] =  0.1
+
         return [data]
     # ----------------------
     def _get_data_by_par(
@@ -196,6 +203,18 @@ class FitSummary:
                 'Error'     : math.sqrt(nentries),
             }
             data.append(entry)
+
+        entry : dict[str,float | str]  = {}
+        if res.gof is None:
+            entry['Parameter'] = 'pvalue'
+            entry['Value'    ] = -1 
+            entry['Error'    ] =  0 
+        else:
+            entry['Parameter'] = 'pvalue'
+            entry['Value'    ] =  res.gof.pval 
+            entry['Error'    ] =  0.1
+
+        data.append(entry)
 
         return data
     # ----------------------
