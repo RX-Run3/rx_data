@@ -31,7 +31,5 @@ labels :
   OS : OS
 groups :
   all:
-    - +++ 
-    - +--
     - SS 
     - OS 
