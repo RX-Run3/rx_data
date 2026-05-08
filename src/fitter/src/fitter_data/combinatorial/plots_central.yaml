@@ -27,11 +27,11 @@ styles  :
     ylabel    : p-value 
     yrange    : [0.0, 1.0]
 labels :
-  +++  : +++
-  +--  : +--
-  Both : Both
+  SS : SS 
+  OS : OS
 groups :
   all:
     - +++ 
     - +--
-    - Both
+    - SS 
+    - OS 
