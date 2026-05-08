@@ -23,11 +23,15 @@ styles  :
     ylabel    : p-value 
     yrange    : [0.0, 1.0]
 labels :
-  +++  : +++
-  +--  : +--
-  Both : Both
+  OS  : Opposite Sign
+  SS  : Same Sign
+  +++ : $B^+\to K^+e^+e^+ + cc$
+  +-- : $B^+\to K^+e^-e^- + cc$
 groups :
-  all:
-    - +++ 
+  OS_vs_SS:
+    - OS 
+    - SS 
+  p3_vs_p1:
+    - +++
     - +--
-    - Both
+    -  SS
