@@ -178,8 +178,9 @@ class PFNDownloader:
         for pfn in pfns:
             try:
                 PFNDownloader.download_pfn(pfn = pfn, cfg = cfg)
-            except Exception:
+            except Exception as exc:
                 log.debug(f'Failed to download: {pfn}')
+                log.debug(f'Reason: {exc}', exc_info = True)
                 lfn = pfn.removeprefix(_PFN_PREFIX)
                 cfg.failed_pfns.append(lfn)
     
