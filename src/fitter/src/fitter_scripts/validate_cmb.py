@@ -51,7 +51,7 @@ def _get_conf() -> CmbValidatorConf:
     ana_dir    = Path(os.environ['ANADIR'])
 
     input      = CmbInputConfig(**data)
-    validation = CmbValidationConfig.from_file(fname = f'combinatorial/config_{args.q2bin}.yaml') 
+    validation = CmbValidationConfig.from_file(fname = f'combinatorial/config_{args.q2bin}.yaml')
 
     cfg_plt    = ZFitPlotterConf.default()
     cfg_plt    = cfg_plt.model_copy(update = {'nbins' : 30})
@@ -91,7 +91,7 @@ def _get_pars(
     Parameters
     -----------------
     label: Label of dataset
-    cut  : Cut associated to working point 
+    cut  : Cut associated to working point
     cfg  : Config needed to validate
 
     Returns
