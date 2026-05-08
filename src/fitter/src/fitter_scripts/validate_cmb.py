@@ -139,8 +139,17 @@ def _plot(
 # --------------------------------
 def _get_renaming(
     prefixes : set[str],
-    df       : pnd.DataFrame):
+    df       : pnd.DataFrame) -> dict[str,str]:
+    '''
+    Parameters
+    -------------
+    prefixes: Strings used to find parameter columns 
+    df      : Dataframe with OS fits parameters
 
+    Returns
+    -------------
+    Dictionary mapping old (from OS fits) to new (from SS fits) names
+    '''
     renaming : dict[str,str] = {}
     parameters = df['Parameter'].to_list()
     for parameter in parameters:
