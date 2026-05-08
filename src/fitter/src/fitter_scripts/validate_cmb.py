@@ -29,7 +29,7 @@ log=LogStore.add_logger('rx_fitter:validate_cmb')
 _IHEP_ANADIR        : Final[str] = '/publicfs/ucas/user/campoverde/Data'
 _CMB_SUFFIX         : Final[str] = '_cmb_1' # end part of string in combinatorial fits parameters
 _OS_DROPPED_COLUMNS : Final[list[str]] = ['q2bin', 'channel', 'brem', 'mva_prc', 'project', 'block', 'component']
-_SIGNAL_PREFIX      : Final[str] = 'yld_bpkpee' 
+_CMB_PREFIX         : Final[str] = 'yld_comb' 
 # ----------------------
 def _get_conf() -> CmbValidatorConf:
     parser = argparse.ArgumentParser(description='Used to perform fits to validate choice of PDF for combinatorial')
@@ -153,7 +153,7 @@ def _get_renaming(
     renaming : dict[str,str] = {}
     parameters = df['Parameter'].to_list()
     for parameter in parameters:
-        if parameter.startswith(_SIGNAL_PREFIX):
+        if parameter.startswith(_CMB_PREFIX):
             renaming[parameter] = 'nev' 
             continue
 
