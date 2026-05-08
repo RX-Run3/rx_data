@@ -1,5 +1,5 @@
 '''
-Module with tests for FitSummary class 
+Module with tests for FitSummary class
 '''
 import pytest
 
@@ -27,7 +27,7 @@ def test_ihep(name : str) -> None:
     '''
     with gut.environment(mapping = {'ANADIR' : _IHEP_ANADIR}):
         smr = FitSummary(
-            name   = name, 
+            name   = name,
             data   = Component.data_24,
             signal = None)
         df  = smr.get_df(force_update = True)
@@ -45,7 +45,7 @@ def test_simple(name : str) -> None:
     Simplest test
     '''
     smr = FitSummary(
-        name   = name, 
+        name   = name,
         data   = Component.data_24,
         signal = Component.bpkpjpsiee)
     df  = smr.get_df(force_update = True)
@@ -63,7 +63,7 @@ def test_update(force_update : bool) -> None:
     Test updating the parquet file
     '''
     smr = FitSummary(
-        name   = 'reso_no_dtf', 
+        name   = 'reso_no_dtf',
         data   = Component.data_24,
         signal = Component.bpkpjpsiee)
     df  = smr.get_df(force_update = force_update)
@@ -83,7 +83,7 @@ def test_with_signal(
     Test picking up only data parameters, for e.g. combinatorial studies
     '''
     smr = FitSummary(
-        name   = name, 
+        name   = name,
         data   = Component.data_24,
         signal = signal)
     df  = smr.get_df(force_update = True)
@@ -100,7 +100,7 @@ def test_no_signal(
     Test picking up only data parameters, for e.g. combinatorial studies
     '''
     smr = FitSummary(
-        name   = name, 
+        name   = name,
         data   = Component.data_24,
         signal = None)
     df  = smr.get_df(force_update = True)
@@ -117,7 +117,7 @@ def test_no_data(
     Test without data
     '''
     smr = FitSummary(
-        name   = name, 
+        name   = name,
         data   = None,
         signal = Component.bpkpee)
     df  = smr.get_df(force_update = True)
@@ -131,12 +131,12 @@ def test_switch() -> None:
     Test picking up only data parameters, for e.g. combinatorial studies
     '''
     smr_sig = FitSummary(
-        name   = 'conv_none', 
+        name   = 'conv_none',
         data   = None,
         signal = Component.bpkpee)
 
     smr_dat = FitSummary(
-        name   = 'conv_none', 
+        name   = 'conv_none',
         data   = Component.data_24,
         signal = None)
 

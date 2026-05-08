@@ -34,7 +34,7 @@ def _cast(row : pnd.Series) -> pnd.Series:
 # -------------------------------
 class FitSummary:
     '''
-    Class meant to: 
+    Class meant to:
 
     - Collect yields an brem fractions from fits
     - Plot yields and fractions
@@ -42,7 +42,7 @@ class FitSummary:
     '''
     # ----------------------
     def __init__(
-        self, 
+        self,
         data  : Component | None,
         signal: Component | None,
         name  : str) -> None:
@@ -108,14 +108,14 @@ class FitSummary:
         return files
     # ----------------------
     def _get_data(
-        self, 
+        self,
         comp : Component,
         path : Path) -> dict[str, float]:
         '''
         Parameters
         -------------
         brem : Brem for which file is read
-        kind : dat or sim 
+        kind : dat or sim
         path : Path to JSON file with fit parameters
 
         Returns
@@ -128,7 +128,7 @@ class FitSummary:
         data : dict[str,float] = {}
         for par in res.parameters:
             data[f'{par.name}_value'] = par.value
-            data[f'{par.name}_error'] = par.error 
+            data[f'{par.name}_error'] = par.error
 
         if comp.is_mc:
             nentries = self._get_mc_nentries(path=path)
@@ -177,11 +177,11 @@ class FitSummary:
         l_data : list[dict[str,Any]] = []
         for path in tqdm.tqdm(paths, ascii=' -'):
             meta     = FitMetadata.from_pars_path(
-                path = path, 
+                path = path,
                 comp = comp)
 
             info     = self._get_data(
-                path = path, 
+                path = path,
                 comp = comp)
 
             meta_info= {name : getattr(meta,name) for name in meta.model_fields_set}
@@ -190,13 +190,13 @@ class FitSummary:
             l_data.append(info)
 
         df              = pnd.DataFrame(l_data)
-        df['component'] = comp 
+        df['component'] = comp
 
         return df
     # ----------------------
     def _save_df(
-        self, 
-        df   : pnd.DataFrame, 
+        self,
+        df   : pnd.DataFrame,
         path : Path) -> None:
         '''
         Parameters
@@ -214,14 +214,14 @@ class FitSummary:
         log.info(f'Saving summary to: {path}')
     # ----------------------
     def get_df(
-        self, 
-        suffix       : str | None = None, 
+        self,
+        suffix       : str | None = None,
         force_update : bool       = False) -> pnd.DataFrame:
         '''
         Parameters
         ---------------
         suffix      : Used in naming of output files
-        force_update: If true (default false) will regenerate file, otherwise will reuse file if found 
+        force_update: If true (default false) will regenerate file, otherwise will reuse file if found
         '''
         if suffix is None:
             output_path  = self._fit_dir / 'parameters.parquet'
@@ -234,7 +234,7 @@ class FitSummary:
 
         l_df : list[pnd.DataFrame] = [ self._get_df(comp = comp) for comp in [self._data, self._signal] if comp ]
         df = pnd.concat(l_df, axis=0)
-        df = df.apply(_cast) 
+        df = df.apply(_cast)
         df = df.reset_index(drop=True)
 
         self._save_df(df=df, path = output_path)
