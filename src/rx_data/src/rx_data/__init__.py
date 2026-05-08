@@ -24,9 +24,11 @@ from .samples                 import SamplesPrinter
 from .rdf_loader              import RDFLoader
 from .photon_veto             import PhotonVeto
 from .photon_veto             import EcalCell 
+from .pfn_downloader          import PFNDownloder
 
 __all__ = [
     'EcalCell',
+    'PFNDownloader',
     'PhotonVeto',
     'EmulatorConf',
     'Sample',
