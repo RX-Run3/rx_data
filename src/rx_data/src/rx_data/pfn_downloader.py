@@ -205,8 +205,9 @@ class PFNDownloader:
         if cfg.dry_run:
             return
 
+        log.debug(f'Downloading: {pfn}')
         xrd_client = clt.FileSystem(pfn)
-        status, _  = xrd_client.copy(pfn, out_path)
+        status, _  = xrd_client.copy(pfn, str(out_path))
 
         if status.ok: # type: ignore
             log.debug('Downloaded successfully')
