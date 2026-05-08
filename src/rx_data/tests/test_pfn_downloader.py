@@ -35,9 +35,11 @@ class PFNHolder:
 
         return _PFNS
 # ----------------------------------------
-@pytest.mark.parametrize('empty', [True, False])
+@pytest.mark.parametrize('empty'  , [True, False])
+@pytest.mark.parametrize('dry_run', [True, False])
 def test_simple(
     tmp_path : Path,
+    dry_run  : bool,
     empty    : bool):
     '''
     Simplest test
@@ -46,10 +48,10 @@ def test_simple(
     cfg    = PFNDownloaderConf(
         version = 'v1',
         out_dir = tmp_path,
-        dry_run = False,
-        nthread = 1)
+        dry_run = dry_run,
+        nthread = 3)
 
-    dwr    = PFNDownloader(
+    dwr = PFNDownloader(
         cfg     = cfg,
         samples = holder)
 
