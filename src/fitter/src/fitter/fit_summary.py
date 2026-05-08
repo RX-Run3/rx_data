@@ -109,22 +109,46 @@ class FitSummary:
     # ----------------------
     def _get_data(
         self,
-        comp : Component,
-        path : Path) -> dict[str, float]:
+        by_fit : bool,
+        comp   : Component,
+        path   : Path) -> list[dict[str, float | str]] | list[dict[str, float]]:
         '''
         Parameters
         -------------
-        brem : Brem for which file is read
-        kind : dat or sim
-        path : Path to JSON file with fit parameters
+        brem   : Brem for which file is read
+        kind   : dat or sim
+        path   : Path to JSON file with fit parameters
+        by_fit : If True each row will represent a fit, otherwise each row represents a parameter
 
         Returns
         -------------
-        Dictionary mapping quantity and value, error or name for e.g. channel.
+        List of dictionaries, each representing a row in the dataframe
         '''
         log.debug(f'Using data from: {path}')
         res = FitResult.from_json(path = path)
+        if by_fit:
+            data = self._get_data_by_fit(res = res, comp = comp, path = path)
+        else:
+            data = self._get_data_by_par(res = res, comp = comp, path = path)
 
+        return data
+    # ----------------------
+    def _get_data_by_fit(
+        self,
+        path : Path,
+        res  : FitResult,
+        comp : Component) -> list[dict[str,float]]:
+        '''
+        Parameters
+        -------------
+        path   : Path to JSON file with fit parameters
+        by_fit : If True each row will represent a fit, otherwise each row represents a parameter
+        res    : Fit result
+
+        Returns
+        -------------
+        List of dictionaries, each representing a row in the dataframe
+        '''
         data : dict[str,float] = {}
         for par in res.parameters:
             data[f'{par.name}_value'] = par.value
@@ -134,6 +158,44 @@ class FitSummary:
             nentries = self._get_mc_nentries(path=path)
             data[f'yld_{self._signal}_brem_x12_value'] = nentries
             data[f'yld_{self._signal}_brem_x12_error'] = math.sqrt(nentries)
+
+        return [data]
+    # ----------------------
+    def _get_data_by_par(
+        self,
+        path : Path,
+        res  : FitResult,
+        comp : Component) -> list[dict[str,float | str]]:
+        '''
+        Parameters
+        -------------
+        path   : Path to JSON file with fit parameters
+        by_fit : If True each row will represent a fit, otherwise each row represents a parameter
+        res    : Fit result
+
+        Returns
+        -------------
+        List of dictionaries, each representing a row in the dataframe
+        '''
+        data : list[dict[str,float | str]] = []
+
+        for par in res.parameters:
+            entry : dict[str,float | str] = {
+                'Parameter' : par.name,
+                'Value'     : par.value,
+                'Error'     : par.error,
+            }
+
+            data.append(entry)
+
+        if comp.is_mc:
+            nentries = self._get_mc_nentries(path=path)
+            entry : dict[str,float | str] = {
+                'Parameter' : f'yld_{self._signal}',
+                'Value'     : nentries,
+                'Error'     : math.sqrt(nentries),
+            }
+            data.append(entry)
 
         return data
     # ----------------------
@@ -160,11 +222,15 @@ class FitSummary:
 
         return len(df)
     # ----------------------
-    def _get_df(self, comp : Component) -> pnd.DataFrame:
+    def _get_df(
+        self,
+        by_fit: bool,
+        comp  : Component) -> pnd.DataFrame:
         '''
         Parameters
         -------------
-        comp: Component for which dataframe is needed
+        comp  : Component for which dataframe is needed
+        by_fit: If True, each row represents a fit, i.e. all parameters
 
         Returns
         -------------
@@ -180,14 +246,17 @@ class FitSummary:
                 path = path,
                 comp = comp)
 
-            info     = self._get_data(
-                path = path,
-                comp = comp)
+            info      = self._get_data(
+                by_fit= by_fit,
+                path  = path,
+                comp  = comp)
 
-            meta_info= {name : getattr(meta,name) for name in meta.model_fields_set}
+            meta_info = {name : getattr(meta,name) for name in meta.model_fields_set}
 
-            info.update(meta_info)
-            l_data.append(info)
+            for elm in info:
+                elm.update(meta_info)
+
+            l_data += info
 
         df              = pnd.DataFrame(l_data)
         df['component'] = comp
@@ -215,11 +284,15 @@ class FitSummary:
     # ----------------------
     def get_df(
         self,
+        by_fit       : bool       = True,
         suffix       : str | None = None,
         force_update : bool       = False) -> pnd.DataFrame:
         '''
         Parameters
         ---------------
+        by_fit      : If True each row represents a fit with all parameters.
+                      False would make each parameter a row
+
         suffix      : Used in naming of output files
         force_update: If true (default false) will regenerate file, otherwise will reuse file if found
         '''
@@ -232,7 +305,7 @@ class FitSummary:
             log.info(f'Reading cached files at: {output_path}')
             return pnd.read_parquet(output_path)
 
-        l_df : list[pnd.DataFrame] = [ self._get_df(comp = comp) for comp in [self._data, self._signal] if comp ]
+        l_df : list[pnd.DataFrame] = [ self._get_df(comp = comp, by_fit = by_fit) for comp in [self._data, self._signal] if comp ]
         df = pnd.concat(l_df, axis=0)
         df = df.apply(_cast)
         df = df.reset_index(drop=True)

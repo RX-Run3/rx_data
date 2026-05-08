@@ -39,6 +39,27 @@ def test_ihep(name : str) -> None:
     for column in df.columns:
         print(column)
 # ----------------------
+@pytest.mark.parametrize('name'  , ['reso_no_dtf'])
+@pytest.mark.parametrize('by_fit', [True, False])
+def test_by_fit(name : str, by_fit : bool) -> None:
+    '''
+    Simplest test
+    '''
+    smr = FitSummary(
+        name   = name,
+        data   = Component.data_24,
+        signal = Component.bpkpjpsiee)
+    df  = smr.get_df(
+        by_fit       = by_fit,
+        force_update = True)
+
+    assert len(df) > 0
+
+    print('')
+    print(df)
+    for column in df.columns:
+        print(column)
+# ----------------------
 @pytest.mark.parametrize('name', ['reso_no_dtf'])
 def test_simple(name : str) -> None:
     '''
