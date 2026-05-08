@@ -353,9 +353,11 @@ class PFNReader:
             vers = sample['version']
 
             if vers != version:
+                log.debug(f'Skipping version: {vers} != {version}')
                 continue
 
             if l_sample and name not in l_sample:
+                log.debug(f'Skipping sample: {name}')
                 continue
 
             cfg_prod = self._cfg.productions[production]
