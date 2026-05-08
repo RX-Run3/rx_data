@@ -6,7 +6,7 @@ through this place
 
 import typer
 
-from dmu        import LogStore
+from dmu        import LogLevels, LogStore
 from rx_common  import Project 
 from rx_data    import SamplesPrinter
 from post_ap    import ProductionConf
@@ -25,7 +25,12 @@ def show_samples_by_block(project : Project = typer.Option(..., '--project', '-p
     printer.print_by_block()
 # ----------------------
 @app.command()
-def download_ntuples(version : str = typer.Option(..., '--version', '-v')) -> None:
+def download_ntuples(
+    level   : int = typer.Option(LogLevels.info, '--level'  , '-l'),
+    version : str = typer.Option(           ..., '--version', '-v')) -> None:
+
+    LogStore.set_level('post_ap:pfn_reader', level)
+
     nickname   = 'all'
     production = Production.rx_filter
 
