@@ -1,10 +1,12 @@
 '''
 Module containing MVAConf class
 '''
-from typing    import Final, Self
-from pydantic  import BaseModel, RootModel, model_validator
+from typing      import Self
+from pydantic    import BaseModel, RootModel, model_validator
+from contextlib  import contextmanager
+from contextvars import ContextVar
 
-_MULT_FACTOR : Final[float] = 1000.
+_MULT_FACTOR : ContextVar[float] = ContextVar('_MULT_FACTOR', default = 1000.) 
 # ---------------------
 class MVAWp(RootModel[float|tuple[float,float]]):
     '''
@@ -70,13 +72,14 @@ class MVAWp(RootModel[float|tuple[float,float]]):
         -------------
         Instance of MVAWp
         '''
+        fact = _MULT_FACTOR.get()
         if '-' in val:
             lower, upper = val.split('-')
-            values = float(lower) / _MULT_FACTOR, float(upper) / _MULT_FACTOR
+            values = float(lower) / fact, float(upper) / fact 
 
             return cls(values)
 
-        return cls(float(val) / _MULT_FACTOR)
+        return cls(float(val) / fact)
     # -------------    
     @model_validator(mode = 'after')
     def validate_value(self) -> 'MVAWp':
@@ -118,14 +121,32 @@ class MVAWp(RootModel[float|tuple[float,float]]):
         '''
         Friendlier name for working point, e.g. 523 (0.523)
         '''
+        fact = _MULT_FACTOR.get()
         if isinstance(self.root, (float, int)):
-            val = int(_MULT_FACTOR * self.root)
+            val = int(fact * self.root)
             return str(val)
 
-        low = int(_MULT_FACTOR * self.root[0])
-        hig = int(_MULT_FACTOR * self.root[1])
+        low = int(fact * self.root[0])
+        hig = int(fact * self.root[1])
 
-        return f'{low:03d}-{hig:03d}'
+        return f'{low:04d}-{hig:04d}'
+    # ---------------------------------
+    @classmethod
+    def mult_factor(cls, value : float):
+        '''
+        Parameters
+        ---------------
+        value: Factor needed to switch MVA WP from probability to labels
+        '''
+        token = _MULT_FACTOR.set(value)
+        @contextmanager
+        def _context():
+            try:
+                yield
+            finally:
+                _MULT_FACTOR.reset(token)
+
+        return _context()
     # -------------    
     def __str__(self):
         if isinstance(self.root, float):

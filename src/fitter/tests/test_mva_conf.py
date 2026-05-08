@@ -62,3 +62,17 @@ def test_label_to_wp():
     with pytest.raises(ValueError):
         MVAWp.from_label(val = '2000')
 # ----------------------------------------
+def test_label_factor():
+    '''
+    Test transforming string into floats
+    '''
+    fact    = 100
+    flt_val = 0.3
+    int_val = int(flt_val * fact)
+    str_val = f'{int_val:03d}' 
+
+    with MVAWp.mult_factor(value = fact):
+        wp = MVAWp.from_label(val = str_val)
+
+    assert wp.lower == flt_val
+# ----------------------------------------
