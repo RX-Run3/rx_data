@@ -25,10 +25,12 @@ from .rdf_loader              import RDFLoader
 from .photon_veto             import PhotonVeto
 from .photon_veto             import EcalCell 
 from .pfn_downloader          import PFNDownloader
+from .pfn_downloader          import PFNDownloaderConf
 
 __all__ = [
     'EcalCell',
     'PFNDownloader',
+    'PFNDownloaderConf',
     'PhotonVeto',
     'EmulatorConf',
     'Sample',
