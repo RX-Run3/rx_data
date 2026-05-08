@@ -6,12 +6,16 @@ through this place
 
 import typer
 
+from pathlib    import Path
 from dmu        import LogLevels, LogStore
 from rx_common  import Project 
 from rx_data    import SamplesPrinter
+from rx_data    import PFNDownloader
+from rx_data    import PFNDownloaderConf
 from post_ap    import ProductionConf
 from post_ap    import PFNReaderConf, Production
 from post_ap    import PFNReader
+
 
 app = typer.Typer(help=__doc__)
 log = LogStore.add_logger('rx_data:cli')
@@ -27,6 +31,8 @@ def show_samples_by_block(project : Project = typer.Option(..., '--project', '-p
 @app.command()
 def download_ntuples(
     level   : int = typer.Option(LogLevels.info, '--level'  , '-l'),
+    nthread : int = typer.Option(           ..., '--nthread', '-n'),
+    dry_run : bool= typer.Option(False         , '--dry_run', '-d'),
     version : str = typer.Option(           ..., '--version', '-v')) -> None:
 
     LogStore.set_level('post_ap:pfn_reader', level)
@@ -51,7 +57,19 @@ def download_ntuples(
         nickname   = nickname, 
         production = production)
 
-    _   = sam
+    if level == LogLevels.debug:
+        print(sam)
+
+    cfg = PFNDownloaderConf(
+        version = version,
+        out_dir = Path('/tmp/files/'),
+        dry_run = dry_run,
+        nthread = nthread)
+
+    dwn = PFNDownloader(
+        cfg     = cfg,
+        samples = sam)
+    dwn.run()
 # ----------------------
 if __name__ == '__main__':
     app()
