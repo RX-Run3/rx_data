@@ -129,17 +129,19 @@ class BandPlotter:
         '''
         for tmp, df_par in self._df.groupby(PARAMETER):
             par_name = str(tmp)
-            for categories in self._cfg.groups.values():
+            for group, categories in self._cfg.groups.items():
                 self._plot_group(
                     df         = df_par, 
                     par_name   = par_name,
                     categories = categories)
 
-            self._cfg.out_dir.mkdir(parents = True, exist_ok = True)
-            out_path = self._cfg.out_dir / f'{par_name}.png'
-            plt.legend()
-            log.info(f'Saving parameter summary to: {out_path}')
-            plt.grid()
-            plt.savefig(out_path)
-            plt.close()
+                self._cfg.out_dir.mkdir(parents = True, exist_ok = True)
+                out_path = self._cfg.out_dir / group / f'{par_name}.png'
+                out_path.parent.mkdir(parents = True, exist_ok = True)
+
+                plt.legend()
+                log.info(f'Saving parameter summary to: {out_path}')
+                plt.grid()
+                plt.savefig(out_path)
+                plt.close()
 # ---------------------------------------

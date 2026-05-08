@@ -26,7 +26,7 @@ def _get_df(
 # ------------------------------
 def _get_all_df():
     l_df : list[pnd.DataFrame] = []
-    for category in ['c1', 'c2']:
+    for category in ['c1', 'c2', 'c3', 'c4']:
         for kind in ['w', 'x', 'y', 'z']:
             for parameter in ['a', 'b', 'c']:
                 df            = _get_df(
@@ -56,13 +56,25 @@ def test_simple(tmp_path : Path):
         'c' : astyle,
     }
 
+    groups = {
+        'g1' : ['c1', 'c2'],
+        'g2' : ['c3', 'c4'],
+    }
+
+    labels = {
+        'c1' : 'Cat 1', 
+        'c2' : 'Cat 2',
+        'c3' : 'Cat 3',
+        'c4' : 'Cat 4',
+    }
+
     cfg = BandPlotterConf(
-        size    = (30, 20),
+        size    = (15, 10),
         out_dir = tmp_path,
         xname   = 'Kind',
         styles  = styles,
-        labels  = {'c1' : 'c1' , 'c2' : 'c2'},
-        groups  = {'main' : ['c1', 'c2']},
+        labels  = labels,
+        groups  = groups,
     )
 
     ptr = BandPlotter(
