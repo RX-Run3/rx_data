@@ -2,8 +2,15 @@
 Module with PFNDownloader class
 '''
 
-from typing import Protocol
+from functools import cached_property
+import os
+import tqdm
 
+from typing  import Protocol
+from pathlib import Path
+from dmu     import LogStore
+
+log=LogStore.add_logger('rx_data:pfn_downloader')
 # ---------------------------------
 class PFNHolder(Protocol):
     '''
