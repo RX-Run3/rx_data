@@ -52,7 +52,7 @@ def test_label_to_wp():
     '''
     # Single WP for both
     flt_val = 0.3
-    int_val = int(flt_val * 100)
+    int_val = int(flt_val * 1000)
     str_val = f'{int_val:03d}' 
 
     wp = MVAWp.from_label(val = str_val)
@@ -60,5 +60,5 @@ def test_label_to_wp():
 
     # Invalid string raises
     with pytest.raises(ValueError):
-        MVAWp.from_label(val = '200')
+        MVAWp.from_label(val = '2000')
 # ----------------------------------------
