@@ -3,7 +3,9 @@ Module storing PFNReader class
 '''
 import apd
 import re
+import os
 
+from pathlib   import Path
 from functools import cached_property
 from typing    import Final, Literal
 from typing    import overload, Self
@@ -188,6 +190,38 @@ class Sample(BaseModel):
         val  = f'{self.name:<100}{self.version:<10}{self.nfiles:<10}{size:<10.3f}'
 
         return val
+    # ------------------------------
+    def local_paths(
+        self, 
+        must_exist: bool,
+        directory : Path) -> list[Path]:
+        '''
+        Parameters
+        --------------
+        must_exist: If True will raise exception if it does not exist
+        directory : Local directory
+
+        Returns
+        --------------
+        Paths in local directory where this sample's files would go
+        '''
+        if not directory.exists():
+            raise ValueError(f'Directory {directory} not found')
+
+        paths = [ directory / os.path.basename(pfn) for pfn in self.pfns ]
+        if not must_exist:
+            return paths
+
+        fail = False
+        for path in paths:
+            if not path.exists():
+                log.error(path)
+                fail = True
+
+        if fail:
+            raise ValueError('At least one path was not found')
+
+        return paths
     # ------------------------------
     @cached_property
     def nfiles(self) -> int:
