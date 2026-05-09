@@ -79,5 +79,15 @@ def download_ntuples(
         samples = sam)
     dwn.run()
 # ----------------------
+@app.command()
+def organize_paths(
+    level   : LogLevels = typer.Option(LogLevels.info, '--level'  , '-l'),
+    version : str       = typer.Option(           ..., '--version', '-v')) -> None:
+
+    samples = _get_samples(version = version, level = level)
+    org = SampleOrganizer(storage = _STORAGE)
+    for sample in samples:
+        org.organize(sample = sample)
+# ----------------------
 if __name__ == '__main__':
     app()
