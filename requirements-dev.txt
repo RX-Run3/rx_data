@@ -2,6 +2,7 @@ pytest-cov
 pytest-mock
 pytest-split
 pytest-xdist
+pytest-benchmark
 pre-commit
 -e src/ap_utilities
 -e src/dmu
