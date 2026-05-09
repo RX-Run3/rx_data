@@ -31,6 +31,8 @@ class PFNDownloaderConf(BaseModel):
     '''
     Class meant to configure PFNDownloader
     '''
+    chunks      : int
+    chunksize   : int
     version     : str
     out_dir     : Path
     dry_run     : bool
@@ -206,8 +208,16 @@ class PFNDownloader:
             return
 
         log.debug(f'Downloading: {pfn}')
-        xrd_client = clt.FileSystem(pfn)
-        status, _  = xrd_client.copy(pfn, str(out_path))
+
+        process = clt.CopyProcess()
+        process.add_job(
+            pfn,
+            str(out_path),
+            parallelchunks= cfg.chunks,
+            chunksize     = cfg.chunksize,
+        )
+        process.prepare()
+        status, _ = process.run()
 
         if status.ok: # type: ignore
             log.debug('Downloaded successfully')
