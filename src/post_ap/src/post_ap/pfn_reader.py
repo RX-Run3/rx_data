@@ -193,8 +193,8 @@ class Sample(BaseModel):
     # ------------------------------
     def local_paths(
         self, 
-        must_exist: bool,
-        directory : Path) -> list[Path]:
+        directory : Path,
+        must_exist: bool) -> list[Path]:
         '''
         Parameters
         --------------
