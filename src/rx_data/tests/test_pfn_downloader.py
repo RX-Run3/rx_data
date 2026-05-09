@@ -46,10 +46,12 @@ def test_simple(
     '''
     holder = PFNHolder(empty = empty)
     cfg    = PFNDownloaderConf(
-        version = 'v1',
-        out_dir = tmp_path,
-        dry_run = dry_run,
-        nthread = 3)
+        chunks    = 4,
+        chunksize = 16_777_216,
+        version   = 'v1',
+        out_dir   = tmp_path,
+        dry_run   = dry_run,
+        nthread   = 3)
 
     dwr = PFNDownloader(
         cfg     = cfg,
@@ -60,3 +62,25 @@ def test_simple(
     else:
         with pytest.raises(ValueError):
             dwr.run()
+# ----------------------------------------
+@pytest.mark.parametrize('chunks', [1, 4, 8])
+def test_benchmark(tmp_path : Path, benchmark, chunks : int):
+    '''
+    Benchmark downloads
+    '''
+    holder = PFNHolder(empty = False)
+    cfg    = PFNDownloaderConf(
+        chunks    = chunks,
+        chunksize = 16_777_216,
+        version   = 'v1',
+        out_dir   = tmp_path,
+        dry_run   = False,
+        nthread   = 3)
+
+    def _run():
+        dwr = PFNDownloader(
+            cfg     = cfg,
+            samples = holder)
+        dwr.run()
+
+    benchmark.pedantic(_run, rounds=1, iterations=1)
