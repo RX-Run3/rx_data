@@ -84,11 +84,15 @@ def download_ntuples(
 # ----------------------
 @app.command()
 def organize_paths(
+    dry_run : bool      = typer.Option(False         , '--dry-run', '-d', is_flag = True),
     level   : LogLevels = typer.Option(LogLevels.info, '--level'  , '-l'),
     version : str       = typer.Option(           ..., '--version', '-v')) -> None:
 
     samples = _get_samples(version = version, level = level)
-    org = SampleOrganizer(storage = _STORAGE)
+    org = SampleOrganizer(
+        cleanup = True,
+        dry_run = dry_run,
+        storage = _STORAGE)
     for sample in samples:
         org.organize(sample = sample)
 # ----------------------
