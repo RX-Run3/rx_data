@@ -6,6 +6,7 @@ through this place
 
 import typer
 
+from typing     import Final
 from pathlib    import Path
 from dmu        import LogLevels, LogStore
 from rx_common  import Project 
@@ -14,29 +15,13 @@ from rx_data    import PFNDownloader
 from rx_data    import PFNDownloaderConf
 from post_ap    import ProductionConf
 from post_ap    import PFNReaderConf, Production
-from post_ap    import PFNReader
-
+from post_ap    import PFNReader, Samples
 
 app = typer.Typer(help=__doc__)
 log = LogStore.add_logger('rx_data:cli')
+_STORAGE : Final[Path] = Path('/home/acampove/external_02/Data/downloaded')
 # ----------------------
-@app.command()
-def show_samples_by_block(project : Project = typer.Option(..., '--project', '-p')) -> None:
-    '''
-    This will print a table with the samples available for each block
-    '''
-    printer = SamplesPrinter(project=project)
-    printer.print_by_block()
-# ----------------------
-@app.command()
-def download_ntuples(
-    level   : int = typer.Option(LogLevels.info, '--level'  , '-l'),
-    nthread : int = typer.Option(           ..., '--nthread', '-n'),
-    dry_run : bool= typer.Option(False         , '--dry_run', '-d'),
-    version : str = typer.Option(           ..., '--version', '-v')) -> None:
-
-    LogStore.set_level('post_ap:pfn_reader', level)
-
+def _get_samples(version : str, level : LogLevels) -> Samples:
     nickname   = 'all'
     production = Production.rx_filter
 
@@ -60,11 +45,34 @@ def download_ntuples(
     if level == LogLevels.debug:
         print(sam)
 
+    return sam
+# ----------------------
+@app.command()
+def show_samples_by_block(project : Project = typer.Option(..., '--project', '-p')) -> None:
+    '''
+    This will print a table with the samples available for each block
+    '''
+    printer = SamplesPrinter(project=project)
+    printer.print_by_block()
+# ----------------------
+@app.command()
+def download_ntuples(
+    level   : LogLevels = typer.Option(LogLevels.info, '--level'  , '-l'),
+    nthread : int       = typer.Option(           ..., '--nthread', '-n'),
+    dry_run : bool      = typer.Option(False         , '--dry_run', '-d'),
+    version : str       = typer.Option(           ..., '--version', '-v')) -> None:
+
+    LogStore.set_level('post_ap:pfn_reader', level)
+
     cfg = PFNDownloaderConf(
         version = version,
-        out_dir = Path('/tmp/files/'),
+        out_dir = _STORAGE,
         dry_run = dry_run,
         nthread = nthread)
+
+    sam = _get_samples(
+        level   = level,
+        version = version)
 
     dwn = PFNDownloader(
         cfg     = cfg,
