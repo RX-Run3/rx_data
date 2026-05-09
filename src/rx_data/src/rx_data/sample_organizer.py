@@ -3,11 +3,65 @@ Module with SampleOrganizer class
 '''
 
 import os
-from pathlib import Path
-from post_ap import Sample
-from dmu     import LogStore
+import tempfile
+
+from typing    import Final, Protocol
+from ROOT      import TFileMerger, TFile # type: ignore
+from pathlib   import Path
+from dmu       import LogStore
+from pydantic  import BaseModel
+from rx_common import Trigger
 
 log=LogStore.add_logger('rx_data:sample_organizer')
+# ----------------------------------
+class SampleProtocol(Protocol):
+    '''
+    Class meant to define how a Sample instance
+    should look like for `SampleOrganizer`
+    '''
+    # -----------------
+    @property
+    def name(self) -> str:
+        ...
+    # -----------------
+    def local_paths(
+        self, 
+        directory : Path,
+        must_exist: bool) -> list[Path]:
+        ...
+# ----------------------------------
+class SampleOrganizerConf(BaseModel):
+    '''
+    Class meant to describe how samples should be organized
+    '''
+    cleanup  : bool
+    dry_run  : bool
+    triggers : list[Trigger]
+    # ------------------------------
+    @classmethod
+    def default(
+        cls, 
+        cleanup : bool,
+        dry_run : bool) -> 'SampleOrganizerConf':
+        '''
+        Provides default instance of config
+        '''
+        triggers = [
+            Trigger.rk_ee_os, 
+            Trigger.rk_ee_ss, 
+            Trigger.rk_mm_os, 
+            Trigger.rk_mm_ss, 
+            # ----------
+            Trigger.rkst_ee_os, 
+            Trigger.rkst_ee_ss, 
+            Trigger.rkst_mm_os, 
+            Trigger.rkst_mm_ss, 
+        ]
+
+        return cls(
+            cleanup  = cleanup,
+            dry_run  = dry_run,
+            triggers = triggers)
 # ----------------------------------
 class SampleOrganizer:
     '''
@@ -19,30 +73,25 @@ class SampleOrganizer:
     - Renaming the files
     '''
     # ---------------------------------------
-    def __init__(self, storage : Path):
+    def __init__(
+        self, 
+        cleanup : bool,
+        dry_run : bool,
+        storage : Path):
         '''
         Parameters
         -------------
+        dry_run: If True no copies or deletions will be made
         storage: Path to directory with ROOT files before organizing them
         '''
         self._storage = storage
-    # ---------------------------------------
-    def _check_local_files(self, sample : Sample) -> None:
-        '''
-        Parameters
-        ----------------
-        sample: Object representing AP JOB
-        '''
-        fail = False
-        for path in sample.local_paths(directory = self._storage):
-            if not path.exists():
-                log.error(path)
-                fail = True
+        self._cfg     = SampleOrganizerConf.default(
+            cleanup = cleanup,
+            dry_run = dry_run)
 
-        if fail:
-            raise ValueError(f'At least one file was not found in \n {sample}')
+        self._ana_dir : Final[Path] = Path(os.environ['ANADIR'])
     # ---------------------------------------
-    def _merge_files(self, sample : Sample) -> list[Path]:
+    def _merge_files(self, sample : SampleProtocol) -> Path:
         '''
         Parameters
         ---------------
@@ -50,18 +99,159 @@ class SampleOrganizer:
 
         Return
         ---------------
-        Paths to merged files, e.g. one per trigger
+        Merged file path
         '''
-        local_paths = sample.local_paths(directory = self._storage)
+        local_paths = sample.local_paths(
+            directory  = self._storage, 
+            must_exist = True)
 
+        if len(local_paths) == 1:
+            single_path = local_paths[0]
+            log.debug(f'Only one path found, skip merging for: {single_path}')
+            return single_path 
+
+        fm = TFileMerger(isLocal=True)
+        fm.SetFastMethod(True)
+        for path in local_paths:
+            if self._cfg.dry_run:
+                continue
+
+            log.debug(f'Adding: {path}')
+            fm.AddFile(str(path), cpProgress = False)
+
+        with tempfile.TemporaryDirectory(delete = False) as tmp_dir:
+            out_path = tmp_dir / Path('merged.root')
+            log.debug(f'Merging into: {out_path}')
+
+            if not self._cfg.dry_run:
+                fm.OutputFile(str(out_path), 'RECREATE')
+                success = fm.Merge()
+                if not success:
+                    raise ValueError('Merge failed')
+
+        if not out_path.exists():
+            raise FileNotFoundError(f'Cannot find: {out_path}')
+
+        if not self._cfg.cleanup:
+            return out_path
+
+        log.debug('Deleting pre-merge paths')
+        for path in local_paths:
+            if self._cfg.dry_run:
+                continue
+
+            path.unlink()
+
+        return out_path
     # ---------------------------------------
-    def organize(self, sample : Sample) -> None:
+    def _split_file(self, path : Path) -> dict[Trigger,Path]:
+        '''
+        Parameters
+        -----------------
+        path: Path to ROOT file with multiple directories
+
+        Returns
+        -----------------
+        Dictionary mapping project to path to ROOT file
+        '''
+        if self._cfg.dry_run:
+            log.debug('Skipping splitting for dry-run')
+            return dict()
+
+        result = dict()
+        log.info('Splitting paths')
+        for trigger in self._cfg.triggers:
+            split_path = path.parent / f'{trigger}_{path.name}'
+            log.debug(split_path)
+
+            found = self._save_file(
+                trigger     = trigger, 
+                input_path  = path,
+                output_path = split_path)
+
+            if not found:
+                continue
+
+            result[trigger] = split_path
+
+        if self._cfg.dry_run:
+            log.debug('Not deleting for dry-run')
+            return result
+
+        log.debug(f'Deleting {path}')
+        path.unlink()
+
+        return result
+    # ---------------------------------------
+    def _save_file(
+        self, 
+        output_path : Path,
+        input_path  : Path,
+        trigger     : Trigger) -> bool:
+        '''
+        Parameters
+        ------------
+        output_path: Path where file will be saved
+        input_path : Handle to file containing all trees
+        project    : Project for which file will be saved
+
+        Returns
+        ------------
+        True if trigger was found in input
+        '''
+        log.debug(f'Looking for {trigger} in {input_path}')
+        ifile     = TFile(str(input_path))
+        reco_tree = ifile.Get(f'{trigger}/DecayTree')
+        true_tree = ifile.Get('MCDT/MCDecayTree')
+
+        if not reco_tree:
+            log.debug(f'Skipping: {trigger}')
+            return False
+
+        log.debug(f'Dumping to {output_path}')
+        ofile     = TFile(str(output_path), 'update')
+        reco_tree.Write()
+        true_tree.Write()
+
+        ofile.Close()
+        ifile.Close()
+
+        return True
+    # ---------------------------------------
+    def _copy_files(
+        self, 
+        name  : str, 
+        paths : dict[Trigger,Path]) -> None:
+        '''
+        Parameters
+        ---------------
+        name : Name of AP job, needed to name ROOT file
+        paths: Dictionary mapping trigger name to ROOT file path
+        '''
+        log.info('Copying files')
+        for trigger, source_path in paths.items():
+            target_path = self._ana_dir / f'Data/{trigger.project}/main/{name}.root'
+            target_path.parent.mkdir(exist_ok=True, parents=True)
+
+            log.debug(f'{str(source_path):<50}{target_path}')
+            if self._cfg.dry_run:
+                log.debug('Skipping copy for dry-run')
+                continue
+
+            log.debug('Moving files')
+            target_path.hardlink_to(source_path)
+            source_path.unlink()
+    # ---------------------------------------
+    def organize(self, sample : SampleProtocol) -> None:
         '''
         Parameters
         ----------------
         sample: Object representing AP JOB
         '''
-        self._check_local_files(sample = sample)
-        merged_paths = self._merge_files(sample = sample)
-        self._copy_files(paths = merged_paths)
+        merged_path = self._merge_files(sample = sample)
+        split_paths = self._split_file(path = merged_path)
+
+        self._copy_files(
+            name  = sample.name,
+            paths = split_paths)
 # ----------------------------------
