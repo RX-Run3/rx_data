@@ -13,6 +13,7 @@ from rx_common  import Project
 from rx_data    import SamplesPrinter
 from rx_data    import PFNDownloader
 from rx_data    import PFNDownloaderConf
+from rx_data    import SampleOrganizer
 from post_ap    import ProductionConf
 from post_ap    import PFNReaderConf, Production
 from post_ap    import PFNReader, Samples
@@ -65,10 +66,12 @@ def download_ntuples(
     LogStore.set_level('post_ap:pfn_reader', level)
 
     cfg = PFNDownloaderConf(
-        version = version,
-        out_dir = _STORAGE,
-        dry_run = dry_run,
-        nthread = nthread)
+        chunks    = 4,
+        chunksize = 16_000_000,
+        version   = version,
+        out_dir   = _STORAGE,
+        dry_run   = dry_run,
+        nthread   = nthread)
 
     sam = _get_samples(
         level   = level,
