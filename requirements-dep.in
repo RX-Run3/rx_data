@@ -12,6 +12,7 @@ asdf
 cffi
 pytest-split
 pytest-xdist
+pytest-benchmark
 pre-commit
 apd
 awkward
