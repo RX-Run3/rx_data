@@ -3,7 +3,7 @@ This is the entry point for all the scripts in this project
 Eventually all the non-library functionality should be accessed
 through this place
 '''
-
+import os
 import typer
 
 from typing     import Final
@@ -20,7 +20,8 @@ from post_ap    import PFNReader, Samples
 
 app = typer.Typer(help=__doc__)
 log = LogStore.add_logger('rx_data:cli')
-_STORAGE : Final[Path] = Path('/home/acampove/external_02/Data/downloaded')
+_ANADIR  : Final[Path] = Path(os.environ['ANADIR'])
+_STORAGE : Final[Path] = Path(f'{_ANADIR}/downloaded')
 # ----------------------
 def _get_samples(version : str, level : LogLevels) -> Samples:
     '''
