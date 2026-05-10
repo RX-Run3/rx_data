@@ -1,10 +1,9 @@
 '''
 File holding tests for PFNDownloader class
 '''
-
-from dmu import LogStore
 import pytest
 
+from dmu       import LogStore
 from functools import cached_property
 from typing    import Final
 from pathlib   import Path
