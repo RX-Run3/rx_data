@@ -12,6 +12,11 @@ from dmu     import LogStore
 
 log=LogStore.add_logger('dmu:version_management')
 #---------------------------------------
+class NoVersions(Exception):
+    '''
+    Needed when no versioned directory was found
+    '''
+#---------------------------------------
 def _get_numeric_version(version : str) -> tuple[int,int]|None:
     r'''
     Parameters
@@ -72,7 +77,7 @@ def get_last_version(dir_path: str | Path, version_only: bool = True) -> str | P
     l_path = list(dir_path.glob('*'))
 
     if not l_path:
-        raise ValueError(f'Nothing found in {dir_path}')
+        raise NoVersions(f'Nothing found in {dir_path}')
 
     d_dir_num : dict[tuple[int,int],Path] = {}
     for path in l_path:
@@ -88,7 +93,7 @@ def get_last_version(dir_path: str | Path, version_only: bool = True) -> str | P
 
     c_dir = sorted(d_dir_num.items())
     if not c_dir:
-        raise ValueError(f'Cannot find path in: {dir_path}')
+        raise NoVersions(f'Cannot find path in: {dir_path}')
 
     _, path = c_dir[-1]
     if not version_only:
