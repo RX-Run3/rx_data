@@ -12,4 +12,7 @@ import dmu.generic.utilities as gut
 with gut.silent_import():
     import tensorflow
 
+import os
+os.sched_setaffinity(0, {0, 1, 2})
+
 import zfit
