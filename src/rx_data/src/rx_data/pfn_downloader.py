@@ -24,7 +24,7 @@ class PFNHolder(Protocol):
     Class meant to represent object that can provide PFNs
     '''
     @cached_property
-    def pfns(self) -> list[str]:
+    def pfns(self) -> set[str]:
         ...
 # ---------------------------------
 class PFNDownloaderConf(BaseModel):
@@ -56,7 +56,7 @@ class PFNDownloader:
         self._samples = samples
         self._cfg     = cfg
     # --------------------------------------------------
-    def _split_pfns(self, pfns : list[str]) -> list[list[str]]:
+    def _split_pfns(self, pfns : set[str]) -> list[list[str]]:
         '''
         Parameters
         ------------------
@@ -68,7 +68,8 @@ class PFNDownloader:
         '''
         npfn        = len(pfns)
         thread_size = math.floor(npfn / self._cfg.nthread)
-        groups      = [ pfns[i_pfn : i_pfn + thread_size] for i_pfn in range(0, npfn, thread_size) ]
+        l_pfns      = list(pfns)
+        groups      = [ l_pfns[i_pfn : i_pfn + thread_size] for i_pfn in range(0, npfn, thread_size) ]
     
         log.debug(30 * '-')
         log.debug(f'{"Thread":<10}{"PFNs":<20}')
@@ -111,7 +112,7 @@ class PFNDownloader:
     def _get_pfns_to_download(
         self, 
         fnames : set[str],
-        pfns   : list[str]) -> list[str]:
+        pfns   : set[str]) -> set[str]:
         '''
         Parameters
         ----------------
@@ -136,9 +137,9 @@ class PFNDownloader:
 
         log.warning(f'Will download {nnew} out of {nold} requested PFNs')
 
-        return list(pfns_to_download)
+        return pfns_to_download
     # --------------------------------------------
-    def _cleanup_pfns(self, pfns : list[str]) -> list[str]:
+    def _cleanup_pfns(self, pfns : set[str]) -> set[str]:
         '''
         Parameters
         ---------------
