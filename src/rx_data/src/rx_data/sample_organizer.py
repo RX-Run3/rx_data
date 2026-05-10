@@ -220,6 +220,33 @@ class SampleOrganizer:
 
         return True
     # ---------------------------------------
+    def _get_target_path(
+        self, 
+        file_name : str,
+        project   : Project) -> Path:
+        '''
+        Parameters
+        ---------------
+        file_name: E.g. mc_signal.root
+        project  : E.g. rk
+
+        Returns
+        ---------------
+        '''
+        target_dir   = self._ana_dir / f'Data/{project}/main'
+        target_dir.mkdir(parents = True, exist_ok = True)
+
+        try:
+            last_version = vmn.get_last_version(dir_path = target_dir, version_only = True)
+        except NoVersions:
+            log.info(f'No version found in: {target_dir}')
+            last_version = None
+
+        next_version = 'v0' if last_version is None else vmn.get_next_version(version = last_version)
+        target_path  = target_dir / next_version / f'{file_name}.root'
+
+        return target_path
+    # ---------------------------------------
     def _copy_files(
         self, 
         name  : str, 
@@ -232,7 +259,7 @@ class SampleOrganizer:
         '''
         log.info('Copying files')
         for trigger, source_path in paths.items():
-            target_path = self._ana_dir / f'Data/{trigger.project}/main/{name}.root'
+            target_path = self._get_target_path(project = trigger.project, file_name = name)
             target_path.parent.mkdir(exist_ok=True, parents=True)
 
             log.debug(f'{str(source_path):<50}{target_path}')
