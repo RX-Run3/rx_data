@@ -23,6 +23,16 @@ log = LogStore.add_logger('rx_data:cli')
 _STORAGE : Final[Path] = Path('/home/acampove/external_02/Data/downloaded')
 # ----------------------
 def _get_samples(version : str, level : LogLevels) -> Samples:
+    '''
+    Parameters
+    --------------
+    version: Version of input files
+    level  : Logging level
+
+    Returns
+    --------------
+    Object representing samples to download from AP
+    '''
     nickname   = 'all'
     production = Production.rx_filter
 
