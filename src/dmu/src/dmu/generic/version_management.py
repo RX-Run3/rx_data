@@ -2,13 +2,13 @@
 Module containing functions used to find latest, next version, etc of a path.
 '''
 
-import glob
 import os
 import re
+import glob
+
 from pathlib import Path
 from typing  import Literal, overload
-
-from dmu.logging.log_store import LogStore
+from dmu     import LogStore
 
 log=LogStore.add_logger('dmu:version_management')
 #---------------------------------------
