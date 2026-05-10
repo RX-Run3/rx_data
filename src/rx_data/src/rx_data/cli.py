@@ -10,13 +10,7 @@ from typing     import Final
 from pathlib    import Path
 from dmu        import LogLevels, LogStore
 from rx_common  import Project 
-from rx_data    import SamplesPrinter
-from rx_data    import PFNDownloader
-from rx_data    import PFNDownloaderConf
-from rx_data    import SampleOrganizer
-from post_ap    import ProductionConf
-from post_ap    import PFNReaderConf, Production
-from post_ap    import PFNReader, Samples
+from post_ap    import Samples 
 
 app = typer.Typer(help=__doc__)
 log = LogStore.add_logger('rx_data:cli')
@@ -34,6 +28,10 @@ def _get_samples(version : str, level : LogLevels) -> Samples:
     --------------
     Object representing samples to download from AP
     '''
+    from post_ap    import ProductionConf
+    from post_ap    import PFNReaderConf, Production
+    from post_ap    import PFNReader
+
     nickname   = 'all'
     production = Production.rx_filter
 
@@ -64,6 +62,8 @@ def show_samples_by_block(project : Project = typer.Option(..., '--project', '-p
     '''
     This will print a table with the samples available for each block
     '''
+    from rx_data    import SamplesPrinter
+
     printer = SamplesPrinter(project=project)
     printer.print_by_block()
 # ----------------------
@@ -73,6 +73,8 @@ def download_ntuples(
     nthread : int       = typer.Option(           ..., '--nthread', '-n'),
     dry_run : bool      = typer.Option(False         , '--dry_run', '-d'),
     version : str       = typer.Option(           ..., '--version', '-v')) -> None:
+    from rx_data    import PFNDownloader
+    from rx_data    import PFNDownloaderConf
 
     LogStore.set_level('post_ap:pfn_reader', level)
 
@@ -98,6 +100,7 @@ def organize_paths(
     dry_run : bool      = typer.Option(False         , '--dry-run', '-d', is_flag = True),
     level   : LogLevels = typer.Option(LogLevels.info, '--level'  , '-l'),
     version : str       = typer.Option(           ..., '--version', '-v')) -> None:
+    from rx_data    import SampleOrganizer
 
     samples = _get_samples(version = version, level = level)
     org = SampleOrganizer(
