@@ -102,3 +102,23 @@ def test_simple(
             storage = tmp_path,
             dry_run = False)
         org.organize(sample = sample)
+# ------------------------------------
+@pytest.mark.parametrize('triggers', [[Trigger.rk_ee_os, Trigger.rkst_ee_os]])
+def test_versions(
+    tmp_path : Path, 
+    triggers : list[Trigger]):
+    '''
+    Test that new version does not override old one
+    '''
+    with gut.environment(mapping = {'ANADIR' : str(tmp_path)}):
+        for _ in range(3):
+            sample = SampleHolder(
+                nfiles   = 3,
+                storage  = tmp_path,
+                triggers = triggers)
+
+            org = SampleOrganizer(
+                cleanup = False,
+                storage = tmp_path,
+                dry_run = False)
+            org.organize(sample = sample)
