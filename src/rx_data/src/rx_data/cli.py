@@ -66,7 +66,7 @@ def download_ntuples(
     LogStore.set_level('post_ap:pfn_reader', level)
 
     cfg = PFNDownloaderConf(
-        chunks    = 4,
+        chunks    = 8,
         chunksize = 16_000_000,
         version   = version,
         out_dir   = _STORAGE,
