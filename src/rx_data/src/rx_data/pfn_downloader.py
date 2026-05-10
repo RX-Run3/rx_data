@@ -225,13 +225,10 @@ class PFNDownloader:
         else:
             raise ValueError(f'Failed to download: {status.message}') # type: ignore
     # ------------------------------------
-    def _download_groups(
-        self, 
-        groups : list[list[str]]) -> None:
+    def _download_groups_with_threads(self, groups : list[list[str]]):
         '''
         Parameters
         ------------------
-        cfg   : Config object
         groups: List of groups of PFNs 
         '''
         with ThreadPoolExecutor(max_workers=self._cfg.nthread) as executor:
@@ -246,6 +243,23 @@ class PFNDownloader:
                     print(future.exception())
 
         time.sleep(1)
+    # ------------------------------------
+    def _download_groups(
+        self, 
+        groups : list[list[str]]) -> None:
+        '''
+        Parameters
+        ------------------
+        groups: List of groups of PFNs 
+        '''
+        if self._cfg.nthread > 1:
+            log.info(f'Using {self._cfg.nthread} threads')
+            self._download_groups_with_threads(groups = groups)
+        else:
+            log.info('Using single thread')
+            pfns = [ pfn for pfns in groups for pfn in pfns ]
+            pbar = tqdm.tqdm(total=len(pfns))
+            self.download_group(pfns = pfns, cfg = self._cfg, pbar = pbar)
 
         if not self._cfg.failed_pfns:
             return

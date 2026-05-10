@@ -83,3 +83,23 @@ def test_benchmark(tmp_path : Path, benchmark, chunks : int):
         dwr.run()
 
     benchmark.pedantic(_run, rounds=1, iterations=1)
+# ----------------------------------------
+@pytest.mark.parametrize('nthread', [1, 3])
+def test_nthread(nthread : int, tmp_path : Path):
+    '''
+    Simplest test
+    '''
+    holder = PFNHolder(empty = False)
+    cfg    = PFNDownloaderConf(
+        chunks    = 8,
+        chunksize = 16_777_216,
+        version   = 'v1',
+        out_dir   = tmp_path,
+        dry_run   = False,
+        nthread   = nthread)
+
+    dwr = PFNDownloader(
+        cfg     = cfg,
+        samples = holder)
+
+    dwr.run()
