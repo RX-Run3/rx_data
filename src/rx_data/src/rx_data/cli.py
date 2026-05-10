@@ -73,8 +73,8 @@ def download_ntuples(
     nthread : int       = typer.Option(           ..., '--nthread', '-n'),
     dry_run : bool      = typer.Option(False         , '--dry_run', '-d'),
     version : str       = typer.Option(           ..., '--version', '-v')) -> None:
-    from rx_data    import PFNDownloader
-    from rx_data    import PFNDownloaderConf
+    from rx_data.pfn_downloader import PFNDownloader
+    from rx_data.pfn_downloader import PFNDownloaderConf
 
     LogStore.set_level('post_ap:pfn_reader', level)
 
