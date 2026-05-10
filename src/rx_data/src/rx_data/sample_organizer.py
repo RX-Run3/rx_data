@@ -5,12 +5,14 @@ Module with SampleOrganizer class
 import os
 import tempfile
 
-from typing    import Final, Protocol
-from ROOT      import TFileMerger, TFile # type: ignore
-from pathlib   import Path
-from dmu       import LogStore
-from pydantic  import BaseModel
-from rx_common import Trigger
+from typing      import Final, Protocol
+from ROOT        import TFileMerger, TFile # type: ignore
+from pathlib     import Path
+from dmu         import LogStore
+from pydantic    import BaseModel
+from rx_common   import Project, Trigger
+from dmu.generic import version_management as vmn 
+from dmu.generic import NoVersions 
 
 log=LogStore.add_logger('rx_data:sample_organizer')
 # ----------------------------------
