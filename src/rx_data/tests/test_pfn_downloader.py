@@ -11,11 +11,11 @@ from pathlib   import Path
 from rx_data   import PFNDownloader
 from rx_data   import PFNDownloaderConf
 
-_PFNS : Final[list[str]] = [
+_PFNS : Final[set[str]] = {
     'root://x509up_u1000@eoslhcb.cern.ch//eos/lhcb/grid/prod/lhcb/anaprod/lhcb/MC/2024/TUPLE.ROOT/00379104/0000/00379104_00000001_1.tuple.root',
     'root://x509up_u1000@eoslhcb.cern.ch//eos/lhcb/grid/prod/lhcb/anaprod/lhcb/MC/2024/TUPLE.ROOT/00379005/0000/00379005_00000001_1.tuple.root',
     'root://x509up_u1000@eoslhcb.cern.ch//eos/lhcb/grid/prod/lhcb/anaprod/lhcb/MC/2024/TUPLE.ROOT/00378985/0000/00378985_00000001_1.tuple.root',
-]
+}
 # ----------------------
 @pytest.fixture(scope='session', autouse=True)
 def initialize():
@@ -29,9 +29,9 @@ class PFNHolder:
         self._empty = empty
     # ----------------------------------------
     @cached_property
-    def pfns(self) -> list[str]:
+    def pfns(self) -> set[str]:
         if self._empty:
-            return []
+            return set()
 
         return _PFNS
 # ----------------------------------------
