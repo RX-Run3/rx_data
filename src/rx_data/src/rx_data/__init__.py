@@ -1,3 +1,6 @@
+import os
+os.sched_setaffinity(0, {0, 1, 2})
+
 from .rdf_getter              import RDFGetter
 from .swp_calculator          import SWPCalculator
 from .spec_maker              import SpecMaker

@@ -4,7 +4,6 @@ Eventually all the non-library functionality should be accessed
 through this place
 '''
 import os
-os.sched_setaffinity(0, {0, 1, 2})
 
 import typer
 
