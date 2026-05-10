@@ -1,9 +1,9 @@
 '''
 Module storing PFNReader class
 '''
-import apd
 import re
 import os
+import apd
 
 from pathlib   import Path
 from functools import cached_property
@@ -290,7 +290,7 @@ class Samples(RootModel[list[Sample]]):
         return len(self.root)
     # -------------------------
     @cached_property
-    def pfns(self) -> list[str]:
+    def pfns(self) -> set[str]:
         '''
         List of PFNs in all samples
         '''
@@ -299,10 +299,10 @@ class Samples(RootModel[list[Sample]]):
         for sample in self.root:
             value += sample.pfns
 
-        return value
+        return set(value)
     # -------------------------
     @cached_property
-    def lfns(self) -> list[str]:
+    def lfns(self) -> set[str]:
         '''
         List of LFNs in all samples
         '''
@@ -311,7 +311,7 @@ class Samples(RootModel[list[Sample]]):
         for sample in self.root:
             value += sample.lfns
 
-        return value
+        return set(value)
 # ---------------------------------------
 class ProductionConf(BaseModel):
     '''
