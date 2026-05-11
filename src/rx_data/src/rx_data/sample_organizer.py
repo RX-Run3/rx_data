@@ -120,7 +120,7 @@ class SampleOrganizer:
             directory  = self._storage, 
             must_exist = True)
 
-        fm = TFileMerger(isLocal=True)
+        fm = TFileMerger(isLocal=False)
         fm.SetFastMethod(True)
         for path in paths:
             if self._cfg.dry_run:
