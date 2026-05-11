@@ -100,6 +100,8 @@ def organize_paths(
     level   : LogLevels = typer.Option(LogLevels.info, '--level'  , '-l'),
     version : str       = typer.Option(           ..., '--version', '-v')) -> None:
 
+    LogStore.set_level('rx_data:sample_organizer', level)
+
     samples = _get_samples(version = version, level = level)
     org = SampleOrganizer(
         cleanup = True,
