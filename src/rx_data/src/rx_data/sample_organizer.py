@@ -131,6 +131,9 @@ class SampleOrganizer:
                 if not success:
                     raise ValueError('Merge failed')
 
+        if self._cfg.dry_run:
+            return out_path
+
         if not out_path.exists():
             raise FileNotFoundError(f'Cannot find: {out_path}')
 
@@ -257,7 +260,6 @@ class SampleOrganizer:
         name : Name of AP job, needed to name ROOT file
         paths: Dictionary mapping trigger name to ROOT file path
         '''
-        log.info('Copying files')
         for trigger, source_path in paths.items():
             target_path = self._get_target_path(project = trigger.project, file_name = name)
             target_path.parent.mkdir(exist_ok=True, parents=True)

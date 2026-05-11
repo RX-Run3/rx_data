@@ -85,7 +85,9 @@ class SampleHolder:
         return [ self._make_file(file_name = f'test_{index:03}.root') for index in range(self._nfiles) ]
 # ------------------------------------
 @pytest.mark.parametrize('triggers', [[Trigger.rk_ee_os, Trigger.rkst_ee_os]])
+@pytest.mark.parametrize('dry_run' , [True, False])
 def test_simple(
+    dry_run  : bool,
     tmp_path : Path, 
     triggers : list[Trigger]):
     '''
@@ -100,7 +102,7 @@ def test_simple(
         org = SampleOrganizer(
             cleanup = False,
             storage = tmp_path,
-            dry_run = False)
+            dry_run = dry_run)
         org.organize(sample = sample)
 # ------------------------------------
 @pytest.mark.parametrize('triggers', [[Trigger.rk_ee_os, Trigger.rkst_ee_os]])
