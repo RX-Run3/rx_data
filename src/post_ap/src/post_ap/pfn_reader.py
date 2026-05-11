@@ -5,6 +5,7 @@ import re
 import os
 import apd
 
+from ROOT      import TFile # type: ignore
 from pathlib   import Path
 from functools import cached_property
 from typing    import Final, Literal
@@ -12,9 +13,11 @@ from typing    import overload, Self
 from pydantic  import BaseModel, RootModel, model_validator
 from pydantic  import ConfigDict
 from apd       import SampleCollection
-from dmu       import LogStore
-from rx_common import Component, Trigger
-from .types    import Production
+
+from dmu         import LogStore
+from dmu.generic import hashing
+from rx_common   import Component, Trigger
+from .types      import Production
 
 log = LogStore.add_logger('post_ap:pfn_reader')
 
