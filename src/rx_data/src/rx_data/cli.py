@@ -4,7 +4,7 @@ Eventually all the non-library functionality should be accessed
 through this place
 '''
 import os
-
+import tqdm
 import typer
 
 from typing     import Final
@@ -107,7 +107,8 @@ def organize_paths(
         cleanup = True,
         dry_run = dry_run,
         storage = _STORAGE)
-    for sample in samples:
+
+    for sample in tqdm.tqdm(samples, ascii = ' -'):
         org.organize(sample = sample)
 # ----------------------
 if __name__ == '__main__':
