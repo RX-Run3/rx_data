@@ -139,9 +139,6 @@ class SampleOrganizer:
         if not self._cfg.cleanup:
             return out_path
 
-
-        #    path.unlink()
-
         return out_path
     # ---------------------------------------
     def _split_file(
