@@ -12,14 +12,13 @@ from pathlib     import Path
 from dmu         import LogStore
 from pydantic    import BaseModel
 from rx_common   import Project, Trigger
-from dmu.generic import NoVersions 
 
 log=LogStore.add_logger('rx_data:sample_organizer')
 # ----------------------------------
-class SampleProtocol(Protocol):
+class SamplesProtocol(Protocol):
     '''
-    Class meant to define how a Sample instance
-    should look like for `SampleOrganizer`
+    Class meant to represent a Sample container 
+    and how it should look like for `SampleOrganizer`
     '''
     # -----------------
     @property
@@ -30,6 +29,12 @@ class SampleProtocol(Protocol):
         self, 
         directory : Path,
         must_exist: bool) -> list[Path]:
+        ...
+    # -----------------
+    def __len__(self) -> int:
+        ...
+    # -----------------
+    def __iter__(self):
         ...
 # ----------------------------------
 class SampleOrganizerConf(BaseModel):
@@ -260,7 +265,7 @@ class SampleOrganizer:
             shutil.copy2(source_path, target_path)
             source_path.unlink()
     # ---------------------------------------
-    def organize(self, sample : SampleProtocol) -> None:
+    def organize(self, sample : SamplesProtocol) -> None:
         '''
         Parameters
         ----------------
