@@ -225,13 +225,42 @@ class Sample(BaseModel):
         fail = False
         for path in paths:
             if not path.exists():
-                log.error(path)
+                log.error(f'Missing: {path}')
+                fail = True
+            if self._fail_check(path = path):
+                log.error(f'Corrupted: {path}')
                 fail = True
 
         if fail:
             raise ValueError('At least one path was not found')
 
         return paths
+    # ------------------------------
+    def _fail_check(self, path : Path) -> bool:
+        '''
+        Parameters
+        --------------
+        path: Path to ROOT file
+
+        Returns
+        --------------
+        True if file is corrupted
+        '''
+        ifile = TFile.Open(str(path))
+
+        if not ifile:
+            return True
+
+        if ifile.IsZombie():
+            ifile.Close()
+            return True
+
+        if ifile.TestBit(TFile.kRecovered):
+            ifile.Close()
+            return True
+
+        ifile.Close()
+        return False
     # ------------------------------
     @cached_property
     def nfiles(self) -> int:
