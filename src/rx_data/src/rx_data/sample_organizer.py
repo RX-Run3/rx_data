@@ -242,12 +242,20 @@ class SampleOrganizer:
             shutil.copy2(source_path, target_path)
             source_path.unlink()
     # ---------------------------------------
-    def organize(self, sample : SampleProtocol) -> None:
+    def organize(self, sample : SampleProtocol) -> bool:
         '''
         Parameters
         ----------------
         sample: Object representing AP JOB
+
+        Returns
+        ---------------
+        True if sample was organized, False if it was skipped
         '''
+        if sample.is_merged(triggers = self._cfg.triggers):
+            log.debug(f'Sample already processed: {sample}')
+            return False
+
         local_paths = sample.local_paths(
             directory  = self._storage, 
             must_exist = True)
@@ -262,6 +270,8 @@ class SampleOrganizer:
         split_paths = self._split_file(path = merged_path, cleanup = cleanup)
 
         self._copy_files(
-            name  = sample.name,
+            sample= sample,
             paths = split_paths)
+
+        return True
 # ----------------------------------
