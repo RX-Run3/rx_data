@@ -13,7 +13,7 @@ from pydantic  import BaseModel, RootModel, model_validator
 from pydantic  import ConfigDict
 from apd       import SampleCollection
 from dmu       import LogStore
-from rx_common import Trigger
+from rx_common import Component, Trigger
 from .types    import Production
 
 log = LogStore.add_logger('post_ap:pfn_reader')
@@ -239,6 +239,16 @@ class Sample(BaseModel):
         return self.data.LFNs()
     # ------------------------------
     @cached_property
+    def polarity(self) -> str:
+        if 'magup' in self.name:
+            return 'magup'
+
+        if 'magdown' in self.name:
+            return 'magdown'
+
+        raise ValueError(f'Cannot find polarity in: {self.name}')
+    # ------------------------------
+    @cached_property
     def pfns(self) -> list[str]:
         '''
         List of PFNs
@@ -254,11 +264,13 @@ class Sample(BaseModel):
         Returns
         --------------
         Path to merged file associated to this sample and trigger
-        i.e. after merging and splitting stage
         '''
         ana_dir     = Path(os.environ['ANADIR'])
         target_path = ana_dir / f'Data/{trigger.project}/main'
-        target_path = target_path / f'latest/{self.name}.root'
+
+        component = Component.from_event_type(etype = self.event_type)
+        file_name = f'mc_{self.polarity}_{self.event_type}_{component}_{trigger}.root'
+        target_path = target_path / f'latest/{file_name}'
 
         return target_path
     # ------------------------------
