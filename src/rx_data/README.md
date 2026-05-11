@@ -2,6 +2,16 @@
 
 # $R_X$ data
 
+> [!WARNING]
+> For the instructions below to work, you need to use the `root` and `xrootd`
+> versions from conda, due to [this](https://github.com/root-project/root/issues/20782) issue:
+> i.e.
+> ```bash
+> pip uninstall root
+> pip uninstall xrootd
+> micromamba install root xrootd
+> ```
+
 This project is meant to:
 
 - Download ntuples for a given AP
