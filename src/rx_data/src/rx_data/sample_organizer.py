@@ -15,10 +15,10 @@ from rx_common   import Project, Trigger
 
 log=LogStore.add_logger('rx_data:sample_organizer')
 # ----------------------------------
-class SamplesProtocol(Protocol):
+class SampleProtocol(Protocol):
     '''
-    Class meant to represent a Sample container 
-    and how it should look like for `SampleOrganizer`
+    Class meant to represent how a sample should look like 
+    to `SampleOrganizer`
     '''
     # -----------------
     @property
@@ -29,12 +29,6 @@ class SamplesProtocol(Protocol):
         self, 
         directory : Path,
         must_exist: bool) -> list[Path]:
-        ...
-    # -----------------
-    def __len__(self) -> int:
-        ...
-    # -----------------
-    def __iter__(self):
         ...
 # ----------------------------------
 class SampleOrganizerConf(BaseModel):
@@ -265,7 +259,7 @@ class SampleOrganizer:
             shutil.copy2(source_path, target_path)
             source_path.unlink()
     # ---------------------------------------
-    def organize(self, sample : SamplesProtocol) -> None:
+    def organize(self, sample : SampleProtocol) -> None:
         '''
         Parameters
         ----------------

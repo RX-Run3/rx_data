@@ -268,6 +268,9 @@ class Samples(RootModel[list[Sample]]):
     # -------------------------
     def __iter__(self): # pyright: ignore[reportIncompatibleMethodOverride]
         return iter(self.root)
+    # -----------------
+    def __len__(self) -> int:
+        return self.size 
     # -------------------------
     @overload
     def __getitem__(self, item: int) -> Sample: ...
