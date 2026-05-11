@@ -14,6 +14,8 @@ from pydantic    import BaseModel
 from rx_common   import Trigger
 
 log=LogStore.add_logger('rx_data:sample_organizer')
+
+_SCRATCH : Final[str] = os.environ['STORAGE']
 # ----------------------------------
 class SampleProtocol(Protocol):
     '''
@@ -99,18 +101,25 @@ class SampleOrganizer:
             cleanup = cleanup,
             dry_run = dry_run)
 
+        if _SCRATCH:
+            log.warning(f'Using custom stratch directory: {_SCRATCH}')
+
         self._ana_dir : Final[Path] = Path(os.environ['ANADIR'])
     # ---------------------------------------
-    def _merge_files(self, paths : list[Path]) -> Path:
+    def _merge_files(self, sample : SampleProtocol) -> Path:
         '''
         Parameters
         ---------------
-        paths: List of paths to ROOT files
+        sample: Object representing sample 
 
         Return
         ---------------
         Merged file path
         '''
+        paths = sample.local_paths(
+            directory  = self._storage, 
+            must_exist = True)
+
         fm = TFileMerger(isLocal=True)
         fm.SetFastMethod(True)
         for path in paths:
@@ -120,7 +129,7 @@ class SampleOrganizer:
             log.debug(f'Adding: {path}')
             fm.AddFile(str(path), cpProgress = False)
 
-        with tempfile.TemporaryDirectory(delete = False) as tmp_dir:
+        with tempfile.TemporaryDirectory(delete = False, dir = _SCRATCH) as tmp_dir:
             out_path = tmp_dir / Path('merged.root')
             log.debug(f'Merging into: {out_path}')
 
@@ -128,7 +137,7 @@ class SampleOrganizer:
                 fm.OutputFile(str(out_path), 'RECREATE')
                 success = fm.Merge()
                 if not success:
-                    raise ValueError('Merge failed')
+                    raise ValueError(f'Merge failed for sample: {sample}')
 
         if self._cfg.dry_run:
             return out_path
@@ -261,7 +270,7 @@ class SampleOrganizer:
             must_exist = True)
 
         if len(local_paths) > 1:
-            merged_path = self._merge_files(paths = local_paths)
+            merged_path = self._merge_files(sample = sample)
             cleanup     = True # delete merged temporary file
         else:
             merged_path = local_paths[0]
