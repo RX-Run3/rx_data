@@ -37,7 +37,9 @@ def test_simple(nickname : str, expected : int):
     '''
     Test simple reading
     '''
-    data   = gut.load_data(package='post_ap_data', fpath='tests/pfn_reader/simple.yaml')
+    data   = gut.load_data(
+        package='post_ap_data', 
+        fpath  ='tests/pfn_reader/simple.yaml')
     cfg    = PFNReaderConf(**data)
 
     reader = PFNReader(cfg=cfg)
@@ -54,7 +56,9 @@ def test_real(analysis : str, sample : str):
     '''
     Test simple reading
     '''
-    data    = gut.load_data(package='post_ap_data', fpath=f'post_ap/{analysis}/v4.yaml')
+    data    = gut.load_data(
+        package='post_ap_data', 
+        fpath  =f'post_ap/{analysis}/v4.yaml')
     cfg     = PFNReaderConf(**data)
 
     reader  = PFNReader(cfg=cfg)
@@ -74,7 +78,9 @@ def test_sim10g(sample : str):
     '''
     Test simple reading
     '''
-    data    = gut.load_data(package='post_ap_data', fpath='post_ap/rx/v15.yaml')
+    data    = gut.load_data(
+        package='post_ap_data', 
+        fpath  ='post_ap/rx/v15.yaml')
     cfg     = PFNReaderConf(**data)
 
     reader  = PFNReader(cfg=cfg)
@@ -87,4 +93,4 @@ def test_sim10g(sample : str):
     assert samples.size      > 0
     assert len(samples.pfns) > 0
     assert len(samples.pfns) == len(samples.lfns)
-
+# -----------------------------
