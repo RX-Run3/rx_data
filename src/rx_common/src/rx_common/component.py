@@ -142,6 +142,21 @@ class Component(StrEnum):
         raise MissingComponent(f'Cannot find component for: {sample}')
     # --------------------------------------------
     @classmethod
+    def from_event_type(cls, etype : int) -> 'Component':
+        '''
+        Parameters
+        -----------------
+        etype: Event type
+
+        Returns
+        -----------------
+        Instance of component
+        '''
+        sample = aput.read_decay_name(event_type = etype)
+
+        return cls.from_sample(sample = sample)
+    # --------------------------------------------
+    @classmethod
     def has_component(cls, sample :  str) -> bool:
         '''
         Parameters
