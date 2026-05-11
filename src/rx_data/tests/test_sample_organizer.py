@@ -1,6 +1,7 @@
 '''
 File with tests for SampleOrganizer class
 '''
+import os
 import pytest
 
 from ROOT        import RDataFrame
@@ -20,7 +21,7 @@ def initialize():
     '''
     LogStore.set_level('rx_data:sample_organizer', 10)
 # ------------------------------------
-class SampleHolder:
+class TestSample:
     '''
     Class meant to be used by SampleOrganizer in tests
     '''
@@ -87,6 +88,37 @@ class SampleHolder:
         _ = must_exist 
 
         return [ self._make_file(file_name = f'test_{index:03}.root') for index in range(self._nfiles) ]
+    # ------------------------------
+    def target_path(self, trigger : Trigger) -> Path:
+        '''
+        Parameters
+        --------------
+        trigger: HLT2 trigger
+
+        Returns
+        --------------
+        Path to merged file associated to this sample and trigger
+        i.e. after merging and splitting stage
+        '''
+        ana_dir     = Path(os.environ['ANADIR'])
+        target_path = ana_dir / f'Data/{trigger.project}/main'
+        target_path = target_path / f'latest/{self.name}.root'
+
+        return target_path
+    # ------------------------------
+    def is_merged(self, triggers : list[Trigger]) -> bool:
+        '''
+        Parameters
+        -------------
+        triggers: List of triggers associated to ROOT files belonging to this sample
+
+        Returns
+        -------------
+        True if all of the files exist
+        '''
+        paths = [ self.target_path(trigger = trigger) for trigger in triggers ]
+
+        return all(path.exists() for path in paths)
 # ------------------------------------
 @pytest.mark.parametrize('triggers', [[Trigger.rk_ee_os, Trigger.rkst_ee_os]])
 @pytest.mark.parametrize('dry_run' , [True, False])
@@ -98,7 +130,7 @@ def test_simple(
     Simplest test
     '''
     with gut.environment(mapping = {'ANADIR' : str(tmp_path)}):
-        sample = SampleHolder(
+        sample = TestSample(
             name     = 'test_sample',
             nfiles   = 3,
             storage  = tmp_path,
@@ -119,7 +151,7 @@ def test_versions(
     '''
     with gut.environment(mapping = {'ANADIR' : str(tmp_path)}):
         for index in range(3):
-            sample = SampleHolder(
+            sample = TestSample(
                 name     = f'sample_{index:03}',
                 nfiles   = 3,
                 storage  = tmp_path,
