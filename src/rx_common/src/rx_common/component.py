@@ -108,6 +108,11 @@ class Component(StrEnum):
     bpdnukpiee     = auto()
     bpdpiknuee     = auto()
     bpdnuknuee     = auto()
+    # -----
+    # Radiative
+    # -----
+    bdkstpi0       = auto()
+    bsphigamma     = auto()
     # --------------------------------------------
     @property
     def scale(self) -> str:
@@ -311,6 +316,10 @@ class Component(StrEnum):
             return 'Bd_JpsiKst_mm_had_swp'
           case Component.bdkstjpsiee_swp:
             return 'Bd_JpsiKst_ee_had_swp'
+          case Component.bdkstpi0:
+            return 'Bd_Kstpi0_eq_TC_Kst982width100_HighPtPi0'
+          case Component.bsphigamma:
+            return 'Bs_phigamma_eq_HighPtGamma_DPC'
           case _:
             raise ValueError(f'No sample defined for: {self}')
     # --------------------------------------------
