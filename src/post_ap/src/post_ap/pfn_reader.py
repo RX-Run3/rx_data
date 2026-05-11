@@ -13,6 +13,7 @@ from pydantic  import BaseModel, RootModel, model_validator
 from pydantic  import ConfigDict
 from apd       import SampleCollection
 from dmu       import LogStore
+from rx_common import Trigger
 from .types    import Production
 
 log = LogStore.add_logger('post_ap:pfn_reader')
@@ -243,6 +244,37 @@ class Sample(BaseModel):
         List of PFNs
         '''
         return self.data.PFNs()
+    # ------------------------------
+    def target_path(self, trigger : Trigger) -> Path:
+        '''
+        Parameters
+        --------------
+        trigger: HLT2 trigger
+
+        Returns
+        --------------
+        Path to merged file associated to this sample and trigger
+        i.e. after merging and splitting stage
+        '''
+        ana_dir     = Path(os.environ['ANADIR'])
+        target_path = ana_dir / f'Data/{trigger.project}/main'
+        target_path = target_path / f'latest/{self.name}.root'
+
+        return target_path
+    # ------------------------------
+    def is_merged(self, triggers : list[Trigger]) -> bool:
+        '''
+        Parameters
+        -------------
+        triggers: List of triggers associated to ROOT files belonging to this sample
+
+        Returns
+        -------------
+        True if all of the files exist
+        '''
+        paths = [ self.target_path(trigger = trigger) for trigger in triggers ]
+
+        return all(path.exists() for path in paths)
 # ---------------------------------------
 class Samples(RootModel[list[Sample]]):
     '''

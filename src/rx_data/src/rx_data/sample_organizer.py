@@ -33,6 +33,12 @@ class SampleProtocol(Protocol):
         directory : Path,
         must_exist: bool) -> list[Path]:
         ...
+    # -----------------
+    def target_path(self, trigger : Trigger) -> Path:
+        ...
+    # -----------------
+    def is_merged(self, triggers : list[Trigger]) -> bool:
+        ...
 # ----------------------------------
 class SampleOrganizerConf(BaseModel):
     '''
