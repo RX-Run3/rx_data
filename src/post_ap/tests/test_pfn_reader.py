@@ -153,7 +153,7 @@ def test_merge(sample_name : str, tmp_path : Path):
         assert sample.is_merged(triggers = triggers)
 # -----------------------------
 @pytest.mark.parametrize('sample', ['sim10g_unfiltered', 'sim10g_ss'])
-def test_filepath(sample : str):
+def test_target_path(sample : str):
     '''
     Test getting path associated to sample
     '''
