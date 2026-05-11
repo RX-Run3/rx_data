@@ -162,3 +162,26 @@ def test_versions(
                 storage = tmp_path,
                 dry_run = False)
             org.organize(sample = sample)
+# ------------------------------------
+@pytest.mark.parametrize('triggers', [[Trigger.rk_ee_os, Trigger.rkst_ee_os]])
+def test_skip_done(
+    tmp_path : Path, 
+    triggers : list[Trigger]):
+    '''
+    Test that if sample was organized, it won't be organized again
+    i.e. caching behavior
+    '''
+    with gut.environment(mapping = {'ANADIR' : str(tmp_path)}):
+         sample      = TestSample(
+            name     = 'test_sample',
+            nfiles   = 3,
+            storage  = tmp_path,
+            triggers = triggers)
+
+         org = SampleOrganizer(
+             cleanup = False,
+             storage = tmp_path,
+             dry_run = False)
+
+         assert     org.organize(sample = sample)
+         assert not org.organize(sample = sample)
