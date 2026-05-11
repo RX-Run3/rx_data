@@ -12,7 +12,6 @@ from pathlib     import Path
 from dmu         import LogStore
 from pydantic    import BaseModel
 from rx_common   import Project, Trigger
-from dmu.generic import version_management as vmn 
 from dmu.generic import NoVersions 
 
 log=LogStore.add_logger('rx_data:sample_organizer')
@@ -234,15 +233,7 @@ class SampleOrganizer:
         '''
         target_dir   = self._ana_dir / f'Data/{project}/main'
         target_dir.mkdir(parents = True, exist_ok = True)
-
-        try:
-            last_version = vmn.get_last_version(dir_path = target_dir, version_only = True)
-        except NoVersions:
-            log.info(f'No version found in: {target_dir}')
-            last_version = None
-
-        next_version = 'v0' if last_version is None else vmn.get_next_version(version = last_version)
-        target_path  = target_dir / next_version / f'{file_name}.root'
+        target_path  = target_dir / f'latest/{file_name}.root'
 
         return target_path
     # ---------------------------------------

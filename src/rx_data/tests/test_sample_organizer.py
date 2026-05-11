@@ -27,15 +27,19 @@ class SampleHolder:
     # ------------------------------------
     def __init__(
         self, 
+        name     : str,
         nfiles   : int,
         triggers : list[Trigger], 
         storage  : Path):
         '''
         Parameters
         ------------------
+        name    : Sample name
         triggers: List of triggers included in file
+        nfiles  : Number of files in sample
         storage : Path to directory where data will be
         '''
+        self._name     = name
         self._nfiles   = nfiles
         self._triggers = triggers
         self._storage  = storage
@@ -72,7 +76,7 @@ class SampleHolder:
     # ------------------------------------
     @property
     def name(self) -> str:
-        return 'sample_name'
+        return self._name 
     # ------------------------------------
     def local_paths(
         self, 
@@ -95,6 +99,7 @@ def test_simple(
     '''
     with gut.environment(mapping = {'ANADIR' : str(tmp_path)}):
         sample = SampleHolder(
+            name     = 'test_sample',
             nfiles   = 3,
             storage  = tmp_path,
             triggers = triggers)
@@ -113,8 +118,9 @@ def test_versions(
     Test that new version does not override old one
     '''
     with gut.environment(mapping = {'ANADIR' : str(tmp_path)}):
-        for _ in range(3):
+        for index in range(3):
             sample = SampleHolder(
+                name     = f'sample_{index:03}',
                 nfiles   = 3,
                 storage  = tmp_path,
                 triggers = triggers)
