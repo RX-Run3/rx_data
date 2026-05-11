@@ -98,6 +98,22 @@ But the files need to be:
 
 For this do:
 
+```bash
+rxdata organize-paths -v v1r5849
 ```
 
+which will produce files that will look like:
+
+```bash
+rxdata organize-paths -v v1r5849
 ```
+
+> [!NOTE]
+> The merging step will require writting large temporary files. 
+> These will live in `/tmp/`. This can be overriden with:
+> 
+> ```bash
+> export SCRATCH=/some/large/storage/device/
+> ```
+> In case `/tmp` has storage left. 
+
