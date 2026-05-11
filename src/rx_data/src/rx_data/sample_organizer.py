@@ -219,37 +219,18 @@ class SampleOrganizer:
 
         return True
     # ---------------------------------------
-    def _get_target_path(
-        self, 
-        file_name : str,
-        project   : Project) -> Path:
-        '''
-        Parameters
-        ---------------
-        file_name: E.g. mc_signal.root
-        project  : E.g. rk
-
-        Returns
-        ---------------
-        '''
-        target_dir   = self._ana_dir / f'Data/{project}/main'
-        target_dir.mkdir(parents = True, exist_ok = True)
-        target_path  = target_dir / f'latest/{file_name}.root'
-
-        return target_path
-    # ---------------------------------------
     def _copy_files(
         self, 
-        name  : str, 
+        sample: SampleProtocol, 
         paths : dict[Trigger,Path]) -> None:
         '''
         Parameters
         ---------------
-        name : Name of AP job, needed to name ROOT file
-        paths: Dictionary mapping trigger name to ROOT file path
+        sample: Object representing MC sample 
+        paths : Dictionary mapping trigger name to ROOT file path
         '''
         for trigger, source_path in paths.items():
-            target_path = self._get_target_path(project = trigger.project, file_name = name)
+            target_path = sample.target_path(trigger = trigger)
             target_path.parent.mkdir(exist_ok=True, parents=True)
 
             log.debug(f'{str(source_path):<50}{target_path}')
