@@ -219,9 +219,13 @@ class SampleOrganizer:
             return False
 
         log.debug(f'Dumping to {output_path}')
-        ofile     = TFile(str(output_path), 'update')
-        reco_tree.Write()
-        true_tree.Write()
+        ofile     = TFile(str(output_path), 'recreate')
+
+        clone_reco_tree = reco_tree.CloneTree()
+        clone_true_tree = true_tree.CloneTree()
+
+        clone_reco_tree.Write()
+        clone_true_tree.Write()
 
         ofile.Close()
         ifile.Close()
