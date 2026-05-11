@@ -139,10 +139,6 @@ class SampleOrganizer:
         if not self._cfg.cleanup:
             return out_path
 
-        #log.debug('Deleting pre-merge paths')
-        #for path in local_paths:
-        #    if self._cfg.dry_run:
-        #        continue
 
         #    path.unlink()
 
