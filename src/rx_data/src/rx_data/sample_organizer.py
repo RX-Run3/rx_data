@@ -3,6 +3,7 @@ Module with SampleOrganizer class
 '''
 
 import os
+import shutil
 import tempfile
 
 from typing      import Final, Protocol
@@ -93,28 +94,19 @@ class SampleOrganizer:
 
         self._ana_dir : Final[Path] = Path(os.environ['ANADIR'])
     # ---------------------------------------
-    def _merge_files(self, sample : SampleProtocol) -> Path:
+    def _merge_files(self, paths : list[Path]) -> Path:
         '''
         Parameters
         ---------------
-        sample: Object representing AP job
+        paths: List of paths to ROOT files
 
         Return
         ---------------
         Merged file path
         '''
-        local_paths = sample.local_paths(
-            directory  = self._storage, 
-            must_exist = True)
-
-        if len(local_paths) == 1:
-            single_path = local_paths[0]
-            log.debug(f'Only one path found, skip merging for: {single_path}')
-            return single_path 
-
         fm = TFileMerger(isLocal=True)
         fm.SetFastMethod(True)
-        for path in local_paths:
+        for path in paths:
             if self._cfg.dry_run:
                 continue
 
@@ -140,20 +132,24 @@ class SampleOrganizer:
         if not self._cfg.cleanup:
             return out_path
 
-        log.debug('Deleting pre-merge paths')
-        for path in local_paths:
-            if self._cfg.dry_run:
-                continue
+        #log.debug('Deleting pre-merge paths')
+        #for path in local_paths:
+        #    if self._cfg.dry_run:
+        #        continue
 
-            path.unlink()
+        #    path.unlink()
 
         return out_path
     # ---------------------------------------
-    def _split_file(self, path : Path) -> dict[Trigger,Path]:
+    def _split_file(
+        self, 
+        cleanup : bool,
+        path    : Path) -> dict[Trigger,Path]:
         '''
         Parameters
         -----------------
-        path: Path to ROOT file with multiple directories
+        path   : Path to ROOT file with multiple directories
+        cleanup: If True, it will delete file after splitting
 
         Returns
         -----------------
@@ -164,7 +160,6 @@ class SampleOrganizer:
             return dict()
 
         result = dict()
-        log.info('Splitting paths')
         for trigger in self._cfg.triggers:
             split_path = path.parent / f'{trigger}_{path.name}'
             log.debug(split_path)
@@ -184,7 +179,8 @@ class SampleOrganizer:
             return result
 
         log.debug(f'Deleting {path}')
-        path.unlink()
+        if cleanup:
+            path.unlink()
 
         return result
     # ---------------------------------------
@@ -270,7 +266,7 @@ class SampleOrganizer:
                 continue
 
             log.debug('Moving files')
-            target_path.hardlink_to(source_path)
+            shutil.copy2(source_path, target_path)
             source_path.unlink()
     # ---------------------------------------
     def organize(self, sample : SampleProtocol) -> None:
@@ -279,8 +275,18 @@ class SampleOrganizer:
         ----------------
         sample: Object representing AP JOB
         '''
-        merged_path = self._merge_files(sample = sample)
-        split_paths = self._split_file(path = merged_path)
+        local_paths = sample.local_paths(
+            directory  = self._storage, 
+            must_exist = True)
+
+        if len(local_paths) > 1:
+            merged_path = self._merge_files(paths = local_paths)
+            cleanup     = True # delete merged temporary file
+        else:
+            merged_path = local_paths[0]
+            cleanup     = False
+
+        split_paths = self._split_file(path = merged_path, cleanup = cleanup)
 
         self._copy_files(
             name  = sample.name,
