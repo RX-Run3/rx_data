@@ -105,7 +105,8 @@ rxdata organize-paths -v v1r5849
 which will produce files that will look like:
 
 ```bash
-rxdata organize-paths -v v1r5849
+MCDecayTree  # True information
+DecayTree    # Reco information for a given trigger
 ```
 
 > [!NOTE]
