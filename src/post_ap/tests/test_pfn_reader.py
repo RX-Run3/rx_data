@@ -167,3 +167,20 @@ def test_filepath(sample : str):
 
     for sam in samples:
         log.info(sam.target_path(trigger = Trigger.rk_ee_os))
+# -----------------------------
+@pytest.mark.parametrize('sample', ['sim10g_filtered', 'sim10g_unfiltered', 'sim10g_ss'])
+def test_polarity(sample : str):
+    '''
+    Test getting path associated to sample
+    '''
+    data    = gut.load_data(
+        package='post_ap_data', 
+        fpath  ='post_ap/rx/v15.yaml')
+    cfg     = PFNReaderConf(**data)
+
+    reader  = PFNReader(cfg=cfg)
+    samples = reader.get_samples(production=Production.rx_2024, nickname=sample)
+
+    for sam in samples:
+        assert sam.polarity in {'magup', 'magdown'}
+        log.info(sam.polarity)

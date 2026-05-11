@@ -109,6 +109,12 @@ class Sample(BaseModel):
         return tags[0]['eventtype']
     # ------------------------------
     @cached_property
+    def polarity(self) -> int:
+        tags = list(self.data.itertags())
+
+        return tags[0]['polarity']
+    # ------------------------------
+    @cached_property
     def output_name(self) -> str:
         value = f'{self.group}.root'
         length= len(value)
@@ -237,16 +243,6 @@ class Sample(BaseModel):
         List of LFNs
         '''
         return self.data.LFNs()
-    # ------------------------------
-    @cached_property
-    def polarity(self) -> str:
-        if 'magup' in self.name:
-            return 'magup'
-
-        if 'magdown' in self.name:
-            return 'magdown'
-
-        raise ValueError(f'Cannot find polarity in: {self.name}')
     # ------------------------------
     @cached_property
     def pfns(self) -> list[str]:
