@@ -58,7 +58,7 @@ class TestSample:
         file_path = self._storage / file_name
         for trigger in self._triggers:
             rdf = RDataFrame(self._nentries)
-            rdf = rdf.Define('a', '1')
+            rdf = rdf.Define('a', 'gRandom->Gaus()')
 
             rdf.Snapshot(
                 options  = self._opt,
@@ -66,7 +66,7 @@ class TestSample:
                 filename = str(file_path))
 
         rdf = RDataFrame(self._nentries)
-        rdf = rdf.Define('a', '1')
+        rdf = rdf.Define('a', 'gRandom->Gaus()')
 
         rdf.Snapshot(
             options  = self._opt,
