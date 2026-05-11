@@ -4,6 +4,8 @@ Script with tests for PFNReader class
 import pytest
 import tqdm
 
+from rx_common    import Trigger
+from pathlib      import Path
 from post_ap      import PFNReader, PFNReaderConf
 from post_ap      import Production
 from post_ap      import Sample
@@ -114,4 +116,39 @@ def test_progress(sample : str):
         pass
 
     assert len(samples) > 0
+# -----------------------------
+@pytest.mark.parametrize('sample_name', ['sim10g_unfiltered'])
+def test_merge(sample_name : str, tmp_path : Path):
+    '''
+    Test that sample container can be iterated
+    '''
+    data    = gut.load_data(
+        package='post_ap_data', 
+        fpath  ='post_ap/rx/v15.yaml')
+    cfg     = PFNReaderConf(**data)
+
+    reader  = PFNReader(cfg=cfg)
+    samples = reader.get_samples(
+        production=Production.rx_2024, 
+        nickname  =sample_name)
+
+    sample = samples[0]
+    with gut.environment(mapping = {'ANADIR' : str(tmp_path)}):
+        path_rk   = sample.merged_path(trigger = Trigger.rk_ee_os)
+        path_rkst = sample.merged_path(trigger = Trigger.rkst_ee_os)
+
+        triggers = [Trigger.rk_ee_os, Trigger.rkst_ee_os]
+
+        assert not   path_rk.exists()
+        assert not path_rkst.exists()
+
+        assert not sample.is_merged(triggers = triggers)
+
+        path_rk.parent.mkdir(parents = True, exist_ok = True)
+        path_rk.touch()
+
+        path_rkst.parent.mkdir(parents = True, exist_ok = True)
+        path_rkst.touch()
+
+        assert sample.is_merged(triggers = triggers)
 # -----------------------------
