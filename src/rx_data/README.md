@@ -40,6 +40,27 @@ rxdata download-ntuples -n 6 -v v1r5849
 where the downloaded ntuples will come from version `v1r5849` and they will be
 downloaded with 6 cores from the `rx_filter` project.
 
+## Transferring ntuples from server
+
+If the ntuples were downloaded to a local cluster and the user needs them in
+their laptop one can use the following snakemake workflow:
+
+```bash
+snakemake -s snakemake/rules/ntuples/transfer.smk  --configfile snakemake/configs/ntuples/transfer.yaml -c 8
+```
+
+Which requires:
+
+- `ANADIR` to also be defined in the laptop's environment
+- The remote filesystem to be mounted through SSHFS
+- The fields:
+```
+SERVER = 'ihep'
+DATASET= 'from_ap'
+```
+in the `smk` file to be updated accordingly
+- The `yaml` file to also be updated.
+
 ## Organizing the ntuples into a directory structure
 
 The ntuples downloaded above will end up in the `downloads/` directory
