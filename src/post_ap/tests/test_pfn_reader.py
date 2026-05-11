@@ -134,8 +134,8 @@ def test_merge(sample_name : str, tmp_path : Path):
 
     sample = samples[0]
     with gut.environment(mapping = {'ANADIR' : str(tmp_path)}):
-        path_rk   = sample.merged_path(trigger = Trigger.rk_ee_os)
-        path_rkst = sample.merged_path(trigger = Trigger.rkst_ee_os)
+        path_rk   = sample.target_path(trigger = Trigger.rk_ee_os)
+        path_rkst = sample.target_path(trigger = Trigger.rkst_ee_os)
 
         triggers = [Trigger.rk_ee_os, Trigger.rkst_ee_os]
 
