@@ -154,7 +154,7 @@ class MVAWp(RootModel[float|tuple[float,float]]):
 
         low, high  = self.root # type: ignore[misc]
 
-        return f'{low:.3f}-{high:.3f}'
+        return f'{low:.2f}-{high:.2f}'
 # ---------------------
 class MVAConf(BaseModel):
     '''
