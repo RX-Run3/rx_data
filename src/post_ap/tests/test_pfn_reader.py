@@ -2,12 +2,13 @@
 Script with tests for PFNReader class
 '''
 import pytest
+import tqdm
+
 from post_ap      import PFNReader, PFNReaderConf
 from post_ap      import Production
 from post_ap      import Sample
 from dmu          import LogStore
 from dmu.generic  import utilities as gut
-
 
 log=LogStore.add_logger('post_ap:test_pfn_reader')
 # ----------------------
@@ -93,4 +94,24 @@ def test_sim10g(sample : str):
     assert samples.size      > 0
     assert len(samples.pfns) > 0
     assert len(samples.pfns) == len(samples.lfns)
+# -----------------------------
+@pytest.mark.parametrize('sample', ['sim10g_unfiltered'])
+def test_progress(sample : str):
+    '''
+    Test that sample container can be iterated
+    '''
+    data    = gut.load_data(
+        package='post_ap_data', 
+        fpath  ='post_ap/rx/v15.yaml')
+    cfg     = PFNReaderConf(**data)
+
+    reader  = PFNReader(cfg=cfg)
+    samples = reader.get_samples(
+        production=Production.rx_2024, 
+        nickname  =sample)
+
+    for _ in tqdm.tqdm(samples, ascii = ' -'):
+        pass
+
+    assert len(samples) > 0
 # -----------------------------
