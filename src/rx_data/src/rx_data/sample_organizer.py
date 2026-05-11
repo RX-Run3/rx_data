@@ -7,7 +7,7 @@ import shutil
 import tempfile
 
 from typing      import Final, Protocol
-from ROOT        import TFileMerger, TFile # type: ignore
+from ROOT        import TFileMerger, TFile, gSystem # type: ignore
 from pathlib     import Path
 from dmu         import LogStore
 from pydantic    import BaseModel
@@ -105,7 +105,7 @@ class SampleOrganizer:
         if _SCRATCH:
             log.warning(f'Using custom scratch directory: {_SCRATCH}')
             _SCRATCH.mkdir(parents = True, exist_ok = True)
-            os.environ['TMPDIR'] = str(_SCRATCH)
+            gSystem.Setenv('TMPDIR', str(_SCRATCH))
 
         self._ana_dir : Final[Path] = Path(os.environ['ANADIR'])
     # ---------------------------------------
