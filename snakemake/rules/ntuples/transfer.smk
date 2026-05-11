@@ -1,53 +1,58 @@
 import os
+from pathlib import Path
 
 SERVER = 'ihep'
-DATASET= 'brem_track_2'
+DATASET= 'from_ap'
 SSHOPT = '-o StrictHostKeyChecking=no -o BatchMode=yes -o PasswordAuthentication=no -o PubkeyAuthentication=yes -o Ciphers=aes128-gcm@openssh.com'
 
-ANADIR = os.environ['ANADIR']
-REMOTE = config['servers'][SERVER]
-ROOT   = config['root'][SERVER]
-PATHS  = config['paths'][DATASET]
+LOCAL_ANADIR   = os.environ['ANADIR']
+REMOTE_ANADIR  = config['remote_root'][SERVER]
+REMOTE_URL     = config['servers'][SERVER]
+RELATIVE_ROOTS = config['paths'][DATASET]
 # ── Helpers ───────────────────────────────────────────────────────────────────
-def all_sync_targets():
-    '''Return one sentinel file per (dataset, relative_path) pair.'''
-    targets = []
-    for rel_path in PATHS:
-        sentinel = os.path.join(ANADIR, rel_path, '.rsync_done')
-        targets.append(sentinel)
+def get_local_paths():
+    '''
+    Returns paths to ROOT files that would exist locally, once copied
+    '''
+    remote_paths = []
+    for relative_root in RELATIVE_ROOTS:
+        remote_root  = f'{REMOTE_ANADIR}/{relative_root}'
+        remote_paths+= list(Path(remote_root).rglob('*.root'))
 
-    return targets
+    if not remote_paths:
+        raise ValueError(f'No paths found in: {remote_root}')
+
+    local_paths = []
+    for remote_path in remote_paths:
+        remote_string= str(remote_path)
+        local_path   = remote_string.replace(REMOTE_ANADIR, LOCAL_ANADIR)
+        local_paths.append(local_path)
+
+    return local_paths
 # ── Rules ─────────────────────────────────────────────────────────────────────
 rule all:
     input:
-        all_sync_targets()
-rule rsync_directory:
+        get_local_paths()
+rule rsync_files:
     '''
-    Transfer a single remote directory to the local machine via rsync over SSH.
-    A hidden sentinel file (.rsync_done) is written on success so Snakemake
-    can track completion and skip already-synced directories on re-runs.
+    Transfers ROOT files from a server to the local machine
     '''
     output:
-        sentinel   = os.path.join(ANADIR, '{rel_path}', '.rsync_done')
+        local_path    = f'{LOCAL_ANADIR}/{{relative_path}}'
     params:
-        remote_src = lambda wc: f'{REMOTE}:{ROOT}/{wc.rel_path}/',
-        local_dst  = lambda wc: os.path.join(ANADIR, wc.rel_path) + '/',
-        ssh_opt    = SSHOPT
+        REMOTE_ANADIR = REMOTE_ANADIR,
+        LOCAL_ANADIR  = LOCAL_ANADIR,
+        SSHOPT        = SSHOPT,
     log:
-        os.path.join(ANADIR, 'logs/ntuples/transfer', '{rel_path}.log')
+        os.path.join(LOCAL_ANADIR, 'logs/ntuples/transfer', '{relative_path}.log')
     shell:
         '''
-        mkdir -p {params.local_dst}
-        mkdir -p $(dirname {log})
-
-        rsync -av                        \
-              --partial                  \
-              --progress                 \
-              --stats                    \
-              -e 'ssh {params.ssh_opt}'  \
-                      {params.remote_src}\
-                      {params.local_dst} \
+        rsync -av                                                     \
+              --partial                                               \
+              --progress                                              \
+              --stats                                                 \
+              -e 'ssh {params.SSHOPT}'                                \
+                      {params.REMOTE_ANADIR}/{wildcards.relative_path}\
+                      {params.LOCAL_ANADIR}/{wildcards.relative_path} \
               2>&1 | tee {log}
-
-        touch {output.sentinel}
         '''

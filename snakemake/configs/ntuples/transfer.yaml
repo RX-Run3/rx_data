@@ -1,4 +1,4 @@
-root:
+remote_root:
   ihep : /publicfs/ucas/user/campoverde/Data
 servers:
   ihep : campoverde@lxlogin.ihep.ac.cn
@@ -8,3 +8,5 @@ paths:
     - Data/rk/brem_track_2/v5
     - Data/rkst/brem_track_2/v4
     - Data/rkst/brem_track_2/v5
+  from_ap:
+    - downloaded 
