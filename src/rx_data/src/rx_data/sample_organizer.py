@@ -15,7 +15,7 @@ from rx_common   import Trigger
 
 log=LogStore.add_logger('rx_data:sample_organizer')
 
-_SCRATCH : Final[str] = os.environ['SCRATCH']
+_SCRATCH : Final[str | None] = os.environ.get('SCRATCH')
 # ----------------------------------
 class SampleProtocol(Protocol):
     '''
