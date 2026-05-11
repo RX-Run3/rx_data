@@ -15,7 +15,8 @@ from rx_common   import Trigger
 
 log=LogStore.add_logger('rx_data:sample_organizer')
 
-_SCRATCH : Final[str | None] = os.environ.get('SCRATCH')
+val = os.environ.get('SCRATCH')
+_SCRATCH : Final[Path | None] = val if val is None else Path(val)
 # ----------------------------------
 class SampleProtocol(Protocol):
     '''
@@ -102,7 +103,9 @@ class SampleOrganizer:
             dry_run = dry_run)
 
         if _SCRATCH:
-            log.warning(f'Using custom stratch directory: {_SCRATCH}')
+            log.warning(f'Using custom scratch directory: {_SCRATCH}')
+            _SCRATCH.mkdir(parents = True, exist_ok = True)
+            os.environ['TMPDIR'] = str(_SCRATCH)
 
         self._ana_dir : Final[Path] = Path(os.environ['ANADIR'])
     # ---------------------------------------
