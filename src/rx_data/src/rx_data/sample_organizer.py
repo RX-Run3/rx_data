@@ -221,8 +221,8 @@ class SampleOrganizer:
         log.debug(f'Dumping to {output_path}')
         ofile     = TFile(str(output_path), 'recreate')
 
-        clone_reco_tree = reco_tree.CloneTree()
-        clone_true_tree = true_tree.CloneTree()
+        clone_reco_tree = reco_tree.CloneTree(-1, 'fast')
+        clone_true_tree = true_tree.CloneTree(-1, 'fast')
 
         clone_reco_tree.Write()
         clone_true_tree.Write()
