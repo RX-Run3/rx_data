@@ -208,7 +208,7 @@ class Sample(BaseModel):
         if not directory.exists():
             raise ValueError(f'Directory {directory} not found')
 
-        paths = [ directory / os.path.basename(pfn) for pfn in self.pfns ]
+        paths = [ directory / self.version / os.path.basename(pfn) for pfn in self.pfns ]
         if not must_exist:
             return paths
 
