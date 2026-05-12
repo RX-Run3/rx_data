@@ -119,7 +119,7 @@ def _get_truth(
     if trigger.project in Project.rk_projects():
         return tm.get_truth(component=component, kind='bukll')
 
-    raise ValueError(f'Invalid project {project} for trigger: {trigger}')
+    raise ValueError(f'Invalid project {trigger.project} for trigger: {trigger}')
 #-----------------------
 def selection(
     q2bin     : Qsq,
