@@ -266,6 +266,16 @@ class Sample(BaseModel):
         return False
     # ------------------------------
     @cached_property
+    def paths(self) -> list[Path]:
+        '''
+        List of paths to ROOT files
+        '''
+        if not self._STORAGE:
+            raise ValueError('Storage location was not set')
+
+        return self.local_paths(directory=self._STORAGE, must_exist=True)
+    # ------------------------------
+    @cached_property
     def nfiles(self) -> int:
         '''
         Number of ntuples in sample
@@ -286,12 +296,44 @@ class Sample(BaseModel):
         '''
         return self.data.PFNs()
     # ------------------------------
-    def target_path(self, trigger : Trigger) -> Path:
+    def _triggers_from_path(self, path : Path) -> set[Trigger]:
         '''
         Parameters
-        --------------
-        trigger: HLT2 trigger
+        ----------------
+        path: Location of ROOT file
 
+        Returns
+        ----------------
+        Set of strings with HLT2 triggers
+        '''
+        ifile = TFile.Open(str(path))
+        keys  = ifile.GetListOfKeys()
+
+        triggers : set[Trigger] = set()
+        for key in keys:
+            name = key.GetName()
+            if not name.startswith('Hlt2'):
+                continue
+
+            trigger = Trigger.from_name(name = name)
+            triggers.add(trigger)
+
+        ifile.Close()
+
+        return triggers
+    # ------------------------------
+    @cached_property
+    def triggers(self) -> list[Trigger]:
+        '''
+        Triggers associated to current sample
+        '''
+        triggers : set[Trigger] = set()
+        for path in self.paths[:10]:
+            # In case one of the files does not get any entry
+            # for a trigger, pick triggers in any of 10 files
+            triggers = triggers | self._triggers_from_path(path = path)
+
+        return list(triggers)
         Returns
         --------------
         Path to merged file associated to this sample and trigger
