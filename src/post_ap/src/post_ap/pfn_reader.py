@@ -14,6 +14,7 @@ from pydantic  import BaseModel, RootModel, model_validator
 from pydantic  import ConfigDict
 from apd       import SampleCollection
 
+from contextlib  import contextmanager
 from dmu         import LogStore
 from dmu.generic import hashing
 from rx_common   import Component, Trigger
@@ -80,6 +81,8 @@ class Sample(BaseModel):
     name    : str
     version : str
     fraction: float | None
+
+    _STORAGE: Path | None= None
     # ------------------------------
     @property
     def info(self) -> str:
@@ -316,6 +319,23 @@ class Sample(BaseModel):
         paths = [ self.target_path(trigger = trigger) for trigger in triggers ]
 
         return all(path.exists() for path in paths)
+    # ------------------------------
+    @classmethod
+    def storage(cls, value : Path):
+        '''
+        Context manager meant to set location of
+        downloaded ROOT files
+        '''
+        old_val = cls._STORAGE
+        @contextmanager
+        def _context():
+            cls._STORAGE = value
+            try:
+                yield
+            finally:
+                cls._STORAGE = old_val
+
+        return _context()
 # ---------------------------------------
 class Samples(RootModel[list[Sample]]):
     '''
