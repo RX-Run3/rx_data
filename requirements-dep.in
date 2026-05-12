@@ -40,7 +40,6 @@ scipy-stubs
 matplotlib-stubs
 particle
 pdg
-pidcalib2
 pyarrow
 pydantic
 PyYAML
