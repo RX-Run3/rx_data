@@ -1,14 +1,15 @@
 '''
 Script with tests for PFNReader class
 '''
+import os
 import pytest
 import tqdm
 
-from rx_common    import Trigger
 from pathlib      import Path
 from post_ap      import PFNReader, PFNReaderConf
 from post_ap      import Production
 from post_ap      import Sample
+from post_ap      import ProductionConf
 from dmu          import LogStore
 from dmu.generic  import utilities as gut
 
