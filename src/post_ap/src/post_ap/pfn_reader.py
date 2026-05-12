@@ -192,6 +192,13 @@ class Sample(BaseModel):
             value += f'{pfn}\n'
         value += ''
 
+        if not self._STORAGE:
+            return value
+
+        for path in self.paths[:20]:
+            value += f'{path}\n'
+        value += ''
+
         return value
     # ------------------------------
     def sample_string(self) -> str:
