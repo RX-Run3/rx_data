@@ -135,23 +135,16 @@ def test_merge(sample_name : str, tmp_path : Path):
 
     sample = samples[0]
     with gut.environment(mapping = {'ANADIR' : str(tmp_path)}):
-        path_rk   = sample.target_path(trigger = Trigger.rk_ee_os)
-        path_rkst = sample.target_path(trigger = Trigger.rkst_ee_os)
+        for path in sample.target_paths:
+            assert not path.exists()
 
-        triggers = [Trigger.rk_ee_os, Trigger.rkst_ee_os]
+        assert not sample.is_merged
 
-        assert not   path_rk.exists()
-        assert not path_rkst.exists()
+        for path in sample.target_paths:
+            path.parent.mkdir(parents = True, exist_ok = True)
+            path.touch()
 
-        assert not sample.is_merged(triggers = triggers)
-
-        path_rk.parent.mkdir(parents = True, exist_ok = True)
-        path_rk.touch()
-
-        path_rkst.parent.mkdir(parents = True, exist_ok = True)
-        path_rkst.touch()
-
-        assert sample.is_merged(triggers = triggers)
+        assert sample.is_merged
 # -----------------------------
 @pytest.mark.parametrize('sample', ['sim10g_unfiltered', 'sim10g_ss'])
 def test_target_path(sample : str):
@@ -167,7 +160,7 @@ def test_target_path(sample : str):
     samples = reader.get_samples(production=Production.rx_2024, nickname=sample)
 
     for sam in samples:
-        log.info(sam.target_path(trigger = Trigger.rk_ee_os))
+        log.info(sam.target_paths)
 # -----------------------------
 @pytest.mark.parametrize('sample', ['sim10g_filtered', 'sim10g_unfiltered', 'sim10g_ss'])
 def test_polarity(sample : str):
