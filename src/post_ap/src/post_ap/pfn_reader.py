@@ -341,21 +341,29 @@ class Sample(BaseModel):
             triggers = triggers | self._triggers_from_path(path = path)
 
         return list(triggers)
+    # ------------------------------
+    @cached_property
+    def target_paths(self) -> list[Path]:
+        '''
         Returns
         --------------
-        Path to merged file associated to this sample and trigger
+        Path to merged files expected for sample 
         '''
-        ana_dir     = Path(os.environ['ANADIR'])
-        target_path = ana_dir / f'Data/{trigger.project}/main'
+        ana_dir            = Path(os.environ['ANADIR'])
+        paths : list[Path] = []
+        for trigger in self.triggers:
+            target_path = ana_dir / f'Data/{trigger.project}/main'
+            hsh         = hashing.hash_object([self.name])
+            component   = Component.from_event_type(etype = self.event_type)
+            file_name   = f'mc_{self.polarity}_{self.event_type}_{component}_{trigger}_{hsh}.root'
+            target_path = target_path / f'latest/{file_name}'
 
-        hsh       = hashing.hash_object([self.name])
-        component = Component.from_event_type(etype = self.event_type)
-        file_name = f'mc_{self.polarity}_{self.event_type}_{component}_{trigger}_{hsh}.root'
-        target_path = target_path / f'latest/{file_name}'
+            paths.append(target_path)
 
-        return target_path
+        return paths 
     # ------------------------------
-    def is_merged(self, triggers : list[Trigger]) -> bool:
+    @cached_property
+    def is_merged(self) -> bool:
         '''
         Parameters
         -------------
@@ -365,9 +373,8 @@ class Sample(BaseModel):
         -------------
         True if all of the files exist
         '''
-        paths = [ self.target_path(trigger = trigger) for trigger in triggers ]
 
-        return all(path.exists() for path in paths)
+        return all(path.exists() for path in self.target_paths)
     # ------------------------------
     @classmethod
     def storage(cls, value : Path):
