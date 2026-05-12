@@ -185,3 +185,51 @@ def test_polarity(sample : str):
     for sam in samples:
         assert sam.polarity in {'magup', 'magdown'}
         log.info(sam.polarity)
+# -----------------------------
+def test_paths():
+    '''
+    Test getting path associated to sample
+    '''
+    prod_cfg= ProductionConf(
+        versions = {'all' : 'v1r5849'},
+        samples  = {'all' : None},
+        fractions= {'all' : None})
+
+    cfg     = PFNReaderConf(
+        working_group= 'RD', 
+        productions  = {Production.rx_filter : prod_cfg})
+
+    reader  = PFNReader(cfg=cfg)
+    samples = reader.get_samples(production=Production.rx_filter, nickname='all')
+    sample  = samples.root[0]
+
+    ANADIR       = os.environ['ANADIR']
+    storage_path = ANADIR / Path('downloaded')
+    with Sample.storage(value = storage_path):
+        for sample in samples:
+            log.info(sample)
+# -----------------------------
+def test_trigger():
+    '''
+    Test getting path associated to sample
+    '''
+    prod_cfg= ProductionConf(
+        versions = {'all' : 'v1r5849'},
+        samples  = {'all' : None},
+        fractions= {'all' : None})
+
+    cfg     = PFNReaderConf(
+        working_group= 'RD', 
+        productions  = {Production.rx_filter : prod_cfg})
+
+    reader  = PFNReader(cfg=cfg)
+    samples = reader.get_samples(production=Production.rx_filter, nickname='all')
+    sample  = samples.root[0]
+
+    ANADIR       = os.environ['ANADIR']
+    storage_path = ANADIR / Path('downloaded')
+    with Sample.storage(value = storage_path):
+        for sample in samples:
+            log.info(sample.name)
+            for trigger in sample.triggers:
+                log.info(f'    {trigger}')
