@@ -103,7 +103,9 @@ def _is_right_trigger(path : Path) -> bool:
     l_trigger  = Data.conf.triggers
     _, trigger = ut.info_from_path(path)
 
-    return trigger in l_trigger
+    flag = str(trigger) in l_trigger
+
+    return flag
 # -----------------------------------------
 def _get_total_size(l_path : list[Path]) -> int:
     '''
