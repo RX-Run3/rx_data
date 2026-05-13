@@ -219,7 +219,7 @@ class Sample(BaseModel):
         Parameters
         --------------
         must_exist: If True will raise exception if it does not exist
-        directory : Local directory
+        directory : Local directory contained versioned directory with AP ntuples
 
         Returns
         --------------
