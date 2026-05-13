@@ -142,12 +142,12 @@ def test_merge(sample_name : str, tmp_path : Path):
     sample_copy = sample.model_copy(deep = True)
     with gut.environment(mapping = {'ANADIR' : str(tmp_path)}),\
          Sample.storage(value = tmp_path / 'downloaded'):
-        for path in sample.target_paths:
+        for path in sample.target_paths.values():
             assert not path.exists()
 
         assert not sample.is_merged
 
-        for path in sample.target_paths:
+        for path in sample.target_paths.values():
             path.parent.mkdir(parents = True, exist_ok = True)
             path.touch()
             log.info(f'Making: {path}')
