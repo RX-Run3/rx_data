@@ -378,7 +378,7 @@ class Sample(BaseModel):
         True if all of the files exist
         '''
         merged = True
-        for path in self.target_paths:
+        for path in self.target_paths.values():
             if path.exists():
                 log.debug(f'Found: {path}')
                 continue
