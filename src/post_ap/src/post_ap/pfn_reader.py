@@ -303,7 +303,7 @@ class Sample(BaseModel):
         '''
         return self.data.PFNs()
     # ------------------------------
-    def _triggers_from_path(self, path : Path) -> set[Trigger]:
+    def _triggers_from_path(self, path : Path | str) -> set[Trigger]:
         '''
         Parameters
         ----------------
