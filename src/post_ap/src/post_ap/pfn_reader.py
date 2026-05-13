@@ -373,8 +373,15 @@ class Sample(BaseModel):
         -------------
         True if all of the files exist
         '''
+        merged = True
+        for path in self.target_paths:
+            if path.exists():
+                continue
 
-        return all(path.exists() for path in self.target_paths)
+            log.debug(f'Could not find: {path}')
+            merged = False
+
+        return merged
     # ------------------------------
     @classmethod
     def storage(cls, value : Path):
