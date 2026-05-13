@@ -6,6 +6,7 @@ import os
 import shutil
 import tempfile
 
+from functools   import cached_property
 from typing      import Final, Protocol
 from ROOT        import TFileMerger, TFile, gSystem # type: ignore
 from pathlib     import Path
@@ -37,10 +38,12 @@ class SampleProtocol(Protocol):
         must_exist: bool) -> list[Path]:
         ...
     # -----------------
-    def target_path(self, trigger : Trigger) -> Path:
+    @cached_property
+    def target_paths(self) -> dict[Trigger,Path]:
         ...
     # -----------------
-    def is_merged(self, triggers : list[Trigger]) -> bool:
+    @property
+    def is_merged(self) -> bool:
         ...
 # ----------------------------------
 class SampleOrganizerConf(BaseModel):
