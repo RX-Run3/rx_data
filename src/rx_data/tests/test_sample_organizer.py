@@ -182,16 +182,16 @@ def test_skip_done(
     i.e. caching behavior
     '''
     with gut.environment(mapping = {'ANADIR' : str(tmp_path)}):
-         sample      = TestSample(
+        sample      = TestSample(
             name     = 'test_sample',
             nfiles   = 3,
             storage  = tmp_path,
             triggers = triggers)
 
-         org = SampleOrganizer(
-             cleanup = False,
-             storage = tmp_path,
-             dry_run = False)
+        org = SampleOrganizer(
+            cleanup = False,
+            storage = tmp_path,
+            dry_run = False)
 
-         assert     org.organize(sample = sample)
-         assert not org.organize(sample = sample)
+        assert     org.organize(sample = sample)
+        assert not org.organize(sample = sample)
