@@ -340,7 +340,10 @@ class Sample(BaseModel):
             # for a trigger, pick triggers in any of 10 files
             triggers = triggers | self._triggers_from_path(path = path)
 
-        return list(triggers)
+        trigger_list = list(triggers)
+        log.debug(f'Found triggers: {trigger_list}')
+
+        return trigger_list
     # ------------------------------
     @cached_property
     def target_paths(self) -> list[Path]:
@@ -358,6 +361,7 @@ class Sample(BaseModel):
             file_name   = f'mc_{self.polarity}_{self.event_type}_{component}_{trigger}_{hsh}.root'
             target_path = target_path / f'latest/{file_name}'
 
+            log.debug(f'Target path: {target_path}')
             paths.append(target_path)
 
         return paths 
@@ -376,6 +380,7 @@ class Sample(BaseModel):
         merged = True
         for path in self.target_paths:
             if path.exists():
+                log.debug(f'Found: {path}')
                 continue
 
             log.debug(f'Could not find: {path}')
