@@ -14,7 +14,7 @@ tests:
     test_mc_spruce_mm: 
       - mc_24_w31_34_hlt1bug_magup_sim10d_12113002_bu_kmumu_eq_btosllball05_dpc_spr,_tuple
 
-working_group: rd
+working_group: RD
 productions:
   rd_ap_2024:
     versions: 

@@ -1,6 +1,6 @@
 # Minimal config needed to test PFNReader 
 
-working_group: rd
+working_group: RD
 productions:
   btoxll_mva_2024_nopid:
     versions:
