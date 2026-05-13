@@ -335,7 +335,7 @@ class Sample(BaseModel):
         Triggers associated to current sample
         '''
         triggers : set[Trigger] = set()
-        for path in self.paths[:10]:
+        for path in self.pfns[:10]:
             # In case one of the files does not get any entry
             # for a trigger, pick triggers in any of 10 files
             triggers = triggers | self._triggers_from_path(path = path)
