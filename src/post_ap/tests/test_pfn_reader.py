@@ -138,8 +138,7 @@ def test_merge(sample_name : str, tmp_path : Path):
         production=Production.rx_filter, 
         nickname  =sample_name)
 
-    sample      = samples[0]
-    sample_copy = sample.model_copy(deep = True)
+    sample = samples[0]
     with gut.environment(mapping = {'ANADIR' : str(tmp_path)}),\
          Sample.storage(value = tmp_path / 'downloaded'):
         for path in sample.target_paths:
@@ -152,7 +151,7 @@ def test_merge(sample_name : str, tmp_path : Path):
             path.touch()
             log.info(f'Making: {path}')
 
-        assert sample_copy.is_merged
+        assert sample.is_merged
 # -----------------------------
 @pytest.mark.parametrize('sample', ['sim10g_filtered', 'sim10g_unfiltered', 'sim10g_ss'])
 def test_polarity(sample : str):
