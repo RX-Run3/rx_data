@@ -346,14 +346,14 @@ class Sample(BaseModel):
         return trigger_list
     # ------------------------------
     @cached_property
-    def target_paths(self) -> list[Path]:
+    def target_paths(self) -> dict[Trigger,Path]:
         '''
         Returns
         --------------
-        Path to merged files expected for sample 
+        Dictionary mapping Hlt2 trigger to ntuple path associated to it
         '''
-        ana_dir            = Path(os.environ['ANADIR'])
-        paths : list[Path] = []
+        ana_dir                     = Path(os.environ['ANADIR'])
+        paths : dict[Trigger, Path] = {}
         for trigger in self.triggers:
             target_path = ana_dir / f'Data/{trigger.project}/main'
             hsh         = hashing.hash_object([self.name])
@@ -362,7 +362,7 @@ class Sample(BaseModel):
             target_path = target_path / f'latest/{file_name}'
 
             log.debug(f'Target path: {target_path}')
-            paths.append(target_path)
+            paths[trigger] = target_path
 
         return paths 
     # ------------------------------
