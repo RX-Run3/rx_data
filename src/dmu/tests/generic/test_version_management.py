@@ -67,6 +67,8 @@ def _get_dir(name : str, tmp_path : Path) -> tuple[str,str]:
     # -------------------------------------------
     if   name == 'non_numeric':
         l_ver = ['vx', 'vy', 'vz']
+    elif name == 'numeric_and_more':
+        l_ver = ['v1', 'v2', 'v3', 'latest', 'dummy']
     elif name == 'extra_file':
         l_ver = ['some_dir', 'v7p6', 'v7p7']
     elif name == 'collisions':
@@ -102,7 +104,7 @@ def test_versioning_formats(kind : str, tmp_path : Path):
 
     assert iversion == oversion
 #-----------------------------------------------------------
-@pytest.mark.parametrize('kind', ['non_numeric', 'extra_file', 'collisions', 'with_commas'])
+@pytest.mark.parametrize('kind', ['non_numeric', 'extra_file', 'collisions', 'with_commas', 'numeric_and_more'])
 def test_must_fail(kind : str, tmp_path : Path):
     '''
     Check cases where the version finder will raise
