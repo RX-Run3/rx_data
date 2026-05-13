@@ -478,14 +478,17 @@ class ProductionConf(BaseModel):
 
     Attributes
     ----------------
-    versions: Map from group of samples to version, e.g. 'data_turbo_24c1 : v1r1670'
+    versions: Map from group of samples to version, e.g. 'ss_sata : v1r1670'
     samples : Dictionary with
-        key  : Name of group of samples, e.g. `data_turbo_24c1`
+        key  : Name of group of samples, e.g. `ss_data`
         value: Either:
             - List of samples as shown in AP, e.g.
                 - data_24_magdown_turbo_24c2
                 - data_24_magup_turbo_24c2
             - None, in which case all the samples would be picked
+    fractions: Dictionary with:
+        Key  : AP job name
+        Value: Fraction of data to pick
     '''
     versions : dict[str,str]
     samples  : dict[str,list[str] | None]
