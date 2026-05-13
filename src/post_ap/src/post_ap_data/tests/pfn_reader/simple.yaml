@@ -18,3 +18,4 @@ productions:
       w40_42_v1r3411:
         - mc_24_w40_42_magup_sim10d_12153001_bu_jpsik_ee_eq_dpc_tuple
         - mc_24_w40_42_magdown_sim10d_12153001_bu_jpsik_ee_eq_dpc_tuple
+    fractions : {}

@@ -32,7 +32,7 @@ RK:
     acceptance: L1_INMUON && L2_INMUON
     cascade   : (1)
     jpsi_misid: (1)
-working_group: rd
+working_group: RD 
 productions:
   rx_2024:
     versions:
