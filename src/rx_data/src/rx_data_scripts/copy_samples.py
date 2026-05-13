@@ -103,7 +103,9 @@ def _is_right_trigger(path : Path) -> bool:
     l_trigger  = Data.conf.triggers
     _, trigger = ut.info_from_path(path)
 
-    return trigger in l_trigger
+    flag = str(trigger) in l_trigger
+
+    return flag
 # -----------------------------------------
 def _get_total_size(l_path : list[Path]) -> int:
     '''
@@ -128,17 +130,17 @@ def _get_source_paths() -> list[Path]:
     log.info(90 * '-')
     for l_identifier in d_samp.values():
         for identifier in l_identifier:
-            identifier    = str(identifier)
-            l_source_samp = [ source for source in Data.l_source if identifier in source.name and _is_right_trigger(source) ]
+            id_str        = str(identifier)
+            l_source_samp = [ source for source in Data.l_source if id_str in source.name and _is_right_trigger(source) ]
 
             npath     = len(l_source_samp)
             size      = _get_total_size(l_path=l_source_samp)
-            if not identifier.startswith('data'):
-                nickname = aput.read_decay_name(event_type=identifier)
+            if not id_str.startswith('data'):
+                nickname = aput.read_decay_name(event_type=id_str)
             else:
                 nickname = 'data' 
 
-            log.info(f'{nickname:<50}{identifier:<25}{npath:<10}{size:<20}')
+            log.info(f'{nickname:<50}{id_str:<25}{npath:<10}{size:<20}')
             l_source += l_source_samp
 
     log.info(90 * '-')
