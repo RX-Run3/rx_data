@@ -366,7 +366,7 @@ class Sample(BaseModel):
 
         return paths 
     # ------------------------------
-    @cached_property
+    @property
     def is_merged(self) -> bool:
         '''
         Parameters
