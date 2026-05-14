@@ -112,7 +112,7 @@ def _get_paths(cfg : Conf) -> tuple[list[Path], list[Path]]:
     nfile = len(l_fpath)
     ndirs = len(l_dpath)
 
-    log.info(f'Found {nfile} files and {ndirs} directories')
+    log.info(f'Found {nfile} files and {ndirs} directories for: {cfg.regex}')
 
     return l_fpath, l_dpath
 # ----------------------
