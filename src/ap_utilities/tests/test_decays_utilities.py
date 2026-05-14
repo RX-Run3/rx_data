@@ -3,7 +3,7 @@ Module with functions used to test functions in decays/utilities.py
 '''
 import pytest
 
-import ap_utilities.decays.utilities as aput
+from ap_utilities import decay_utilities as aput
 
 # --------------------------------------------------
 class Data:
