@@ -106,7 +106,8 @@ def _get_paths(cfg : Conf) -> tuple[list[Path], list[Path]]:
     l_dpath  = [ dpath for dpath in root_dir.rglob('*') if dpath.is_dir() ]
 
     if not l_fpath:
-        raise ValueError(f'No files found in: {root_dir}')
+        log.info(f'No dataset found for: {cfg.regex}')
+        return [], []
 
     nfile = len(l_fpath)
     ndirs = len(l_dpath)
