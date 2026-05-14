@@ -6,6 +6,7 @@ import os
 import shutil
 import tempfile
 
+from functools   import cached_property
 from typing      import Final, Protocol
 from ROOT        import TFileMerger, TFile, gSystem # type: ignore
 from pathlib     import Path
@@ -37,10 +38,12 @@ class SampleProtocol(Protocol):
         must_exist: bool) -> list[Path]:
         ...
     # -----------------
-    def target_path(self, trigger : Trigger) -> Path:
+    @cached_property
+    def target_paths(self) -> dict[Trigger,Path]:
         ...
     # -----------------
-    def is_merged(self, triggers : list[Trigger]) -> bool:
+    @property
+    def is_merged(self) -> bool:
         ...
 # ----------------------------------
 class SampleOrganizerConf(BaseModel):
@@ -246,16 +249,21 @@ class SampleOrganizer:
         sample: Object representing MC sample 
         paths : Dictionary mapping trigger name to ROOT file path
         '''
+        log.debug('Moving files')
         for trigger, source_path in paths.items():
-            target_path = sample.target_path(trigger = trigger)
-            target_path.parent.mkdir(exist_ok=True, parents=True)
-
-            log.debug(f'{str(source_path):<50}{target_path}')
             if self._cfg.dry_run:
                 log.debug('Skipping copy for dry-run')
                 continue
 
-            log.debug('Moving files')
+            target_path = sample.target_paths[trigger]
+            target_path.parent.mkdir(exist_ok=True, parents=True)
+
+            log.debug('')
+            log.debug(source_path)
+            log.debug('--->')
+            log.debug(target_path)
+            log.debug('')
+
             shutil.copy2(source_path, target_path)
             source_path.unlink()
     # ---------------------------------------
@@ -269,10 +277,11 @@ class SampleOrganizer:
         ---------------
         True if sample was organized, False if it was skipped
         '''
-        if sample.is_merged(triggers = self._cfg.triggers):
+        if sample.is_merged is True:
             log.debug(f'Sample already processed: {sample}')
             return False
 
+        log.debug(f'Sample not processed: {sample}')
         local_paths = sample.local_paths(
             directory  = self._storage, 
             must_exist = True)
