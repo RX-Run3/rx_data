@@ -27,31 +27,33 @@ class Conf(BaseModel):
     '''
     Data class meant to contain configuration
     '''
-    regex   : str | None = None
+    regex   : str
     etype   : int | None = None
     source  : str
     target  : str
     dry     : bool 
     # --------------------------------------
-    @model_validator(mode = 'after')
-    def validate_fields(self) -> 'Conf':
+    @model_validator(mode = 'before')
+    @classmethod
+    def validate_fields(cls, data):
         '''
         Validates fields
         '''
-        if self.regex:
-            return self
+        if data['regex'] is not None:
+            return data 
 
-        if not self.etype:
+        if data['etype'] is     None:
             raise ValueError('Neither regular expression nor event type passed')
 
-        name = decay_utilities.read_decay_name(event_type=self.etype)
+        name = decay_utilities.read_decay_name(event_type=data['etype'])
         decay= name.lower()
+        regex= fr'.*{decay}.*'
 
-        self.regex = fr'.*{decay}.*'
+        log.debug(f'Using regex: {regex}')
 
-        log.debug(f'Using regex: {self.regex}')
+        data['regex'] = regex
 
-        return self
+        return data 
 # ----------------------
 def _get_conf() -> Conf:
     '''
