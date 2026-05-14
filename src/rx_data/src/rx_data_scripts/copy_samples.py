@@ -67,12 +67,11 @@ def _parse_args():
     parser.add_argument('-t', '--tout', type=      int, help='Timeout, used to check if server is reachable', default = 10)
     parser.add_argument('-S', '--serv', type=      str, help='Sever number, e.g. 001', default = '')
     parser.add_argument('-v', '--vers', type=      str, help='Version of files, only makes sense if kind is not "all"')
-    parser.add_argument('-H', '--host', type=_get_host, help='Server from which files will be transferred', choices = ['IHEP', 'LOCAL'], default = 'IHEP')
+    parser.add_argument('-H', '--host', type=      str, help='Server from which files will be transferred', choices = ['IHEP', 'LOCAL'], default = 'IHEP')
     parser.add_argument('-d', '--dry' ,           help='If used, will do not copy files', action='store_true')
     args = parser.parse_args()
 
     Data.serv = args.serv
-    Data.host = args.host
     Data.kind = args.kind
     Data.proj = args.proj
     Data.conf = gut.load_conf(package='rx_data_data', fpath=f'copy_files/{args.proj}.yaml')
@@ -81,6 +80,7 @@ def _parse_args():
     Data.nprc = args.nprc
     Data.timeout        = args.tout
     Data.skipped_friend = args.skip
+    Data.host           = _get_host(args.host)
 
     LogStore.set_level('rx_data:copy_samples', args.logl)
 # ----------------------
