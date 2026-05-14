@@ -65,20 +65,22 @@ def _get_conf() -> Conf:
         formatter_class= argparse.RawDescriptionHelpFormatter,
         description    = textwrap.dedent(__doc__).strip())
 
-    parser.add_argument('-r', '--regex'  , type=str, help='Regular expression to match files to be moved', required=True)
-    parser.add_argument('-d', '--dry'    , action='store_true', help='If used, will do a dry run, e.g. not move files')
+    parser.add_argument('-r', '--regex'  , type=str, help='Regular expression to match files to be moved', required=False)
+    parser.add_argument('-e', '--etype'  , type=int, help='Event type of sample to move, 0 for data'     , required=False)
     parser.add_argument('-s', '--source' , type=str, help='Name of project to move files from, e.g. rk'  , required=True)
     parser.add_argument('-t', '--target' , type=str, help='Name of target project'                       , required=True)
     parser.add_argument('-l', '--loglvl' , type=int, help='Logging level'                                , default=20) 
+    parser.add_argument('-d', '--dry'    , action='store_true', help='If used, will do a dry run, e.g. not move files')
     args = parser.parse_args()
 
     LogStore.set_level('rx_data:move_sample', args.loglvl)
 
     return Conf(
-        regex =args.regex,
-        dry   =args.dry,
-        source=args.source,
-        target=args.target)
+        regex = args.regex,
+        etype = args.etype,
+        dry   = args.dry,
+        source= args.source,
+        target= args.target)
 # ----------------------
 def _get_paths(cfg : Conf) -> tuple[list[Path], list[Path]]:
     '''
