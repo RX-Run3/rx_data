@@ -358,7 +358,8 @@ class Sample(BaseModel):
             target_path = ana_dir / f'Data/{trigger.project}/main'
             hsh         = hashing.hash_object([self.name])
             component   = Component.from_event_type(etype = self.event_type)
-            file_name   = f'mc_{self.polarity}_{self.event_type}_{component}_{trigger}_{hsh}.root'
+            sample      = component.sample.lower()
+            file_name   = f'mc_{self.polarity}_{self.event_type}_{sample}_{trigger}_{hsh}.root'
             target_path = target_path / f'latest/{file_name}'
 
             log.debug(f'Target path: {target_path}')
