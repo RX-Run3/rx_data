@@ -36,6 +36,7 @@ class Data:
     host    : str
     l_source: list[Path]
     timeout : int
+    serv    : str
 
     skipped_friend : str|None
     fcp            : FCopy
@@ -63,12 +64,14 @@ def _parse_args():
     parser.add_argument('-s', '--skip', type=      str, help='Friend tree to skip', choices=Data.l_kind)
     parser.add_argument('-l', '--logl', type=      int, help='Logger level', choices=[5, 10, 20, 30], default=20)
     parser.add_argument('-n', '--nprc', type=      int, help='Number of process to download with, with zero, will download all files at once', default=1)
-    parser.add_argument('-t', '--tout', type=      int, help='Timeout, used to check if server is reachable', default = 50)
+    parser.add_argument('-t', '--tout', type=      int, help='Timeout, used to check if server is reachable', default = 10)
+    parser.add_argument('-S', '--serv', type=      str, help='Sever number, e.g. 001', default = '')
     parser.add_argument('-v', '--vers', type=      str, help='Version of files, only makes sense if kind is not "all"')
     parser.add_argument('-H', '--host', type=_get_host, help='Server from which files will be transferred', choices = ['IHEP', 'LOCAL'], default = 'IHEP')
     parser.add_argument('-d', '--dry' ,           help='If used, will do not copy files', action='store_true')
     args = parser.parse_args()
 
+    Data.serv = args.serv
     Data.host = args.host
     Data.kind = args.kind
     Data.proj = args.proj
@@ -93,7 +96,7 @@ def _get_host(name : str) -> str:
     '''
     match name:
         case 'IHEP':
-            return 'campoverde@lxlogin.ihep.ac.cn'
+            return f'campoverde@lxlogin{Data.serv}.ihep.ac.cn'
         case 'LOCAL':
             return ''
         case _:
@@ -217,7 +220,9 @@ def _copy_sample(source : Path) -> int:
     target= Data.out_dir/source.name
 
     if not hasattr(Data, 'fcp'):
-        Data.fcp = FCopy(source=Data.host, timeout = Data.timeout)
+        Data.fcp = FCopy(
+            source  = Data.host, 
+            timeout = Data.timeout)
 
     Data.copied_files += 1
     Data.copied_size  += source.stat().st_size / 1_000_000_000
