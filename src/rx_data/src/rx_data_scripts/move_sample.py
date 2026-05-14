@@ -15,21 +15,43 @@ import re
 import shutil
 import textwrap
 import argparse
-from dataclasses           import dataclass
-from pathlib               import Path
-from dmu.logging.log_store import LogStore
+
+from pathlib      import Path
+from dmu          import LogStore
+from pydantic     import BaseModel, model_validator
+from ap_utilities import decay_utilities
 
 log=LogStore.add_logger('rx_data:move_sample')
 # ----------------------
-@dataclass
-class Conf:
+class Conf(BaseModel):
     '''
     Data class meant to contain configuration
     '''
-    regex   : str
+    regex   : str | None = None
+    etype   : int | None = None
     source  : str
     target  : str
     dry     : bool 
+    # --------------------------------------
+    @model_validator(mode = 'after')
+    def validate_fields(self) -> 'Conf':
+        '''
+        Validates fields
+        '''
+        if self.regex:
+            return self
+
+        if not self.etype:
+            raise ValueError('Neither regular expression nor event type passed')
+
+        name = decay_utilities.read_decay_name(event_type=self.etype)
+        decay= name.lower()
+
+        self.regex = fr'.*{decay}.*'
+
+        log.debug(f'Using regex: {self.regex}')
+
+        return self
 # ----------------------
 def _get_conf() -> Conf:
     '''
