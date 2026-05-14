@@ -77,9 +77,10 @@ class FCopy:
                  '-o', 'StrictHostKeyChecking=no', server, 
                  '/bin/true'],
                 capture_output= True,
+                check         = False,
                 timeout       = self._timeout)
-        except subprocess.TimeoutExpired:
-            raise ValueError(f'Timeout, cannot access: {server}')
+        except subprocess.TimeoutExpired as exc:
+            raise ValueError(f'Timeout, cannot access: {server}') from exc
 
         code = result.returncode
         if code != 0:
