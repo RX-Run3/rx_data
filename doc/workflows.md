@@ -175,6 +175,20 @@ Then open your browser at `http://localhost:3100`.
 
 ---
 
+## Making the config file in the server
+
+Generate a token in the browser and then use it with:
+
+```bash
+cat > ~/.config/flowo/config.toml << EOF
+FLOWO_HOST = "http://localhost:3100"
+FLOWO_USER_TOKEN = "flw_GlYaCLMz1flA_x8N90w5DOmg1a-gRQ9I6zfR3oO2Tas"
+FLOWO_WORKING_PATH = "/publicfs/ucas/user/campoverde"
+EOF
+```
+
+in the server (e.g. lxplus)
+
 ## Restarting After a Session (containers already exist)
 
 If containers exist but are stopped:
