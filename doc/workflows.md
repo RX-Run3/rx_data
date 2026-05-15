@@ -175,16 +175,6 @@ Then open your browser at `http://localhost:3100`.
 
 ---
 
-## Making the config file in the server
-
-In the browser, after logging in, create a token and use it to generate a config with:
-
-```bash
-flowo --generate-config --host http://localhost:3100 --working-path /publicfs/ucas/user/campoverde --token flw_GlYaCLMz1flA_x8N90w5DOmg1a-gRQ9I6zfR3oO2Tas
-```
-
-in the server (e.g. lxplus)
-
 ## Restarting After a Session (containers already exist)
 
 If containers exist but are stopped:
