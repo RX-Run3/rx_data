@@ -1,13 +1,11 @@
 import os
 
-
 ENV       = 'rx_run3'
-HOME      = os.environ['HOME']
-LOGDIR    = os.environ['SMKLOG']
-ANADIR    = os.environ['ANADIR']
+HOME      = config['defaults']['home']
+LOGDIR    = config['defaults']['smklog']
+ANADIR    = config['defaults']['anadir']
 CHUNK     = config['defaults']['chunk_size']
 _SENTINEL = f'{ANADIR}/tmp/sentinels/friends/{{project}}/{{friend}}/{{vers}}/part_{{part}}.done'
-
 # ──────────────────────────────────────────────────────────────────────
 def _get_setting(wc, name):
     friend = getattr(wc,  'friend')
