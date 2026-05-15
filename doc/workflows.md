@@ -171,9 +171,19 @@ ssh -L 3100:localhost:3100 campoverde@lxlogin002.ihep.ac.cn
 
 Then open your browser at `http://localhost:3100`.
 
-> 80 is the port Caddy listens on on the server 3100 is the local port on your laptop (chosen to avoid conflicts — you can use any free port).
+> 1300 is the port Caddy listens on on the server 3100 is the local port on your laptop (chosen to avoid conflicts — you can use any free port).
 
 ---
+
+## Making the config file in the server
+
+In the browser, after logging in, create a token and use it to generate a config with:
+
+```bash
+flowo --generate-config --host http://localhost:3100 --working-path /publicfs/ucas/user/campoverde --token flw_GlYaCLMz1flA_x8N90w5DOmg1a-gRQ9I6zfR3oO2Tas
+```
+
+in the server (e.g. lxplus)
 
 ## Restarting After a Session (containers already exist)
 
@@ -192,9 +202,9 @@ podman start flowo_app
 
 ```
 You (browser)
-    │  port 3100 (laptop) → port 80 (server, SSH tunnel)
+    │  port 3100 (laptop) → port 3100 (server, SSH tunnel)
     ▼
-Caddy  (inside flowo_app, port 80)
+Caddy  (inside flowo_app, port 3100)
     │  port 8000
     ▼
 FastAPI  (inside flowo_app, port 8000)
