@@ -166,7 +166,7 @@ You should see `flowo_db` and `flowo_app` both with status `Up`.
 Open an SSH tunnel:
 
 ```bash
-ssh -L 3100:localhost:80 campoverde@lxlogin002.ihep.ac.cn
+ssh -L 3100:localhost:3100 campoverde@lxlogin002.ihep.ac.cn
 ```
 
 Then open your browser at `http://localhost:3100`.
