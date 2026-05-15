@@ -1,5 +1,5 @@
 defaults:
-  chunk_size : 100_000
+  chunk_size : 20_000
 # ------------
 projects:
   rk:
