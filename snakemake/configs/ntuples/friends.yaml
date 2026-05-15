@@ -23,30 +23,30 @@ projects:
       version     : v8
       parts       : 50
     smear: 
-      version     : v2
+      version     : v1
       parts       : 20
   # ------------
   rkst:
     brem_track_2: 
-      version     : v5
+      version     : v1
       parts       : 50
       photon_veto : v0
     hop: 
-      version     : v3
+      version     : v1
       parts       : 10
     mass: 
       version     : v1
       parts       : 10
     swp_cascade:
-      version     : v3
+      version     : v1
       parts       : 10
     swp_jpsi_misid:
-      version     : v3
+      version     : v1
       parts       : 10
     mva           : 
-      version     : v8
+      version     : v4
       parts       : 50
     smear: 
-      version     : v2
+      version     : v1
       parts       : 20
 # ------------
