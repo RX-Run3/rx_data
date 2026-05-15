@@ -36,6 +36,7 @@ class Data:
     host    : str
     l_source: list[Path]
     timeout : int
+    serv    : str
 
     skipped_friend : str|None
     fcp            : FCopy
@@ -63,13 +64,14 @@ def _parse_args():
     parser.add_argument('-s', '--skip', type=      str, help='Friend tree to skip', choices=Data.l_kind)
     parser.add_argument('-l', '--logl', type=      int, help='Logger level', choices=[5, 10, 20, 30], default=20)
     parser.add_argument('-n', '--nprc', type=      int, help='Number of process to download with, with zero, will download all files at once', default=1)
-    parser.add_argument('-t', '--tout', type=      int, help='Timeout, used to check if server is reachable', default = 50)
+    parser.add_argument('-t', '--tout', type=      int, help='Timeout, used to check if server is reachable', default = 10)
+    parser.add_argument('-S', '--serv', type=      str, help='Sever number, e.g. 001', default = '')
     parser.add_argument('-v', '--vers', type=      str, help='Version of files, only makes sense if kind is not "all"')
-    parser.add_argument('-H', '--host', type=_get_host, help='Server from which files will be transferred', choices = ['IHEP', 'LOCAL'], default = 'IHEP')
+    parser.add_argument('-H', '--host', type=      str, help='Server from which files will be transferred', choices = ['IHEP', 'LOCAL'], default = 'IHEP')
     parser.add_argument('-d', '--dry' ,           help='If used, will do not copy files', action='store_true')
     args = parser.parse_args()
 
-    Data.host = args.host
+    Data.serv = args.serv
     Data.kind = args.kind
     Data.proj = args.proj
     Data.conf = gut.load_conf(package='rx_data_data', fpath=f'copy_files/{args.proj}.yaml')
@@ -78,6 +80,7 @@ def _parse_args():
     Data.nprc = args.nprc
     Data.timeout        = args.tout
     Data.skipped_friend = args.skip
+    Data.host           = _get_host(args.host)
 
     LogStore.set_level('rx_data:copy_samples', args.logl)
 # ----------------------
@@ -93,7 +96,7 @@ def _get_host(name : str) -> str:
     '''
     match name:
         case 'IHEP':
-            return 'campoverde@lxlogin.ihep.ac.cn'
+            return f'campoverde@lxlogin{Data.serv}.ihep.ac.cn'
         case 'LOCAL':
             return ''
         case _:
@@ -103,7 +106,9 @@ def _is_right_trigger(path : Path) -> bool:
     l_trigger  = Data.conf.triggers
     _, trigger = ut.info_from_path(path)
 
-    return trigger in l_trigger
+    flag = str(trigger) in l_trigger
+
+    return flag
 # -----------------------------------------
 def _get_total_size(l_path : list[Path]) -> int:
     '''
@@ -128,17 +133,17 @@ def _get_source_paths() -> list[Path]:
     log.info(90 * '-')
     for l_identifier in d_samp.values():
         for identifier in l_identifier:
-            identifier    = str(identifier)
-            l_source_samp = [ source for source in Data.l_source if identifier in source.name and _is_right_trigger(source) ]
+            id_str        = str(identifier)
+            l_source_samp = [ source for source in Data.l_source if id_str in source.name and _is_right_trigger(source) ]
 
             npath     = len(l_source_samp)
             size      = _get_total_size(l_path=l_source_samp)
-            if not identifier.startswith('data'):
-                nickname = aput.read_decay_name(event_type=identifier)
+            if not id_str.startswith('data'):
+                nickname = aput.read_decay_name(event_type=id_str)
             else:
                 nickname = 'data' 
 
-            log.info(f'{nickname:<50}{identifier:<25}{npath:<10}{size:<20}')
+            log.info(f'{nickname:<50}{id_str:<25}{npath:<10}{size:<20}')
             l_source += l_source_samp
 
     log.info(90 * '-')
@@ -215,7 +220,9 @@ def _copy_sample(source : Path) -> int:
     target= Data.out_dir/source.name
 
     if not hasattr(Data, 'fcp'):
-        Data.fcp = FCopy(source=Data.host, timeout = Data.timeout)
+        Data.fcp = FCopy(
+            source  = Data.host, 
+            timeout = Data.timeout)
 
     Data.copied_files += 1
     Data.copied_size  += source.stat().st_size / 1_000_000_000

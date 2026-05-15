@@ -219,7 +219,7 @@ class Sample(BaseModel):
         Parameters
         --------------
         must_exist: If True will raise exception if it does not exist
-        directory : Local directory
+        directory : Local directory contained versioned directory with AP ntuples
 
         Returns
         --------------
@@ -303,7 +303,7 @@ class Sample(BaseModel):
         '''
         return self.data.PFNs()
     # ------------------------------
-    def _triggers_from_path(self, path : Path) -> set[Trigger]:
+    def _triggers_from_path(self, path : Path | str) -> set[Trigger]:
         '''
         Parameters
         ----------------
@@ -335,34 +335,39 @@ class Sample(BaseModel):
         Triggers associated to current sample
         '''
         triggers : set[Trigger] = set()
-        for path in self.paths[:10]:
+        for path in self.pfns[:10]:
             # In case one of the files does not get any entry
             # for a trigger, pick triggers in any of 10 files
             triggers = triggers | self._triggers_from_path(path = path)
 
-        return list(triggers)
+        trigger_list = list(triggers)
+        log.debug(f'Found triggers: {trigger_list}')
+
+        return trigger_list
     # ------------------------------
     @cached_property
-    def target_paths(self) -> list[Path]:
+    def target_paths(self) -> dict[Trigger,Path]:
         '''
         Returns
         --------------
-        Path to merged files expected for sample 
+        Dictionary mapping Hlt2 trigger to ntuple path associated to it
         '''
-        ana_dir            = Path(os.environ['ANADIR'])
-        paths : list[Path] = []
+        ana_dir                     = Path(os.environ['ANADIR'])
+        paths : dict[Trigger, Path] = {}
         for trigger in self.triggers:
             target_path = ana_dir / f'Data/{trigger.project}/main'
             hsh         = hashing.hash_object([self.name])
             component   = Component.from_event_type(etype = self.event_type)
-            file_name   = f'mc_{self.polarity}_{self.event_type}_{component}_{trigger}_{hsh}.root'
+            sample      = component.sample.lower()
+            file_name   = f'mc_{self.polarity}_{self.event_type}_{sample}_{trigger}_{hsh}.root'
             target_path = target_path / f'latest/{file_name}'
 
-            paths.append(target_path)
+            log.debug(f'Target path: {target_path}')
+            paths[trigger] = target_path
 
         return paths 
     # ------------------------------
-    @cached_property
+    @property
     def is_merged(self) -> bool:
         '''
         Parameters
@@ -373,8 +378,16 @@ class Sample(BaseModel):
         -------------
         True if all of the files exist
         '''
+        merged = True
+        for path in self.target_paths.values():
+            if path.exists():
+                log.debug(f'Found: {path}')
+                continue
 
-        return all(path.exists() for path in self.target_paths)
+            log.debug(f'Could not find: {path}')
+            merged = False
+
+        return merged
     # ------------------------------
     @classmethod
     def storage(cls, value : Path):
@@ -471,14 +484,17 @@ class ProductionConf(BaseModel):
 
     Attributes
     ----------------
-    versions: Map from group of samples to version, e.g. 'data_turbo_24c1 : v1r1670'
+    versions: Map from group of samples to version, e.g. 'ss_sata : v1r1670'
     samples : Dictionary with
-        key  : Name of group of samples, e.g. `data_turbo_24c1`
+        key  : Name of group of samples, e.g. `ss_data`
         value: Either:
             - List of samples as shown in AP, e.g.
                 - data_24_magdown_turbo_24c2
                 - data_24_magup_turbo_24c2
             - None, in which case all the samples would be picked
+    fractions: Dictionary with:
+        Key  : AP job name
+        Value: Fraction of data to pick
     '''
     versions : dict[str,str]
     samples  : dict[str,list[str] | None]

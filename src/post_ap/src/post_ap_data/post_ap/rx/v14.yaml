@@ -38,7 +38,7 @@ RKst:
     acceptance: L1_INMUON    && L2_INMUON    && H1_INMUON    && H2_INMUON
     cascade   : (1)
     jpsi_misid: (1)
-working_group: rd
+working_group: RD
 productions:
   rd_ap_2024:
     versions:

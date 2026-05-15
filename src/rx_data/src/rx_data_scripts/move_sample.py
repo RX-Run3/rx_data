@@ -15,21 +15,45 @@ import re
 import shutil
 import textwrap
 import argparse
-from dataclasses           import dataclass
-from pathlib               import Path
-from dmu.logging.log_store import LogStore
+
+from pathlib      import Path
+from dmu          import LogStore
+from pydantic     import BaseModel, model_validator
+from ap_utilities import decay_utilities
 
 log=LogStore.add_logger('rx_data:move_sample')
 # ----------------------
-@dataclass
-class Conf:
+class Conf(BaseModel):
     '''
     Data class meant to contain configuration
     '''
     regex   : str
+    etype   : int | None = None
     source  : str
     target  : str
     dry     : bool 
+    # --------------------------------------
+    @model_validator(mode = 'before')
+    @classmethod
+    def validate_fields(cls, data):
+        '''
+        Validates fields
+        '''
+        if data['regex'] is not None:
+            return data 
+
+        if data['etype'] is     None:
+            raise ValueError('Neither regular expression nor event type passed')
+
+        name = decay_utilities.read_decay_name(event_type=data['etype'])
+        decay= name.lower()
+        regex= fr'.*{decay}.*'
+
+        log.debug(f'Using regex: {regex}')
+
+        data['regex'] = regex
+
+        return data 
 # ----------------------
 def _get_conf() -> Conf:
     '''
@@ -43,20 +67,22 @@ def _get_conf() -> Conf:
         formatter_class= argparse.RawDescriptionHelpFormatter,
         description    = textwrap.dedent(__doc__).strip())
 
-    parser.add_argument('-r', '--regex'  , type=str, help='Regular expression to match files to be moved', required=True)
-    parser.add_argument('-d', '--dry'    , action='store_true', help='If used, will do a dry run, e.g. not move files')
+    parser.add_argument('-r', '--regex'  , type=str, help='Regular expression to match files to be moved', required=False)
+    parser.add_argument('-e', '--etype'  , type=int, help='Event type of sample to move, 0 for data'     , required=False)
     parser.add_argument('-s', '--source' , type=str, help='Name of project to move files from, e.g. rk'  , required=True)
     parser.add_argument('-t', '--target' , type=str, help='Name of target project'                       , required=True)
     parser.add_argument('-l', '--loglvl' , type=int, help='Logging level'                                , default=20) 
+    parser.add_argument('-d', '--dry'    , action='store_true', help='If used, will do a dry run, e.g. not move files')
     args = parser.parse_args()
 
     LogStore.set_level('rx_data:move_sample', args.loglvl)
 
     return Conf(
-        regex =args.regex,
-        dry   =args.dry,
-        source=args.source,
-        target=args.target)
+        regex = args.regex,
+        etype = args.etype,
+        dry   = args.dry,
+        source= args.source,
+        target= args.target)
 # ----------------------
 def _get_paths(cfg : Conf) -> tuple[list[Path], list[Path]]:
     '''
@@ -80,12 +106,13 @@ def _get_paths(cfg : Conf) -> tuple[list[Path], list[Path]]:
     l_dpath  = [ dpath for dpath in root_dir.rglob('*') if dpath.is_dir() ]
 
     if not l_fpath:
-        raise ValueError(f'No files found in: {root_dir}')
+        log.info(f'No dataset found for: {cfg.regex}')
+        return [], []
 
     nfile = len(l_fpath)
     ndirs = len(l_dpath)
 
-    log.info(f'Found {nfile} files and {ndirs} directories')
+    log.info(f'Found {nfile} files and {ndirs} directories for: {cfg.regex}')
 
     return l_fpath, l_dpath
 # ----------------------

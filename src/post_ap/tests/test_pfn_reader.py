@@ -54,15 +54,14 @@ def test_simple(nickname : str, expected : int):
 
     assert npfn == expected
 # -----------------------------
-@pytest.mark.parametrize('analysis', ['rk', 'rkst'])
-@pytest.mark.parametrize('sample'  , ['ss_mu', 'ss_md'])
-def test_real(analysis : str, sample : str):
+@pytest.mark.parametrize('sample', ['sim10g_ss'])
+def test_real(sample : str):
     '''
     Test simple reading
     '''
     data    = gut.load_data(
         package='post_ap_data', 
-        fpath  =f'post_ap/{analysis}/v4.yaml')
+        fpath  ='post_ap/rx/v15.yaml')
     cfg     = PFNReaderConf(**data)
 
     reader  = PFNReader(cfg=cfg)
@@ -118,33 +117,42 @@ def test_progress(sample : str):
 
     assert len(samples) > 0
 # -----------------------------
-@pytest.mark.parametrize('sample_name', ['sim10g_unfiltered'])
+@pytest.mark.parametrize('sample_name', ['all'])
 def test_merge(sample_name : str, tmp_path : Path):
     '''
     Test that sample container can be iterated
     '''
-    data    = gut.load_data(
-        package='post_ap_data', 
-        fpath  ='post_ap/rx/v15.yaml')
-    cfg     = PFNReaderConf(**data)
+    cfg_prod = ProductionConf(
+        versions = {'all' : 'v1r5849'},
+        samples  = {'all' : None},
+        fractions= dict(),
+    )
+
+    cfg     = PFNReaderConf(
+        working_group='RD',
+        productions  = {Production.rx_filter : cfg_prod},
+    )
 
     reader  = PFNReader(cfg=cfg)
     samples = reader.get_samples(
-        production=Production.rx_2024, 
+        production=Production.rx_filter, 
         nickname  =sample_name)
 
-    sample = samples[0]
-    with gut.environment(mapping = {'ANADIR' : str(tmp_path)}):
-        for path in sample.target_paths:
+    sample      = samples[0]
+    sample_copy = sample.model_copy(deep = True)
+    with gut.environment(mapping = {'ANADIR' : str(tmp_path)}),\
+         Sample.storage(value = tmp_path / 'downloaded'):
+        for path in sample.target_paths.values():
             assert not path.exists()
 
         assert not sample.is_merged
 
-        for path in sample.target_paths:
+        for path in sample.target_paths.values():
             path.parent.mkdir(parents = True, exist_ok = True)
             path.touch()
+            log.info(f'Making: {path}')
 
-        assert sample.is_merged
+        assert sample_copy.is_merged
 # -----------------------------
 @pytest.mark.parametrize('sample', ['sim10g_filtered', 'sim10g_unfiltered', 'sim10g_ss'])
 def test_polarity(sample : str):

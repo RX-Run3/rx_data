@@ -4,6 +4,7 @@ File with tests for SampleOrganizer class
 import os
 import pytest
 
+from functools   import cached_property
 from ROOT        import RDataFrame
 from ROOT.RDF    import RSnapshotOptions
 from pathlib     import Path
@@ -89,24 +90,26 @@ class TestSample:
 
         return [ self._make_file(file_name = f'test_{index:03}.root') for index in range(self._nfiles) ]
     # ------------------------------
-    def target_path(self, trigger : Trigger) -> Path:
+    @cached_property
+    def target_paths(self) -> dict[Trigger, Path]:
         '''
-        Parameters
-        --------------
-        trigger: HLT2 trigger
-
         Returns
         --------------
-        Path to merged file associated to this sample and trigger
-        i.e. after merging and splitting stage
+        Dictionary mapping trigger to path to ROOT file
         '''
-        ana_dir     = Path(os.environ['ANADIR'])
-        target_path = ana_dir / f'Data/{trigger.project}/main'
-        target_path = target_path / f'latest/{self.name}.root'
+        ana_dir  = Path(os.environ['ANADIR'])
+        paths : dict[Trigger,Path] = {}
+        for trigger in self._triggers:
+            target_path    = ana_dir / f'Data/{trigger.project}/main'
+            paths[trigger] = target_path / f'latest/{self.name}.root'
 
-        return target_path
+        if len(paths) == 0:
+            raise ValueError('No target paths found')
+
+        return paths 
     # ------------------------------
-    def is_merged(self, triggers : list[Trigger]) -> bool:
+    @property
+    def is_merged(self) -> bool:
         '''
         Parameters
         -------------
@@ -116,9 +119,16 @@ class TestSample:
         -------------
         True if all of the files exist
         '''
-        paths = [ self.target_path(trigger = trigger) for trigger in triggers ]
+        merged = True
+        for path in self.target_paths.values():
+            if path.exists():
+                log.info(f'Found: {path}')
+                continue
 
-        return all(path.exists() for path in paths)
+            log.info(f'Could not find: {path}')
+            merged = False
+
+        return merged
 # ------------------------------------
 @pytest.mark.parametrize('triggers', [[Trigger.rk_ee_os, Trigger.rkst_ee_os]])
 @pytest.mark.parametrize('dry_run' , [True, False])
@@ -172,16 +182,16 @@ def test_skip_done(
     i.e. caching behavior
     '''
     with gut.environment(mapping = {'ANADIR' : str(tmp_path)}):
-         sample      = TestSample(
+        sample      = TestSample(
             name     = 'test_sample',
             nfiles   = 3,
             storage  = tmp_path,
             triggers = triggers)
 
-         org = SampleOrganizer(
-             cleanup = False,
-             storage = tmp_path,
-             dry_run = False)
+        org = SampleOrganizer(
+            cleanup = False,
+            storage = tmp_path,
+            dry_run = False)
 
-         assert     org.organize(sample = sample)
-         assert not org.organize(sample = sample)
+        assert     org.organize(sample = sample)
+        assert not org.organize(sample = sample)

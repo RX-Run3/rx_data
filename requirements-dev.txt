@@ -4,6 +4,7 @@ pytest-split
 pytest-xdist
 pytest-benchmark
 pre-commit
+ruff
 -e src/ap_utilities
 -e src/dmu
 -e src/ecal_calibration
