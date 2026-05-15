@@ -10,6 +10,54 @@ This documentation explains:
 
 # Available workflows
 
+## Friend trees
+
+For this run:
+
+```bash
+snakemake -s snakemake/rules/ntuples/friends.smk --configfile snakemake/configs/ntuples/friends.yaml -c 10
+```
+
+where the trees are:
+
+- `mass`: The candidates masses are recalculated assuming that the two leptons are pions and kaons. Needed for misID studies.
+
+- `swp_jpsi_misid`: Branches corresponding to lepton kaon swaps that make the resonant mode leak into rare modes. Where the swap is inverted and the $J/\psi$ mass provided
+
+- `swp_cascade`: Branches corresponding to $D\to K\pi$ with $\pi\to\ell$ swaps, where the swap is inverted and the $D$ mass provided.
+
+- `hop`: With the $\alpha$ and mass branches calculated
+
+- `brem_track_2`: This will calculate branches associated to the brem correction. 
+    The branches will include:
+    - Masses of B and Jpsi.
+    - Momenta of mesons and electrons.
+    - Derived quantities like `DIRA` or the `brem` categories.
+
+- `mva`: With the BDT branches 
+- `smear`: This will calculate the smeared masses `B_Mass_smr` and `Jpsi_Mass_smr` and `q2_smr`.
+
+and they depend on each other as:
+
+```mermaid
+graph TD
+  mass([mass])
+  swp_jpsi_misid([swp_jpsi_misid])
+  swp_cascade([swp_cascade])
+  hop([hop])
+  brem_track_2([brem_track_2])
+  smear([smear])
+  mva([mva])
+
+  brem_track_2 -->|needs corrected masses| smear
+  brem_track_2 -->|training on brem features| mva
+  hop -->|required by mva| mva
+  smear -->|q² wise models from smeared q²| mva
+```
+
+The workflow will take care of everything. The user should only have to check the `yaml` config file
+and update it.
+
 ## Ntuple transfers
 
 Run:
