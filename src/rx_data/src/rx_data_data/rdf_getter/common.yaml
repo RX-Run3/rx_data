@@ -10,6 +10,11 @@ redefinitions:
   q2_smr        : smear.q2_smr
 definitions:
   common: &common
+    Jpsi_DTF_HEAD_PE  : B_DTF_HEAD_fix_Jpsi_FOURMOMENTUME
+    Jpsi_DTF_HEAD_PX  : B_DTF_HEAD_fix_Jpsi_FOURMOMENTUMX
+    Jpsi_DTF_HEAD_PY  : B_DTF_HEAD_fix_Jpsi_FOURMOMENTUMY
+    Jpsi_DTF_HEAD_PZ  : B_DTF_HEAD_fix_Jpsi_FOURMOMENTUMZ
+
     L1_FMX            : L1_STATEAT_FirstMeasurement_positionX
     L1_FMY            : L1_STATEAT_FirstMeasurement_positionY
     L1_TRACK_ETA      : ROOT::Math::XYZVector lep(L1_TRACK_PX, L1_TRACK_PY, L1_TRACK_PZ); return lep.eta();
