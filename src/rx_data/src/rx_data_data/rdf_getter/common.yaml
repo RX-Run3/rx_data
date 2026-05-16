@@ -42,6 +42,8 @@ definitions:
     Jpsi_DTF_HEAD_PY  : B_DTF_HEAD_fix_Jpsi_FOURMOMENTUMY
     Jpsi_DTF_HEAD_PZ  : B_DTF_HEAD_fix_Jpsi_FOURMOMENTUMZ
 
+    B_const_mass_M_old       : B_DTF_Jpsi_MASS           
+    B_const_mass_psi2S_M_old : B_DTF_Psi2S_MASS           
     # ----------------
     # Photon conversion
     # ----------------
