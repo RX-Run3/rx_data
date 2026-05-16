@@ -4,8 +4,8 @@ Module holding FCopy class
 import shutil
 import subprocess
 
-from pathlib import Path
-from dmu     import LogStore
+from pathlib                import Path
+from dmu.logging.log_store  import LogStore
 
 log=LogStore.add_logger('dmu:fsystem:fcopy')
 # ----------------------
@@ -60,8 +60,10 @@ class FCopy:
 
         self._source = source
         self._target = target 
-        self._server = None
         self._timeout= timeout
+
+        self._server      = None
+        self._socket_path = None
 
         self._check_utility(name='rsync')
         self._check_utility(name='ssh'  )
@@ -117,17 +119,19 @@ class FCopy:
         if not server:
             return
 
+        socket_path = f'/tmp/cm-{server}.sock'
+
         log.debug(f'Opening connection to: {server}')
-        self._socket_path = f'/tmp/cm-{server}.sock'
         subprocess.run([
             'ssh',  '-MNf',
             '-o' ,  'ControlMaster=yes',
             '-o' ,  'ControlPersist=10m',
-            '-o' , f'ControlPath={self._socket_path}',
+            '-o' , f'ControlPath={socket_path}',
             server
         ], check=True)
 
-        self._server = server
+        self._server      = server
+        self._socket_path = socket_path
     # ----------------------
     def _close_master_connection(self) -> None:
         if not self._server:
