@@ -2,17 +2,14 @@
 Module containing HOPVarCalculator class
 '''
 import math
-from typing import Union
-
 import numpy
-from ROOT                   import RDF  # type: ignore
-from ROOT.Math              import LorentzVector, XYZVector # type: ignore
-from dmu.logging.log_store  import LogStore
-from rx_common              import Project, info
+
+from ROOT       import RDF  # type: ignore
+from ROOT.Math  import LorentzVector, XYZVector # type: ignore
+from dmu        import LogStore
+from rx_common  import Project, Trigger
 
 log = LogStore.add_logger('rx_data:hop_calculator')
-
-Vector=Union[LorentzVector, XYZVector]
 # -------------------------------
 class HOPCalculator:
     '''
