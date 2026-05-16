@@ -7,49 +7,49 @@ defaults:
 projects:
   rk:
     brem_track_2: 
-      version     : v5
+      version     : v4
       parts       : 50
       photon_veto : v0
     hop: 
-      version     : v3
+      version     : v4
       parts       : 10
     mass: 
-      version     : v1
+      version     : v2
       parts       : 10
     swp_cascade:
-      version     : v3
+      version     : v4
       parts       : 10
     swp_jpsi_misid:
-      version     : v3
+      version     : v4
       parts       : 10
     mva           : 
-      version     : v8
+      version     : v9
       parts       : 50
     smear: 
-      version     : v1
+      version     : v2
       parts       : 20
   # ------------
   rkst:
     brem_track_2: 
-      version     : v1
+      version     : v2
       parts       : 50
       photon_veto : v0
     hop: 
-      version     : v1
+      version     : v2
       parts       : 10
     mass: 
-      version     : v1
+      version     : v2
       parts       : 10
     swp_cascade:
-      version     : v1
+      version     : v2
       parts       : 10
     swp_jpsi_misid:
-      version     : v1
+      version     : v2
       parts       : 10
     mva           : 
-      version     : v4
+      version     : v5
       parts       : 50
     smear: 
-      version     : v1
+      version     : v2
       parts       : 20
 # ------------
