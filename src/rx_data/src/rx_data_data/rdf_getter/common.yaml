@@ -10,6 +10,18 @@ redefinitions:
   q2_smr        : smear.q2_smr
 definitions:
   common: &common
+    B_const_mass_psi2S_M  : B_DTF_Psi2S_fix_HEAD_MASS
+    B_const_mass_psi2S_PX : B_DTF_Psi2S_fix_HEAD_FOURMOMENTUME
+    B_const_mass_psi2S_PY : B_DTF_Psi2S_fix_HEAD_FOURMOMENTUMX
+    B_const_mass_psi2S_PZ : B_DTF_Psi2S_fix_HEAD_FOURMOMENTUMY
+    B_const_mass_psi2S_PE : B_DTF_Psi2S_fix_HEAD_FOURMOMENTUMZ
+
+    B_const_mass_M        : B_DTF_Jpsi_fix_HEAD_MASS
+    B_const_mass_PX       : B_DTF_Jpsi_fix_HEAD_FOURMOMENTUME
+    B_const_mass_PY       : B_DTF_Jpsi_fix_HEAD_FOURMOMENTUMX
+    B_const_mass_PZ       : B_DTF_Jpsi_fix_HEAD_FOURMOMENTUMY
+    B_const_mass_PE       : B_DTF_Jpsi_fix_HEAD_FOURMOMENTUMZ
+
     Jpsi_DTF_HEAD_PE  : B_DTF_HEAD_fix_Jpsi_FOURMOMENTUME
     Jpsi_DTF_HEAD_PX  : B_DTF_HEAD_fix_Jpsi_FOURMOMENTUMX
     Jpsi_DTF_HEAD_PY  : B_DTF_HEAD_fix_Jpsi_FOURMOMENTUMY
