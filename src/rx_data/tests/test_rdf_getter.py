@@ -104,7 +104,7 @@ def initialize():
     LogStore.set_level('rx_data:spec_maker'     , 10)
     LogStore.set_level('rx_data:sample_emulator', 10)
 
-    plt.style.use(mplhep.style.LHCb2)
+    plt.style.use(mplhep.style.LHCb2) # type: ignore
 # ------------------------------------------------
 def _check_truem_columns(rdf : RDF.RNode):
     l_name = [ name.c_str() for name in rdf.GetColumnNames() if name.c_str().endswith('_TRUEM') ]
