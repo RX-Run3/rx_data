@@ -140,7 +140,7 @@ def _get_source_paths() -> list[Path]:
             npath     = len(l_source_samp)
             size      = _get_total_size(l_path=l_source_samp)
             if not id_str.startswith('data'):
-                nickname = aput.read_decay_name(event_type=id_str)
+                nickname = decay_utilities.read_decay_name(event_type=id_str)
             else:
                 nickname = 'data' 
 
@@ -170,7 +170,7 @@ def _get_version(kind : str) -> str:
     if not knd_dir.exists():
         raise ValueError(f'Cannot find {knd_dir}, likely PFS was not mounted')
 
-    vers    = get_last_version(dir_path = knd_dir, version_only=True)
+    vers = vman.get_last_version(dir_path = knd_dir, version_only=True)
 
     log.debug(f'Latest version {vers} found in {knd_dir}')
 
