@@ -24,7 +24,10 @@ def initialize():
     LogStore.set_level('rx_data:test_swp_calculator', 10)
     LogStore.set_level('rx_data:rdf_getter'         , 10)
 
-    plt.style.use(mplhep.style.LHCb2)
+    plt.style.use(mplhep.style.LHCb2) # type: ignore
+    
+    with RDFGetter.only_friends(s_friend = set()):
+        yield
 # ----------------------
 def _get_hadron_mapping(trigger : Trigger) -> dict[str,int]:
     '''
