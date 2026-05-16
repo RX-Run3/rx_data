@@ -21,7 +21,7 @@ class HOPCalculator:
     def __init__(
         self, 
         rdf    : RDF.RNode,
-        trigger: str):
+        trigger: Trigger):
         '''
         Parameters
         -----------------
@@ -33,7 +33,7 @@ class HOPCalculator:
         self._trigger       = trigger
         self._extra_branches= ['EVENTNUMBER', 'RUNNUMBER']
     # -------------------------------
-    def _val_to_vector(self, arr_val : numpy.ndarray, ndim : int) -> Vector:
+    def _val_to_vector(self, arr_val : numpy.ndarray, ndim : int):
         if   ndim == 4:
             [px, py, pz, pe] = arr_val.tolist()
             vector = LorentzVector('ROOT::Math::PxPyPzE4D<double>')(px, py, pz, pe)
@@ -45,7 +45,7 @@ class HOPCalculator:
 
         return vector
     # -------------------------------
-    def _get_xvector(self, name : str, ndim : int) -> list[Vector]:
+    def _get_xvector(self, name : str, ndim : int) -> list:
         '''
         Parameters
         -----------------
@@ -56,7 +56,8 @@ class HOPCalculator:
         -----------------
         List of vectors in dataframe, associated to object
         '''
-        project  = info.project_from_trigger(trigger=self._trigger, lower_case=True)
+        project = self._trigger.project
+
         if   name == 'Hadrons' and project in [Project.rkst, Project.rkst_no_pid]:
             l_h1 = self._get_xvector(name='H1_P', ndim=ndim)
             l_h2 = self._get_xvector(name='H2_P', ndim=ndim)
