@@ -12,7 +12,7 @@ from ROOT         import RDataFrame, TFileMerger, TFile, TTree, RDF # type: igno
 from dmu          import LogLevels, LogStore
 
 from rx_q2        import Q2SmearCorrector
-from rx_common    import Component, Project, info, MissingComponent
+from rx_common    import Component, Project, Trigger, info, MissingComponent
 from rx_data      import utilities
 from rx_data      import NtuplePartitioner
 from rx_data      import MVACalculator
@@ -189,7 +189,7 @@ def _process_rdf(
 
     return rdf
 # ----------------------
-def _get_smear_rdf(rdf : RDF.RNode, trigger : str) -> RDF.RNode:
+def _get_smear_rdf(rdf : RDF.RNode, trigger : Trigger) -> RDF.RNode:
     '''
     Parameters
     -------------
@@ -207,7 +207,7 @@ def _get_smear_rdf(rdf : RDF.RNode, trigger : str) -> RDF.RNode:
 
     return rdf
 # ----------------------
-def _get_swap_rdf(rdf : RDF.RNode, trigger : str) -> RDF.RNode:
+def _get_swap_rdf(rdf : RDF.RNode, trigger : Trigger) -> RDF.RNode:
     '''
     Parameters
     -------------
@@ -218,11 +218,8 @@ def _get_swap_rdf(rdf : RDF.RNode, trigger : str) -> RDF.RNode:
     -------------
     ROOT dataframe with the swap masses
     '''
-    # TODO: Remove the SS condition for the SWPCalculator
-    # When the data ntuples with fixed descriptor be ready
-    is_ss   = 'SameSign' in trigger
-    lep_id  = 11 if info.is_ee(trigger=trigger) else 13
-    project = info.project_from_trigger(trigger=trigger, lower_case=True)
+    lep_id  = 11 if trigger.is_electron else 13
+    project = trigger.project
 
     log.info(f'Found project {project} for trigger {trigger}')
 
@@ -231,7 +228,7 @@ def _get_swap_rdf(rdf : RDF.RNode, trigger : str) -> RDF.RNode:
     kaon_name = {'rk' : 'H', 'rkst' : 'H2'}[project]
     if Data.kind == 'swp_jpsi_misid':
         obj = SWPCalculator(rdf=rdf, d_lep={'L1' : lep_id, 'L2' : lep_id}, d_had={kaon_name : lep_id})
-        rdf = obj.get_rdf(preffix=Data.kind, progress_bar=Data.pbar, use_ss=is_ss)
+        rdf = obj.get_rdf(preffix=Data.kind, progress_bar=Data.pbar, use_ss=trigger.is_ss)
 
         return rdf
 
@@ -239,7 +236,7 @@ def _get_swap_rdf(rdf : RDF.RNode, trigger : str) -> RDF.RNode:
     kaon_name = {'rk' : 'H', 'rkst' : 'H1'}[project]
     if Data.kind == 'swp_cascade':
         obj = SWPCalculator(rdf=rdf, d_lep={'L1' : 211, 'L2' : 211}, d_had={kaon_name : 321})
-        rdf = obj.get_rdf(preffix=Data.kind, progress_bar=Data.pbar, use_ss=is_ss)
+        rdf = obj.get_rdf(preffix=Data.kind, progress_bar=Data.pbar, use_ss=trigger.is_ss)
 
         return rdf
 
