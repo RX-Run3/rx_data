@@ -4,8 +4,8 @@ Module holding FCopy class
 import shutil
 import subprocess
 
-from pathlib               import Path
-from dmu.logging.log_store import LogStore
+from pathlib import Path
+from dmu     import LogStore
 
 log=LogStore.add_logger('dmu:fsystem:fcopy')
 # ----------------------
@@ -18,18 +18,27 @@ class FCopy:
 
     Usage:
 
-    ````
+    ````python
     from dmu import FCopy
 
-    fcp = FCopy(source='userA@serverA', target='userB@serverB')
-    fcp.copy(source='/home/userA/path/file1', target='/home/userB/path/file1') 
+    with FCopy(source='userA@serverA') as fcp
+        fcp.copy(source='/home/userA/path/file1', target='/home/userB/path/file1') 
     ````
 
-    Will copy a file given the paths, from one server to another.
+    Will copy a file given the paths, from one remove server to a local path.
+    While:
 
-    The connection must be possible without passwords, i.e. with key pairs
-    By default source and target in initializer are empty strings and the
-    files are assumed to be local
+    ````python
+    from dmu import FCopy
+
+    with FCopy(target='userA@serverA') as fcp
+        fcp.copy(source='/home/userA/path/file1', target='/home/userB/path/file1') 
+    ````
+
+    will copy a local file to a remote server.
+    Master control has to be enable for the remove server.
+
+    If no source or target are set, the copy is local, i.e. within the same machine.
     '''
     # ----------------------
     def __init__(
