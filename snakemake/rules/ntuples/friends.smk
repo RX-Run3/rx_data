@@ -50,9 +50,6 @@ rule _base:
         err = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}_{{part}}.err',
         out = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}_{{part}}.out',
         LOG = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}_{{part}}.log',
-    resources:
-        htcondor_request_mem_mb  = 4000,
-        htcondor_request_disk_mb = 2000,
     params:
         LOGD      = LOGDIR,
         phot_veto = lambda wc: _get_setting(wc, 'photon_veto'),
@@ -89,24 +86,41 @@ use rule _base as run_independent with:
     '''Request trees that do not depend on anything'''
     output:
         done   = _SENTINEL
+    resources:
+        htcondor_request_mem_mb  = 4000,
+        htcondor_request_disk_mb = 2000,
     wildcard_constraints:
-        friend = '(mass|swp_jpsi_misid|swp_cascade|brem_track_2|hop)',
+        friend = '(mass|swp_jpsi_misid|swp_cascade|hop)',
         vers   = r'v\d+',
-
+use rule _base as brem_track_2 with:
+    '''Request brem_track_2 trees'''
+    output:
+        done   = _SENTINEL
+    resources:
+        htcondor_request_mem_mb  = 6000,
+        htcondor_request_disk_mb = 2000,
+    wildcard_constraints:
+        friend = 'brem_track_2',
+        vers   = r'v\d+',
 use rule _base as smear with:
     '''Request mass smearing trees'''
     output:
         done = _SENTINEL
+    resources:
+        htcondor_request_mem_mb  = 4000,
+        htcondor_request_disk_mb = 2000,
     wildcard_constraints:
         friend = 'smear',
         vers   = r'v\d+',
     input:
         sentinels(friend = 'brem_track_2')
-
 use rule _base as mva with:
     '''Request mva trees'''
     output:
         done = _SENTINEL
+    resources:
+        htcondor_request_mem_mb  = 4000,
+        htcondor_request_disk_mb = 2000,
     wildcard_constraints:
         friend = 'mva',
         vers   = r'v\d+',
