@@ -25,7 +25,14 @@ from rx_data        import collector as col
 from rx_data        import RDFGetter
 from rx_common      import Trigger
 
-_INCLUSIVE_SAMPLES = [
+_RESONANT_SAMPLES : Final[list[tuple[Component,Trigger]]] = [
+    (Component.bpkpjpsiee    , Trigger.rk_ee_os  ),
+    (Component.bdkstkpijpsiee, Trigger.rkst_ee_os),
+    (Component.bpkpjpsimm    , Trigger.rk_mm_os  ),
+    (Component.bdkstkpijpsimm, Trigger.rkst_mm_os),
+]
+
+_INCLUSIVE_SAMPLES : Final[list[tuple[Component,Trigger]]] = [
     (Component.bdjpsixee, Trigger.rk_ee_os),
     (Component.bpjpsixee, Trigger.rk_ee_os),
     (Component.bsjpsixee, Trigger.rk_ee_os),
