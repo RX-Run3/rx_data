@@ -74,7 +74,7 @@ def test_local(tmp_path : Path) -> None:
     l_target = _make_paths(dir=tmp_path / 'target', make_file=False, number=10)
 
     fcp = FCopy()
-    for source, target in zip(l_source, l_target):
+    for source, target in zip(l_source, l_target, strict = True):
         fcp.copy(source=source, target=target)
 # ----------------------
 def test_remote_target(tmp_path : Path, user : str) -> None:
