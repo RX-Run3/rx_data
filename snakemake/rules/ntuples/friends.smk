@@ -119,7 +119,7 @@ use rule _base as mva with:
     output:
         done = _SENTINEL
     resources:
-        htcondor_request_mem_mb  = 4000,
+        htcondor_request_mem_mb  = 5000,
         htcondor_request_disk_mb = 2000,
     wildcard_constraints:
         friend = 'mva',
