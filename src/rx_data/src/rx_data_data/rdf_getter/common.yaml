@@ -1,6 +1,5 @@
 # This config file is used to configure the behaviour of RDFGetter
 
-#If a column ins not found in a dataframe, it will be added according to the following definitions
 redefinitions:
   block         : 'block < 0 ? 0 : block'                   # This is needed to process pre-UT data as Block 0 data, temporary. Ntuples from post_ap already 
   q2            : Jpsi_M_brem_track_2 * Jpsi_M_brem_track_2 # have q2 calculated without correction use brem_track_2 in definition to keep skipping code simple
@@ -8,19 +7,32 @@ redefinitions:
   B_Mass_smr    : smear.B_Mass_smr                          # Same as above, additionally, B_Mass_smr does not exist already, but
   Jpsi_Mass_smr : smear.Jpsi_Mass_smr                       # ROOT recognizes smear.B_Mass_smr == B_Mass_smr, so a definition alone does not work
   q2_smr        : smear.q2_smr
-definitions:
-  common: &common
-    B_const_mass_psi2S_M  : B_DTF_Psi2S_fix_HEAD_MASS
-    B_const_mass_psi2S_PX : B_DTF_Psi2S_fix_HEAD_FOURMOMENTUME
-    B_const_mass_psi2S_PY : B_DTF_Psi2S_fix_HEAD_FOURMOMENTUMX
-    B_const_mass_psi2S_PZ : B_DTF_Psi2S_fix_HEAD_FOURMOMENTUMY
-    B_const_mass_psi2S_PE : B_DTF_Psi2S_fix_HEAD_FOURMOMENTUMZ
 
-    B_const_mass_M        : B_DTF_Jpsi_fix_HEAD_MASS
-    B_const_mass_PX       : B_DTF_Jpsi_fix_HEAD_FOURMOMENTUME
-    B_const_mass_PY       : B_DTF_Jpsi_fix_HEAD_FOURMOMENTUMX
-    B_const_mass_PZ       : B_DTF_Jpsi_fix_HEAD_FOURMOMENTUMY
-    B_const_mass_PE       : B_DTF_Jpsi_fix_HEAD_FOURMOMENTUMZ
+  B_const_mass_psi2S_M  : B_DTF_Psi2S_fix_HEAD_MASS
+  B_const_mass_psi2S_PX : B_DTF_Psi2S_fix_HEAD_FOURMOMENTUME
+  B_const_mass_psi2S_PY : B_DTF_Psi2S_fix_HEAD_FOURMOMENTUMX
+  B_const_mass_psi2S_PZ : B_DTF_Psi2S_fix_HEAD_FOURMOMENTUMY
+  B_const_mass_psi2S_PE : B_DTF_Psi2S_fix_HEAD_FOURMOMENTUMZ
+
+  B_const_mass_M        : B_DTF_Jpsi_fix_HEAD_MASS
+  B_const_mass_PX       : B_DTF_Jpsi_fix_HEAD_FOURMOMENTUME
+  B_const_mass_PY       : B_DTF_Jpsi_fix_HEAD_FOURMOMENTUMX
+  B_const_mass_PZ       : B_DTF_Jpsi_fix_HEAD_FOURMOMENTUMY
+  B_const_mass_PE       : B_DTF_Jpsi_fix_HEAD_FOURMOMENTUMZ
+# Define columns if they do not exist
+definitions: 
+  common: &common
+    B_DTF_Psi2S_fix_HEAD_MASS          : B_DTF_Psi2S_MASS          
+    B_DTF_Psi2S_fix_HEAD_FOURMOMENTUME : B_DTF_Psi2S_PE 
+    B_DTF_Psi2S_fix_HEAD_FOURMOMENTUMX : B_DTF_Psi2S_PX 
+    B_DTF_Psi2S_fix_HEAD_FOURMOMENTUMY : B_DTF_Psi2S_PY 
+    B_DTF_Psi2S_fix_HEAD_FOURMOMENTUMZ : B_DTF_Psi2S_PZ 
+                                                                   
+    B_DTF_Jpsi_fix_HEAD_MASS           : B_DTF_Jpsi_MASS           
+    B_DTF_Jpsi_fix_HEAD_FOURMOMENTUME  : B_DTF_Jpsi_PE  
+    B_DTF_Jpsi_fix_HEAD_FOURMOMENTUMX  : B_DTF_Jpsi_PX  
+    B_DTF_Jpsi_fix_HEAD_FOURMOMENTUMY  : B_DTF_Jpsi_PY  
+    B_DTF_Jpsi_fix_HEAD_FOURMOMENTUMZ  : B_DTF_Jpsi_PZ  
 
     Jpsi_DTF_HEAD_PE  : B_DTF_HEAD_fix_Jpsi_FOURMOMENTUME
     Jpsi_DTF_HEAD_PX  : B_DTF_HEAD_fix_Jpsi_FOURMOMENTUMX
