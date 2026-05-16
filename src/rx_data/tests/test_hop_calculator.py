@@ -12,6 +12,7 @@ from rx_common  import Component, Trigger
 from rx_data    import HOPCalculator
 from rx_data    import MisCalculator
 from rx_data    import testing as tst
+from rx_data    import RDFGetter
 
 # ----------------------------
 class Data:
@@ -27,6 +28,9 @@ def initialize():
     This will run before tests
     '''
     LogStore.set_level('rx_data:hop_calculator', 10)
+
+    with RDFGetter.only_friends(s_friend = set()):
+        yield
 # ----------------------------
 def _get_rdf(kind : str, prefix : str) -> RDF.RNode:
     trigger = tst.get_trigger(kind = kind, prefix = prefix)
@@ -69,7 +73,7 @@ def _compare_sig_bkg(rdf_sig : RDF.RNode, rdf_bkg : RDF.RNode, name : str, tmp_p
     plt.savefig(f'{out_dir}/mass.png')
     plt.close()
 # ----------------------------
-def _get_hop(rdf : RDF.RNode, trigger : str) -> tuple[RDF.RNode, RDF.RNode]:
+def _get_hop(rdf : RDF.RNode, trigger : Trigger) -> tuple[RDF.RNode, RDF.RNode]:
     obj     = HOPCalculator(rdf=rdf, trigger=trigger)
     rdf_hop = obj.get_rdf(preffix='hop')
 
