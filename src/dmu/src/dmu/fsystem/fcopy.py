@@ -60,43 +60,11 @@ class FCopy:
 
         self._source = source
         self._target = target 
+        self._server = None
         self._timeout= timeout
 
         self._check_utility(name='rsync')
         self._check_utility(name='ssh'  )
-        self._check_remote(server=self._source)
-        self._check_remote(server=self._target)
-    # ----------------------
-    def _check_remote(self, server : str) -> None:
-        '''
-        Parameters
-        -------------
-        path   : String representing server, if empty, its local
-        timeout: Number of seconds to wait when accessing server
-        '''
-        if not server:
-            return
-
-        try:
-            result = subprocess.run(
-                ['ssh', '-o', f'ConnectTimeout={self._timeout}', 
-                 '-o', 'BatchMode=yes',
-                 '-o', 'PubkeyAuthentication=yes',
-                 '-o', 'PasswordAuthentication=no',
-                 '-o', 'StrictHostKeyChecking=no', server, 
-                 '/bin/true'],
-                capture_output= True,
-                check         = False,
-                timeout       = self._timeout)
-        except subprocess.TimeoutExpired as exc:
-            raise ValueError(f'Timeout, cannot access: {server}') from exc
-
-        code = result.returncode
-        if code != 0:
-            log.info(result.stdout)
-            log.error(result.stderr)
-
-            raise ValueError(f'Error {code}, cannot access: {server}')
     # ----------------------
     def _check_utility(self, name : str) -> None:
         '''
@@ -139,6 +107,50 @@ class FCopy:
             return f'{self._source}:{path}'
         else:
             return f'{self._target}:{path}'
+    # ----------------------
+    def _open_master_connection(self, server: str) -> None:
+        '''
+        Parameters
+        -------------------
+        server: SSH server path, i.e. user@server.example
+        '''
+        if not server:
+            return
+
+        log.debug(f'Opening connection to: {server}')
+        self._socket_path = f'/tmp/cm-{server}.sock'
+        subprocess.run([
+            'ssh',  '-MNf',
+            '-o' ,  'ControlMaster=yes',
+            '-o' ,  'ControlPersist=10m',
+            '-o' , f'ControlPath={self._socket_path}',
+            server
+        ], check=True)
+
+        self._server = server
+    # ----------------------
+    def _close_master_connection(self) -> None:
+        if not self._server:
+            log.debug('Not connected to any server, not closing connection')
+            return
+
+        log.debug(f'Closing connection to server: {self._server}')
+        subprocess.run([
+            'ssh', '-O', 'exit',
+            '-o', f'ControlPath={self._socket_path}',
+            self._server,
+        ], check=False)
+    # ----------------------
+    def __enter__(self):
+        self._open_master_connection(server=self._source)
+        self._open_master_connection(server=self._target)
+
+        return self
+    # ----------------------
+    def __exit__(self, *args):
+        _ = args
+
+        self._close_master_connection()
     # ----------------------
     def copy(self, source : Path, target : Path) -> bool:
         '''
