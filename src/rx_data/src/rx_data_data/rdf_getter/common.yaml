@@ -22,6 +22,9 @@ redefinitions:
 # Define columns if they do not exist
 definitions: 
   common: &common
+    # ----------------
+    # DTF masses
+    # ----------------
     B_DTF_Psi2S_fix_HEAD_MASS          : B_DTF_Psi2S_MASS          
     B_DTF_Psi2S_fix_HEAD_FOURMOMENTUME : B_DTF_Psi2S_PE 
     B_DTF_Psi2S_fix_HEAD_FOURMOMENTUMX : B_DTF_Psi2S_PX 
@@ -39,6 +42,9 @@ definitions:
     Jpsi_DTF_HEAD_PY  : B_DTF_HEAD_fix_Jpsi_FOURMOMENTUMY
     Jpsi_DTF_HEAD_PZ  : B_DTF_HEAD_fix_Jpsi_FOURMOMENTUMZ
 
+    # ----------------
+    # Photon conversion
+    # ----------------
     L1_FMX            : L1_STATEAT_FirstMeasurement_positionX
     L1_FMY            : L1_STATEAT_FirstMeasurement_positionY
     L1_TRACK_ETA      : ROOT::Math::XYZVector lep(L1_TRACK_PX, L1_TRACK_PY, L1_TRACK_PZ); return lep.eta();
@@ -57,7 +63,9 @@ definitions:
 
     L1_not_conv_150   : 8 * TMath::Abs(L1_FMX) + 10 * TMath::Abs(L1_FMY) < 150 
     L2_not_conv_150   : 8 * TMath::Abs(L2_FMX) + 10 * TMath::Abs(L2_FMY) < 150
-
+    # ----------------
+    # q2 branches
+    # ----------------
     Jpsi_const_mass_M : TMath::Sqrt(TMath::Power(Jpsi_DTF_HEAD_PE, 2) - TMath::Power(Jpsi_DTF_HEAD_PX, 2) - TMath::Power(Jpsi_DTF_HEAD_PY, 2) - TMath::Power(Jpsi_DTF_HEAD_PZ, 2))
     q2_dtf            : Jpsi_const_mass_M * Jpsi_const_mass_M
     q2_smr_dtf        : q2_dtf # TODO: For now, the smeared version of the DTF q2 is the same as the unsmeared
