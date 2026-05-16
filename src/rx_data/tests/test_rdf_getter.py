@@ -843,7 +843,6 @@ def test_block(
     '''
     Test of getter class with check for block assignment
     '''
-    trigger = Trigger(trigger)
     with RDFGetter.max_entries(value=-1):
         gtr = RDFGetter(sample=sample, trigger=trigger)
         rdf = gtr.get_rdf(per_file=False)
