@@ -7,11 +7,9 @@ import pytest
 
 from pathlib import Path
 from dmu     import FCopy
-
-from dmu.logging.log_store import LogStore
+from dmu     import LogStore
 
 log=LogStore.add_logger('dmu:test_fcopy')
-
 # ----------------------
 @pytest.fixture
 def user() -> str:
@@ -73,9 +71,9 @@ def test_local(tmp_path : Path) -> None:
     l_source = _make_paths(dir=tmp_path / 'source', make_file= True, number=10)
     l_target = _make_paths(dir=tmp_path / 'target', make_file=False, number=10)
 
-    fcp = FCopy()
-    for source, target in zip(l_source, l_target, strict = True):
-        fcp.copy(source=source, target=target)
+    with FCopy() as fcp:
+        for source, target in zip(l_source, l_target, strict = True):
+            fcp.copy(source=source, target=target)
 # ----------------------
 def test_remote_target(tmp_path : Path, user : str) -> None:
     '''
@@ -84,9 +82,9 @@ def test_remote_target(tmp_path : Path, user : str) -> None:
     l_source = _make_paths(dir=tmp_path / 'source', make_file= True, number=10)
     l_target = _make_paths(dir=tmp_path / 'target', make_file=False, number=10)
 
-    fcp = FCopy(target=f'{user}@localhost')
-    for source, target in zip(l_source, l_target, strict = True):
-        fcp.copy(source=source, target=target)
+    with FCopy(target=f'{user}@localhost') as fcp:
+        for source, target in zip(l_source, l_target, strict = True):
+            fcp.copy(source=source, target=target)
 # ----------------------
 def test_remote_source(tmp_path : Path , user : str) -> None:
     '''
@@ -95,7 +93,7 @@ def test_remote_source(tmp_path : Path , user : str) -> None:
     l_source = _make_paths(dir=tmp_path / 'source', make_file= True, number=10)
     l_target = _make_paths(dir=tmp_path / 'target', make_file=False, number=10)
 
-    fcp = FCopy(source=f'{user}@localhost')
-    for source, target in zip(l_source, l_target, strict = True):
-        fcp.copy(source=source, target=target)
+    with FCopy(source=f'{user}@localhost') as fcp:
+        for source, target in zip(l_source, l_target, strict = True):
+            fcp.copy(source=source, target=target)
 # ----------------------
