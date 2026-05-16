@@ -40,7 +40,6 @@ class Data:
     serv    : str
 
     skipped_friend : str|None
-    fcp            : FCopy
     out_dir        : Path # Path to ana_dir/{kind}/{version}
     pfs_dir = Path(os.environ['PFS_ANADIR']) / 'Data'
     ana_dir = Path(os.environ['ANADIR'    ]) / 'Data'
@@ -208,10 +207,13 @@ def _initialize(kind : str):
 
     Data.l_source = l_path
 # ----------------------
-def _copy_sample(source : Path) -> int:
+def _copy_sample(
+    fcp    : FCopy,
+    source : Path) -> int:
     '''
     Parameters
     ---------------
+    fcp   : File copier instance
     source: Path to file to be copied
 
     Returns
@@ -219,11 +221,6 @@ def _copy_sample(source : Path) -> int:
     Number of files that were actually copied
     '''
     target= Data.out_dir/source.name
-
-    if not hasattr(Data, 'fcp'):
-        Data.fcp = FCopy(
-            source  = Data.host, 
-            timeout = Data.timeout)
 
     Data.copied_files += 1
     Data.copied_size  += source.stat().st_size / 1_000_000_000
@@ -234,22 +231,25 @@ def _copy_sample(source : Path) -> int:
     log.debug('')
 
     if not Data.dry:
-        Data.fcp.copy(source=source, target=target)
+        fcp.copy(source=source, target=target)
 
     return 1
 # -----------------------------------------
-def _download_group(group : list[Path]) -> int:
+def _download_group(group : list[Path], fcp : FCopy) -> int:
     nfiles = len(group)
     log.debug(f'Downloading {nfiles} files in parallel')
 
     if nfiles == 1:
         log.warning('Found group of one file, not using multiprocessing')
-        ncopied = _copy_sample(source=group[0])
+        ncopied = _copy_sample(
+            fcp   = fcp,
+            source= group[0])
         return ncopied
 
     with multiprocessing.Pool() as pool:
         log.debug(f'Will run {nfiles} processes')
-        l_ncopied = pool.map(_copy_sample, group)
+        fn = partial(_copy_sample, fcp) 
+        l_ncopied = pool.map(fn, group)
         ncopied   = sum(l_ncopied)
 
     return ncopied
@@ -303,8 +303,10 @@ def _download_kind(kind : str) -> None:
     l_path = _get_source_paths()
     l_group= _group_paths(l_path)
     ncopied= 0
-    for group in tqdm.tqdm(l_group, ascii=' -'):
-        ncopied += _download_group(group)
+
+    with FCopy(source = Data.serv) as fcp:
+        for group in tqdm.tqdm(l_group, ascii=' -'):
+            ncopied += _download_group(group, fcp)
 
     log.info(f'Copied {ncopied} files for kind {kind}')
 # -----------------------------------------
