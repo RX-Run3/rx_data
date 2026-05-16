@@ -16,7 +16,7 @@ from dmu.ml.cv_predict     import CVClassifier, CVPredict
 from dmu.logging.log_store import LogStore
 from dmu.generic           import version_management as vman
 from rx_selection          import selection          as sel
-from rx_common             import Component, Qsq, Trigger, info
+from rx_common             import Component, Cuts, Qsq, Trigger
 
 log = LogStore.add_logger('rx_data:mva_calculator')
 #---------------------------------
@@ -57,7 +57,7 @@ class MVACalculator:
         # Above high data should use high MVA
         self._default_q2  = Qsq.central # Any entry not in [low, central, high] bins will go to this bin for prediction
         self._version     = version
-        self._project     = info.project_from_trigger(trigger=trigger, lower_case=True)
+        self._project     = trigger.project
         self._l_model     : list[CVClassifier]
         self._dry_run     = dry_run
     #---------------------------------
@@ -77,7 +77,7 @@ class MVACalculator:
             skip_truth = True,
             process    = self._sample)
 
-        q2_cut = d_sel['q2']
+        q2_cut = d_sel[Cuts.q2]
 
         return q2_cut
     #---------------------------------
