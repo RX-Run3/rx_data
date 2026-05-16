@@ -1,6 +1,7 @@
 '''
 Module with class used to swap mass hypotheses
 '''
+import math
 import pandas as pnd
 import random
 import vector
@@ -169,8 +170,7 @@ class SWPCalculator:
             old_lep_id = tut.numeric_from_series(row, f'{lep_name}_ID', int)
             lep        = part.from_pdgid(old_lep_id)
 
-            # For OS candidates H - Lep combination have to be of opposite charge tracks
-            if lep.charge == had.charge and not self._use_ss:
+            if lep.charge == had.charge:
                 continue
 
             lep_id = new_lep_id if kind == 'swp' else old_lep_id
@@ -180,15 +180,21 @@ class SWPCalculator:
 
             masses.append(mass)
 
+        if not masses and self._use_ss:
+            log.debug('No valid OS hadron-lepton combinations found in SS line, return mass = NaN')
+            return math.nan
+
+        if self._use_ss:
+            log.debug('Multiple valid OS hadron-lepton combination found in SS line, returning random combination')
+            return random.choice(masses)
+
         ncmb = len(masses)
-        if ncmb == 0:
-            raise ValueError('No track combinations found')
+        if ncmb != 1 and not self._use_ss:
+            raise ValueError('Not one and only one hadron-lepton combinations found')
 
-        # If multiple combinations found (e.g. SS sample with K+ l-l-)
-        # pick randomly 
-        log.debug(f'Found {ncmb} combinations with masses: {masses}')
+        log.debug('Found one hadron-lepton combination in OS line')
 
-        return random.choice(masses)
+        return masses[0]
     #---------------------------------
     def _calculate_mass(self, progress_bar : bool, had_name : str, kind : str, new_had_id : int) -> pnd.Series:
         if progress_bar:
