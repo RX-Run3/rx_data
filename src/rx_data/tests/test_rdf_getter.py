@@ -1251,20 +1251,17 @@ def _validate_emulation(
         plt.close()
 # ------------------------------------------------
 _CUSTOM_PROJECTS=[
-    ('Bd_Kstee_eq_btosllball05_DPC', Project.rk         ),
-    ('Bd_Kstee_eq_btosllball05_DPC', Project.rk_no_pid  ),
-    ('Bu_JpsiK_ee_eq_DPC'          , Project.rk_sim10d  ),
-    ('DATA_24_MagUp_24c2'          , Project.rk_no_refit),
+    (Component.bpkpee, Trigger.rk_ee_os   ),
+    (Component.bpkpee, Trigger.rk_ee_nopid),
 ]
-@pytest.mark.parametrize('sample, project', _CUSTOM_PROJECTS)
-def test_project(sample : str, project : Project):
+@pytest.mark.parametrize('component, trigger', _CUSTOM_PROJECTS)
+def test_project(component : Component, trigger : Trigger):
     '''
     Will test `project` context manager
     '''
-    component = Component.from_sample(sample = sample)
     with RDFGetter.max_entries(value=1000),\
-         RDFGetter.project(project=project):
-        gtr = RDFGetter(sample=component, trigger=Trigger.rk_ee_os)
+         RDFGetter.project(project=trigger.project):
+        gtr = RDFGetter(sample=component, trigger=trigger)
         rdf = gtr.get_rdf(per_file=False)
 
     nentries = rdf.Count().GetValue()
