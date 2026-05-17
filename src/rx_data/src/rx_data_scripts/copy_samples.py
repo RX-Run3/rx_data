@@ -290,7 +290,7 @@ def _group_paths(l_path : list[Path]) -> list[list[Path]]:
 
     return l_l_path
 # -----------------------------------------
-def _download_kind(kind : str) -> None:
+def _download_kind(kind : str, fcp : FCopy) -> None:
     '''
     Parameters
     -------------------
@@ -304,9 +304,8 @@ def _download_kind(kind : str) -> None:
     l_group= _group_paths(l_path)
     ncopied= 0
 
-    with FCopy(source = Data.serv) as fcp:
-        for group in tqdm.tqdm(l_group, ascii=' -'):
-            ncopied += _download_group(group, fcp)
+    for group in tqdm.tqdm(l_group, ascii=' -'):
+        ncopied += _download_group(group, fcp)
 
     log.info(f'Copied {ncopied} files for kind {kind}')
 # -----------------------------------------
@@ -328,7 +327,8 @@ def main():
         if kind == Data.skipped_friend:
             continue
 
-        _download_kind(kind = kind)
+        with FCopy(source = Data.serv) as fcp:
+            _download_kind(kind = kind, fcp = fcp)
 
     log.info(f'Copied {Data.copied_files} ({Data.copied_size:.2f} Gb) files in total')
 # -----------------------------------------
