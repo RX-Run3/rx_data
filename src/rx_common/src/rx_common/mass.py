@@ -151,7 +151,7 @@ class Mass(StrEnum):
             # B+
             # ------------
             case Mass.bp:
-                return 4500, 7000
+                return 4600, 7000
             case Mass.bp_dtf_jpsi:
                 return 5080, 5680
             case Mass.bp_dtf_psi2:
@@ -168,7 +168,7 @@ class Mass(StrEnum):
             # B0
             # ------------
             case Mass.bd:
-                return 4500, 7000
+                return 4600, 7000
             case Mass.bd_dtf_jpsi:
                 return 5080, 5680
             case Mass.bd_dtf_psi2:
