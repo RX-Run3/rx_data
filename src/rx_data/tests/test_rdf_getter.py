@@ -539,6 +539,7 @@ def test_mc_ss(component : Component, trigger : Trigger, tmp_path : Path):
         rdf = gtr.get_rdf(per_file=False)
 
     with sel.custom_selection(d_sel = {
+        Cuts.truth      : '(1)',
         Cuts.cascade    : '(1)',
         Cuts.jpsi_misid : '(1)'}):
         rdf = sel.apply_full_selection(
