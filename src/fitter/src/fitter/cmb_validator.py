@@ -229,9 +229,9 @@ class CmbValidator:
             if pdf is None:
                 continue
 
-            name = f'nev_{component}' if component.is_mc else 'nev'
-            nev  = zfit.Parameter(name, 10, 0, 1000_000)
-            pdf  = pdf.create_extended(nev, name = component.latex)
+            par_name = f'nev_{component}' if component.is_mc else 'nev'
+            nev      = zfit.Parameter(par_name, 10, 0, 1000_000)
+            pdf      = pdf.create_extended(nev, name = component.latex)
 
             l_pdf.append(pdf)
 
