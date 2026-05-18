@@ -113,18 +113,15 @@ def _get_df(
     cfg : CmbValidatorConf,
     mass: Mass) -> pnd.DataFrame:
 
-    rdf_dat  = _get_rdf(
-        mass = mass, 
-        comp = Component.data_24)
-
-    rdf_sim  = _get_rdf(
-        mass = mass, 
-        comp = Component.bpkpee)
+    rdfs : dict[Component,RDF.RNode] = {}
+    for comp in [Component.data_24, Component.bpkpee]:
+        rdfs[comp] = _get_rdf(
+            mass   = mass, 
+            comp   = comp)
 
     obj = CmbValidator(
-        rdf_dat = rdf_dat,
-        rdf_sim = rdf_sim,
-        cfg     = cfg)
+        rdfs = rdfs,
+        cfg  = cfg)
     res = obj.run(label = 'test')
     df  = res.df
 

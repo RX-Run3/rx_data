@@ -188,19 +188,16 @@ class CmbValidator:
     # ---------------------------
     def __init__(
         self, 
-        rdf_dat : RDF.RNode,
-        rdf_sim : RDF.RNode,
+        rdfs    : dict[Component, RDF.RNode],
         cfg     : CmbValidatorConf):
         '''
         Parameters
         ----------------
-        rdf_dat: DataFrame with data to be fitted
-        rdf_sim: Dataframe with simulated background component
-        cfg    : Configuration needed for fits, etc
+        rdfs : Dictionary mapping component with dataframe holding data
+        cfg  : Configuration needed for fits, etc
         '''
-        self._cfg     = cfg
-        self._rdf_dat = rdf_dat
-        self._rdf_sim = rdf_sim
+        self._cfg  = cfg
+        self._rdfs = rdfs
     # ---------------------------
     def _get_model(
         self, 
@@ -273,7 +270,7 @@ class CmbValidator:
             return pdf
 
         log.debug(f'Applying selection {cut} for {component}')
-        rdf    = self._rdf_sim.Filter(cut)
+        rdf    = self._rdfs[component].Filter(cut)
         masses = rdf.AsNumpy([mass])[mass]
 
         if len(masses) < _MIN_DATA_SIZE:
@@ -305,7 +302,7 @@ class CmbValidator:
         -------------
         Array of masses needed for fit
         '''
-        rdf  = self._rdf_dat.Filter(cut, 'BDT')
+        rdf  = self._rdfs[Component.data_24].Filter(cut, 'BDT')
         mass = self._cfg.input.mass
 
         data = rdf.AsNumpy([mass])[mass]
