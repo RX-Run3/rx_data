@@ -36,7 +36,6 @@ class Component(StrEnum):
     undefined      = auto()
     comb           = auto()
     ccbar          = auto()
-    same_sign      = auto()
     # -----
     # Data
     # -----
@@ -189,7 +188,6 @@ class Component(StrEnum):
 
         if self in [
             Component.data_24,
-            Component.same_sign,
             Component.data_24_mu_c1,
             Component.data_24_mu_c2,
             Component.data_24_mu_c3,
@@ -423,8 +421,6 @@ class Component(StrEnum):
                 return r'$B^+\to K^+e^+e^-$'
             case Component.bpkpmm:
                 return r'$B^+\to K^+\mu^+\mu^-$'
-            case Component.same_sign:
-                return 'Same sign'
             case Component.data_24:
                 return 'Data'
             case _:
