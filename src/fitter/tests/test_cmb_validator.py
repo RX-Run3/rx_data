@@ -51,11 +51,11 @@ def test_config(
     '''
     Validate configuration
     '''
-    input      = CmbInputConfig(
+    input       = CmbInputConfig(
         q2bin   = Qsq.central,
         mass    = mass,
         trigger = Trigger.rk_ee_ss,
-        sample  = Component.data_24,
+        samples = [Component.data_24, Component.bpkpee],
         cutflow = cutflow,
     )
 
@@ -89,7 +89,7 @@ def _get_df(
 # ----------------------
 @pytest.mark.parametrize('mass'   , [Mass.bp_bcor])
 @pytest.mark.parametrize('cutflow', ['cmb_window'])
-def test_validator(
+def test_all_but_fits(
     tmp_path: Path,
     mass    : Mass,
     cutflow : str):
@@ -100,7 +100,7 @@ def test_validator(
         q2bin   = Qsq.central,
         mass    = mass,
         trigger = Trigger.rk_ee_ss,
-        sample  = Component.data_24,
+        samples = [Component.data_24, Component.bpkpee],
         cutflow = cutflow,
     )
 
