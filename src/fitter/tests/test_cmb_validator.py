@@ -80,7 +80,6 @@ def _get_rdf(mass : Mass) -> RDF.RNode:
 # ----------------------
 def _get_df(
     cfg : CmbValidatorConf,
-    cat : str, 
     mass: Mass) -> pnd.DataFrame:
 
     rdf = _get_rdf(mass = mass)
@@ -90,13 +89,11 @@ def _get_df(
     res = obj.run(label = 'test')
     df  = res.df
 
-    df['Category'] = cat
-
     return df
 # ----------------------
 @pytest.mark.parametrize('mass'   , [Mass.bp_bcor])
 @pytest.mark.parametrize('cutflow', ['cmb_window'])
-def test_all_but_fits(
+def test_validation(
     tmp_path: Path,
     mass    : Mass,
     cutflow : str):
@@ -126,11 +123,12 @@ def test_all_but_fits(
 
     l_df : list[pnd.DataFrame] = []
     for cat in ['c1', 'c2']:
-        df = _get_df(cat = cat, cfg = cfg, mass = mass)
+        df             = _get_df(cfg = cfg, mass = mass)
+        df['Category'] = cat
         l_df.append(df)
 
-    df      = pnd.concat(l_df)
-    data    = gut.load_data(
+    df   = pnd.concat(l_df)
+    data = gut.load_data(
         package = 'fitter_data', 
         fpath   = 'combinatorial/test_plots.yaml')
     data['out_dir'] = tmp_path
