@@ -36,6 +36,7 @@ class Component(StrEnum):
     undefined      = auto()
     comb           = auto()
     ccbar          = auto()
+    same_sign      = auto()
     # -----
     # Data
     # -----
@@ -421,6 +422,8 @@ class Component(StrEnum):
                 return r'$B^+\to K^+e^+e^-$'
             case Component.bpkpmm:
                 return r'$B^+\to K^+\mu^+\mu^-$'
+            case Component.same_sign:
+                return 'Same sign'
             case Component.data_24:
                 return 'Data'
             case _:
