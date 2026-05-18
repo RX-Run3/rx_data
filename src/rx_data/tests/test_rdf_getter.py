@@ -25,6 +25,20 @@ from rx_data        import collector as col
 from rx_data        import RDFGetter
 from rx_common      import Trigger
 
+_MCSS : Final[list[tuple[Component,Trigger]]] = [
+    (Component.bpkpee    , Trigger.rk_ee_ss  ),
+    (Component.bdkstkpiee, Trigger.rkst_ee_ss),
+]
+
+_SIGNALS : Final[list[tuple[Component,Trigger]]] = [
+    (Component.bpkpee    , Trigger.rk_ee_os  ),
+    (Component.bpkpee    , Trigger.rk_ee_ss  ),
+    (Component.bpkpmm    , Trigger.rk_mm_os  ),
+    (Component.bdkstkpiee, Trigger.rkst_ee_os),
+    (Component.bdkstkpiee, Trigger.rkst_ee_ss),
+    (Component.bdkstkpimm, Trigger.rkst_mm_os),
+]
+
 _RESONANT_SAMPLES : Final[list[tuple[Component,Trigger]]] = [
     (Component.bpkpjpsiee    , Trigger.rk_ee_os  ),
     (Component.bdkstkpijpsiee, Trigger.rkst_ee_os),
@@ -512,6 +526,55 @@ def test_cocktail():
     log.debug(f'KY: {evt_ky.shape}')
 
     assert numpy.array_equal(evt_kx, evt_ky)
+# ------------------------------------------------
+@pytest.mark.parametrize('component, trigger', _MCSS[:1])
+def test_mc_ss(component : Component, trigger : Trigger, tmp_path : Path):
+    '''
+    Tests for electron samples
+    '''
+    with RDFGetter.max_entries(-1):
+        gtr = RDFGetter(
+            sample =component, 
+            trigger=trigger)
+        rdf = gtr.get_rdf(per_file=False)
+
+    with sel.custom_selection(d_sel = {
+        Cuts.cascade    : '(1)',
+        Cuts.jpsi_misid : '(1)'}):
+        rdf = sel.apply_full_selection(
+            rdf     = rdf,
+            q2bin   = Qsq.central,
+            process = component, 
+            trigger = trigger)
+
+    rep = rdf.Report()
+    rep.Print()
+
+    _run_default_checks(
+        rdf      = rdf,
+        test_name= 'signal',
+        trigger  = trigger,
+        tmp_path = tmp_path,
+        sample   = component)
+# ------------------------------------------------
+@pytest.mark.parametrize('component, trigger', _SIGNALS)
+def test_signal(component : Component, trigger : Trigger, tmp_path : Path):
+    '''
+    Tests for electron samples
+    '''
+    max_entries = -1 if trigger.is_ss else 50_000
+    with RDFGetter.max_entries(max_entries):
+        gtr = RDFGetter(
+            sample =component, 
+            trigger=trigger)
+        rdf = gtr.get_rdf(per_file=False)
+
+    _run_default_checks(
+        rdf      = rdf,
+        test_name= 'signal',
+        trigger  = trigger,
+        tmp_path = tmp_path,
+        sample   = component)
 # ------------------------------------------------
 @pytest.mark.parametrize('per_file', [True, False])
 @pytest.mark.parametrize('trigger' , [Trigger.rk_ee_os, Trigger.rkst_ee_os])
