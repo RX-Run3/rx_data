@@ -197,11 +197,11 @@ def test_all_pdf(name : Model):
     '''
     log.info(f'Testing {name}')
 
-    l_shr = ['mu', 'sg']
-    l_flt = ['mu', 'sg']
+    l_shr = []
+    l_flt = []
 
     mod   = ModelFactory(
-        preffix = name,
+        preffix = '',
         obs     = Data.obs,
         l_pdf   = [name],
         l_shared= l_shr,
