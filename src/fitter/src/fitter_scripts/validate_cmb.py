@@ -38,7 +38,10 @@ def _get_conf() -> CmbValidatorConf:
     parser.add_argument('-t', '--trigger', type= Trigger, help='Name of trigger', choices = Trigger)
     args = parser.parse_args()
 
-    samples : list[Component] = [Component.bpkpee, Component.data_24]
+    samples : list[Component] = [
+        Component.bpkpee, 
+        Component.bpkpjpsiee,
+        Component.data_24]
 
     ana_dir = Path(os.environ['ANADIR'])
     input   = CmbInputConfig(
@@ -63,18 +66,20 @@ def _get_conf() -> CmbValidatorConf:
         output     = output,
         validation = validation)
 # ----------------------
-def _get_rdf(cfg : CmbValidatorConf) -> tuple[RDF.RNode, RDF.RNode]:
+def _get_rdfs(
+    cfg : CmbValidatorConf, 
+    cut : str) -> dict[Component, RDF.RNode]:
     '''
     Parameters
     --------------
     cfg: Config object
+    cut: Selection used to define label, e.g. +++, +--
 
     Returns
     --------------
     Tuple with dataframes with data and MC after full selection
     '''
-    rdf_dat = None
-    rdf_sim = None
+    rdfs : dict[Component, RDF.RNode] = {}
     for sample in cfg.input.samples:
         gtr = RDFGetter(
             trigger = cfg.input.trigger,
@@ -89,15 +94,10 @@ def _get_rdf(cfg : CmbValidatorConf) -> tuple[RDF.RNode, RDF.RNode]:
                 process = sample,
                 trigger = cfg.input.trigger)
 
-        if sample.is_mc:
-            rdf_sim = rdf
-        else:
-            rdf_dat = rdf
+        rdf = rdf.Filter(cut)
+        rdfs[sample] = rdf
 
-    if not rdf_dat or not rdf_sim:
-        raise ValueError('Either data or MC dataframe missing')
-
-    return rdf_dat, rdf_sim
+    return rdfs 
 # ----------------------
 def _get_pars(
     label : str,
@@ -122,14 +122,11 @@ def _get_pars(
 
     log.info(f'Parameters not found from cache: {out_path}')
 
-    rdf_dat, rdf_sim = _get_rdf(cfg = cfg)
-    rdf_dat = rdf_dat.Filter(cut, label)
-    rdf_sim = rdf_sim.Filter(cut, label)
+    rdfs = _get_rdfs(cfg = cfg, cut = cut)
 
     obj = CmbValidator(
-        rdf_dat = rdf_dat,
-        rdf_sim = rdf_sim,
-        cfg     = cfg)
+        rdfs = rdfs,
+        cfg  = cfg)
     res = obj.run(label = label)
 
     log.info(f'Caching to: {out_path}')
