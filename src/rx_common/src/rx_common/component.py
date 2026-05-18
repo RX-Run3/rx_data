@@ -189,6 +189,7 @@ class Component(StrEnum):
 
         if self in [
             Component.data_24,
+            Component.same_sign,
             Component.data_24_mu_c1,
             Component.data_24_mu_c2,
             Component.data_24_mu_c3,
