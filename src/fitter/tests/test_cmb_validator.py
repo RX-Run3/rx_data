@@ -14,7 +14,8 @@ from fitter       import CmbInputConfig, CmbValidatorConf, CmbValidationConfig
 from fitter       import CmbOutputConfig
 from rx_common    import Component, Mass, Qsq, Trigger
 from dmu          import LogStore
-from dmu.stats    import ZFitPlotterConf
+from dmu.stats    import Model, zfit
+from dmu.stats    import ModelFactory, ZFitPlotterConf
 from dmu.generic  import utilities as gut
 from dmu.plotting import BandPlotter, BandPlotterConf
 
@@ -56,11 +57,41 @@ def test_config(
         validation = validation,
         output     = output)
 # ----------------------
-def _get_rdf(mass : Mass) -> RDF.RNode:
+def _get_mass(
+    comp : Component, 
+    size : int) -> numpy.ndarray:
+    '''
+    Returns numpy array with masses
+    '''
+    fac = ModelFactory(
+        obs      = zfit.Space('mass', limits = (4500, 6000)),
+        l_shared = [],
+        l_float  = [],
+        l_pdf    = [Model.fermi_dirac],
+        preffix  = '')
+
+    pdf     = fac.get_pdf()
+    sampler = pdf.create_sampler(size)
+    arr_sig = sampler.to_numpy().flatten()
+
+    if comp != Component.data_24:
+        return arr_sig
+
+    arr_bkg = truncexpon.rvs(b=2.5, loc=4500, scale=1000, size=size)
+
+    arr_dat = numpy.concatenate([arr_sig, arr_bkg]) 
+    numpy.random.shuffle(arr_dat)
+
+    return arr_dat[:size]
+# ----------------------
+def _get_rdf(
+    mass : Mass,
+    comp : Component) -> RDF.RNode:
     '''
     Parameters
     --------------
     mass : Observable that will be fitted in validation
+    comp : Fitting component
 
     Returns
     --------------
@@ -71,7 +102,7 @@ def _get_rdf(mass : Mass) -> RDF.RNode:
     data : dict[str,numpy.ndarray] = {
         'mva_cmb' : numpy.random.uniform(0, 1, size = size),
         'mva_prc' : numpy.random.uniform(0, 1, size = size),
-        mass      : truncexpon.rvs(b=2.5, loc=4500, scale=1000, size=size)
+        mass      : _get_mass(comp = comp, size = size),
     }
 
     rdf = RDF.FromNumpy(data)
@@ -82,7 +113,10 @@ def _get_df(
     cfg : CmbValidatorConf,
     mass: Mass) -> pnd.DataFrame:
 
-    rdf = _get_rdf(mass = mass)
+    rdf = _get_rdf(
+        mass = mass, 
+        comp = Component.data_24)
+
     obj = CmbValidator(
         rdf = rdf,
         cfg = cfg)
