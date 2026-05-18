@@ -6,15 +6,28 @@ cutflows:
     0.50-0.80 : mva_cmb > 0.50 && mva_cmb < 0.80
     0.80-1.00 : mva_cmb > 0.80 && mva_cmb < 1.00
 fit:
-  conf:
-    strategy:
-      ntries : 10
-      pvalue : 0.05
-  model:
-    pdfs:
-      - hypexp 
-    shared       : []
-    reparametrize: {}
-    floating     : []
-    fix          :
-      mu : 4700
+  bpkpee:
+    conf:
+      strategy:
+        ntries : 10
+        pvalue : 0.05
+    model:
+      pdfs:
+        - fermi_dirac 
+      shared       : []
+      reparametrize: {}
+      floating     : []
+      fix          : {}
+  data_24:
+    conf:
+      strategy:
+        ntries : 10
+        pvalue : 0.05
+    model:
+      pdfs:
+        - hypexp 
+      shared       : []
+      reparametrize: {}
+      floating     : []
+      fix          :
+        mu : 4700
