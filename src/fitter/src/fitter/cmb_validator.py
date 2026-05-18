@@ -367,7 +367,7 @@ class CmbValidator:
             res = self._fit(
                 label= label,
                 name = cut_name,
-                comp = Component.same_sign,
+                comp = Component.data_24,
                 model= model,
                 data = data)
 

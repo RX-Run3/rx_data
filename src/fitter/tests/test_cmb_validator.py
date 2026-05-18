@@ -143,7 +143,7 @@ def test_validation(
         q2bin   = Qsq.central,
         mass    = mass,
         trigger = Trigger.rk_ee_ss,
-        samples = [Component.same_sign, Component.bpkpee],
+        samples = [Component.data_24, Component.bpkpee],
         cutflow = cutflow,
     )
 
