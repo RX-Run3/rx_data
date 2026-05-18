@@ -225,10 +225,6 @@ def _get_ss_df(cfg : CmbValidatorConf) -> list[pnd.DataFrame]:
     '''
     l_df : list[pnd.DataFrame] = []
     categories : dict[str,str] = {'Both': '(1)'}
-    #if cfg.input.trigger.project == Project.rk:
-    #    categories['+++'] = 'TMath::Abs(total_charge) == 3'
-    #    categories['+--'] = 'TMath::Abs(total_charge) == 1'
-
     for label, cut in categories.items():
         df  = _get_pars(
             label = label,
