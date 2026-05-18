@@ -345,7 +345,8 @@ class CmbValidator:
 
         log.debug('Plotting fit')
 
-        cfg_plt    = self._cfg.output.plots.model_copy(update = {'title' : name})
+        title      = f'{name}; Entries = {len(data)}'
+        cfg_plt    = self._cfg.output.plots.model_copy(update = {'title' : title})
         ptr        = ZFitPlotter(
             model  = model,
             data   = data)
