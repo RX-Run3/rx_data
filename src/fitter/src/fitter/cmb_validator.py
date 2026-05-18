@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 
 from pathlib     import Path
 from ROOT        import RDF # type: ignore
-from functools   import cached_property
 from typing      import Final
 from pydantic    import BaseModel, ConfigDict, model_validator
 from dmu         import LogStore
