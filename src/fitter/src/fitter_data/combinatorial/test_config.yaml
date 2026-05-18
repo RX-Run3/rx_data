@@ -18,7 +18,7 @@ fit:
       reparametrize: {}
       floating     : []
       fix          : {}
-  same_sign:
+  data_24:
     conf:
       strategy:
         ntries : 10
