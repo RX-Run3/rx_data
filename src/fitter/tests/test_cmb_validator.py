@@ -6,15 +6,15 @@ import numpy
 import pytest
 import pandas as pnd
 
-from pathlib     import Path
-from scipy.stats import truncexpon
-from ROOT        import RDF # type: ignore
-from fitter      import CmbValidator
-from fitter      import CmbInputConfig, CmbValidatorConf, CmbValidationConfig
-from fitter      import CmbOutputConfig
-from rx_common   import Component, Mass, Qsq, Trigger
-from dmu         import LogStore
-from dmu.stats   import ZFitPlotterConf
+from pathlib      import Path
+from scipy.stats  import truncexpon
+from ROOT         import RDF # type: ignore
+from fitter       import CmbValidator
+from fitter       import CmbInputConfig, CmbValidatorConf, CmbValidationConfig
+from fitter       import CmbOutputConfig
+from rx_common    import Component, Mass, Qsq, Trigger
+from dmu          import LogStore
+from dmu.stats    import ZFitPlotterConf
 from dmu.generic  import utilities as gut
 from dmu.plotting import BandPlotter, BandPlotterConf
 
