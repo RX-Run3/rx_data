@@ -20,7 +20,8 @@ from zfit.pdf    import BasePDF
 
 log=LogStore.add_logger('fitter:cmb_validator')
 
-PDF_PREFIX : Final[str] = 'cmb'
+_PDF_PREFIX    : Final[str] = 'cmb'
+_MIN_DATA_SIZE : Final[int] = 100
 # --------------------------------
 class CmbFitConf(BaseModel):
     '''
@@ -225,10 +226,17 @@ class CmbValidator:
                 name      = name,
                 component = component, 
                 cfg       = cfg_fit)
+
+            if pdf is None:
+                continue
+
             nev     = zfit.Parameter(f'nev_{component}', 10, 0, 1000_000)
             pdf     = pdf.create_extended(nev, name = component.latex)
 
             l_pdf.append(pdf)
+
+        if len(l_pdf) == 1:
+            return l_pdf[0]
 
         return zfit.pdf.SumPDF(l_pdf) 
     # ----------------------
@@ -237,7 +245,7 @@ class CmbValidator:
         cut       : str,
         name      : str,
         component : Component, 
-        cfg       : CmbFitConf) -> zfit.pdf.BasePDF:
+        cfg       : CmbFitConf) -> zfit.pdf.BasePDF | None:
         '''
         Parameters
         -------------
@@ -246,12 +254,13 @@ class CmbValidator:
 
         Returns
         -------------
-        PDF needed to model component
+        PDF needed to model component or None if fewer than
+        _MIN_DATA_SIZE entries found
         '''
         mass = self._cfg.input.mass
         obj  = ModelFactory.from_conf(
             obs    = mass.obs, 
-            prefix = PDF_PREFIX,
+            prefix = _PDF_PREFIX,
             cfg    = cfg.model)
         pdf = obj.get_pdf()
 
@@ -262,6 +271,10 @@ class CmbValidator:
         log.debug(f'Applying selection {cut} for {component}')
         rdf    = self._rdf_sim.Filter(cut)
         masses = rdf.AsNumpy([mass])[mass]
+
+        if len(masses) < _MIN_DATA_SIZE:
+            return None
+
         self._fit(
             comp  = component,
             model = pdf,
