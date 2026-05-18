@@ -38,7 +38,7 @@ def _get_conf() -> CmbValidatorConf:
     parser.add_argument('-t', '--trigger', type= Trigger, help='Name of trigger', choices = Trigger)
     args = parser.parse_args()
 
-    samples : list[Component] = [args.trigger.project.signal, Component.data_24]
+    samples : list[Component] = [Component.bpkpee, Component.data_24]
 
     ana_dir = Path(os.environ['ANADIR'])
     input   = CmbInputConfig(
@@ -149,7 +149,7 @@ def _plot(
     data= gut.load_data(
         package = 'fitter_data', 
         fpath   = f'combinatorial/plots_{cfg_val.input.q2bin}.yaml')
-    data['out_dir'] = str(cfg_val.out_dir)
+    data['out_dir'] = str(cfg_val.out_dir(component = Component.data_24))
 
     cfg = BandPlotterConf(**data)
     ptr = BandPlotter(cfg = cfg, df = df)
@@ -228,9 +228,9 @@ def _get_ss_df(cfg : CmbValidatorConf) -> list[pnd.DataFrame]:
     '''
     l_df : list[pnd.DataFrame] = []
     categories : dict[str,str] = {'Both': '(1)'}
-    if cfg.input.trigger.project == Project.rk:
-        categories['+++'] = 'TMath::Abs(total_charge) == 3'
-        categories['+--'] = 'TMath::Abs(total_charge) == 1'
+    #if cfg.input.trigger.project == Project.rk:
+    #    categories['+++'] = 'TMath::Abs(total_charge) == 3'
+    #    categories['+--'] = 'TMath::Abs(total_charge) == 1'
 
     for label, cut in categories.items():
         df  = _get_pars(
