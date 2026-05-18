@@ -527,7 +527,7 @@ def test_cocktail():
 
     assert numpy.array_equal(evt_kx, evt_ky)
 # ------------------------------------------------
-@pytest.mark.parametrize('component, trigger', _MCSS[:1])
+@pytest.mark.parametrize('component, trigger', _MCSS)
 def test_mc_ss(component : Component, trigger : Trigger, tmp_path : Path):
     '''
     Tests for electron samples
@@ -538,10 +538,7 @@ def test_mc_ss(component : Component, trigger : Trigger, tmp_path : Path):
             trigger=trigger)
         rdf = gtr.get_rdf(per_file=False)
 
-    with sel.custom_selection(d_sel = {
-        Cuts.truth      : '(1)',
-        Cuts.cascade    : '(1)',
-        Cuts.jpsi_misid : '(1)'}):
+    with sel.custom_selection(d_sel = {Cuts.truth : '(1)'}):
         rdf = sel.apply_full_selection(
             rdf     = rdf,
             q2bin   = Qsq.central,
