@@ -44,8 +44,13 @@ fit:
         pvalue : 0.05
     model:
       pdfs:
-        - fermi_dirac 
+        - dscb 
       shared       : []
       reparametrize: {}
       floating     : []
       fix          : {}
+      values:
+        mu:
+          - 4600
+          - 4000
+          - 5000
