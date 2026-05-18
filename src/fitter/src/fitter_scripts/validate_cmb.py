@@ -14,7 +14,7 @@ from dmu.stats    import ZFitPlotterConf
 from dmu.generic  import utilities as gut
 from dmu.plotting import BandPlotter, BandPlotterConf
 from rx_selection import selection as sel
-from rx_common    import Mass, Project, Qsq, Component, Trigger
+from rx_common    import Mass, Qsq, Component, Trigger
 from rx_data      import RDFGetter
 from fitter       import FitSummary
 from fitter       import CmbValidationConfig
