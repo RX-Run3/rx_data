@@ -32,24 +32,22 @@ _CMB_PREFIX         : Final[str] = 'yld_comb'
 # ----------------------
 def _get_conf() -> CmbValidatorConf:
     parser = argparse.ArgumentParser(description='Used to perform fits to validate choice of PDF for combinatorial')
-    parser.add_argument('-c', '--cutflow', type=       str, help='Cutflow name')
-    parser.add_argument('-q', '--q2bin'  , type=       Qsq, help='Q2bin'          , choices =     Qsq)
-    parser.add_argument('-M', '--mass'   , type=      Mass, help='Mass to fit'    , choices =    Mass)
-    parser.add_argument('-t', '--trigger', type=   Trigger, help='Name of trigger', choices = Trigger)
-    parser.add_argument('-s', '--sample' , type= Component, help='Name of sample' , default = Component.data_24)
+    parser.add_argument('-c', '--cutflow', type=     str, help='Cutflow name')
+    parser.add_argument('-q', '--q2bin'  , type=     Qsq, help='Q2bin'          , choices =     Qsq)
+    parser.add_argument('-M', '--mass'   , type=    Mass, help='Mass to fit'    , choices =    Mass)
+    parser.add_argument('-t', '--trigger', type= Trigger, help='Name of trigger', choices = Trigger)
     args = parser.parse_args()
 
-    data = {
-        'q2bin'  : args.q2bin,
-        'mass'   : args.mass,
-        'trigger': args.trigger,
-        'sample' : args.sample,
-        'cutflow': args.cutflow,
-    }
+    samples : list[Component] = [args.trigger.project.signal, Component.data_24]
 
-    ana_dir    = Path(os.environ['ANADIR'])
+    ana_dir = Path(os.environ['ANADIR'])
+    input   = CmbInputConfig(
+        cutflow = args.cutflow,
+        samples = samples,
+        trigger = args.trigger,
+        mass    = args.mass,
+        q2bin   = args.q2bin)
 
-    input      = CmbInputConfig(**data)
     validation = CmbValidationConfig.from_file(fname = f'combinatorial/config_{args.q2bin}.yaml')
 
     cfg_plt    = ZFitPlotterConf.default()
