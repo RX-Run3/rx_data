@@ -6,7 +6,6 @@ import argparse
 import pandas   as pnd
 
 from contextlib   import ExitStack
-from functools    import cache
 from typing       import Final
 from ROOT         import RDF # type: ignore
 from pathlib      import Path
@@ -66,22 +65,41 @@ def _get_conf() -> CmbValidatorConf:
         output     = output,
         validation = validation)
 # ----------------------
-@cache
-def _get_rdf(cfg : CmbValidatorConf) -> RDF.RNode:
-    gtr = RDFGetter(
-        trigger= cfg.input.trigger,
-        sample = cfg.input.sample)
-    rdf = gtr.get_rdf(per_file = False)
+def _get_rdf(cfg : CmbValidatorConf) -> tuple[RDF.RNode, RDF.RNode]:
+    '''
+    Parameters
+    --------------
+    cfg: Config object
 
-    with sel.custom_selection(d_sel = cfg.validation.selection):
-        rdf = sel.apply_full_selection(
-            rdf     = rdf,
-            out_path= cfg.out_dir,
-            q2bin   = cfg.input.q2bin,
-            process = cfg.input.sample,
-            trigger = cfg.input.trigger)
+    Returns
+    --------------
+    Tuple with dataframes with data and MC after full selection
+    '''
+    rdf_dat = None
+    rdf_sim = None
+    for sample in cfg.input.samples:
+        gtr = RDFGetter(
+            trigger = cfg.input.trigger,
+            sample  = sample)
+        rdf = gtr.get_rdf(per_file = False)
 
-    return rdf
+        with sel.custom_selection(d_sel = cfg.validation.selection):
+            rdf = sel.apply_full_selection(
+                rdf     = rdf,
+                out_path= cfg.out_dir(sample),
+                q2bin   = cfg.input.q2bin,
+                process = sample,
+                trigger = cfg.input.trigger)
+
+        if sample.is_mc:
+            rdf_sim = rdf
+        else:
+            rdf_dat = rdf
+
+    if not rdf_dat or not rdf_sim:
+        raise ValueError('Either data or MC dataframe missing')
+
+    return rdf_dat, rdf_sim
 # ----------------------
 def _get_pars(
     label : str,
@@ -98,7 +116,7 @@ def _get_pars(
     -----------------
     dataframe with parameters
     '''
-    out_path = cfg.out_dir / f'{label}/parameters.parquet'
+    out_path = cfg.out_dir(component = Component.same_sign) / f'{label}/parameters.parquet'
 
     if out_path.exists():
         log.info(f'Parameters found from cache, loading: {out_path}')
@@ -106,12 +124,14 @@ def _get_pars(
 
     log.info(f'Parameters not found from cache: {out_path}')
 
-    rdf = _get_rdf(cfg = cfg)
-    rdf = rdf.Filter(cut, label)
+    rdf_dat, rdf_sim = _get_rdf(cfg = cfg)
+    rdf_dat = rdf_dat.Filter(cut, label)
+    rdf_sim = rdf_sim.Filter(cut, label)
 
     obj = CmbValidator(
-        rdf = rdf,
-        cfg = cfg)
+        rdf_dat = rdf_dat,
+        rdf_sim = rdf_sim,
+        cfg     = cfg)
     res = obj.run(label = label)
 
     log.info(f'Caching to: {out_path}')
