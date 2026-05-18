@@ -244,7 +244,7 @@ class AnealingMinimizer:
                 continue
 
             if gof > self._target_gof:
-                log.info('Found fit statisfying target GOF:')
+                log.info('Found fit satisfying target GOF:')
                 log.info(gof)
                 return res
 
