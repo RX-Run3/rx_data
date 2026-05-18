@@ -25,20 +25,21 @@ class Model(StrEnum):
     '''
     Enum meant to represent fitting models
     '''
-    exp    = 'exp'
-    hypexp = 'hypexp'
-    modexp = 'modexp'
-    pol1   = 'pol1'
-    pol2   = 'pol2'
-    pol3   = 'pol3'
-    cbr    = 'cbr'
-    cbl    = 'cbl'
-    suj    = 'suj'
-    gauss  = 'gauss'
-    dscb   = 'dscb'
-    voigt  = 'voigt'
-    qgauss = 'qgauss'
-    cauchy = 'cauchy'
+    fermi_dirac = auto()
+    exp         = auto()
+    hypexp      = auto()
+    modexp      = auto()
+    pol1        = auto()
+    pol2        = auto()
+    pol3        = auto()
+    cbr         = auto()
+    cbl         = auto()
+    suj         = auto()
+    gauss       = auto()
+    dscb        = auto()
+    voigt       = auto()
+    qgauss      = auto()
+    cauchy      = auto()
 # --------------------------
 class KDEModel(StrEnum):
     '''

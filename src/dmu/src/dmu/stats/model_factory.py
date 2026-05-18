@@ -18,6 +18,7 @@ from .imports        import zfit
 from .types          import CorrectionImplementation, Model
 from .zfit_models    import HypExp
 from .zfit_models    import ModExp
+from .zfit_models    import FermiDirac 
 
 log=LogStore.add_logger('dmu:stats:model_factory')
 
@@ -416,6 +417,19 @@ class ModelFactory:
             alpha = ap, 
             beta  = bt, 
             name  = f'hypexp_{self._preffix}{suffix}')
+
+        return pdf
+    # ---------------------------------------------
+    @MethodRegistry.register(Model.fermi_dirac)
+    def _get_fermi_dirac(self, suffix : str = '') -> zpdf:
+        mu = self._get_parameter(kind = Model.fermi_dirac, name = 'mu', suffix = suffix)
+        ap = self._get_parameter(kind = Model.fermi_dirac, name = 'ap', suffix = suffix)
+
+        pdf= FermiDirac(
+            obs   = self._obs, 
+            mu    = mu, 
+            ap    = ap, 
+            name  = f'fermi_dirac_{self._preffix}{suffix}')
 
         return pdf
     # ---------------------------------------------

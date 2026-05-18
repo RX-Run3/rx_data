@@ -17,6 +17,7 @@ from .utilities           import is_pdf_usable
 from .zfit_plotter        import ZFitPlotter, ZFitPlotterConf
 from .zfit_models         import ModExp
 from .zfit_models         import HypExp
+from .zfit_models         import FermiDirac 
 from .fit_conf            import FitConf, KDEConf, PaddingConf
 from .imports             import zfit
 from .imports             import tensorflow
@@ -44,6 +45,7 @@ __all__ = [
     'is_pdf_usable',
     'ZFitPlotterConf',
     'GoodnessOfFit',
+    'FermiDirac',
     'Model',
     'KDEModel',
     'Retries',
