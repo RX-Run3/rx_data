@@ -39,6 +39,7 @@ fit:
         mu : 4700
   bpkpee:
     conf:
+      do_errors: False
       strategy:
         ntries : 10
         pvalue : 0.05

@@ -273,6 +273,7 @@ class CmbValidator:
         masses = rdf.AsNumpy([mass])[mass]
 
         if len(masses) < _MIN_DATA_SIZE:
+            log.warning(f'Found {len(masses)} entries for {component}, skipping')
             return None
 
         self._fit(
