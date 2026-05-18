@@ -205,6 +205,7 @@ class CmbValidator:
     def _get_model(
         self, 
         cut  : str,
+        label: str,
         name : str) -> zfit.pdf.BasePDF:
         '''
         Parameters
@@ -224,6 +225,7 @@ class CmbValidator:
             pdf     = self._pdf_for_component(
                 cut       = cut,
                 name      = name,
+                label     = label,
                 component = component, 
                 cfg       = cfg_fit)
 
@@ -245,6 +247,7 @@ class CmbValidator:
         self, 
         cut       : str,
         name      : str,
+        label     : str,
         component : Component, 
         cfg       : CmbFitConf) -> zfit.pdf.BasePDF | None:
         '''
@@ -283,7 +286,7 @@ class CmbValidator:
             model = pdf,
             data  = masses,
             name  = name,
-            label = 'mc_fit')
+            label = label)
 
         log.debug('Fixing parameters:')
         for par in pdf.get_params():
@@ -379,6 +382,7 @@ class CmbValidator:
             data = self._get_data(cut = cut)
             model= self._get_model(
                 cut  = cut,
+                label= label,
                 name = cut_name)
 
             res = self._fit(
