@@ -205,7 +205,8 @@ class CmbValidator:
         Fitting model needed to fit combinatorial proxy
         '''
         l_pdf : list[BasePDF] = []
-        for component, cfg_fit in self._cfg.validation.fit.items():
+        for component in self._cfg.input.samples:
+            cfg_fit = self._cfg.validation.fit[component]
             pdf = self._pdf_for_component(component = component, cfg = cfg_fit)
             nev = zfit.Parameter(f'nev_{component}', 10, 0, 1000_000)
             pdf = pdf.create_extended(nev, name = component.latex)
