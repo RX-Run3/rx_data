@@ -240,6 +240,7 @@ def _plot_bmass(
     data = rdf.AsNumpy(masses)
     df   = pnd.DataFrame(data)
 
+    df.to_json(f'{test_dir}/bmass.json', indent=2)
     df.plot.hist(range=[minx, maxx], bins=100, histtype='step')
 
     plt.title(test_name)
