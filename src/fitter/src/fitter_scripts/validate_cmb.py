@@ -232,14 +232,22 @@ def _get_prefix(param : str) -> str:
 
     return prefix
 # --------------------------------
-def main():
+def _get_os_df(
+    df_ss : pnd.DataFrame, 
+    cfg   : CmbValidatorConf) -> list[pnd.DataFrame]:
     '''
-    Entry point
+    Parameters
+    --------------
+    df_ss : Dataframe with parameters from SS fit
+    cfg   : Configuration object
+
+    Returns
+    --------------
+    List of dataframes with parameters from OS fits
     '''
-    cfg  = _get_conf()
-    l_df = _get_ss_df(cfg = cfg)
-    pars = l_df[0]['Parameter'].to_list()
+    pars     = df_ss['Parameter'].to_list()
     prefixes = { _get_prefix(param = par) for par in pars }
+    l_df : list[pnd.DataFrame] = []
 
     with ExitStack() as stack:
         stack.enter_context(gut.environment(mapping = {'ANADIR' : _IHEP_ANADIR}))
@@ -260,7 +268,17 @@ def main():
 
         l_df.append(df)
 
-    df = pnd.concat(l_df, ignore_index=True)
+    return l_df
+# --------------------------------
+def main():
+    '''
+    Entry point
+    '''
+    cfg     = _get_conf()
+    l_df_ss = _get_ss_df(cfg = cfg)
+    l_df_os = _get_os_df(cfg = cfg, df_ss = l_df_ss[0])
+
+    df = pnd.concat(l_df_ss + l_df_os, ignore_index=True)
     _plot(df = df, cfg_val = cfg)
 # --------------------------------
 if __name__ == '__main__':
