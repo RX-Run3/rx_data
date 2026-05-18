@@ -18,6 +18,10 @@ cutflows:
     0.70-0.80 : mva_cmb > 0.70 && mva_cmb < 0.80
     0.80-0.90 : mva_cmb > 0.80 && mva_cmb < 0.90
     0.90-1.00 : mva_cmb > 0.90 && mva_cmb < 1.00
+  cmb_test:
+    0.00-0.30 : mva_cmb > 0.00 && mva_cmb < 0.30
+    0.30-0.60 : mva_cmb > 0.30 && mva_cmb < 0.60
+    0.60-1.00 : mva_cmb > 0.60 && mva_cmb < 1.00
 fit:
   conf:
     strategy:
