@@ -114,7 +114,7 @@ def _get_pars(
     -----------------
     dataframe with parameters
     '''
-    out_path = cfg.out_dir(component = Component.same_sign) / f'{label}/parameters.parquet'
+    out_path = cfg.out_dir(component = Component.data_24) / f'{label}/parameters.parquet'
 
     if out_path.exists():
         log.info(f'Parameters found from cache, loading: {out_path}')
