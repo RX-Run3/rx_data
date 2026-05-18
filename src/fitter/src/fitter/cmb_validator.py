@@ -230,8 +230,9 @@ class CmbValidator:
             if pdf is None:
                 continue
 
-            nev     = zfit.Parameter(f'nev_{component}', 10, 0, 1000_000)
-            pdf     = pdf.create_extended(nev, name = component.latex)
+            name = f'nev_{component}' if component.is_mc else 'nev'
+            nev  = zfit.Parameter(name, 10, 0, 1000_000)
+            pdf  = pdf.create_extended(nev, name = component.latex)
 
             l_pdf.append(pdf)
 
@@ -276,6 +277,7 @@ class CmbValidator:
             log.warning(f'Found {len(masses)} entries for {component} at {name}, skipping')
             return None
 
+        log.info(f'Found {len(masses)} entries for {component} at {name}')
         self._fit(
             comp  = component,
             model = pdf,
