@@ -9,7 +9,7 @@ from pathlib     import Path
 from ROOT        import RDF # type: ignore
 from functools   import cached_property
 from typing      import Final
-from pydantic    import BaseModel, ConfigDict
+from pydantic    import BaseModel, ConfigDict, model_validator
 from dmu         import LogStore
 from dmu.stats   import ModelFactory, ModelFactoryConf, ZFitPlotter, ZFitPlotterConf
 from dmu.stats   import FitConf, FitResult, Fitter
@@ -41,8 +41,16 @@ class CmbInputConfig(BaseModel):
     q2bin  : Qsq 
     mass   : Mass 
     trigger: Trigger 
-    sample : Component 
+    samples: list[Component]
     cutflow: str 
+    # -------------------------------------
+    @model_validator(mode = 'after')
+    def validate_samples(self) -> 'CmbInputConfig':
+        unique_samples = set(self.samples)
+
+        assert len(unique_samples) == len(self.samples)
+
+        return self
 # --------------------------------
 class CmbOutputConfig(BaseModel):
     '''
@@ -81,7 +89,7 @@ class CmbValidationConfig(BaseModel):
 
     selection : dict[Cuts,str]
     cutflows  : dict[str,dict[str,str]]
-    fit       : CmbFitConf
+    fit       : dict[Component,CmbFitConf]
     # ---------------------------
     @classmethod
     def from_file(cls, fname : str) -> 'CmbValidationConfig':
@@ -109,6 +117,15 @@ class CmbValidatorConf(BaseModel):
     input      : CmbInputConfig
     validation : CmbValidationConfig
     output     : CmbOutputConfig
+    # ------------------------
+    @model_validator(mode = 'after')
+    def validate_samples(self) -> 'CmbValidatorConf':
+        in_samples = set(self.input.samples)
+        ot_samples = set(self.validation.fit)
+
+        assert in_samples == ot_samples
+
+        return self
     # ------------------------
     def __hash__(self) -> int:
         return hash(self.model_dump_json())
