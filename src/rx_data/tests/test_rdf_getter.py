@@ -464,6 +464,28 @@ def _check_mcdt(rdf : RDF.RNode, name : str, out_dir : Path) -> None:
     plt.savefig(f'{test_dir}/q2.png')
     plt.close()
 # ------------------------------------------------
+def _check_total_charge(rdf : RDF.RNode, trigger : Trigger) -> None:
+    '''
+    Check branch `total_charge`
+    '''
+    TARGET = 'total_charge'
+
+    columns = [ col.c_str() for col in rdf.GetColumnNames() ]
+
+    if TARGET not in columns:
+        raise ValueError(f'No {TARGET} column found')
+
+    arr_charge = rdf.AsNumpy([TARGET])[TARGET]
+    charges    = set(arr_charge.tolist())
+
+    if trigger.project == Project.rkst:
+        assert charges == {+2, -2}
+
+    # TODO: +1, -1 candidates seem to be missing
+    # Need to check this
+    if trigger.project == Project.rk:
+        assert charges == {+3, -3}
+# ------------------------------------------------
 def _run_default_checks(
     rdf          : RDF.RNode,
     test_name    : str,
@@ -548,6 +570,10 @@ def test_mc_ss(component : Component, trigger : Trigger, tmp_path : Path):
 
     rep = rdf.Report()
     rep.Print()
+
+    _check_total_charge(
+        rdf     = rdf, 
+        trigger = trigger)
 
     _run_default_checks(
         rdf      = rdf,
