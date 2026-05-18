@@ -35,8 +35,8 @@ dev = ["pytest"]
 [tool.setuptools.package-data]
 'fitter_data' = ['**/*.yaml']
 
-[tool.ruff]
-select = ["F", "PL", "B"]
+[tool.ruff.lint]
+select = ["F", "PL", "B", 'A']
 
 [tool.pyright]
 include = ["src"]
