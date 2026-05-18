@@ -47,14 +47,14 @@ class ZFitPlotterConf(BaseModel):
     d_leg           : dict[str,str]             = Field(default_factory=dict)
     # ---------------------------
     @classmethod
-    def default(cls) -> Self:
+    def default(cls, stacked : bool = True) -> Self:
         '''
         Returns default instance of current class
         '''
         return cls(
             nbins           = 50,
             plot_components = [],
-            stacked         = False)
+            stacked         = stacked)
 #----------------------------------------
 class ZFitPlotter:
     '''
