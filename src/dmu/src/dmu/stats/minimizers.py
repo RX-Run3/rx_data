@@ -222,14 +222,17 @@ class AnealingMinimizer:
                 continue
 
             try:
-                obj = _calculate_errors(res = obj)
+                obj = _calculate_errors(res = obj, cfg = self._cfg)
             except MinimizerFailError as exc:
                 log.warning(f'Could not calculate error: {exc}')
                 continue
 
             gcl = GofCalculator(nll = loss)
             gof = gcl.get_gof()
-            res = FitResult.from_zfit(res = obj, gof = gof)
+            res = FitResult.from_zfit(
+                res          = obj, 
+                gof          = gof,
+                no_errors_ok = not self._cfg.do_errors)
 
             if res.cov_status != 0:
                 log.warning('Found invalid covariance')
@@ -331,7 +334,7 @@ class ContextMinimizer:
 
         return frs
 # ------------------------
-def _calculate_errors(res : zres) -> zres:
+def _calculate_errors(res : zres, cfg : FitConf) -> zres:
     '''
     Parameters
     -------------
@@ -342,6 +345,10 @@ def _calculate_errors(res : zres) -> zres:
     Result of fit after error calculation
     None if error could not be calculated after 10 attempts
     '''
+    if not cfg.do_errors:
+        log.warning('Not calculating fit errors')
+        return res
+
     log.debug('Calculating errors')
 
     for method in ['minuit_hesse', 'approx']:
@@ -403,7 +410,7 @@ def minimize(
     gof = gcl.get_gof()
 
     if isinstance(obj, zres):
-        obj = _calculate_errors(res = obj)
+        obj = _calculate_errors(res = obj, cfg = cfg)
         res = FitResult.from_zfit(res = obj, gof = gof)
     else:
         res = obj

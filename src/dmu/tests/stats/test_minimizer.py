@@ -7,6 +7,8 @@ from dmu         import LogStore
 from dmu.stats   import AnealingMinimizer
 from dmu.stats   import ContextMinimizer
 from dmu.stats   import zfit
+from dmu.stats   import FitConf
+from dmu.stats   import Retries
 from dmu.testing import get_nll
 from dmu.testing import SumLiteral
 
@@ -16,12 +18,21 @@ log = LogStore.add_logger('dmu:ml:test_minimizer')
 def initialize():
     LogStore.set_level('dmu:ml:minimizers', 10)
 # -------------------------------------------
-def test_anealing():
+@pytest.mark.parametrize('do_errors', [True, False])
+def test_anealing(do_errors : bool):
     '''
     Test AnealingMinimizer with chi2
     '''
+    strategy  = Retries(
+        ntries = 5,
+        pvalue = 0.05)
+
+    cfg       = FitConf(
+        strategy  = strategy,
+        do_errors = do_errors)
+
     nll       = get_nll(kind = 's+b')
-    minimizer = AnealingMinimizer()
+    minimizer = AnealingMinimizer(cfg = cfg)
     res       = minimizer.get_result(nll)
 
     print(res)
