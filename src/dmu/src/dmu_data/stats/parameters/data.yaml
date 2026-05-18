@@ -4,9 +4,9 @@ fermi_dirac:
     min : 4500 
     max : 6000 
   ap:
-    val : 0.10 
-    min : 0.03 
-    max : 0.20 
+    val : 100
+    min :  30
+    max : 200
 exp:
   c:
     val : -0.010
