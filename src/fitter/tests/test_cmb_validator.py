@@ -27,21 +27,6 @@ def initialize():
     '''
     LogStore.set_level('fitter:cmb_validator', 10)
 # ----------------------
-def _get_rdf(mass : Mass) -> RDF.RNode:
-    '''
-    Returns dataframe with fake data
-    '''
-    size = 100_000
-    data : dict[str,numpy.ndarray] = {
-        'mva_cmb' : numpy.random.uniform(0, 1, size = size),
-        'mva_prc' : numpy.random.uniform(0, 1, size = size),
-        mass      : truncexpon.rvs(b=2.5, loc=4500, scale=1000, size=size)
-    }
-
-    rdf = RDF.FromNumpy(data)
-
-    return rdf
-# ----------------------
 @pytest.mark.parametrize('mass'   , [Mass.bp_bcor])
 @pytest.mark.parametrize('cutflow', ['cmb_window'])
 def test_config(
@@ -70,6 +55,28 @@ def test_config(
         input      = input,
         validation = validation,
         output     = output)
+# ----------------------
+def _get_rdf(mass : Mass) -> RDF.RNode:
+    '''
+    Parameters
+    --------------
+    mass : Observable that will be fitted in validation
+
+    Returns
+    --------------
+    DataFrame with: mva_cmb, mva_prc, mass
+    '''
+
+    size = 100_000
+    data : dict[str,numpy.ndarray] = {
+        'mva_cmb' : numpy.random.uniform(0, 1, size = size),
+        'mva_prc' : numpy.random.uniform(0, 1, size = size),
+        mass      : truncexpon.rvs(b=2.5, loc=4500, scale=1000, size=size)
+    }
+
+    rdf = RDF.FromNumpy(data)
+
+    return rdf
 # ----------------------
 def _get_df(
     cfg : CmbValidatorConf,
