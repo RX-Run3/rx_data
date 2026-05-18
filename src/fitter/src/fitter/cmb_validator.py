@@ -17,6 +17,7 @@ from dmu.stats   import zfit
 from dmu.generic import utilities as gut
 from rx_common   import Mass
 from rx_common   import Cuts, Qsq, Component, Trigger
+from zfit.pdf    import BasePDF
 
 log=LogStore.add_logger('fitter:cmb_validator')
 
@@ -130,17 +131,17 @@ class CmbValidatorConf(BaseModel):
     def __hash__(self) -> int:
         return hash(self.model_dump_json())
     # ------------------------
-    @property
-    def out_dir(self) -> Path:
+    def out_dir(self, component : Component) -> Path:
         '''
         Path to directory where output should go
         '''
-        model    = '-'.join(self.validation.fit.model.pdfs)
+        cfg_fit  = self.validation.fit[component]
+        model    = '-'.join(cfg_fit.model.pdfs)
         cutflow  = self.input.cutflow
         q2bin    = self.input.q2bin
         trigger  = self.input.trigger
 
-        return self.output.dir_path / f'{trigger.value}/{q2bin}/{cutflow}/{model}'
+        return self.output.dir_path / f'{trigger.value}/{q2bin}/{cutflow}/{component}/{model}'
     # ------------------------
     @property
     def cuts(self) -> dict[str,str]:
@@ -203,16 +204,37 @@ class CmbValidator:
         '''
         Fitting model needed to fit combinatorial proxy
         '''
-        cfg = self._cfg.validation.fit.model
+        l_pdf : list[BasePDF] = []
+        for component, cfg_fit in self._cfg.validation.fit.items():
+            pdf = self._pdf_for_component(component = component, cfg = cfg_fit)
+            nev = zfit.Parameter(f'nev_{component}', 10, 0, 1000_000)
+            pdf = pdf.create_extended(nev, name = component.latex)
+
+            l_pdf.append(pdf)
+
+        return zfit.pdf.SumPDF(l_pdf) 
+    # ----------------------
+    def _pdf_for_component(self, component : Component, cfg : CmbFitConf) -> zfit.pdf.BasePDF:
+        '''
+        Parameters
+        -------------
+        component: Component to fit, e.g. data
+        cfg      : Configuration for fit
+
+        Returns
+        -------------
+        PDF needed to model component
+        '''
         obj = ModelFactory.from_conf(
             obs    = self._cfg.input.mass.obs,
             prefix = PDF_PREFIX,
-            cfg    = cfg)
-
+            cfg    = cfg.model)
         pdf = obj.get_pdf()
 
-        nev = zfit.Parameter('nev', 10, 0, 1000_000)
-        pdf = pdf.create_extended(nev, name = 'Model')
+        if not component.is_mc:
+            return pdf
+
+        # TODO: Add fit to MC here
 
         return pdf
     # ---------------------------
@@ -246,20 +268,25 @@ class CmbValidator:
         self, 
         label: str,
         name : str,
+        comp : Component,
+        model: zfit.pdf.BasePDF,
         data : numpy.ndarray) -> FitResult | None:
         '''
         Parameters
         -------------
         label: Identifier for validation run
         name : Used for naming plots
+        comp : Component that will be fitted
+        model: PDF to fit
         data : Array with data to fit
         '''
         obj = Fitter(
-            pdf  = self.model, 
+            pdf  = model, 
             data = data)
 
+        cfg = self._cfg.validation.fit[comp]
         try:
-            res = obj.fit(cfg = self._cfg.validation.fit.conf)
+            res = obj.fit(cfg = cfg.conf)
         except Exception:
             log.warning(f'Fit failed: {label}/{name}')
             return None
@@ -269,7 +296,7 @@ class CmbValidator:
             data   = data)
         ptr.run(cfg = self._cfg.output.plots)
 
-        out_dir = self._cfg.out_dir / label
+        out_dir = self._cfg.out_dir(component = comp) / label
         out_dir.mkdir(parents = True, exist_ok = True)
 
         plt.savefig(out_dir / f'{name}.png')
@@ -291,6 +318,8 @@ class CmbValidator:
             res = self._fit(
                 label= label,
                 name = cut_name,
+                comp = Component.data_24,
+                model= self.model,
                 data = data)
 
             if res is None:
