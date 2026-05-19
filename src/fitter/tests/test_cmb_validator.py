@@ -175,3 +175,51 @@ def test_validation(
     ptr = BandPlotter(df = df, cfg = cfg_plt)
     ptr.plot()
 # ----------------------
+@pytest.mark.parametrize('mass'   , [Mass.bp_bcor])
+@pytest.mark.parametrize('cutflow', ['cmb_window'])
+def test_kde_fit(
+    tmp_path: Path,
+    mass    : Mass,
+    cutflow : str):
+    '''
+    Test fitting extra component with kde 
+    '''
+    cfg_input   = CmbInputConfig(
+        q2bin   = Qsq.central,
+        mass    = mass,
+        trigger = Trigger.rk_ee_ss,
+        samples = [Component.data_24, Component.bpkpee],
+        cutflow = cutflow,
+    )
+
+    output      = CmbOutputConfig(
+        dir_path= tmp_path,
+        plots   = ZFitPlotterConf.default(),
+    )
+
+    validation = CmbValidationConfig.from_file(fname = 'combinatorial/test_kde.yaml') 
+
+    cfg = CmbValidatorConf(
+        input      = cfg_input,
+        validation = validation,
+        output     = output,
+    )
+
+    l_df : list[pnd.DataFrame] = []
+    for cat in ['c1', 'c2']:
+        df             = _get_df(cfg = cfg, mass = mass)
+        df['Category'] = cat
+        l_df.append(df)
+
+    df   = pnd.concat(l_df)
+    data = gut.load_data(
+        package = 'fitter_data', 
+        fpath   = 'combinatorial/test_plots.yaml')
+    data['out_dir'] = tmp_path
+
+    cfg_plt = BandPlotterConf(**data)
+    cfg_plt = cfg_plt.model_copy(update = {'out_dir' : tmp_path})
+
+    ptr = BandPlotter(df = df, cfg = cfg_plt)
+    ptr.plot()
+# ----------------------
