@@ -281,6 +281,9 @@ class CmbValidator:
         log.debug(f'Applying selection {cut} for {component}')
         rdf    = self._rdfs[component].Filter(cut)
         masses = rdf.AsNumpy([mass])[mass]
+        if len(masses) < _MIN_DATA_SIZE:
+            log.warning(f'Found {len(masses)} entries for {component} at {name}, skipping')
+            return None
 
         if not pdf:
             log.info(f'Using KDE for: {component}')
@@ -295,10 +298,6 @@ class CmbValidator:
             return model
         else:
             log.info(f'Using {cfg.model} for {component}')
-
-        if len(masses) < _MIN_DATA_SIZE:
-            log.warning(f'Found {len(masses)} entries for {component} at {name}, skipping')
-            return None
 
         log.info(f'Found {len(masses)} entries for {component} at {name}')
         self._fit(
