@@ -40,8 +40,8 @@ def _get_conf() -> CmbValidatorConf:
 
     samples : list[Component] = [
         Component.bpkpee, 
-        Component.bpkpjpsiee,
-        Component.data_24]
+        Component.data_24,
+    ]
 
     ana_dir  = Path(os.environ['ANADIR'])
     cfg_input= CmbInputConfig(

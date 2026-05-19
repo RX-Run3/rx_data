@@ -49,10 +49,3 @@ fit:
         ntries : 10
         pvalue : 0.05
     model: null
-  bpkpjpsiee:
-    conf:
-      do_errors: False
-      strategy:
-        ntries : 10
-        pvalue : 0.05
-    model: null
