@@ -58,18 +58,18 @@ def _validate_scales(scales : Any) -> None:
     assert isinstance(err, float)
 #-------------------------------
 @pytest.mark.parametrize('q2bin'    , [
-    Qsq.low, 
-    Qsq.central, 
+    Qsq.low,
+    Qsq.central,
     Qsq.high])
 @pytest.mark.parametrize('component', [
-    Component.bdkstkpiee, 
+    Component.bdkstkpiee,
     Component.bpkstkpiee,
     Component.bsphiee])
 @pytest.mark.parametrize('brem', [ Brem.one, Brem.two, Brem.brx12 ])
 def test_all_datasets(
-    q2bin    : Qsq, 
+    q2bin    : Qsq,
     brem     : Brem,
-    component: Component, 
+    component: Component,
     tmp_path : Path):
     '''
     Tests retrieval of scales between signal and PRec yields
@@ -79,7 +79,7 @@ def test_all_datasets(
         obj    = PrecScales(
             output_directory= tmp_path,
             brem            = brem,
-            comp            = component, 
+            comp            = component,
             q2bin           = q2bin)
 
         scales = obj.get_scale(signal=signal)
@@ -87,18 +87,18 @@ def test_all_datasets(
     _validate_scales(scales = scales)
 #-------------------------------
 @pytest.mark.parametrize('q2bin'    , [
-    Qsq.low, 
-    Qsq.central, 
+    Qsq.low,
+    Qsq.central,
     Qsq.high])
 @pytest.mark.parametrize('component', [
-    Component.bdkstkpiee, 
+    Component.bdkstkpiee,
     Component.bpkstkpiee,
     Component.bsphiee])
 @pytest.mark.parametrize('mva_cut', _get_seq_wp(min_cmb=0.9, min_prc=0.9, step=0.1))
 @pytest.mark.parametrize('brem', [ Brem.one, Brem.two, Brem.brx12 ])
 def test_seq_scan_scales(
-    mva_cut   : str, 
-    q2bin     : Qsq, 
+    mva_cut   : str,
+    q2bin     : Qsq,
     brem      : Brem,
     component : Component,
     tmp_path  : Path) -> None:
@@ -110,7 +110,7 @@ def test_seq_scan_scales(
          Cache.cache_root(path = tmp_path):
         obj    = PrecScales(
             output_directory= tmp_path,
-            comp            = component, 
+            comp            = component,
             brem            = brem,
             q2bin           = q2bin)
         scales = obj.get_scale(signal=signal)
