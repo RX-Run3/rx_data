@@ -1,4 +1,7 @@
-ntoys : 0
+project:
+  - rk
+channel:
+  - ee
 # ----------------
 qsq_bin:
   - low
