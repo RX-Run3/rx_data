@@ -43,8 +43,8 @@ def _get_conf() -> CmbValidatorConf:
         Component.bpkpjpsiee,
         Component.data_24]
 
-    ana_dir = Path(os.environ['ANADIR'])
-    input   = CmbInputConfig(
+    ana_dir  = Path(os.environ['ANADIR'])
+    cfg_input= CmbInputConfig(
         cutflow = args.cutflow,
         samples = samples,
         trigger = args.trigger,
@@ -62,7 +62,7 @@ def _get_conf() -> CmbValidatorConf:
     )
 
     return CmbValidatorConf(
-        input      = input,
+        input      = cfg_input,
         output     = output,
         validation = validation)
 # ----------------------
@@ -287,7 +287,11 @@ def main():
     '''
     cfg     = _get_conf()
     l_df_ss = _get_ss_df(cfg = cfg)
-    l_df_os = _get_os_df(cfg = cfg, df_ss = l_df_ss[0])
+
+    if cfg.input.q2bin.is_rare:
+        l_df_os = _get_os_df(cfg = cfg, df_ss = l_df_ss[0])
+    else:
+        l_df_os = []
 
     df = pnd.concat(l_df_ss + l_df_os, ignore_index=True)
     _plot(df = df, cfg_val = cfg)
