@@ -31,8 +31,8 @@ fit:
   data_24:
     conf:
       strategy:
-        ntries : 10
-        pvalue : 0.05
+        ntries : 15
+        pvalue : 0.99
     model:
       pdfs:
         - hypexp 
