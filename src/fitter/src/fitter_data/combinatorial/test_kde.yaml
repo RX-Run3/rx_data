@@ -1,0 +1,27 @@
+selection:
+  prc     : mva_prc > 0.6
+cutflows:
+  cmb_window:
+    0.02-0.50 : mva_cmb > 0.20 && mva_cmb < 0.50
+    0.50-0.80 : mva_cmb > 0.50 && mva_cmb < 0.80
+    0.80-1.00 : mva_cmb > 0.80 && mva_cmb < 1.00
+fit:
+  bpkpee :
+    conf:
+      strategy:
+        ntries : 10
+        pvalue : 0.05
+    model: null
+  data_24:
+    conf:
+      strategy:
+        ntries : 10
+        pvalue : 0.05
+    model:
+      pdfs:
+        - hypexp 
+      shared       : []
+      reparametrize: {}
+      floating     : []
+      fix          :
+        mu : 4700
