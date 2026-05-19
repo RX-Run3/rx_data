@@ -121,10 +121,23 @@ class CmbValidatorConf(BaseModel):
     # ------------------------
     @model_validator(mode = 'after')
     def validate_samples(self) -> 'CmbValidatorConf':
+        '''
+        Check that every sample requested
+        has a config section in the yaml file
+        '''
         in_samples = set(self.input.samples)
         ot_samples = set(self.validation.fit)
 
-        assert in_samples == ot_samples
+        fail = False
+        for needed_sample in in_samples:
+            if needed_sample in ot_samples:
+                continue
+
+            log.error(f'Missing {needed_sample} in config file')
+            fail = True
+
+        if fail:
+            raise ValueError('At least one sample missing in config')
 
         return self
     # ------------------------
