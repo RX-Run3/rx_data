@@ -1,3 +1,5 @@
+# This file configures scanning used for MVA WP optimization
+
 mva_cmb:
   - '030'
   - '040'

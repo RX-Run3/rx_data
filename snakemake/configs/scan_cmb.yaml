@@ -1,3 +1,5 @@
+# This file configures scanning for validation of combinatorial shape
+
 mva_cmb:
   - 000-002
   - 002-004
