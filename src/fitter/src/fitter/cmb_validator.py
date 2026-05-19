@@ -241,7 +241,7 @@ class CmbValidator:
         if len(l_pdf) == 1:
             return l_pdf[0]
 
-        return zfit.pdf.SumPDF(l_pdf) 
+        return zfit.pdf.SumPDF(l_pdf, obs = self._cfg.input.mass.obs) 
     # ----------------------
     def _pdf_for_component(
         self, 
@@ -287,8 +287,9 @@ class CmbValidator:
 
         if not pdf:
             log.info(f'Using KDE for: {component}')
-            obs   = zfit.Space(mass.value, limits = (4500, 6000))
+            obs   = zfit.Space('mass', limits = (4500, 6000))
             model = zfit.pdf.KDE1DimFFT(
+                name = component.latex,
                 data = masses, 
                 obs  = obs,
                 norm = mass.obs)
