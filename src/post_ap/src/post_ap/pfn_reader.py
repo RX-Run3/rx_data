@@ -140,6 +140,44 @@ class Sample(BaseModel):
             raise ValueError(f'Cannot extract block identifier from: {self.name}')
 
         return mtch.group(1)
+    # ---------------------------
+    @cached_property
+    def block(self) -> int:
+        '''
+        Associations taken from:
+
+        https://lhcb-simulation.web.cern.ch/WPP/MCsamples.html#samples
+        '''
+        log.debug('Picking up blocks')
+
+        blocks : list[int] = []
+
+        if '_w31_'    in self.name:
+            blocks.append(1)
+
+        if '_w32_34_' in self.name:
+            blocks.append(2)
+
+        if '_w25_27_' in self.name:
+            blocks.append(4)
+
+        if '_w35_37_' in self.name:
+            blocks.append(5)
+
+        if '_w37_39_' in self.name:
+            blocks.append(6)
+
+        if '_w40_41_' in self.name:
+            blocks.append(7)
+
+        if '_w41_42_' in self.name:
+            blocks.append(8)
+
+        if len(blocks) != 1:
+            log.error(f'Blocks: {blocks}')
+            raise ValueError(f'Cannot find one and only one block for sample: {self.name}')
+
+        return blocks[0]
     # ------------------------------
     @cached_property
     def analysis(self) -> str:
@@ -330,6 +368,10 @@ class Sample(BaseModel):
         return triggers
     # ------------------------------
     @cached_property
+    def hash(self) -> str:
+        return hashing.hash_object([self.name])
+    # ------------------------------
+    @cached_property
     def triggers(self) -> list[Trigger]:
         '''
         Triggers associated to current sample
@@ -356,10 +398,9 @@ class Sample(BaseModel):
         paths : dict[Trigger, Path] = {}
         for trigger in self.triggers:
             target_path = ana_dir / f'Data/{trigger.project}/main'
-            hsh         = hashing.hash_object([self.name])
             component   = Component.from_event_type(etype = self.event_type)
             sample      = component.sample.lower()
-            file_name   = f'mc_{self.polarity}_{self.event_type}_{sample}_{trigger}_{hsh}.root'
+            file_name   = f'mc_{self.polarity}_{self.event_type}_{sample}_{trigger}_{self.hash}.root'
             target_path = target_path / f'latest/{file_name}'
 
             log.debug(f'Target path: {target_path}')

@@ -242,4 +242,27 @@ def test_target_paths():
         for sample in samples:
             log.info(sample.name)
             log.info(f'   {sample.target_paths}')
+# -----------------------------
+def test_hash():
+    '''
+    Test that sample container can be iterated
+    '''
+    cfg_prod = ProductionConf(
+        versions = {'all' : 'v1r5849'},
+        samples  = {'all' : None},
+        fractions= dict(),
+    )
 
+    cfg     = PFNReaderConf(
+        working_group='RD',
+        productions  = {Production.rx_filter : cfg_prod},
+    )
+
+    reader  = PFNReader(cfg=cfg)
+    samples = reader.get_samples(
+        production=Production.rx_filter, 
+        nickname  ='all')
+
+    for sample in samples:
+        log.info(f'{sample.hash:<20}{sample.block:<50}')
+# -----------------------------
