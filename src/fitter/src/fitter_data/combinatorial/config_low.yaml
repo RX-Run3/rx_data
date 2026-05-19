@@ -1,33 +1,50 @@
 selection:
-  leakage : (TMath::Abs(B_const_mass_M - 5280) > 200) # && (TMath::Abs(B_const_mass_psi2S_M - 5280) > 100)
+  truth   : (1)
   cmb     : (1)
   prc     : mva_prc > 0.6
   mass    : (1)
 cutflows:
   cmb_window:
-    0.00-0.02 : mva_cmb > 0.00 && mva_cmb < 0.02
-    0.02-0.04 : mva_cmb > 0.02 && mva_cmb < 0.04
-    0.04-0.07 : mva_cmb > 0.04 && mva_cmb < 0.07
-    0.07-0.10 : mva_cmb > 0.07 && mva_cmb < 0.10
-    0.10-0.20 : mva_cmb > 0.10 && mva_cmb < 0.20
-    0.20-0.30 : mva_cmb > 0.20 && mva_cmb < 0.30
-    0.30-0.40 : mva_cmb > 0.30 && mva_cmb < 0.40
-    0.40-0.50 : mva_cmb > 0.40 && mva_cmb < 0.50
-    0.50-0.60 : mva_cmb > 0.50 && mva_cmb < 0.60
-    0.60-0.70 : mva_cmb > 0.60 && mva_cmb < 0.70
-    0.70-0.80 : mva_cmb > 0.70 && mva_cmb < 0.80
-    0.80-0.90 : mva_cmb > 0.80 && mva_cmb < 0.90
-    0.90-1.00 : mva_cmb > 0.90 && mva_cmb < 1.00
+    0.10-0.15 : mva_cmb > 0.10 && mva_cmb < 0.15
+    0.15-0.20 : mva_cmb > 0.15 && mva_cmb < 0.20
+    0.20-0.25 : mva_cmb > 0.20 && mva_cmb < 0.25
+    0.25-0.30 : mva_cmb > 0.25 && mva_cmb < 0.30
+    0.30-0.35 : mva_cmb > 0.30 && mva_cmb < 0.35
+    0.35-0.40 : mva_cmb > 0.35 && mva_cmb < 0.40
+    0.40-0.45 : mva_cmb > 0.40 && mva_cmb < 0.45
+    0.45-0.50 : mva_cmb > 0.45 && mva_cmb < 0.50
+    0.50-0.55 : mva_cmb > 0.50 && mva_cmb < 0.55
+    0.55-0.60 : mva_cmb > 0.55 && mva_cmb < 0.60
+    0.60-0.65 : mva_cmb > 0.60 && mva_cmb < 0.65
+    0.65-0.70 : mva_cmb > 0.65 && mva_cmb < 0.70
+    0.70-0.75 : mva_cmb > 0.70 && mva_cmb < 0.75
+    0.75-0.80 : mva_cmb > 0.75 && mva_cmb < 0.80
+    0.80-0.85 : mva_cmb > 0.80 && mva_cmb < 0.85
+    0.85-0.90 : mva_cmb > 0.85 && mva_cmb < 0.90
+    0.90-0.95 : mva_cmb > 0.90 && mva_cmb < 0.95
+    0.95-1.00 : mva_cmb > 0.95 && mva_cmb < 1.00
+  cmb_test:
+    0.10-0.40 : mva_cmb > 0.10 && mva_cmb < 0.40
+    0.40-0.70 : mva_cmb > 0.40 && mva_cmb < 0.70
+    0.70-1.00 : mva_cmb > 0.70 && mva_cmb < 1.00
 fit:
-  conf:
-    strategy:
-      ntries : 10
-      pvalue : 0.05
-  model:
-    pdfs:
-      - hypexp 
-    shared       : []
-    reparametrize: {}
-    floating     : []
-    fix          :
-      mu : 4800
+  data_24:
+    conf:
+      strategy:
+        ntries : 10
+        pvalue : 0.05
+    model:
+      pdfs:
+        - hypexp 
+      shared       : []
+      reparametrize: {}
+      floating     : []
+      fix          :
+        mu : 4800
+  bpkpee:
+    conf:
+      do_errors: False
+      strategy:
+        ntries : 10
+        pvalue : 0.05
+    model: null
