@@ -50,7 +50,7 @@ def test_config(
         plots   = ZFitPlotterConf.default(),
     )
 
-    validation = CmbValidationConfig.from_file(fname = 'combinatorial/test_config.yaml') 
+    validation = CmbValidationConfig.from_file(fname = 'combinatorial/test_parametric.yaml') 
 
     return CmbValidatorConf(
         input      = input,
@@ -136,7 +136,7 @@ def test_validation(
     '''
     Test actual validation
     '''
-    input       = CmbInputConfig(
+    cfg_input   = CmbInputConfig(
         q2bin   = Qsq.central,
         mass    = mass,
         trigger = Trigger.rk_ee_ss,
@@ -149,10 +149,10 @@ def test_validation(
         plots   = ZFitPlotterConf.default(),
     )
 
-    validation = CmbValidationConfig.from_file(fname = 'combinatorial/test_config.yaml') 
+    validation = CmbValidationConfig.from_file(fname = 'combinatorial/test_parametric.yaml') 
 
     cfg = CmbValidatorConf(
-        input      = input,
+        input      = cfg_input,
         validation = validation,
         output     = output,
     )

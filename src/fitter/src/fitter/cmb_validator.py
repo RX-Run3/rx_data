@@ -30,7 +30,7 @@ class CmbFitConf(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     conf : FitConf 
-    model: ModelFactoryConf
+    model: ModelFactoryConf | None
 # --------------------------------
 class CmbInputConfig(BaseModel):
     '''
@@ -136,7 +136,10 @@ class CmbValidatorConf(BaseModel):
         Path to directory where output should go
         '''
         cfg_fit  = self.validation.fit[component]
-        model    = '-'.join(cfg_fit.model.pdfs)
+        model    = cfg_fit.model
+        pdfs     = model.pdfs if model else ['kde']
+
+        model    = '-'.join(pdfs)
         cutflow  = self.input.cutflow
         q2bin    = self.input.q2bin
         trigger  = self.input.trigger
@@ -212,7 +215,7 @@ class CmbValidator:
 
         Returns
         ----------------
-        PDF used for fit
+        PDF used for fit to data
         '''
         l_pdf : list[BasePDF] = []
         for component in self._cfg.input.samples:
@@ -231,7 +234,7 @@ class CmbValidator:
 
             par_name = f'nev_{component}' if component.is_mc else 'nev'
             nev      = zfit.Parameter(par_name, 10, 0, 1000_000)
-            pdf      = pdf.create_extended(nev, name = component.latex)
+            pdf.set_yield(nev)
 
             l_pdf.append(pdf)
 
@@ -258,20 +261,32 @@ class CmbValidator:
         PDF needed to model component or None if fewer than
         _MIN_DATA_SIZE entries found
         '''
+        log.info('Building parametric PDF for {component}')
         mass = self._cfg.input.mass
-        obj  = ModelFactory.from_conf(
-            obs    = mass.obs, 
-            prefix = _PDF_PREFIX,
-            cfg    = cfg.model)
-        pdf = obj.get_pdf()
 
-        if not component.is_mc:
+        pdf = None
+        if cfg.model:
+            obj  = ModelFactory.from_conf(
+                obs    = mass.obs, 
+                prefix = _PDF_PREFIX,
+                cfg    = cfg.model)
+            pdf = obj.get_pdf()
+
+        if not pdf and not component.is_mc:
+            raise ValueError(f'Missing model for {component}')
+        elif           not component.is_mc:
             log.debug(f'Component {component} is not MC, not fitting')
             return pdf
 
         log.debug(f'Applying selection {cut} for {component}')
         rdf    = self._rdfs[component].Filter(cut)
         masses = rdf.AsNumpy([mass])[mass]
+
+        if not pdf:
+            log.info(f'Using KDE for: {component}')
+            return zfit.pdf.KDE1DimFFT(data = masses, obs = mass.obs)
+        else:
+            log.info(f'Using {cfg.model} for {component}')
 
         if len(masses) < _MIN_DATA_SIZE:
             log.warning(f'Found {len(masses)} entries for {component} at {name}, skipping')
@@ -284,6 +299,9 @@ class CmbValidator:
             data  = masses,
             name  = name,
             label = label)
+
+        if not cfg.model:
+            return pdf
 
         log.debug('Fixing parameters:')
         for par in pdf.get_params():
