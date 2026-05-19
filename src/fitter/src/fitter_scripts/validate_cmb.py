@@ -39,8 +39,8 @@ def _get_conf() -> CmbValidatorConf:
     args = parser.parse_args()
 
     samples : list[Component] = [
-        Component.bpkpee, 
         Component.data_24,
+        Component.bpkpee, 
     ]
 
     ana_dir  = Path(os.environ['ANADIR'])
