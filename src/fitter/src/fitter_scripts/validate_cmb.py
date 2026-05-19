@@ -114,13 +114,13 @@ def _get_pars(
     -----------------
     dataframe with parameters
     '''
-    out_path = cfg.out_dir(component = Component.data_24) / f'{label}/parameters.parquet'
+    parquet_path = cfg.out_dir(component = Component.data_24) / f'{label}/parameters.parquet'
 
-    if out_path.exists():
-        log.info(f'Parameters found from cache, loading: {out_path}')
-        return pnd.read_parquet(path = out_path)
+    if parquet_path.exists():
+        log.info(f'Parameters found from cache, loading: {parquet_path}')
+        return pnd.read_parquet(path = parquet_path)
 
-    log.info(f'Parameters not found from cache: {out_path}')
+    log.info(f'Parameters not found from cache: {parquet_path}')
 
     rdfs = _get_rdfs(cfg = cfg, cut = cut)
 
@@ -129,8 +129,8 @@ def _get_pars(
         cfg  = cfg)
     res = obj.run(label = label)
 
-    log.info(f'Caching to: {out_path}')
-    res.df.to_parquet(path = out_path)
+    log.info(f'Caching to: {parquet_path}')
+    res.df.to_parquet(path = parquet_path)
 
     return res.df
 # --------------------------------
