@@ -279,10 +279,13 @@ class CmbValidator:
             return pdf
 
         log.debug(f'Applying selection {cut} for {component}')
-        rdf    = self._rdfs[component].Filter(cut)
-        masses = rdf.AsNumpy([mass])[mass]
-        if len(masses) < _MIN_DATA_SIZE:
-            log.warning(f'Found {len(masses)} entries for {component} at {name}, skipping')
+        rdf              = self._rdfs[component].Filter(cut)
+        masses           = rdf.AsNumpy([mass])[mass]
+        lower, upper     = self._cfg.input.mass.limits
+        masses_in_bounds = masses[(masses > lower) & (masses < upper)]
+
+        if len(masses_in_bounds) < _MIN_DATA_SIZE:
+            log.warning(f'Found {len(masses_in_bounds)} entries for {component} at {name}, skipping')
             return None
 
         if not pdf:
@@ -404,7 +407,10 @@ class CmbValidator:
         '''
         log.debug('Plotting fit')
 
-        title      = f'{name}; Entries = {len(data)}'
+        lower, upper   = self._cfg.input.mass.limits
+        data_in_bounds = data[(data > lower) & (data < upper)]
+
+        title      = f'{name}; Entries = {len(data_in_bounds)}'
         cfg_plt    = self._cfg.output.plots.model_copy(update = {'title' : title})
 
         ptr        = ZFitPlotter(
