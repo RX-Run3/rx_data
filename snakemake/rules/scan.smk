@@ -47,10 +47,9 @@ rule fits:
         name  = name,
         ntoys = ntoys,
         toycfg= toycfg,
-    container:
-        'gitlab-registry.cern.ch/lhcb-rd/cal-rx-run3:97024d733'
     resources:
-        kubernetes_memory_limit='5000Mi'
+        htcondor_request_mem_mb  = 4000,
+        htcondor_request_disk_mb = 2000,
     shell :
         '''
         source setup.sh
