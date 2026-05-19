@@ -21,17 +21,13 @@ styles  :
   bt_hypexp_cmb_1:
     <<: *style
     ylabel: $\beta$
-    yrange: [0., 0.003]
+    yrange: [0., 0.006]
   pvalue:
     <<: *style
     ylabel    : p-value 
     yrange    : [0.0, 1.0]
 labels :
-  +++  : +++
-  +--  : +--
-  Both : Both
+  SS : SS 
 groups :
   all:
-    - +++ 
-    - +--
-    - Both
+    - SS 
