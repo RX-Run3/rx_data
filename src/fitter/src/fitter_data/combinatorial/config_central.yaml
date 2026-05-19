@@ -43,18 +43,7 @@ fit:
       strategy:
         ntries : 10
         pvalue : 0.05
-    model:
-      pdfs:
-        - dscb 
-      shared       : []
-      reparametrize: {}
-      floating     : []
-      fix          : {}
-      values:
-        mu:
-          - 4600
-          - 4000
-          - 5000
+    model: null
   bpkpjpsiee:
     conf:
       do_errors: False
