@@ -284,7 +284,15 @@ class CmbValidator:
 
         if not pdf:
             log.info(f'Using KDE for: {component}')
-            return zfit.pdf.KDE1DimFFT(data = masses, obs = mass.obs)
+            model = zfit.pdf.KDE1DimFFT(data = masses, obs = mass.obs)
+            self._plot_fit(
+                data  = masses,
+                model = model,
+                label = label,
+                name  = name ,
+                comp  = component )
+
+            return model
         else:
             log.info(f'Using {cfg.model} for {component}')
 
@@ -364,10 +372,36 @@ class CmbValidator:
             log.warning(f'Fit failed: {label}/{name}')
             return None
 
+        self._plot_fit(
+            data  = data ,
+            model = model,
+            label = label,
+            name  = name ,
+            comp  = comp )
+
+        return res
+    # ----------------------
+    def _plot_fit(
+        self,
+        data : numpy.ndarray,
+        model: zfit.pdf.BasePDF,
+        label: str,
+        name : str,
+        comp : Component) -> None:
+        '''
+        Parameters
+        -------------
+        label: Identifier for validation run
+        name : Used for naming plots
+        comp : Component that will be fitted
+        model: PDF to fit
+        data : Array with data to fit
+        '''
         log.debug('Plotting fit')
 
         title      = f'{name}; Entries = {len(data)}'
         cfg_plt    = self._cfg.output.plots.model_copy(update = {'title' : title})
+
         ptr        = ZFitPlotter(
             model  = model,
             data   = data)
@@ -381,8 +415,6 @@ class CmbValidator:
         log.debug(f'Saving plot to: {out_path}')
         plt.savefig(out_path)
         plt.close('all')
-
-        return res
     # ---------------------------
     def run(
         self,
