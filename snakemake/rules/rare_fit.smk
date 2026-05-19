@@ -28,7 +28,7 @@ rule all:
 # ---------------------
 rule fits:
     output: f'{out_path}/{group_name}/{{cmb}}_{{prc}}_all/{mode}/{{prj}}/{{chn}}/{{qsq}}/data_24/fit/brem_x12/brem_x12/fit_linear.png'
-    log: 
+    log:
         prc = f'{LOGDIR}/{{cmb}}_{{prc}}_{{prj}}_{{chn}}_{{qsq}}.prc',
         err = f'{LOGDIR}/{{cmb}}_{{prc}}_{{prj}}_{{chn}}_{{qsq}}.err',
         out = f'{LOGDIR}/{{cmb}}_{{prc}}_{{prj}}_{{chn}}_{{qsq}}.out',
