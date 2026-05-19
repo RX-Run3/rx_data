@@ -261,7 +261,7 @@ class CmbValidator:
         PDF needed to model component or None if fewer than
         _MIN_DATA_SIZE entries found
         '''
-        log.info('Building parametric PDF for {component}')
+        log.info(f'Building parametric PDF for {component}')
         mass = self._cfg.input.mass
 
         pdf = None
