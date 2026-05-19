@@ -287,7 +287,7 @@ class CmbValidator:
 
         if not pdf:
             log.info(f'Using KDE for: {component}')
-            obs   = zfit.Space('mass', limits = (4500, 6000))
+            obs   = zfit.Space('mass', limits = (4000, 6000))
             model = zfit.pdf.KDE1DimFFT(
                 name = component.latex,
                 data = masses, 
