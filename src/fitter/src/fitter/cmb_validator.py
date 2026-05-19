@@ -21,7 +21,7 @@ from zfit.pdf    import BasePDF
 log=LogStore.add_logger('fitter:cmb_validator')
 
 _PDF_PREFIX    : Final[str] = 'cmb'
-_MIN_DATA_SIZE : Final[int] = 100
+_MIN_DATA_SIZE : Final[int] = 50
 # --------------------------------
 class CmbFitConf(BaseModel):
     '''
@@ -287,7 +287,12 @@ class CmbValidator:
 
         if not pdf:
             log.info(f'Using KDE for: {component}')
-            model = zfit.pdf.KDE1DimFFT(data = masses, obs = mass.obs)
+            obs   = zfit.Space(mass, limits = (4500, 6000))
+            model = zfit.pdf.KDE1DimFFT(
+                data = masses, 
+                obs  = obs,
+                norm = mass.obs)
+
             self._plot_fit(
                 data  = masses,
                 model = model,
