@@ -115,13 +115,19 @@ def organize_paths(
 # ----------------------
 @app.command()
 def patch_files(
-    version : str     = typer.Option(..., '--version', '-v'),
-    project : Project = typer.Option(..., '--project', '-p')) -> None:
+    version : str     = typer.Option(..., '--version', '-v', help = 'Version of ntuples in main trees'),
+    project : Project = typer.Option(..., '--project', '-p', help = 'Project, e.g. rk')) -> None:
+    '''
+    Used to add or fix branches in main trees of specific set of ntuples
+    '''
+    ntup_dir = _ANADIR / 'Data' / project / f'main/{version}'
+    paths    = list(ntup_dir.rglob('*.root'))
+    if not paths:
+        raise ValueError(f'No path found in: {ntup_dir}')
 
-    ptc = FilePatcher(
-        version = version,
-        project = project)
-    ptc.run()
+    ptc = FilePatcher()
+    for path in tqdm.tqdm(paths, ascii = ' -'):
+        ptc.run(path = path)
 # ----------------------
 if __name__ == '__main__':
     app()
