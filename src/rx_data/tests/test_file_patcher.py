@@ -17,7 +17,7 @@ def initialize():
     '''
     LogStore.set_level('rx_data:file_patcher', 10)
 # -----------------------------------------
-def _make_input(path : Path) -> None:
+def _make_input(path : Path, add_block : bool = False) -> None:
     '''
     Makes dummy data
     '''
@@ -26,6 +26,8 @@ def _make_input(path : Path) -> None:
 
     rdf_gen = RDataFrame(100)
     rdf_gen = rdf_gen.Define('b', '1')
+    if add_block:
+        rdf_gen = rdf_gen.Define('block', '2')
 
     opts = RDF.RSnapshotOptions()
     opts.fMode = 'update'
