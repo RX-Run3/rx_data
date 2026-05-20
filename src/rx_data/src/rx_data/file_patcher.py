@@ -27,6 +27,7 @@ class FilePatcher:
         ------------
         dry_run: If true will stop before adding column
         '''
+        self._counter = 0
         self._dry_run = dry_run
         self._blocks : dict[str,int] = gut.load_data(
             package = 'rx_data_data', 
@@ -116,6 +117,10 @@ class FilePatcher:
         1 : Block was added
         2 : Dry run
         '''
+        if self._dry_run:
+            self._counter += 1
+            log.info(f'{self._counter:<20}{path}')
+
         if not path.name.startswith('mc_'):
             log.debug(f'Skipping non MC file: {path}')
             return -3
