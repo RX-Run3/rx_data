@@ -80,8 +80,9 @@ def test_dry_run(tmp_path : Path):
     Test dry run 
     '''
     ptc  = FilePatcher(dry_run = True)
-    hash = list(ptc.hashes)[0]
-    path = tmp_path / f'mc_file_{hash}.root'
-    _make_input(path = path)
 
-    assert ptc.run(path = path) == 2
+    for hash in ptc.hashes:
+        path = tmp_path / f'mc_file_{hash}.root'
+        _make_input(path = path)
+
+        assert ptc.run(path = path) == 2
