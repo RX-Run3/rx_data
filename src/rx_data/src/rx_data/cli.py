@@ -115,8 +115,9 @@ def organize_paths(
 # ----------------------
 @app.command()
 def patch_files(
-    version : str     = typer.Option(..., '--version', '-v', help = 'Version of ntuples in main trees'),
-    project : Project = typer.Option(..., '--project', '-p', help = 'Project, e.g. rk')) -> None:
+    dry_run : bool    = typer.Option(False, '--dry-run', '-d', help = 'Run without making changes'),
+    version : str     = typer.Option(...  , '--version', '-v', help = 'Version of ntuples in main trees'),
+    project : Project = typer.Option(...  , '--project', '-p', help = 'Project, e.g. rk')) -> None:
     '''
     Used to add or fix branches in main trees of specific set of ntuples
     '''
@@ -125,7 +126,7 @@ def patch_files(
     if not paths:
         raise ValueError(f'No path found in: {ntup_dir}')
 
-    ptc = FilePatcher()
+    ptc = FilePatcher(dry_run = dry_run)
     for path in tqdm.tqdm(paths, ascii = ' -'):
         ptc.run(path = path)
 # ----------------------
