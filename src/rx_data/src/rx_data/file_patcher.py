@@ -132,8 +132,8 @@ class FilePatcher:
         if not mtch:
             raise ValueError(f'Cannot extract hash from: {path}')
 
-        hash  = mtch.group(1)
-        block = self._blocks.get(hash)
+        hash_val = mtch.group(1)
+        block    = self._blocks.get(hash_val)
 
         return self._add_block(block = block, path = path)
 # -----------------------------
