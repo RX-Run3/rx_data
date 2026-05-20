@@ -2,6 +2,7 @@
 Module holding FilePatcher class
 '''
 import re
+import tempfile
 
 from pathlib     import Path
 from typing      import Final
@@ -79,19 +80,22 @@ class FilePatcher:
             log.debug('Dry run, not adding any column')
             return 2
 
-        data = rdf_input.AsNumpy()
-        rdf  = RDF.FromNumpy(data)
+        with tempfile.NamedTemporaryFile(suffix='.root', delete=True, dir='/tmp') as value:
+            tmp_path = str(value.name)
+            log.debug(f'Storing temporary MCDecayTree in: {tmp_path}')
+            rdf_input.Snapshot('MCDecayTree', tmp_path)
+            rdf  = RDataFrame('MCDecayTree', tmp_path)
 
-        rdf  = rdf.Define('block', str(block))
-        opts = RDF.RSnapshotOptions()
-        opts.fMode              = 'update'
-        opts.fOverwriteIfExists = True
+            rdf  = rdf.Define('block', str(block))
+            opts = RDF.RSnapshotOptions()
+            opts.fMode              = 'update'
+            opts.fOverwriteIfExists = True
 
-        rdf.Snapshot(
-            options  = opts,
-            treename = 'MCDecayTree', 
-            filename = str(path), 
-        )
+            rdf.Snapshot(
+                options  = opts,
+                treename = 'MCDecayTree', 
+                filename = str(path), 
+            )
 
         return 1
     # -----------------------------
