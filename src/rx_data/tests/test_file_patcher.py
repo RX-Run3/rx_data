@@ -53,3 +53,35 @@ def test_mc_add_block(tmp_path : Path):
 
         assert ptc.run(path = path) == 1
 # -----------------------------------------
+def test_data_add_block(tmp_path : Path):
+    '''
+    Test on data files 
+    '''
+    ptc = FilePatcher(dry_run = False)
+
+    path = tmp_path / 'data_file_xxx.root'
+    _make_input(path = path)
+
+    assert ptc.run(path = path) == -3
+# -----------------------------------------
+def test_mc_already_present(tmp_path : Path):
+    '''
+    Test on MC files that have block branch 
+    '''
+    ptc  = FilePatcher(dry_run = False)
+    hash = list(ptc.hashes)[0]
+    path = tmp_path / f'mc_file_{hash}.root'
+    _make_input(path = path, add_block = True)
+
+    assert ptc.run(path = path) == 0
+# -----------------------------------------
+def test_dry_run(tmp_path : Path):
+    '''
+    Test dry run 
+    '''
+    ptc  = FilePatcher(dry_run = True)
+    hash = list(ptc.hashes)[0]
+    path = tmp_path / f'mc_file_{hash}.root'
+    _make_input(path = path)
+
+    assert ptc.run(path = path) == 2
