@@ -70,9 +70,6 @@ class FilePatcher:
             log.debug(f'Column already present in: {path}')
             return 0
 
-        data = rdf_input.AsNumpy()
-        rdf  = RDF.FromNumpy(data)
-
         if block is None:
             log.warning(f'Block not found for {path}')
             return -1
@@ -81,6 +78,9 @@ class FilePatcher:
         if self._dry_run:
             log.debug('Dry run, not adding any column')
             return 2
+
+        data = rdf_input.AsNumpy()
+        rdf  = RDF.FromNumpy(data)
 
         rdf  = rdf.Define('block', str(block))
         opts = RDF.RSnapshotOptions()
