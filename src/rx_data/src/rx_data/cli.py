@@ -15,6 +15,7 @@ from rx_data    import SamplesPrinter
 from rx_data    import PFNDownloader
 from rx_data    import PFNDownloaderConf
 from rx_data    import SampleOrganizer
+from rx_data    import FilePatcher
 from post_ap    import ProductionConf
 from post_ap    import PFNReaderConf, Production
 from post_ap    import PFNReader, Samples
@@ -111,6 +112,16 @@ def organize_paths(
 
     for sample in tqdm.tqdm(samples, ascii = ' -'):
         org.organize(sample = sample)
+# ----------------------
+@app.command()
+def patch_files(
+    version : str     = typer.Option(..., '--version', '-v'),
+    project : Project = typer.Option(..., '--project', '-p')) -> None:
+
+    ptc = FilePatcher(
+        version = version,
+        project = project)
+    ptc.run()
 # ----------------------
 if __name__ == '__main__':
     app()

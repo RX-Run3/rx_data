@@ -27,8 +27,10 @@ from .photon_veto             import EcalCell
 from .pfn_downloader          import PFNDownloader
 from .pfn_downloader          import PFNDownloaderConf
 from .sample_organizer        import SampleOrganizer
+from .file_patcher            import FilePatcher
 
 __all__ = [
+    'FilePatcher',
     'SampleOrganizer',
     'EcalCell',
     'PFNDownloader',

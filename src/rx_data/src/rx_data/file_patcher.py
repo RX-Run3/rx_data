@@ -1,0 +1,4 @@
+'''
+Module holding FilePatcher class
+'''
+
