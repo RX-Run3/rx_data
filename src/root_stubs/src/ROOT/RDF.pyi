@@ -17,7 +17,8 @@ class RCutFlowReport:
 
 class RSnapshotOptions:
     def __init__(self) -> None:
-        self.fMode : str
+        self.fMode              : str
+        self.fOverwriteIfExists : bool
 
 class RDisplay:
     def Print(self) -> None: ...
