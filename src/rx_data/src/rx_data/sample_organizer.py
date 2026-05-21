@@ -87,6 +87,10 @@ class SampleOrganizer:
     - Relocating them
     - Relocating trees into analyses directories, e.g. rk, rkst
     - Renaming the files
+
+    I.e.
+
+    GRID -> downloaded_files/ -> /tmp/merged.root -> rk/signal.root rkst/signal.root ...
     '''
     # ---------------------------------------
     def __init__(
@@ -99,6 +103,7 @@ class SampleOrganizer:
         -------------
         dry_run: If True no copies or deletions will be made
         storage: Path to directory with ROOT files before organizing them
+        cleanup: If True will delete merged file
         '''
         self._storage = storage
         self._cfg     = SampleOrganizerConf.default(
