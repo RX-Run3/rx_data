@@ -5,6 +5,7 @@ import os
 import pytest
 import tqdm
 
+from ROOT         import TFile # type: ignore
 from pathlib      import Path
 from post_ap      import PFNReader, PFNReaderConf
 from post_ap      import Production
@@ -37,16 +38,23 @@ def _print_tags(sample : Sample):
         log.info(x)
 # -----------------------------
 @pytest.mark.parametrize('nickname, expected', Data.l_arg_nopid)
-def test_simple(nickname : str, expected : int):
+def test_simple(
+    nickname : str, 
+    expected : int,
+    tmp_path : Path):
     '''
     Test simple reading
     '''
+    storage= tmp_path / 'downloaded'
     data   = gut.load_data(
         package='post_ap_data', 
         fpath  ='tests/pfn_reader/simple.yaml')
     cfg    = PFNReaderConf(**data)
 
-    reader = PFNReader(cfg=cfg)
+    reader = PFNReader(
+        cfg     = cfg,
+        storage = storage)
+
     samples= reader.get_samples(
         production=Production.btoxll_mva_2024_nopid, 
         nickname  =nickname)
@@ -55,16 +63,19 @@ def test_simple(nickname : str, expected : int):
     assert npfn == expected
 # -----------------------------
 @pytest.mark.parametrize('sample', ['sim10g_ss'])
-def test_real(sample : str):
+def test_real(sample : str, tmp_path : Path):
     '''
     Test simple reading
     '''
+    storage = tmp_path / 'downloaded'
     data    = gut.load_data(
         package='post_ap_data', 
         fpath  ='post_ap/rx/v15.yaml')
     cfg     = PFNReaderConf(**data)
 
-    reader  = PFNReader(cfg=cfg)
+    reader  = PFNReader(
+        cfg     = cfg,
+        storage = storage)
     samples = reader.get_samples(production=Production.rx_2024, nickname=sample)
 
     for val in samples.root:
@@ -77,16 +88,19 @@ def test_real(sample : str):
     assert len(samples.pfns) == len(samples.lfns)
 # -----------------------------
 @pytest.mark.parametrize('sample', ['sim10g_filtered', 'sim10g_unfiltered', 'sim10g_ss'])
-def test_sim10g(sample : str):
+def test_sim10g(sample : str, tmp_path : Path):
     '''
     Test simple reading
     '''
+    storage = tmp_path / 'downloaded'
     data    = gut.load_data(
         package='post_ap_data', 
         fpath  ='post_ap/rx/v15.yaml')
     cfg     = PFNReaderConf(**data)
 
-    reader  = PFNReader(cfg=cfg)
+    reader  = PFNReader(
+        cfg     = cfg,
+        storage = storage)
     samples = reader.get_samples(production=Production.rx_2024, nickname=sample)
 
     log.info(samples)
@@ -98,16 +112,19 @@ def test_sim10g(sample : str):
     assert len(samples.pfns) == len(samples.lfns)
 # -----------------------------
 @pytest.mark.parametrize('sample', ['sim10g_unfiltered'])
-def test_progress(sample : str):
+def test_progress(sample : str, tmp_path : Path):
     '''
     Test that sample container can be iterated
     '''
+    storage = tmp_path / 'downloaded'
     data    = gut.load_data(
         package='post_ap_data', 
         fpath  ='post_ap/rx/v15.yaml')
     cfg     = PFNReaderConf(**data)
 
-    reader  = PFNReader(cfg=cfg)
+    reader  = PFNReader(
+        cfg     = cfg,
+        storage = storage)
     samples = reader.get_samples(
         production=Production.rx_2024, 
         nickname  =sample)
@@ -118,10 +135,13 @@ def test_progress(sample : str):
     assert len(samples) > 0
 # -----------------------------
 @pytest.mark.parametrize('sample_name', ['all'])
-def test_merge(sample_name : str, tmp_path : Path):
+def test_merge(
+    sample_name : str, 
+    tmp_path    : Path):
     '''
     Test that sample container can be iterated
     '''
+    storage  = tmp_path / 'downloaded'
     cfg_prod = ProductionConf(
         versions = {'all' : 'v1r5849'},
         samples  = {'all' : None},
@@ -133,38 +153,49 @@ def test_merge(sample_name : str, tmp_path : Path):
         productions  = {Production.rx_filter : cfg_prod},
     )
 
-    reader  = PFNReader(cfg=cfg)
+    reader  = PFNReader(
+        storage = storage,
+        cfg     = cfg)
     samples = reader.get_samples(
         production=Production.rx_filter, 
         nickname  =sample_name)
 
     sample      = samples[0]
     sample_copy = sample.model_copy(deep = True)
-    with gut.environment(mapping = {'ANADIR' : str(tmp_path)}),\
-         Sample.storage(value = tmp_path / 'downloaded'):
+    with gut.environment(mapping = {'ANADIR' : str(tmp_path)}):
         for path in sample.target_paths.values():
             assert not path.exists()
 
         assert not sample.is_organized
 
+        for path in sample.local_paths(must_exist = False):
+            assert not path.exists()
+            path.parent.mkdir(parents = True)
+            TFile(str(path), 'recreate')
+
         for path in sample.target_paths.values():
             path.parent.mkdir(parents = True, exist_ok = True)
-            path.touch()
+            TFile(str(path), 'recreate')
             log.info(f'Making: {path}')
 
         assert sample_copy.is_organized
 # -----------------------------
 @pytest.mark.parametrize('sample', ['sim10g_filtered', 'sim10g_unfiltered', 'sim10g_ss'])
-def test_polarity(sample : str):
+def test_polarity(
+    sample   : str,
+    tmp_path : Path):
     '''
     Test getting path associated to sample
     '''
+    storage = tmp_path / 'downloaded'
     data    = gut.load_data(
         package='post_ap_data', 
         fpath  ='post_ap/rx/v15.yaml')
     cfg     = PFNReaderConf(**data)
 
-    reader  = PFNReader(cfg=cfg)
+    reader  = PFNReader(
+        cfg     = cfg,
+        storage = storage)
     samples = reader.get_samples(production=Production.rx_2024, nickname=sample)
 
     for sam in samples:
@@ -175,6 +206,8 @@ def test_paths():
     '''
     Test getting path associated to sample
     '''
+    ANADIR  = os.environ['PFS_ANADIR']
+    storage = ANADIR / Path('downloaded')
     prod_cfg= ProductionConf(
         versions = {'all' : 'v1r5849'},
         samples  = {'all' : None},
@@ -184,20 +217,24 @@ def test_paths():
         working_group= 'RD', 
         productions  = {Production.rx_filter : prod_cfg})
 
-    reader  = PFNReader(cfg=cfg)
-    samples = reader.get_samples(production=Production.rx_filter, nickname='all')
+    reader  = PFNReader(
+        cfg     = cfg,
+        storage = storage)
+
+    samples = reader.get_samples(
+        production = Production.rx_filter, 
+        nickname   = 'all')
     sample  = samples.root[0]
 
-    ANADIR       = os.environ['ANADIR']
-    storage_path = ANADIR / Path('downloaded')
-    with Sample.storage(value = storage_path):
-        for sample in samples:
-            log.info(sample)
+    for sample in samples:
+        log.info(sample)
 # -----------------------------
 def test_trigger():
     '''
     Test getting path associated to sample
     '''
+    ANADIR  = os.environ['PFS_ANADIR']
+    storage = ANADIR / Path('downloaded')
     prod_cfg= ProductionConf(
         versions = {'all' : 'v1r5849'},
         samples  = {'all' : None},
@@ -207,17 +244,14 @@ def test_trigger():
         working_group= 'RD', 
         productions  = {Production.rx_filter : prod_cfg})
 
-    reader  = PFNReader(cfg=cfg)
+    reader  = PFNReader(
+        cfg     = cfg,
+        storage = storage)
     samples = reader.get_samples(production=Production.rx_filter, nickname='all')
     sample  = samples.root[0]
-
-    ANADIR       = os.environ['ANADIR']
-    storage_path = ANADIR / Path('downloaded')
-    with Sample.storage(value = storage_path):
-        for sample in samples:
-            log.info(sample.name)
-            for trigger in sample.triggers:
-                log.info(f'    {trigger}')
+    log.info(sample.name)
+    for trigger in sample.triggers:
+        log.info(f'    {trigger}')
 # -----------------------------
 def test_target_paths():
     '''
@@ -232,16 +266,16 @@ def test_target_paths():
         working_group= 'RD', 
         productions  = {Production.rx_filter : prod_cfg})
 
-    reader  = PFNReader(cfg=cfg)
+    ANADIR  = os.environ['PFS_ANADIR']
+    storage = ANADIR / Path('downloaded')
+    reader  = PFNReader(
+        cfg     = cfg, 
+        storage = storage)
     samples = reader.get_samples(production=Production.rx_filter, nickname='all')
     sample  = samples.root[0]
 
-    ANADIR       = os.environ['ANADIR']
-    storage_path = ANADIR / Path('downloaded')
-    with Sample.storage(value = storage_path):
-        for sample in samples:
-            log.info(sample.name)
-            log.info(f'   {sample.target_paths}')
+    log.info(sample.name)
+    log.info(f'   {sample.target_paths}')
 # -----------------------------
 def test_hash():
     '''
@@ -258,7 +292,11 @@ def test_hash():
         productions  = {Production.rx_filter : cfg_prod},
     )
 
-    reader  = PFNReader(cfg=cfg)
+    ANADIR  = os.environ['PFS_ANADIR']
+    storage = ANADIR / Path('downloaded')
+    reader  = PFNReader(
+        cfg     = cfg,
+        storage = storage)
     samples = reader.get_samples(
         production=Production.rx_filter, 
         nickname  ='all')
