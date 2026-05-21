@@ -368,7 +368,7 @@ def _process_and_merge(
 
         fmrg.AddFile(tmp_path, cpProgress=False)
 
-    fmrg.OutputFile(out_path)
+    fmrg.OutputFile(str(out_path))
 
     log.info(f'Merging temporary files into: {out_path}')
     fmrg.Merge()
