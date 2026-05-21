@@ -34,7 +34,6 @@ class SampleProtocol(Protocol):
     # -----------------
     def local_paths(
         self, 
-        directory : Path,
         must_exist: bool) -> list[Path]:
         ...
     # -----------------
@@ -96,16 +95,13 @@ class SampleOrganizer:
     def __init__(
         self, 
         cleanup : bool,
-        dry_run : bool,
-        storage : Path):
+        dry_run : bool):
         '''
         Parameters
         -------------
         dry_run: If True no copies or deletions will be made
-        storage: Path to directory with ROOT files before organizing them
         cleanup: If True will delete merged file
         '''
-        self._storage = storage
         self._cfg     = SampleOrganizerConf.default(
             cleanup = cleanup,
             dry_run = dry_run)
@@ -127,9 +123,7 @@ class SampleOrganizer:
         ---------------
         Merged file path
         '''
-        paths = sample.local_paths(
-            directory  = self._storage, 
-            must_exist = True)
+        paths = sample.local_paths(must_exist = True)
 
         fm = TFileMerger(isLocal=False)
         fm.SetFastMethod(True)
@@ -284,9 +278,7 @@ class SampleOrganizer:
             return False
 
         log.debug(f'Sample not processed: {sample}')
-        local_paths = sample.local_paths(
-            directory  = self._storage, 
-            must_exist = True)
+        local_paths = sample.local_paths(must_exist = True)
 
         if len(local_paths) > 1:
             merged_path = self._merge_files(sample = sample)
