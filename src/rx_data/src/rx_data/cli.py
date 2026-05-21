@@ -111,8 +111,16 @@ def organize_paths(
         cleanup = True,
         dry_run = dry_run)
 
+    counter = 0
     for sample in tqdm.tqdm(samples, ascii = ' -'):
-        org.organize(sample = sample)
+        if not org.organize(sample = sample):
+            continue
+
+        counter += 1
+
+    nsamples = len(samples)
+    log.info('-' * 30)
+    log.info(f'Organized: {counter}/{nsamples}')
 # ----------------------
 @app.command()
 def patch_files(
