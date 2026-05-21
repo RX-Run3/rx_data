@@ -32,7 +32,7 @@ def _get_numeric_version(version : str) -> tuple[int,int]|None:
     If ANY file or directory that does not follow the regex is found
     which is not among: README.md, comparison, ignored.
     '''
-    if version in ['README.md', 'comparison', 'ignored']:
+    if version in ['README.md', 'comparison', 'ignored', 'latest']:
         return None
 
     version = version.replace('p', '.')
