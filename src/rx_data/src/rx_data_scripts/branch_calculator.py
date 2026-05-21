@@ -292,9 +292,18 @@ def _skip_file(input : Path, output : Path) -> bool:
     True, if output exists and is newer than input, false otherwise.
     '''
     if not output.exists():
+        log.debug(f'Processing missing: {output}')
         return False
     
-    return input.stat().st_mtime < output.stat().st_mtime
+    is_stale = input.stat().st_mtime > output.stat().st_mtime
+
+    if is_stale:
+        log.debug(f'Stale friend, processing: {input}')
+        return False
+
+    log.debug(f'Skipping, friend found: {output}')
+
+    return True
 # ---------------------------------
 def _create_file(path : Path) -> None:
     '''
@@ -304,7 +313,6 @@ def _create_file(path : Path) -> None:
     '''
     out_path = _get_out_path(path = path)
     if _skip_file(input = path, output = out_path):
-        log.debug(f'Output found, skipping {out_path}')
         return
 
     try:
