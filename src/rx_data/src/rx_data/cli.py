@@ -102,7 +102,6 @@ def download_ntuples(
 def organize_paths(
     dry_run : bool      = typer.Option(False         , '--dry-run', '-d', help = 'If used, will do dry run', is_flag = True),
     level   : LogLevels = typer.Option(LogLevels.info, '--level'  , '-l', help = 'Logging level'),
-    nproc   : int       = typer.Option(             4, '--nproc'  , '-n', help = 'Number of processes to run in parallel over samples'),
     version : str       = typer.Option(           ..., '--version', '-v', help = 'Version of analysis production, e.g. v1r5849')) -> None:
 
     LogStore.set_level('rx_data:sample_organizer', level)
