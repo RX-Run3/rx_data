@@ -82,10 +82,8 @@ class TestSample:
     # ------------------------------------
     def local_paths(
         self, 
-        directory : Path,
         must_exist: bool) -> list[Path]:
 
-        _ = directory
         _ = must_exist 
 
         return [ self._make_file(file_name = f'test_{index:03}.root') for index in range(self._nfiles) ]
@@ -109,7 +107,7 @@ class TestSample:
         return paths 
     # ------------------------------
     @property
-    def is_merged(self) -> bool:
+    def is_organized(self) -> bool:
         '''
         Parameters
         -------------
@@ -148,7 +146,6 @@ def test_simple(
 
         org = SampleOrganizer(
             cleanup = False,
-            storage = tmp_path,
             dry_run = dry_run)
         org.organize(sample = sample)
 # ------------------------------------
@@ -169,7 +166,6 @@ def test_versions(
 
             org = SampleOrganizer(
                 cleanup = False,
-                storage = tmp_path,
                 dry_run = False)
             org.organize(sample = sample)
 # ------------------------------------
@@ -190,7 +186,6 @@ def test_skip_done(
 
         org = SampleOrganizer(
             cleanup = False,
-            storage = tmp_path,
             dry_run = False)
 
         assert     org.organize(sample = sample)
