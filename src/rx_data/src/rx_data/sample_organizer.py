@@ -156,9 +156,6 @@ class SampleOrganizer:
         if not out_path.exists():
             raise FileNotFoundError(f'Cannot find: {out_path}')
 
-        if not self._cfg.cleanup:
-            return out_path
-
         return out_path
     # ---------------------------------------
     def _split_file(
