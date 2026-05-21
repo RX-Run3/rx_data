@@ -151,9 +151,9 @@ class PFNDownloader:
         '''
         s_name_to_download  = { os.path.basename(pfn) for pfn in pfns }
         dir_downloaded      = self._cfg.out_dir / self._cfg.version
-        paths_downloaded    = dir_downloaded.rglob('.*.root')
+        paths_downloaded    = list(dir_downloaded.rglob('.*.root'))
 
-        if paths_downloaded:
+        if not paths_downloaded:
             log.info(f'No downloaded files found in {dir_downloaded}, check for superfluous paths skipped')
             return pfns 
     
