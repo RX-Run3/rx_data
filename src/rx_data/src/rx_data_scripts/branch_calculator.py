@@ -119,23 +119,6 @@ def _get_out_dir() -> Path:
 
     return out_dir
 # ---------------------------------
-def _get_out_path(path : Path) -> Path:
-    '''
-    Parameters
-    ------------------
-    path: Path to file from main category
-
-    Returns
-    ------------------
-    Path to file with friend tree
-    '''
-    fname    = os.path.basename(path)
-    out_path = Data.out_dir / fname
-
-    log.debug(f'Creating : {out_path}')
-
-    return out_path
-# ---------------------------------
 def _process_rdf(
     rdf     : RDF.RNode,
     path    : Path) -> RDF.RNode|None:
@@ -311,7 +294,9 @@ def _create_file(path : Path) -> None:
     ------------------
     path : ROOT file path
     '''
-    out_path = _get_out_path(path = path)
+    fname    = os.path.basename(path)
+    out_path = Data.out_dir / fname
+
     if _skip_file(input = path, output = out_path):
         return
 
