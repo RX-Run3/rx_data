@@ -119,9 +119,18 @@ def _get_out_dir() -> Path:
 
     return out_dir
 # ---------------------------------
-def _get_out_path(path : Path) -> str:
+def _get_out_path(path : Path) -> Path:
+    '''
+    Parameters
+    ------------------
+    path: Path to file from main category
+
+    Returns
+    ------------------
+    Path to file with friend tree
+    '''
     fname    = os.path.basename(path)
-    out_path = f'{Data.out_dir}/{fname}'
+    out_path = Data.out_dir / fname
 
     log.debug(f'Creating : {out_path}')
 
