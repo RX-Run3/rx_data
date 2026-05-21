@@ -63,6 +63,7 @@ def test_simple(
             dwr.run()
 # ----------------------------------------
 @pytest.mark.parametrize('chunks', [1, 4, 8])
+@pytest.mark.skip(reason = 'Test takes too long')
 def test_benchmark(tmp_path : Path, benchmark, chunks : int):
     '''
     Benchmark downloads
