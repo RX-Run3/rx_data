@@ -145,14 +145,14 @@ def test_merge(sample_name : str, tmp_path : Path):
         for path in sample.target_paths.values():
             assert not path.exists()
 
-        assert not sample.is_merged
+        assert not sample.is_organized
 
         for path in sample.target_paths.values():
             path.parent.mkdir(parents = True, exist_ok = True)
             path.touch()
             log.info(f'Making: {path}')
 
-        assert sample_copy.is_merged
+        assert sample_copy.is_organized
 # -----------------------------
 @pytest.mark.parametrize('sample', ['sim10g_filtered', 'sim10g_unfiltered', 'sim10g_ss'])
 def test_polarity(sample : str):

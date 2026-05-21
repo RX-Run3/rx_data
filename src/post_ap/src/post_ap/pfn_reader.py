@@ -409,7 +409,7 @@ class Sample(BaseModel):
         return paths 
     # ------------------------------
     @property
-    def is_merged(self) -> bool:
+    def is_organized(self) -> bool:
         '''
         Parameters
         -------------
