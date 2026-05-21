@@ -280,14 +280,30 @@ def _get_input_rdf(path : Path) -> RDF.RNode:
 
     return rdf
 # ---------------------------------
+def _skip_file(input : Path, output : Path) -> bool:
+    '''
+    Parameters
+    ----------------
+    input : Path to input ROOT file from main category
+    output: Path to outut friend tree file
+
+    Returns
+    ----------------
+    True, if output exists and is newer than input, false otherwise.
+    '''
+    if not output.exists():
+        return False
+    
+    return input.stat().st_mtime < output.stat().st_mtime
+# ---------------------------------
 def _create_file(path : Path) -> None:
     '''
     Parameters
     ------------------
     path : ROOT file path
     '''
-    out_path = _get_out_path(path)
-    if os.path.isfile(out_path):
+    out_path = _get_out_path(path = path)
+    if _skip_file(input = path, output = out_path):
         log.debug(f'Output found, skipping {out_path}')
         return
 
