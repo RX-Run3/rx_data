@@ -101,10 +101,6 @@ def _set_logs():
     LogStore.set_level('rx_data:sample_emulator'    ,       30)
     LogStore.set_level('rx_data:sample_patcher'     ,       30)
     LogStore.set_level('rx_data:spec_maker'         ,       30)
-
-    if Data.lvl < LogLevels.info:
-        LogStore.set_level('rx_data:spec_maker', Data.lvl)
-        LogStore.set_level('rx_data:rdf_getter', Data.lvl)
 # ---------------------------------
 def _get_out_dir() -> Path:
     '''
