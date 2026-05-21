@@ -43,7 +43,7 @@ class SampleProtocol(Protocol):
         ...
     # -----------------
     @property
-    def is_merged(self) -> bool:
+    def is_organized(self) -> bool:
         ...
 # ----------------------------------
 class SampleOrganizerConf(BaseModel):
@@ -279,7 +279,7 @@ class SampleOrganizer:
         ---------------
         True if sample was organized, False if it was skipped
         '''
-        if sample.is_merged is True:
+        if sample.is_organized is True:
             log.debug(f'Sample already processed: {sample}')
             return False
 
