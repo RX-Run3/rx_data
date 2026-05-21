@@ -51,7 +51,10 @@ def _get_samples(version : str, level : LogLevels) -> Samples:
         working_group = 'RD',
         productions   = productions)
 
-    rdr = PFNReader(cfg = cfg)
+    rdr = PFNReader(
+        cfg     = cfg,
+        storage = _STORAGE)
+
     sam = rdr.get_samples(
         nickname   = nickname, 
         production = production)
@@ -105,10 +108,9 @@ def organize_paths(
     LogStore.set_level('rx_data:sample_organizer', level)
 
     samples = _get_samples(version = version, level = level)
-    org = SampleOrganizer(
+    org     = SampleOrganizer(
         cleanup = True,
-        dry_run = dry_run,
-        storage = _STORAGE)
+        dry_run = dry_run)
 
     for sample in tqdm.tqdm(samples, ascii = ' -'):
         org.organize(sample = sample)
