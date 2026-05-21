@@ -5,6 +5,7 @@ import re
 import os
 import apd
 
+from datetime  import datetime
 from ROOT      import TFile # type: ignore
 from pathlib   import Path
 from functools import cached_property
@@ -14,7 +15,6 @@ from pydantic  import BaseModel, RootModel, model_validator
 from pydantic  import ConfigDict
 from apd       import SampleCollection
 
-from contextlib  import contextmanager
 from dmu         import LogStore
 from dmu.generic import hashing
 from rx_common   import Component, Trigger
@@ -71,7 +71,14 @@ class Sample(BaseModel):
         'validity_end'     : None}
 
     And the fields can be accessed from data.info
-    '''
+
+    Attributes
+    ----------------
+    storage: Path to directory containing versioned directory containing
+             downloaded ntuples, i.e.
+
+             {storage}/v1r5811/ntuple.root
+    ''' 
     model_config = ConfigDict(
         arbitrary_types_allowed = True,
         frozen                  = False)
@@ -80,9 +87,8 @@ class Sample(BaseModel):
     data    : SampleCollection
     name    : str
     version : str
+    storage : Path
     fraction: float | None
-
-    _STORAGE: Path | None= None
     # ------------------------------
     @property
     def info(self) -> str:
@@ -230,9 +236,6 @@ class Sample(BaseModel):
             value += f'{pfn}\n'
         value += ''
 
-        if not self._STORAGE:
-            return value
-
         for path in self.paths[:20]:
             value += f'{path}\n'
         value += ''
@@ -251,22 +254,17 @@ class Sample(BaseModel):
     # ------------------------------
     def local_paths(
         self, 
-        directory : Path,
         must_exist: bool) -> list[Path]:
         '''
         Parameters
         --------------
         must_exist: If True will raise exception if it does not exist
-        directory : Local directory contained versioned directory with AP ntuples
 
         Returns
         --------------
         Paths in local directory where this sample's files would go
         '''
-        if not directory.exists():
-            raise ValueError(f'Directory {directory} not found')
-
-        paths = [ directory / self.version / os.path.basename(pfn) for pfn in self.pfns ]
+        paths = [ self.storage / self.version / os.path.basename(pfn) for pfn in self.pfns ]
         if not must_exist:
             return paths
 
@@ -275,6 +273,7 @@ class Sample(BaseModel):
             if not path.exists():
                 log.error(f'Missing: {path}')
                 fail = True
+
             if self._fail_check(path = path):
                 log.error(f'Corrupted: {path}')
                 fail = True
@@ -315,10 +314,10 @@ class Sample(BaseModel):
         '''
         List of paths to ROOT files
         '''
-        if not self._STORAGE:
+        if not self.storage:
             raise ValueError('Storage location was not set')
 
-        return self.local_paths(directory=self._STORAGE, must_exist=True)
+        return self.local_paths(must_exist=True)
     # ------------------------------
     @cached_property
     def nfiles(self) -> int:
@@ -408,6 +407,49 @@ class Sample(BaseModel):
 
         return paths 
     # ------------------------------
+    @cached_property
+    def targets_date(self) -> datetime | None:
+        '''
+        Earliest date of targets.
+        If any target is missing will return None
+        '''
+        dates : set[datetime] = set()
+        for target in self.target_paths.values():
+            if not target.exists():
+                return None
+
+            date = self._path_to_date(path = target)
+
+            dates.add(date)
+
+        return min(dates)
+    # ------------------------------
+    @cached_property
+    def downloads_date(self) -> datetime:
+        '''
+        Latest modification date for downloaded files associated
+        to this sample. Will raise exception if any file was not downloaded
+        '''
+        paths = self.local_paths(must_exist = True)
+        dates = [ self._path_to_date(path = path) for path in paths ]
+
+        return max(dates)
+    # ------------------------------
+    def _path_to_date(self, path : Path) -> datetime:
+        '''
+        Parameters
+        ----------------
+        path: Path to file
+
+        Returns
+        ----------------
+        Modification date of path
+        '''
+        mtime = path.stat().st_mtime
+        date  = datetime.fromtimestamp(mtime)
+
+        return date
+    # ------------------------------
     @property
     def is_organized(self) -> bool:
         '''
@@ -419,33 +461,10 @@ class Sample(BaseModel):
         -------------
         True if all of the files exist
         '''
-        merged = True
-        for path in self.target_paths.values():
-            if path.exists():
-                log.debug(f'Found: {path}')
-                continue
+        if self.targets_date is None:
+            return False
 
-            log.debug(f'Could not find: {path}')
-            merged = False
-
-        return merged
-    # ------------------------------
-    @classmethod
-    def storage(cls, value : Path):
-        '''
-        Context manager meant to set location of
-        downloaded ROOT files
-        '''
-        old_val = cls._STORAGE
-        @contextmanager
-        def _context():
-            cls._STORAGE = value
-            try:
-                yield
-            finally:
-                cls._STORAGE = old_val
-
-        return _context()
+        return self.targets_date > self.downloads_date
 # ---------------------------------------
 class Samples(RootModel[list[Sample]]):
     '''
@@ -570,11 +589,19 @@ class PFNReader:
     Thin wrapper around apd used to get list of PFNs
     '''
     #------------------------------------
-    def __init__(self, cfg : PFNReaderConf):
+    def __init__(
+        self, 
+        storage: Path,
+        cfg    : PFNReaderConf):
         '''
-        cfg: Dictionary with configuration needed to read PFNs
+        cfg    : Dictionary with configuration needed to read PFNs
+        storage: Path to directory containing versioned directory containing
+                 downloaded ntuples, i.e.
+
+                 {storage}/v1r5811/ntuple.root
         '''
-        self._cfg = cfg
+        self._cfg     = cfg
+        self._storage = storage
     #------------------------------------
     def _samples_from_collection(
         self,
@@ -612,6 +639,7 @@ class PFNReader:
                 raise ValueError(f'Expected one sample, found: {nsam}')
 
             elm = Sample(
+                storage = self._storage,
                 group   = nickname,
                 fraction= frac,
                 name    = name,
