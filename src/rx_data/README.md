@@ -118,3 +118,14 @@ DecayTree    # Reco information for a given trigger
 > ```
 > In case `/tmp` has storage left. 
 
+## Adding missing block branch in MCDecayTree
+
+This branch can be added back based on the hash
+that is part of the file name. For this run:
+
+```bash
+rxdata patch-files -p rkst -v v1
+rxdata patch-files -p rk   -v v1
+```
+
+where `v1` is the version of the trees
