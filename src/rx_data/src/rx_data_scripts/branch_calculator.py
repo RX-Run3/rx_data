@@ -337,7 +337,7 @@ def _create_file(path : Path) -> None:
         rdf = l_rdf[0]
         rdf = _process_rdf(rdf, path)
         if rdf is not None:
-            rdf.Snapshot(Data.tree_name, out_path)
+            rdf.Snapshot(Data.tree_name, str(out_path))
 
         return
 
@@ -347,7 +347,7 @@ def _create_file(path : Path) -> None:
         out_path  = out_path,
         nchunk    = nchunk)
 
-    tmp_wc = out_path.replace('.root', '_*_pre_merge.root')
+    tmp_wc = str(out_path).replace('.root', '_*_pre_merge.root')
     log.info(f'Removing temporary files from: {tmp_wc}')
     for tmp_path in glob.glob(tmp_wc):
         os.remove(tmp_path)
@@ -355,7 +355,7 @@ def _create_file(path : Path) -> None:
 def _process_and_merge(
     l_rdf     : list[RDF.RNode],
     nchunk    : int,
-    out_path  : str,
+    out_path  : Path,
     input_path: Path) -> None:
     '''
     Parameters
@@ -372,7 +372,7 @@ def _process_and_merge(
         if rdf_out is None:
             continue
 
-        tmp_path = out_path.replace('.root', f'_{index:03}_pre_merge.root')
+        tmp_path = str(out_path).replace('.root', f'_{index:03}_pre_merge.root')
 
         log.debug(f'Saving tree {Data.tree_name} to {tmp_path}')
         rdf_out.Snapshot(Data.tree_name, tmp_path)
