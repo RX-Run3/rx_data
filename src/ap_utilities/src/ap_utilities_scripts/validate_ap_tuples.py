@@ -25,7 +25,7 @@ class Holder(BaseModel, Generic[T]):
     # -------------------------------
     @model_validator(mode = 'after')
     def _validate(self) -> 'Holder':
-        if not self.old and not self.new:
+        if self.old is None and self.new is None:
             raise ValueError('Neither old nor new version found')
 
         return self
@@ -65,15 +65,15 @@ class RDFHolder(Holder[RDF.RNode]):
         Dictonary mapping tree label to:
 
         - List of branches that only exist in this tree
-        - False if the tree itself does not exist
+        - None if the tree itself does not exist
         '''
         summary : dict[str,list[str] | None] = {}
 
         only_in_new : list[str] = [ col for col in self.new_cols if col not in self.old_cols ]
         only_in_old : list[str] = [ col for col in self.old_cols if col not in self.new_cols ]
 
-        summary[f'old_{self.name}'] = None if self.old is None else only_in_new
-        summary[f'new_{self.name}'] = None if self.new is None else only_in_old
+        summary[f'old_{self.name}'] = None if self.old is None else only_in_old
+        summary[f'new_{self.name}'] = None if self.new is None else only_in_new
 
         return summary
 # -------------------------------
@@ -84,18 +84,18 @@ class Config(BaseModel):
     old : Path
     new : Path
     # -------------------------------
-    def get_rdf(self, dir : str | None, is_old : bool) -> RDF.RNode | None:
+    def get_rdf(self, dirname : str | None, is_old : bool) -> RDF.RNode | None:
         '''
         Parameters
         ------------------
-        dir   : Name of directory holding DecayTree, None, if missing
-        is_old: If True, use old file
+        dirname: Name of directory holding DecayTree, None, if missing
+        is_old : If True, use old file
 
         Returns
         ------------------
         Dataframe associated or None if no dataframe found
         '''
-        if dir is None:
+        if dirname is None:
             return None
 
         path = self.old if is_old else self.new
@@ -103,7 +103,7 @@ class Config(BaseModel):
         if not path.exists():
             return None
 
-        return RDataFrame(f'{dir}/{_TREENAME}', str(path))
+        return RDataFrame(f'{dirname}/{_TREENAME}', str(path))
 # -------------------------------
 def _get_directory_names(path : Path) -> list[str]:
     '''
@@ -133,7 +133,7 @@ def _get_directories(cfg : Config) -> list[Holder[str]]:
 
     all_names = old_names + new_names
     holders : list[Holder[str]] = []
-    for name in all_names:
+    for name in sorted(list(set(all_names))):
         hdr      = Holder[str](
             name = name,
             old  = name if name in old_names else None,
@@ -160,8 +160,8 @@ def _get_trees(
     for dir in dirs:
         holder = RDFHolder(
             name= dir.name,
-            old = cfg.get_rdf(dir = dir.old, is_old =  True),
-            new = cfg.get_rdf(dir = dir.new, is_old = False),
+            old = cfg.get_rdf(dirname = dir.old, is_old =  True),
+            new = cfg.get_rdf(dirname = dir.new, is_old = False),
         )
 
         holders.append(holder)
@@ -176,7 +176,7 @@ def _get_conf() -> Config:
     '''
     parser = argparse.ArgumentParser(description='Script used to plot histograms in pkl files created by PIDCalib2')
     parser.add_argument('-o', '--old', type=str, help='Path to old/reference file'   , required = True)
-    parser.add_argument('-n', '--new', type=int, help='Path to new file, to validate', required = True)
+    parser.add_argument('-n', '--new', type=str, help='Path to new file, to validate', required = True)
     args   = parser.parse_args()
 
     return Config(
