@@ -69,42 +69,45 @@ missing:
 
 ## After pipelines
 
-This is done in an environment with access to EOS. To gain EOS access from outside of LXPLUS (e.g. a laptop) follow 
-[these](doc/mounting_eos.md) instructions. After that do:
+In order to validate the new production run:
 
 ```bash
-# This project is in pip
-pip install ap_utilities
-
-validate_ap_tuples -p 18455 -c 05_09_2024 -t 4
+validate_ap_tuples -o /path/to/old/file.root -n /path/to/new/file.root -e Hlt1 _fix_
 ```
 
-Where:   
-`-l`: Logging level, by default 20 (info), but it can be 10 (debug) or 30 (warning)   
-`-t`: Is the number of threads to use, if not passed, it will use one.   
-`-p`: Is the pipeline number, needed to find the ROOT files in EOS   
-`-c`: Name of config file written as shown below 
+which will compare a file produced from an old production to a new one, from the pipeline.
+The validation will:
+
+- Check which trees were present before and are missing now and vicevesa.
+They will appear in a section like:
 
 ```yaml
-# -----------------------------------------
-# Needed to find where files are in EOS
-# -----------------------------------------
-paths:
-  pipeline_dir : /eos/lhcb/wg/dpa/wp2/ci
-  analysis_dir : rd_ap_2024
-# -----------------------------------------
-# Each key corresponds to a MC sample, the value is a list of lines that must be found
-# as a tree in the file. If any, then the sample is not signal for any of the HLT2 lines
-# therefore no tree (equivalent to a line) is required to be made
-# -----------------------------------------
-samples:
-  # These is a sample without a dedicated trigger
-  Bu_K1ee_eq_DPC:
-    - any 
-  # This is a sample with two triggers targetting it
-  Bd_Kpiee_eq_DPC:
-    - Hlt2RD_B0ToKpPimEE
-    - Hlt2RD_B0ToKpPimEE_MVA
+Directories:
+  Hlt2RD_B0ToKpPimMuE_MVA:
+    new: true
+    old: false
+  Hlt2RD_BsToPhiMuE_MVA:
+    new: true
+    old: false
 ```
 
-The configs will be already in the package in `ap_utilities_data/validation/`
+which would mean that now we have a `MuE` tree that we did not before.
+
+- Check, for each trigger, which branches are present now that were not present before
+and viceversa, giving a section like:
+
+```yaml
+Trees:
+  Hlt2RD_B0ToKpPimEE_MVA:
+    new:
+      - B_DOWNSTREAM_TRACK_ISOLATION_eminus_MULT
+      - B_DOWNSTREAM_TRACK_ISOLATION_eplus_MULT
+      - B_DTF_CTAU
+      - B_DTF_CTAUERR
+    old:
+      - B_ALV
+      - B_ALV12
+      - B_DOCA12
+```
+
+- Exclude from these lists branches containing the substring `Hlt1` or `_fix_`
