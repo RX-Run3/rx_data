@@ -1,18 +1,24 @@
 '''
 Script used to validate ntuples produced by AP pipelines
 '''
-
 import yaml
+import uproot
 import argparse
 
 from functools import cached_property
 from pathlib   import Path
-from ROOT      import TFile, TDirectory, RDF, RDataFrame # type: ignore
+from ROOT      import RDF, RDataFrame # type: ignore
 from typing    import Final, Generic, TypeVar
 from pydantic  import BaseModel, model_validator, ConfigDict
 
 T = TypeVar('T')
 _TREENAME : Final[str] = 'DecayTree'
+# -------------------------------
+class IndentedDumper(yaml.Dumper):
+    def increase_indent(self, flow=False, indentless=False):
+        _ = indentless
+
+        return super().increase_indent(flow=flow, indentless=False)
 # -------------------------------
 class Holder(BaseModel, Generic[T]):
     '''
@@ -32,17 +38,21 @@ class Holder(BaseModel, Generic[T]):
 
         return self
     # -------------------------------
-    @property
-    def summary(self) -> dict[str,bool]:
+    @cached_property
+    def summary(self) -> dict[str,bool] | None:
         '''
+        None if both new and old exist
         Dictionary signaling if an object exists or not
         '''
-        return { 
-            f'old_{self.name}' : self.old is not None,
-            f'new_{self.name}' : self.new is not None,
+        if self.old and self.new:
+            return None
+
+        return {  
+            'old' : self.old is not None,
+            'new' : self.new is not None,
         }
 # -------------------------------
-class RDFHolder(Holder[RDF.RNode]):
+class RDFHolder(Holder):
     '''
     Class meant to hold dataframes
     '''
@@ -75,8 +85,8 @@ class RDFHolder(Holder[RDF.RNode]):
         only_in_new : list[str] = [ col for col in self.new_cols if col not in self.old_cols ]
         only_in_old : list[str] = [ col for col in self.old_cols if col not in self.new_cols ]
 
-        summary[f'old_{self.name}'] = None if self.old is None else only_in_old
-        summary[f'new_{self.name}'] = None if self.new is None else only_in_new
+        summary['old'] = None if self.old is None else only_in_old
+        summary['new'] = None if self.new is None else only_in_new
 
         return summary
 # -------------------------------
@@ -120,12 +130,11 @@ def _get_directory_names(path : Path) -> list[str]:
     ----------------
     List of directory names in file
     '''
-    with TFile(str(path), 'read') as ifile:
-        keys = ifile.GetKeys()
-        objs = [ key.ReadObj() for key in keys ]
-        dirs = [ obj for obj in objs if isinstance(obj, TDirectory) ]
+    with uproot.open(path = path) as ifile: # type: ignore
+        dirs = ifile.keys(filter_classname = 'TDirectory') 
+        dirs = [ dirname.split(';')[0] for dirname in dirs ]
 
-        return [ _dir.GetName() for _dir in dirs ]
+    return dirs
 # -------------------------------
 def _get_directories(cfg : Config) -> list[Holder[str]]:
     '''
@@ -193,8 +202,8 @@ def main():
     dirs  = _get_directories(cfg = cfg)
     trees = _get_trees(cfg = cfg, dirs = dirs)
 
-    dirs_summaries = [ dir.summary       for dir  in dirs  ]
-    tree_summaries = [ tree.tree_summary for tree in trees ]
+    dirs_summaries = { dir.name  : dir.summary for dir  in dirs  if dir.summary is not None }
+    tree_summaries = { tree.name : tree.tree_summary for tree in trees }
 
     data = {
         'Directories' : dirs_summaries,
@@ -202,7 +211,10 @@ def main():
     }
 
     with open('summary.yaml', 'w') as ofile:
-        string = yaml.safe_dump(data, indent = 2)
+        string = yaml.dump(
+            data               = data, 
+            default_flow_style = False, 
+            Dumper             = IndentedDumper)
         ofile.write(string)
 # -------------------------------
 if __name__ == '__main__':
