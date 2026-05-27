@@ -14,6 +14,37 @@ from pydantic  import BaseModel, model_validator, ConfigDict
 T = TypeVar('T')
 _TREENAME : Final[str] = 'DecayTree'
 # -------------------------------
+class Config(BaseModel):
+    '''
+    Class meant to configure validation
+    '''
+    model_config = ConfigDict(frozen = True)
+
+    old : Path
+    new : Path
+    exp : list[str]
+    # -------------------------------
+    def get_rdf(self, dirname : str | None, is_old : bool) -> RDF.RNode | None:
+        '''
+        Parameters
+        ------------------
+        dirname: Name of directory holding DecayTree, None, if missing
+        is_old : If True, use old file
+
+        Returns
+        ------------------
+        Dataframe associated or None if no dataframe found
+        '''
+        if dirname is None:
+            return None
+
+        path = self.old if is_old else self.new
+
+        if not path.exists():
+            return None
+
+        return RDataFrame(f'{dirname}/{_TREENAME}', str(path))
+# -------------------------------
 class IndentedDumper(yaml.Dumper):
     def increase_indent(self, flow=False, indentless=False):
         _ = indentless
@@ -72,8 +103,7 @@ class RDFHolder(Holder):
     def new_cols(self) -> list[str]:
         return self._get_cols(rdf = self.new)
     # ---------
-    @property
-    def tree_summary(self) -> dict[str,list[str] | None]:
+    def tree_summary(self, cfg : Config) -> dict[str,list[str] | None]:
         '''
         Dictonary mapping tree label to:
 
@@ -82,43 +112,13 @@ class RDFHolder(Holder):
         '''
         summary : dict[str,list[str] | None] = {}
 
-        only_in_new : list[str] = [ col for col in self.new_cols if col not in self.old_cols ]
-        only_in_old : list[str] = [ col for col in self.old_cols if col not in self.new_cols ]
+        only_in_old : list[str] = [ col for col in self.old_cols if col not in self.new_cols and not any(subs in col for subs in cfg.exp) ]
+        only_in_new : list[str] = [ col for col in self.new_cols if col not in self.old_cols and not any(subs in col for subs in cfg.exp) ]
 
         summary['old'] = None if self.old is None else only_in_old
         summary['new'] = None if self.new is None else only_in_new
 
         return summary
-# -------------------------------
-class Config(BaseModel):
-    '''
-    Class meant to configure validation
-    '''
-    model_config = ConfigDict(frozen = True)
-
-    old : Path
-    new : Path
-    # -------------------------------
-    def get_rdf(self, dirname : str | None, is_old : bool) -> RDF.RNode | None:
-        '''
-        Parameters
-        ------------------
-        dirname: Name of directory holding DecayTree, None, if missing
-        is_old : If True, use old file
-
-        Returns
-        ------------------
-        Dataframe associated or None if no dataframe found
-        '''
-        if dirname is None:
-            return None
-
-        path = self.old if is_old else self.new
-
-        if not path.exists():
-            return None
-
-        return RDataFrame(f'{dirname}/{_TREENAME}', str(path))
 # -------------------------------
 def _get_directory_names(path : Path) -> list[str]:
     '''
@@ -189,11 +189,13 @@ def _get_conf() -> Config:
     config object built from arguments
     '''
     parser = argparse.ArgumentParser(description='Script used to plot histograms in pkl files created by PIDCalib2')
-    parser.add_argument('-o', '--old', type=str, help='Path to old/reference file'   , required = True)
-    parser.add_argument('-n', '--new', type=str, help='Path to new file, to validate', required = True)
+    parser.add_argument('-o', '--old', type =str, help='Path to old/reference file'   , required = True)
+    parser.add_argument('-n', '--new', type =str, help='Path to new file, to validate', required = True)
+    parser.add_argument('-e', '--exp', nargs='+', help='Substrings that will be used to ignore missing branches')
     args   = parser.parse_args()
 
     return Config(
+        exp = args.exp,
         old = args.old,
         new = args.new)
 # -------------------------------
@@ -203,7 +205,7 @@ def main():
     trees = _get_trees(cfg = cfg, dirs = dirs)
 
     dirs_summaries = { dir.name  : dir.summary for dir  in dirs  if dir.summary is not None }
-    tree_summaries = { tree.name : tree.tree_summary for tree in trees }
+    tree_summaries = { tree.name : tree.tree_summary(cfg = cfg) for tree in trees }
 
     data = {
         'Directories' : dirs_summaries,
