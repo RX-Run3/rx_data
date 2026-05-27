@@ -9,7 +9,7 @@ from functools import cached_property
 from pathlib   import Path
 from ROOT      import TFile, TDirectory, RDF, RDataFrame # type: ignore
 from typing    import Final, Generic, TypeVar
-from pydantic  import BaseModel, model_validator
+from pydantic  import BaseModel, model_validator, ConfigDict
 
 T = TypeVar('T')
 _TREENAME : Final[str] = 'DecayTree'
@@ -19,6 +19,8 @@ class Holder(BaseModel, Generic[T]):
     Class meant to hold an old version and a new version
     of a generic object
     '''
+    model_config = ConfigDict(frozen = True)
+
     name: str
     old : T | None
     new : T | None
@@ -44,6 +46,7 @@ class RDFHolder(Holder[RDF.RNode]):
     '''
     Class meant to hold dataframes
     '''
+    model_config = ConfigDict(arbitrary_types_allowed = True)
     # ---------
     def _get_cols(self, rdf : RDF.RNode | None) -> list[str]:
         if rdf is None:
@@ -81,6 +84,8 @@ class Config(BaseModel):
     '''
     Class meant to configure validation
     '''
+    model_config = ConfigDict(frozen = True)
+
     old : Path
     new : Path
     # -------------------------------
