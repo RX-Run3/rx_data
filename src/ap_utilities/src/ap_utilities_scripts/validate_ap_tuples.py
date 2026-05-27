@@ -195,7 +195,7 @@ def _get_conf() -> Config:
     args   = parser.parse_args()
 
     return Config(
-        exp = args.exp,
+        exp = [] if not args.exp else args.exp,
         old = args.old,
         new = args.new)
 # -------------------------------
