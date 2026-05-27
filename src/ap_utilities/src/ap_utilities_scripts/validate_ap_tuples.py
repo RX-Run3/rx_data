@@ -157,14 +157,14 @@ def _get_trees(
     List of holders of dataframes
     '''
     holders : list[RDFHolder] = []
-    for dir in dirs:
-        holder = RDFHolder(
-            name= dir.name,
-            old = cfg.get_rdf(dirname = dir.old, is_old =  True),
-            new = cfg.get_rdf(dirname = dir.new, is_old = False),
+    for dir_holder in dirs:
+        rdf_holder = RDFHolder(
+            name= dir_holder.name,
+            old = cfg.get_rdf(dirname = dir_holder.old, is_old =  True),
+            new = cfg.get_rdf(dirname = dir_holder.new, is_old = False),
         )
 
-        holders.append(holder)
+        holders.append(rdf_holder)
 
     return holders
 # -------------------------------
