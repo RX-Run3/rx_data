@@ -41,16 +41,16 @@ These file will most of the time contain more than 100 samples. Therefore the
 following is used to make the corresponding sections:
 
 ```bash
-post_ap -v v15 -p rx -s sim10g_unfiltered
+post_ap -p rx -s sim10g_unfiltered
 ```
 
-where the first two arguments are needed to find:
+where the first argument is needed to find:
 
 ```bash
-src/post_ap/src/post_ap_data/post_ap/rx/v15.yaml
+src/post_ap/src/post_ap_data/filter/rx.yaml
 ```
 
-and the last one is used to specify which samples to include. 
+and the second one is used to specify which samples to include. 
 The config looks like:
 
 ```yaml
