@@ -102,7 +102,7 @@ class Sample(BaseModel):
             sample_frac = _FRACTION.format(fraction = self.fraction)
 
         fields = {
-            'filter_job_name' : self.filter_job_name,
+            'filter_job_name' : self.name,
             'ntuple_job_name' : self.name,
             'sample_frac'     : sample_frac,
             'output_name'     : self.output_name,
@@ -191,16 +191,6 @@ class Sample(BaseModel):
         E.g. rx_2024
         '''
         return self.data.info[0]['analysis']
-    # ------------------------------
-    @cached_property
-    def filter_job_name(self) -> str:
-        value = f'mc_{self.block_identifier}_{self.event_type}_{self.group}'
-        length= len(value)
-
-        if length > _MAX_JOB_LENGTH:
-            raise ValueError(f'Job name is too long {length} (> {_MAX_JOB_LENGTH})')
-
-        return value
     # ------------------------------
     @cached_property
     def wg(self) -> str:
