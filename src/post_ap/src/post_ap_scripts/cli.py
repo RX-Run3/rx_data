@@ -1,8 +1,10 @@
 '''
+Entry point for post_ap utilities
 '''
-
+import os
 import typer
 
+from pathlib     import Path
 from dmu         import LogStore
 from dmu.generic import utilities as gut
 from post_ap     import PFNReaderConf
@@ -21,8 +23,10 @@ def make_info(
     data = gut.load_data(
         package = 'post_ap_data', 
         fpath   = f'post_ap/{project}/{version}.yaml')
+
+    storage = Path(os.environ['ANADIR']) / 'downloads'
     cfg     = PFNReaderConf(**data)
-    rdr     = PFNReader(cfg = cfg)
+    rdr     = PFNReader(cfg = cfg, storage = storage)
     samples = rdr.get_samples(
         production=Production.rx_2024, 
         nickname  =sample)
