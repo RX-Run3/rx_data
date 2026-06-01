@@ -90,6 +90,15 @@ class Sample(BaseModel):
     storage : Path
     fraction: float | None
     # ------------------------------
+    @model_validator(mode = 'after')
+    def _validate(self) -> 'Sample':
+        good_name_length = len(self.name) < _MAX_JOB_LENGTH
+
+        if not good_name_length:
+            raise ValueError(f'Job name length is larger than {_MAX_JOB_LENGTH}')
+
+        return self
+    # ------------------------------
     @property
     def info(self) -> str:
         '''
