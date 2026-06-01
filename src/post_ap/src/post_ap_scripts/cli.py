@@ -21,7 +21,7 @@ def make_info(
 
     data = gut.load_data(
         package = 'post_ap_data', 
-        fpath   = f'post_ap/filter/{project}.yaml')
+        fpath   = f'filter/{project}.yaml')
 
     storage = Path(os.environ['ANADIR']) / 'downloads'
     cfg     = PFNReaderConf(**data)
