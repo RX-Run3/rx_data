@@ -63,6 +63,9 @@ class FilePatcher:
         '''
         try:
             rdf_input = RDataFrame('MCDecayTree', str(path))
+            entries   = rdf_input.Count().GetValue()
+
+            log.debug(f'Found MCDecayTree with {entries} entries')
         except Exception:
             log.debug(f'MCDecayTree not found in {path}')
             return -2
