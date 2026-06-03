@@ -9,7 +9,7 @@ import tqdm
 
 from pathlib      import Path
 from ROOT         import RDataFrame, TFileMerger, TFile, TTree, RDF # type: ignore
-from dmu          import LogLevels, LogStore
+from dmu          import LogStore
 
 from rx_q2        import Q2SmearCorrector
 from rx_common    import Component, Project, Trigger, MissingComponent
