@@ -759,15 +759,48 @@ def test_data(
         tmp_path = tmp_path,
         test_name= f'data_{sample}_{trigger}')
 # ------------------------------------------------
-@pytest.mark.parametrize('sample' , [Component.bpkpee])
+@pytest.mark.parametrize('sample' , [Component.bdkstkpiee, Component.bdkstkpijpsiee])
 @pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rkst_ee_os])
-def test_mc(
+def test_mc_ee(
     sample  : Component, 
     trigger : Trigger, 
     tmp_path: Path):
     '''
     Test of getter class in mc
     '''
+    if sample == Component.bdkstkpijpsiee and trigger == Trigger.rk_ee_os:
+        return
+
+    with RDFGetter.max_entries(value=-1):
+        gtr = RDFGetter(sample=sample, trigger=trigger)
+        rdf = gtr.get_rdf(per_file=False)
+
+    _plot_sim(rdf, f'test_mc/{sample}', out_dir = tmp_path, particle=   'B')
+    _plot_sim(rdf, f'test_mc/{sample}', out_dir = tmp_path, particle='Jpsi')
+
+    if 'B0ToKpPim' in trigger:
+        return
+
+    _print_dotted_branches(rdf)
+    _check_branches(rdf, is_ee=True, is_mc=sample.is_mc)
+
+    _plot_mc_qsq(rdf, f'test_mc/{sample}', sample, out_dir = tmp_path)
+    _plot_mva_mass(rdf, f'test_mc/{sample}', out_dir = tmp_path)
+    _plot_mva(rdf     , f'test_mc/{sample}', out_dir = tmp_path)
+    _plot_hop(rdf     , f'test_mc/{sample}', out_dir = tmp_path)
+# ------------------------------------------------
+@pytest.mark.parametrize('sample' , [Component.bpkpmm, Component.bdkstkpijpsimm])
+@pytest.mark.parametrize('trigger', [Trigger.rk_mm_os, Trigger.rkst_mm_os])
+def test_mc_mm(
+    sample  : Component, 
+    trigger : Trigger, 
+    tmp_path: Path):
+    '''
+    Test of getter class in mc
+    '''
+    if sample == Component.bdkstkpijpsimm and trigger == Trigger.rk_mm_os:
+        return
+
     with RDFGetter.max_entries(value=-1):
         gtr = RDFGetter(sample=sample, trigger=trigger)
         rdf = gtr.get_rdf(per_file=False)
@@ -1267,15 +1300,15 @@ def test_same_sign(trigger   : Trigger):
 # --------------------------
 @pytest.mark.parametrize('source, target, trigger', 
     [
-    ('Bd_JpsiKst_mm_eq_DPC', 'Bs_JpsiKst_mm_eq_DPC', Trigger.rkst_mm_os),
-    ('Bd_JpsiKst_ee_eq_DPC', 'Bs_JpsiKst_ee_eq_DPC', Trigger.rkst_ee_os),
+    (Component.bdkstkpijpsimm, Component.bskstjpsimm    , Trigger.rkst_mm_os),
+    (Component.bdkstkpijpsiee, Component.bskstjpsiee    , Trigger.rkst_ee_os),
     # -------------
-    ('Bd_JpsiKst_mm_eq_DPC', 'Bd_JpsiKst_mm_had_swp', Trigger.rkst_mm_os),
-    ('Bd_JpsiKst_ee_eq_DPC', 'Bd_JpsiKst_ee_had_swp', Trigger.rkst_ee_os),
+    (Component.bdkstkpijpsimm, Component.bdkstjpsimm_swp, Trigger.rkst_mm_os),
+    (Component.bdkstkpijpsiee, Component.bdkstjpsiee_swp, Trigger.rkst_ee_os),
     ])
 def test_emulated_samples(
-    source  : str, 
-    target  : str, 
+    source  : Component, 
+    target  : Component, 
     trigger : Trigger,
     tmp_path: Path):
     '''
@@ -1283,9 +1316,6 @@ def test_emulated_samples(
 
     B0 -> Jpsi K* => Bs -> Jpsi K*
     '''
-    source  = Component.from_sample(source)
-    target  = Component.from_sample(target)
-
     with RDFGetter.max_entries(value=100_000):
         gtr_1   = RDFGetter(sample=target, trigger=trigger)
         rdf_tar = gtr_1.get_rdf(per_file=False)
