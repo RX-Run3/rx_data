@@ -84,7 +84,7 @@ class FilePatcher:
             log.debug('Dry run, not adding any column')
             return 2
 
-        with tempfile.NamedTemporaryFile(suffix='.root', delete=True, dir='/tmp') as value:
+        with tempfile.NamedTemporaryFile(suffix='.root', delete=False, dir='/tmp') as value:
             tmp_path = str(value.name)
             log.debug(f'Storing temporary MCDecayTree in: {tmp_path}')
             rdf_input.Snapshot('MCDecayTree', tmp_path)
