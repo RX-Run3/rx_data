@@ -105,6 +105,22 @@ Access to a computing cluster, e.g. something to login with `ssh user@lxplus.cer
 
 For instructions on how to setup the plugin check [this](https://flowo-docs.pages.dev/quickstart/)
 One can also use `podman` insted of docker, in the docker compose step.
+A working env file is:
+
+```bash
+PORT=3100
+DOMAIN=localhost
+PROTOCOL=http
+SECRET_KEY=12345
+TZ=Asia/Shanghai
+POSTGRES_DB=flowo_logs
+POSTGRES_USER=flowo
+POSTGRES_PASSWORD=flowo_password
+POSTGRES_HOST=db
+FLOWO_WORKING_PATH=/publicfs/ucas/user/campoverde
+CONTAINER_MOUNT_PATH=/publicfs/ucas/user/campoverde
+BACKEND_CORS_ORIGINS=["http://localhost","http://localhost:3100"]
+```
 
 ## Connecting from Your Laptop
 
