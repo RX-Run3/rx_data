@@ -2,11 +2,11 @@
 Module holding FilePatcher class
 '''
 import re
-import tempfile
+import array
 
 from pathlib     import Path
 from typing      import Final
-from ROOT        import RDataFrame, RDF # type: ignore
+from ROOT        import RDataFrame, TFile # type: ignore
 from dmu         import LogStore
 from dmu.generic import utilities as gut
 
@@ -84,22 +84,25 @@ class FilePatcher:
             log.debug('Dry run, not adding any column')
             return 2
 
-        with tempfile.NamedTemporaryFile(suffix='.root', delete=False, dir='/tmp') as value:
-            tmp_path = str(value.name)
-            log.debug(f'Storing temporary MCDecayTree in: {tmp_path}')
-            rdf_input.Snapshot('MCDecayTree', tmp_path)
-            rdf  = RDataFrame('MCDecayTree', tmp_path)
+        file = TFile(str(path), "UPDATE")
+        tree = file.Get('MCDecayTree')
 
-            rdf  = rdf.Define('block', str(block))
-            opts = RDF.RSnapshotOptions()
-            opts.fMode              = 'update'
-            opts.fOverwriteIfExists = True
+        val = tree.GetEntry(0)
+        if val <= 0:
+            log.warning(f'Corrupted: {path}')
 
-            rdf.Snapshot(
-                options  = opts,
-                treename = 'MCDecayTree', 
-                filename = str(path), 
-            )
+            file.Close()
+            return 1
+        
+        value_arr  = array.array('i', [block])
+        new_branch = tree.Branch('block', value_arr, "block/I")
+        
+        for i in range(int(tree.GetEntries(""))):
+            tree.GetEntry(i)
+            new_branch.Fill()
+        
+        file.Write()
+        file.Close()
 
         return 1
     # -----------------------------
@@ -122,7 +125,7 @@ class FilePatcher:
         '''
         if self._dry_run:
             self._counter += 1
-            log.info(f'{self._counter:<20}{path}')
+            log.debug(f'{self._counter:<20}{path}')
 
         if not path.name.startswith('mc_'):
             log.debug(f'Skipping non MC file: {path}')
