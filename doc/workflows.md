@@ -103,63 +103,8 @@ Access to a computing cluster, e.g. something to login with `ssh user@lxplus.cer
 
 ## First-Time Setup (pulling images)
 
-Only needed if images are not cached locally (`podman images`).
-
-```bash
-podman pull docker.1ms.run/library/postgres:15-alpine
-podman pull ghcr.io/zhanghaomiao/flowo:latest
-```
-
-> Note: standard Docker Hub and most Alibaba mirrors are blocked in China. Use `docker.1ms.run` as the mirror.
-
----
-
-## Starting Flowo
-
-### 1. Kill any stale processes from previous sessions
-
-```bash
-pkill -9 caddy
-pkill -9 fastapi
-```
-
-### 2. Start the database
-
-```bash
-podman run -d --network host \
-              --env-file flowo/.env \
-              --name flowo_db \
-  docker.1ms.run/library/postgres:15-alpine
-```
-
-### 3. Start the app
-
-```bash
-podman run -d --network  host \
-              --env-file flowo/.env \
-              --name     flowo_app \
-              -e POSTGRES_HOST=127.0.0.1 \
-              -e POSTGRES_PORT=5432 \
-              -v /publicfs/ucas/user/campoverde:/publicfs/ucas/user/campoverde:ro \
-              ghcr.io/zhanghaomiao/flowo:latest
-```
-
-### 4. Copy the Caddyfile and restart
-
-```bash
-podman cp flowo/Caddyfile flowo_app:/etc/caddy/Caddyfile
-podman restart flowo_app
-```
-
-### 5. Verify both containers are running
-
-```bash
-podman ps
-```
-
-You should see `flowo_db` and `flowo_app` both with status `Up`.
-
----
+For instructions on how to setup the plugin check [this](https://flowo-docs.pages.dev/quickstart/)
+One can also use `podman` insted of docker, in the docker compose step.
 
 ## Connecting from Your Laptop
 
@@ -170,10 +115,6 @@ ssh -L 3100:localhost:3100 campoverde@lxlogin002.ihep.ac.cn
 ```
 
 Then open your browser at `http://localhost:3100`.
-
-> 1300 is the port Caddy listens on on the server 3100 is the local port on your laptop (chosen to avoid conflicts — you can use any free port).
-
----
 
 ## Making the config file in the server
 
@@ -189,39 +130,3 @@ EOF
 
 in the server (e.g. lxplus)
 
-## Restarting After a Session (containers already exist)
-
-If containers exist but are stopped:
-
-```bash
-pkill -9 caddy
-pkill -9 fastapi
-podman start flowo_db
-podman start flowo_app
-```
-
----
-
-## Architecture Overview
-
-```
-You (browser)
-    │  port 3100 (laptop) → port 3100 (server, SSH tunnel)
-    ▼
-Caddy  (inside flowo_app, port 3100)
-    │  port 8000
-    ▼
-FastAPI  (inside flowo_app, port 8000)
-    │  port 5432
-    ▼
-Postgres  (flowo_db, port 5432)
-```
-
-Caddy and FastAPI both run inside the `flowo_app` container, managed by `supervisord`.
-
----
-
-## Notes
-
-- Container image storage is configured in `~/.config/containers/storage.conf` to use `/tmp/$USER/containers/storage`. This path may be wiped on node reboots, requiring images to be re-pulled.
-- Port 3100 is exposed on the host network. Access is protected by flowo's login, but use the SSH tunnel to avoid exposing it to other users on the cluster.
