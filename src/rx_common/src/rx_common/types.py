@@ -111,7 +111,7 @@ class Block(BaseModel):
             return cls(value=value)
 
         if value.startswith('b'):
-            value = value.lstrip('b')
+            value = value.removeprefix('b')
             return cls(value=value)
 
         raise ValueError(f'Invalid string: {value}')

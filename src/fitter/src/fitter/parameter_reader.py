@@ -184,7 +184,7 @@ class ParameterReader:
                 continue
 
             index    = 0 if key.endswith('_value') else 1
-            var_name = key.rstrip('_value').rstrip('_error')
+            var_name = key.removesuffix('_value').removesuffix('_error')
 
             if var_name not in output_data:
                 output_data[var_name] = [-999.0, -999.0]
