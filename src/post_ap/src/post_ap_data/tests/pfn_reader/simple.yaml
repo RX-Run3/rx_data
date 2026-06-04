@@ -19,3 +19,21 @@ productions:
         - mc_24_w40_42_magup_sim10d_12153001_bu_jpsik_ee_eq_dpc_tuple
         - mc_24_w40_42_magdown_sim10d_12153001_bu_jpsik_ee_eq_dpc_tuple
     fractions : {}
+  rx_filter:
+    versions:
+      data-ecal   : v1r6146
+    samples:
+      data-ecal:
+        - data_24_magdown_turbo_rd_24c2
+        - data_24_magdown_turbo_rd_24c3
+        - data_24_magdown_turbo_rd_24c4
+        - data_24_magup_turbo_rd_24c2
+        - data_24_magup_turbo_rd_24c3
+        - data_24_magup_turbo_rd_24c4
+        - data_25_magdown_turbo_rd_25c1
+        - data_25_magdown_turbo_rd_25c2
+        - data_25_magdown_turbo_rd_25c4
+        - data_25_magup_turbo_rd_25c1
+        - data_25_magup_turbo_rd_25c3
+        - data_25_magup_turbo_rd_25c4
+    fractions : {}
