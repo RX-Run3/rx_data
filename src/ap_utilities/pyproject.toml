@@ -22,7 +22,7 @@ select = ["F", "PL", "B"]
 [project.scripts]
 analyze_samples    ='ap_utilities_scripts.analyze_samples:main'
 check_production   ='ap_utilities_scripts.check_production:main'
-check_samples      ='ap_utilities_scripts.check_samples:main'
+check_bkk_samples  ='ap_utilities_scripts.check_bkk_samples:main'
 find_in_ap         ='ap_utilities_scripts.find_in_ap:main'
 list_ap_samples    ='ap_utilities_scripts.list_ap_samples:main'
 make_fields        ='ap_utilities_scripts.make_fields:main'

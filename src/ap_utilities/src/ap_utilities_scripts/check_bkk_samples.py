@@ -10,7 +10,7 @@ from ap_utilities import LogStore
 from ap_utilities import BkkChecker
 from ap_utilities import SampleConfig
 
-log=LogStore.add_logger('ap_utilities_scripts:check_samples')
+log=LogStore.add_logger('ap_utilities_scripts:check_bkk_samples')
 
 KINDS      : Final[list[str]] = ['block', 'sample']
 SETTINGS   : Final[list[str]] = ['2024_sim10d', '2024_sim10f', '2024_sim10g']
@@ -53,9 +53,9 @@ def _parse_args() -> Conf:
 def _set_logs(cfg : Conf) -> None:
     log.debug(f'Running with log level: {cfg.log_lvl}')
 
-    LogStore.set_level('ap_utilities:bkk_checker'          , cfg.log_lvl)
-    LogStore.set_level('ap_utilities:sample_config'        , cfg.log_lvl)
-    LogStore.set_level('ap_utilities_scripts:check_samples', cfg.log_lvl)
+    LogStore.set_level('ap_utilities:bkk_checker'              , cfg.log_lvl)
+    LogStore.set_level('ap_utilities:sample_config'            , cfg.log_lvl)
+    LogStore.set_level('ap_utilities_scripts:check_bkk_samples', cfg.log_lvl)
 # --------------------------------
 def _print_total(df : pnd.DataFrame) -> None:
     '''

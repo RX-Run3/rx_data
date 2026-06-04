@@ -37,7 +37,7 @@ The samples to be ntupled go to `rx_2024/info.yaml`. To get the contents run:
 # Enter environment with access to dirac
 # need grid certificate first
 dirac_shell
-check_samples -c 2024_sim10g -s by_priority -n 6 -p sim10g -k block
+check_bkk_samples -c 2024_sim10g -s by_priority -n 6 -p sim10g -k block
 ```
 
 which will check for their existence with:
