@@ -74,11 +74,19 @@ def show_samples_by_block(project : Project = typer.Option(..., '--project', '-p
 # ----------------------
 @app.command()
 def download_ntuples(
-    level   : LogLevels = typer.Option(LogLevels.info, '--level'  , '-l'),
-    nthread : int       = typer.Option(           ..., '--nthread', '-n'),
-    dry_run : bool      = typer.Option(False         , '--dry_run', '-d'),
-    version : str       = typer.Option(           ..., '--version', '-v')) -> None:
+    level   : LogLevels = typer.Option(LogLevels.info, '--level'  , '-l', help='Logging level'),
+    nthread : int       = typer.Option(           ..., '--nthread', '-n', help='Threads to download with'),
+    dry_run : bool      = typer.Option(False         , '--dry_run', '-d', help='If used will do everything but download'),
+    version : str       = typer.Option(           ..., '--version', '-v', help='AP version, e.v. v1r6146')) -> None:
+    '''
+    Downloads ntuples from grid, before using do:
 
+    # Make sure you have access to APD metadata
+    apd-login
+
+    # Make sure you have access to grid data
+    lhcb-proxy-init -v 100:00
+    '''
     LogStore.set_level('post_ap:pfn_reader', level)
 
     cfg = PFNDownloaderConf(
