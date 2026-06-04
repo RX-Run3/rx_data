@@ -1,78 +1,5 @@
 [TOC]
 
-## List LFNs
-
-Do:
-
-```bash
-list_lfns -v v1 v2 v3 -p rx
-```
-
-To create `lfns.txt` with a list of LFNs corresponding to the versions
-shown above for the `rx` project. To check the amount of data in those files
-do:
-
-```bash
-dirac-dms-data-size -u MB lfns.txt
-```
-
-This list can later be used to remove old files from the grid with:
-
-```bash
-dirac-dms-remove-files lfns.txt
-```
-
-## Listing available triggers
-
-In order to see what triggers are present in the current version of the ntuples do:
-
-```bash
-list_triggers -v v1 -k rx
-
-# And this will save them to a yaml file
-list_triggers -v v1 -k rx -o triggers.yaml
-```
-
-## Downloading the ntuples
-
-For this, run:
-
-```bash
-download_rx_data -m 5 -v v1 -d -t triggers.yaml -k rx
-```
-
-which will use 5 threads to download the ntuples associated to the triggers in `triggers.yaml`
-and version `v1` to the specified path.
-
-The full options are:
-
-```
-options:
-  -h, --help              show this help message and exit
-  -t TRIG, --trig TRIG    Path to YAML file with list of triggers
-  -v VERS, --vers VERS    Version of LFNs
-  -k KIND, --kind KIND    Type of production
-  -n NFILE, --nfile NFILE Number of files to download
-  -l {10,20,30,40}, --log {10,20,30,40} Log level, default 20
-  -m MTH, --mth MTH       Number of threads to use for downloading, default 1
-  -r, --ran               When picking a subset of files, with -n, pick them randomly
-  -d, --dryr              If used, it will skip downloads, but do everything else
-  -f, --force             If used, it will download even if output already exists
-```
-
-**IMPORTANT**:
-- In order to prevent deleting the data, save it in a hiden folder, e.g. one starting with a period. Above it is `.data`.
-- This path is optional, one can export `DOWNLOAD_NTUPPATH` and the path will be picked up
-
-**Potential problems**:
-The download happens through XROOTD, which will try to pick a kerberos token. If authentication problems happen, do:
-
-```bash
-which kinit
-```
-
-and make sure that your kinit does not come from a virtual environment but it is the one in the LHCb stack or the native one.
-
 ## Checking for corrupted files
 
 For this run:
@@ -85,19 +12,6 @@ Which will check for corrupted files and will remove them.
 `-x` can be used to pass wildcards, in the case above, it would target only data.
 After removal, the download can be tried again, which would run only on the missing samples.
 This might allow for these files to be fixed, assuming that they were broken due to network issues. 
-
-## Organizing paths
-
-### Merging data files
-
-After the preselection the data files are very small and there are many of them. The following line can be used to merge them:
-
-```bash
-merge_samples -p rx -s DATA_24_MagDown_24c3 -t Hlt2RD_BuToKpMuMu_MVA    -v v7
-merge_samples -p rx -s DATA_24_MagDown_24c2 -t Hlt2RD_B0ToKpPimMuMu_MVA -v v7
-```
-
-where the command will merge all the files associated to a given sample and trigger.
 
 ## Samples naming
 
@@ -209,40 +123,6 @@ graph TD
   hop -->|required by mva| mva
   smear -->|q² wise models from smeared q²| mva
 ```
-
-### Calculating friend trees with jobs
-
-These trees take time to calculate, therefore one has to send jobs to the cluster in IHEP 
-(LXPLUS HTCondor is not supported). For that do:
-
-```bash
-make_friend_trees -p rk_nopid -e mva smear -c rk # makes all the trees excluding mva and smear
-make_friend_trees -p rk_nopid -o smear     -c rk # makes only the smear tree
-make_friend_trees -p rk_nopid -o mva       -c rk # makes only the mva tree
-```
-
-Where the order of the trees is needed due to the dependencies. E.g. in order to make the `smear` trees
-one needs the `brem_track_2` trees. The options are:
-
-```
-options:
-  -h, --help            show this help message and exit
-  -c CONFIG, --config CONFIG
-                        Name of config file, e.g. rk_nopid
-  -p PROJECT, --project PROJECT
-                        Name of project, e.g. rk
-  -e EXCLUDE [EXCLUDE ...], --exclude EXCLUDE [EXCLUDE ...]
-                        List of names of friend trees to exclude
-  -o ONLY, --only ONLY  Name the only friend tree to make
-  -w WCARD, --wcard WCARD
-                        Wildcard to match files
-  -d, --dry_run         If used, it will do a dry run, fewer jobs and no outputs
-  -l {10,20,30}, --log_lvl {10,20,30}
-                        Logging level
-```
-
-In this case, these last two flags are needed because the `mva` trees are calculated with the `brem_track_2`
-trees as input. Therefore they can only be processed afterwards.
 
 ## Missing files
 
