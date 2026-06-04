@@ -1,3 +1,63 @@
+# -------------------------
+# Aliases
+# -------------------------
+fit_strat: &fit_strat
+  strategy :
+    ntries : 20
+    pvalue : 0.05
+plot_conf: &plot_conf
+  nbins  : 30
+  stacked: True
+  d_leg  : {}
+# -------------------------
+constraints_low    : &cons_low
+  component  : data_24
+  trigger    : rk_ee_ss
+  parameters : 
+    - ap       
+    - bt
+  selection  : {}
+  fit:
+    <<: *fit_strat
+  plots:
+    <<: *plot_conf
+# -------------------------
+constraints_central: &cons_central
+  component  : data_24
+  trigger    : rk_ee_ss
+  parameters :
+    - ap      
+    - bt
+  selection  :
+    leakage: (TMath::Abs(B_const_mass_M - 5280) > 200) && (TMath::Abs(B_const_mass_psi2S_M - 5280) > 100)
+  fit:
+    <<: *fit_strat
+  plots:
+    <<: *plot_conf
+# -------------------------
+constraints_high   : &cons_high
+  component  : data_24
+  trigger    : rk_ee_ss
+  parameters :
+    - mu      
+    - sg      
+  selection  :
+    leakage: (TMath::Abs(B_const_mass_M - 5280) > 200) && (TMath::Abs(B_const_mass_psi2S_M - 5280) > 100)
+  fit:
+    <<: *fit_strat
+  plots:
+    <<: *plot_conf
+# -------------------------
+# Proper config
+# -------------------------
+constraints:
+  low:
+    <<: *cons_low
+  central:
+    <<: *cons_central
+  high:
+    <<: *cons_high
+# -----------------
 models:
   low:
     pdfs          : [hypexp]
@@ -21,4 +81,4 @@ models:
     fix           :
       dl_suj :  2.5
       gm_suj : -1.5
-constraints : null
+# -----------------

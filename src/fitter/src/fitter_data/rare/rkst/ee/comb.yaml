@@ -13,12 +13,10 @@ plot_conf: &plot_conf
 constraints_low    : &cons_low
   component  : data_24
   trigger    : rkst_ee_ss
-  parameters : # Will constrain parameters starting
-    - mu       # with any of these strings
-    - ap       # E.g mu_hypexp_combinatorial_1
+  parameters : 
+    - ap       
     - bt
-  selection  :
-    cmb : mva_cmb > 0.2 && mva_cmb < 0.9
+  selection  : {}
   fit:
     <<: *fit_strat
   plots:
@@ -27,13 +25,11 @@ constraints_low    : &cons_low
 constraints_central: &cons_central
   component  : data_24
   trigger    : rkst_ee_ss
-  parameters : # Will constrain parameters starting
-    - mu       # with any of these strings
-    - ap       # E.g mu_hypexp_combinatorial_1
+  parameters :
+    - ap      
     - bt
   selection  :
     leakage: (TMath::Abs(B_const_mass_M - 5280) > 200) && (TMath::Abs(B_const_mass_psi2S_M - 5280) > 100)
-    cmb    : mva_cmb > 0.2 && mva_cmb < 0.9
   fit:
     <<: *fit_strat
   plots:
@@ -42,12 +38,11 @@ constraints_central: &cons_central
 constraints_high   : &cons_high
   component  : data_24
   trigger    : rkst_ee_ss
-  parameters : # Will constrain parameters starting
-    - mu       # with any of these strings
-    - sg       # E.g mu_hypexp_combinatorial_1
+  parameters :
+    - mu      
+    - sg      
   selection  :
     leakage: (TMath::Abs(B_const_mass_M - 5280) > 200) && (TMath::Abs(B_const_mass_psi2S_M - 5280) > 100)
-    cmb    : mva_cmb > 0.2 && mva_cmb < 0.9
   fit:
     <<: *fit_strat
   plots:
@@ -69,19 +64,21 @@ models:
     shared        : []
     floating      : []
     reparametrize : {}
-    fix           : {}
+    fix           :
+      mu : 4800
   central:
     pdfs          : [hypexp]
     shared        : []
     floating      : []
     reparametrize : {}
-    fix           : {}
+    fix           :
+      mu : 4700
   high:
     pdfs          : [suj]
     shared        : []
     floating      : []
     reparametrize : {}
     fix           :
-      dl_suj : 2.5
-      gm_suj : -10
+      dl_suj :  2.5
+      gm_suj : -1.5
 # -----------------
