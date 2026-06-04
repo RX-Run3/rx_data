@@ -62,6 +62,32 @@ def test_simple(
 
     assert npfn == expected
 # -----------------------------
+def test_data(tmp_path : Path):
+    '''
+    Test reading data
+    '''
+    storage= tmp_path / 'downloaded'
+    data   = gut.load_data(
+        package='post_ap_data', 
+        fpath  ='tests/pfn_reader/simple.yaml')
+    cfg    = PFNReaderConf(**data)
+
+    reader = PFNReader(
+        cfg     = cfg,
+        storage = storage)
+
+    samples= reader.get_samples(
+        production= Production.rx_filter, 
+        nickname  = 'data-ecal')
+    npfn   = samples.size
+
+    for sample in samples:
+        log.info(sample.name)
+        for path in sample.target_paths:
+            log.info(f'   {path}')
+
+    assert npfn > 0 
+# -----------------------------
 @pytest.mark.parametrize('sample', ['sim10g_ss'])
 def test_real(sample : str, tmp_path : Path):
     '''
