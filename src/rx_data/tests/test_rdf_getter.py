@@ -771,7 +771,7 @@ def test_mc_ee(
     if sample == Component.bdkstkpijpsiee and trigger == Trigger.rk_ee_os:
         return
 
-    with RDFGetter.max_entries(value=-1):
+    with RDFGetter.max_entries(value=10_000):
         gtr = RDFGetter(sample=sample, trigger=trigger)
         rdf = gtr.get_rdf(per_file=False)
 
@@ -801,7 +801,7 @@ def test_mc_mm(
     if sample == Component.bdkstkpijpsimm and trigger == Trigger.rk_mm_os:
         return
 
-    with RDFGetter.max_entries(value=-1):
+    with RDFGetter.max_entries(value=10_000):
         gtr = RDFGetter(sample=sample, trigger=trigger)
         rdf = gtr.get_rdf(per_file=False)
 
