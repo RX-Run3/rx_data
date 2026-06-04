@@ -131,10 +131,12 @@ def organize_paths(
         dry_run = dry_run)
 
     counter = 0
-    for sample in tqdm.tqdm(samples, ascii = ' -'):
+    for sample in tqdm.tqdm(samples, ascii = ' -', disable = level < LogLevels.info):
         if not org.organize(sample = sample):
+            log.debug(f'Skipping: {sample}')
             continue
 
+        log.debug(f'Organizing: {sample}')
         counter += 1
 
     nsamples = len(samples)
