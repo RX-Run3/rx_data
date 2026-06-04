@@ -89,8 +89,8 @@ constraints:
     - bdkstkpiee
     - bpkstkpiee
     - bsphiee
-  combinatorial: false 
-  signal_shape : false 
+  combinatorial: true 
+  signal_shape : true 
 fit  : {}
 plots:
   merging:
