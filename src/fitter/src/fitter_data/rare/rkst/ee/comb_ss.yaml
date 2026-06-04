@@ -1,0 +1,24 @@
+models:
+  low:
+    pdfs          : [hypexp]
+    shared        : []
+    floating      : []
+    reparametrize : {}
+    fix           :
+      mu : 4800
+  central:
+    pdfs          : [hypexp]
+    shared        : []
+    floating      : []
+    reparametrize : {}
+    fix           :
+      mu : 4700
+  high:
+    pdfs          : [suj]
+    shared        : []
+    floating      : []
+    reparametrize : {}
+    fix           :
+      dl_suj :  2.5
+      gm_suj : -1.5
+constraints : null
