@@ -657,26 +657,29 @@ def test_max_entries(
 
     assert math.isclose(nentries, requested, rel_tol=0.1)
 # ------------------------------------------------
-@pytest.mark.parametrize('kind'   , ['data', 'mc'])
-@pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rkst_ee_os])
+@pytest.mark.parametrize(
+    'sample, trigger', 
+    [
+    (Component.data_24_md_c2, Trigger.rk_ee_os), 
+    (Component.bpkpee       , Trigger.rk_ee_os), 
+    (Component.data_24_md_c2, Trigger.rk_mm_os), 
+    (Component.bpkpmm       , Trigger.rk_mm_os), 
+    # ------------------
+    (Component.data_24_md_c2, Trigger.rkst_ee_os), 
+    (Component.bdkstkpiee   , Trigger.rkst_ee_os), 
+    (Component.data_24_md_c2, Trigger.rkst_mm_os), 
+    (Component.bdkstkpimm   , Trigger.rkst_mm_os), 
+     ])
 def test_per_file(
-    kind     : str, 
+    sample   : Component, 
     trigger  : Trigger, 
     tmp_path : Path):
     '''
     Test of per_file flag set to True
     '''
-    if   kind == 'data':
-        sample = Component.data_24_md_c2
-    elif kind == 'mc' and trigger.is_electron:
-        sample = Component.bdkstkpiee
-    elif kind == 'mc' and trigger.is_muon:
-        sample = Component.bdkstkpimm
-    else:
-        raise ValueError(f'Invalid kind/trigger: {kind}/{trigger}')
-
-    gtr   = RDFGetter(sample=sample, trigger=trigger)
-    d_rdf = gtr.get_rdf(per_file=True)
+    with RDFGetter.max_entries(1000):
+        gtr   = RDFGetter(sample=sample, trigger=trigger)
+        d_rdf = gtr.get_rdf(per_file=True)
 
     for val, rdf in d_rdf.items():
         name = hash(val)
