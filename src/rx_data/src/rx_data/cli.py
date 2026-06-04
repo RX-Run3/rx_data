@@ -111,6 +111,17 @@ def organize_paths(
     dry_run : bool      = typer.Option(False         , '--dry-run', '-d', help = 'If used, will do dry run', is_flag = True),
     level   : LogLevels = typer.Option(LogLevels.info, '--level'  , '-l', help = 'Logging level'),
     version : str       = typer.Option(           ..., '--version', '-v', help = 'Version of analysis production, e.g. v1r5849')) -> None:
+    '''
+    Used to organize ntuples from AP
+
+    These ntuples are already in local server.
+    It expects ROOT files in {ANADIR}/downloaded/{version}.
+    The files will be post processed by:
+
+    - Splitting them into analyses, e.g. rk, rkstar
+    - Merging them such that each job corresponds to one ROOT file
+    - Renaming them
+    '''
 
     LogStore.set_level('rx_data:sample_organizer', level)
 
