@@ -487,8 +487,6 @@ class Trigger(StrEnum):
     rkst_mm_nopid= auto()
     rkst_mm_ss   = auto()
     # -----------
-    uninitialized= auto()
-    # -----------
     @property
     def misid_version(self) -> 'Trigger':
         '''
@@ -616,8 +614,6 @@ class Trigger(StrEnum):
                 return 'Hlt2RD_B0ToKpPimMuMu_MVA_noPID'
             case Trigger.rkst_mm_ss:
                 return 'Hlt2RD_B0ToKpPimMuMu_SameSign_MVA'
-            case Trigger.uninitialized:
-                return 'uninitialized'
     # -----------
     @classmethod
     def from_name(cls, name: str) -> 'Trigger':
@@ -667,8 +663,6 @@ class Trigger(StrEnum):
                 return cls.rkst_mm_nopid
             case 'Hlt2RD_B0ToKpPimMuMu_SameSign_MVA':
                 return cls.rkst_mm_ss
-            case 'uninitialized':
-                return cls.uninitialized
             case _:
                 raise ValueError(f'Unknown trigger name: {name!r}')
     # -----------
@@ -707,9 +701,6 @@ class Trigger(StrEnum):
         -----------------
         Project for which this trigger is meant to be used, e.g. rk, rkst etc
         '''
-        if self == Trigger.uninitialized:
-            raise ValueError('Trigger is not initialized')
-
         match self:
             # --------------
             # rk
