@@ -182,7 +182,7 @@ hist==2.9.0
     #   zfit
 histoprint==2.6.0
     # via hist
-htcondor==24.12.18
+htcondor==24.12.20
     # via
     #   -r requirements-dep.in
     #   snakemake-executor-plugin-htcondor
