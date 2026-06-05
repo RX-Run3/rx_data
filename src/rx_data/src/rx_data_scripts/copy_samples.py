@@ -336,7 +336,8 @@ def main():
         if kind == Data.skipped_friend:
             continue
 
-        with FCopy(source = Data.serv) as fcp:
+        log.info(f'Downloading from host: {Data.host}')
+        with FCopy(source = Data.host) as fcp:
             _download_kind(kind = kind, fcp = fcp)
 
     log.info(f'Copied {Data.copied_files} ({Data.copied_size:.2f} Gb) files in total')
