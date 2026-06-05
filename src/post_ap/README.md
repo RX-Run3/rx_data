@@ -77,6 +77,16 @@ productions:
       mc_24_w41_42_magup_sim10g_11144001_bd_jpsikst_mm_eq_dpc_tuple   : 0.08 
 ```
 
+# Show production information
+
+For this do:
+
+```bash
+post_ap show-samples -P rx_filter -p rx -v v1r6165
+```
+
+which will show basic information on samples in `rx_filter` from version `v1r6165`
+
 # Testing locally
 
 In order to test locally:
