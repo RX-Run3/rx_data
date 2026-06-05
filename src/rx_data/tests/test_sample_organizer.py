@@ -105,7 +105,7 @@ class TestSample:
         paths : dict[Trigger,Path] = {}
         for trigger in self._triggers:
             target_path    = ana_dir / f'Data/{trigger.project}/main'
-            paths[trigger] = target_path / f'latest/{self.name}.root'
+            paths[trigger] = target_path / f'latest/{self.name}_{trigger}.root'
 
         if len(paths) == 0:
             raise ValueError('No target paths found')
@@ -134,17 +134,16 @@ class TestSample:
 
         return merged
 # ------------------------------------
-@pytest.mark.parametrize('triggers', [[Trigger.rk_ee_os, Trigger.rkst_ee_os]])
-@pytest.mark.parametrize('dry_run' , [True, False])
-@pytest.mark.parametrize('is_mc'   , [True, False])
+@pytest.mark.parametrize('dry_run', [True, False])
+@pytest.mark.parametrize('is_mc'  , [True, False])
 def test_simple(
     dry_run  : bool,
     is_mc    : bool,
-    tmp_path : Path, 
-    triggers : list[Trigger]):
+    tmp_path : Path):
     '''
     Simplest test
     '''
+    triggers = list(Trigger)
     with gut.environment(mapping = {'ANADIR' : str(tmp_path)}):
         sample = TestSample(
             name     = 'test_sample',
