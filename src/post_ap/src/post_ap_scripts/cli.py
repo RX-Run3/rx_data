@@ -16,9 +16,12 @@ log = LogStore.add_logger('post_ap:cli')
 # ----------------------
 @app.command()
 def make_info(
-    sample  : str = typer.Option(..., '--sample' , '-s'),
-    project : str = typer.Option(..., '--project', '-p')):
-
+    group   : str = typer.Option(..., '--group'  , '-g', help = 'Nickname associated to samples, e.g. data_ecal'),
+    project : str = typer.Option(..., '--project', '-p', help = 'Project name, needed to find config, e.g. rx')):
+    '''
+    Used to create info.yaml, needed for AnalysisProduction jobs that filter
+    ntuples made by DaVinci
+    '''
     data = gut.load_data(
         package = 'post_ap_data', 
         fpath   = f'filter/{project}.yaml')
@@ -28,14 +31,14 @@ def make_info(
     rdr     = PFNReader(cfg = cfg, storage = storage)
     samples = rdr.get_samples(
         production=Production.rx_2024, 
-        nickname  =sample)
+        nickname  =group)
 
     lines : list[str] = [ sample.info for sample in samples ]
 
     text = '\n'.join(lines)
     text = text.replace('PROJECT', project)
 
-    with open(f'{sample}.yaml', 'w') as ofile:
+    with open(f'{group}.yaml', 'w') as ofile:
         ofile.write(text)
 # ----------------------
 if __name__ == '__main__':
