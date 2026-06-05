@@ -4,7 +4,7 @@ snakemake-logger-plugin-rich
 junit2html
 junitparser
 ihep-utilities>=0.0.3
-htcondor==24.12.18
+htcondor
 snakemake-executor-plugin-ihep
 snakemake-executor-plugin-htcondor
 snakemake>9
