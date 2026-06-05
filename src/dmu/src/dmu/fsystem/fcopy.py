@@ -4,16 +4,19 @@ Module holding FCopy class
 import shutil
 import subprocess
 
+from typing                 import Final
 from pathlib                import Path
 from dmu.logging.log_store  import LogStore
 
 log=LogStore.add_logger('dmu:fsystem:fcopy')
+
+_SOCKET_PATH : Final[Path] = Path('/tmp/control_master.socket')
 # ----------------------
 class FCopy:
     '''
     Class meant to act as a wrapper to rsync by
 
-    - Checking that the server and local machine are suitable
+    - Checking that the server and local machine are reachable 
     - Talking to rsync
 
     Usage:
@@ -39,6 +42,21 @@ class FCopy:
     Master control has to be enable for the remove server.
 
     If no source or target are set, the copy is local, i.e. within the same machine.
+
+    # On socket
+
+    The context manager will trigger the creation of a socket at
+    ```
+    /tmp/control_master.socket
+    ```
+    if not found. If found (because the user made it), it won't make it or remove it
+    once the context manager is exited.
+
+    In order to make a socket do:
+
+    ```
+    ssh -M -S /tmp/control_master.socket -o ControlPersist=yes user@lxplus.cern.ch
+    ```
     '''
     # ----------------------
     def __init__(
@@ -61,12 +79,12 @@ class FCopy:
         self._source = source
         self._target = target 
         self._timeout= timeout
-
-        self._server      = None
-        self._socket_path = None
+        self._server = source or target
 
         self._check_utility(name='rsync')
         self._check_utility(name='ssh'  )
+
+        self._close_on_exit = False 
     # ----------------------
     def _check_utility(self, name : str) -> None:
         '''
@@ -117,21 +135,23 @@ class FCopy:
         server: SSH server path, i.e. user@server.example
         '''
         if not server:
+            log.debug('No server specified, not making control master socket')
             return
 
-        socket_path = f'/tmp/cm-{server}.sock'
+        if _SOCKET_PATH.exists():
+            log.info(f'Socket found at: {_SOCKET_PATH}, not remaking it')
+            return
 
         log.debug(f'Opening connection to: {server}')
         subprocess.run([
             'ssh',  '-MNf',
             '-o' ,  'ControlMaster=yes',
             '-o' ,  'ControlPersist=10m',
-            '-o' , f'ControlPath={socket_path}',
+            '-o' , f'ControlPath={_SOCKET_PATH}',
             server
         ], check=True)
 
-        self._server      = server
-        self._socket_path = socket_path
+        self._close_on_exit = True
     # ----------------------
     def _close_master_connection(self) -> None:
         if not self._server:
@@ -141,7 +161,7 @@ class FCopy:
         log.debug(f'Closing connection to server: {self._server}')
         subprocess.run([
             'ssh', '-O', 'exit',
-            '-o', f'ControlPath={self._socket_path}',
+            '-o', f'ControlPath={_SOCKET_PATH}',
             self._server,
         ], check=False)
     # ----------------------
@@ -154,7 +174,11 @@ class FCopy:
     def __exit__(self, *args):
         _ = args
 
-        self._close_master_connection()
+        if self._close_on_exit:
+            self._close_master_connection()
+            log.info(f'Removing socket: {_SOCKET_PATH}')
+        else:
+            log.info(f'Not removing socket: {_SOCKET_PATH}')
     # ----------------------
     def copy(self, source : Path, target : Path) -> bool:
         '''
@@ -181,7 +205,7 @@ class FCopy:
                 '--append-verify',
                 '-a',
                 '-e',
-                f'ssh -o ControlPath={self._socket_path} -o PubkeyAuthentication=yes -o PasswordAuthentication=no', 
+                f'ssh -o ControlPath={_SOCKET_PATH} -o PubkeyAuthentication=yes -o PasswordAuthentication=no', 
                 spath, tpath]
         else:
             commands = ['rsync', '--append-verify', '-a', spath, tpath]
