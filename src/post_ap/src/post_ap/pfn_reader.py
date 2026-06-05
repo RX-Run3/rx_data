@@ -24,8 +24,8 @@ log = LogStore.add_logger('post_ap:pfn_reader')
 
 _MAX_JOB_LENGTH    : Final[int] = 84
 _MAX_OUTPUT_LENGHT : Final[int] = 50
-_SAMPLE_REGEX      : Final[str] = r'.*_\d{8}_(.*)_tuple$'
-_BLOCK_REGEX       : Final[str] = r'mc_24_(w\d{2}(_\d{2})?)_mag.*'
+_DATA_REGEX        : Final[str] = r'data_(24|25)_(magup|magdown)_turbo_rd_(\1c\d)' # Regex for name of data sample jobs
+_SIM_REGEX         : Final[str] = r'mc_.*(w\d{2}(_\d{2})?)_.*(\d{8}).*'            # Regex for name of simulated sample jobs 
 _SECTION           : Final[str] = '''
 {filter_job_name}:
   input :{sample_frac}
@@ -97,7 +97,17 @@ class Sample(BaseModel):
         if not good_name_length:
             raise ValueError(f'Job name length is larger than {_MAX_JOB_LENGTH}')
 
+        is_mc   = re.match(_SIM_REGEX , self.name)
+        is_data = re.match(_DATA_REGEX, self.name)
+
+        if not is_mc and not is_data:
+            raise ValueError(f'Sample {self.name} is neither data nor MC')
+
         return self
+    # ------------------------------
+    @cached_property
+    def is_mc(self) -> bool:
+        return self.name.startswith('mc_')
     # ------------------------------
     @property
     def info(self) -> str:
@@ -125,6 +135,13 @@ class Sample(BaseModel):
     # ------------------------------
     @cached_property
     def event_type(self) -> int:
+        '''
+        EventType used for MC samples
+        For data this will raise ValueError
+        '''
+        if not self.is_mc:
+            raise ValueError(f'Event type not defined for: {self.name}')
+
         tags = list(self.data.itertags())
 
         return tags[0]['eventtype']
@@ -148,9 +165,12 @@ class Sample(BaseModel):
     @cached_property
     def block_identifier(self) -> str:
         '''
-        E.g. w31
+        E.g. w31, only valid for MC
         '''
-        mtch = re.match(_BLOCK_REGEX, self.name)
+        if not self.is_mc:
+            raise ValueError(f'Cannot extract block information from: {self.name}')
+
+        mtch = re.match(_SIM_REGEX, self.name)
         if not mtch:
             raise ValueError(f'Cannot extract block identifier from: {self.name}')
 
@@ -165,34 +185,28 @@ class Sample(BaseModel):
         '''
         log.debug('Picking up blocks')
 
-        blocks : list[int] = []
+        if self.block_identifier ==    'w31':
+            return 1
 
-        if '_w31_'    in self.name:
-            blocks.append(1)
+        if self.block_identifier == 'w32_34':
+            return 2
 
-        if '_w32_34_' in self.name:
-            blocks.append(2)
+        if self.block_identifier == 'w25_27':
+            return 4
 
-        if '_w25_27_' in self.name:
-            blocks.append(4)
+        if self.block_identifier == 'w35_37':
+            return 5
 
-        if '_w35_37_' in self.name:
-            blocks.append(5)
+        if self.block_identifier == 'w37_39':
+            return 6
 
-        if '_w37_39_' in self.name:
-            blocks.append(6)
+        if self.block_identifier == 'w40_41':
+            return 7
 
-        if '_w40_41_' in self.name:
-            blocks.append(7)
+        if self.block_identifier == 'w41_42':
+            return 8
 
-        if '_w41_42_' in self.name:
-            blocks.append(8)
-
-        if len(blocks) != 1:
-            log.error(f'Blocks: {blocks}')
-            raise ValueError(f'Cannot find one and only one block for sample: {self.name}')
-
-        return blocks[0]
+        raise ValueError(f'Cannot find one a block for sample: {self.name}')
     # ------------------------------
     @cached_property
     def analysis(self) -> str:
@@ -207,7 +221,13 @@ class Sample(BaseModel):
     # ------------------------------
     @cached_property
     def sample(self) -> str:
-        mtch = re.match(_SAMPLE_REGEX, self.name)
+        '''
+        Nickname of simulated sample
+        '''
+        if not self.is_mc:
+            raise ValueError(f'MC sample not available for data: {self.name}')
+
+        mtch = re.match(_SIM_REGEX, self.name)
         if not mtch:
             raise ValueError(f'Cannot extract sample name from: {self.name}')
 
@@ -306,6 +326,7 @@ class Sample(BaseModel):
             return True
 
         ifile.Close()
+
         return False
     # ------------------------------
     @cached_property
@@ -316,7 +337,7 @@ class Sample(BaseModel):
         if not self.storage:
             raise ValueError('Storage location was not set')
 
-        return self.local_paths(must_exist=True)
+        return self.local_paths(must_exist=False)
     # ------------------------------
     @cached_property
     def nfiles(self) -> int:
@@ -367,6 +388,9 @@ class Sample(BaseModel):
     # ------------------------------
     @cached_property
     def hash(self) -> str:
+        '''
+        Hash, created using sample name
+        '''
         return hashing.hash_object([self.name])
     # ------------------------------
     @cached_property
@@ -380,10 +404,37 @@ class Sample(BaseModel):
             # for a trigger, pick triggers in any of 10 files
             triggers = triggers | self._triggers_from_path(path = path)
 
-        trigger_list = list(triggers)
-        log.debug(f'Found triggers: {trigger_list}')
+        log.debug('Found triggers:')
+        for trigger in triggers:
+            log.debug(f'   {trigger}')
 
-        return trigger_list
+        return list(triggers)
+    # ------------------------------
+    @cached_property
+    def year_period(self) -> tuple[str,str]:
+        '''
+        E.g. 24, 24c3 
+        '''
+        if self.is_mc:
+            raise NotImplementedError('Year not implemented for MC')
+
+        mtch = re.match(_DATA_REGEX, self.name)
+        if not mtch:
+            raise ValueError(f'Invalid data sample name: {self.name}')
+
+        return mtch.group(1), mtch.group(2)
+    # ------------------------------
+    @cached_property
+    def year(self) -> str:
+        val, _ = self.year_period
+
+        return val 
+    # ------------------------------
+    @cached_property
+    def period(self) -> str:
+        _, val = self.year_period
+
+        return val 
     # ------------------------------
     @cached_property
     def target_paths(self) -> dict[Trigger,Path]:
@@ -391,14 +442,23 @@ class Sample(BaseModel):
         Returns
         --------------
         Dictionary mapping Hlt2 trigger to ntuple path associated to it
+        The paths are meant to be named as:
+
+        DATA: data_24_magup_24c2_Hlt2RD_BuToKpEE_MVA_misid.root
+        MC:   mc_magup_15454101_lb_jpsix_ee_eq_jpsiinacc_Hlt2RD_BuToKpEE_MVA_b9f112a35b.root
         '''
         ana_dir                     = Path(os.environ['ANADIR'])
         paths : dict[Trigger, Path] = {}
         for trigger in self.triggers:
             target_path = ana_dir / f'Data/{trigger.project}/main'
-            component   = Component.from_event_type(etype = self.event_type)
-            sample      = component.sample.lower()
-            file_name   = f'mc_{self.polarity}_{self.event_type}_{sample}_{trigger}_{self.hash}.root'
+
+            if self.is_mc:
+                component   = Component.from_event_type(etype = self.event_type)
+                sample      = component.sample.lower()
+                file_name   = f'mc_{self.polarity}_{self.event_type}_{sample}_{trigger}_{self.hash}.root'
+            else:
+                file_name   = f'data_{self.year}_{self.polarity}_{self.period}_{trigger}.root'
+
             target_path = target_path / f'latest/{file_name}'
 
             log.debug(f'Target path: {target_path}')
