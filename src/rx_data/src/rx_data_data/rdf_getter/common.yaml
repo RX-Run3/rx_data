@@ -85,4 +85,3 @@ definitions:
                         ROOT::Math::PxPyPzEVector l2(M2_PX, M2_PY, M2_PZ, M2_ENERGY);
                         auto ll = l1 + l2;
                         return ll.M2();
-
