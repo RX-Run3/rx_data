@@ -82,9 +82,7 @@ def test_data(tmp_path : Path):
     npfn   = samples.size
 
     for sample in samples:
-        log.info(sample.name)
-        for path in sample.target_paths:
-            log.info(f'   {path}')
+        log.info(sample)
 
     assert npfn > 0 
 # -----------------------------
