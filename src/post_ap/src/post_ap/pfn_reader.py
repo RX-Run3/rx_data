@@ -292,6 +292,7 @@ class Sample(BaseModel):
             if not path.exists():
                 log.error(f'Missing: {path}')
                 fail = True
+                continue
 
             if self._fail_check(path = path):
                 log.error(f'Corrupted: {path}')
