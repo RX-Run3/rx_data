@@ -83,6 +83,7 @@ def _parse_args():
     Data.host           = _get_host(args.host)
 
     LogStore.set_level('rx_data:copy_samples', args.logl)
+    LogStore.set_level('dmu:fsystem:fcopy'   , args.logl)
 # ----------------------
 def _get_host(name : str) -> str:
     '''
@@ -240,7 +241,6 @@ def _download_group(group : list[Path], fcp : FCopy) -> int:
     log.debug(f'Downloading {nfiles} files in parallel')
 
     if nfiles == 1:
-        log.warning('Found group of one file, not using multiprocessing')
         ncopied = _copy_sample(
             fcp   = fcp,
             source= group[0])
@@ -283,10 +283,19 @@ def _group_paths(l_path : list[Path]) -> list[list[Path]]:
     l_arr_path = numpy.array_split(arr_path, ngroups)
     l_l_path   = [ [ Path(obj) for obj in arr_path ] for arr_path in l_arr_path ]
 
-    log.debug('Found the following groups:')
+    groups : dict[int,int] = dict()
     for group in l_l_path:
         nfiles = len(group)
-        log.debug(f'   {nfiles}')
+        if nfiles not in groups:
+            groups[nfiles] = 1
+        else:
+            groups[nfiles]+= 1
+
+    log.info('')
+    log.info('Found the following groups:')
+    log.info('')
+    for size, freq in groups.items():
+        log.info(f'{size:<20}{freq:<20}')
 
     return l_l_path
 # -----------------------------------------
