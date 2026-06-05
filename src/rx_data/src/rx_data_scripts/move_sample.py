@@ -39,7 +39,8 @@ class Conf(BaseModel):
         '''
         Validates fields
         '''
-        if data['regex'] is not None:
+        regex = data.get('regex')
+        if regex:
             return data 
 
         if data['etype'] is     None:
