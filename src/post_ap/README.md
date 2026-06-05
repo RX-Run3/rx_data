@@ -41,7 +41,7 @@ These file will most of the time contain more than 100 samples. Therefore the
 following is used to make the corresponding sections:
 
 ```bash
-post_ap -p rx -s sim10g_unfiltered
+post_ap make-info -p rx -g sim10g_unfiltered
 ```
 
 where the first argument is needed to find:
