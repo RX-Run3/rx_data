@@ -202,6 +202,7 @@ class FCopy:
         if self._source or self._target:
             commands = [
                 'rsync',
+                '--progress',
                 '--append-verify',
                 '-a',
                 '-e',
@@ -213,14 +214,13 @@ class FCopy:
         log.debug(' '.join(commands))
         result = subprocess.run(
             commands, 
-            check          = False,
-            capture_output = True, 
-            text           = True)
+            check = False,
+            stderr=subprocess.PIPE,
+            text  = True)
 
         if result.returncode != 0:
             log.error(f'Status: {result.returncode}')
             log.error(f'STDERR: {result.stderr}')
-            log.error(f'STDOUT: {result.stdout}')
             raise RuntimeError(f'Failed to run: {commands}')
 
         return True
