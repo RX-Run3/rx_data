@@ -80,11 +80,15 @@ def test_data(tmp_path : Path):
         production= Production.rx_filter, 
         nickname  = 'data-ecal')
     npfn   = samples.size
+    assert npfn > 0 
 
     for sample in samples:
         log.info(sample)
 
-    assert npfn > 0 
+        for path in sample.target_paths.values():
+            log.info(f'   {path}')
+
+        return
 # -----------------------------
 @pytest.mark.parametrize('sample', ['sim10g_ss'])
 def test_real(sample : str, tmp_path : Path):
