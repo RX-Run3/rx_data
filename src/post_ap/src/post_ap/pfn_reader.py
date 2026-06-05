@@ -406,10 +406,11 @@ class Sample(BaseModel):
             triggers = triggers | self._triggers_from_path(path = path)
 
         log.debug('Found triggers:')
-        for trigger in triggers:
+        trigger_list = sorted(list(triggers))
+        for trigger in trigger_list:
             log.debug(f'   {trigger}')
 
-        return list(triggers)
+        return trigger_list
     # ------------------------------
     @cached_property
     def year_period(self) -> tuple[str,str]:
@@ -756,7 +757,10 @@ class PFNReader:
             l_sample   = l_sample,
             version    = version)
 
-        log.info(f'Found {samples.size} samples')
+        log.info(f'Found {samples.size} samples for {nickname} in {production}')
+        for sample in samples[:20]:
+            log.info(f'    {sample.name}')
+        log.info('...')
 
         return samples
 # ---------------------------------------
