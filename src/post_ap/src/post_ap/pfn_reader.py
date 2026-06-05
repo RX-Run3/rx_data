@@ -574,6 +574,15 @@ class Samples(RootModel[list[Sample]]):
         return len(self.root)
     # -------------------------
     @cached_property
+    def event_types(self) -> list[int]:
+        '''
+        List of sorted event types
+        '''
+        etypes = { sample.event_type for sample in self }
+
+        return sorted(list(etypes))
+    # -------------------------
+    @cached_property
     def pfns(self) -> set[str]:
         '''
         List of PFNs in all samples
