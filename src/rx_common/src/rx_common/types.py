@@ -633,6 +633,8 @@ class Trigger(StrEnum):
         match name:
             case 'Hlt2RD_BuToKpEE_MVA':
                 return cls.rk_ee_os
+            case 'Hlt2RD_BuToKpMuE_MVA':
+                return cls.rk_me_os
             case 'Hlt2RD_BuToKpEE_SameSign_MVA':
                 return cls.rk_ee_ss
             case 'Hlt2RD_BuToKpEE_MVA_noPID':
@@ -649,6 +651,8 @@ class Trigger(StrEnum):
                 return cls.rk_mm_ss
             case 'Hlt2RD_B0ToKpPimEE_MVA':
                 return cls.rkst_ee_os
+            case 'Hlt2RD_B0ToKpPimMuE_MVA':
+                return cls.rkst_me_os
             case 'Hlt2RD_B0ToKpPimEE_SameSign_MVA':
                 return cls.rkst_ee_ss
             case 'Hlt2RD_B0ToKpPimEE_MVA_noPID':
