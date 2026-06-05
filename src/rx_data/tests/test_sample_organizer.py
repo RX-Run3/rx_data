@@ -41,6 +41,7 @@ class TestSample:
         nfiles  : Number of files in sample
         storage : Path to directory where data will be
         '''
+        self.is_mc     = True
         self._name     = name
         self._nfiles   = nfiles
         self._triggers = triggers
@@ -48,7 +49,6 @@ class TestSample:
         self._nentries = 100
 
         self._opt      = RSnapshotOptions()
-        self._opt.fMode= 'update'
     # ------------------------------------
     def _make_file(self, file_name : str) -> Path:
         '''
@@ -57,6 +57,9 @@ class TestSample:
         file_name: End of file path
         '''
         file_path = self._storage / file_name
+        if file_path.exists():
+            return file_path
+
         for trigger in self._triggers:
             rdf = RDataFrame(self._nentries)
             rdf = rdf.Define('a', 'gRandom->Gaus()')
@@ -65,13 +68,16 @@ class TestSample:
                 options  = self._opt,
                 treename = f'{trigger}/DecayTree', 
                 filename = str(file_path))
+            self._opt.fMode = 'update'
 
         rdf = RDataFrame(self._nentries)
         rdf = rdf.Define('a', 'gRandom->Gaus()')
 
+        extra_tree = 'MCDT/MCDecayTree' if self.is_mc else 'lumiTree'
+
         rdf.Snapshot(
             options  = self._opt,
-            treename = 'MCDT/MCDecayTree', 
+            treename = extra_tree, 
             filename = str(file_path))
 
         return file_path
@@ -130,8 +136,10 @@ class TestSample:
 # ------------------------------------
 @pytest.mark.parametrize('triggers', [[Trigger.rk_ee_os, Trigger.rkst_ee_os]])
 @pytest.mark.parametrize('dry_run' , [True, False])
+@pytest.mark.parametrize('is_mc'   , [True, False])
 def test_simple(
     dry_run  : bool,
+    is_mc    : bool,
     tmp_path : Path, 
     triggers : list[Trigger]):
     '''
@@ -143,6 +151,8 @@ def test_simple(
             nfiles   = 3,
             storage  = tmp_path,
             triggers = triggers)
+
+        sample.is_mc = is_mc
 
         org = SampleOrganizer(
             cleanup = False,
