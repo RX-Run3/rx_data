@@ -68,22 +68,10 @@ class SampleOrganizerConf(BaseModel):
         '''
         Provides default instance of config
         '''
-        triggers = [
-            Trigger.rk_ee_os, 
-            Trigger.rk_ee_ss, 
-            Trigger.rk_mm_os, 
-            Trigger.rk_mm_ss, 
-            # ----------
-            Trigger.rkst_ee_os, 
-            Trigger.rkst_ee_ss, 
-            Trigger.rkst_mm_os, 
-            Trigger.rkst_mm_ss, 
-        ]
-
         return cls(
             cleanup  = cleanup,
             dry_run  = dry_run,
-            triggers = triggers)
+            triggers = list(Trigger))
 # ----------------------------------
 class SampleOrganizer:
     '''
