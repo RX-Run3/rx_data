@@ -18,3 +18,11 @@ productions:
       mc_24_w37_39_magdown_sim10g_11144001_bd_jpsikst_mm_eq_dpc_tuple : 0.08 
       mc_24_w40_41_magdown_sim10g_11144001_bd_jpsikst_mm_eq_dpc_tuple : 0.08 
       mc_24_w41_42_magup_sim10g_11144001_bd_jpsikst_mm_eq_dpc_tuple   : 0.08 
+  rx_filter:
+    versions:
+      data-ecal : v1r6146
+      mc-ecal   : v1r6165
+    samples:
+      data-ecal : null
+      mc-ecal   : null
+    fractions: {}
