@@ -424,7 +424,9 @@ class Sample(BaseModel):
         if not mtch:
             raise ValueError(f'Invalid data sample name: {self.name}')
 
-        return mtch.group(1), mtch.group(2)
+        log.debug(f'Found periods {mtch.groups()} in {self.name}')
+
+        return mtch.group(1), mtch.group(3)
     # ------------------------------
     @cached_property
     def year(self) -> str:
