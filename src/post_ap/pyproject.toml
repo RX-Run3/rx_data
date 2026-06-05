@@ -39,3 +39,4 @@ script-files=[
 
 [tool.ruff]
 select = ["F", "PL", "B"]
+ignore = ['PLR0911']
