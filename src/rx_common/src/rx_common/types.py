@@ -468,6 +468,7 @@ class Trigger(StrEnum):
     Class meant to represent MVA HLT2 triggers
     '''
     rk_ee_os     = auto()
+    rk_me_os     = auto()
     rk_ee_ss     = auto()
     rk_ee_nopid  = auto()
     rk_ee_cal    = auto()
@@ -477,6 +478,7 @@ class Trigger(StrEnum):
     rk_mm_ss     = auto()
     # -----------
     rkst_ee_os   = auto()
+    rkst_me_os   = auto()
     rkst_ee_ss   = auto()
     rkst_ee_nopid= auto()
     rkst_ee_cal  = auto()
@@ -576,10 +578,12 @@ class Trigger(StrEnum):
         '''
         return 'nopid' not in self.name
     # -----------
-    def __str__(self):
+    def __str__(self) -> str:
         match self:
             case Trigger.rk_ee_os:
                 return 'Hlt2RD_BuToKpEE_MVA'
+            case Trigger.rk_me_os:
+                return 'Hlt2RD_BuToKpMuE_MVA'
             case Trigger.rk_ee_ss:
                 return 'Hlt2RD_BuToKpEE_SameSign_MVA'
             case Trigger.rk_ee_nopid:
@@ -596,6 +600,8 @@ class Trigger(StrEnum):
                 return 'Hlt2RD_BuToKpMuMu_SameSign_MVA'
             case Trigger.rkst_ee_os:
                 return 'Hlt2RD_B0ToKpPimEE_MVA'
+            case Trigger.rkst_me_os:
+                return 'Hlt2RD_B0ToKpPimMuE_MVA'
             case Trigger.rkst_ee_ss:
                 return 'Hlt2RD_B0ToKpPimEE_SameSign_MVA'
             case Trigger.rkst_ee_nopid:
@@ -706,6 +712,8 @@ class Trigger(StrEnum):
             # --------------
             case Trigger.rk_ee_os:
                 return Project.rk
+            case Trigger.rk_me_os:
+                return Project.rk
             case Trigger.rk_ee_ss:
                 return Project.rk
             case Trigger.rk_ee_cal:
@@ -725,6 +733,8 @@ class Trigger(StrEnum):
             # rkst
             # --------------
             case Trigger.rkst_ee_os:
+                return Project.rkst
+            case Trigger.rkst_me_os:
                 return Project.rkst
             case Trigger.rkst_ee_ss:
                 return Project.rkst
