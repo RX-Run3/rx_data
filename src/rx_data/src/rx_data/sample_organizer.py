@@ -26,6 +26,13 @@ class SampleProtocol(Protocol):
     '''
     # -----------------
     @property
+    def is_mc(self) -> bool:
+        '''
+        True if sample is MC
+        '''
+        ...
+    # -----------------
+    @property
     def name(self) -> str:
         '''
         Name of AP job
@@ -154,11 +161,13 @@ class SampleOrganizer:
     # ---------------------------------------
     def _split_file(
         self, 
+        is_mc   : bool,
         cleanup : bool,
         path    : Path) -> dict[Trigger,Path]:
         '''
         Parameters
         -----------------
+        is_mc  : True if it is MC
         path   : Path to ROOT file with multiple directories, i.e. the merged one
         cleanup: If True, it will delete file after splitting
 
@@ -176,6 +185,7 @@ class SampleOrganizer:
             log.debug(split_path)
 
             found = self._save_file(
+                is_mc       = is_mc,
                 trigger     = trigger, 
                 input_path  = path,
                 output_path = split_path)
@@ -197,6 +207,7 @@ class SampleOrganizer:
     # ---------------------------------------
     def _save_file(
         self, 
+        is_mc       : bool,
         output_path : Path,
         input_path  : Path,
         trigger     : Trigger) -> bool:
@@ -214,7 +225,10 @@ class SampleOrganizer:
         log.debug(f'Looking for {trigger} in {input_path}')
         ifile     = TFile(str(input_path))
         reco_tree = ifile.Get(f'{trigger}/DecayTree')
-        true_tree = ifile.Get('MCDT/MCDecayTree')
+        if is_mc:
+            extr_tree = ifile.Get('MCDT/MCDecayTree')
+        else:
+            extr_tree = ifile.Get('lumiTree')
 
         if not reco_tree:
             log.debug(f'Skipping: {trigger}')
@@ -225,10 +239,10 @@ class SampleOrganizer:
         max_evs = -1
 
         clone_reco_tree = reco_tree.CloneTree(max_evs, 'fast')
-        clone_true_tree = true_tree.CloneTree(max_evs, 'fast')
+        clone_extr_tree = extr_tree.CloneTree(max_evs, 'fast')
 
         clone_reco_tree.Write()
-        clone_true_tree.Write()
+        clone_extr_tree.Write()
 
         ofile.Close()
         ifile.Close()
@@ -287,7 +301,10 @@ class SampleOrganizer:
             merged_path = local_paths[0]
             cleanup     = False
 
-        split_paths = self._split_file(path = merged_path, cleanup = cleanup)
+        split_paths = self._split_file(
+            is_mc   = sample.is_mc,
+            path    = merged_path, 
+            cleanup = cleanup)
 
         self._copy_files(
             sample= sample,
