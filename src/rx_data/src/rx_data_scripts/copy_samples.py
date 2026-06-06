@@ -7,39 +7,18 @@ import multiprocessing
 import tqdm
 import numpy
 
-from enum         import StrEnum, auto
 from functools    import partial
 from ap_utilities import decay_utilities
 from pathlib      import Path
 from omegaconf    import DictConfig
 from dmu.generic  import version_management as vman 
 from dmu.generic  import utilities as gut
+from dmu.fsystem  import Server
 from dmu          import LogStore
 from dmu          import FCopy
 from rx_data      import utilities as ut
 
 log = LogStore.add_logger('rx_data:copy_samples')
-# -----------------------------------------
-class Host(StrEnum):
-    '''
-    Class meant to represent server 
-    '''
-    local  = auto()
-    lxplus = auto()
-    lxlogin= auto()
-    # ----------------------
-    @property
-    def login(self) -> str:
-        '''
-        String needed to login, e.g. user@host.ch
-        '''
-        match self:
-            case Host.lxlogin:
-                return 'campoverde@lxlogin.ihep.ac.cn'
-            case Host.lxplus:
-                return 'acampove@lxplus.ihep.ac.cn'
-            case Host.local:
-                return ''
 # -----------------------------------------
 class Data:
     '''
@@ -55,7 +34,7 @@ class Data:
     nprc    : int
     conf    : DictConfig 
     d_data  : dict
-    host    : Host 
+    host    : Server 
     l_source: list[Path]
     timeout : int
 
@@ -86,7 +65,7 @@ def _parse_args():
     parser.add_argument('-n', '--nprc', type=  int, help='Number of process to download with, with zero, will download all files at once', default=1)
     parser.add_argument('-t', '--tout', type=  int, help='Timeout, used to check if server is reachable', default = 10)
     parser.add_argument('-v', '--vers', type=  str, help='Version of files, only makes sense if kind is not "all"')
-    parser.add_argument('-H', '--host', type= Host, help='Server from which files will be transferred', choices = list(Host))
+    parser.add_argument('-H', '--host', type= Server, help='Server from which files will be transferred', choices = list(Server))
     parser.add_argument('-d', '--dry' ,             help='If used, will do not copy files', action='store_true')
     args = parser.parse_args()
 
