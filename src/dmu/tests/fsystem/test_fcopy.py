@@ -97,3 +97,18 @@ def test_remote_source(tmp_path : Path , user : str) -> None:
         for source, target in zip(l_source, l_target, strict = True):
             fcp.copy(source=source, target=target)
 # ----------------------
+def test_tunnel(tmp_path : Path):
+    '''
+    Tests tunnel property
+    '''
+    l_source = _make_paths(dir=tmp_path / 'source', make_file= True, number=10)
+    l_target = _make_paths(dir=tmp_path / 'target', make_file=False, number=10)
+
+    with FCopy() as fcp:
+        for source, target in zip(l_source, l_target, strict = True):
+            fcp.copy(source=source, target=target)
+
+        vals = fcp.tunnel.glob(path = tmp_path, pattern = '*')
+        for val in vals:
+            log.info(val)
+# ----------------------

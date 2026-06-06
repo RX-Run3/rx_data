@@ -4,9 +4,11 @@ Module holding FCopy class
 import shutil
 import subprocess
 
+from functools              import cached_property
 from typing                 import Final
 from pathlib                import Path
 from dmu.logging.log_store  import LogStore
+from .tunnel                import Tunnel
 
 log=LogStore.add_logger('dmu:fsystem:fcopy')
 
@@ -85,6 +87,14 @@ class FCopy:
         self._check_utility(name='ssh'  )
 
         self._close_on_exit = False 
+    # ----------------------
+    @cached_property
+    def tunnel(self) -> Tunnel:
+        '''
+        Object needed to tunnel to
+        server through socket
+        '''
+        return Tunnel(socket = _SOCKET_PATH)
     # ----------------------
     def _check_utility(self, name : str) -> None:
         '''
