@@ -34,7 +34,7 @@ class Data:
     nprc    : int
     conf    : DictConfig 
     d_data  : dict
-    host    : Server 
+    server  : Server 
     l_source: list[Path]
     timeout : int
 
@@ -58,15 +58,15 @@ class Data:
 # -----------------------------------------
 def _parse_args():
     parser = argparse.ArgumentParser(description='Script used to copy files from remote server to laptop')
-    parser.add_argument('-k', '--kind', type=  str, help='Type of files', choices=Data.l_kind, required=True)
-    parser.add_argument('-p', '--proj', type=  str, help='Name of YAML config file, e.g. rk', required=True, choices=['rk', 'rkst', 'rk_nopid', 'rkst_nopid'])
-    parser.add_argument('-s', '--skip', type=  str, help='Friend tree to skip', choices=Data.l_kind)
-    parser.add_argument('-l', '--logl', type=  int, help='Logger level', choices=[5, 10, 20, 30], default=20)
-    parser.add_argument('-n', '--nprc', type=  int, help='Number of process to download with, with zero, will download all files at once', default=1)
-    parser.add_argument('-t', '--tout', type=  int, help='Timeout, used to check if server is reachable', default = 10)
-    parser.add_argument('-v', '--vers', type=  str, help='Version of files, only makes sense if kind is not "all"')
-    parser.add_argument('-H', '--host', type= Server, help='Server from which files will be transferred', choices = list(Server))
-    parser.add_argument('-d', '--dry' ,             help='If used, will do not copy files', action='store_true')
+    parser.add_argument('-k', '--kind', type=    str, help='Type of files', choices=Data.l_kind, required=True)
+    parser.add_argument('-p', '--proj', type=    str, help='Name of YAML config file, e.g. rk', required=True, choices=['rk', 'rkst', 'rk_nopid', 'rkst_nopid'])
+    parser.add_argument('-s', '--skip', type=    str, help='Friend tree to skip', choices=Data.l_kind)
+    parser.add_argument('-l', '--logl', type=    int, help='Logger level', choices=[5, 10, 20, 30], default=20)
+    parser.add_argument('-n', '--nprc', type=    int, help='Number of process to download with, with zero, will download all files at once', default=1)
+    parser.add_argument('-t', '--tout', type=    int, help='Timeout, used to check if server is reachable', default = 10)
+    parser.add_argument('-v', '--vers', type=    str, help='Version of files, only makes sense if kind is not "all"')
+    parser.add_argument('-S', '--serv', type= Server, help='Server from which files will be transferred', choices = list(Server))
+    parser.add_argument('-d', '--dry' ,               help='If used, will do not copy files', action='store_true')
     args = parser.parse_args()
 
     Data.kind           = args.kind
@@ -77,7 +77,7 @@ def _parse_args():
     Data.nprc           = args.nprc
     Data.timeout        = args.tout
     Data.skipped_friend = args.skip
-    Data.host           = args.host 
+    Data.server         = args.serv
 
     LogStore.set_level('rx_data:copy_samples', args.logl)
     LogStore.set_level('dmu:fsystem:fcopy'   , args.logl)
@@ -316,8 +316,8 @@ def main():
         if kind == Data.skipped_friend:
             continue
 
-        log.info(f'Downloading from host: {Data.host}')
-        with FCopy(source = Data.host.login) as fcp:
+        log.info(f'Downloading from host: {Data.server}')
+        with FCopy(source = Data.server.host) as fcp:
             _download_kind(kind = kind, fcp = fcp)
 
     log.info(f'Copied {Data.copied_files} ({Data.copied_size:.2f} Gb) files in total')
