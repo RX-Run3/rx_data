@@ -138,27 +138,29 @@ class FCopy:
         else:
             return f'{self._target}:{path}'
     # ----------------------
-    def _open_master_connection(self, server: str) -> None:
+    def _open_master_connection(self) -> None:
         '''
         Parameters
         -------------------
         server: SSH server path, i.e. user@server.example
         '''
-        if not server:
+        if not self._server:
             log.debug('No server specified, not making control master socket')
+            log.debug(f'Source: {self._source}')
+            log.debug(f'Target: {self._target}')
             return
 
         if _SOCKET_PATH.exists():
             log.info(f'Socket found at: {_SOCKET_PATH}, not remaking it')
             return
 
-        log.debug(f'Opening connection to: {server}')
+        log.debug(f'Opening connection to: {self._server}')
         subprocess.run([
             'ssh',  '-MNf',
             '-o' ,  'ControlMaster=yes',
             '-o' ,  'ControlPersist=10m',
             '-o' , f'ControlPath={_SOCKET_PATH}',
-            server
+            self._server
         ], check=True)
 
         self._close_on_exit = True
@@ -176,8 +178,7 @@ class FCopy:
         ], check=False)
     # ----------------------
     def __enter__(self):
-        self._open_master_connection(server=self._source)
-        self._open_master_connection(server=self._target)
+        self._open_master_connection()
 
         return self
     # ----------------------
