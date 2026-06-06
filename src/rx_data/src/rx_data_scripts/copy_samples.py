@@ -11,7 +11,6 @@ from functools    import partial
 from ap_utilities import decay_utilities
 from pathlib      import Path
 from omegaconf    import DictConfig
-from dmu.generic  import version_management as vman 
 from dmu.generic  import utilities as gut
 from dmu.fsystem  import Server
 from dmu          import LogStore
@@ -42,7 +41,7 @@ class Data:
     out_dir        : Path # Path to ana_dir/{kind}/{version}
     pfs_dir = Path(os.environ['PFS_ANADIR']) / 'Data'
     ana_dir = Path(os.environ['ANADIR'    ]) / 'Data'
-    vers    = None
+    vers    : str 
     l_kind  = [
         'all',
         'main',
@@ -138,24 +137,7 @@ def _get_source_paths() -> list[Path]:
 
     return l_source
 # -----------------------------------------
-def _get_version(kind : str) -> str:
-    '''
-    Get latest or user defined version for given kind of friend trees 
-    '''
-    if Data.vers is not None:
-        return Data.vers
-
-    knd_dir = Data.pfs_dir / Data.proj / kind
-    if not knd_dir.exists():
-        raise ValueError(f'Cannot find {knd_dir}, likely PFS was not mounted')
-
-    vers = vman.get_last_version(dir_path = knd_dir, version_only=True)
-
-    log.debug(f'Latest version {vers} found in {knd_dir}')
-
-    return vers
-# -----------------------------------------
-def _initialize(kind : str):
+def _initialize(kind : str, fcp : FCopy):
     '''
     This function will initialize:
     - Data.out_dir : Full path to output directory 
@@ -169,11 +151,14 @@ def _initialize(kind : str):
         raise ValueError(f'Specified version {Data.vers} for kind {Data.kind}')
 
     log.info(f'Initializing for trees of type: {kind}')
-    vers    = _get_version(kind)
-    inp_dir = Data.pfs_dir / f'{Data.proj}/{kind}/{vers}'
-    l_path  = list(inp_dir.glob('*.root'))
+    inp_dir = Data.pfs_dir / Data.proj / f'{kind}/{Data.vers}'
 
-    Data.out_dir = Data.ana_dir / f'{Data.proj}/{kind}/{vers}'
+    log.info(f'Searching for files in: {Data.server.host}:{inp_dir}')
+    l_path  = fcp.tunnel.glob(path = inp_dir, pattern = '*.root')
+    if not l_path:
+        raise ValueError('No paths found')
+
+    Data.out_dir = Data.ana_dir / Data.proj / f'{kind}/{Data.vers}'
     Data.out_dir.mkdir(parents=True, exist_ok=True)
 
     log.info(f'Source: {inp_dir}')
@@ -285,7 +270,9 @@ def _download_kind(kind : str, fcp : FCopy) -> None:
     kind: E.g. mva, mass, brem_track_2
     '''
     log.info(f'Copying files for kind {kind}')
-    _initialize(kind = kind)
+    _initialize(
+        fcp  = fcp,
+        kind = kind)
 
     l_path  = _get_source_paths()
     l_group = _group_paths(l_path)
