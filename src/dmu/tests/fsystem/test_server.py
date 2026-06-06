@@ -9,6 +9,6 @@ log = LogStore.add_logger('dmu:test_server')
 # --------------------------------------------
 def test_login():
     for elm in Server:
-        assert isinstance(elm.login, str)
-        log.info(elm.login)
+        assert isinstance(elm.host, str)
+        log.info(elm.host)
 # --------------------------------------------
