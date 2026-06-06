@@ -4,21 +4,42 @@ Script used to copy ntuples from mounted filesystem
 import os
 import argparse
 import multiprocessing
-
 import tqdm
 import numpy
 
+from enum         import StrEnum, auto
 from functools    import partial
 from ap_utilities import decay_utilities
 from pathlib      import Path
 from omegaconf    import DictConfig
 from dmu.generic  import version_management as vman 
-from dmu          import LogStore
 from dmu.generic  import utilities as gut
+from dmu          import LogStore
 from dmu          import FCopy
 from rx_data      import utilities as ut
 
 log = LogStore.add_logger('rx_data:copy_samples')
+# -----------------------------------------
+class Host(StrEnum):
+    '''
+    Class meant to represent server 
+    '''
+    local  = auto()
+    lxplus = auto()
+    lxlogin= auto()
+    # ----------------------
+    @property
+    def login(self) -> str:
+        '''
+        String needed to login, e.g. user@host.ch
+        '''
+        match self:
+            case Host.lxlogin:
+                return 'campoverde@lxlogin.ihep.ac.cn'
+            case Host.lxplus:
+                return 'acampove@lxplus.ihep.ac.cn'
+            case Host.local:
+                return ''
 # -----------------------------------------
 class Data:
     '''
@@ -34,10 +55,9 @@ class Data:
     nprc    : int
     conf    : DictConfig 
     d_data  : dict
-    host    : str
+    host    : Host 
     l_source: list[Path]
     timeout : int
-    serv    : str
 
     skipped_friend : str|None
     out_dir        : Path # Path to ana_dir/{kind}/{version}
@@ -59,49 +79,29 @@ class Data:
 # -----------------------------------------
 def _parse_args():
     parser = argparse.ArgumentParser(description='Script used to copy files from remote server to laptop')
-    parser.add_argument('-k', '--kind', type=      str, help='Type of files', choices=Data.l_kind, required=True)
-    parser.add_argument('-p', '--proj', type=      str, help='Name of YAML config file, e.g. rk', required=True, choices=['rk', 'rkst', 'rk_nopid', 'rkst_nopid'])
-    parser.add_argument('-s', '--skip', type=      str, help='Friend tree to skip', choices=Data.l_kind)
-    parser.add_argument('-l', '--logl', type=      int, help='Logger level', choices=[5, 10, 20, 30], default=20)
-    parser.add_argument('-n', '--nprc', type=      int, help='Number of process to download with, with zero, will download all files at once', default=1)
-    parser.add_argument('-t', '--tout', type=      int, help='Timeout, used to check if server is reachable', default = 10)
-    parser.add_argument('-S', '--serv', type=      str, help='Sever number, e.g. 001', default = '')
-    parser.add_argument('-v', '--vers', type=      str, help='Version of files, only makes sense if kind is not "all"')
-    parser.add_argument('-H', '--host', type=      str, help='Server from which files will be transferred', choices = ['IHEP', 'LOCAL'], default = 'IHEP')
-    parser.add_argument('-d', '--dry' ,           help='If used, will do not copy files', action='store_true')
+    parser.add_argument('-k', '--kind', type=  str, help='Type of files', choices=Data.l_kind, required=True)
+    parser.add_argument('-p', '--proj', type=  str, help='Name of YAML config file, e.g. rk', required=True, choices=['rk', 'rkst', 'rk_nopid', 'rkst_nopid'])
+    parser.add_argument('-s', '--skip', type=  str, help='Friend tree to skip', choices=Data.l_kind)
+    parser.add_argument('-l', '--logl', type=  int, help='Logger level', choices=[5, 10, 20, 30], default=20)
+    parser.add_argument('-n', '--nprc', type=  int, help='Number of process to download with, with zero, will download all files at once', default=1)
+    parser.add_argument('-t', '--tout', type=  int, help='Timeout, used to check if server is reachable', default = 10)
+    parser.add_argument('-v', '--vers', type=  str, help='Version of files, only makes sense if kind is not "all"')
+    parser.add_argument('-H', '--host', type= Host, help='Server from which files will be transferred', choices = list(Host))
+    parser.add_argument('-d', '--dry' ,             help='If used, will do not copy files', action='store_true')
     args = parser.parse_args()
 
-    Data.serv = args.serv
-    Data.kind = args.kind
-    Data.proj = args.proj
-    Data.conf = gut.load_conf(package='rx_data_data', fpath=f'copy_files/{args.proj}.yaml')
-    Data.vers = args.vers
-    Data.dry  = args.dry
-    Data.nprc = args.nprc
+    Data.kind           = args.kind
+    Data.proj           = args.proj
+    Data.conf           = gut.load_conf(package='rx_data_data', fpath=f'copy_files/{args.proj}.yaml')
+    Data.vers           = args.vers
+    Data.dry            = args.dry
+    Data.nprc           = args.nprc
     Data.timeout        = args.tout
     Data.skipped_friend = args.skip
-    Data.host           = _get_host(args.host)
+    Data.host           = args.host 
 
     LogStore.set_level('rx_data:copy_samples', args.logl)
     LogStore.set_level('dmu:fsystem:fcopy'   , args.logl)
-# ----------------------
-def _get_host(name : str) -> str:
-    '''
-    Parameters
-    -------------
-    name: Nickname for host
-
-    Returns
-    -------------
-    Actual host name
-    '''
-    match name:
-        case 'IHEP':
-            return f'campoverde@lxlogin{Data.serv}.ihep.ac.cn'
-        case 'LOCAL':
-            return ''
-        case _:
-            raise ValueError(f'Invalid host: {name}')
 # -----------------------------------------
 def _is_right_trigger(path : Path) -> bool:
     l_trigger  = Data.conf.triggers
@@ -305,22 +305,23 @@ def _download_kind(kind : str, fcp : FCopy) -> None:
     -------------------
     kind: E.g. mva, mass, brem_track_2
     '''
-
     log.info(f'Copying files for kind {kind}')
     _initialize(kind = kind)
 
-    l_path = _get_source_paths()
-    l_group= _group_paths(l_path)
-    ncopied= 0
+    l_path  = _get_source_paths()
+    l_group = _group_paths(l_path)
+    ncopied = 0
 
     for group in tqdm.tqdm(l_group, ascii=' -'):
-        ncopied += _download_group(group, fcp)
+        ncopied  += _download_group(
+            group = group, 
+            fcp   = fcp)
 
     log.info(f'Copied {ncopied} files for kind {kind}')
 # -----------------------------------------
 def main():
     '''
-    Starts here
+    Entry point for sample copier
     '''
     _parse_args()
 
@@ -337,7 +338,7 @@ def main():
             continue
 
         log.info(f'Downloading from host: {Data.host}')
-        with FCopy(source = Data.host) as fcp:
+        with FCopy(source = Data.host.login) as fcp:
             _download_kind(kind = kind, fcp = fcp)
 
     log.info(f'Copied {Data.copied_files} ({Data.copied_size:.2f} Gb) files in total')
