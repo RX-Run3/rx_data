@@ -2,28 +2,14 @@
 Script with tests for FCopy class
 '''
 
-import os
 import pytest
 
-from pathlib import Path
-from dmu     import FCopy
-from dmu     import LogStore
+from pathlib     import Path
+from dmu         import FCopy
+from dmu         import LogStore
+from dmu.fsystem import Server
 
 log=LogStore.add_logger('dmu:test_fcopy')
-# ----------------------
-@pytest.fixture
-def user() -> str:
-    '''
-    Returns
-    -------------
-    Name of user in local machine
-    '''
-    user = os.environ.get('USER')
-
-    if user is None:
-        raise ValueError('Cannot find USER environment variable')
-
-    return user
 # ----------------------
 @pytest.fixture(scope='session', autouse=True)
 def initialize():
@@ -75,25 +61,25 @@ def test_local(tmp_path : Path) -> None:
         for source, target in zip(l_source, l_target, strict = True):
             fcp.copy(source=source, target=target)
 # ----------------------
-def test_remote_target(tmp_path : Path, user : str) -> None:
+def test_remote_target(tmp_path : Path) -> None:
     '''
     Files are in a local server, copy them remotely 
     '''
     l_source = _make_paths(dir=tmp_path / 'source', make_file= True, number=10)
     l_target = _make_paths(dir=tmp_path / 'target', make_file=False, number=10)
 
-    with FCopy(target=f'{user}@localhost') as fcp:
+    with FCopy(target=Server.local.host) as fcp:
         for source, target in zip(l_source, l_target, strict = True):
             fcp.copy(source=source, target=target)
 # ----------------------
-def test_remote_source(tmp_path : Path , user : str) -> None:
+def test_remote_source(tmp_path : Path) -> None:
     '''
     Files are in a remote server, copy them locally
     '''
     l_source = _make_paths(dir=tmp_path / 'source', make_file= True, number=10)
     l_target = _make_paths(dir=tmp_path / 'target', make_file=False, number=10)
 
-    with FCopy(source=f'{user}@localhost') as fcp:
+    with FCopy(source=Server.local.host) as fcp:
         for source, target in zip(l_source, l_target, strict = True):
             fcp.copy(source=source, target=target)
 # ----------------------
@@ -104,7 +90,7 @@ def test_tunnel(tmp_path : Path):
     l_source = _make_paths(dir=tmp_path / 'source', make_file= True, number=10)
     l_target = _make_paths(dir=tmp_path / 'target', make_file=False, number=10)
 
-    with FCopy() as fcp:
+    with FCopy(target = Server.local.host) as fcp:
         for source, target in zip(l_source, l_target, strict = True):
             fcp.copy(source=source, target=target)
 
