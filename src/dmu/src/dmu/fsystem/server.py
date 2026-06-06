@@ -1,6 +1,7 @@
 '''
 Module holding Server enum
 '''
+import os
 from enum                  import StrEnum, auto
 from dmu.logging.log_store import LogStore
 
@@ -15,7 +16,7 @@ class Server(StrEnum):
     lxlogin= auto()
     # ----------------------
     @property
-    def login(self) -> str:
+    def host(self) -> str:
         '''
         String needed to login, e.g. user@host.ch
         '''
@@ -25,5 +26,6 @@ class Server(StrEnum):
             case Server.lxplus:
                 return 'acampove@lxplus.ihep.ac.cn'
             case Server.local:
-                return ''
+                user = os.environ['USER']
+                return f'{user}@localhost'
 # -----------------------------------------
