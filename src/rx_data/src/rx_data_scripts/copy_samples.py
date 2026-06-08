@@ -17,6 +17,7 @@ from dmu.fsystem  import Server
 from dmu          import LogStore
 from dmu          import FCopy
 from rx_data      import utilities as ut
+from rx_common    import Project
 
 log = LogStore.add_logger('rx_data:copy_samples')
 # -----------------------------------------
@@ -43,6 +44,14 @@ class UsedSamples(BaseModel):
             raise ValueError('Found at least one invalid sample')
 
         return data
+    # --------------------------------
+    @classmethod
+    def from_project(cls, project : Project) -> 'UsedSamples':
+        data = gut.load_data(
+            package='rx_data_data', 
+            fpath  =f'copy_files/{project}.yaml')
+
+        return cls(**data)
 # -----------------------------------------
 class Data:
     '''
@@ -93,8 +102,7 @@ def _parse_args():
     parser.add_argument('-d', '--dry' ,               help='If used, will do not copy files', action='store_true')
     args = parser.parse_args()
 
-    data = gut.load_data(package='rx_data_data', fpath=f'copy_files/{args.proj}.yaml')
-    conf = UsedSamples(**data)
+    conf = UsedSamples.from_project(project = args.proj)
 
     Data.kind           = args.kind
     Data.proj           = args.proj
