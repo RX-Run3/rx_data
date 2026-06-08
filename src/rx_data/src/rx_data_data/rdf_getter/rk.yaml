@@ -4,6 +4,7 @@
 common: &common
   total_charge                                              : H_ID / TMath::Abs(H_ID) - L1_ID / TMath::Abs(L1_ID) - L2_ID / TMath::Abs(L2_ID)
   H_PHI                                                     : H_PHI_rft
+  # ---------
   B_HEAD_CC_B_ChargedIso_DR2_0p15_CP                        : B_HEAD_CC_bp_ChargedIso_DR2_0p25_CP      # PRC BDT uses 0.15 cone, we kept 0.25
   B_HEAD_CC_B_ChargedIso_DR2_0p15_PTASY                     : B_HEAD_CC_bp_ChargedIso_DR2_0p25_PTASY   # Might not matter, cone isolation does
   B_HEAD_CC_B_ChargedIso_DR2_0p15_CMULT                     : B_HEAD_CC_bp_ChargedIso_DR2_0p25_CMULT   # not provide high discriminating power
