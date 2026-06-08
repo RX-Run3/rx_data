@@ -114,6 +114,31 @@ class Component(StrEnum):
     bdkstpi0       = auto()
     bsphigamma     = auto()
     # --------------------------------------------
+    @classmethod
+    def is_valid(cls, arg : int | str) -> bool:
+        '''
+        Parameters
+        ---------------
+        arg: Either the event type or a string
+
+        Returns
+        ---------------
+        True if argument represents a valid sample
+        '''
+        if isinstance(arg, int):
+            try:
+                cls.from_event_type(arg)
+                return True
+            except:
+                return False
+
+        if isinstance(arg, str):
+            try:
+                cls.from_sample(arg)
+                return True
+            except:
+                return False
+    # --------------------------------------------
     @property
     def scale(self) -> str:
         '''
