@@ -7,10 +7,11 @@ import multiprocessing
 import tqdm
 import numpy
 
+from rx_common    import Component, Trigger
+from pydantic     import BaseModel, model_validator
 from functools    import partial
 from ap_utilities import decay_utilities
 from pathlib      import Path
-from omegaconf    import DictConfig
 from dmu.generic  import utilities as gut
 from dmu.fsystem  import Server
 from dmu          import LogStore
@@ -18,6 +19,30 @@ from dmu          import FCopy
 from rx_data      import utilities as ut
 
 log = LogStore.add_logger('rx_data:copy_samples')
+# -----------------------------------------
+class UsedSamples(BaseModel):
+    '''
+    Class representing samples needed for analysis
+    '''
+    triggers : list[Trigger]
+    samples  : dict[str,list[int|str]]
+    # --------------------------------
+    @model_validator(mode = 'before')
+    @classmethod
+    def _validate_samples(cls, data):
+        fail = False
+        for samples in data['samples'].values():
+            for sample in samples:
+                if Component.is_valid(arg = sample):
+                    continue
+
+                fail = True
+                log.warning(f'Invalid sample: {sample}')
+
+        if fail:
+            raise ValueError('Found at least one invalid sample')
+
+        return data
 # -----------------------------------------
 class Data:
     '''
@@ -31,7 +56,7 @@ class Data:
     proj    : str
     dry     : bool
     nprc    : int
-    conf    : DictConfig 
+    conf    : UsedSamples 
     d_data  : dict
     server  : Server 
     l_source: list[Path]
@@ -68,9 +93,12 @@ def _parse_args():
     parser.add_argument('-d', '--dry' ,               help='If used, will do not copy files', action='store_true')
     args = parser.parse_args()
 
+    data = gut.load_data(package='rx_data_data', fpath=f'copy_files/{args.proj}.yaml')
+    conf = UsedSamples(**data)
+
     Data.kind           = args.kind
     Data.proj           = args.proj
-    Data.conf           = gut.load_conf(package='rx_data_data', fpath=f'copy_files/{args.proj}.yaml')
+    Data.conf           = conf
     Data.vers           = args.vers
     Data.dry            = args.dry
     Data.nprc           = args.nprc
@@ -85,7 +113,7 @@ def _is_right_trigger(path : Path) -> bool:
     l_trigger  = Data.conf.triggers
     _, trigger = ut.info_from_path(path)
 
-    flag = str(trigger) in l_trigger
+    flag = trigger in l_trigger
 
     return flag
 # -----------------------------------------
@@ -105,14 +133,13 @@ def _get_total_size(l_path : list[Path]) -> int:
     return int(fsize)
 # -----------------------------------------
 def _get_source_paths() -> list[Path]:
-    d_samp   = Data.conf.samples
     l_source = []
     log.info(90 * '-')
     log.info(f'{"Sample":<50}{"Identifier":<25}{"Paths":<10}{"Size [MB]":<20}')
     log.info(90 * '-')
-    for l_identifier in d_samp.values():
+    for l_identifier in Data.conf.samples.values():
         for identifier in l_identifier:
-            id_str        = str(identifier)
+            id_str        = str(identifier).lower()
             l_source_samp = [ source for source in Data.l_source if id_str in source.name and _is_right_trigger(source) ]
 
             npath     = len(l_source_samp)
