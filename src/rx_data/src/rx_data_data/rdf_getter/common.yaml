@@ -1,14 +1,14 @@
 # This config file is used to configure the behaviour of RDFGetter
 
 redefinitions:
-  block         : 'block < 0 ? 0 : block'                   # This is needed to process pre-UT data as Block 0 data, temporary. Ntuples from post_ap already 
+  block         : 'block < 0 ? 0 : block'                   # This is needed to process pre-UT data as Block 0 data, temporary. Ntuples from post_ap already
   q2            : Jpsi_M_brem_track_2 * Jpsi_M_brem_track_2 # have q2 calculated without correction use brem_track_2 in definition to keep skipping code simple
   # --------
   B_Mass_smr    : smear.B_Mass_smr                          # Same as above, additionally, B_Mass_smr does not exist already, but
   Jpsi_Mass_smr : smear.Jpsi_Mass_smr                       # ROOT recognizes smear.B_Mass_smr == B_Mass_smr, so a definition alone does not work
   q2_smr        : smear.q2_smr
 # Define columns if they do not exist
-definitions: 
+definitions:
   common: &common
     Jpsi_PHI                              : Jpsi_PHI_rft # In ecal fixing version refitted phi was not saved
     L1_PHI                                : L1_PHI_rft   # Refitted phi is the same as original and original was dropped
@@ -35,10 +35,10 @@ definitions:
     L1_not_conv_100   : 8 * TMath::Abs(L1_FMX) + 10 * TMath::Abs(L1_FMY) < 100
     L2_not_conv_100   : 8 * TMath::Abs(L2_FMX) + 10 * TMath::Abs(L2_FMY) < 100
 
-    L1_not_conv_130   : 8 * TMath::Abs(L1_FMX) + 10 * TMath::Abs(L1_FMY) < 130 
+    L1_not_conv_130   : 8 * TMath::Abs(L1_FMX) + 10 * TMath::Abs(L1_FMY) < 130
     L2_not_conv_130   : 8 * TMath::Abs(L2_FMX) + 10 * TMath::Abs(L2_FMY) < 130
 
-    L1_not_conv_150   : 8 * TMath::Abs(L1_FMX) + 10 * TMath::Abs(L1_FMY) < 150 
+    L1_not_conv_150   : 8 * TMath::Abs(L1_FMX) + 10 * TMath::Abs(L1_FMY) < 150
     L2_not_conv_150   : 8 * TMath::Abs(L2_FMX) + 10 * TMath::Abs(L2_FMY) < 150
     # ----------------
     # Add back old columns or redefine them based on new names

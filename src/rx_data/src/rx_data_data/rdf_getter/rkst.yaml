@@ -8,10 +8,10 @@ common : &common
   H2_PHI                                : H2_PHI_rft  # This should put back the original
   B_HEAD_CC_B_ChargedIso_DR2_0p15_CP    : B_HEAD_CC_B_ChargedIso_DR2_0p25_CP      # PRC BDT uses 0.15 cone, we kept 0.25
   B_HEAD_CC_B_ChargedIso_DR2_0p15_PTASY : B_HEAD_CC_B_ChargedIso_DR2_0p25_PTASY   # Might not matter, cone isolation does
-  B_HEAD_CC_B_ChargedIso_DR2_0p15_CMULT : B_HEAD_CC_B_ChargedIso_DR2_0p25_CMULT   # not provide high discriminating power 
-  B_HEAD_NC_B_NeutralIso_DR2_0p15_CP    : B_HEAD_NC_B_NeutralIso_DR2_0p25_CP    
-  B_HEAD_NC_B_NeutralIso_DR2_0p15_PTASY : B_HEAD_NC_B_NeutralIso_DR2_0p25_PTASY 
-  B_HEAD_NC_B_NeutralIso_DR2_0p15_CMULT : B_HEAD_NC_B_NeutralIso_DR2_0p25_CMULT 
+  B_HEAD_CC_B_ChargedIso_DR2_0p15_CMULT : B_HEAD_CC_B_ChargedIso_DR2_0p25_CMULT   # not provide high discriminating power
+  B_HEAD_NC_B_NeutralIso_DR2_0p15_CP    : B_HEAD_NC_B_NeutralIso_DR2_0p25_CP
+  B_HEAD_NC_B_NeutralIso_DR2_0p15_PTASY : B_HEAD_NC_B_NeutralIso_DR2_0p25_PTASY
+  B_HEAD_NC_B_NeutralIso_DR2_0p15_CMULT : B_HEAD_NC_B_NeutralIso_DR2_0p25_CMULT
 definitions:
   DATA:
     <<: *common
