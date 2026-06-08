@@ -52,20 +52,22 @@ class Conf(BaseModel):
         '''
         Validates fields
         '''
-        regex = data.get('regex')
-        if regex:
-            return data 
+        identifier = data.get('identifier')
 
-        if data['etype'] is     None:
-            raise ValueError('Neither regular expression nor event type passed')
+        if   re.match(r'\d{8}', identifier):
+            name   = decay_utilities.read_decay_name(event_type=identifier)
+            decay  = name.lower()
+            regex  = fr'.*{decay}.*'
+        elif identifier == _ANALYSIS_ID:
+            source = data['source']
+            project= Project(source)
+            regex  = cls._get_analysis_regex(project = project) 
+        else:
+            regex = identifier
 
-        name = decay_utilities.read_decay_name(event_type=data['etype'])
-        decay= name.lower()
-        regex= fr'.*{decay}.*'
+        data['identifier'] = regex 
 
-        log.debug(f'Using regex: {regex}')
-
-        data['regex'] = regex
+        log.info(f'Using regex: {regex}')
 
         return data 
 # ----------------------
