@@ -3,11 +3,9 @@
 
 definitions:
   DATA:
-    total_charge : H_ID / TMath::Abs(H_ID) - L1_ID / TMath::Abs(L1_ID) - L2_ID / TMath::Abs(L2_ID)
-    H_PHI        : H_PHI_rft
+    <<: *common
   MC:
-    total_charge : H_ID / TMath::Abs(H_ID) - L1_ID / TMath::Abs(L1_ID) - L2_ID / TMath::Abs(L2_ID)
-    H_PHI        : H_PHI_rft
+    <<: *common
 TRUEM:
   B_mass : 'ROOT::Math::XYZVector L1_3D(L1_TRUEPX, L1_TRUEPY, L1_TRUEPZ); auto L1_truept=L1_3D.Rho(); auto L1_trueeta=L1_3D.Eta(); auto L1_truephi=L1_3D.Phi();
         ROOT::Math::XYZVector L2_3D(L2_TRUEPX, L2_TRUEPY, L2_TRUEPZ); auto L2_truept=L2_3D.Rho(); auto L2_trueeta=L2_3D.Eta(); auto L2_truephi=L2_3D.Phi();
