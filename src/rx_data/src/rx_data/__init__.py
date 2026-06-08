@@ -28,8 +28,10 @@ from .pfn_downloader          import PFNDownloader
 from .pfn_downloader          import PFNDownloaderConf
 from .sample_organizer        import SampleOrganizer
 from .file_patcher            import FilePatcher
+from .used_samples            import UsedSamples
 
 __all__ = [
+    'UsedSamples',
     'FilePatcher',
     'SampleOrganizer',
     'EcalCell',
