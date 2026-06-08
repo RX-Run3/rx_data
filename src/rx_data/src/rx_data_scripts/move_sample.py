@@ -118,22 +118,20 @@ def _get_conf() -> Conf:
         formatter_class= argparse.RawDescriptionHelpFormatter,
         description    = textwrap.dedent(__doc__).strip())
 
-    parser.add_argument('-r', '--regex'  , type=str, help='Regular expression to match files to be moved', required=False)
-    parser.add_argument('-e', '--etype'  , type=int, help='Event type of sample to move, 0 for data'     , required=False)
-    parser.add_argument('-s', '--source' , type=str, help='Name of project to move files from, e.g. rk'  , required=True)
-    parser.add_argument('-t', '--target' , type=str, help='Name of target project'                       , required=True)
-    parser.add_argument('-l', '--loglvl' , type=int, help='Logging level'                                , default=20) 
-    parser.add_argument('-d', '--dry'    , action='store_true', help='If used, will do a dry run, e.g. not move files')
+    parser.add_argument('-i', '--identifier', type=str, help=f'Event type, regex or "{_ANALYSIS_ID}", needed to find files', required=True)
+    parser.add_argument('-s', '--source'    , type=str, help='Name of project to move files from, e.g. rk'  , required=True)
+    parser.add_argument('-t', '--target'    , type=str, help='Name of target project'                       , required=True)
+    parser.add_argument('-l', '--loglvl'    , type=int, help='Logging level'                                , default=20) 
+    parser.add_argument('-d', '--dry'       , action='store_true', help='If used, will do a dry run, e.g. not move files')
     args = parser.parse_args()
 
     LogStore.set_level('rx_data:move_sample', args.loglvl)
 
     return Conf(
-        regex = args.regex,
-        etype = args.etype,
-        dry   = args.dry,
-        source= args.source,
-        target= args.target)
+        identifier = args.identifier,
+        dry        = args.dry,
+        source     = args.source,
+        target     = args.target)
 # ----------------------
 def _get_paths(cfg : Conf) -> tuple[list[Path], list[Path]]:
     '''
@@ -149,21 +147,21 @@ def _get_paths(cfg : Conf) -> tuple[list[Path], list[Path]]:
     - List of paths to directories
     '''
     ana_dir  = Path(os.environ['ANADIR'])
-    root_dir = ana_dir / f'Data/{cfg.source}'
+    root_dir = ana_dir / 'Data' / cfg.source
     l_fpath  = list(root_dir.rglob('*.root'))
-    pattern  = re.compile(cfg.regex)
-    l_fpath  = [ fpath for fpath in l_fpath if pattern.search(fpath.name)]
-
+    l_fpath  = [ fpath for fpath in l_fpath if cfg.pick_path(path = fpath) ]
     l_dpath  = [ dpath for dpath in root_dir.rglob('*') if dpath.is_dir() ]
 
     if not l_fpath:
-        log.info(f'No dataset found for: {cfg.regex}')
+        log.warning(f'No dataset found for: {cfg.identifier}')
         return [], []
 
     nfile = len(l_fpath)
     ndirs = len(l_dpath)
 
-    log.info(f'Found {nfile} files and {ndirs} directories for: {cfg.regex}')
+    log.info(f'Found {nfile} files and {ndirs} directories')
+    for dpath in sorted(l_dpath):
+        log.info(dpath)
 
     return l_fpath, l_dpath
 # ----------------------
