@@ -1,9 +1,13 @@
-
+'''
+MOdule holding UsedSamples class
+'''
 from rx_common    import Component, Trigger
 from pydantic     import BaseModel, model_validator
 from dmu.generic  import utilities as gut
+from dmu          import LogStore
 from rx_common    import Project
 
+log = LogStore.add_logger('rx_data:copy_samples')
 # -----------------------------------------
 class UsedSamples(BaseModel):
     '''
