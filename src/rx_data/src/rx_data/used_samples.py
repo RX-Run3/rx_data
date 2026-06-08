@@ -7,7 +7,7 @@ from dmu.generic  import utilities as gut
 from dmu          import LogStore
 from rx_common    import Project
 
-log = LogStore.add_logger('rx_data:copy_samples')
+log = LogStore.add_logger('rx_data:used_samples')
 # -----------------------------------------
 class UsedSamples(BaseModel):
     '''
@@ -40,3 +40,17 @@ class UsedSamples(BaseModel):
             fpath  =f'copy_files/{project}.yaml')
 
         return cls(**data)
+    # --------------------------------
+    @property
+    def identifiers(self) -> list[str]:
+        '''
+        List of strings used to identify samples 
+        '''
+        values : list[str] = []
+        for identifiers in self.samples.values():
+            str_identifiers = [ str(val).lower() for val in identifiers ]
+
+            values += str_identifiers
+
+        return values
+# --------------------------------
