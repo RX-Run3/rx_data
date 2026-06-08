@@ -52,6 +52,7 @@ class Component(StrEnum):
     bpkkk          = auto()
     bpkpik         = auto()
     bpkpipi        = auto()
+    bdkpipi        = auto()
     # -----
     bpkpee         = auto()
     bpkpjpsiee     = auto()
@@ -108,6 +109,9 @@ class Component(StrEnum):
     bpdnukpiee     = auto()
     bpdpiknuee     = auto()
     bpdnuknuee     = auto()
+    bdkpipienu     = auto()
+    bdkpienuenu    = auto()
+    bdkpimunumunu  = auto()
     # -----
     # Radiative
     # -----
@@ -360,6 +364,14 @@ class Component(StrEnum):
             return 'Bd_Kstpi0_eq_TC_Kst982width100_HighPtPi0'
           case Component.bsphigamma:
             return 'Bs_phigamma_eq_HighPtGamma_DPC'
+          case Component.bdkpipienu:
+            return 'Bd_Dstplenu_eq_PHSP_TC'
+          case Component.bdkpienuenu:
+            return 'Bd_Denu_Kstenu_eq_VIA_HVM_EGDWC'
+          case Component.bdkpimunumunu:
+            return 'Bd_Dmunu_Kstmunu_eq_DPC'
+          case Component.bdkpipi:
+            return 'Bd_piplpimnKst_eq_sqDalitz_DPC'
           case _:
             raise ValueError(f'No sample defined for: {self}')
     # --------------------------------------------
