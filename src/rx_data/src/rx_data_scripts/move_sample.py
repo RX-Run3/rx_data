@@ -70,6 +70,41 @@ class Conf(BaseModel):
         log.info(f'Using regex: {regex}')
 
         return data 
+    # --------------------------------------
+    @classmethod
+    def _get_analysis_regex(cls, project : Project) -> str:
+        '''
+        Parameters
+        ---------------
+        project: rk or rkstar, needed to pick config with list of samples used by analysis
+
+        Returns
+        ---------------
+        Regular expression that any analysis sample should match
+        '''
+        obj = UsedSamples.from_project(project = project)
+        ids = [ f'.*{elm}.*' for elm in obj.identifiers ]
+        val = '|'.join(ids)
+
+        return val
+    # --------------------------------------
+    def pick_path(self, path : Path) -> bool:
+        '''
+        Parameters
+        --------------
+        path: Path to ROOT file
+
+        Returns
+        --------------
+        True if path satisfies regex
+        '''
+        if not path.name.endswith('.root'):
+            raise ValueError(f'Not a ROOT file: {path}')
+
+        pattern = re.compile(self.identifier)
+        value   = bool(pattern.search(path.name))
+
+        return value
 # ----------------------
 def _get_conf() -> Conf:
     '''
