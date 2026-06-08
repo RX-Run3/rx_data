@@ -24,22 +24,27 @@ import shutil
 import textwrap
 import argparse
 
-from pathlib      import Path
 from dmu          import LogStore
+from typing       import Final
+from pathlib      import Path
 from pydantic     import BaseModel, model_validator
+from rx_common    import Project
 from ap_utilities import decay_utilities
 
+from rx_data.used_samples import UsedSamples
+
 log=LogStore.add_logger('rx_data:move_sample')
+
+_ANALYSIS_ID : Final[str] = 'for_analysis'
 # ----------------------
 class Conf(BaseModel):
     '''
     Data class meant to contain configuration
     '''
-    regex   : str
-    etype   : int | None = None
-    source  : str
-    target  : str
-    dry     : bool 
+    identifier: str
+    source    : str
+    target    : str
+    dry       : bool 
     # --------------------------------------
     @model_validator(mode = 'before')
     @classmethod
