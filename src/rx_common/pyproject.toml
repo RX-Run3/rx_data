@@ -16,7 +16,7 @@ where= ['src']
 
 [tool.ruff]
 select = ["F", "PL", "B"]
-ignore = ['PLR0911', 'PLR0912']
+ignore = ['PLR0911', 'PLR0912', 'PLR0913', 'PLR0915']
 
 [tool.setuptools]
 script-files=[
