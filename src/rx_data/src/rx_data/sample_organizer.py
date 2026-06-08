@@ -25,7 +25,7 @@ class SampleProtocol(Protocol):
     to `SampleOrganizer`
     '''
     # -----------------
-    @property
+    @cached_property
     def is_mc(self) -> bool:
         '''
         True if sample is MC
