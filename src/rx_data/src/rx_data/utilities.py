@@ -155,13 +155,6 @@ def _preprocess_rdf(rdf: RDF.RNode) -> RDF.RNode:
     rdf = _preprocess_lepton(rdf, 'L1')
     rdf = _preprocess_lepton(rdf, 'L2')
 
-    columns = rdf.GetColumnNames()
-    # Hadrons have bool columns that need to be casted as int
-    # Hadrons are needed to build corrected B meson
-    for hadron in ['H', 'H1', 'H2']:
-        if any(column.c_str().startswith(f'{hadron}_') for column in columns):
-            rdf = _preprocess_lepton(rdf, hadron)
-
     return rdf
 # ------------------------------------------
 def _preprocess_lepton(rdf : RDF.RNode, lep : str) -> RDF.RNode:
