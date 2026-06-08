@@ -354,7 +354,7 @@ def _process_and_merge(
     out_path: Path to output file
     path    : Path to merged ROOT output file
     '''
-    log.info(f'File will be processed in {nchunk} chunks')
+    log.info(f'File {input_path} will be processed in {nchunk} chunks')
     fmrg = TFileMerger()
     for index, rdf_in in enumerate(tqdm.tqdm(l_rdf, ascii=' -')):
         rdf_out  = _process_rdf(rdf_in, input_path)
