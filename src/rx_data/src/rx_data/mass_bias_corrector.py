@@ -199,7 +199,7 @@ class MassBiasCorrector:
             }
 
         d_data[   'B_DIRA_OWNPV'] = self._calculate_dira(momentum=bp.to_Vector3D(), row=row, particle=   'B')
-        d_data['Jpsi_DIRA_OWNPV'] = self._calculate_dira(momentum=jp.to_Vector3D(), row=row, particle='Jpsi')
+        #d_data['Jpsi_DIRA_OWNPV'] = self._calculate_dira(momentum=jp.to_Vector3D(), row=row, particle='Jpsi')
 
         sr = pnd.Series(d_data)
 
