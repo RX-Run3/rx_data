@@ -30,8 +30,7 @@ from pathlib      import Path
 from pydantic     import BaseModel, model_validator
 from rx_common    import Project
 from ap_utilities import decay_utilities
-
-from rx_data.used_samples import UsedSamples
+from rx_data      import UsedSamples
 
 log=LogStore.add_logger('rx_data:move_sample')
 
