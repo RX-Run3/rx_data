@@ -170,10 +170,16 @@ def _preprocess_lepton(rdf : RDF.RNode, lep : str) -> RDF.RNode:
 def _pick_column(name : str) -> bool:
     # To make friend trees and align entries
     to_keep  = ['EVENTNUMBER', 'RUNNUMBER', 'nPVs']
+
     # Needed to identify electrons, muons do not need brem correction 
     to_keep += ['L1_ID'      , 'L2_ID']
+
     # For q2 smearing
     to_keep += ['nbrem'      , 'block', 'Jpsi_TRUEM', 'B_TRUEM']
+
+    # To re-use old DIRA in case new DIRA cannot be calculated 
+    to_keep += ['Jpsi_DIRA_OWNPV']
+
     # To recalculate DIRA
     to_keep += ['Jpsi_BPVX', 'Jpsi_BPVY', 'Jpsi_BPVZ']
     to_keep += [   'B_BPVX',    'B_BPVY',    'B_BPVZ']
