@@ -5,11 +5,9 @@
 
 triggers:
   - Hlt2RD_BuToKpEE_MVA
-  - Hlt2RD_BuToKpEE_MVA_noPID
   - Hlt2RD_BuToKpEE_MVA_misid
   - Hlt2RD_BuToKpEE_SameSign_MVA
   - Hlt2RD_BuToKpMuMu_MVA
-  - Hlt2RD_BuToKpMuMu_MVA_noPID
   - Hlt2RD_BuToKpMuMu_SameSign_MVA
 samples :
   data:
