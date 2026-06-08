@@ -3,12 +3,20 @@ Script used to move samples from one project to another
 
 Usage:
 
-move_sample -r "^data_24.*" -s rk -t rk_no_refit
+move_sample -i "^data_24.*" -s rk -t rk_no_refit
 
 will:
 
 - Look for all the files (friend and main trees) matching the regex "^data_24.*" in the `rk` project
 - Create the `rk_no_refit` project and move each file there, with the same directory structure
+
+This can be used also with event types:
+
+move_sample -i 12345678 -s rk -t rk_no_refit
+
+to target a given sample or with `for_analysis` to target all the samples:
+
+move_sample -i for_analysis -s rk -t rk_analysis
 '''
 import os
 import re
