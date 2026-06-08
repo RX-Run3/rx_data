@@ -37,13 +37,18 @@ definitions:
     L1_not_conv_150   : 8 * TMath::Abs(L1_FMX) + 10 * TMath::Abs(L1_FMY) < 150 
     L2_not_conv_150   : 8 * TMath::Abs(L2_FMX) + 10 * TMath::Abs(L2_FMY) < 150
     # ----------------
-    # q2 branches
+    # Add back old columns or redefine them based on new names
     # ----------------
     # Define fixed DTF branch for old sim10d ntuples
     B_DTF_HEAD_fix_Jpsi_MASS : TMath::Sqrt(TMath::Power(Jpsi_DTF_HEAD_PE, 2) - TMath::Power(Jpsi_DTF_HEAD_PX, 2) - TMath::Power(Jpsi_DTF_HEAD_PY, 2) - TMath::Power(Jpsi_DTF_HEAD_PZ, 2))
     # Use this branch for Jpsi mass with DTF constraint on B
     Jpsi_const_mass_M        : B_DTF_HEAD_fix_Jpsi_MASS
-
+    L1_HASBREMADDED          : L1_BremMultiplicity
+    L2_HASBREMADDED          : L2_BremMultiplicity
+    B_END_VZ                 : B_ENDVERTEX_Z
+    # ----------------
+    # q2 branches
+    # ----------------
     q2_dtf            : Jpsi_const_mass_M * Jpsi_const_mass_M
     q2_smr_dtf        : q2_dtf # TODO: For now, the smeared version of the DTF q2 is the same as the unsmeared
     q2_track          : ROOT::Math::PtEtaPhiMVector l1(L1_TRACK_PT, L1_TRACK_ETA, L1_TRACK_PHI, 0.511);
