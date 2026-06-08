@@ -4,19 +4,19 @@
 # What samples should be copied
 
 triggers:
-  - Hlt2RD_B0ToKpPimEE_MVA
-  - Hlt2RD_B0ToKpPimEE_MVA_misid
-  - Hlt2RD_B0ToKpPimEE_SameSign_MVA
-  - Hlt2RD_B0ToKpPimMuMu_MVA
-  - Hlt2RD_B0ToKpPimMuMu_SameSign_MVA
+  - rkst_ee_os 
+  - rkst_ee_misid 
+  - rkst_ee_ss 
+  - rkst_mm_os 
+  - rkst_mm_ss 
 samples :
   data:
-    - data_24_magdown_24c2
-    - data_24_magdown_24c3
-    - data_24_magdown_24c4
-    - data_24_magup_24c2
-    - data_24_magup_24c3
-    - data_24_magup_24c4
+    - DATA_24_MagDown_24c2
+    - DATA_24_MagDown_24c3
+    - DATA_24_MagDown_24c4
+    - DATA_24_MagUp_24c2
+    - DATA_24_MagUp_24c3
+    - DATA_24_MagUp_24c4
   rk_signal:
     - 12123003 # Kee
     - 12113002 # Kmm
