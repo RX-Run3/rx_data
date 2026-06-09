@@ -1,7 +1,6 @@
 '''
 Script used to copy ntuples from mounted filesystem
 '''
-import os
 import argparse
 import multiprocessing
 import tqdm
@@ -37,9 +36,6 @@ class Data:
     timeout : int
 
     skipped_friend : str|None
-    out_dir        : Path # Path to ana_dir/{kind}/{version}
-    pfs_dir = Path(os.environ['PFS_ANADIR']) / 'Data'
-    ana_dir = Path(os.environ['ANADIR'    ]) / 'Data'
     vers    : str 
     l_kind  = [
         'all',
@@ -60,10 +56,10 @@ def _parse_args():
     parser.add_argument('-p', '--proj', type=    str, help='Name of YAML config file, e.g. rk', required=True, choices=['rk', 'rkst', 'rk_nopid', 'rkst_nopid'])
     parser.add_argument('-s', '--skip', type=    str, help='Friend tree to skip', choices=Data.l_kind)
     parser.add_argument('-l', '--logl', type=    int, help='Logger level', choices=[5, 10, 20, 30], default=20)
-    parser.add_argument('-n', '--nprc', type=    int, help='Number of process to download with, with zero, will download all files at once', default=1)
+    parser.add_argument('-n', '--nprc', type=    int, help='Number of process to transfer with, with zero will transfer all files at once', default=1)
     parser.add_argument('-t', '--tout', type=    int, help='Timeout, used to check if server is reachable', default = 10)
     parser.add_argument('-v', '--vers', type=    str, help='Version of files, only makes sense if kind is not "all"', required = True)
-    parser.add_argument('-S', '--serv', type= Server, help='Server from which files will be transferred', choices = list(Server))
+    parser.add_argument('-S', '--serv', type= Server, help='Server to which files will be transferred', choices = list(Server))
     parser.add_argument('-d', '--dry' ,               help='If used, will do not copy files', action='store_true')
     args = parser.parse_args()
 
@@ -137,7 +133,7 @@ def _get_source_paths() -> list[Path]:
 
     return l_source
 # -----------------------------------------
-def _initialize(kind : str, fcp : FCopy):
+def _initialize(kind : str):
     '''
     This function will initialize:
     - Data.out_dir : Full path to output directory 
@@ -151,18 +147,15 @@ def _initialize(kind : str, fcp : FCopy):
         raise ValueError(f'Specified version {Data.vers} for kind {Data.kind}')
 
     log.info(f'Initializing for trees of type: {kind}')
-    inp_dir = Data.pfs_dir / Data.proj / f'{kind}/{Data.vers}'
+    inp_dir = Server.local.data_dir / Data.proj / kind / Data.vers
 
-    log.info(f'Searching for files in: {Data.server.host}:{inp_dir}')
-    l_path  = fcp.tunnel.glob(path = inp_dir, pattern = '*.root')
+    log.info(f'Searching for files in: {Server.local.host}:{inp_dir}')
+    l_path  = list(inp_dir.glob(pattern = '*.root'))
     if not l_path:
         raise ValueError('No paths found')
 
-    Data.out_dir = Data.ana_dir / Data.proj / f'{kind}/{Data.vers}'
-    Data.out_dir.mkdir(parents=True, exist_ok=True)
-
     log.info(f'Source: {inp_dir}')
-    log.info(f'Target: {Data.out_dir}')
+    log.info(f'Target: {Data.server.data_dir}')
 
     nsource = len(l_path)
     if nsource == 0:
@@ -185,7 +178,7 @@ def _copy_sample(
     ---------------
     Number of files that were actually copied
     '''
-    target= Data.out_dir/source.name
+    target = Data.server.data_dir / Data.proj / Data.kind / Data.vers / source.name
 
     Data.copied_files += 1
     Data.copied_size  += source.stat().st_size / 1_000_000_000
@@ -200,9 +193,9 @@ def _copy_sample(
 
     return 1
 # -----------------------------------------
-def _download_group(group : list[Path], fcp : FCopy) -> int:
+def _transfer_group(group : list[Path], fcp : FCopy) -> int:
     nfiles = len(group)
-    log.debug(f'Downloading {nfiles} files in parallel')
+    log.debug(f'Transferring {nfiles} files in parallel')
 
     if nfiles == 1:
         ncopied = _copy_sample(
@@ -222,11 +215,11 @@ def _group_paths(l_path : list[Path]) -> list[list[Path]]:
     '''
     Parameters
     --------------------
-    l_path: List of paths of files to download
+    l_path: List of paths of files to transfer 
 
     Returns
     --------------------
-    Group of lists of files to download. Each group will be downloaded separately
+    Group of lists of files to transfer. Each group will be transferred separately
     '''
     if Data.nprc <  0:
         raise ValueError(f'Number of processes has to be larger or equal to 1, found: {Data.nprc}')
@@ -263,23 +256,21 @@ def _group_paths(l_path : list[Path]) -> list[list[Path]]:
 
     return l_l_path
 # -----------------------------------------
-def _download_kind(kind : str, fcp : FCopy) -> None:
+def _transfer_kind(kind : str, fcp : FCopy) -> None:
     '''
     Parameters
     -------------------
     kind: E.g. mva, mass, brem_track_2
     '''
     log.info(f'Copying files for kind {kind}')
-    _initialize(
-        fcp  = fcp,
-        kind = kind)
+    _initialize(kind = kind)
 
     l_path  = _get_source_paths()
     l_group = _group_paths(l_path)
     ncopied = 0
 
     for group in tqdm.tqdm(l_group, ascii=' -'):
-        ncopied  += _download_group(
+        ncopied  += _transfer_group(
             group = group, 
             fcp   = fcp)
 
@@ -303,9 +294,9 @@ def main():
         if kind == Data.skipped_friend:
             continue
 
-        log.info(f'Downloading from host: {Data.server}')
-        with FCopy(source = Data.server.host) as fcp:
-            _download_kind(kind = kind, fcp = fcp)
+        log.info(f'Transferring from host: {Data.server}')
+        with FCopy(target = Data.server.host) as fcp:
+            _transfer_kind(kind = kind, fcp = fcp)
 
     log.info(f'Copied {Data.copied_files} ({Data.copied_size:.2f} Gb) files in total')
 # -----------------------------------------
