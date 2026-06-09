@@ -10,7 +10,6 @@ import tqdm
 from pathlib      import Path
 from ROOT         import RDataFrame, TFileMerger, TFile, TTree, RDF # type: ignore
 from dmu          import LogStore
-
 from rx_q2        import Q2SmearCorrector
 from rx_common    import Component, Project, Trigger, MissingComponent
 from rx_data      import utilities
@@ -39,7 +38,6 @@ class Data:
     pbar        : bool
     dry         : bool
     lvl         : int
-    wild_card   : str | None
     chunk_size  : int
     out_dir     : Path 
 
@@ -78,7 +76,6 @@ def _parse_args() -> None:
     Data.pbar        = args.pbar
     Data.dry         = args.dry
     Data.lvl         = args.lvl
-    Data.wild_card   = args.wc
     Data.chunk_size  = args.chunk
 # ---------------------------------
 def _set_logs():
@@ -386,9 +383,8 @@ def main():
     _set_logs()
 
     prt = NtuplePartitioner(
-        kind      = 'main',
-        project   = Data.proj,
-        wild_card = Data.wild_card)
+        kind    = 'main',
+        project = Data.proj)
 
     igroup, ngroup = Data.part
     l_path = prt.get_paths(index=igroup, total=ngroup)

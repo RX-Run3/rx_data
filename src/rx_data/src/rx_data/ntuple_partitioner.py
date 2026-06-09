@@ -22,19 +22,16 @@ class NtuplePartitioner:
     def __init__(
         self, 
         project  : Project,
-        kind     : str,
-        wild_card: str | None = None):
+        kind     : str):
         '''
         Parameters
         -------------
         project  : E.g. rk, rkst, rk_nopid
         kind     : Type of tree, e.g. main, mva, hop...
-        wild_card: If used, will restrict files that will be used in the partitioning
         '''
         self._kind      = kind
         self._proj      = project
         self._ana_dir   = Path(os.environ['ANADIR'])
-        self._wild_card = wild_card
 
         self._s_ecorr   = {'brem_track_2'}
     # ---------------------------------
@@ -129,10 +126,6 @@ class NtuplePartitioner:
         if self._kind in self._s_ecorr:
             # For electron corrections, drop muon paths
             l_path = [ path for path in l_path if 'MuMu' not in str(path) ]
-    
-        if self._wild_card is not None:
-            log.debug(f'Filtering with wildcard: {self._wild_card}')
-            l_path = [ path for path in l_path if fnmatch.fnmatch( str(path), f'*{self._wild_card}*') ]
     
         nfnal = len(l_path)
         log.debug(f'Filtered -> {nfnal} paths')
