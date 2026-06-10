@@ -78,6 +78,15 @@ class Files(RootModel[list[File]]):
         text = path.read_text()
         return cls.model_validate_json(text)
     # ------------------------------------
+    @property
+    def size(self) -> int:
+        '''
+        Total size of sample
+        '''
+        sizes = [ file.entries for file in self.root ]
+
+        return sum(sizes)
+    # ------------------------------------
     def split(self, entries : int) -> list[FilePart]:
         '''
         Parameters
