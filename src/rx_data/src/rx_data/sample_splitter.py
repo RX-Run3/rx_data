@@ -111,6 +111,9 @@ class FileBatches(RootModel[list[FileBatch]]):
         msg+= 80 * '-' + '\n'
         for batch in self.root:
             msg += f'{batch}\n'
+        msg += 80 * '-' + '\n'
+        msg += f'Total: {len(self.root)}\n'
+        msg += 80 * '-' + '\n'
 
         return msg
 # ------------------------------------
