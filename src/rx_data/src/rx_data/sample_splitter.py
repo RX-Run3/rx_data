@@ -79,7 +79,7 @@ class FileBatch(RootModel[list[FilePart]]):
 
             if this_batch.size >= entries:
                 batches.root.append(this_batch)
-                log.info(f'Closing batch with {this_batch.size} >= {entries}')
+                log.debug(f'Closing batch with {this_batch.size} >= {entries}')
                 this_batch = FileBatch([])
 
         if this_batch.root:
