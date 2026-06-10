@@ -14,3 +14,4 @@ def test_simple():
 
     fname = Path('files.json')
     files = spt.run(out_path = '/tmp' / fname)
+    print(files.size)

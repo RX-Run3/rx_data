@@ -1,6 +1,11 @@
 import os
 import glob
+from functools import cache
+from rx_common import Project
+from rx_data   import SampleSplitter
+from pathlib   import Path
 
+MAIN_VERSION = 'v1'
 ENV    = 'rx_run3'
 HOME   = config['defaults']['home']
 LOGDIR = config['defaults']['smklog']
@@ -9,7 +14,28 @@ CHUNK  = config['defaults']['chunk_size']
 _MERGE = f'{ANADIR}/tmp/sentinels/friends/{{project}}/{{friend}}_{{vers}}.merge'
 _CALC  = f'{ANADIR}/tmp/sentinels/friends/{{project}}/{{friend}}_{{vers}}_{{index}}.calc'
 _SPLT  = f'{ANADIR}/tmp/sentinels/friends/{{project}}/{{friend}}_{{vers}}_{{index}}.splt'
+
 # ──────────────────────────────────────────────────────────────────────
+@cache
+def _get_parts(project, entries):
+    spt = SampleSplitter(
+        version = MAIN_VERSION,
+        project = project)
+
+    fpath = Path(f'/tmp/stats_{project}_{MAIN_VERSION}.json')
+    files = spt.run(out_path = fpath)
+    parts = files.split(entries = entries)
+    npart = len(parts)
+    print(f'Found {npart} parts for {project} with {entries} entries')
+
+    return 1#npart
+
+def _get_calc_list(wc):
+    dir_name = f'{ANADIR}/tmp/sentinels/friends/{wc.project}'
+    entries  = _get_setting(wc, 'entries')
+    nparts   = _get_parts(wc.project, entries)
+
+    return [f'{dir_name}/{wc.friend}_{wc.vers}_{index}.calc' for index in range(nparts) ]
 def _get_setting(wc, name):
     friend = getattr(wc,  'friend')
     project= getattr(wc, 'project')
@@ -47,7 +73,7 @@ rule _merge:
     output:
         done = _MERGE
     input :
-        _CALC
+        _get_calc_list
     resources:
         htcondor_request_mem_mb  = 5000,
         htcondor_request_disk_mb = 2000,
@@ -127,54 +153,3 @@ use rule _calculate as calculate_independent with:
         vers   = r'v\d+',
     input:
         _SPLT
-use rule _calculate as calculate_smear with:
-    '''Request mass smearing trees'''
-    wildcard_constraints:
-        friend = 'smear',
-        vers   = r'v\d+',
-    input:
-        [_SPLT]                           +
-        sentinels(friend = 'brem_track_2')
-use rule _calculate as calculate_mva with:
-    '''Request mva trees'''
-    wildcard_constraints:
-        friend = 'mva',
-        vers   = r'v\d+',
-    input:
-        [_SPLT]                            +
-        sentinels(friend = 'hop'         ) +
-        sentinels(friend = 'smear'       ) +
-        sentinels(friend = 'brem_track_2')
-rule _split:
-    output:
-        _SPLT
-    resources:
-        htcondor_request_mem_mb  = 5000,
-        htcondor_request_disk_mb = 2000,
-    log:
-        prc = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}.prc',
-        err = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}.err',
-        out = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}.out',
-        LOG = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}.log',
-    params:
-        LOGD    = LOGDIR,
-        home    = HOME,
-        env     = ENV,
-        entries = lambda wc : _get_setting(wc, 'entries')
-    shell:
-        '''
-        (
-        source setup.sh {params.env} {params.home}
-        echo $_CONDOR_JOB_AD > {log.prc}
-
-        # {ANADIR}/tmp/sentinels/friends/{{project}}/{{friend}}/{{vers}}_{{index}}.splt'
-        find_chunks -p {wildcards.project} -e {params.entries} -f {wildcards.friend} -v {wildcards.vers}
-
-        ) >> {log.prc} 2>&1
-
-        JOBID=$(grep -m1 '^ClusterId' $_CONDOR_JOB_AD | awk '{{print $3}}')
-        ln -s {params.LOGD}/$JOBID.err {log.err}
-        ln -s {params.LOGD}/$JOBID.out {log.out}
-        ln -s {params.LOGD}/$JOBID.log {log.LOG}
-        '''
-# ───────────────────────────────────────────────────────────────────
