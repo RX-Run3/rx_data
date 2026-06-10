@@ -174,3 +174,4 @@ poetry.toml
 # End of https://www.toptal.com/developers/gitignore/api/python
 .snakemake/
 .home/
+.statistics*.json
