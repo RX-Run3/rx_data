@@ -17,7 +17,7 @@ def test_simple():
     batches = files.split(entries = 1000_000)
 
     print(batches)
-    print(batches.size - files.size)
+    print(batches.nentries - files.size)
 
-    assert batches.size == files.size
+    assert batches.nentries == files.size
 

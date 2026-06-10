@@ -102,6 +102,13 @@ class FileBatches(RootModel[list[FileBatch]]):
     @property
     def size(self) -> int:
         '''
+        Number of batches
+        '''
+        return len(self.root)
+    # -------------------------
+    @property
+    def nentries(self) -> int:
+        '''
         Number of events in all batches
         '''
         sizes = [ batch.size for batch in self.root ]
