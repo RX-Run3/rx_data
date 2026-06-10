@@ -12,6 +12,12 @@ def test_simple():
         version = 'v1',
         project = Project.rk)
 
-    fname = Path('files.json')
-    files = spt.run(out_path = '/tmp' / fname)
-    print(files.size)
+    fname   = Path('files.json')
+    files   = spt.run(out_path = '/tmp' / fname)
+    batches = files.split(entries = 1000_000)
+
+    print(batches)
+    print(batches.size - files.size)
+
+    assert batches.size == files.size
+
