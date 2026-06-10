@@ -22,14 +22,13 @@ def _get_parts(project, entries):
         version = MAIN_VERSION,
         project = project)
 
-    fpath = Path(f'/tmp/stats_{project}_{MAIN_VERSION}.json')
-    files = spt.run(out_path = fpath)
-    parts = files.split(entries = entries)
-    npart = len(parts)
+    fpath   = Path(f'/tmp/stats_{project}_{MAIN_VERSION}.json')
+    files   = spt.run(out_path = fpath)
+    batches = files.split(entries = entries)
+    nbatch  = batches.size
     print(f'Found {npart} parts for {project} with {entries} entries')
 
-    return 1#npart
-
+    return nbatch
 def _get_calc_list(wc):
     dir_name = f'{ANADIR}/tmp/sentinels/friends/{wc.project}'
     entries  = _get_setting(wc, 'entries')
