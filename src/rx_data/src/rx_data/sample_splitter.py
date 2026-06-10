@@ -147,14 +147,19 @@ class File(BaseModel):
         List of objects representing file partitioning
         '''
         file_parts = []
-        for start in range(0, self.entries + 1, entries):
-            end = min(start + entries - 1, self.entries)
+        index      = 0
+        for start in range(0, self.entries, entries):
+            end      = min(start + entries - 1, self.entries)
 
             element  = FilePart(
                 path = self.path,
+                index= index,
+                split= end == self.entries - 1,
                 range= (start, end))
 
             file_parts.append(element)
+
+            index += 1
 
         return file_parts
 # ------------------------------------
@@ -171,13 +176,13 @@ class Files(RootModel[list[File]]):
     @property
     def size(self) -> int:
         '''
-        Total size of sample
+        Number of entries in all samples
         '''
         sizes = [ file.entries for file in self.root ]
 
         return sum(sizes)
     # ------------------------------------
-    def split(self, entries : int) -> list[FilePart]:
+    def split(self, entries : int) -> FileBatches:
         '''
         Parameters
         -------------
@@ -185,13 +190,13 @@ class Files(RootModel[list[File]]):
 
         Returns
         -------------
-        List of objects representing file parts
+        Container of file batches
         '''
         parts : list[FilePart] = []
         for file in self.root:
             parts += file.parts(entries = entries)
 
-        return parts
+        return FileBatch.batch_parts(parts = parts, entries = entries)
 # ------------------------------------
 class SampleSplitter:
     '''
