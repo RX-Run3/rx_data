@@ -38,9 +38,9 @@ class FilePart(BaseModel):
         '''
         Number of entries in file
         '''
-        min, max = self.range
+        lo, hi = self.range
 
-        return max - min + 1
+        return hi - lo + 1
 # ------------------------------------
 class FileBatch(RootModel[list[FilePart]]):
     '''
@@ -81,6 +81,9 @@ class FileBatch(RootModel[list[FilePart]]):
                 batches.root.append(this_batch)
                 log.info(f'Closing batch with {this_batch.size} >= {entries}')
                 this_batch = FileBatch([])
+
+        if this_batch.root:
+            batches.root.append(this_batch)
 
         return batches 
     # ------------------------------------
@@ -152,12 +155,12 @@ class File(BaseModel):
         file_parts = []
         index      = 0
         for start in range(0, self.entries, entries):
-            end      = min(start + entries - 1, self.entries)
+            end      = min(start + entries - 1, self.entries - 1)
 
             element  = FilePart(
                 path = self.path,
                 index= index,
-                split= end == self.entries - 1,
+                split= self.entries > entries, 
                 range= (start, end))
 
             file_parts.append(element)
