@@ -26,7 +26,7 @@ def _get_parts(project, entries):
     files   = spt.run(out_path = fpath)
     batches = files.split(entries = entries)
     nbatch  = batches.size
-    print(f'Found {npart} parts for {project} with {entries} entries')
+    print(f'Found {nbatch} batches for {project} with {entries} entries')
 
     return nbatch
 def _get_calc_list(wc):
@@ -144,11 +144,26 @@ rule _calculate:
         mkdir -p $(dirname {output.done})
         touch {output.done}
         '''
-# ── Rules ─────────────────────────────────────────────────────────────────────
+# ───────────────────────────────────────────────────────────────────
 use rule _calculate as calculate_independent with:
     '''Request trees that do not depend on anything'''
     wildcard_constraints:
         friend = '(mass|swp_jpsi_misid|swp_cascade|hop|brem_track_2)',
         vers   = r'v\d+',
+use rule _calculate as calculate_smear with:
+    '''Request mass smearing trees'''
+    wildcard_constraints:
+        friend = 'smear',
+        vers   = r'v\d+',
     input:
-        _SPLT
+        sentinels(friend = 'brem_track_2')
+use rule _calculate as calculate_mva with:
+    '''Request mva trees'''
+    wildcard_constraints:
+        friend = 'mva',
+        vers   = r'v\d+',
+    input:
+        sentinels(friend = 'hop'         ) +
+        sentinels(friend = 'smear'       ) +
+        sentinels(friend = 'brem_track_2')
+# ───────────────────────────────────────────────────────────────────
