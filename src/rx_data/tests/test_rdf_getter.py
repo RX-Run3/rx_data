@@ -46,6 +46,13 @@ _RESONANT_SAMPLES : Final[list[tuple[Component,Trigger]]] = [
     (Component.bdkstkpijpsimm, Trigger.rkst_mm_os),
 ]
 
+_DATA_SAMPLES     : Final[list[tuple[Component,Trigger]]] = [
+    (Component.data_24_md_c2, Trigger.rk_ee_os  ),
+    (Component.data_24_md_c2, Trigger.rkst_ee_os),
+    (Component.data_24_md_c2, Trigger.rk_mm_os  ),
+    (Component.data_24_md_c2, Trigger.rkst_mm_os),
+]
+
 _INCLUSIVE_SAMPLES : Final[list[tuple[Component,Trigger]]] = [
     (Component.bdjpsixee, Trigger.rk_ee_os),
     (Component.bpjpsixee, Trigger.rk_ee_os),
@@ -964,7 +971,26 @@ def test_custom_columns(trigger : Trigger):
     assert 'xbrem' in l_col
 # ------------------------------------------------
 @pytest.mark.parametrize('sample, trigger', _RESONANT_SAMPLES)
-def test_no_friends(
+def test_no_friends_mc(
+    sample  : Component, 
+    trigger : Trigger, 
+    tmp_path: Path):
+    '''
+    Test loading files with out any friend
+    '''
+    with RDFGetter.only_friends(s_friend = set()):
+        gtr = RDFGetter(sample=sample, trigger=trigger)
+        rdf = gtr.get_rdf(per_file=False)
+
+    assert rdf.Count().GetValue() > 0
+
+    _check_block(rdf)
+
+    name   = f'no_friends/{sample}_{trigger}'
+
+    _plot_block(rdf=rdf, name=name, out_dir = tmp_path)
+@pytest.mark.parametrize('sample, trigger', _DATA_SAMPLES)
+def test_no_friends_dt(
     sample  : Component, 
     trigger : Trigger, 
     tmp_path: Path):
