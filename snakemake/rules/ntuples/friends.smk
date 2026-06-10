@@ -68,7 +68,7 @@ rule all:
         sentinels(friend = 'mva'            ) +
         sentinels(friend = 'smear'          )
 # ───────────────────────────────────────────────────────────────────
-rule _merge:
+rule merge:
     output:
         done = _MERGE
     input :
@@ -105,8 +105,6 @@ rule _merge:
         '''
 # ───────────────────────────────────────────────────────────────────
 rule _calculate:
-    output:
-        done   = _CALC
     resources:
         htcondor_request_mem_mb  = 5000,
         htcondor_request_disk_mb = 2000,
@@ -147,11 +145,15 @@ rule _calculate:
 # ───────────────────────────────────────────────────────────────────
 use rule _calculate as calculate_independent with:
     '''Request trees that do not depend on anything'''
+    output:
+        done   = _CALC
     wildcard_constraints:
         friend = '(mass|swp_jpsi_misid|swp_cascade|hop|brem_track_2)',
         vers   = r'v\d+',
 use rule _calculate as calculate_smear with:
     '''Request mass smearing trees'''
+    output:
+        done   = _CALC
     wildcard_constraints:
         friend = 'smear',
         vers   = r'v\d+',
@@ -159,6 +161,8 @@ use rule _calculate as calculate_smear with:
         sentinels(friend = 'brem_track_2')
 use rule _calculate as calculate_mva with:
     '''Request mva trees'''
+    output:
+        done   = _CALC
     wildcard_constraints:
         friend = 'mva',
         vers   = r'v\d+',
