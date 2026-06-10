@@ -1,5 +1,5 @@
 '''
-Module holding SampleSplitter class
+Module holding SampleSplitter class and other helper classes
 '''
 import os
 
@@ -10,19 +10,109 @@ from ROOT      import RDataFrame
 from rx_common import Project
 from pydantic  import BaseModel, RootModel, model_validator
 
-_ANADIR   : Final[Path] = Path(os.environ['ANADIR'])
-_TREE     : Final[str ] = 'main'
-_OUT_PATH : Final[Path] = Path('.samples.json')
-_TREE_NAME: Final[str]  = 'DecayTree'
+_ANADIR   : Final[Path ] = Path(os.environ['ANADIR'])
+_TREE     : Final[str  ] = 'main'
+_OUT_PATH : Final[Path ] = Path('.samples.json')
+_TREE_NAME: Final[str  ] = 'DecayTree'
 
 log=LogStore.add_logger('rx_data:sample_splitter')
 # ------------------------------------
 class FilePart(BaseModel):
     '''
     Class representing part of ROOT file
+
+    Attributes
+    ----------------
+    path : Path to ROOT file
+    range: Range of indices of entries in file, starting at zero, inclusive range 
+    index: Index of part within file, i.e. if file has not been split, it will be zero
+    split: True if this is just one part of a bigger file
     '''
     path : Path
     range: tuple[int,int]
+    index: int
+    split: bool
+    # --------------------
+    @property
+    def size(self) -> int:
+        '''
+        Number of entries in file
+        '''
+        min, max = self.range
+
+        return max - min + 1
+# ------------------------------------
+class FileBatch(RootModel[list[FilePart]]):
+    '''
+    Class representing a collection of file parts
+    '''
+    # ------------------------------------
+    @property
+    def size(self) -> int:
+        '''
+        Total number of entries in file batch
+        '''
+        sizes = [ elm.size for elm in self.root ]
+
+        return sum(sizes)
+    # ------------------------------------
+    @classmethod
+    def batch_parts(
+        cls, 
+        parts   : list[FilePart],
+        entries : int) -> 'FileBatches': 
+        '''
+        Parameters
+        --------------
+        parts  : List of files or parts of files
+        entries: Number of entries beyond which batch cannot go
+
+        Returns
+        ---------------
+        File batches, all of them with roughly `entries` entries
+        '''
+        parts = sorted(parts, key = lambda x : x.size)
+        batches    = FileBatches([]) 
+        this_batch = FileBatch([])
+        for part in parts:
+            this_batch.root.append(part)
+
+            if this_batch.size >= entries:
+                batches.root.append(this_batch)
+                log.info(f'Closing batch with {this_batch.size} >= {entries}')
+                this_batch = FileBatch([])
+
+        return batches 
+    # ------------------------------------
+    def __str__(self) -> str:
+        nfiles = len(self.root)
+        name   = self.root[0].path.name if nfiles == 1 else 'multiple'
+        msg    = f'{nfiles:<20}{self.size:<20}{name}'
+
+        return msg
+# ------------------------------------
+class FileBatches(RootModel[list[FileBatch]]):
+    '''
+    Class representing a collection of file batches 
+    '''
+    # -------------------------
+    @property
+    def size(self) -> int:
+        '''
+        Number of events in all batches
+        '''
+        sizes = [ batch.size for batch in self.root ]
+
+        return sum(sizes)
+    # -------------------------
+    def __str__(self) -> str:
+        msg = 80 * '-' + '\n'
+        msg+= f'{"Files":<20}{"Entries":<20}{"File names"}\n'
+        msg+= 80 * '-' + '\n'
+        for batch in self.root:
+            msg += f'{batch}\n'
+
+        return msg
 # ------------------------------------
 class File(BaseModel):
     '''
