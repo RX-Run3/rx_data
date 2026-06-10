@@ -11,6 +11,7 @@ from typing     import Final
 from pathlib    import Path
 from dmu        import LogLevels, LogStore
 from rx_common  import Project 
+from rx_data    import SampleSplitter
 from rx_data    import SamplesPrinter
 from rx_data    import PFNDownloader
 from rx_data    import PFNDownloaderConf
@@ -159,6 +160,21 @@ def patch_files(
     ptc = FilePatcher(dry_run = dry_run)
     for path in tqdm.tqdm(paths, ascii = ' -'):
         ptc.run(path = path)
+# ----------------------
+@app.command()
+def store_sample_db(
+    version : str     = typer.Option(..., '--version', '-v', help = 'Version of ntuples'),
+    project : Project = typer.Option(..., '--Project', '-p', help = 'E.g. rk, rkst')):
+    '''
+    Used to create JSON file in current directory holding list of samples and number of events
+    File will be stored in `.statistics_{project}_{version}.json`
+    '''
+    spt = SampleSplitter(
+        version = version,
+        project = project)
+
+    cache_path = Path(f'.statistics_{project}_{version}.json')
+    spt.run(out_path = cache_path)
 # ----------------------
 if __name__ == '__main__':
     app()
