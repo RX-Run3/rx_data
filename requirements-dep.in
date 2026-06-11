@@ -1,5 +1,6 @@
 uv
 sigal
+pydantic-settings
 snakemake-logger-plugin-rich
 junit2html
 junitparser

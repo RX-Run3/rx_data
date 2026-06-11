@@ -431,11 +431,14 @@ pycparser==2.23
 pydantic==2.12.5
     # via
     #   -r requirements-dep.in
+    #   pydantic-settings
     #   snakemake-logger-plugin-rich
     #   sqlmodel
     #   zfit
 pydantic-core==2.41.5
     # via pydantic
+pydantic-settings==2.14.1
+    # via -r requirements-dep.in
 pygments==2.19.2
     # via rich
 pyparsing==3.2.5
@@ -449,6 +452,8 @@ python-dateutil==2.9.0.post0
     #   luigi
     #   matplotlib
     #   pandas
+python-dotenv==1.2.2
+    # via pydantic-settings
 python-slugify==8.0.4
     # via -r requirements-dep.in
 pytz==2025.2
@@ -646,7 +651,9 @@ typing-extensions==4.15.0
     #   typing-inspection
     #   zfit-interface
 typing-inspection==0.4.2
-    # via pydantic
+    # via
+    #   pydantic
+    #   pydantic-settings
 tzdata==2025.3
     # via pandas
 uhi==1.0.0
