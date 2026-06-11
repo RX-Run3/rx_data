@@ -84,6 +84,8 @@ rule merge:
         home    = HOME,
         env     = ENV,
         entries = lambda wc : _get_setting(wc, 'entries')
+        fvers   = lambda wc : _get_setting(wc, 'friend')
+        mvers   = MAIN_VERSION
     shell:
         '''
         (
@@ -92,7 +94,8 @@ rule merge:
 
         merge_friends -p {wildcards.project}\
                       -f {wildcards.friend} \
-                      -v {wildcards.vers}   \
+                      -F {params.fvers} \
+                      -M {params.mvers}   \
                       -e {params.entries}
 
         ) >> {log.prc} 2>&1
@@ -118,6 +121,8 @@ rule _calculate:
     params:
         phot_veto = lambda wc : _get_setting(wc, 'photon_veto'),
         entries   = lambda wc : _get_setting(wc,     'entries'),
+        mvers     = MAIN_VERSION, 
+        fvers     = lambda wc : _get_setting(wc,      'friend'),
         LOGD      = LOGDIR,
         home      = HOME,
         env       = ENV,
@@ -128,12 +133,13 @@ rule _calculate:
         echo $_CONDOR_JOB_AD > {log.prc}
 
         branch_calculator           \
+            -g {params.phot_veto}
             -k {wildcards.friend}   \
             -P {wildcards.project}  \
-            -v {wildcards.vers}     \
+            -M {params.mvers}     \
+            -F {params.fvers}     \
             -i {wildcards.index}    \
-            -s {params.entries}     \
-            -g {params.phot_veto}
+            -e {params.entries}     \
         ) >> {log.prc} 2>&1
 
         JOBID=$(grep -m1 '^ClusterId' $_CONDOR_JOB_AD | awk '{{print $3}}')
