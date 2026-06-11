@@ -137,7 +137,7 @@ rule _calculate:
         phot_veto = lambda wc : _get_setting(wc, 'photon_veto'),
         entries   = lambda wc : _get_setting(wc,     'entries'),
         mvers     = MAIN_VERSION, 
-        fvers     = lambda wc : _get_setting(wc,      'friend'),
+        fvers     = lambda wc : _get_setting(wc,     'version'),
         LOGD      = LOGDIR,
         home      = HOME,
         env       = ENV,
