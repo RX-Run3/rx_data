@@ -78,6 +78,10 @@ def _merge(target : Path, sources : list[Path]) -> None:
 
     fmrg.OutputFile(str(target))
     fmrg.Merge()
+
+    log.info('Merge finished, removing pre-merge files')
+    for source in sources:
+        source.unlink()
 # ----------------------
 def main():
     '''
