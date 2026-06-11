@@ -74,6 +74,8 @@ rule merge:
     resources:
         htcondor_request_mem_mb  = 5000,
         htcondor_request_disk_mb = 2000,
+    wildcard_constraints:
+        vers   = r'v\d+',
     log:
         prc = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}.prc',
         err = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}.err',
@@ -83,9 +85,9 @@ rule merge:
         LOGD    = LOGDIR,
         home    = HOME,
         env     = ENV,
-        entries = lambda wc : _get_setting(wc, 'entries')
-        fvers   = lambda wc : _get_setting(wc, 'friend')
-        mvers   = MAIN_VERSION
+        entries = lambda wc : _get_setting(wc, 'entries'),
+        fvers   = lambda wc : _get_setting(wc, 'friend'),
+        mvers   = MAIN_VERSION,
     shell:
         '''
         (
@@ -133,11 +135,11 @@ rule _calculate:
         echo $_CONDOR_JOB_AD > {log.prc}
 
         branch_calculator           \
-            -g {params.phot_veto}
+            -g {params.phot_veto}   \
             -k {wildcards.friend}   \
             -P {wildcards.project}  \
-            -M {params.mvers}     \
-            -F {params.fvers}     \
+            -M {params.mvers}       \
+            -F {params.fvers}       \
             -i {wildcards.index}    \
             -e {params.entries}     \
         ) >> {log.prc} 2>&1
