@@ -20,8 +20,11 @@ from rx_data      import SpecMaker
 from rx_data      import SWPCalculator
 from rx_data      import MassCalculator
 from rx_data      import MassBiasCorrector
+from rx_data      import FilePart, SampleSplitter
 
-log = LogStore.add_logger('rx_data:branch_calculator')
+log                       = LogStore.add_logger('rx_data:branch_calculator')
+_KINDS : Final[list[str]] = ['mass', 'hop', 'swp_jpsi_misid', 'swp_cascade', 'brem_track_2', 'mva', 'smear']
+_TREE_NAME : Final[str]   = 'DecayTree'
 # ---------------------------------
 class Data:
     '''
