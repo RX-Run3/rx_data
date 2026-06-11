@@ -56,7 +56,7 @@ def _merge(target : Path, sources : list[Path]) -> None:
     sources: List of files to be merged
     '''
     if target.exists():
-        raise ValueError(f'Target already exists: {target}')
+        return
 
     if not os.access(target.parent, os.W_OK):
         raise ValueError(f'Target is not writable: {target}')
@@ -82,8 +82,8 @@ def _merge(target : Path, sources : list[Path]) -> None:
         raise ValueError(f'Merge for {target} failed')
 
     log.info('Merge finished, removing pre-merge files')
-    for source in sources:
-        source.unlink()
+    #for source in sources:
+    #    source.unlink()
 # ----------------------
 def main():
     '''
