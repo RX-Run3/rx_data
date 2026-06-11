@@ -112,6 +112,7 @@ def main():
             to_merge[key].append(val)
 
     for target, sources in to_merge.items():
+        log.info(f'Creating: {target}')
         _merge(
             sources = sources,
             target  = target)
