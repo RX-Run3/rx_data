@@ -80,8 +80,8 @@ def main():
     '''
     Entry point
     '''
-    cfg   = _parse_args()
-    spt   = SampleSplitter(
+    cfg = _parse_args()
+    spt = SampleSplitter(
         project = cfg.project,
         version = cfg.version)
 
@@ -90,6 +90,10 @@ def main():
 
     to_merge : dict[Path,list[Path]] = {}
     for part in batches.parts:
+        if not part.split:
+            log.debug(f'Not merging non-split part: {part.path}')
+            continue
+
         key = part.friend_path(friend = cfg.friend)
         val = part.friend_part_path(friend = cfg.friend)
 
