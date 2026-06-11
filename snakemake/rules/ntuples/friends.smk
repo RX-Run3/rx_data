@@ -150,7 +150,7 @@ rule _calculate:
         branch_calculator           \
             -g {params.phot_veto}   \
             -k {wildcards.friend}   \
-            -P {wildcards.project}  \
+            -p {wildcards.project}  \
             -M {params.mvers}       \
             -F {params.fvers}       \
             -i {wildcards.index}    \
