@@ -10,7 +10,6 @@ ENV    = 'rx_run3'
 HOME   = config['defaults']['home']
 LOGDIR = config['defaults']['smklog']
 ANADIR = config['defaults']['anadir']
-CHUNK  = config['defaults']['chunk_size']
 _MERGE = f'{ANADIR}/tmp/sentinels/friends/{{project}}/{{friend}}_{{vers}}.merge'
 _CALC  = f'{ANADIR}/tmp/sentinels/friends/{{project}}/{{friend}}_{{vers}}_{{index}}.calc'
 # ──────────────────────────────────────────────────────────────────────

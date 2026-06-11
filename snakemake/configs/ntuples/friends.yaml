@@ -1,5 +1,4 @@
 defaults:
-  chunk_size : 20_000
   home       : /afs/ihep.ac.cn/users/c/campoverde
   smklog     : /publicfs/ucas/user/campoverde/Jobs/snakemake
   anadir     : /publicfs/ucas/user/campoverde/Data
