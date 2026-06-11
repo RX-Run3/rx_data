@@ -203,8 +203,8 @@ def _get_input_rdf(
     -------------
     ROOT dataframe associated
     '''
-    mc_sample, trigger = utilities.info_from_path(path=path, sample_lowercase=False)
-    component = Component.from_sample(sample = mc_sample)
+    sample, trigger = utilities.info_from_path(path=path, sample_lowercase=False)
+    component = Component.from_sample(sample = sample)
 
     s_friend : set[str] = set()
     if cfg.kind == 'mva':
