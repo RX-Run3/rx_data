@@ -7,7 +7,7 @@ import argparse
 from typing       import Final
 from pydantic     import BaseModel
 from pathlib      import Path
-from ROOT         import RDataFrame, TFile, TTree, RDF # type: ignore
+from ROOT         import TFile, TTree, RDF # type: ignore
 from dmu          import LogStore
 from rx_q2        import Q2SmearCorrector
 from rx_common    import Component, Project, Trigger, MissingComponent
@@ -52,7 +52,7 @@ def _parse_args() -> Config:
     parser.add_argument('-b', '--pbar'       ,           help='If used, will show progress bar whenever it is available', action='store_true')
     parser.add_argument('-d', '--dry'        ,           help='If used, will do dry drun, e.g. stop before processing', action='store_true')
     parser.add_argument('-i', '--index'      , type=int, help='Index of batch of file parts to use in calculation', required = True)
-    parser.add_argument('-e', '--ent'        , type=int, help='Number of entries to split dataset into', required = True)
+    parser.add_argument('-e', '--entries'    , type=int, help='Number of entries to split dataset into', required = True)
     parser.add_argument('-l', '--lvl'        , type=int, help='log level', choices=[5, 10, 20, 30], default=20)
     args = parser.parse_args()
 
@@ -93,34 +93,25 @@ def _set_logs(cfg : Config):
 def _process_rdf(
     rdf : RDF.RNode,
     cfg : Config,
-    path: Path) -> RDF.RNode|None:
+    path: Path) -> RDF.RNode:
     '''
     Parameters
     --------------
-    rdf : Dataframe to have the columns added
+    rdf : Non-empty dataframe to have the columns added
     cfg : Configuration
     path: Full path to corresponding ROOT file
 
     Returns:
     --------------
-    Either:
-    - Dataframe with columns needed
-    - None, in case it does not make sense to add the columns to this type of file
+    Dataframe with columns needed
     '''
     mc_sample, trigger = utilities.info_from_path(path=path, sample_lowercase=False)
+
     component = Component.from_sample(sample = mc_sample)
-
-    nentries = rdf.Count().GetValue()
-    if nentries == 0:
-        log.warning(f'Found empty input file: {path}/{_TREE_NAME}')
-        rdf=RDataFrame(0)
-        rdf=rdf.Define('fake_column', '1')
-
-        return rdf
-    else:
-        log.debug(30 * '-')
-        log.debug(f'Found {nentries} entries in: {path}')
-        log.debug(30 * '-')
+    nentries  = rdf.Count().GetValue()
+    log.debug(30 * '-')
+    log.debug(f'Found {nentries} entries in: {path}')
+    log.debug(30 * '-')
 
     msc = MisCalculator(rdf=rdf, trigger=trigger)
     rdf = msc.get_rdf()
@@ -270,7 +261,7 @@ def _create_file(
         return
 
     try:
-        rdf   = _get_input_rdf(path=part.path, cfg = cfg)
+        rdf = _get_input_rdf(path=part.path, cfg = cfg)
     except MissingComponent as exc:
         log.warning(f'Not processing: {part.path}. Reason {exc}', exc_info = False)
         return
@@ -300,9 +291,7 @@ def _create_file(
         cfg = cfg,
         path= part.path)
 
-    if rdf is not None:
-        out_path = part.friend_part_path(friend = cfg.kind)
-        rdf.Snapshot(_TREE_NAME, str(out_path))
+    rdf.Snapshot(_TREE_NAME, str(output_path))
 # ----------------------
 def main():
     '''
