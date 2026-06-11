@@ -29,6 +29,7 @@ class FilePart(BaseModel):
     split: True if this is just one part of a bigger file
     '''
     path : Path
+    vers : str
     range: tuple[int,int]
     index: int
     split: bool
@@ -186,6 +187,7 @@ class File(BaseModel):
     '''
     Object representing ROOT file
     '''
+    vers    : str
     path    : Path
     entries : int
     # ------------------------------------
@@ -221,6 +223,7 @@ class File(BaseModel):
 
             element  = FilePart(
                 path = self.path,
+                vers = self.vers,
                 index= index,
                 split= self.entries > entries, 
                 range= (start, end))
@@ -296,7 +299,13 @@ class SampleSplitter:
         if not paths:
             raise ValueError(f'No ROOT file found in {dir_path}')
 
-        return Files([ File(path = path, entries = 0) for path in paths ])
+        files = [ 
+            File(
+                path    = path, 
+                vers    = self._version,
+                entries = 0) for path in paths ]
+
+        return Files(files)
     # ------------------------------------
     def run(self, out_path : Path | None = None) -> Files:
         '''
