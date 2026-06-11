@@ -225,6 +225,7 @@ class Component(StrEnum):
             Component.data_24_md_c2,
             Component.data_24_md_c3,
             Component.data_24_md_c4]:
+
             return False
 
         return True
@@ -426,13 +427,7 @@ class Component(StrEnum):
         ---------------
         List of MC samples known to analysis
         '''
-        return [ sample for sample in cls if sample.has_mc() ]
-    # --------------------------------------------
-    def has_mc(self) -> bool:
-        if self in [Component.undefined, Component.comb, Component.data_24]:
-            return False
-
-        return True
+        return [ sample for sample in cls if sample.is_mc ]
     # --------------------------------------------
     def __str__(self):
         '''
