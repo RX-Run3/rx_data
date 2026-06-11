@@ -73,7 +73,7 @@ def _merge(target : Path, sources : list[Path]) -> None:
         raise ValueError('At least one source is missing')
 
     fmrg = TFileMerger()
-    for source in sources:
+    for source in sorted(sources):
         fmrg.AddFile(str(source), cpProgress=False)
 
     fmrg.OutputFile(str(target))
