@@ -3,16 +3,16 @@ import glob
 from pathlib   import Path
 from functools import cache
 
-ENV                = 'rx_run3'
-os.environ['USER'] = ENV
+ENV    = 'rx_run3'
+ANADIR = config['defaults']['anadir']
+HOME   = config['defaults']['home']
 
-from rx_common import Project
-from rx_data   import SampleSplitter
+os.environ['USER']   = ENV
+os.environ['HOME']   = HOME 
+os.environ['ANADIR'] = ANADIR 
 
 MAIN_VERSION = 'v1'
-HOME   = config['defaults']['home']
 LOGDIR = config['defaults']['smklog']
-ANADIR = config['defaults']['anadir']
 _MERGE = f'{ANADIR}/tmp/sentinels/friends/{{project}}/{{friend}}_{{vers}}.merge'
 _CALC  = f'{ANADIR}/tmp/sentinels/friends/{{project}}/{{friend}}_{{vers}}_{{index}}.calc'
 
@@ -23,6 +23,9 @@ CACHED = {
     'rk_100000'   : 1824, 
     'rkst_100000' : 614,
     }
+
+from rx_common import Project
+from rx_data   import SampleSplitter
 # ──────────────────────────────────────────────────────────────────────
 @cache
 def _get_parts(project, entries):
