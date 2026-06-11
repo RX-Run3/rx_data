@@ -51,11 +51,11 @@ def _parse_args() -> Config:
     parser.add_argument('-p', '--proj'       , type=str, help='Project'                 , choices=['rk', 'rkst', 'rk_nopid', 'rkst_nopid', 'rk_no_refit'], required=True)
     parser.add_argument('-M', '--vmain'      , type=str, help='Version of main tree'    , required=True)
     parser.add_argument('-F', '--vfrnd'      , type=str, help='Version of friend trees' , required=True)
-    parser.add_argument('-b', '--pbar'       ,           help='If used, will show progress bar whenever it is available', action='store_true')
-    parser.add_argument('-d', '--dry'        ,           help='If used, will do dry drun, e.g. stop before processing', action='store_true')
     parser.add_argument('-i', '--index'      , type=int, help='Index of batch of file parts to use in calculation', required = True)
     parser.add_argument('-e', '--entries'    , type=int, help='Number of entries to split dataset into', required = True)
     parser.add_argument('-l', '--lvl'        , type=int, help='log level', choices=[5, 10, 20, 30], default=20)
+    parser.add_argument('-b', '--pbar'       ,           help='If used, will show progress bar whenever it is available', action='store_true')
+    parser.add_argument('-d', '--dry'        ,           help='If used, will do dry drun, e.g. stop before processing', action='store_true')
     args = parser.parse_args()
 
     cfg = Config(
