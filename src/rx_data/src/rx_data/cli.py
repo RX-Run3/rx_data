@@ -173,7 +173,7 @@ def store_sample_db(
         version = version,
         project = project)
 
-    cache_path = Path(f'.statistics_{project}_{version}.json')
+    cache_path = _ANADIR / f'DB/statistics/{version}/{project}.json'
     spt.run(out_path = cache_path)
 # ----------------------
 if __name__ == '__main__':
