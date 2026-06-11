@@ -31,7 +31,8 @@ class Config(BaseModel):
     Class used to hold shared data
     '''
     photon_veto : str
-    vers        : str
+    vmain       : str
+    vfrnd       : str
     proj        : Project
     kind        : str
     pbar        : bool
@@ -48,7 +49,8 @@ def _parse_args() -> Config:
     parser.add_argument('-g', '--photon_veto', type=str, help='Version of photon veto', required=True)
     parser.add_argument('-k', '--kind'       , type=str, help='Kind of branch to create', choices=_KINDS, required=True)
     parser.add_argument('-p', '--proj'       , type=str, help='Project'                 , choices=['rk', 'rkst', 'rk_nopid', 'rkst_nopid', 'rk_no_refit'], required=True)
-    parser.add_argument('-v', '--vers'       , type=str, help='Version of outputs', required=True)
+    parser.add_argument('-M', '--vmain'      , type=str, help='Version of main tree'    , required=True)
+    parser.add_argument('-F', '--vfrnd'      , type=str, help='Version of friend trees' , required=True)
     parser.add_argument('-b', '--pbar'       ,           help='If used, will show progress bar whenever it is available', action='store_true')
     parser.add_argument('-d', '--dry'        ,           help='If used, will do dry drun, e.g. stop before processing', action='store_true')
     parser.add_argument('-i', '--index'      , type=int, help='Index of batch of file parts to use in calculation', required = True)
@@ -60,7 +62,8 @@ def _parse_args() -> Config:
         photon_veto = args.photon_veto,
         kind        = args.kind,
         proj        = args.proj,
-        vers        = args.vers,
+        vmain       = args.vmain,
+        vfrnd       = args.vfrnd,
         pbar        = args.pbar,
         dry         = args.dry,
         index       = args.index,
@@ -138,7 +141,7 @@ def _process_rdf(
         obj = Q2SmearCorrector(channel=trigger.channel)
         rdf = obj.get_rdf(rdf=rdf)
     elif cfg.kind == 'mva'   :
-        obj = MVACalculator(rdf=rdf, sample=component, trigger=trigger, version=cfg.vers)
+        obj = MVACalculator(rdf=rdf, sample=component, trigger=trigger, version=cfg.vfrnd)
         rdf = obj.get_rdf(kind = 'root')
     elif cfg.kind == 'mass':
         obj = MassCalculator(rdf=rdf)
@@ -257,7 +260,7 @@ def _create_file(
     cfg : Object holding configuration
     part: ROOT file part
     '''
-    output_path = part.friend_path(friend = cfg.kind, version = cfg.vers)
+    output_path = part.friend_path(friend = cfg.kind, version = cfg.vfrnd)
     if _skip_file(input = part.path, output = output_path):
         return
 
@@ -293,7 +296,7 @@ def _create_file(
         path= part.path)
 
     log.debug(f'Saving file to {output_path}')
-    output_part_path = part.friend_part_path(friend = cfg.kind, version = cfg.vers)
+    output_part_path = part.friend_part_path(friend = cfg.kind, version = cfg.vfrnd)
     output_part_path.parent.mkdir(exist_ok=True, parents=True)
     rdf.Snapshot(_TREE_NAME, str(output_part_path))
 # ----------------------
@@ -310,7 +313,7 @@ def main():
     _set_logs(cfg = cfg)
 
     spt   = SampleSplitter(
-        version = cfg.vers,
+        version = cfg.vmain,
         project = cfg.proj)
     files = spt.run()
     batches = files.split(entries = cfg.entries)
