@@ -1,19 +1,17 @@
 '''
 Script used to create small trees with extra branches from input trees
 '''
-
-import os
-import glob
-import argparse
 import tqdm
+import argparse
 
+from typing       import Final
+from pydantic     import BaseModel
 from pathlib      import Path
-from ROOT         import RDataFrame, TFileMerger, TFile, TTree, RDF # type: ignore
+from ROOT         import RDataFrame, TFile, TTree, RDF # type: ignore
 from dmu          import LogStore
 from rx_q2        import Q2SmearCorrector
 from rx_common    import Component, Project, Trigger, MissingComponent
 from rx_data      import utilities
-from rx_data      import NtuplePartitioner
 from rx_data      import MVACalculator
 from rx_data      import RDFGetter
 from rx_data      import MisCalculator
