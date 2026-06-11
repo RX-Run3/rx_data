@@ -32,7 +32,7 @@ class Config(BaseModel):
     '''
     photon_veto : str
     vers        : str
-    proj        : Project 
+    proj        : Project
     kind        : str
     pbar        : bool
     dry         : bool
@@ -123,7 +123,7 @@ def _process_rdf(
         df   = utilities.df_from_rdf(rdf=rdf, drop_nans=False)
         is_mc= utilities.rdf_is_mc(rdf=rdf)
         cor  = MassBiasCorrector(
-            df                 = df, 
+            df                 = df,
             is_mc              = is_mc,
             trigger            = trigger,
             ecorr_kind         = cfg.kind,
@@ -148,7 +148,7 @@ def _process_rdf(
     return rdf
 # ----------------------
 def _get_swap_rdf(
-    rdf     : RDF.RNode, 
+    rdf     : RDF.RNode,
     cfg     : Config,
     trigger : Trigger) -> RDF.RNode:
     '''
@@ -236,7 +236,7 @@ def _skip_file(input : Path, output : Path) -> bool:
     if not output.exists():
         log.debug(f'Processing missing: {output}')
         return False
-    
+
     is_stale = input.stat().st_mtime > output.stat().st_mtime
 
     if is_stale:
@@ -287,7 +287,7 @@ def _create_file(
         return
 
     rdf = _process_rdf(
-        rdf = rdf, 
+        rdf = rdf,
         cfg = cfg,
         path= part.path)
 
@@ -299,7 +299,7 @@ def main():
 
     Parameters
     ---------------------
-    args: Arguments needed to start calculation when used as module, 
+    args: Arguments needed to start calculation when used as module,
           If not passed, this will be used as an script
     '''
     cfg = _parse_args()
