@@ -74,10 +74,12 @@ def _merge(target : Path, sources : list[Path]) -> None:
 
     fmrg = TFileMerger()
     for source in sources:
-        fmrg.AddFile(source, cpProgress=False)
+        fmrg.AddFile(str(source), cpProgress=False)
 
     fmrg.OutputFile(str(target))
-    fmrg.Merge()
+    success = fmrg.Merge()
+    if not success:
+        raise ValueError(f'Merge for {target} failed')
 
     log.info('Merge finished, removing pre-merge files')
     for source in sources:
