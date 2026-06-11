@@ -71,13 +71,7 @@ def sentinels(friend):
 rule all:
     '''Request all sentinel files for every combination.'''
     input:
-        sentinels(friend = 'mass'           ) +
-        sentinels(friend = 'swp_jpsi_misid' ) +
-        sentinels(friend = 'swp_cascade'    ) +
-        sentinels(friend = 'brem_track_2'   ) +
-        sentinels(friend = 'hop'            ) +
-        sentinels(friend = 'mva'            ) +
-        sentinels(friend = 'smear'          )
+        sentinels(friend = 'mva'            )
 # ───────────────────────────────────────────────────────────────────
 rule merge:
     output:
@@ -166,22 +160,6 @@ rule _calculate:
         touch {output.done}
         '''
 # ───────────────────────────────────────────────────────────────────
-use rule _calculate as calculate_independent with:
-    '''Request trees that do not depend on anything'''
-    output:
-        done   = _CALC
-    wildcard_constraints:
-        friend = '(mass|swp_jpsi_misid|swp_cascade|hop|brem_track_2)',
-        vers   = r'v\d+',
-use rule _calculate as calculate_smear with:
-    '''Request mass smearing trees'''
-    output:
-        done   = _CALC
-    wildcard_constraints:
-        friend = 'smear',
-        vers   = r'v\d+',
-    input:
-        sentinels(friend = 'brem_track_2')
 use rule _calculate as calculate_mva with:
     '''Request mva trees'''
     output:
@@ -189,8 +167,4 @@ use rule _calculate as calculate_mva with:
     wildcard_constraints:
         friend = 'mva',
         vers   = r'v\d+',
-    input:
-        sentinels(friend = 'hop'         ) +
-        sentinels(friend = 'smear'       ) +
-        sentinels(friend = 'brem_track_2')
 # ───────────────────────────────────────────────────────────────────
