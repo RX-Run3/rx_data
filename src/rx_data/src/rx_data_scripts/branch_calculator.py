@@ -290,13 +290,16 @@ def _create_file(
         log.debug('Doing dry run')
         return
 
+    output_part_path = part.friend_part_path(friend = cfg.kind, version = cfg.vfrnd)
+    if output_part_path.exists():
+        return
+
     rdf = _process_rdf(
         rdf = rdf,
         cfg = cfg,
         path= part.path)
 
     log.debug(f'Saving file to {output_path}')
-    output_part_path = part.friend_part_path(friend = cfg.kind, version = cfg.vfrnd)
     output_part_path.parent.mkdir(exist_ok=True, parents=True)
     rdf.Snapshot(_TREE_NAME, str(output_part_path))
 # ----------------------
