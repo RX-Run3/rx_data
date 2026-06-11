@@ -1,6 +1,7 @@
 '''
 Script used to create small trees with extra branches from input trees
 '''
+import os
 import tqdm
 import argparse
 
@@ -23,6 +24,7 @@ from rx_data      import MassBiasCorrector
 from rx_data      import FilePart, SampleSplitter
 
 log                       = LogStore.add_logger('rx_data:branch_calculator')
+_ANADIR     : Final[Path] = Path(os.environ['ANADIR'])
 _KINDS : Final[list[str]] = ['mass', 'hop', 'swp_jpsi_misid', 'swp_cascade', 'brem_track_2', 'mva', 'smear']
 _TREE_NAME : Final[str]   = 'DecayTree'
 # ---------------------------------
@@ -314,11 +316,13 @@ def main():
     '''
     cfg = _parse_args()
     _set_logs(cfg = cfg)
+    out_path = _ANADIR / f'DB/statistics/{cfg.vmain}/{cfg.proj}.json'
 
     spt   = SampleSplitter(
         version = cfg.vmain,
         project = cfg.proj)
-    files = spt.run()
+    files = spt.run(out_path = out_path)
+
     batches = files.split(entries = cfg.entries)
     batch   = batches.at(cfg.index)
 
