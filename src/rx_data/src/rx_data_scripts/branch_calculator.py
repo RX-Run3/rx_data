@@ -47,7 +47,7 @@ def _parse_args() -> Config:
     parser = argparse.ArgumentParser(description='Script used to create ROOT files with trees with extra branches by picking up inputs from directory and patitioning them')
     parser.add_argument('-g', '--photon_veto', type=str, help='Version of photon veto', required=True)
     parser.add_argument('-k', '--kind'       , type=str, help='Kind of branch to create', choices=_KINDS, required=True)
-    parser.add_argument('-P', '--proj'       , type=str, help='Project'                 , choices=['rk', 'rkst', 'rk_nopid', 'rkst_nopid', 'rk_no_refit'], required=True)
+    parser.add_argument('-p', '--proj'       , type=str, help='Project'                 , choices=['rk', 'rkst', 'rk_nopid', 'rkst_nopid', 'rk_no_refit'], required=True)
     parser.add_argument('-v', '--vers'       , type=str, help='Version of outputs', required=True)
     parser.add_argument('-b', '--pbar'       ,           help='If used, will show progress bar whenever it is available', action='store_true')
     parser.add_argument('-d', '--dry'        ,           help='If used, will do dry drun, e.g. stop before processing', action='store_true')
@@ -172,7 +172,7 @@ def _get_swap_rdf(
     kaon_name = {'rk' : 'H', 'rkst' : 'H2'}[project]
     if cfg.kind == 'swp_jpsi_misid':
         obj = SWPCalculator(rdf=rdf, d_lep={'L1' : lep_id, 'L2' : lep_id}, d_had={kaon_name : lep_id})
-        rdf = obj.get_rdf(preffix=cfg.kind, progress_bar=False, use_ss=trigger.is_ss)
+        rdf = obj.get_rdf(preffix=cfg.kind, progress_bar=cfg.pbar, use_ss=trigger.is_ss)
 
         return rdf
 
@@ -180,7 +180,7 @@ def _get_swap_rdf(
     kaon_name = {'rk' : 'H', 'rkst' : 'H1'}[project]
     if cfg.kind == 'swp_cascade':
         obj = SWPCalculator(rdf=rdf, d_lep={'L1' : 211, 'L2' : 211}, d_had={kaon_name : 321})
-        rdf = obj.get_rdf(preffix=cfg.kind, progress_bar=False, use_ss=trigger.is_ss)
+        rdf = obj.get_rdf(preffix=cfg.kind, progress_bar=cfg.pbar, use_ss=trigger.is_ss)
 
         return rdf
 
