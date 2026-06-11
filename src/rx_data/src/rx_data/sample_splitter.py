@@ -33,6 +33,32 @@ class FilePart(BaseModel):
     index: int
     split: bool
     # --------------------
+    def friend_part_path(self, friend : str) -> Path:
+        '''
+        Path to this file partition for given friend
+        '''
+        path = str(self.path)
+        path = path.replace(f'/{_TREE}/', f'/{friend}/')
+
+        if not self.split:
+            return Path(path)
+
+        path = path.replace('.root', f'{self.index:03}_pre_merge.root')
+
+        return Path(path)
+    # --------------------
+    def friend_path(self, friend : str) -> Path:
+        '''
+        Path to original file for given friend tree 
+        '''
+        path = str(self.path)
+        path = path.replace(f'/{_TREE}/', f'/{friend}/')
+
+        if not self.split:
+            return Path(path)
+
+        return Path(path)
+    # --------------------
     @property
     def size(self) -> int:
         '''
@@ -98,6 +124,35 @@ class FileBatches(RootModel[list[FileBatch]]):
     '''
     Class representing a collection of file batches 
     '''
+    # -------------------------
+    def at(self, index : int) -> FileBatch:
+        '''
+        Parameters
+        ---------------
+        index: Index of location of batch
+
+        Returns
+        ---------------
+        Batch at that index
+        '''
+        if index < 0:
+            raise ValueError(f'Invalid index: {index}')
+
+        if index + 1 > len(self.root):
+            raise ValueError(f'Index beyond container length: {index} - {len(self.root)}')
+
+        return self.root[index]
+    # -------------------------
+    @property
+    def parts(self) -> list[FilePart]:
+        '''
+        List of file parts in all batches
+        '''
+        parts : list[FilePart] = []
+        for batch in self.root:
+            parts += batch.root
+
+        return parts
     # -------------------------
     @property
     def size(self) -> int:
