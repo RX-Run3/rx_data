@@ -4,6 +4,7 @@ Script with code needed to merge outputs from branch_calculator
 import os
 import argparse
 
+from typing    import Final
 from ROOT      import TFileMerger # type: ignore
 from pathlib   import Path
 from pydantic  import BaseModel
@@ -12,12 +13,13 @@ from rx_data   import SampleSplitter # type: ignore
 from dmu       import LogStore
 
 log=LogStore.add_logger('rx_data:merge_friends')
+_ANADIR : Final[Path] = Path(os.environ['ANADIR'])
 # ----------------------
 class Conf(BaseModel):
     '''
     Class needed to configure merging
     '''
-    project : Project
+    proj    : Project
     friend  : str
     entries : int
     vmain   : str
@@ -40,7 +42,7 @@ def _parse_args() -> Conf:
     args = parser.parse_args()
 
     cfg = Conf(
-        project = args.project,
+        proj    = args.project,
         friend  = args.friend,
         vmain   = args.vmain,
         vfrnd   = args.vfrnd,
@@ -91,11 +93,12 @@ def main():
     '''
     cfg = _parse_args()
     spt = SampleSplitter(
-        project = cfg.project,
+        project = cfg.proj,
         version = cfg.vmain)
 
-    files   = spt.run()
-    batches = files.split(entries = cfg.entries)
+    out_path = _ANADIR / f'DB/statistics/{cfg.vmain}/{cfg.proj}.json'
+    files    = spt.run(out_path = out_path)
+    batches  = files.split(entries = cfg.entries)
 
     to_merge : dict[Path,list[Path]] = {}
     for part in batches.parts:
