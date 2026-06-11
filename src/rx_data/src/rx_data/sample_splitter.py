@@ -34,29 +34,42 @@ class FilePart(BaseModel):
     index: int
     split: bool
     # --------------------
-    def friend_part_path(self, friend : str) -> Path:
+    def friend_part_path(self, friend : str, version : str) -> Path:
         '''
-        Path to this file partition for given friend
+        Parameters
+        ----------------
+        friend : Name of friend tree
+        version: Version of friend tree
+
+        Returns
+        ----------------
+        Path to friend tree file associated to this file part
+        '''
+        val  = self.friend_path(friend = friend, version = version)
+        path = str(val)
+        path = path.replace('.root', f'{self.index:03}_pre_merge.root')
+
+        return Path(path)
+    # --------------------
+    def friend_path(self, friend : str, version : str) -> Path:
+        '''
+        Parameters
+        ----------------
+        friend : Name of friend tree
+        version: Version of friend tree
+
+        Returns
+        ----------------
+        Path to friend tree file associated to this file part
         '''
         path = str(self.path)
-        path = path.replace(f'/{_TREE}/', f'/{friend}/')
+        path = path.replace(f'/{_TREE}/'    , f'/{friend}/')
+        path = path.replace(f'/{self.vers}/', f'/{version}/')
 
         if not self.split:
             return Path(path)
 
         path = path.replace('.root', f'{self.index:03}_pre_merge.root')
-
-        return Path(path)
-    # --------------------
-    def friend_path(self, friend : str) -> Path:
-        '''
-        Path to original file for given friend tree 
-        '''
-        path = str(self.path)
-        path = path.replace(f'/{_TREE}/', f'/{friend}/')
-
-        if not self.split:
-            return Path(path)
 
         return Path(path)
     # --------------------
