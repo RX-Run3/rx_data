@@ -13,8 +13,6 @@ ANADIR = config['defaults']['anadir']
 CHUNK  = config['defaults']['chunk_size']
 _MERGE = f'{ANADIR}/tmp/sentinels/friends/{{project}}/{{friend}}_{{vers}}.merge'
 _CALC  = f'{ANADIR}/tmp/sentinels/friends/{{project}}/{{friend}}_{{vers}}_{{index}}.calc'
-_SPLT  = f'{ANADIR}/tmp/sentinels/friends/{{project}}/{{friend}}_{{vers}}_{{index}}.splt'
-
 # ──────────────────────────────────────────────────────────────────────
 @cache
 def _get_parts(project, entries):
@@ -82,16 +80,20 @@ rule merge:
         out = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}.out',
         LOG = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}.log',
     params:
-        LOGD= LOGDIR,
-        home= HOME,
-        env = ENV,
+        LOGD    = LOGDIR,
+        home    = HOME,
+        env     = ENV,
+        entries = lambda wc : _get_setting(wc, 'entries')
     shell:
         '''
         (
         source setup.sh {params.env} {params.home}
         echo $_CONDOR_JOB_AD > {log.prc}
 
-        merge_friends -p {wildcards.project} -f {wildcards.friend} -v {wildcards.vers}
+        merge_friends -p {wildcards.project}\
+                      -f {wildcards.friend} \
+                      -v {wildcards.vers}   \
+                      -e {params.entries}
 
         ) >> {log.prc} 2>&1
 
