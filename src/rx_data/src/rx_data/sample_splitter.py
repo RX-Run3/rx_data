@@ -294,7 +294,7 @@ class SampleSplitter:
         Parameters
         ------------
         project: E.g. rk
-        version: Version of files
+        version: Version of files associated to main tree
         '''
         self._project = project
         self._version = version
