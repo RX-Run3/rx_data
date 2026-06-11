@@ -26,7 +26,7 @@ log                       = LogStore.add_logger('rx_data:branch_calculator')
 _KINDS : Final[list[str]] = ['mass', 'hop', 'swp_jpsi_misid', 'swp_cascade', 'brem_track_2', 'mva', 'smear']
 _TREE_NAME : Final[str]   = 'DecayTree'
 # ---------------------------------
-class Data:
+class Config(BaseModel):
     '''
     Class used to hold shared data
     '''
@@ -34,17 +34,11 @@ class Data:
     vers        : str
     proj        : Project 
     kind        : str
-    nmax        : int | None
-    part        : tuple[int,int]
     pbar        : bool
     dry         : bool
     lvl         : int
-    chunk_size  : int
-    out_dir     : Path 
-
-    l_kind    = ['mass', 'hop', 'swp_jpsi_misid', 'swp_cascade', 'brem_track_2', 'mva', 'smear']
-    tree_name = 'DecayTree'
-    ana_dir   = Path(os.environ['ANADIR'])
+    entries     : int
+    index       : int
 # ---------------------------------
 def _parse_args() -> None:
     '''
