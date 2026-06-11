@@ -91,15 +91,18 @@ def _set_logs(cfg : Config):
     LogStore.set_level('rx_data:spec_maker'         ,      30)
 # ---------------------------------
 def _process_rdf(
-    rdf     : RDF.RNode,
-    path    : Path) -> RDF.RNode|None:
+    rdf : RDF.RNode,
+    cfg : Config,
+    path: Path) -> RDF.RNode|None:
     '''
-    Takes:
-
+    Parameters
+    --------------
     rdf : Dataframe to have the columns added
+    cfg : Configuration
     path: Full path to corresponding ROOT file
 
     Returns:
+    --------------
     Either:
     - Dataframe with columns needed
     - None, in case it does not make sense to add the columns to this type of file
@@ -109,7 +112,7 @@ def _process_rdf(
 
     nentries = rdf.Count().GetValue()
     if nentries == 0:
-        log.warning(f'Found empty input file: {path}/{Data.tree_name}')
+        log.warning(f'Found empty input file: {path}/{_TREE_NAME}')
         rdf=RDataFrame(0)
         rdf=rdf.Define('fake_column', '1')
 
@@ -122,42 +125,46 @@ def _process_rdf(
     msc = MisCalculator(rdf=rdf, trigger=trigger)
     rdf = msc.get_rdf()
 
-    if   Data.kind == 'hop':
+    if   cfg.kind == 'hop':
         obj = HOPCalculator(rdf=rdf, trigger=trigger)
-        rdf = obj.get_rdf(preffix=Data.kind)
-    elif Data.kind == 'brem_track_2':
+        rdf = obj.get_rdf(preffix=cfg.kind)
+    elif cfg.kind == 'brem_track_2':
         df   = utilities.df_from_rdf(rdf=rdf, drop_nans=False)
         is_mc= utilities.rdf_is_mc(rdf=rdf)
         cor  = MassBiasCorrector(
             df                 = df, 
             is_mc              = is_mc,
             trigger            = trigger,
-            ecorr_kind         = Data.kind,
-            photon_veto_version= Data.photon_veto)
+            ecorr_kind         = cfg.kind,
+            photon_veto_version= cfg.photon_veto)
 
-        df  = cor.get_df(suffix=Data.kind)
+        df  = cor.get_df(suffix=cfg.kind)
         rdf = RDF.FromPandas(df)
-    elif Data.kind in ['swp_cascade', 'swp_jpsi_misid']:
-        rdf = _get_swap_rdf(rdf=rdf, trigger=trigger)
-    elif Data.kind == 'smear':
+    elif cfg.kind in ['swp_cascade', 'swp_jpsi_misid']:
+        rdf = _get_swap_rdf(rdf=rdf, trigger=trigger, cfg = cfg)
+    elif cfg.kind == 'smear':
         obj = Q2SmearCorrector(channel=trigger.channel)
         rdf = obj.get_rdf(rdf=rdf)
-    elif Data.kind == 'mva'   :
-        obj = MVACalculator(rdf=rdf, sample=component, trigger=trigger, version=Data.vers)
+    elif cfg.kind == 'mva'   :
+        obj = MVACalculator(rdf=rdf, sample=component, trigger=trigger, version=cfg.vers)
         rdf = obj.get_rdf(kind = 'root')
-    elif Data.kind == 'mass':
+    elif cfg.kind == 'mass':
         obj = MassCalculator(rdf=rdf)
         rdf = obj.get_rdf()
     else:
-        raise ValueError(f'Invalid kind: {Data.kind}')
+        raise ValueError(f'Invalid kind: {cfg.kind}')
 
     return rdf
 # ----------------------
-def _get_swap_rdf(rdf : RDF.RNode, trigger : Trigger) -> RDF.RNode:
+def _get_swap_rdf(
+    rdf     : RDF.RNode, 
+    cfg     : Config,
+    trigger : Trigger) -> RDF.RNode:
     '''
     Parameters
     -------------
     rdf    : ROOT dataframe
+    cfg    : Config object
     trigger: HLT2 trigger
 
     Returns
@@ -172,36 +179,29 @@ def _get_swap_rdf(rdf : RDF.RNode, trigger : Trigger) -> RDF.RNode:
     # Pion is the one that gets misidentified as electron
     # pi(-> e/mu) + e/mu combinations
     kaon_name = {'rk' : 'H', 'rkst' : 'H2'}[project]
-    if Data.kind == 'swp_jpsi_misid':
+    if cfg.kind == 'swp_jpsi_misid':
         obj = SWPCalculator(rdf=rdf, d_lep={'L1' : lep_id, 'L2' : lep_id}, d_had={kaon_name : lep_id})
-        rdf = obj.get_rdf(preffix=Data.kind, progress_bar=Data.pbar, use_ss=trigger.is_ss)
+        rdf = obj.get_rdf(preffix=cfg.kind, progress_bar=False, use_ss=trigger.is_ss)
 
         return rdf
 
     # These are Kpi combinations
     kaon_name = {'rk' : 'H', 'rkst' : 'H1'}[project]
-    if Data.kind == 'swp_cascade':
+    if cfg.kind == 'swp_cascade':
         obj = SWPCalculator(rdf=rdf, d_lep={'L1' : 211, 'L2' : 211}, d_had={kaon_name : 321})
-        rdf = obj.get_rdf(preffix=Data.kind, progress_bar=Data.pbar, use_ss=trigger.is_ss)
+        rdf = obj.get_rdf(preffix=cfg.kind, progress_bar=False, use_ss=trigger.is_ss)
 
         return rdf
 
-    raise ValueError(f'Invalid kind: {Data.kind}')
+    raise ValueError(f'Invalid kind: {cfg.kind}')
 # ---------------------------------
-def _split_rdf(rdf : RDF.RNode) -> list[RDF.RNode]:
-    nentries = rdf.Count().GetValue()
-    l_size   = range(0, nentries, Data.chunk_size)
-
-    l_rdf    = [
-        rdf.Range(start, min(start + Data.chunk_size, nentries))
-        for start in l_size ]
-
-    return l_rdf
-# ----------------------
-def _get_input_rdf(path : Path) -> RDF.RNode:
+def _get_input_rdf(
+    cfg  : Config,
+    path : Path) -> RDF.RNode:
     '''
     Parameters
     -------------
+    cfg : Configuration object
     path: Path to ROOT file
 
     Returns
@@ -212,14 +212,14 @@ def _get_input_rdf(path : Path) -> RDF.RNode:
     component = Component.from_sample(sample = mc_sample)
 
     s_friend : set[str] = set()
-    if Data.kind == 'mva':
+    if cfg.kind == 'mva':
         s_friend = {'brem_track_2', 'hop', 'smear'}
 
-    if Data.kind == 'smear':
+    if cfg.kind == 'smear':
         s_friend = {'brem_track_2'}
 
     with RDFGetter.only_friends(s_friend=s_friend),\
-         SpecMaker.project(project = Data.proj):
+         SpecMaker.project(project = cfg.proj):
         gtr   = RDFGetter(sample=component, trigger=trigger)
         d_rdf = gtr.get_rdf(per_file=True)
 
@@ -228,9 +228,6 @@ def _get_input_rdf(path : Path) -> RDF.RNode:
         for path_found in d_rdf:
             log.info(path_found)
         raise ValueError(f'Cannot find dataframe for: {path}')
-
-    if Data.nmax is not None:
-        rdf=rdf.Range(Data.nmax)
 
     return rdf
 # ---------------------------------
@@ -259,94 +256,53 @@ def _skip_file(input : Path, output : Path) -> bool:
 
     return True
 # ---------------------------------
-def _create_file(path : Path) -> None:
+def _create_file(
+    cfg  : Config,
+    part : FilePart) -> None:
     '''
     Parameters
     ------------------
-    path : ROOT file path
+    cfg : Object holding configuration
+    part: ROOT file part
     '''
-    fname    = os.path.basename(path)
-    out_path = Data.out_dir / fname
-
-    if _skip_file(input = path, output = out_path):
+    output_path = part.friend_part_path(friend = cfg.kind)
+    if _skip_file(input = part.path, output = output_path):
         return
 
     try:
-        rdf   = _get_input_rdf(path=path)
+        rdf   = _get_input_rdf(path=part.path, cfg = cfg)
     except MissingComponent as exc:
-        log.warning(f'Not processing: {path}. Reason {exc}', exc_info = False)
+        log.warning(f'Not processing: {part.path}. Reason {exc}', exc_info = False)
         return
 
     nentries = rdf.Count().GetValue()
     if nentries == 0:
-        log.warning(f'Found empty dataframe for: {path}')
-        log.info(f'Saving empty output to: {out_path}')
+        log.warning(f'Found empty dataframe for: {part.path}')
+        log.info(f'Saving empty output to: {output_path}')
 
-        ofile=TFile(out_path, 'recreate')
+        ofile=TFile(output_path, 'recreate')
         ttree=TTree('DecayTree', '')
         ttree.Write()
         ofile.Close()
 
         return
 
-    l_rdf = _split_rdf(rdf=rdf)
+    lo, hi = part.range
+    if part.split:
+        rdf = rdf.Range(lo, hi + 1)
 
-    if Data.dry:
+    if cfg.dry:
         log.debug('Doing dry run')
         return
 
-    nchunk = len(l_rdf)
-    if nchunk == 1:
-        log.info('File will be processed in a single chunk')
-        rdf = l_rdf[0]
-        rdf = _process_rdf(rdf, path)
-        if rdf is not None:
-            rdf.Snapshot(Data.tree_name, str(out_path))
+    rdf = _process_rdf(
+        rdf = rdf, 
+        cfg = cfg,
+        path= part.path)
 
-        return
-
-    _process_and_merge(
-        l_rdf     = l_rdf,
-        input_path= path,
-        out_path  = out_path,
-        nchunk    = nchunk)
-
-    tmp_wc = str(out_path).replace('.root', '_*_pre_merge.root')
-    log.info(f'Removing temporary files from: {tmp_wc}')
-    for tmp_path in glob.glob(tmp_wc):
-        os.remove(tmp_path)
-# ----------------------
-def _process_and_merge(
-    l_rdf     : list[RDF.RNode],
-    nchunk    : int,
-    out_path  : Path,
-    input_path: Path) -> None:
-    '''
-    Parameters
-    -------------
-    l_rdf   : List of ROOT dataframes
-    nchunk  : Number of chunks into which the dataframe was processed
-    out_path: Path to output file
-    path    : Path to merged ROOT output file
-    '''
-    log.info(f'File {input_path} will be processed in {nchunk} chunks')
-    fmrg = TFileMerger()
-    for index, rdf_in in enumerate(tqdm.tqdm(l_rdf, ascii=' -')):
-        rdf_out  = _process_rdf(rdf_in, input_path)
-        if rdf_out is None:
-            continue
-
-        tmp_path = str(out_path).replace('.root', f'_{index:03}_pre_merge.root')
-
-        log.debug(f'Saving tree {Data.tree_name} to {tmp_path}')
-        rdf_out.Snapshot(Data.tree_name, tmp_path)
-
-        fmrg.AddFile(tmp_path, cpProgress=False)
-
-    fmrg.OutputFile(str(out_path))
-
-    log.info(f'Merging temporary files into: {out_path}')
-    fmrg.Merge()
+    if rdf is not None:
+        out_path = part.friend_part_path(friend = cfg.kind)
+        rdf.Snapshot(_TREE_NAME, str(out_path))
 # ----------------------
 def main():
     '''
@@ -357,29 +313,25 @@ def main():
     args: Arguments needed to start calculation when used as module, 
           If not passed, this will be used as an script
     '''
-    _parse_args()
-    _set_logs()
+    cfg = _parse_args()
+    _set_logs(cfg = cfg)
 
-    prt = NtuplePartitioner(
-        kind    = 'main',
-        project = Data.proj)
-
-    igroup, ngroup = Data.part
-    l_path = prt.get_paths(index=igroup, total=ngroup)
-
-    Data.out_dir = _get_out_dir()
+    spt   = SampleSplitter(
+        version = cfg.vers,
+        project = cfg.proj)
+    files = spt.run()
+    batches = files.split(entries = cfg.entries)
+    batch   = batches.at(cfg.index)
 
     log.info('Processing paths')
 
-    if Data.dry:
+    if cfg.dry:
         log.warning('This is a dry run')
 
-    if isinstance(Data.nmax, int):
-        log.info(f'Limitting dataframe to {Data.nmax} entries')
-
-    for path in tqdm.tqdm(l_path, ascii=' -'):
-        log.debug(f'{"":<4}{path}')
-        _create_file(path=path)
+    for file_part in tqdm.tqdm(batch.root, ascii=' -'):
+        _create_file(
+            cfg  = cfg,
+            part = file_part)
 # ---------------------------------
 if __name__ == '__main__':
     main()
