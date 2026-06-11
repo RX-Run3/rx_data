@@ -19,8 +19,9 @@ class Conf(BaseModel):
     '''
     project : Project
     friend  : str
-    version : str
     entries : int
+    vmain   : str
+    vfrnd   : str
 # ----------------------
 def _parse_args() -> Conf:
     '''
@@ -33,14 +34,16 @@ def _parse_args() -> Conf:
     parser = argparse.ArgumentParser(description='Script needed to merge files from friend tree creation step')
     parser.add_argument('-p', '--project', type=Project, help='Needed to find the files E.g. rk')
     parser.add_argument('-f', '--friend' , type=str    , help='Needed to find the files E.g. mva')
-    parser.add_argument('-v', '--version', type=str    , help='Needed to find the files E.g. v1')
+    parser.add_argument('-M', '--vmain'  , type=str    , help='Main tree version, E.g. v1')
+    parser.add_argument('-F', '--vfrnd'  , type=str    , help='Friend tree version, E.g. v1')
     parser.add_argument('-e', '--entries', type=int    , help='Needed to find splitting that led to this sources')
     args = parser.parse_args()
 
     cfg = Conf(
         project = args.project,
         friend  = args.friend,
-        version = args.version,
+        vmain   = args.vmain,
+        vfrnd   = args.vfrnd,
         entries = args.entries)
 
     return cfg
@@ -83,7 +86,7 @@ def main():
     cfg = _parse_args()
     spt = SampleSplitter(
         project = cfg.project,
-        version = cfg.version)
+        version = cfg.vmain)
 
     files   = spt.run()
     batches = files.split(entries = cfg.entries)
@@ -94,8 +97,8 @@ def main():
             log.debug(f'Not merging non-split part: {part.path}')
             continue
 
-        key = part.friend_path(friend = cfg.friend)
-        val = part.friend_part_path(friend = cfg.friend)
+        key = part.friend_path(friend = cfg.friend, version = cfg.vfrnd)
+        val = part.friend_part_path(friend = cfg.friend, version = cfg.vfrnd)
 
         if key not in to_merge:
             to_merge[key] = [val]
