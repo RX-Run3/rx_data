@@ -73,6 +73,7 @@ def _set_logs(cfg : Config):
     '''
     This method will set the logging level of multiple tools
     '''
+    LogStore.set_level('rx_data:sample_splitter'    , cfg.lvl)
     LogStore.set_level('rx_data:branch_calculator'  , cfg.lvl)
     LogStore.set_level('rx_data:mass_calculator'    , cfg.lvl)
     LogStore.set_level('rx_data:mva_calculator'     , cfg.lvl)
@@ -234,7 +235,7 @@ def _skip_file(input : Path, output : Path) -> bool:
     True, if output exists and is newer than input, false otherwise.
     '''
     if not output.exists():
-        log.debug(f'Processing missing: {output}')
+        log.debug(f'Creating: {output}')
         return False
 
     is_stale = input.stat().st_mtime > output.stat().st_mtime
@@ -256,7 +257,7 @@ def _create_file(
     cfg : Object holding configuration
     part: ROOT file part
     '''
-    output_path = part.friend_part_path(friend = cfg.kind)
+    output_path = part.friend_part_path(friend = cfg.kind, version = cfg.vers)
     if _skip_file(input = part.path, output = output_path):
         return
 
