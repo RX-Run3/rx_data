@@ -345,6 +345,7 @@ class SampleSplitter:
         files  = self._get_files()
         string = files.model_dump_json(indent = 2)
 
+        out_path.parent.mkdir(exist_ok = True, parents = True)
         out_path.write_text(string)
 
         return files
