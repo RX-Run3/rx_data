@@ -69,8 +69,6 @@ class FilePart(BaseModel):
         if not self.split:
             return Path(path)
 
-        path = path.replace('.root', f'{self.index:03}_pre_merge.root')
-
         return Path(path)
     # --------------------
     @property
