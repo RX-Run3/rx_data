@@ -12,7 +12,6 @@ from pydantic  import BaseModel, RootModel, model_validator
 
 _ANADIR   : Final[Path ] = Path(os.environ['ANADIR'])
 _TREE     : Final[str  ] = 'main'
-_OUT_PATH : Final[Path ] = Path('.samples.json')
 _TREE_NAME: Final[str  ] = 'DecayTree'
 
 log=LogStore.add_logger('rx_data:sample_splitter')
@@ -302,6 +301,7 @@ class SampleSplitter:
         '''
         self._project = project
         self._version = version
+        self._out_path= Path(f'.samples_{project}_{version}.json')
     # ------------------------------------
     def _get_files(self) -> Files:
         '''
@@ -327,7 +327,7 @@ class SampleSplitter:
         Runs creation of database
         '''
         if not out_path:
-            out_path = _OUT_PATH
+            out_path = self._out_path 
 
         if out_path.exists():
             log.info(f'Found cached: {out_path}')
