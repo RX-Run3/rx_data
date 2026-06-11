@@ -86,7 +86,7 @@ rule merge:
         home    = HOME,
         env     = ENV,
         entries = lambda wc : _get_setting(wc, 'entries'),
-        fvers   = lambda wc : _get_setting(wc, 'friend'),
+        fvers   = lambda wc : _get_setting(wc, 'version'),
         mvers   = MAIN_VERSION,
     shell:
         '''
