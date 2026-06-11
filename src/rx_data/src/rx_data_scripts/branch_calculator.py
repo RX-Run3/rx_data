@@ -257,7 +257,7 @@ def _create_file(
     cfg : Object holding configuration
     part: ROOT file part
     '''
-    output_path = part.friend_part_path(friend = cfg.kind, version = cfg.vers)
+    output_path = part.friend_path(friend = cfg.kind, version = cfg.vers)
     if _skip_file(input = part.path, output = output_path):
         return
 
@@ -292,7 +292,10 @@ def _create_file(
         cfg = cfg,
         path= part.path)
 
-    rdf.Snapshot(_TREE_NAME, str(output_path))
+    log.debug(f'Saving file to {output_path}')
+    output_part_path = part.friend_part_path(friend = cfg.kind, version = cfg.vers)
+    output_part_path.parent.mkdir(exist_ok=True, parents=True)
+    rdf.Snapshot(_TREE_NAME, str(output_part_path))
 # ----------------------
 def main():
     '''
