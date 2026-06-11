@@ -29,8 +29,12 @@ from .pfn_downloader          import PFNDownloaderConf
 from .sample_organizer        import SampleOrganizer
 from .file_patcher            import FilePatcher
 from .used_samples            import UsedSamples
+from .sample_splitter         import SampleSplitter
+from .sample_splitter         import FilePart 
 
 __all__ = [
+    'FilePart',
+    'SampleSplitter',
     'UsedSamples',
     'FilePatcher',
     'SampleOrganizer',

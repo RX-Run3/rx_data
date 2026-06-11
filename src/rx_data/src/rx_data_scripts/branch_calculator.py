@@ -1,19 +1,18 @@
 '''
 Script used to create small trees with extra branches from input trees
 '''
-
 import os
-import glob
-import argparse
 import tqdm
+import argparse
 
+from typing       import Final
+from pydantic     import BaseModel
 from pathlib      import Path
-from ROOT         import RDataFrame, TFileMerger, TFile, TTree, RDF # type: ignore
+from ROOT         import TFile, TTree, RDF # type: ignore
 from dmu          import LogStore
 from rx_q2        import Q2SmearCorrector
 from rx_common    import Component, Project, Trigger, MissingComponent
 from rx_data      import utilities
-from rx_data      import NtuplePartitioner
 from rx_data      import MVACalculator
 from rx_data      import RDFGetter
 from rx_data      import MisCalculator
@@ -22,164 +21,147 @@ from rx_data      import SpecMaker
 from rx_data      import SWPCalculator
 from rx_data      import MassCalculator
 from rx_data      import MassBiasCorrector
+from rx_data      import FilePart, SampleSplitter
 
-log = LogStore.add_logger('rx_data:branch_calculator')
+log                       = LogStore.add_logger('rx_data:branch_calculator')
+_ANADIR     : Final[Path] = Path(os.environ['ANADIR'])
+_KINDS : Final[list[str]] = ['mass', 'hop', 'swp_jpsi_misid', 'swp_cascade', 'brem_track_2', 'mva', 'smear']
+_TREE_NAME : Final[str]   = 'DecayTree'
 # ---------------------------------
-class Data:
+class Config(BaseModel):
     '''
     Class used to hold shared data
     '''
     photon_veto : str
-    vers        : str
-    proj        : Project 
+    vmain       : str
+    vfrnd       : str
+    proj        : Project
     kind        : str
-    nmax        : int | None
-    part        : tuple[int,int]
     pbar        : bool
     dry         : bool
     lvl         : int
-    chunk_size  : int
-    out_dir     : Path 
-
-    l_kind    = ['mass', 'hop', 'swp_jpsi_misid', 'swp_cascade', 'brem_track_2', 'mva', 'smear']
-    tree_name = 'DecayTree'
-    ana_dir   = Path(os.environ['ANADIR'])
+    entries     : int
+    index       : int
 # ---------------------------------
-def _parse_args() -> None:
+def _parse_args() -> Config:
     '''
     Parse arguments
     '''
     parser = argparse.ArgumentParser(description='Script used to create ROOT files with trees with extra branches by picking up inputs from directory and patitioning them')
     parser.add_argument('-g', '--photon_veto', type=str, help='Version of photon veto', required=True)
-    parser.add_argument('-k', '--kind'       , type=str, help='Kind of branch to create', choices=Data.l_kind, required=True)
-    parser.add_argument('-P', '--proj'       , type=str, help='Project'                 , choices=['rk', 'rkst', 'rk_nopid', 'rkst_nopid', 'rk_no_refit'], required=True)
-    parser.add_argument('-v', '--vers'       , type=str, help='Version of outputs', required=True)
-    parser.add_argument('-w', '--wc'         , type=str, help='Wildcard, if passed will be used to match paths')
-    parser.add_argument('-n', '--nmax'       , type=int, help='If used, limit number of entries to process to this value')
-    parser.add_argument('-s', '--chunk'      , type=int, help='It will set the number of entries the dataframes will be split on before processing', default=100_000)
-    parser.add_argument('-p', '--part'       , nargs= 2, help='Partitioning, first number is the index, second is the number of parts', required=True)
+    parser.add_argument('-k', '--kind'       , type=str, help='Kind of branch to create', choices=_KINDS, required=True)
+    parser.add_argument('-p', '--proj'       , type=str, help='Project'                 , choices=['rk', 'rkst', 'rk_nopid', 'rkst_nopid', 'rk_no_refit'], required=True)
+    parser.add_argument('-M', '--vmain'      , type=str, help='Version of main tree'    , required=True)
+    parser.add_argument('-F', '--vfrnd'      , type=str, help='Version of friend trees' , required=True)
+    parser.add_argument('-i', '--index'      , type=int, help='Index of batch of file parts to use in calculation', required = True)
+    parser.add_argument('-e', '--entries'    , type=int, help='Number of entries to split dataset into', required = True)
+    parser.add_argument('-l', '--lvl'        , type=int, help='log level', choices=[5, 10, 20, 30], default=20)
     parser.add_argument('-b', '--pbar'       ,           help='If used, will show progress bar whenever it is available', action='store_true')
     parser.add_argument('-d', '--dry'        ,           help='If used, will do dry drun, e.g. stop before processing', action='store_true')
-    parser.add_argument('-l', '--lvl'        , type=int, help='log level', choices=[5, 10, 20, 30], default=20)
     args = parser.parse_args()
 
-    igroup, ngroup = args.part
-    igroup    = int(igroup)
-    ngroup    = int(ngroup)
+    cfg = Config(
+        photon_veto = args.photon_veto,
+        kind        = args.kind,
+        proj        = args.proj,
+        vmain       = args.vmain,
+        vfrnd       = args.vfrnd,
+        pbar        = args.pbar,
+        dry         = args.dry,
+        index       = args.index,
+        entries     = args.entries,
+        lvl         = args.lvl)
 
-    Data.photon_veto = args.photon_veto
-    Data.kind        = args.kind
-    Data.proj        = args.proj
-    Data.vers        = args.vers
-    Data.part        = igroup, ngroup 
-    Data.nmax        = args.nmax
-    Data.pbar        = args.pbar
-    Data.dry         = args.dry
-    Data.lvl         = args.lvl
-    Data.chunk_size  = args.chunk
+    return cfg
 # ---------------------------------
-def _set_logs():
+def _set_logs(cfg : Config):
     '''
     This method will set the logging level of multiple tools
     '''
-    LogStore.set_level('rx_data:branch_calculator'  , Data.lvl)
-    LogStore.set_level('rx_data:mass_calculator'    , Data.lvl)
-    LogStore.set_level('rx_data:mva_calculator'     , Data.lvl)
-    LogStore.set_level('rx_data:mis_calculator'     , Data.lvl)
-    LogStore.set_level('rx_data:swp_calculator'     , Data.lvl)
-    LogStore.set_level('rx_data:hop_calculator'     , Data.lvl)
-    LogStore.set_level('dmu:ml:cv_predict'          , Data.lvl)
-    LogStore.set_level('dmu:ml:CVClassifier'        , Data.lvl)
+    LogStore.set_level('rx_data:sample_splitter'    , cfg.lvl)
+    LogStore.set_level('rx_data:branch_calculator'  , cfg.lvl)
+    LogStore.set_level('rx_data:mass_calculator'    , cfg.lvl)
+    LogStore.set_level('rx_data:mva_calculator'     , cfg.lvl)
+    LogStore.set_level('rx_data:mis_calculator'     , cfg.lvl)
+    LogStore.set_level('rx_data:swp_calculator'     , cfg.lvl)
+    LogStore.set_level('rx_data:hop_calculator'     , cfg.lvl)
+    LogStore.set_level('dmu:ml:cv_predict'          , cfg.lvl)
+    LogStore.set_level('dmu:ml:CVClassifier'        , cfg.lvl)
 
-    LogStore.set_level('rx_data:mass_bias_corrector',       30)
-    LogStore.set_level('rx_data:photon_veto'        ,       30)
-    LogStore.set_level('rx_data:path_splitter'      ,       30)
-    LogStore.set_level('rx_data:rdf_getter'         ,       30)
-    LogStore.set_level('rx_data:sample_emulator'    ,       30)
-    LogStore.set_level('rx_data:sample_patcher'     ,       30)
-    LogStore.set_level('rx_data:spec_maker'         ,       30)
-# ---------------------------------
-def _get_out_dir() -> Path:
-    '''
-    Returns
-    -------------
-    Path to directory where output ROOT files will be stored
-    '''
-    out_dir  = Data.ana_dir / f'Data/{Data.proj}/{Data.kind}/{Data.vers}'
-
-    if not Data.dry:
-        out_dir.mkdir(parents=True, exist_ok=True)
-
-    return out_dir
+    LogStore.set_level('rx_data:mass_bias_corrector',      30)
+    LogStore.set_level('rx_data:photon_veto'        ,      30)
+    LogStore.set_level('rx_data:path_splitter'      ,      30)
+    LogStore.set_level('rx_data:rdf_getter'         ,      30)
+    LogStore.set_level('rx_data:sample_emulator'    ,      30)
+    LogStore.set_level('rx_data:sample_patcher'     ,      30)
+    LogStore.set_level('rx_data:spec_maker'         ,      30)
 # ---------------------------------
 def _process_rdf(
-    rdf     : RDF.RNode,
-    path    : Path) -> RDF.RNode|None:
+    rdf : RDF.RNode,
+    cfg : Config,
+    path: Path) -> RDF.RNode:
     '''
-    Takes:
-
-    rdf : Dataframe to have the columns added
+    Parameters
+    --------------
+    rdf : Non-empty dataframe to have the columns added
+    cfg : Configuration
     path: Full path to corresponding ROOT file
 
     Returns:
-    Either:
-    - Dataframe with columns needed
-    - None, in case it does not make sense to add the columns to this type of file
+    --------------
+    Dataframe with columns needed
     '''
     mc_sample, trigger = utilities.info_from_path(path=path, sample_lowercase=False)
+
     component = Component.from_sample(sample = mc_sample)
-
-    nentries = rdf.Count().GetValue()
-    if nentries == 0:
-        log.warning(f'Found empty input file: {path}/{Data.tree_name}')
-        rdf=RDataFrame(0)
-        rdf=rdf.Define('fake_column', '1')
-
-        return rdf
-    else:
-        log.debug(30 * '-')
-        log.debug(f'Found {nentries} entries in: {path}')
-        log.debug(30 * '-')
+    nentries  = rdf.Count().GetValue()
+    log.debug(30 * '-')
+    log.debug(f'Found {nentries} entries in: {path}')
+    log.debug(30 * '-')
 
     msc = MisCalculator(rdf=rdf, trigger=trigger)
     rdf = msc.get_rdf()
 
-    if   Data.kind == 'hop':
+    if   cfg.kind == 'hop':
         obj = HOPCalculator(rdf=rdf, trigger=trigger)
-        rdf = obj.get_rdf(preffix=Data.kind)
-    elif Data.kind == 'brem_track_2':
+        rdf = obj.get_rdf(preffix=cfg.kind)
+    elif cfg.kind == 'brem_track_2':
         df   = utilities.df_from_rdf(rdf=rdf, drop_nans=False)
         is_mc= utilities.rdf_is_mc(rdf=rdf)
         cor  = MassBiasCorrector(
-            df                 = df, 
+            df                 = df,
             is_mc              = is_mc,
             trigger            = trigger,
-            ecorr_kind         = Data.kind,
-            photon_veto_version= Data.photon_veto)
+            ecorr_kind         = cfg.kind,
+            photon_veto_version= cfg.photon_veto)
 
-        df  = cor.get_df(suffix=Data.kind)
+        df  = cor.get_df(suffix=cfg.kind)
         rdf = RDF.FromPandas(df)
-    elif Data.kind in ['swp_cascade', 'swp_jpsi_misid']:
-        rdf = _get_swap_rdf(rdf=rdf, trigger=trigger)
-    elif Data.kind == 'smear':
+    elif cfg.kind in ['swp_cascade', 'swp_jpsi_misid']:
+        rdf = _get_swap_rdf(rdf=rdf, trigger=trigger, cfg = cfg)
+    elif cfg.kind == 'smear':
         obj = Q2SmearCorrector(channel=trigger.channel)
         rdf = obj.get_rdf(rdf=rdf)
-    elif Data.kind == 'mva'   :
-        obj = MVACalculator(rdf=rdf, sample=component, trigger=trigger, version=Data.vers)
+    elif cfg.kind == 'mva'   :
+        obj = MVACalculator(rdf=rdf, sample=component, trigger=trigger, version=cfg.vfrnd)
         rdf = obj.get_rdf(kind = 'root')
-    elif Data.kind == 'mass':
+    elif cfg.kind == 'mass':
         obj = MassCalculator(rdf=rdf)
         rdf = obj.get_rdf()
     else:
-        raise ValueError(f'Invalid kind: {Data.kind}')
+        raise ValueError(f'Invalid kind: {cfg.kind}')
 
     return rdf
 # ----------------------
-def _get_swap_rdf(rdf : RDF.RNode, trigger : Trigger) -> RDF.RNode:
+def _get_swap_rdf(
+    rdf     : RDF.RNode,
+    cfg     : Config,
+    trigger : Trigger) -> RDF.RNode:
     '''
     Parameters
     -------------
     rdf    : ROOT dataframe
+    cfg    : Config object
     trigger: HLT2 trigger
 
     Returns
@@ -194,54 +176,47 @@ def _get_swap_rdf(rdf : RDF.RNode, trigger : Trigger) -> RDF.RNode:
     # Pion is the one that gets misidentified as electron
     # pi(-> e/mu) + e/mu combinations
     kaon_name = {'rk' : 'H', 'rkst' : 'H2'}[project]
-    if Data.kind == 'swp_jpsi_misid':
+    if cfg.kind == 'swp_jpsi_misid':
         obj = SWPCalculator(rdf=rdf, d_lep={'L1' : lep_id, 'L2' : lep_id}, d_had={kaon_name : lep_id})
-        rdf = obj.get_rdf(preffix=Data.kind, progress_bar=Data.pbar, use_ss=trigger.is_ss)
+        rdf = obj.get_rdf(preffix=cfg.kind, progress_bar=cfg.pbar, use_ss=trigger.is_ss)
 
         return rdf
 
     # These are Kpi combinations
     kaon_name = {'rk' : 'H', 'rkst' : 'H1'}[project]
-    if Data.kind == 'swp_cascade':
+    if cfg.kind == 'swp_cascade':
         obj = SWPCalculator(rdf=rdf, d_lep={'L1' : 211, 'L2' : 211}, d_had={kaon_name : 321})
-        rdf = obj.get_rdf(preffix=Data.kind, progress_bar=Data.pbar, use_ss=trigger.is_ss)
+        rdf = obj.get_rdf(preffix=cfg.kind, progress_bar=cfg.pbar, use_ss=trigger.is_ss)
 
         return rdf
 
-    raise ValueError(f'Invalid kind: {Data.kind}')
+    raise ValueError(f'Invalid kind: {cfg.kind}')
 # ---------------------------------
-def _split_rdf(rdf : RDF.RNode) -> list[RDF.RNode]:
-    nentries = rdf.Count().GetValue()
-    l_size   = range(0, nentries, Data.chunk_size)
-
-    l_rdf    = [
-        rdf.Range(start, min(start + Data.chunk_size, nentries))
-        for start in l_size ]
-
-    return l_rdf
-# ----------------------
-def _get_input_rdf(path : Path) -> RDF.RNode:
+def _get_input_rdf(
+    cfg  : Config,
+    path : Path) -> RDF.RNode:
     '''
     Parameters
     -------------
+    cfg : Configuration object
     path: Path to ROOT file
 
     Returns
     -------------
     ROOT dataframe associated
     '''
-    mc_sample, trigger = utilities.info_from_path(path=path, sample_lowercase=False)
-    component = Component.from_sample(sample = mc_sample)
+    sample, trigger = utilities.info_from_path(path=path, sample_lowercase=False)
+    component = Component.from_sample(sample = sample)
 
     s_friend : set[str] = set()
-    if Data.kind == 'mva':
+    if cfg.kind == 'mva':
         s_friend = {'brem_track_2', 'hop', 'smear'}
 
-    if Data.kind == 'smear':
+    if cfg.kind == 'smear':
         s_friend = {'brem_track_2'}
 
     with RDFGetter.only_friends(s_friend=s_friend),\
-         SpecMaker.project(project = Data.proj):
+         SpecMaker.project(project = cfg.proj):
         gtr   = RDFGetter(sample=component, trigger=trigger)
         d_rdf = gtr.get_rdf(per_file=True)
 
@@ -250,9 +225,6 @@ def _get_input_rdf(path : Path) -> RDF.RNode:
         for path_found in d_rdf:
             log.info(path_found)
         raise ValueError(f'Cannot find dataframe for: {path}')
-
-    if Data.nmax is not None:
-        rdf=rdf.Range(Data.nmax)
 
     return rdf
 # ---------------------------------
@@ -268,9 +240,9 @@ def _skip_file(input : Path, output : Path) -> bool:
     True, if output exists and is newer than input, false otherwise.
     '''
     if not output.exists():
-        log.debug(f'Processing missing: {output}')
+        log.debug(f'Creating: {output}')
         return False
-    
+
     is_stale = input.stat().st_mtime > output.stat().st_mtime
 
     if is_stale:
@@ -281,94 +253,57 @@ def _skip_file(input : Path, output : Path) -> bool:
 
     return True
 # ---------------------------------
-def _create_file(path : Path) -> None:
+def _create_file(
+    cfg  : Config,
+    part : FilePart) -> None:
     '''
     Parameters
     ------------------
-    path : ROOT file path
+    cfg : Object holding configuration
+    part: ROOT file part
     '''
-    fname    = os.path.basename(path)
-    out_path = Data.out_dir / fname
-
-    if _skip_file(input = path, output = out_path):
+    output_path = part.friend_path(friend = cfg.kind, version = cfg.vfrnd)
+    if _skip_file(input = part.path, output = output_path):
         return
 
     try:
-        rdf   = _get_input_rdf(path=path)
+        rdf = _get_input_rdf(path=part.path, cfg = cfg)
     except MissingComponent as exc:
-        log.warning(f'Not processing: {path}. Reason {exc}', exc_info = False)
+        log.warning(f'Not processing: {part.path}. Reason {exc}', exc_info = False)
         return
 
     nentries = rdf.Count().GetValue()
     if nentries == 0:
-        log.warning(f'Found empty dataframe for: {path}')
-        log.info(f'Saving empty output to: {out_path}')
+        log.warning(f'Found empty dataframe for: {part.path}')
+        log.info(f'Saving empty output to: {output_path}')
 
-        ofile=TFile(out_path, 'recreate')
+        ofile=TFile(output_path, 'recreate')
         ttree=TTree('DecayTree', '')
         ttree.Write()
         ofile.Close()
 
         return
 
-    l_rdf = _split_rdf(rdf=rdf)
+    lo, hi = part.range
+    if part.split:
+        rdf = rdf.Range(lo, hi + 1)
 
-    if Data.dry:
+    if cfg.dry:
         log.debug('Doing dry run')
         return
 
-    nchunk = len(l_rdf)
-    if nchunk == 1:
-        log.info('File will be processed in a single chunk')
-        rdf = l_rdf[0]
-        rdf = _process_rdf(rdf, path)
-        if rdf is not None:
-            rdf.Snapshot(Data.tree_name, str(out_path))
-
+    output_part_path = part.friend_part_path(friend = cfg.kind, version = cfg.vfrnd)
+    if output_part_path.exists():
         return
 
-    _process_and_merge(
-        l_rdf     = l_rdf,
-        input_path= path,
-        out_path  = out_path,
-        nchunk    = nchunk)
+    rdf = _process_rdf(
+        rdf = rdf,
+        cfg = cfg,
+        path= part.path)
 
-    tmp_wc = str(out_path).replace('.root', '_*_pre_merge.root')
-    log.info(f'Removing temporary files from: {tmp_wc}')
-    for tmp_path in glob.glob(tmp_wc):
-        os.remove(tmp_path)
-# ----------------------
-def _process_and_merge(
-    l_rdf     : list[RDF.RNode],
-    nchunk    : int,
-    out_path  : Path,
-    input_path: Path) -> None:
-    '''
-    Parameters
-    -------------
-    l_rdf   : List of ROOT dataframes
-    nchunk  : Number of chunks into which the dataframe was processed
-    out_path: Path to output file
-    path    : Path to merged ROOT output file
-    '''
-    log.info(f'File {input_path} will be processed in {nchunk} chunks')
-    fmrg = TFileMerger()
-    for index, rdf_in in enumerate(tqdm.tqdm(l_rdf, ascii=' -')):
-        rdf_out  = _process_rdf(rdf_in, input_path)
-        if rdf_out is None:
-            continue
-
-        tmp_path = str(out_path).replace('.root', f'_{index:03}_pre_merge.root')
-
-        log.debug(f'Saving tree {Data.tree_name} to {tmp_path}')
-        rdf_out.Snapshot(Data.tree_name, tmp_path)
-
-        fmrg.AddFile(tmp_path, cpProgress=False)
-
-    fmrg.OutputFile(str(out_path))
-
-    log.info(f'Merging temporary files into: {out_path}')
-    fmrg.Merge()
+    log.debug(f'Saving file to {output_path}')
+    output_part_path.parent.mkdir(exist_ok=True, parents=True)
+    rdf.Snapshot(_TREE_NAME, str(output_part_path))
 # ----------------------
 def main():
     '''
@@ -376,32 +311,30 @@ def main():
 
     Parameters
     ---------------------
-    args: Arguments needed to start calculation when used as module, 
+    args: Arguments needed to start calculation when used as module,
           If not passed, this will be used as an script
     '''
-    _parse_args()
-    _set_logs()
+    cfg = _parse_args()
+    _set_logs(cfg = cfg)
+    out_path = _ANADIR / f'DB/statistics/{cfg.vmain}/{cfg.proj}.json'
 
-    prt = NtuplePartitioner(
-        kind    = 'main',
-        project = Data.proj)
+    spt   = SampleSplitter(
+        version = cfg.vmain,
+        project = cfg.proj)
+    files = spt.run(out_path = out_path)
 
-    igroup, ngroup = Data.part
-    l_path = prt.get_paths(index=igroup, total=ngroup)
-
-    Data.out_dir = _get_out_dir()
+    batches = files.split(entries = cfg.entries)
+    batch   = batches.at(cfg.index)
 
     log.info('Processing paths')
 
-    if Data.dry:
+    if cfg.dry:
         log.warning('This is a dry run')
 
-    if isinstance(Data.nmax, int):
-        log.info(f'Limitting dataframe to {Data.nmax} entries')
-
-    for path in tqdm.tqdm(l_path, ascii=' -'):
-        log.debug(f'{"":<4}{path}')
-        _create_file(path=path)
+    for file_part in tqdm.tqdm(batch.root, ascii=' -'):
+        _create_file(
+            cfg  = cfg,
+            part = file_part)
 # ---------------------------------
 if __name__ == '__main__':
     main()

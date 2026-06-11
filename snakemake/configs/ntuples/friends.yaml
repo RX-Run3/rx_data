@@ -1,5 +1,4 @@
 defaults:
-  chunk_size : 20_000
   home       : /afs/ihep.ac.cn/users/c/campoverde
   smklog     : /publicfs/ucas/user/campoverde/Jobs/snakemake
   anadir     : /publicfs/ucas/user/campoverde/Data
@@ -8,48 +7,48 @@ projects:
   rk:
     brem_track_2: 
       version     : v4
-      parts       : 50
+      entries     : 100_000
       photon_veto : v0
     hop: 
       version     : v4
-      parts       : 10
+      entries     : 100_000
     mass: 
       version     : v2
-      parts       : 10
+      entries     : 100_000
     swp_cascade:
       version     : v4
-      parts       : 10
+      entries     : 100_000
     swp_jpsi_misid:
       version     : v4
-      parts       : 10
+      entries     : 100_000
     mva           : 
       version     : v9
-      parts       : 50
+      entries     : 100_000
     smear: 
       version     : v2
-      parts       : 20
+      entries     : 100_000
   # ------------
   rkst:
     brem_track_2: 
       version     : v2
-      parts       : 50
+      entries     : 100_000
       photon_veto : v0
     hop: 
       version     : v2
-      parts       : 10
+      entries     : 100_000
     mass: 
       version     : v2
-      parts       : 10
+      entries     : 100_000
     swp_cascade:
       version     : v2
-      parts       : 10
+      entries     : 100_000
     swp_jpsi_misid:
       version     : v2
-      parts       : 10
+      entries     : 100_000
     mva           : 
       version     : v5
-      parts       : 50
+      entries     : 100_000
     smear: 
       version     : v2
-      parts       : 20
+      entries     : 100_000
 # ------------

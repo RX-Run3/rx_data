@@ -168,7 +168,7 @@ class SpecMaker:
         ftree     : str,
         d_trigger : dict[str,list[Path]]) -> list[Path]:
         '''
-        On EXT trigger: This is a _fake_ trigger made from the merge of the OS electron trigger and
+        On noPID trigger for data: This is a _fake_ trigger made from the merge of the OS electron trigger and
         the misID trigger, when the later is given a weight of 10, to account for prescale in 2024 data.
         For 2025, prescale is gone.
 
@@ -180,31 +180,35 @@ class SpecMaker:
 
         Returns
         ----------------
-        Gets list of paths to ROOT files for a given HLT2 trigger
+        List of paths to ROOT files for a given HLT2 trigger
         '''
         component = Component.from_sample(sample = sample)
 
         if component.is_mc and self._trigger in d_trigger:
-            log.debug(f'Found paths for ROOT files associated to: {self._trigger}/{sample}/{ftree}')
+            log.debug(f'Found paths for ROOT files associated to MC sample: {self._trigger}/{sample}/{ftree}')
             return d_trigger[self._trigger]
 
         if component.is_mc:
-            raise ValueError(f'Invalid trigger {self._trigger} for sample {sample}, project {self._project} and friend tree {ftree}')
+            raise ValueError(f'Invalid trigger {self._trigger} for MC sample {sample}, project {self._project} and friend tree {ftree}')
 
-        if self._trigger.has_pid:
-            log.debug(f'Found paths for ROOT files associated to: {self._trigger}/{sample}/{ftree}')
+        if self._trigger.has_pid and self._trigger in d_trigger:
+            log.debug(f'Found paths for ROOT files associated to data: {self._trigger}/{sample}/{ftree}')
             return d_trigger[self._trigger]
 
-        # NOTE: If it was not explicitly stated that this is 2024 data, ext trigger does not make sense
+        if self._trigger.has_pid:
+            raise ValueError(f'Invalid trigger {self._trigger} for data sample {sample}, project {self._project} and friend tree {ftree}')
+
         log.debug(f'Found extended trigger: {self._trigger}')
         trig_default = self._trigger.pid_version
         trig_misid   = trig_default.misid_version
 
-        l_path = []
-        l_path+= d_trigger[trig_default]
-        l_path+= d_trigger[trig_misid  ]
-
-        return l_path
+        if trig_default not in d_trigger or trig_misid not in d_trigger:
+            raise ValueError(
+                f'Could not find triggers {trig_default} or '
+                f'{trig_misid} for sample {sample}, project {self._project}, '
+                f'friend tree {ftree}')
+        
+        return d_trigger[trig_default] + d_trigger[trig_misid]
     # ---------------------------------------------------
     def _get_sample(
         self, 
