@@ -69,39 +69,26 @@ def _parse_args() -> Config:
 
     return cfg
 # ---------------------------------
-def _set_logs():
+def _set_logs(cfg : Config):
     '''
     This method will set the logging level of multiple tools
     '''
-    LogStore.set_level('rx_data:branch_calculator'  , Data.lvl)
-    LogStore.set_level('rx_data:mass_calculator'    , Data.lvl)
-    LogStore.set_level('rx_data:mva_calculator'     , Data.lvl)
-    LogStore.set_level('rx_data:mis_calculator'     , Data.lvl)
-    LogStore.set_level('rx_data:swp_calculator'     , Data.lvl)
-    LogStore.set_level('rx_data:hop_calculator'     , Data.lvl)
-    LogStore.set_level('dmu:ml:cv_predict'          , Data.lvl)
-    LogStore.set_level('dmu:ml:CVClassifier'        , Data.lvl)
+    LogStore.set_level('rx_data:branch_calculator'  , cfg.lvl)
+    LogStore.set_level('rx_data:mass_calculator'    , cfg.lvl)
+    LogStore.set_level('rx_data:mva_calculator'     , cfg.lvl)
+    LogStore.set_level('rx_data:mis_calculator'     , cfg.lvl)
+    LogStore.set_level('rx_data:swp_calculator'     , cfg.lvl)
+    LogStore.set_level('rx_data:hop_calculator'     , cfg.lvl)
+    LogStore.set_level('dmu:ml:cv_predict'          , cfg.lvl)
+    LogStore.set_level('dmu:ml:CVClassifier'        , cfg.lvl)
 
-    LogStore.set_level('rx_data:mass_bias_corrector',       30)
-    LogStore.set_level('rx_data:photon_veto'        ,       30)
-    LogStore.set_level('rx_data:path_splitter'      ,       30)
-    LogStore.set_level('rx_data:rdf_getter'         ,       30)
-    LogStore.set_level('rx_data:sample_emulator'    ,       30)
-    LogStore.set_level('rx_data:sample_patcher'     ,       30)
-    LogStore.set_level('rx_data:spec_maker'         ,       30)
-# ---------------------------------
-def _get_out_dir() -> Path:
-    '''
-    Returns
-    -------------
-    Path to directory where output ROOT files will be stored
-    '''
-    out_dir  = Data.ana_dir / f'Data/{Data.proj}/{Data.kind}/{Data.vers}'
-
-    if not Data.dry:
-        out_dir.mkdir(parents=True, exist_ok=True)
-
-    return out_dir
+    LogStore.set_level('rx_data:mass_bias_corrector',      30)
+    LogStore.set_level('rx_data:photon_veto'        ,      30)
+    LogStore.set_level('rx_data:path_splitter'      ,      30)
+    LogStore.set_level('rx_data:rdf_getter'         ,      30)
+    LogStore.set_level('rx_data:sample_emulator'    ,      30)
+    LogStore.set_level('rx_data:sample_patcher'     ,      30)
+    LogStore.set_level('rx_data:spec_maker'         ,      30)
 # ---------------------------------
 def _process_rdf(
     rdf     : RDF.RNode,
