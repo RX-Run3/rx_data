@@ -47,6 +47,10 @@ class FilePart(BaseModel):
         '''
         val  = self.friend_path(friend = friend, version = version)
         path = str(val)
+
+        if not self.split:
+            return Path(path)
+
         path = path.replace('.root', f'_{self.index:05}_pre_merge.root')
 
         return Path(path)
