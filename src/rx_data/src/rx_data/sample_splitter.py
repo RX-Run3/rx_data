@@ -324,7 +324,15 @@ class SampleSplitter:
     # ------------------------------------
     def run(self, out_path : Path | None = None) -> Files:
         '''
-        Runs creation of database
+        Parameters
+        -----------------
+        out_path: Path to database with samples information
+                  If passed JSON path will load it, if not
+                  will calculate it, cache it and return files object
+
+        Returns
+        -----------------
+        Container with object representing ntuples 
         '''
         if not out_path:
             out_path = self._out_path 
