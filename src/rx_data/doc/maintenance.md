@@ -72,22 +72,32 @@ local file and copy again.
 Given the files produced by `post_ap`, new branches can be attached. These branches can be calculated using
 `branch_calculator` and can be placed in small files. These latter files would be made into friends of the main files.
 
+### Create ntuple statistics databases
+
 In order to do this we assume that all the ntuples live in `$DATADIR/main/vx`, where `DATADIR` needs to be exported
 such that the code will pick it up. `vx` represents a version of the ntuples (e.g. `v1`, `v2`, etc), the code will 
 pick up the latest. Then run:
 
 ```bash
-branch_calculator -k swp_jpsi_misid -p  0 40 -b -v v1 -s 10000 -P rk
+rxdata store-sample-db -v v1 -p rk
+rxdata store-sample-db -v v1 -p rkst
+```
+
+`v1` is the version of the main trees. This will create a database in a path starting at `$ANADIR`. This database will contain all the names of the files
+used in the analysis as well as the number of entries. This is needed in order for the code to know how to split the
+files to load balance effectively the processing of the ntuples.
+
+### Calculate branches
+
+```bash
+branch_calculator -g v0 -k mva -p rkst -M v1 -F v5 -i 449 -e 100000
 ```
 
 which will:
 
-- Create a new set of files in `$ANADIR/Data/swp_jpsi_misid/v1` with each input file, corresponding to an output file.
-- Split the input files into 40 groups, with roughly the same file size.
-- Process files by chunks of 10 thousands entries at a time. This is needed to prevent the cluster (HTCondor, etc) to run out of memory.
-- Process the zeroth group.
-
-Thus, this can be parallelized by running the line above 40 times in 40 jobs.
+- Split the input files, from the main tree category into batches, use batch `449`.
+- Each batch is meant to have round `100000` events.
+- Create a new set of files in `$ANADIR/Data/mva/v5` with each input file, corresponding to an output file of version `v1`.
 
 Currently the command can add:
 
@@ -123,6 +133,9 @@ graph TD
   hop -->|required by mva| mva
   smear -->|q² wise models from smeared q²| mva
 ```
+
+However this whole thing should be done with snakemake workflows, so that all these steps are properly
+chained and automated as described [here](doc/workflows.md)
 
 ## Missing files
 
