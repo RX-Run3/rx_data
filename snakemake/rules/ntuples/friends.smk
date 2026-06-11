@@ -12,9 +12,23 @@ LOGDIR = config['defaults']['smklog']
 ANADIR = config['defaults']['anadir']
 _MERGE = f'{ANADIR}/tmp/sentinels/friends/{{project}}/{{friend}}_{{vers}}.merge'
 _CALC  = f'{ANADIR}/tmp/sentinels/friends/{{project}}/{{friend}}_{{vers}}_{{index}}.calc'
+
+CACHED = {
+    'rk_10000'    : 178, 
+    'rkst_10000'  :  59,
+    # -----------
+    'rk_100000'   : 1824, 
+    'rkst_100000' : 614,
+    }
 # ──────────────────────────────────────────────────────────────────────
 @cache
 def _get_parts(project, entries):
+    key = f'{project}_{entries}'
+    if key in CACHED:
+        nbatch = CACHED[key]
+        print(f'Found {nbatch} batches from cache for {project} with {entries} entries')
+        return nbatch 
+
     spt = SampleSplitter(
         version = MAIN_VERSION,
         project = project)
