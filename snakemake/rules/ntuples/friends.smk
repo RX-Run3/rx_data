@@ -1,12 +1,15 @@
 import os
 import glob
+from pathlib   import Path
 from functools import cache
+
+ENV                = 'rx_run3'
+os.environ['USER'] = ENV
+
 from rx_common import Project
 from rx_data   import SampleSplitter
-from pathlib   import Path
 
 MAIN_VERSION = 'v1'
-ENV    = 'rx_run3'
 HOME   = config['defaults']['home']
 LOGDIR = config['defaults']['smklog']
 ANADIR = config['defaults']['anadir']
