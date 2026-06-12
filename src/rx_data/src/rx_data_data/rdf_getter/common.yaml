@@ -14,6 +14,7 @@ definitions:
     L1_PHI                                : L1_PHI_rft   # Refitted phi is the same as original and original was dropped
     L2_PHI                                : L2_PHI_rft   # This should put back the original
     B_PHI                                 : B_PHI_rft
+    dataq                                 : '1'
     # ----------------
     # For BDT
     # ----------------
