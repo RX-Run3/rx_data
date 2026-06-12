@@ -11,6 +11,7 @@ class Server(StrEnum):
     '''
     Class meant to represent server 
     '''
+    lxlogin= auto()
     local  = auto()
     lxplus = auto()
     # ----------------------
@@ -24,6 +25,8 @@ class Server(StrEnum):
                 return '-p 2224 acampove@localhost'
             case Server.local:
                 return '-p 2223 acampove@localhost'
+            case Server.lxlogin:
+                raise ValueError('Requested IHEP host')
     # ----------------------
     @property
     def data_dir(self) -> Path:
@@ -35,6 +38,8 @@ class Server(StrEnum):
                 ana_dir = '/eos/lhcb/wg/RD/RX_run3'
             case Server.local:
                 ana_dir = '/run/media/acampove/RX' 
+            case Server.lxlogin:
+                ana_dir = '/publicfs/ucas/user/campoverde/Data' 
 
         return Path(ana_dir) / 'Data'
 # -----------------------------------------

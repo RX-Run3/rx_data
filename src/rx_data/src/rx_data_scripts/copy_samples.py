@@ -151,7 +151,7 @@ def _initialize_kind(kind : str):
 
     log.info(f'Initializing for trees of type: {kind}')
     
-    root_dir = Server.local.data_dir / Data.proj / kind
+    root_dir = Server.lxlogin.data_dir / Data.proj / kind
     if Data.vers:
         inp_dir = root_dir / Data.vers
     else:
