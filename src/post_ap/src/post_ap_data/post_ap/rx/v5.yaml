@@ -226,8 +226,8 @@ transformations:
     L2_TRACK_GhostProb                    : L2_TRACK_GhostProb
     #
     K_PID_E                           : H_PIDe
-    H1_PID_E                          : H1_PIDe
-    H2_PID_E                          : H2_PIDe
+    H1_PIDe                          : H1_PIDe
+    H2_PIDe                          : H2_PIDe
     #
     K_PROBNN_E                        : K_ProbNNe
     H1_ProbNNe                       : H1_ProbNNe
@@ -237,18 +237,18 @@ transformations:
     H1_PROBNN_K                       : H1_ProbNNk
     H2_PROBNN_K                       : H2_ProbNNk
     #
-    L1_PID_E                          : L1_PIDe
-    L2_PID_E                          : L2_PIDe
+    L1_PIDe                          : L1_PIDe
+    L2_PIDe                          : L2_PIDe
     L1_ProbNNe                       : L1_ProbNNe
     L2_ProbNNe                       : L2_ProbNNe
     #
-    L1_PID_MU                         : L1_PIDmu
-    L2_PID_MU                         : L2_PIDmu
-    L1_PROBNN_MU                      : L1_ProbNNmu
-    L2_PROBNN_MU                      : L2_ProbNNmu
+    L1_PIDmu                         : L1_PIDmu
+    L2_PIDmu                         : L2_PIDmu
+    L1_ProbNNmu                      : L1_ProbNNmu
+    L2_ProbNNmu                      : L2_ProbNNmu
     #
-    L1_ISMUON                         : L1_isMuon
-    L2_ISMUON                         : L2_isMuon
+    L1_isMuon                         : L1_isMuon
+    L2_isMuon                         : L2_isMuon
     # -----
     B_BPVFDCHI2                       : B_FDCHI2_OWNPV
     Jpsi_BPVFDCHI2                    : Jpsi_FDCHI2_OWNPV

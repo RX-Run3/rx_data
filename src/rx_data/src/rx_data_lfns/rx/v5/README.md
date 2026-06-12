@@ -29,7 +29,7 @@ kinem_lep : L1_PT > 500 && L2_PT > 500 && L1_P > 3000 && L2_P > 3000
 kinem_had : H_PT > 300 && H_P > 2500
 clones    : (th_l1_l2 > 5e-4) && (th_l1_kp > 5e-4) && (th_l2_kp > 5e-4)
 tr_ipchi2 : H_IPCHI2_OWNPV > 9 && L1_IPCHI2_OWNPV > 9 && L2_IPCHI2_OWNPV > 9
-pid_l     : L1_ProbNNmu> 0.2 && L2_ProbNNmu> 0.2 && L1_ISMUON && L2_ISMUON && L1_PID_MU >-3. && L2_PID_MU > -3
+pid_l     : L1_ProbNNmu> 0.2 && L2_ProbNNmu> 0.2 && L1_isMuon && L2_isMuon && L1_PIDmu >-3. && L2_PIDmu > -3
 pid_k     : (H_ProbNNk   * (1 - H_PROBNN_P) > 0.05) && H_PID_K > 0
 rich      : L1_PPHASRICH && L2_PPHASRICH && H_PPHASRICH
 acceptance: L1_INMUON && L2_INMUON

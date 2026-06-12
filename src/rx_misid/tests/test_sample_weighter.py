@@ -67,8 +67,8 @@ def _get_dataframe(
     df['L2_HASBREM' ] = numpy.random.choice(a = [0, 1], p = [0.5, 0.5], size = Data.nentries)
     df['L1_ProbNNe'] = numpy.random.random(size=Data.nentries)
     df['L2_ProbNNe'] = numpy.random.random(size=Data.nentries)
-    df['L1_PID_E'   ] = numpy.random.uniform(-10, 10, size=Data.nentries)
-    df['L2_PID_E'   ] = numpy.random.uniform(-10, 10, size=Data.nentries)
+    df['L1_PIDe'   ] = numpy.random.uniform(-10, 10, size=Data.nentries)
+    df['L2_PIDe'   ] = numpy.random.uniform(-10, 10, size=Data.nentries)
 
     for lep in ['L1', 'L2']:
         df[f'{lep}_TRACK_PT' ] = 10 ** numpy.random.uniform(2, 5, Data.nentries)

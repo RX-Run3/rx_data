@@ -404,12 +404,12 @@ def _plot_ext(rdf : RDF.RNode, sample : str, out_dir : Path) -> None:
             'saving'   : {'plt_dir' : f'{out_dir}/ext'},
             'general'  : {'size' : [20, 10]},
             'plots_2d' :
-            [['L1_PID_E', 'L2_PID_E', 'weight', f'PIDe_wgt_{sample}', True],
-             ['L1_PID_E', 'L2_PID_E',     None, f'PIDe_raw_{sample}', True]],
+            [['L1_PIDe', 'L2_PIDe', 'weight', f'PIDe_wgt_{sample}', True],
+             ['L1_PIDe', 'L2_PIDe',     None, f'PIDe_raw_{sample}', True]],
             'axes' :
             {
-                'L1_PID_E' : {'binning' : [-5, 13, 60], 'label': r'$\Delta LL(e^+)$'},
-                'L2_PID_E' : {'binning' : [-5, 13, 60], 'label': r'$\Delta LL(e^-)$'},
+                'L1_PIDe' : {'binning' : [-5, 13, 60], 'label': r'$\Delta LL(e^+)$'},
+                'L2_PIDe' : {'binning' : [-5, 13, 60], 'label': r'$\Delta LL(e^-)$'},
                 },
             }
 
@@ -417,8 +417,8 @@ def _plot_ext(rdf : RDF.RNode, sample : str, out_dir : Path) -> None:
     ptr.run()
 # ------------------------------------------------
 def _check_ext(rdf : RDF.RNode) -> None:
-    rdf_ana = rdf.Filter('L1_PID_E > 1 && L2_PID_E > 1')
-    rdf_mis = rdf.Filter('L1_PID_E < 1 || L2_PID_E < 1')
+    rdf_ana = rdf.Filter('L1_PIDe > 1 && L2_PIDe > 1')
+    rdf_mis = rdf.Filter('L1_PIDe < 1 || L2_PIDe < 1')
 
     count_ana = rdf_ana.Count().GetValue()
     count_mis = rdf_mis.Count().GetValue()
@@ -741,8 +741,8 @@ def test_electron(kind : str, trigger : Trigger, tmp_path : Path):
     Component.data_24_mu_c4])
 @pytest.mark.parametrize('trigger', 
     [Trigger.rk_ee_os, 
-     Trigger.rk_mm_os,
      Trigger.rkst_ee_os,
+     Trigger.rk_mm_os,
      Trigger.rkst_mm_os])
 def test_data(
     sample  : Component,
@@ -1113,7 +1113,7 @@ def test_custom_friend(
     Tests getting data with a custom version for a given tree, either friend or main
     '''
     trigger = Trigger(trigger)
-    with RDFGetter.custom_friends(versions={'mva' : 'v8'}):
+    with RDFGetter.custom_friends(versions={'mva' : 'v9'}):
         gtr = RDFGetter(sample=sample, trigger=trigger)
         rdf = gtr.get_rdf(per_file=False)
 

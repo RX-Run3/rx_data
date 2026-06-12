@@ -65,7 +65,7 @@ class RDFGetter(SpecMaker):
         self._s_ftree         : set[str] # list of friend trees actually used
 
         self._cfg : DictConfig= self._load_config()
-        self._ext_weight      = '(L1_PID_E > 1 && L2_PID_E > 1) ? 1 : 10'
+        self._ext_weight      = '(L1_PIDe > 1 && L2_PIDe > 1) ? 1 : 10'
 
         _l_bu_ee_trigger      = [
             'Hlt2RD_BuToKpEE_MVA',

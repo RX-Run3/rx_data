@@ -810,7 +810,7 @@
     H_NVPOVERLAP                                                                                        ULong64_t                               
     H_P                                                                                                 Double_t                                
     H_PHI                                                                                               Float_t                                 
-    H_PID_E                                                                                             Float_t                                 
+    H_PIDe                                                                                             Float_t                                 
     H_PID_K                                                                                             Float_t                                 
     H_PID_MU                                                                                            Float_t                                 
     H_PID_P                                                                                             Float_t                                 
@@ -1509,8 +1509,8 @@
     L1_INHCAL                                                                                           Bool_t                                  
     L1_INMUON                                                                                           Bool_t                                  
     L1_IPCHI2_OWNPV                                                                                     Float_t                                 
-    L1_ISMUON                                                                                           Bool_t                                  
-    L1_ISMUONTIGHT                                                                                      Bool_t                                  
+    L1_isMuon                                                                                           Bool_t                                  
+    L1_isMuonTIGHT                                                                                      Bool_t                                  
     L1_IS_NOT_H                                                                                         Float_t                                 
     L1_IS_PHOTON                                                                                        Float_t                                 
     L1_M                                                                                                Double_t                                
@@ -1528,9 +1528,9 @@
     L1_NVPOVERLAP                                                                                       ULong64_t                               
     L1_P                                                                                                Double_t                                
     L1_PHI                                                                                              Float_t                                 
-    L1_PID_E                                                                                            Float_t                                 
+    L1_PIDe                                                                                            Float_t                                 
     L1_PID_K                                                                                            Float_t                                 
-    L1_PID_MU                                                                                           Float_t                                 
+    L1_PIDmu                                                                                           Float_t                                 
     L1_PID_P                                                                                            Float_t                                 
     L1_PIDe                                                                                             Float_t                                 
     L1_PIDmu                                                                                            Float_t                                 
@@ -1539,7 +1539,7 @@
     L1_ProbNNe                                                                                         Float_t                                 
     L1_PROBNN_GHOST                                                                                     Float_t                                 
     L1_PROBNN_K                                                                                         Float_t                                 
-    L1_PROBNN_MU                                                                                        Float_t                                 
+    L1_ProbNNmu                                                                                        Float_t                                 
     L1_PROBNN_P                                                                                         Float_t                                 
     L1_PROBNN_PI                                                                                        Float_t                                 
     L1_PT                                                                                               Double_t                                
@@ -1760,8 +1760,8 @@
     L2_INHCAL                                                                                           Bool_t                                  
     L2_INMUON                                                                                           Bool_t                                  
     L2_IPCHI2_OWNPV                                                                                     Float_t                                 
-    L2_ISMUON                                                                                           Bool_t                                  
-    L2_ISMUONTIGHT                                                                                      Bool_t                                  
+    L2_isMuon                                                                                           Bool_t                                  
+    L2_isMuonTIGHT                                                                                      Bool_t                                  
     L2_IS_NOT_H                                                                                         Float_t                                 
     L2_IS_PHOTON                                                                                        Float_t                                 
     L2_M                                                                                                Double_t                                
@@ -1779,9 +1779,9 @@
     L2_NVPOVERLAP                                                                                       ULong64_t                               
     L2_P                                                                                                Double_t                                
     L2_PHI                                                                                              Float_t                                 
-    L2_PID_E                                                                                            Float_t                                 
+    L2_PIDe                                                                                            Float_t                                 
     L2_PID_K                                                                                            Float_t                                 
-    L2_PID_MU                                                                                           Float_t                                 
+    L2_PIDmu                                                                                           Float_t                                 
     L2_PID_P                                                                                            Float_t                                 
     L2_PIDe                                                                                             Float_t                                 
     L2_PIDmu                                                                                            Float_t                                 
@@ -1790,7 +1790,7 @@
     L2_ProbNNe                                                                                         Float_t                                 
     L2_PROBNN_GHOST                                                                                     Float_t                                 
     L2_PROBNN_K                                                                                         Float_t                                 
-    L2_PROBNN_MU                                                                                        Float_t                                 
+    L2_ProbNNmu                                                                                        Float_t                                 
     L2_PROBNN_P                                                                                         Float_t                                 
     L2_PROBNN_PI                                                                                        Float_t                                 
     L2_PT                                                                                               Double_t                                

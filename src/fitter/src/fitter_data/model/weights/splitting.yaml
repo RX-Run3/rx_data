@@ -4,8 +4,8 @@ branches: # all these branches will be picked in the dataframe
   - block
   - L1_HASBREM
   - L2_HASBREM
-  - L1_PID_E
-  - L2_PID_E
+  - L1_PIDe
+  - L2_PIDe
   - L1_ProbNNe
   - L2_ProbNNe
   - L1_TRACK_PT

@@ -3,10 +3,10 @@ general:
 selection:
   max_ran_entries : 50000
   cuts:
-    pide : L1_PID_MU > 0 && L2_PID_MU > 0
+    pide : L1_PIDmu > 0 && L2_PIDmu > 0
     pidk : K_PID_K > -2
 plots:
-  L1_PID_MU : &lep_pid
+  L1_PIDmu : &lep_pid
     binning : [-15,+15, 30]
     labels  : ['$\text{PID}_{\mu}(\mu^+)$', 'Entries'] # Labels are optional, will use varname and Entries as labels if not present
     weights : weights
@@ -20,7 +20,7 @@ plots:
         color    : black
       'New with PID':
         color    : blue
-  L2_PID_MU:
+  L2_PIDmu:
     <<: *lep_pid
     name    : l2_pidmu
     labels  : ['$\text{PID}_{\mu}(\mu^-)$', 'Entries'] # Labels are optional, will use varname and Entries as labels if not present
