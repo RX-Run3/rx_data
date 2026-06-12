@@ -6,6 +6,7 @@ import multiprocessing
 import tqdm
 import numpy
 
+from dmu.generic  import version_management as vman 
 from typing       import Final
 from functools    import partial
 from ap_utilities import decay_utilities
@@ -60,7 +61,7 @@ def _parse_args():
     parser.add_argument('-l', '--logl', type=    int, help='Logger level', choices=[5, 10, 20, 30], default=20)
     parser.add_argument('-n', '--nprc', type=    int, help='Number of process to transfer with, with zero will transfer all files at once', default=1)
     parser.add_argument('-t', '--tout', type=    int, help='Timeout, used to check if server is reachable', default = 10)
-    parser.add_argument('-v', '--vers', type=    str, help='Version of files, only makes sense if kind is not "all"', required = True)
+    parser.add_argument('-v', '--vers', type=    str, help='Version of files, only makes sense if kind is not "all"')
     parser.add_argument('-S', '--serv', type= Server, help='Server to which files will be transferred', choices = list(Server))
     parser.add_argument('-d', '--dry' ,               help='If used, will do not copy files', action='store_true')
     args = parser.parse_args()
@@ -149,7 +150,12 @@ def _initialize(kind : str):
         raise ValueError(f'Specified version {Data.vers} for kind {Data.kind}')
 
     log.info(f'Initializing for trees of type: {kind}')
-    inp_dir = Server.local.data_dir / Data.proj / kind / Data.vers
+    
+    root_dir = Server.local.data_dir / Data.proj / kind
+    if Data.vers:
+        inp_dir = root_dir / Data.vers
+    else:
+        inp_dir = vman.get_last_version(dir_path = root_dir, version_only = False)
 
     log.info(f'Searching for files in: {Server.local.host}:{inp_dir}')
     l_path  = list(inp_dir.glob(pattern = '*.root'))
