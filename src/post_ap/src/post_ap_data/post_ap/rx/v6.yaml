@@ -581,19 +581,19 @@ transformations:
     Hp_TRGHOSTPROB                    : H_TRACK_GhostProb
     Hp_PROBNN_K                       : H_ProbNNk
     #---------
-    K_TRGHOSTPROB                     : H_TRACK_GhostProb
-    H1_TRGHOSTPROB                    : H1_TRACK_GhostProb
-    H2_TRGHOSTPROB                    : H2_TRACK_GhostProb
-    L1_TRGHOSTPROB                    : L1_TRACK_GhostProb
-    L2_TRGHOSTPROB                    : L2_TRACK_GhostProb
+    K_TRACK_GhostProb                     : H_TRACK_GhostProb
+    H1_TRACK_GhostProb                    : H1_TRACK_GhostProb
+    H2_TRACK_GhostProb                    : H2_TRACK_GhostProb
+    L1_TRACK_GhostProb                    : L1_TRACK_GhostProb
+    L2_TRACK_GhostProb                    : L2_TRACK_GhostProb
     #
     K_PID_E                           : H_PIDe
     H1_PID_E                          : H1_PIDe
     H2_PID_E                          : H2_PIDe
     #
     K_PROBNN_E                        : K_ProbNNe
-    H1_PROBNN_E                       : H1_ProbNNe
-    H2_PROBNN_E                       : H2_ProbNNe
+    H1_ProbNNe                       : H1_ProbNNe
+    H2_ProbNNe                       : H2_ProbNNe
     #
     K_PROBNN_K                        : H_ProbNNk
     H1_PROBNN_K                       : H1_ProbNNk
@@ -601,8 +601,8 @@ transformations:
     #
     L1_PID_E                          : L1_PIDe
     L2_PID_E                          : L2_PIDe
-    L1_PROBNN_E                       : L1_ProbNNe
-    L2_PROBNN_E                       : L2_ProbNNe
+    L1_ProbNNe                       : L1_ProbNNe
+    L2_ProbNNe                       : L2_ProbNNe
     #
     L1_PID_MU                         : L1_PIDmu
     L2_PID_MU                         : L2_PIDmu
@@ -936,32 +936,32 @@ transformations:
     evt_max : -1
     cuts:
       any:
-        L1Ghost: L1_TRGHOSTPROB < 0.5
-        L2Ghost: L2_TRGHOSTPROB < 0.5
+        L1Ghost: L1_TRACK_GhostProb < 0.5
+        L2Ghost: L2_TRACK_GhostProb < 0.5
       bukee:
-        KpGhost: H_TRGHOSTPROB  < 0.5
+        KpGhost: H_TRACK_GhostProb  < 0.5
       bukmm:
-        KpGhost: H_TRGHOSTPROB  < 0.5
+        KpGhost: H_TRACK_GhostProb  < 0.5
       bdkstee:
         k_mass : Kst_M    >  800 && Kst_M   < 1000
-        H1Ghost: H1_TRGHOSTPROB < 0.5
-        H2Ghost: H2_TRGHOSTPROB < 0.5
+        H1Ghost: H1_TRACK_GhostProb < 0.5
+        H2Ghost: H2_TRACK_GhostProb < 0.5
       bdkstmm:
         k_mass : Kst_M    >  800 && Kst_M   < 1000
-        H1Ghost: H1_TRGHOSTPROB < 0.5
-        H2Ghost: H2_TRGHOSTPROB < 0.5
+        H1Ghost: H1_TRACK_GhostProb < 0.5
+        H2Ghost: H2_TRACK_GhostProb < 0.5
       lbpkee_1:
-        H1Ghost: H1_TRGHOSTPROB < 0.5
-        H2Ghost: H2_TRGHOSTPROB < 0.5
+        H1Ghost: H1_TRACK_GhostProb < 0.5
+        H2Ghost: H2_TRACK_GhostProb < 0.5
       lbpkee_2:
         H1Ghost: P_TRGHOSTPROB  < 0.5
-        H2Ghost: K_TRGHOSTPROB  < 0.5
+        H2Ghost: K_TRACK_GhostProb  < 0.5
       lbpkmm_1:
-        H1Ghost: H1_TRGHOSTPROB < 0.5
-        H2Ghost: H2_TRGHOSTPROB < 0.5
+        H1Ghost: H1_TRACK_GhostProb < 0.5
+        H2Ghost: H2_TRACK_GhostProb < 0.5
       lbpkmm_2:
         H1Ghost: P_TRGHOSTPROB  < 0.5
-        H2Ghost: K_TRGHOSTPROB  < 0.5
+        H2Ghost: K_TRACK_GhostProb  < 0.5
       lbppiee  :
         H1Ghost:  P_TRGHOSTPROB  < 0.5
         H2Ghost: Pi_TRGHOSTPROB  < 0.5

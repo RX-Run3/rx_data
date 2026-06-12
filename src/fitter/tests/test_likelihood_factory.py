@@ -270,8 +270,8 @@ def test_rare_misid_electron(
     with UnpackerModel.package(name = 'fitter_data'):
         cfg = FitModelConf(**data)
 
-    l1_in_cr = f'((L1_PROBNN_E < 0.2) || (L1_PID_E < 3.0)) && L1_{tag_cut}'
-    l2_in_cr = f'((L2_PROBNN_E < 0.2) || (L2_PID_E < 3.0)) && L2_{tag_cut}'
+    l1_in_cr = f'((L1_ProbNNe < 0.2) || (L1_PID_E < 3.0)) && L1_{tag_cut}'
+    l2_in_cr = f'((L2_ProbNNe < 0.2) || (L2_PID_E < 3.0)) && L2_{tag_cut}'
 
     with PL.parameter_schema(cfg=cfg.yields),\
          RDFGetter.max_entries(value = -1),\

@@ -12,8 +12,8 @@ general:
 plots_2d:
     - [L1_PID_E   , L2_PID_E   , null  , PID_E_raw, true]
     - [L1_PID_E   , L2_PID_E   , weight, PID_E_wgt, true]
-    - [L1_PROBNN_E, L2_PROBNN_E, null  , PRB_E_raw, true]
-    - [L1_PROBNN_E, L2_PROBNN_E, weight, PRB_E_wgt, true]
+    - [L1_ProbNNe, L2_ProbNNe, null  , PRB_E_raw, true]
+    - [L1_ProbNNe, L2_ProbNNe, weight, PRB_E_wgt, true]
 axes:
     L1_PID_E:
         binning : [-5, 13, 60]
@@ -21,9 +21,9 @@ axes:
     L2_PID_E:
         binning : [-5, 13, 60]
         label   : '$\Delta LL(e^-)$'
-    L1_PROBNN_E:
+    L1_ProbNNe:
         binning : [0, 1, 40]
         label   : '$\text{ProbNNe}_(e^+)$'
-    L2_PROBNN_E:
+    L2_ProbNNe:
         binning : [0, 1, 40]
         label   : '$\text{ProbNNe}_(e^-)$'

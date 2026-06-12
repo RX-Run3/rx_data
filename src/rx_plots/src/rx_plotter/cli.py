@@ -69,8 +69,8 @@ def control_region(
     else:
         raise ValueError(f'Invalid mass: {mass}')
 
-    l1_cut = 'L1_PROBNN_E < 0.2 || L1_PID_E < 3.0'
-    l2_cut = 'L2_PROBNN_E < 0.2 || L2_PID_E < 3.0'
+    l1_cut = 'L1_ProbNNe < 0.2 || L1_PID_E < 3.0'
+    l2_cut = 'L2_ProbNNe < 0.2 || L2_PID_E < 3.0'
     mv_cut = '(mva_cmb > 0.50) && (mva_prc > 0.50)'
 
     with sel.custom_selection(d_sel = {'pid_l' : f'({l1_cut}) && ({l2_cut}) && ({tg_cut})', 'bdt' : mv_cut}):

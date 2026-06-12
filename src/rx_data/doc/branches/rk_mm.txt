@@ -913,7 +913,7 @@
     H_TRACK_PY                                                                                          Float_t                                 
     H_TRACK_PZ                                                                                          Float_t                                 
     H_TRCHI2DOF                                                                                         Double_t                                
-    H_TRGHOSTPROB                                                                                       Double_t                                
+    H_TRACK_GhostProb                                                                                       Double_t                                
     Hlt1D2KKDecision                                                                                    Bool_t                                  
     Hlt1D2KPiAlignmentDecision                                                                          Bool_t                                  
     Hlt1D2KPiDecision                                                                                   Bool_t                                  
@@ -1383,7 +1383,7 @@
     K_TRACK_PY                                                                                          Float_t                                 
     K_TRACK_PZ                                                                                          Float_t                                 
     K_TRCHI2DOF                                                                                         Double_t                                
-    K_TRGHOSTPROB                                                                                       Double_t                                
+    K_TRACK_GhostProb                                                                                       Double_t                                
     L1_ALLPV_IP                                                                                         Float_t                                 
     L1_BPVIP                                                                                            Float_t                                 
     L1_BPVIPCHI2                                                                                        Float_t                                 
@@ -1536,7 +1536,7 @@
     L1_PIDmu                                                                                            Float_t                                 
     L1_PPHASMUONINFO                                                                                    Bool_t                                  
     L1_PPHASRICH                                                                                        Bool_t                                  
-    L1_PROBNN_E                                                                                         Float_t                                 
+    L1_ProbNNe                                                                                         Float_t                                 
     L1_PROBNN_GHOST                                                                                     Float_t                                 
     L1_PROBNN_K                                                                                         Float_t                                 
     L1_PROBNN_MU                                                                                        Float_t                                 
@@ -1633,7 +1633,7 @@
     L1_TRACK_PY                                                                                         Float_t                                 
     L1_TRACK_PZ                                                                                         Float_t                                 
     L1_TRCHI2DOF                                                                                        Double_t                                
-    L1_TRGHOSTPROB                                                                                      Double_t                                
+    L1_TRACK_GhostProb                                                                                      Double_t                                
     L1_isMuon                                                                                           Bool_t                                  
     L2_ALLPV_IP                                                                                         Float_t                                 
     L2_BPVIP                                                                                            Float_t                                 
@@ -1787,7 +1787,7 @@
     L2_PIDmu                                                                                            Float_t                                 
     L2_PPHASMUONINFO                                                                                    Bool_t                                  
     L2_PPHASRICH                                                                                        Bool_t                                  
-    L2_PROBNN_E                                                                                         Float_t                                 
+    L2_ProbNNe                                                                                         Float_t                                 
     L2_PROBNN_GHOST                                                                                     Float_t                                 
     L2_PROBNN_K                                                                                         Float_t                                 
     L2_PROBNN_MU                                                                                        Float_t                                 
@@ -1884,7 +1884,7 @@
     L2_TRACK_PY                                                                                         Float_t                                 
     L2_TRACK_PZ                                                                                         Float_t                                 
     L2_TRCHI2DOF                                                                                        Double_t                                
-    L2_TRGHOSTPROB                                                                                      Double_t                                
+    L2_TRACK_GhostProb                                                                                      Double_t                                
     L2_isMuon                                                                                           Bool_t                                  
     LHCEnergy                                                                                           Int_t                                   
     LHCbClockPhase                                                                                      Float_t                                 

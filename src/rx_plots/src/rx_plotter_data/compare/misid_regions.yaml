@@ -5,8 +5,8 @@
 general:
   size : [15, 10]
 selection:
-  #pid_l : ((L1_PROBNN_E < 0.2 || L1_PID_E < 3.0) && L1_PROBNN_K < 0.1 ) && ((L2_PROBNN_E < 0.2 || L2_PID_E < 3.0) && L1_PROBNN_K < 0.1) # Pions
-  pid_l : ((L1_PROBNN_E < 0.2 || L1_PID_E < 3.0) && L1_PROBNN_K > 0.1 ) && ((L2_PROBNN_E < 0.2 || L2_PID_E < 3.0) && L1_PROBNN_K > 0.1) # Kaons
+  #pid_l : ((L1_ProbNNe < 0.2 || L1_PID_E < 3.0) && L1_PROBNN_K < 0.1 ) && ((L2_ProbNNe < 0.2 || L2_PID_E < 3.0) && L1_PROBNN_K < 0.1) # Pions
+  pid_l : ((L1_ProbNNe < 0.2 || L1_PID_E < 3.0) && L1_PROBNN_K > 0.1 ) && ((L2_ProbNNe < 0.2 || L2_PID_E < 3.0) && L1_PROBNN_K > 0.1) # Kaons
   bdt   : mva_cmb > 0.8 && mva_prc > 0.6
 comparison:
   Signal:

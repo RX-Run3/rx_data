@@ -5,10 +5,10 @@ definitions:
 overide_selection:
   mass     : B_const_mass_M > 5180
 overlay:
-  prob_950 : L1_PROBNN_E > 0.950 && L2_PROBNN_E > 0.950
-  prob_970 : L1_PROBNN_E > 0.970 && L2_PROBNN_E > 0.970
-  prob_990 : L1_PROBNN_E > 0.990 && L2_PROBNN_E > 0.990
-  prob_995 : L1_PROBNN_E > 0.995 && L2_PROBNN_E > 0.995
+  prob_950 : L1_ProbNNe > 0.950 && L2_ProbNNe > 0.950
+  prob_970 : L1_ProbNNe > 0.970 && L2_ProbNNe > 0.970
+  prob_990 : L1_ProbNNe > 0.990 && L2_ProbNNe > 0.990
+  prob_995 : L1_ProbNNe > 0.995 && L2_ProbNNe > 0.995
 plots:
     B_M:
         binning    : [4500, 6000, 100]
@@ -24,14 +24,14 @@ plots:
         title      : ''
         name       : 'bmass_dtf'
         normalized : true 
-    L1_PROBNN_E:
+    L1_ProbNNe:
         binning    : [0.95, 1.00, 100]
         yscale     : 'log'
         labels     : ['ProbNNE', 'Normalized']
         title      : ''
         name       : 'probnne_l1'
         normalized : false 
-    L2_PROBNN_E:
+    L2_ProbNNe:
         binning    : [0.95, 1.00, 100]
         yscale     : 'log'
         labels     : ['ProbNNE', 'Normalized']

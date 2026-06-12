@@ -67,8 +67,8 @@ def _plot_simulation_pide(
     '''
     for hadron, df_hadr in df.groupby('hadron'):
         ax = None
-        ax = df_hadr.plot.scatter(x='L1_PID_E', y='L1_PROBNN_E', color='blue', s=1, label='$e_{SS}$', ax=ax)
-        ax = df_hadr.plot.scatter(x='L2_PID_E', y='L2_PROBNN_E', color='red' , s=1, label='$e_{OS}$', ax=ax)
+        ax = df_hadr.plot.scatter(x='L1_PID_E', y='L1_ProbNNe', color='blue', s=1, label='$e_{SS}$', ax=ax)
+        ax = df_hadr.plot.scatter(x='L2_PID_E', y='L2_ProbNNe', color='red' , s=1, label='$e_{OS}$', ax=ax)
 
         plot_path = tmp_path / f'{sample}_{hadron}.png'
 
@@ -113,8 +113,8 @@ def _check_columns(df : pnd.DataFrame) -> None:
         'L2_HASBREM',
         'L1_PID_E',
         'L2_PID_E',
-        'L1_PROBNN_E',
-        'L2_PROBNN_E',
+        'L1_ProbNNe',
+        'L2_ProbNNe',
         'L1_TRACK_PT',
         'L1_TRACK_ETA',
         'L2_TRACK_PT',

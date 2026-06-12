@@ -14,8 +14,8 @@ splitting:
     - L2_HASBREM
     - L1_PID_E
     - L2_PID_E
-    - L1_PROBNN_E
-    - L2_PROBNN_E
+    - L1_ProbNNe
+    - L2_ProbNNe
     - L1_TRACK_PT
     - L1_TRACK_ETA
     - L2_TRACK_PT

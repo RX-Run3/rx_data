@@ -38,7 +38,7 @@ def _get_paths() -> list[str]:
 # --------------------------------------
 def _rename_branches(rdf : RDataFrame) -> RDataFrame:
     rdf = rdf.Define('B_const_mass_M', 'B_DTF_Jpsi_MASS')
-    rdf = rdf.Define('H_TRGHOSTPROB' ,   'K_TRGHOSTPROB')
+    rdf = rdf.Define('H_TRACK_GhostProb' ,   'K_TRACK_GhostProb')
 
     return rdf
 # --------------------------------------

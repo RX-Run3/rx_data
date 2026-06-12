@@ -65,8 +65,8 @@ def _get_dataframe(
     df['weight']      = numpy.random.choice([1, 10]     , size=Data.nentries)
     df['L1_HASBREM' ] = numpy.random.choice(a = [0, 1], p = [0.5, 0.5], size = Data.nentries)
     df['L2_HASBREM' ] = numpy.random.choice(a = [0, 1], p = [0.5, 0.5], size = Data.nentries)
-    df['L1_PROBNN_E'] = numpy.random.random(size=Data.nentries)
-    df['L2_PROBNN_E'] = numpy.random.random(size=Data.nentries)
+    df['L1_ProbNNe'] = numpy.random.random(size=Data.nentries)
+    df['L2_ProbNNe'] = numpy.random.random(size=Data.nentries)
     df['L1_PID_E'   ] = numpy.random.uniform(-10, 10, size=Data.nentries)
     df['L2_PID_E'   ] = numpy.random.uniform(-10, 10, size=Data.nentries)
 
