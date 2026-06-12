@@ -6,6 +6,7 @@ import multiprocessing
 import tqdm
 import numpy
 
+from typing       import Final
 from functools    import partial
 from ap_utilities import decay_utilities
 from pathlib      import Path
@@ -16,6 +17,17 @@ from rx_data      import utilities as ut
 from rx_data      import UsedSamples
 
 log = LogStore.add_logger('rx_data:copy_samples')
+
+_FRIENDS : Final[list[str]] = [
+    'all',
+    'main',
+    'mva',
+    'hop',
+    'mass',
+    'smear',
+    'swp_jpsi_misid',
+    'swp_cascade',
+    'brem_track_2']
 # -----------------------------------------
 class Data:
     '''
@@ -37,24 +49,14 @@ class Data:
 
     skipped_friend : str|None
     vers    : str 
-    l_kind  = [
-        'all',
-        'main',
-        'mva',
-        'hop',
-        'mass',
-        'smear',
-        'swp_jpsi_misid',
-        'swp_cascade',
-        'brem_track_2']
     copied_files : int   = 0
     copied_size  : float = 0
 # -----------------------------------------
 def _parse_args():
     parser = argparse.ArgumentParser(description='Script used to copy files from remote server to laptop')
-    parser.add_argument('-k', '--kind', type=    str, help='Type of files', choices=Data.l_kind, required=True)
+    parser.add_argument('-k', '--kind', type=    str, help='Type of files', choices=_FRIENDS, required=True)
     parser.add_argument('-p', '--proj', type=    str, help='Name of YAML config file, e.g. rk', required=True, choices=['rk', 'rkst', 'rk_nopid', 'rkst_nopid'])
-    parser.add_argument('-s', '--skip', type=    str, help='Friend tree to skip', choices=Data.l_kind)
+    parser.add_argument('-s', '--skip', type=    str, help='Friend tree to skip', choices=_FRIENDS)
     parser.add_argument('-l', '--logl', type=    int, help='Logger level', choices=[5, 10, 20, 30], default=20)
     parser.add_argument('-n', '--nprc', type=    int, help='Number of process to transfer with, with zero will transfer all files at once', default=1)
     parser.add_argument('-t', '--tout', type=    int, help='Timeout, used to check if server is reachable', default = 10)
