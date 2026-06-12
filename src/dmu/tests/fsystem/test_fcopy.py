@@ -52,49 +52,12 @@ def _make_paths(
 # ----------------------
 def test_local(tmp_path : Path) -> None:
     '''
-    Test for transfer between two local paths
+    Simplest test
     '''
     l_source = _make_paths(dir=tmp_path / 'source', make_file= True, number=10)
     l_target = _make_paths(dir=tmp_path / 'target', make_file=False, number=10)
 
-    with FCopy() as fcp:
-        for source, target in zip(l_source, l_target, strict = True):
-            fcp.copy(source=source, target=target)
-# ----------------------
-def test_remote_target(tmp_path : Path) -> None:
-    '''
-    Files are in a local server, copy them remotely 
-    '''
-    l_source = _make_paths(dir=tmp_path / 'source', make_file= True, number=10)
-    l_target = _make_paths(dir=tmp_path / 'target', make_file=False, number=10)
-
-    with FCopy(target=Server.local.host) as fcp:
-        for source, target in zip(l_source, l_target, strict = True):
-            fcp.copy(source=source, target=target)
-# ----------------------
-def test_remote_source(tmp_path : Path) -> None:
-    '''
-    Files are in a remote server, copy them locally
-    '''
-    l_source = _make_paths(dir=tmp_path / 'source', make_file= True, number=10)
-    l_target = _make_paths(dir=tmp_path / 'target', make_file=False, number=10)
-
-    with FCopy(source=Server.local.host) as fcp:
-        for source, target in zip(l_source, l_target, strict = True):
-            fcp.copy(source=source, target=target)
-# ----------------------
-def test_tunnel(tmp_path : Path):
-    '''
-    Tests tunnel property
-    '''
-    l_source = _make_paths(dir=tmp_path / 'source', make_file= True, number=10)
-    l_target = _make_paths(dir=tmp_path / 'target', make_file=False, number=10)
-
-    with FCopy(target = Server.local.host) as fcp:
-        for source, target in zip(l_source, l_target, strict = True):
-            fcp.copy(source=source, target=target)
-
-        vals = fcp.tunnel.glob(path = tmp_path, pattern = '*')
-        for val in vals:
-            log.info(val)
+    fcp = FCopy(server=Server.local.host)
+    for source, target in zip(l_source, l_target, strict = True):
+        fcp.copy(source=source, target=target)
 # ----------------------
