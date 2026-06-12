@@ -50,8 +50,10 @@ If the original files are downloaded to a cluster and the user needs the files i
 - Use SSHFS to mount the cluster's file system in the laptop.
 - Copy the files through
 
+### Usage
+
 ```bash
-copy_samples -k all -c rk
+copy_samples -k all -p rk -s main -n 5 -S local
 ```
 
 where:
@@ -61,6 +63,36 @@ where:
 `-s` Optional, name of friend tree to skip, e.g. `mva`
 `-v` Version of files to download. By default it should get the latest. This should be used only if `k` is not `all`
      given that different types of friend trees will have different versions.
+`-S` Server name. This is where the files will be copied to
+
+### Servers
+
+The files can be copied to either a local computer or to EOS
+
+#### EOS 
+
+For this one has to setup a control master socket with:
+
+```bash
+ssh -fN -o ControlMaster=auto -o ControlPath=/tmp/cm-%r@%h:%p -o ControlPersist=100m $USER@lxplus.cern.ch
+```
+
+which will allow the same connection to be used by the transfer and won't prompt for passwords
+
+#### Local
+
+I.e. to a laptop. For this one needs a _reverse forwarding_ SSH connection to IHEP. I.e.
+
+```bash
+issh -R 2223:localhost:2223 $USER@lxlogin004.ihep.ac.cn
+```
+
+which will listen in port 2223 in both the laptop and the cluster. 
+Additionally the public key in the laptop needs to be authorized in the cluster.
+
+Then in the cluster the code will try to transfer the files through `localhost` port 2223.
+
+### Configs
 
 The config files live in `src/rx_data_data/copy_files` and can be adapted for new samples or different source paths.
 If the files to be copied already exist locally, it will check that the sizes are the same, if not, it will remove the
