@@ -22,7 +22,7 @@ class Server(StrEnum):
         '''
         match self:
             case Server.lxplus:
-                return '-p 2224 acampove@localhost'
+                return '-p 22   acampove@lxplus.cern.ch'
             case Server.local:
                 return '-p 2223 acampove@localhost'
             case Server.lxlogin:
