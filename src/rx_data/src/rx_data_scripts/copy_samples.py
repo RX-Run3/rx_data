@@ -136,7 +136,7 @@ def _get_source_paths() -> list[Path]:
 
     return l_source
 # -----------------------------------------
-def _initialize(kind : str):
+def _initialize_kind(kind : str):
     '''
     This function will initialize:
     - Data.out_dir : Full path to output directory 
@@ -271,7 +271,7 @@ def _transfer_kind(kind : str, fcp : FCopy) -> None:
     kind: E.g. mva, mass, brem_track_2
     '''
     log.info(f'Copying files for kind {kind}')
-    _initialize(kind = kind)
+    _initialize_kind(kind = kind)
 
     l_path  = _get_source_paths()
     l_group = _group_paths(l_path)
