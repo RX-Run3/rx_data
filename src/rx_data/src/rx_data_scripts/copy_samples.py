@@ -179,6 +179,7 @@ def _initialize_kind(kind : str, cfg : Config) -> Config:
 def _copy_sample(
     cfg    : Config,
     fcp    : FCopy,
+    kind   : str,
     source : Path) -> int:
     '''
     Parameters
@@ -193,7 +194,7 @@ def _copy_sample(
     if cfg.vers is None:
         raise ValueError('Version not set')
 
-    target = cfg.server.data_dir / cfg.proj / cfg.kind / cfg.vers / source.name
+    target = cfg.server.data_dir / cfg.proj / kind / cfg.vers / source.name
 
     cfg.copied_files += 1
     cfg.copied_size  += source.stat().st_size / 1_000_000_000
@@ -210,6 +211,7 @@ def _copy_sample(
 # -----------------------------------------
 def _transfer_group(
     cfg   : Config,
+    kind  : str,
     group : list[Path], 
     fcp   : FCopy) -> int:
     nfiles = len(group)
@@ -218,13 +220,14 @@ def _transfer_group(
     if nfiles == 1:
         ncopied = _copy_sample(
             cfg   = cfg,
+            kind  = kind,
             fcp   = fcp,
             source= group[0])
         return ncopied
 
     with multiprocessing.Pool() as pool:
         log.debug(f'Will run {nfiles} processes')
-        fn = partial(_copy_sample, cfg, fcp) 
+        fn = partial(_copy_sample, cfg, fcp, kind) 
         l_ncopied = pool.map(fn, group)
         ncopied   = sum(l_ncopied)
 
@@ -294,6 +297,7 @@ def _transfer_kind(
     for group in tqdm.tqdm(l_group, ascii=' -'):
         ncopied  += _transfer_group(
             group = group, 
+            kind  = kind,
             cfg   = cfg,
             fcp   = fcp)
 
