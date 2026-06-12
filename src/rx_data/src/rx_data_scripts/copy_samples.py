@@ -283,9 +283,9 @@ def main():
     Entry point for sample copier
     '''
     _parse_args()
-
+    fcp = FCopy(server = Data.server.host)
     if Data.kind == 'all':
-        l_kind = Data.l_kind
+        l_kind = _FRIENDS 
     else:
         l_kind = [Data.kind]
 
@@ -297,8 +297,7 @@ def main():
             continue
 
         log.info(f'Transferring from host: {Data.server}')
-        with FCopy(target = Data.server.host) as fcp:
-            _transfer_kind(kind = kind, fcp = fcp)
+        _transfer_kind(kind = kind, fcp = fcp)
 
     log.info(f'Copied {Data.copied_files} ({Data.copied_size:.2f} Gb) files in total')
 # -----------------------------------------
