@@ -1,91 +1,79 @@
 '''
 Module holding FCopy class
 '''
+import re
 import shutil
 import subprocess
 
-from functools              import cached_property
-from typing                 import Final
 from pathlib                import Path
 from dmu.logging.log_store  import LogStore
 
 log=LogStore.add_logger('dmu:fsystem:fcopy')
-
-_SOCKET_PATH : Final[Path] = Path('/tmp/control_master.socket')
 # ----------------------
 class FCopy:
     '''
     Class meant to act as a wrapper to rsync by
 
-    - Checking that the server and local machine are reachable 
+    - Checking that the server is reachable 
     - Talking to rsync
 
-    Usage:
-
     ````python
     from dmu import FCopy
 
-    with FCopy(source='userA@serverA') as fcp
-        fcp.copy(source='/home/userA/path/file1', target='/home/userB/path/file1') 
-    ````
-
-    Will copy a file given the paths, from one remove server to a local path.
-    While:
-
-    ````python
-    from dmu import FCopy
-
-    with FCopy(target='userA@serverA') as fcp
+    with FCopy(target='-p 1234 userA@serverA') as fcp
         fcp.copy(source='/home/userA/path/file1', target='/home/userB/path/file1') 
     ````
 
     will copy a local file to a remote server.
-    Master control has to be enable for the remove server.
+    User has to setup reverse forwarding from target server to local one with
 
-    If no source or target are set, the copy is local, i.e. within the same machine.
+    ssh -R xxxx:localhost:xxxx user@lxlogin.ihep.ac.cn
 
-    # On socket
-
-    The context manager will trigger the creation of a socket at
-    ```
-    /tmp/control_master.socket
-    ```
-    if not found. If found (because the user made it), it won't make it or remove it
-    once the context manager is exited.
-
-    In order to make a socket do:
-
-    ```
-    ssh -M -S /tmp/control_master.socket -o ControlPersist=yes user@lxplus.cern.ch
-    ```
+    Such that this class can use port xxx to connect to target
+    machine through localhost
     '''
     # ----------------------
     def __init__(
         self, 
-        source : str = '', 
-        target : str = '',
+        server : str,
         timeout: int = 50):
         '''
         Parameters
         -------------
-        source : User and server name where input files are, e.g. user@server.ch
-        target : User and server name where output files will go, e.g. user@server.ch
+        target : User and server name where output files will go, e.g. -p 1234 user@server.ch
         timeout: When checking for servers availability, wait this number of seconds
         
         If server and/or target are left empty (default), the files will be assumed to be local
         '''
-        if source and target:
-            raise RuntimeError('Source and target cannot be both remote')
-
-        self._source = source
-        self._target = target 
+        port, login  = self._read_server(server = server)
+        self._port   = port
+        self._login  = login 
         self._timeout= timeout
-        self._server = source or target
 
         self._check_utility(name='rsync')
         self._check_utility(name='ssh'  )
 
         self._close_on_exit = False 
+    # ----------------------
+    def _read_server(self, server : str) -> tuple[str,str]:
+        '''
+        Parameters
+        -------------
+        server: E.g. -p 1234 user@server
+
+        Returns
+        -------------
+        Tuple with port number and server, e.g.
+
+        1234, user@server
+        '''
+        REGEX = r'-p\s+(\d+)\s+(.*)'
+        match = re.match(REGEX, server)
+
+        if not match:
+            raise ValueError(f'Cannot extract port and sever from: {server}')
+
+        return match.group(1), match.group(2)
     # ----------------------
     def _check_utility(self, name : str) -> None:
         '''
@@ -100,87 +88,6 @@ class FCopy:
             raise ValueError(f'Utility \"{name}\" not found')
 
         log.debug(f'Utility \"{name}\" found at: {path}')
-    # ----------------------
-    def _get_path(self, path : Path, is_source : bool) -> str:
-        '''
-        Parameters
-        -------------
-        path     : Path in server, e.g. /home/user/file.p
-        is_source: If true, this is where the file will be copied from
-
-        Returns
-        -------------
-        String with full path to server or local
-        '''
-        if not self._source and not self._target:
-            return str(path)
-
-        if     is_source and not self._source:
-            if not path.exists():
-                raise FileNotFoundError(f'Source \"{path}\" missing')
-
-            return str(path)
-
-        if not is_source and not self._target:
-            return str(path)
-
-        if is_source:
-            return f'{self._source}:{path}'
-        else:
-            return f'{self._target}:{path}'
-    # ----------------------
-    def _open_master_connection(self) -> None:
-        '''
-        Parameters
-        -------------------
-        server: SSH server path, i.e. user@server.example
-        '''
-        if not self._server:
-            log.debug('No server specified, not making control master socket')
-            log.debug(f'Source: {self._source}')
-            log.debug(f'Target: {self._target}')
-            return
-
-        if _SOCKET_PATH.exists():
-            log.info(f'Socket found at: {_SOCKET_PATH}, not remaking it')
-            return
-
-        log.debug(f'Opening connection to: {self._server}')
-        subprocess.run([
-            'ssh',  '-MNf',
-            '-o' ,  'ControlMaster=yes',
-            '-o' ,  'ControlPersist=10m',
-            '-o' , f'ControlPath={_SOCKET_PATH}',
-            self._server
-        ], check=True)
-
-        self._close_on_exit = True
-    # ----------------------
-    def _close_master_connection(self) -> None:
-        if not self._server:
-            log.debug('Not connected to any server, not closing connection')
-            return
-
-        log.debug(f'Closing connection to server: {self._server}')
-        subprocess.run([
-            'ssh', '-O', 'exit',
-            '-o', f'ControlPath={_SOCKET_PATH}',
-            self._server,
-        ], check=False)
-    # ----------------------
-    def __enter__(self):
-        self._open_master_connection()
-
-        return self
-    # ----------------------
-    def __exit__(self, *args):
-        _ = args
-
-        if self._close_on_exit:
-            self._close_master_connection()
-            log.info(f'Removing socket: {_SOCKET_PATH}')
-        else:
-            log.info(f'Not removing socket: {_SOCKET_PATH}')
     # ----------------------
     def copy(self, source : Path, target : Path) -> bool:
         '''
@@ -198,20 +105,13 @@ class FCopy:
         log.debug('--->')
         log.debug(target)
 
-        spath = self._get_path(source, is_source= True)
-        tpath = self._get_path(target, is_source=False)
-
-        if self._source or self._target:
-            commands = [
-                'rsync',
-                '--progress',
-                '--append-verify',
-                '-a',
-                '-e',
-                f'ssh -o ControlPath={_SOCKET_PATH} -o PubkeyAuthentication=yes -o PasswordAuthentication=no', 
-                spath, tpath]
-        else:
-            commands = ['rsync', '--append-verify', '-a', spath, tpath]
+        commands = [
+            'rsync',
+            '--progress',
+            '--append-verify',
+            '-a',
+            '-e',
+            f'ssh -p {self._port}', str(source), f'{self._login}:{target}']
 
         log.debug(' '.join(commands))
         result = subprocess.run(
