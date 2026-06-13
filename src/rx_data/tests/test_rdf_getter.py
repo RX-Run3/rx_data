@@ -13,7 +13,7 @@ import numpy
 
 from typing         import cast, Final
 from pathlib        import Path
-from ROOT           import RDataFrame, RDF # type: ignore
+from ROOT           import RDataFrame, RDF, EnableImplicitMT # type: ignore
 from dmu            import LogStore
 from dmu.plotting   import Plotter2D
 from dmu.generic    import utilities as gut
@@ -126,6 +126,10 @@ def initialize():
     LogStore.set_level('rx_data:sample_emulator', 10)
 
     plt.style.use(mplhep.style.LHCb2) # type: ignore
+
+    with RDFGetter.alignment_check():
+        EnableImplicitMT(2)
+        yield
 # ------------------------------------------------
 def _check_truem_columns(rdf : RDF.RNode):
     l_name = [ name.c_str() for name in rdf.GetColumnNames() if name.c_str().endswith('_TRUEM') ]
@@ -524,7 +528,9 @@ def _run_default_checks(
     _plot_mva(rdf     , f'{test_name}_{sample}', out_dir = tmp_path)
     _plot_hop(rdf     , f'{test_name}_{sample}', out_dir = tmp_path)
 # ------------------------------------------------
+# Basic tests
 # ------------------------------------------------
+@pytest.mark.basic
 @pytest.mark.parametrize('sample, trigger',
     [(Component.bpkpee    , Trigger.rk_ee_os),
      (Component.bpkpmm    , Trigger.rk_mm_os),
@@ -550,6 +556,7 @@ def test_mcdecaytree(
 
     _check_mcdt(rdf=rdf, name=f'mcdt/{sample}', out_dir = tmp_path)
 # ------------------------------------------------
+@pytest.mark.basic
 @pytest.mark.parametrize('sample' , [Component.bdkstkpiee, Component.bdkstkpijpsiee])
 @pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rkst_ee_os])
 def test_mc_ee(
@@ -580,6 +587,7 @@ def test_mc_ee(
     _plot_mva(rdf     , f'test_mc/{sample}', out_dir = tmp_path)
     _plot_hop(rdf     , f'test_mc/{sample}', out_dir = tmp_path)
 # ------------------------------------------------
+@pytest.mark.basic
 @pytest.mark.parametrize('sample' , [Component.bpkpmm, Component.bdkstkpijpsimm])
 @pytest.mark.parametrize('trigger', [Trigger.rk_mm_os, Trigger.rkst_mm_os])
 def test_mc_mm(
@@ -610,6 +618,7 @@ def test_mc_mm(
     _plot_mva(rdf     , f'test_mc/{sample}', out_dir = tmp_path)
     _plot_hop(rdf     , f'test_mc/{sample}', out_dir = tmp_path)
 # ------------------------------------------------
+@pytest.mark.basic
 @pytest.mark.parametrize(
     'sample' , [
     Component.data_24_md_c2,
@@ -630,7 +639,7 @@ def test_data(
     '''
     Test of getter class in data
     '''
-    with RDFGetter.max_entries(value=100_000):
+    with RDFGetter.max_entries(value=1000):
         gtr = RDFGetter(sample=sample, trigger=trigger)
         rdf = gtr.get_rdf(per_file=False)
 
