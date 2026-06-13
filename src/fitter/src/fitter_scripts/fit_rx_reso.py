@@ -5,6 +5,7 @@ and run fits to the resonant mode
 
 import os
 import argparse
+
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 from contextlib    import ExitStack
@@ -16,6 +17,7 @@ from dmu.generic   import utilities as gut
 from dmu.generic   import UnpackerModel
 from zfit.loss     import ExtendedUnbinnedNLL
 
+from fitter        import NLLConf
 from fitter        import MVAWp
 from fitter        import FitModelConf
 from fitter        import ToyConf
@@ -113,7 +115,7 @@ def _parse_args() -> RXFitConfig:
 
     return cfg
 # ----------------------
-def _get_nll(cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL, dict[str,dict[Cuts,str]]]:
+def _get_nll(cfg : RXFitConfig) -> NLLConf:
     '''
     Parameters
     -------------
@@ -131,15 +133,14 @@ def _get_nll(cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL, dict[str,dict[Cuts
         q2bin  = cfg.q2bin,
         sample = Component.data_24,
         cfg    = cfg.mod_cfg)
-    nll     = ftr.run()
-    cfg_mod = ftr.get_config()
+    nll = ftr.run()
 
     if not isinstance(nll, ExtendedUnbinnedNLL):
         raise TypeError('Likelihood object is not an ExtendedUnbinnedNLL')
 
-    return nll, cfg_mod
+    return nll
 # ----------------------
-def _get_region_nll(region : Region, cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL, dict[str,dict[Cuts,str]]]:
+def _get_region_nll(region : Region, cfg : RXFitConfig) -> NLLConf:
     '''
     Parameters
     -------------
@@ -153,8 +154,9 @@ def _get_region_nll(region : Region, cfg : RXFitConfig) -> tuple[ExtendedUnbinne
     cfg = cfg.pick_category(name = region)
 
     with sel.update_selection(d_sel = region.selection):
-        cfg.name = region
-        cfg      = cfg.cfg_copy(category_suffix = f'b{cfg.block}')
+        replacements = {'BLOCK' : f'b{cfg.block}'}
+        cfg.name     = region
+        cfg          = cfg.cfg_copy(replacements = replacements)
 
         return _get_nll(cfg=cfg)
 # ----------------------
@@ -162,7 +164,8 @@ def _fit_electron(cfg : RXFitConfig) -> None:
     '''
     This is where DataFitter is used
     '''
-    d_nll : dict[Region,tuple[ExtendedUnbinnedNLL, dict[str,dict[Cuts,str]]]] = {}
+    d_nll : dict[Region,NLLConf] = {}
+
     d_nll[Region.brem_xx1] = _get_region_nll(region = Region.brem_xx1, cfg = cfg)
     d_nll[Region.brem_xx2] = _get_region_nll(region = Region.brem_xx2, cfg = cfg)
 
