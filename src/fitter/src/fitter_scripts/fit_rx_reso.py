@@ -135,9 +135,6 @@ def _get_nll(cfg : RXFitConfig) -> NLLConf:
         cfg    = cfg.mod_cfg)
     nll = ftr.run()
 
-    if not isinstance(nll, ExtendedUnbinnedNLL):
-        raise TypeError('Likelihood object is not an ExtendedUnbinnedNLL')
-
     return nll
 # ----------------------
 def _get_region_nll(region : Region, cfg : RXFitConfig) -> NLLConf:
