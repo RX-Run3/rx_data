@@ -1,8 +1,23 @@
+plots_settings: &plots_settings
+  nbins    : 50
+  stacked  : True
+  d_leg :
+    comb       : Combinatorial
+    bppijpsiee : $B^+\to J/\psi(\to e^+e^-)\pi^+$
+    ccbar      : $B_{s,d,u}\to c\bar{c} X$
+    bpkpjpsiee : $B^+\to J/\psi(\to e^+e^-) K^+$
+    bpkppsi2ee : $B^+\to \psi(2S)(\to e^+e^-) K^+$
+  plot_components : []
+  plot_range:
+    - 4500
+    - 7000
+# -------------------------------------
 trigger          : rk_ee_os
 yields           : model/yields/rk/reso_electron.yaml
 selection : 
-  extra   : TMath::Abs(B_const_mass_M) > 5200
-  q2      : (q2_dtf > 6000000) && (q2_dtf < 11000000)
+  jpsi :
+    extra   : TMath::Abs(B_const_mass_M) > 5200
+    q2      : (q2_dtf > 6000000) && (q2_dtf < 11000000)
 observable:
   jpsi:
     name : B_Mass
@@ -17,17 +32,11 @@ components:
   #bpkppsi2ee : reso/rk/ee/bpkppsi2ee.yaml
 constraints:
   pre_rare : []
+  combinatorial : false
+  signal_shape  : false
 fit: {}
 plots:
-  nbins    : 50
-  stacked  : True
-  d_leg :
-    comb       : Combinatorial
-    bppijpsiee : $B^+\to J/\psi(\to e^+e^-)\pi^+$
-    ccbar      : $B_{s,d,u}\to c\bar{c} X$
-    bpkpjpsiee : $B^+\to J/\psi(\to e^+e^-) K^+$
-    bpkppsi2ee : $B^+\to \psi(2S)(\to e^+e^-) K^+$
-  plot_components : []
-  plot_range:
-    - 4500
-    - 7000
+  merging : {}
+  regions :
+    brem_xx1 : *plots_settings
+    brem_xx2 : *plots_settings
