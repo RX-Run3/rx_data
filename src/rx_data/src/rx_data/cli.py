@@ -10,7 +10,7 @@ import typer
 from typing     import Final
 from pathlib    import Path
 from dmu        import LogLevels, LogStore
-from rx_common  import Project 
+from rx_common  import Project
 from rx_data    import SampleSplitter
 from rx_data    import SamplesPrinter
 from rx_data    import PFNDownloader
@@ -57,7 +57,7 @@ def _get_samples(version : str, level : LogLevels) -> Samples:
         storage = _STORAGE)
 
     sam = rdr.get_samples(
-        nickname   = nickname, 
+        nickname   = nickname,
         production = production)
 
     if level == LogLevels.debug:
