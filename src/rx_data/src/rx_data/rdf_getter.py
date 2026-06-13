@@ -6,8 +6,8 @@ import numpy
 
 from contextlib   import contextmanager
 from pathlib      import Path
-from typing       import Any, overload, Literal
-from ROOT         import RDF, GetThreadPoolSize, TFile # type: ignore
+from typing       import Any, Final, overload, Literal
+from ROOT         import RDF, TFile # type: ignore
 from dmu          import LogStore
 from dmu.generic  import hashing
 from dmu.generic  import utilities as gut
@@ -17,6 +17,8 @@ from .spec_maker  import SpecMaker
 from .rdf_loader  import RDFLoader
 
 log=LogStore.add_logger('rx_data:rdf_getter')
+
+_ENABLE_ALIGNMENT_CHECK : Final[bool] = False
 # ---------------------------------------------------
 class AlreadySetColumns(Exception):
     '''
@@ -101,7 +103,6 @@ class RDFGetter(SpecMaker):
         self._d_info : dict[str,Any] = {} # Used to store information related to transformations done to dataframe (e.g. Range), needed for hashing
 
         self._set_logs()
-        self._check_multithreading()
     # ---------------------------------------------------
     def _load_config(self) -> DictConfig:
         '''
@@ -131,16 +132,6 @@ class RDFGetter(SpecMaker):
         to reduce noise
         '''
         LogStore.set_level('rx_data:path_splitter', 30)
-    # ---------------------------------------------------
-    def _check_multithreading(self) -> None:
-        '''
-        This method will raise if running with mulithreading and if it was not explicitly allowed
-        '''
-        nthreads = GetThreadPoolSize()
-        if nthreads > 1:
-            raise ValueError(f'Cannot run with mulithreading, using {nthreads} threads')
-
-        log.debug('Not using multithreading')
     # ---------------------------------------------------
     # TODO: This class is pretty large, all the lines below
     # have one job, adding columns to dataframe, put them in a class
@@ -568,6 +559,9 @@ class RDFGetter(SpecMaker):
         rdf   : ROOT dataframe
         index : Name of column whose values need to be aligned
         '''
+        if not _ENABLE_ALIGNMENT_CHECK:
+            return
+
         columns = [ name.c_str() for name in rdf.GetColumnNames() ]
         indexes = [ name         for name in columns if index in name ]
         ncol    = len(indexes)
