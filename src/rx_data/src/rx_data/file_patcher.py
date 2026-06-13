@@ -59,7 +59,7 @@ class FilePatcher:
         -1: Block was not added, because block was not found
         0 : Block was not added, because it was already there
         1 : Block was added
-        2 : Dry run
+        2 : Dry run, but would have added a missing block
         '''
         try:
             rdf_input = RDataFrame('MCDecayTree', str(path))
@@ -121,7 +121,7 @@ class FilePatcher:
         -1: Block was not added, because block was not found
         0 : Block was not added, because it was already there
         1 : Block was added
-        2 : Dry run
+        2 : Dry run, but would have added a missing block
         '''
         if self._dry_run:
             self._counter += 1
