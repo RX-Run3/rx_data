@@ -916,7 +916,7 @@ def test_check_vars(sample : Component, trigger : Trigger):
     [(Component.bpkpee    , Trigger.rk_ee_os),
      (Component.bpkpmm    , Trigger.rk_mm_os),
      (Component.bdkstkpiee, Trigger.rkst_ee_os),
-     (Component.bdkstkpimm, Trigger.rkst_mm_os)][:1])
+     (Component.bdkstkpimm, Trigger.rkst_mm_os)])
 def test_mcdecaytree(
     sample  : Component,
     trigger : Trigger,
