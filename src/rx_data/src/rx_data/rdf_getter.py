@@ -6,7 +6,7 @@ import numpy
 
 from contextlib   import contextmanager
 from pathlib      import Path
-from typing       import Any, Final, overload, Literal
+from typing       import Any, overload, Literal
 from ROOT         import RDF, TFile # type: ignore
 from dmu          import LogStore
 from dmu.generic  import hashing
@@ -18,7 +18,6 @@ from .rdf_loader  import RDFLoader
 
 log=LogStore.add_logger('rx_data:rdf_getter')
 
-_ENABLE_ALIGNMENT_CHECK : Final[bool] = False
 # ---------------------------------------------------
 class AlreadySetColumns(Exception):
     '''
@@ -41,6 +40,7 @@ class RDFGetter(SpecMaker):
     friends     : List of names of samples, to be treated as friend trees. By default this is None and everything will be processed
     skip_adding_columns : By default false. If true, it will skip defining new columns.
     '''
+    _ENABLE_ALIGNMENT_CHECK : bool    = False
     _max_entries                      = -1
     _skip_adding_columns              = False
     _d_custom_columns : dict[str,str] = {}
@@ -547,8 +547,9 @@ class RDFGetter(SpecMaker):
 
         return rdf
     # ----------------------
-    @staticmethod
+    @classmethod
     def check_alignment(
+        cls,
         rdf    : RDF.RNode,
         index  : str) -> None:
         '''
@@ -559,7 +560,7 @@ class RDFGetter(SpecMaker):
         rdf   : ROOT dataframe
         index : Name of column whose values need to be aligned
         '''
-        if not _ENABLE_ALIGNMENT_CHECK:
+        if not cls._ENABLE_ALIGNMENT_CHECK:
             return
 
         columns = [ name.c_str() for name in rdf.GetColumnNames() ]
@@ -700,6 +701,25 @@ class RDFGetter(SpecMaker):
                 yield
             finally:
                 cls._d_custom_columns = old_val
+
+        return _context()
+    # ---------------------------------------------------
+    @classmethod
+    def alignment_check(cls):
+        '''
+        Context manager that turns on alignment check
+        needed for tests
+        '''
+        old_val = cls._ENABLE_ALIGNMENT_CHECK
+
+        @contextmanager
+        def _context():
+            cls._ENABLE_ALIGNMENT_CHECK = True
+
+            try:
+                yield
+            finally:
+                cls._ENABLE_ALIGNMENT_CHECK = old_val
 
         return _context()
 # ---------------------------------------------------
