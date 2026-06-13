@@ -574,7 +574,7 @@ class RDFGetter(SpecMaker):
 
         log.info(f'Checking {ncol} columns for {index}')
 
-        rdf_small = rdf.Range(100)
+        rdf_small = rdf.Filter('rdfentry_ < 100')
 
         data    = rdf_small.AsNumpy(indexes)
         arrays  = [ array for array in data.values() ]
