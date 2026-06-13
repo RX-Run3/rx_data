@@ -30,7 +30,7 @@ class FilePatcher:
         self._counter = 0
         self._dry_run = dry_run
         self._blocks : dict[str,int] = gut.load_data(
-            package = 'rx_data_data', 
+            package = 'rx_data_data',
             fpath   = 'rdf_getter/blocks.json')
     # -----------------------------
     @property
@@ -39,11 +39,11 @@ class FilePatcher:
         List of strings representing hashes in ROOT files
         hashes identify job that created this file
         '''
-        return set(self._blocks) 
+        return set(self._blocks)
     # -----------------------------
     def _add_block(
-        self, 
-        block : int | None, 
+        self,
+        block : int | None,
         path  : Path) -> int:
         '''
         Parameters
@@ -55,8 +55,8 @@ class FilePatcher:
         ------------
         Statust code:
 
-        -2: Block was not added, because MCDecayTree was not found 
-        -1: Block was not added, because block was not found 
+        -2: Block was not added, because MCDecayTree was not found
+        -1: Block was not added, because block was not found
         0 : Block was not added, because it was already there
         1 : Block was added
         2 : Dry run
@@ -93,14 +93,14 @@ class FilePatcher:
 
             file.Close()
             return 1
-        
+
         value_arr  = array.array('i', [block])
         new_branch = tree.Branch('block', value_arr, "block/I")
-        
+
         for i in range(int(tree.GetEntries(""))):
             tree.GetEntry(i)
             new_branch.Fill()
-        
+
         file.Write()
         file.Close()
 
@@ -117,8 +117,8 @@ class FilePatcher:
         Statust code:
 
         -3: Block was not added, because file is not MC
-        -2: Block was not added, because MCDecayTree was not found 
-        -1: Block was not added, because block was not found 
+        -2: Block was not added, because MCDecayTree was not found
+        -1: Block was not added, because block was not found
         0 : Block was not added, because it was already there
         1 : Block was added
         2 : Dry run
