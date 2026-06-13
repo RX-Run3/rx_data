@@ -100,7 +100,7 @@ class RDFGetter(SpecMaker):
                                             # requested. They keys are the main tree file path, the value is the dataframe
                                             # with the main and friend trees
 
-        self._d_info : dict[str,Any] = {} # Used to store information related to transformations done to dataframe (e.g. Range), needed for hashing
+        self._d_info : dict[str,Any] = {} # Used to store information related to transformations done to dataframe (e.g. Cuts), needed for hashing
 
         self._set_logs()
     # ---------------------------------------------------
@@ -477,7 +477,7 @@ class RDFGetter(SpecMaker):
 
         log.debug(f'Filtering for a range of {nent} entries')
         self._d_info['range'] = 0, nent 
-        rdf  = rdf.Range(0, nent)
+        rdf  = rdf.Filter(f'rdfentry_ < {nent}')
 
         log.warning(f'Picking up range: [{0}, {nent}] ')
 
