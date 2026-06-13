@@ -124,7 +124,7 @@ def _get_rdf(cfg : dict) -> RDataFrame:
     if Data.nev is None:
         return rdf
 
-    rdf = rdf.Range(Data.nev)
+    rdf = rdf.Filter(f'rdfentry_ < {Data.nev}')
 
     return rdf
 # -------------------------------

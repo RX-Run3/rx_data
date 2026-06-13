@@ -134,7 +134,7 @@ def _get_df(nentries : int = 10) -> pnd.DataFrame:
     rdf = rdf.Redefine('L1_BREMHYPOCOL' , 'int(L1_BREMHYPOCOL)' )
     rdf = rdf.Redefine('L1_BREMHYPOROW' , 'int(L1_BREMHYPOROW)' )
     rdf = rdf.Redefine('L1_BREMHYPOAREA', 'int(L1_BREMHYPOAREA)')
-    rdf = rdf.Range(nentries)
+    rdf = rdf.Filter(f'rdfentry_ < {nentries}')
 
     return df_from_rdf(rdf=rdf, drop_nans=True)
 #-----------------------------------------

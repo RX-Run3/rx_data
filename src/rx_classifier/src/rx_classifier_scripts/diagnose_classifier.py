@@ -117,7 +117,7 @@ def _get_rdf() -> RDataFrame:
     rdf = _apply_selection(rdf)
 
     if Data.max_entries > 0:
-        rdf = rdf.Range(Data.max_entries)
+        rdf = rdf.Filter(f'rdfentry_ < {Data.max_entries}')
 
     nentries = rdf.Count().GetValue()
     log.info(f'Using {nentries} entries for {Data.sample}/{Data.trigger}')

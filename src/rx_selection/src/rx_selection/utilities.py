@@ -58,7 +58,7 @@ def get_rdf_range(rdf : RDataFrame, index : int, npartition : int) -> RDataFrame
 
     log.info(f'Picking up ends [{start}, {end}] for {index}/{npartition}')
 
-    rdf = rdf.Range(start, end)
+    rdf = rdf.Filter(f'rdfentry_ >= {start} && rdfentry_ < {end}')
     rdf = atr_obj.add_atr(rdf)
 
     return rdf

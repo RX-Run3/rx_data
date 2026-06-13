@@ -62,7 +62,7 @@ def test_dzero_misid(
             trigger         = trigger,
             apply_selection = False)
 
-    rdf      = rdf.Range(1000)
+    rdf      = rdf.Filter('rdfentry_ < 1000')
     ientries = rdf.Count().GetValue()
 
     d_had = _get_hadron_mapping(trigger=trigger)

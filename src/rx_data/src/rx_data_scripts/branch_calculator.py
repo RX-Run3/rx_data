@@ -286,7 +286,7 @@ def _create_file(
 
     lo, hi = part.range
     if part.split:
-        rdf = rdf.Range(lo, hi + 1)
+        rdf = rdf.Filter(f'rdfentry_ >= {lo} && rdfentry_ <= {hi}')
 
     if cfg.dry:
         log.debug('Doing dry run')

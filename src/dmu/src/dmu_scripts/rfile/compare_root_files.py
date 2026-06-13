@@ -92,9 +92,9 @@ def _get_data(tree : TTree) -> dict[str, numpy.ndarray]:
     rdf = RDataFrame(tree)
     if Data.max_entries > 0:
         log.warning(f'Limiting to {Data.max_entries} entries')
-        rdf = rdf.Range(Data.max_entries)
+        rdf = rdf.Filter(f'rdfentry_ < {Data.max_entries}')
 
-    d_data = rdf.AsNumpy(exclude=[])
+    d_data = rdf.AsNumpy()
 
     return d_data
 #------------------

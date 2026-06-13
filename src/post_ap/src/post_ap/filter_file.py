@@ -515,7 +515,7 @@ class FilterFile:
             return rdf
 
         log.warning(f'Saving {tree_path} with at most {self.max_save} entries')
-        rdf = rdf.Range(self.max_save)
+        rdf = rdf.Filter(f'rdfentry_ < {self.max_save}')
 
         return rdf
     # --------------------------------------
