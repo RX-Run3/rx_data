@@ -158,8 +158,18 @@ def patch_files(
         raise ValueError(f'No path found in: {ntup_dir}')
 
     ptc = FilePatcher(dry_run = dry_run)
+
+    statuses : dict[int,int] = {}
     for path in tqdm.tqdm(paths, ascii = ' -'):
-        ptc.run(path = path)
+        status = ptc.run(path = path)
+
+        if status not in statuses:
+            statuses[status] = 1
+        else:
+            statuses[status]+= 1
+
+    npatched = statuses[2]
+    log.info(f'Patched: {npatched} files')
 # ----------------------
 @app.command()
 def store_sample_db(
