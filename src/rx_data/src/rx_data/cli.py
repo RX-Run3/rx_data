@@ -168,7 +168,7 @@ def patch_files(
         else:
             statuses[status]+= 1
 
-    npatched = statuses[2]
+    npatched = statuses[1] + statuses[2]
     log.info(f'Patched: {npatched} files')
 # ----------------------
 @app.command()
