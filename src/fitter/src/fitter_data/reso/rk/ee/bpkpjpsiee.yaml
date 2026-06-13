@@ -1,7 +1,6 @@
 component : bpkpjpsiee 
 categories:
-  brem:
-    selection : {}
+  BLOCK:
     model :
       pdfs:
         - dscb 
