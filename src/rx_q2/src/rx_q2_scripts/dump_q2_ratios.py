@@ -212,8 +212,8 @@ def _scales_from_df(
     d_fr = _get_scale(df=df, corr= Correction.brem_fraction  , signal = signal, fun=lambda x : x[0] / x[1])
 
     corr     = Correction.blok_fraction
-    df_dat   = df.query('sample == "dat"')
-    val, err = _get_entry(corr=corr, df=df_dat)
+    df_dat   = df.query(f'sample == \"{_DATA}\"')
+    val, err = _get_entry(corr=corr, df=df_dat, comp = _DATA)
     d_bk     = {f'{corr}_val' : [val], f'{corr}_err' : [err]}
 
     df   = pnd.DataFrame({**d_mu, **d_sg, **d_fr, **d_bk})
@@ -240,8 +240,8 @@ def _get_scale(
     key  : Name of scale/resolution
     value: Numerical value
     '''
-    df_dat  = df.query('sample == "dat"')
-    df_sim  = df.query('sample == "sim"') 
+    df_dat  = df.query(f'sample == \"{_DATA}\"')
+    df_sim  = df.query(f'sample == \"{signal}\"') 
 
     dat_val, dat_err = _get_entry(corr=corr, df=df_dat, comp = _DATA)
     sim_val, sim_err = _get_entry(corr=corr, df=df_sim, comp = signal)
@@ -267,6 +267,7 @@ def _get_scale(
 # ----------------------
 def _get_entry(
     corr : Correction, 
+    comp : Component,
     df   : pnd.DataFrame) -> tuple[float,float]:
     '''
     Parameters
@@ -280,7 +281,7 @@ def _get_entry(
     '''
     if len(df) != 1:
         log.error(df)
-        raise ValueError('Expected one and only one row')
+        raise ValueError(f'Expected one and only one row for correction: {corr}/{comp}')
 
     try:
         val = df[f'{corr.var}_val'].iloc[0]
@@ -297,7 +298,8 @@ def _plot_df(
     brem     : Brem,
     ax       : Axes) -> Axes:
 
-    if brem == 0 and variable == Correction.mass_resolution:
+    # Skip brem 0
+    if brem not in {Brem.one, Brem.two}:
         return ax
 
     val   = f'{variable}_val'
@@ -308,7 +310,7 @@ def _plot_df(
         high= df[val] + df[err]
 
         ax.fill_between(
-            df['block'],
+            x    = df['block'],
             y1   = low.to_numpy(dtype=float), # type: ignore
             y2   = high.to_numpy(dtype=float),# type: ignore
             color= brem.color,
@@ -383,33 +385,37 @@ def _plot_variables(
     else:
         plt.legend(labels = [])
 
+    latex = 'MC' if comp.is_mc else 'Data'
+
     if   variable == 'mu':
-        plt.ylabel(rf'$\mu^{{{kind.latex}}}$[MeV]')
+        plt.ylabel(rf'$\mu^{{{latex}}}$[MeV]')
         ax.axhline(y=cfg.jpsi_mass, color='black', linestyle=':', label='PDG')
     elif variable == 'sg':
-        plt.ylabel(rf'$\sigma^{{{kind.latex}}}$[MeV]')
+        plt.ylabel(rf'$\sigma^{{{latex}}}$[MeV]')
     elif variable == 'fr':
-        plt.ylabel(rf'$fr_{{Brem}}^{{{kind.latex}}}$[MeV]')
+        plt.ylabel(rf'$fr_{{Brem}}^{{{latex}}}$[MeV]')
     elif variable == 'bk':
-        plt.ylabel(rf'$fr_{{Block}}^{{{kind.latex}}}$[MeV]')
+        plt.ylabel(rf'$fr_{{Block}}^{{{latex}}}$[MeV]')
     else:
         raise ValueError(f'Invalid variable: {variable}')
 
     rng = cfg.get_range(var=variable)
     plt.ylim(rng)
     plt.grid()
-    plt.savefig(cfg.out_dir / f'{variable}_{kind}.png')
+    plt.savefig(cfg.out_dir / f'{variable}_{comp}.png')
     plt.close()
 #-------------------------------------
-def _plot(df : pnd.DataFrame, cfg : ScalesConf) -> None:
+def _plot(
+    df  : pnd.DataFrame, 
+    cfg : ScalesConf) -> None:
     '''
     Parameters
     ---------------
     df: Pandas dataframe with fitting parameters, e.g. mu, sg.
     '''
-
+    signal : Component | None = None
     for kind, df_kind in df.groupby('sample'):
-        skind = DataSet(kind)
+        comp = Component(kind)
 
         _plot_variables(df=df_kind, variable='mu', comp = comp, cfg = cfg)
         _plot_variables(df=df_kind, variable='sg', comp = comp, cfg = cfg)
@@ -421,6 +427,8 @@ def _plot(df : pnd.DataFrame, cfg : ScalesConf) -> None:
         if comp != _DATA:
             signal = comp
 
+    if signal is None:
+        raise ValueError('Signal component not found')
 
     df_scale = _get_scales(df = df, cfg = cfg, signal = signal)
     _plot_corrections(df=df_scale, cfg = cfg, correction=Correction.mass_resolution)
