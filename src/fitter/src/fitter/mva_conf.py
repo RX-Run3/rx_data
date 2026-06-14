@@ -17,6 +17,14 @@ class MVAWp(RootModel[float|tuple[float,float]]):
     '''
     # -------------    
     @property
+    def lower_str(self) -> str:
+        return f'{self.lower:.03f}'
+    # -------------    
+    @property
+    def upper_str(self) -> str:
+        return f'{self.upper:.03f}'
+    # -------------    
+    @property
     def lower(self) -> float:
         '''
         Lower bound of working point
