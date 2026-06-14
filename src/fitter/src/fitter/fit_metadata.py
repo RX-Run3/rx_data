@@ -11,7 +11,7 @@ from .mva_conf  import MVAWp
 
 _COMMON   = r'.*\/(\d{3}-\d{3}|\d{3})_(\d{3}-\d{3}|\d{3})_(all|b\d)\/(?:reso|rare)\/(rk|rkst)\/(mm|ee)\/(low|central|jpsi|psi2|high)'
 _DT_REGEX = r'\/data_24\/fit\/.*\/brem_([x,0-9]{3})\/parameters.json'
-_MC_REGEX = r'\/_SIGNAL\/fit\/brem_([x,0-9]{3})\/brem_[x,0-9]{3}_b\d\/parameters.json'
+_MC_REGEX = r'\/_SIGNAL\/fit\/brem_([x,0-9]{3})\/brem_[x,0-9]{3}\/parameters.json'
 
 log=LogStore.add_logger('fitter:fit_metadata')
 # -------------------------------
