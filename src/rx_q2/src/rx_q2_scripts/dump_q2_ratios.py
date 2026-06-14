@@ -12,7 +12,6 @@ For each brem category and block
 '''
 import math
 import argparse
-
 import mplhep
 import jacobi
 import matplotlib.pyplot     as plt
@@ -58,26 +57,30 @@ def _load_config(args : argparse.Namespace) -> ScalesConf:
 def _get_Bx_df(cfg : ScalesConf) -> pnd.DataFrame:
     name   = 'reso_no_dtf'
     signal = Component.bpkpjpsiee 
+    data   = Component.data_24
     brems  = [Brem.one, Brem.two] 
     blocks = Block.blocks()
-    kinds  = ['dat', 'sim']
+    comps  = [data, signal]
     suffix = f'{cfg.kind}_{cfg.comb.name}_{cfg.prec.name}_{cfg.year}'
 
-    smr = FitSummary(name = name, signal = signal)
+    smr = FitSummary(
+        name   = name, 
+        data   = data,
+        signal = signal)
     smr.get_df(suffix = suffix)
 
     rdr    = FitParameterReader(name = name, suffix = suffix)
     l_data = []
     for brem in brems:
         for block in blocks:
-            for kind in kinds:
+            for comp in comps:
                 msr = rdr(
                     signame  = signal,
                     brem     = brem, 
                     block    = block, 
-                    cmb      = cfg.comb.name,
-                    prc      = cfg.prec.name,
-                    kind     = kind,
+                    cmb      = cfg.comb,
+                    prc      = cfg.prec,
+                    comp     = comp,
                     trigger  = Trigger.rk_ee_os, 
                     project  = Project.rk,
                     q2bin    = Qsq.jpsi)
@@ -102,7 +105,7 @@ def _get_Bx_df(cfg : ScalesConf) -> pnd.DataFrame:
                     # ---
                     'block'  : block.value,
                     'brem'   : brem.to_int(),
-                    'sample' : kind,
+                    'sample' : comp,
                 }
 
                 l_data.append(data)
