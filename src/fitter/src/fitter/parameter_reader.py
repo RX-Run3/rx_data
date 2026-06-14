@@ -227,7 +227,7 @@ class ParameterReader:
         [val] = [ data[key] for key in keys if key.endswith('_value') ]
         [err] = [ data[key] for key in keys if key.endswith('_error') ]
 
-        if brem == _NBREM:
+        if brem == Brem.two:
             val = 1 - val # fraction stored is brem 1 one
 
         # Fraction needs to be named as mu and sg to be used for scales
@@ -239,7 +239,7 @@ class ParameterReader:
 
         signal = mtch.group(1) 
 
-        return f'fr_{signal}_brem_{brem}', val, err
+        return f'fr_{signal}_{brem}', val, err
     # ----------------------
     def __call__(
         self, 
@@ -292,7 +292,7 @@ class ParameterReader:
 
         # for simultaneous fits, this removes brem_002 parameters when one needs brem_001
         # and viceversa
-        data     = { key : value for key, value in data.items() if f'brem_{brem}' in key }
+        data     = { key : value for key, value in data.items() if str(brem) in key }
 
         data[f'bk_{signame}'] = (math.nan, math.nan) if comp.is_mc else self._get_block_fraction(
             signame = signame,
