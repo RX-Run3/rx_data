@@ -115,10 +115,9 @@ class FitSummary:
         '''
         Parameters
         -------------
-        brem   : Brem for which file is read
-        kind   : dat or sim
-        path   : Path to JSON file with fit parameters
         by_fit : If True each row will represent a fit, otherwise each row represents a parameter
+        comp   : Component, e.g. data or signal MC 
+        path   : Path to JSON file with fit parameters
 
         Returns
         -------------
