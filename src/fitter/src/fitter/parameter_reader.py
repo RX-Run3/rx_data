@@ -130,6 +130,8 @@ class ParameterReader:
         try:
             df_info = df[columns]
         except KeyError as exc:
+            log.error(f'Requested: {columns}')
+            log.error('Found:')
             for col in df.columns:
                 log.error(col)
             raise KeyError('Cannot find at least one column') from exc
@@ -256,8 +258,8 @@ class ParameterReader:
         signame  : Identifier for signal parameter, e.g. jpsi 
         brem     : Brem category, e.g. 0, 1, 2
         block    : Block number in 2024, e.g. 1, 2, 3...8
-        cmb/prc  : String specifying working point, e.g. 050
-        kind     : Either dat or sim
+        cmb/prc  : MVA working point 
+        comp     : Component, e.g. MC or data 
         project  : E.g. rk, rkst 
         q2bin    : E.g. jpsi
         trigger  : HLT2 trigger, used to pick channel, etc
