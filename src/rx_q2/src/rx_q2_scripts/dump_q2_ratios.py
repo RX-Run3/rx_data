@@ -29,12 +29,12 @@ from rx_common       import Block, Correction, Project
 from rx_common       import Trigger, Component
 from rx_common       import Qsq 
 from rx_common       import Brem 
-from rx_common       import DataSet 
 
 log=LogStore.add_logger('rx_q2:dump_q2_ratios')
 
 PROJECTS   : list[str]        = ['rk_ee', 'rk_mm', 'rkst_ee', 'rkst_mm']
 _FRACTIONS : Final[list[str]] = ['fr']
+_DATA      : Component        = Component.data_24
 #-------------------------------------
 def _load_config(args : argparse.Namespace) -> ScalesConf:
     '''
@@ -57,15 +57,14 @@ def _load_config(args : argparse.Namespace) -> ScalesConf:
 def _get_Bx_df(cfg : ScalesConf) -> pnd.DataFrame:
     name   = 'reso_no_dtf'
     signal = Component.bpkpjpsiee 
-    data   = Component.data_24
     brems  = [Brem.one, Brem.two] 
     blocks = Block.blocks()
-    comps  = [data, signal]
+    comps  = [_DATA, signal]
     suffix = f'{cfg.kind}_{cfg.comb.name}_{cfg.prec.name}_{cfg.year}'
 
     smr = FitSummary(
         name   = name, 
-        data   = data,
+        data   = _DATA,
         signal = signal)
     smr.get_df(suffix = suffix)
 
