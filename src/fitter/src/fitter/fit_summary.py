@@ -276,8 +276,8 @@ class FitSummary:
 
             l_data += info
 
-        df              = pnd.DataFrame(l_data)
-        df['component'] = comp
+        df         = pnd.DataFrame(l_data)
+        df['comp'] = comp
 
         return df
     # ----------------------
