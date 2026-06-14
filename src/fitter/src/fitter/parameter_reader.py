@@ -8,15 +8,18 @@ import numpy
 import jacobi
 import pandas as pnd
 
+from typing     import Final
 from contextlib import contextmanager
 from pathlib    import Path
 from dmu        import LogStore
 from dmu.stats  import Measurement
-from rx_common  import Block, Brem, Project, Trigger 
-from rx_common  import Qsq 
-from rx_common  import info
+from rx_common  import Block, Brem, Component, Project, Trigger 
+from rx_common  import Qsq
+from .mva_conf  import MVAWp 
 
 log=LogStore.add_logger('fitter:parameter_reader')
+
+_NBREM : Final[int] = 2
 # ------------------------------------
 class FitMeasurement(Measurement):
     '''
