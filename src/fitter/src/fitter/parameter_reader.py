@@ -119,7 +119,7 @@ class ParameterReader:
         ext_cols = [] if extra_columns is None else extra_columns
         columns  = [
             'project',
-            'kind',
+            'comp',
             'mva_cmb',
             'mva_prc',
             'brem', 
@@ -244,9 +244,9 @@ class ParameterReader:
         signame   : str,
         brem      : Brem,
         block     : Block,
-        cmb       : str,
-        prc       : str,
-        kind      : str,
+        cmb       : MVAWp,
+        prc       : MVAWp,
+        comp      : Component,
         project   : Project,
         q2bin     : Qsq,
         trigger   : Trigger) -> FitMeasurement:
@@ -266,17 +266,17 @@ class ParameterReader:
         -------------
         FitMeasurement instance, i.e. container with parameter names, values and errors
         '''
-        channel = info.channel_from_trigger(trigger=trigger, lower_case = True)
+        channel = trigger.channel
         df      = self._df
-        df      = self._query(df = df, cut = f'kind    == \"{kind}\"'   )
-        df      = self._query(df = df, cut = f'mva_cmb == \"{cmb}\"'    )
-        df      = self._query(df = df, cut = f'mva_prc == \"{prc}\"'    )
-        df      = self._query(df = df, cut = f'q2bin   == \"{q2bin}\"'  )
-        df      = self._query(df = df, cut = f'channel == \"{channel}\"')
-        df      = self._query(df = df, cut = f'project == \"{project}\"')
-        df      = self._query(df = df, cut = f'brem    == \"{brem}\"'   )
+        df      = self._query(df = df, cut = f'comp    == \"{comp}\"'     )
+        df      = self._query(df = df, cut = f'mva_cmb == \"{cmb.lower_str}\"')
+        df      = self._query(df = df, cut = f'mva_prc == \"{prc.lower_str}\"')
+        df      = self._query(df = df, cut = f'q2bin   == \"{q2bin}\"'    )
+        df      = self._query(df = df, cut = f'channel == \"{channel}\"'  )
+        df      = self._query(df = df, cut = f'project == \"{project}\"'  )
+        df      = self._query(df = df, cut = f'brem    == \"{brem}\"'     )
         df_all  = df.copy() # Data after all requirements, but with all blocks 
-        df      = self._query(df = df, cut = f'block   ==   {block}'    )
+        df      = self._query(df = df, cut = f'block   == \"{block}\"'    )
 
         if len(df) != 1:
             self._print_info(df=df)
