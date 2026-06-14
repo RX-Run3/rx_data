@@ -217,7 +217,7 @@ class ParameterReader:
         Tuple with value of brem fraction, error and name of variable
         '''
         keys = [ key for key in data if 'fraction' in key ]
-        if len(keys) != 2:
+        if len(keys) != _NBREM:
             for key in data:
                 log.error(key)
             raise ValueError('Expected two entries corresponding to brem fraction')
@@ -225,7 +225,7 @@ class ParameterReader:
         [val] = [ data[key] for key in keys if key.endswith('_value') ]
         [err] = [ data[key] for key in keys if key.endswith('_error') ]
 
-        if brem == 2:
+        if brem == _NBREM:
             val = 1 - val # fraction stored is brem 1 one
 
         # Fraction needs to be named as mu and sg to be used for scales
