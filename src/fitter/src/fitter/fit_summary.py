@@ -260,6 +260,8 @@ class FitSummary:
         -------------
         Number of entries in dataset used in fit
         '''
+        log.debug(f'Getting MC entries from: {path}')
+
         json_path = path.parent / 'data.json'
         if not json_path.exists():
             raise FileNotFoundError(f'Cannot find: {json_path}')
