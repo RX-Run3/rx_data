@@ -369,7 +369,7 @@ def _plot_variables(
 
         # Block and brem fractions only make sense for brem one
         # and are the same for both brems
-        if variable in _FRACTIONS and sval != '2':
+        if variable in _FRACTIONS and sval == '2':
             log.debug(f'Skipping {sval}/{variable}')
             continue
 
