@@ -294,7 +294,7 @@ class ParameterReader:
         # and viceversa
         data     = { key : value for key, value in data.items() if f'brem_{brem}' in key }
 
-        data[f'bk_{signame}'] = (math.nan, math.nan) if kind == 'sim' else self._get_block_fraction(
+        data[f'bk_{signame}'] = (math.nan, math.nan) if comp.is_mc else self._get_block_fraction(
             signame = signame,
             df      = df_all, 
             brem    = brem,
