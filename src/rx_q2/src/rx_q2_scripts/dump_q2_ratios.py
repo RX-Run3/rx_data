@@ -296,10 +296,13 @@ def _plot_df(
     err   = f'{variable}_err'
 
     try:
+        low = df[val] - df[err]
+        high= df[val] + df[err]
+
         ax.fill_between(
             df['block'],
-            df[val] - df[err],
-            df[val] + df[err],
+            y1   = low.to_numpy(dtype=float), # type: ignore
+            y2   = high.to_numpy(dtype=float),# type: ignore
             color= brem.color,
             label= brem.latex,
             alpha= 0.5)
@@ -443,7 +446,7 @@ def main():
     parser.add_argument('-y', '--year'   , type=str           , help='Year for data whose corrections are needed', default='2024')
     args = parser.parse_args()
 
-    plt.style.use(mplhep.style.LHCb2)
+    plt.style.use(mplhep.style.LHCb2) # type: ignore
 
     cfg  = _load_config(args = args)
 
