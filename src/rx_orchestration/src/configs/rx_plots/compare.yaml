@@ -1,17 +1,17 @@
 args:
-  - {sample : Bd_Kstee_eq_btosllball05_DPC, trigger : Hlt2RD_B0ToKpPimEE_MVA, q2_bin : low    }
-  - {sample : Bd_Kstee_eq_btosllball05_DPC, trigger : Hlt2RD_B0ToKpPimEE_MVA, q2_bin : central}
-  - {sample : Bd_Kstee_eq_btosllball05_DPC, trigger : Hlt2RD_B0ToKpPimEE_MVA, q2_bin : high   }
+  - {sample : bdkstkpiee    , trigger : rkst_ee_os, q2_bin : low    }
+  - {sample : bdkstkpiee    , trigger : rkst_ee_os, q2_bin : central}
+  - {sample : bdkstkpiee    , trigger : rkst_ee_os, q2_bin : high   }
   # ------------
-  - {sample : Bu_Kee_eq_btosllball05_DPC  , trigger : Hlt2RD_BuToKpEE_MVA   , q2_bin : low    }
-  - {sample : Bu_Kee_eq_btosllball05_DPC  , trigger : Hlt2RD_BuToKpEE_MVA   , q2_bin : central}
-  - {sample : Bu_Kee_eq_btosllball05_DPC  , trigger : Hlt2RD_BuToKpEE_MVA   , q2_bin : high   }
+  - {sample : bpkpee        , trigger : rk_ee_os  , q2_bin : low    }
+  - {sample : bpkpee        , trigger : rk_ee_os  , q2_bin : central}
+  - {sample : bpkpee        , trigger : rk_ee_os  , q2_bin : high   }
   # ------------
-  - {sample : Bd_JpsiKst_ee_eq_DPC        , trigger : Hlt2RD_B0ToKpPimEE_MVA, q2_bin : jpsi   }
-  - {sample : Bu_JpsiK_ee_eq_DPC          , trigger : Hlt2RD_BuToKpEE_MVA   , q2_bin : jpsi   }
+  - {sample : bdkstkpijpsiee, trigger : rkst_ee_os, q2_bin : jpsi   }
+  - {sample : bpkpjpsiee    , trigger :   rk_ee_os, q2_bin : jpsi   }
   # ------------
-  - {sample : 'DATA_24*'                  , trigger : Hlt2RD_B0ToKpPimEE_MVA, q2_bin : jpsi   }
-  - {sample : 'DATA_24*'                  , trigger : Hlt2RD_BuToKpEE_MVA   , q2_bin : jpsi   }
+  - {sample : data_24       , trigger : rkst_ee_os, q2_bin : jpsi   }
+  - {sample : data_24       , trigger :   rk_ee_os, q2_bin : jpsi   }
 output:
   resolution:
     - bmass_correction.png
