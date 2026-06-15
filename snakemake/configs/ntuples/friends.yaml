@@ -6,9 +6,9 @@ defaults:
 projects:
   rk:
     brem_track_2: 
-      version     : v5
+      version     : v6
       entries     : 100_000
-      photon_veto : v1
+      photon_veto : v2
     hop: 
       version     : v4
       entries     : 100_000
@@ -30,9 +30,9 @@ projects:
   # ------------
   rkst:
     brem_track_2: 
-      version     : v5
+      version     : v6
       entries     : 100_000
-      photon_veto : v1
+      photon_veto : v2
     hop: 
       version     : v2
       entries     : 100_000
