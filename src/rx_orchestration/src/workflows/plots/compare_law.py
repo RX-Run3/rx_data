@@ -82,20 +82,17 @@ class WrapCompare(law.WrapperTask):
     
         l_cfg = [] 
         for args in config['args']:
+            q2bin   = args['q2_bin' ]
             sample  = args['sample' ]
             trigger = args['trigger']
-            q2bin   = args['q2_bin' ]
     
-            for block in [12, 5, 6, 78]:
-                if block == 78 and sample == 'Bd_JpsiKst_ee_eq_DPC':
-                    log.warning(f'Skipping blocks 7 and 8 for {sample}')
-                    continue
-                for kind in ['resolution', 'smear']:
-                    for brem in [1, 2]:
+            for block in _BLOCKS:
+                for kind in _KINDS:
+                    for brem in _BREMS:
                         cfg            = {}
+                        cfg['q2_bin' ] = q2bin 
                         cfg['sample' ] = sample
                         cfg['trigger'] = trigger
-                        cfg['q2_bin' ] = q2bin 
                         cfg['config' ] = kind 
                         cfg['substr' ] = None 
                         cfg['brem'   ] = brem 
