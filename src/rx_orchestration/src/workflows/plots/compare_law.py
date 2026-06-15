@@ -3,16 +3,21 @@ This script is meant to run the orchestration of comparison plots with
 Luigi Analysis Workflow
 '''
 import os
-import json
-from pathlib               import Path
-
 import law
+import json
+
+from typing                import Final
+from pathlib               import Path
 from law.parameter         import Parameter
 from omegaconf             import DictConfig, OmegaConf
 from dmu.generic           import utilities as gut
 from dmu.logging.log_store import LogStore
 
 log=LogStore.add_logger('rx_orchestration:compare_law')
+_ANADIR : Final[Path]      = Path(os.environ['ANADIR'])
+_BLOCKS : Final[list[int]] = [1, 2, 5, 6, 7, 8]
+_BREMS  : Final[list[int]] = [1, 2]
+_KINDS  : Final[list[str]] = ['resolution', 'smear']
 # -------------------------------------
 class CompareTask(law.Task):
     config_string : str = Parameter() # type: ignore
