@@ -58,27 +58,6 @@ def _set_logs() -> None:
     LogStore.set_level('fitter:data_preprocessor', LEVEL)
     LogStore.set_level('fitter:base_fitter'      , LEVEL)
 # ----------------------
-def _get_client(cfg : RXFitConfig) -> Client | None:
-    '''
-    Parameters
-    -------------
-    cfg: Configuration object
-
-    Returns
-    -------------
-    Client if using multiple processes, or None
-    '''
-    if cfg.nproc == 1:
-        return None
-
-    cluster = LocalCluster(
-       n_workers         =cfg.nproc,
-       threads_per_worker=1,
-       processes         =True,
-       memory_limit      ='4GiB')
-
-    return Client(cluster)
-# ----------------------
 def _parse_args() -> RXFitConfig:
     '''
     Returns
@@ -241,11 +220,7 @@ def main():
     EnableImplicitMT(cfg.ncores)
     _set_logs()
 
-    client = _get_client(cfg = cfg)
     with ExitStack() as stack:
-        if client is not None:
-            stack.enter_context(RDFLoader.client(client = client))
-
         stack.enter_context(RDFGetter.custom_friends(versions = {}))
         stack.enter_context(Cache.cache_root(path=cfg.output_directory))
         stack.enter_context(PL.parameter_schema(cfg=cfg.mod_cfg.yields))
