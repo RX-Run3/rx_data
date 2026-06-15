@@ -13,8 +13,8 @@ os.environ['ANADIR'] = ANADIR
 
 MAIN_VERSION = 'v1'
 LOGDIR = config['defaults']['smklog']
-_MERGE = f'{ANADIR}/tmp/sentinels/friends/{{project}}/{{friend}}_{{vers}}.merge'
-_CALC  = f'{ANADIR}/tmp/sentinels/friends/{{project}}/{{friend}}_{{vers}}_{{index}}.calc'
+_MERGE = f'{ANADIR}/tmp/sentinels/friends/{{project}}/{{friend}}/{{vers}}.merge'
+_CALC  = f'{ANADIR}/tmp/sentinels/friends/{{project}}/{{friend}}/{{vers}}_{{index}}.calc'
 
 CACHED = {
     'rk_10000'    : 178, 
