@@ -16,7 +16,6 @@ from dmu.workflow  import Cache
 from dmu.stats     import ParameterLibrary as PL
 from dmu.generic   import utilities as gut
 from dmu.generic   import UnpackerModel
-from zfit.loss     import ExtendedUnbinnedNLL
 
 from fitter        import NLLConf
 from fitter        import MVAWp
@@ -26,7 +25,7 @@ from fitter        import RXFitConfig
 from fitter        import DataFitter
 from fitter        import LikelihoodFactory
 from rx_selection  import selection as sel
-from rx_common     import Qsq, Component, Region, Cuts
+from rx_common     import Qsq, Component, Region
 
 log=LogStore.add_logger('fitter:fit_rx_reso')
 # ----------------------
@@ -181,7 +180,7 @@ def _fit_muon(cfg : RXFitConfig) -> None:
     '''
     This is where DataFitter is used
     '''
-    d_nll    = {}
+    d_nll : dict[Region,NLLConf] = {}
     cfg.name = Region.brem_xx0
     d_nll[cfg.name] = _get_nll(cfg=cfg)
 
