@@ -51,7 +51,7 @@ def _get_calc_list(wc):
     entries  = _get_setting(wc, 'entries')
     nparts   = _get_parts(wc.project, entries)
 
-    return [f'{dir_name}/{wc.friend}_{wc.vers}_{index}.calc' for index in range(nparts) ]
+    return [f'{dir_name}/{wc.friend}/{wc.vers}_{index}.calc' for index in range(nparts) ]
 def _get_setting(wc, name):
     friend = getattr(wc,  'friend')
     project= getattr(wc, 'project')
@@ -70,14 +70,14 @@ def sentinels(friend):
                 continue
 
             vers = settings['version']
-            path = f'{ANADIR}/tmp/sentinels/friends/{project}/{friend}_{vers}.merge'
+            path = f'{ANADIR}/tmp/sentinels/friends/{project}/{friend}/{vers}.merge'
             paths.append(path)
 
     return paths
 rule all:
     '''Request all sentinel files for every combination.'''
     input:
-        sentinels(friend = 'mva'            )
+        sentinels(friend = 'brem_track_2'            )
 # ───────────────────────────────────────────────────────────────────
 rule merge:
     output:
