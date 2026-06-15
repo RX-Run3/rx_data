@@ -329,7 +329,8 @@ class ParameterReader:
             brem    = brem,
             signame = signame)
 
-        iblock  = numpy.argmax(arr_blk == block.to_int())
+        iblock  = numpy.argmax(arr_blk == block.value)
+
         def fun(vals : numpy.ndarray) -> float:
             val = vals[iblock]
 
