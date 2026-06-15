@@ -4,11 +4,11 @@ Module containing Q2SmearCalculator class
 
 import os
 import math
-from typing    import Final
-from functools import cache
-
 import pandas as pnd
-from ROOT                           import RDF
+
+from typing                         import Final
+from functools                      import lru_cache
+from ROOT                           import RDF # type: ignore
 from rx_common                      import info
 from dmu.generic                    import typing_utilities as tut
 from dmu.logging.log_store          import LogStore
@@ -69,7 +69,7 @@ class Q2SmearCorrector:
 
         return df
     # ------------------------------------
-    @cache
+    @lru_cache(maxsize = 10)
     def _read_quantity(self, nbrem : int, block : int, kind : str) -> float:
         df = self._df.query(f'block == {block} and brem == {nbrem}')
 
