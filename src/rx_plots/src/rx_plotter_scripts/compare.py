@@ -1,8 +1,6 @@
 '''
 Script used to compare variables in the same dataframe
 '''
-# pylint: disable=no-name-in-module, logging-fstring-interpolation, line-too-long
-
 import os
 import mplhep
 import argparse
@@ -46,18 +44,8 @@ class Config:
     nomva   : bool
     emulate : bool
 
-    trigger_bukee = 'Hlt2RD_BuToKpEE_MVA'
-    trigger_bukmm = 'Hlt2RD_BuToKpMuMu_MVA'
-
-    trigger_bdkee = 'Hlt2RD_B0ToKpPimEE_MVA'
-    trigger_bdkmm = 'Hlt2RD_B0ToKpPimMuMu_MVA'
-
-    l_trigger_bu  = [trigger_bukmm, trigger_bukee, f'{trigger_bukee}_ext', f'{trigger_bukee}_noPID']
-    l_trigger_bd  = [trigger_bdkmm, trigger_bdkee, f'{trigger_bdkee}_ext', f'{trigger_bdkee}_noPID']
-    l_trigger     = l_trigger_bd + l_trigger_bu
-
-    d_reso        = {'jpsi' : 'B_const_mass_M', 'psi2' : 'B_const_mass_psi2S_M'}
-    ana_dir       = Path(os.environ['ANADIR'])
+    d_reso  = {Qsq.jpsi : 'B_const_mass_M', Qsq.psi2 : 'B_const_mass_psi2S_M'}
+    ana_dir = Path(os.environ['ANADIR'])
 
     l_col  = []
 # ---------------------------------
@@ -235,7 +223,7 @@ def _cfg_from_args() -> Config:
     parser = argparse.ArgumentParser(description='Script used to make comparison plots between distributions in the same dataframe')
     parser.add_argument('-q', '--q2bin'  , type=Qsq      , help='q2 bin' , choices=['low', 'central', 'jpsi', 'psi2', 'high'], required=True)
     parser.add_argument('-s', '--sample' , type=Component, help='Sample' , required=True)
-    parser.add_argument('-t', '--trigger', type=Trigger  , help='Trigger' , required=True, choices=Config.l_trigger)
+    parser.add_argument('-t', '--trigger', type=Trigger  , help='Trigger' , required=True, choices=list(Trigger))
     parser.add_argument('-c', '--config' , type=str      , help='Configuration', required=True)
     parser.add_argument('-x', '--substr' , type=str      , help='Substring that must be contained in path, e.g. magup')
     parser.add_argument('-b', '--brem'   , type=int      , help='Brem category, 12 = 1 or 2, -1 = all' , choices=[-1, 0, 1, 2, 12], required=True)
