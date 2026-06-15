@@ -69,7 +69,7 @@ def _parse_args() -> RXFitConfig:
     parser.add_argument('-c', '--fit_cfg', type=str           , help='Name of configuration, e.g. rare/rk/ee'          , required= True)
     parser.add_argument('-t', '--toy_cfg', type=str           , help='Name of toy config, e.g. toys/maker.yaml'        , default =   '')
     parser.add_argument('-N', '--ntoys'  , type=int           , help='If specified, this will override ntoys in config', default =0)
-    parser.add_argument('-n', '--nproc'  , type=int           , help='Number of processes'                             , default =1)
+    parser.add_argument('-n', '--ncores' , type=int           , help='Number of processes'                             , default =1)
     parser.add_argument('-l', '--log_lvl', type=int           , help='Logging level', choices=[5, 10, 20, 30]          , default =20)
     parser.add_argument('-q', '--q2bin'  , type=str           , help='q2 bin'      , choices=['low', 'central', 'high'], required=True)
     parser.add_argument('-C', '--mva_cmb', type=MVAWp.from_str, help='MVA working point, e.g. 0.2; 0.1 0.3'            , required=True)
@@ -106,7 +106,7 @@ def _cfg_from_args(args : argparse.Namespace) -> RXFitConfig:
         group   = args.group,
         block   = args.block,
         q2bin   = args.q2bin,
-        nproc   = args.nproc,
+        ncores  = args.ncores,
         mva_cmb = args.mva_cmb,
         mva_prc = args.mva_prc,
         log_lvl = args.log_lvl,
@@ -216,9 +216,9 @@ def main():
     with UnpackerModel.package(name = 'fitter_data'):
         cfg = _parse_args()
 
-    if cfg.nproc > 1:
-        log.info(f'Running with {cfg.nproc} cores')
-        EnableImplicitMT(cfg.nproc)
+    if cfg.ncores > 1:
+        log.info(f'Running with {cfg.ncores} cores')
+        EnableImplicitMT(cfg.ncores)
 
     _set_logs()
 
