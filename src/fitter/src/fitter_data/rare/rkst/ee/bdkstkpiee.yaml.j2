@@ -1,8 +1,8 @@
-component : bdkstkpiee 
+component : bdkstkpiee
 categories:
 {% for block in range(1, 9) %}
   BREM_b{{ block }}:
-    selection : 
+    selection :
       block: block == {{ block }}
     model:
       pdfs :
@@ -10,7 +10,7 @@ categories:
       fix           : {}
       reparametrize :
         mu : scale
-        sg : reso 
+        sg : reso
       shared        :
         - mu
         - sg
