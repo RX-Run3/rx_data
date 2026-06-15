@@ -28,7 +28,7 @@ plots:
           ls    : --
           lw    : 3
           c     : gray
-    Jpsi_M_brem_track_2:
+    Jpsi_Mass:
         binning    : [3200, 3800, 30]
         yscale     : 'linear'
         labels     : ['M${}_{corr}(J/\psi)$[MeV]', 'Normalized']
@@ -52,7 +52,7 @@ plots:
         normalized : true
         styling:
           histtype : step
-    B_M_brem_track_2:
+    B_Mass:
         binning    : [4500, 6000, 60]
         yscale     : 'linear'
         labels     : ['M${}_{corr}(B^+)$[MeV]', 'Normalized']

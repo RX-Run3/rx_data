@@ -5,7 +5,7 @@ general:
 selection:
   q2 : (1)
 plots:
-  Jpsi_M_brem_track_2:
+  Jpsi_Mass:
     binning    : [2300, 3700, 40]
     yscale     : linear
     labels     : ['M$(J/\psi)$[MeV]', 'Normalized']
@@ -19,7 +19,7 @@ plots:
       ls    : --
       c     : black 
       lw    : 2
-  Jpsi_M_smr_brem_track_2:
+  Jpsi_Mass_smr:
     binning    : [2300, 3700, 40]
     yscale     : linear
     labels     : ['M$(J/\psi)$[MeV]', 'Normalized']
@@ -35,9 +35,9 @@ plots:
       lw    : 2
 plugin:
   stats:
-    Jpsi_M_smr_brem_track_2:
+    Jpsi_Mass_smr:
       mean : $\mu$={:.3f}
       rms  : $\sigma$={:.3f}
-    Jpsi_M_brem_track_2:
+    Jpsi_Mass:
       mean : $\mu$={:.3f}
       rms  : $\sigma$={:.3f}

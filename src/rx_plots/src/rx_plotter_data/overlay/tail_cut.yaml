@@ -3,7 +3,7 @@
 general:
   size : [12, 8]
 definitions:
-  B_M_corr    : B_M_brem_track_2
+  B_M_corr    : B_Mass
   nbrem       : int(L1_HASBREMADDED_brem_track_2) + int(L2_HASBREMADDED_brem_track_2)
 selection:
   q2      : (1)

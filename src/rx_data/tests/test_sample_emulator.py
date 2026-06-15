@@ -31,7 +31,6 @@ _SAMPLE_PAIRS = [
 _SWAPPED_MASSES = [
     'B_M',
     'B_Mass',
-    'B_M_brem_track_2',
     'B_const_mass_M',
     'B_const_mass_psi2S_M',
 ]
@@ -57,7 +56,6 @@ def _get_rdf(size : int = 100) -> RDF.RNode:
 
     rdf = rdf.Define('B_M'                 ,   '0')
     rdf = rdf.Define('B_Mass'              ,   '0')
-    rdf = rdf.Define('B_M_brem_track_2'    ,   '0')
     rdf = rdf.Define('B_const_mass_M'      ,   '0')
     rdf = rdf.Define('B_const_mass_psi2S_M',   '0')
     rdf = rdf.Define('B_TRUEID'            , '123')

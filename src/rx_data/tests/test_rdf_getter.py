@@ -108,9 +108,8 @@ class Data:
         'L2_TRACK_P']
 
     l_brem_track_2 = [
-        'B_Mass',
         'Jpsi_Mass',
-        'B_M_brem_track_2']
+        'B_Mass']
 
     l_branch_mm = l_branch_common + ['B_Mass', 'Jpsi_Mass']
     l_q2bin     = ['low', 'cen_low', 'central', 'cen_high', 'psi2', 'high']

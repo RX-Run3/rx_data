@@ -3,8 +3,8 @@
 general:
   size : [12, 8]
 definitions:
-  B_M_corr    : B_M_brem_track_2
-  Jpsi_M_corr : Jpsi_M_brem_track_2
+  B_M_corr    : B_Mass
+  Jpsi_M_corr : Jpsi_Mass
   nbrem       : int(L1_HASBREMADDED_brem_track_2) + int(L2_HASBREMADDED_brem_track_2)
 selection:
   q2      : (1)

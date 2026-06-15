@@ -1,6 +1,6 @@
 --------------------
 PDF: SumPDF
-OBS: <zfit Space obs=('B_M_brem_track_2',), axes=(0,), limits=(array([[4500.]]), array([[7000.]])), binned=False>
+OBS: <zfit Space obs=('B_Mass',), axes=(0,), limits=(array([[4500.]]), array([[7000.]])), binned=False>
 Name                                                        Value            Low           HighFloating               Constraint
 --------------------
 ar_dscb_Signal_002_1_reso_flt                           1.000e+00      2.000e-01      5.000e+00    1      9.062e-01___1.910e-02

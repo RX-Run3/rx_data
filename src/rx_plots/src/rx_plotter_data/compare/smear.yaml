@@ -11,12 +11,12 @@ comparison:
       jmass : Jpsi_M
   Corrected:
     vars:
-      bmass : B_M_brem_track_2
-      jmass : Jpsi_M_brem_track_2
+      bmass : B_Mass
+      jmass : Jpsi_Mass
   Corrected and smeared:
     vars:
-      bmass : B_M_smr_brem_track_2
-      jmass : Jpsi_M_smr_brem_track_2
+      bmass : B_Mass_smr
+      jmass : Jpsi_Mass_smr
 saving:
   plt_dir : plots/comparison/smear
 plots:

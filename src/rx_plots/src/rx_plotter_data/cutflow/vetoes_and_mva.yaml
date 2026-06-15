@@ -45,7 +45,7 @@ cutflow:
 saving:
   plt_dir : plots/cutflow/vetoes
 plots:
-    B_M_brem_track_2:
+    B_Mass:
         binning    : [4500, 6000, 30]
         yscale     : 'linear'
         labels     : ['M${}_{corr}(B^+)$', 'Normalized']

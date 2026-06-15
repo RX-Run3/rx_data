@@ -43,17 +43,17 @@ class Q2SmearCorrector:
 
         self._particles : Final[list[str]] = ['B', 'Jpsi']
         self._columns   : Final[list[str]] = [
-            'B_M_brem_track_2', 'Jpsi_M_brem_track_2', 
-            'B_TRUEID'        , 'Jpsi_TRUEID',
-            'B_TRUEM'         , 'Jpsi_TRUEM',
-            'nbrem'           , 'block']
+            'B_Mass'   , 'Jpsi_Mass', 
+            'B_TRUEID' , 'Jpsi_TRUEID',
+            'B_TRUEM'  , 'Jpsi_TRUEM',
+            'nbrem'    , 'block']
 
         self._extra_columns : Final[list[str]] = ['EVENTNUMBER', 'RUNNUMBER']
 
         if not add_original:
             _expected = ['Jpsi_Mass_smr', 'B_Mass_smr', 'q2_smr']
         else:
-            _expected = ['Jpsi_Mass_smr', 'B_Mass_smr', 'q2_smr', 'B_M_brem_track_2', 'Jpsi_M_brem_track_2']
+            _expected = ['Jpsi_Mass_smr', 'B_Mass_smr', 'q2_smr', 'B_Mass', 'Jpsi_Mass']
 
         self._expected : Final[list[str]] = _expected
         self._channel  = channel

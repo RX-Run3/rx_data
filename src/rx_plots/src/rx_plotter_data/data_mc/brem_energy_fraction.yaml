@@ -21,7 +21,7 @@ plots:
       normalized : True
       styling:
         linestyle : '-'
-    B_M_brem_track_2:
+    B_Mass:
       binning    : [4500, 6000, 60]
       yscale     : linear
       labels     : ['B mass', 'Normalized']

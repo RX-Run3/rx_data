@@ -11,15 +11,15 @@ comparison:
       jmass : Jpsi_M
   Corrected:
     vars:
-      bmass : B_M_brem_track_2
-      jmass : Jpsi_M_brem_track_2
+      bmass : B_Mass
+      jmass : Jpsi_Mass
   Corrected and L0(nPVs):
     cuts:
       npv   : nPVs < 4
       L0    : max_ll_pt > 2500
     vars:
-      bmass : B_M_brem_track_2
-      jmass : Jpsi_M_brem_track_2
+      bmass : B_Mass
+      jmass : Jpsi_Mass
 saving:
   plt_dir : plots/comparison/resolution
 plots:

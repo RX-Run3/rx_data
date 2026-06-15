@@ -92,7 +92,7 @@ cutflow:
 saving:
   plt_dir : cutflow/bdt
 plots:
-  B_M_brem_track_2:
+  B_Mass:
     binning    : [4500, 6000, 30]
     yscale     : 'linear'
     labels     : ['$\text{M}_{corr}(B^+)$', 'Normalized']

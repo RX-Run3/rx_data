@@ -30,11 +30,11 @@ class Data:
     columns = [
         'nbrem',
         'B_M',
-        'B_M_brem_track_2',
-        'B_M_smr_brem_track_2',
+        'B_Mass',
+        'B_Mass_smr',
         'Jpsi_M',
-        'Jpsi_M_brem_track_2',
-        'Jpsi_M_smr_brem_track_2']
+        'Jpsi_Mass',
+        'Jpsi_Mass_smr']
 
     d_latex = {
         'Bd_JpsiKst_ee_eq_DPC' : r'$B^0\to K^{*0}(\to K^+\pi^-) J/\psi(\to ee)$',
@@ -79,13 +79,13 @@ def _get_df(sample : Component) -> pnd.DataFrame:
     return df
 # --------------------------------
 def _define_columns(df : pnd.DataFrame) -> pnd.DataFrame:
-    df['qsq_org' ] = df['Jpsi_M'                 ] ** 2 / 1e6
-    df['qsq_cor' ] = df['Jpsi_M_brem_track_2'    ] ** 2 / 1e6
-    df['qsq_smr' ] = df['Jpsi_M_smr_brem_track_2'] ** 2 / 1e6
+    df['qsq_org' ] = df['Jpsi_M'       ] ** 2 / 1e6
+    df['qsq_cor' ] = df['Jpsi_Mass'    ] ** 2 / 1e6
+    df['qsq_smr' ] = df['Jpsi_Mass_smr'] ** 2 / 1e6
 
-    df['mass_org'] = df['B_M'                    ]
-    df['mass_cor'] = df['B_M_brem_track_2'       ]
-    df['mass_smr'] = df['B_M_smr_brem_track_2'   ]
+    df['mass_org'] = df['B_M'          ]
+    df['mass_cor'] = df['B_Mass'       ]
+    df['mass_smr'] = df['B_Mass_smr'   ]
 
     l_drop = [ col for col in Data.columns if col not in ['nbrem'] ]
     df     = df.drop(columns=l_drop)
