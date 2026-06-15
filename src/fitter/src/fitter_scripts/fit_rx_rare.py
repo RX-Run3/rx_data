@@ -216,7 +216,10 @@ def main():
     with UnpackerModel.package(name = 'fitter_data'):
         cfg = _parse_args()
 
-    EnableImplicitMT(cfg.ncores)
+    if cfg.nproc > 1:
+        log.info(f'Running with {cfg.nproc} cores')
+        EnableImplicitMT(cfg.nproc)
+
     _set_logs()
 
     with ExitStack() as stack:
