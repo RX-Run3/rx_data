@@ -19,7 +19,7 @@ class Data:
     '''
     Data class
     '''
-    plt.style.use(mplhep.style.LHCb2)
+    plt.style.use(mplhep.style.LHCb2) # type: ignore
     cache_dir : str
     plots_dir : str
 
