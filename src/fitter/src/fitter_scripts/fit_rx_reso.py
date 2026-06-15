@@ -200,7 +200,10 @@ def main():
     with UnpackerModel.package(name = 'fitter_data'):
         cfg = _parse_args()
 
-    EnableImplicitMT(cfg.ncores)
+    if cfg.ncores > 1:
+        EnableImplicitMT(cfg.ncores)
+        log.info(f'Using {cfg.ncores} cores')
+
     with ExitStack() as stack:
         stack.enter_context(Cache.cache_root(path=cfg.output_directory))
         stack.enter_context(PL.parameter_schema(cfg=cfg.mod_cfg.yields))
