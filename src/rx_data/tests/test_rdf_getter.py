@@ -13,7 +13,7 @@ import numpy
 
 from typing         import cast, Final
 from pathlib        import Path
-from ROOT           import RDataFrame, RDF # type: ignore
+from ROOT           import RDataFrame, RDF, EnableImplicitMT # type: ignore
 from dmu            import LogStore
 from dmu.plotting   import Plotter2D
 from dmu.generic    import utilities as gut
@@ -126,6 +126,10 @@ def initialize():
     LogStore.set_level('rx_data:sample_emulator', 10)
 
     plt.style.use(mplhep.style.LHCb2) # type: ignore
+
+    with RDFGetter.alignment_check():
+        EnableImplicitMT(2)
+        yield
 # ------------------------------------------------
 def _check_truem_columns(rdf : RDF.RNode):
     l_name = [ name.c_str() for name in rdf.GetColumnNames() if name.c_str().endswith('_TRUEM') ]
@@ -524,6 +528,136 @@ def _run_default_checks(
     _plot_mva(rdf     , f'{test_name}_{sample}', out_dir = tmp_path)
     _plot_hop(rdf     , f'{test_name}_{sample}', out_dir = tmp_path)
 # ------------------------------------------------
+# Basic tests
+# ------------------------------------------------
+@pytest.mark.basic
+@pytest.mark.parametrize('sample, trigger',
+    [(Component.bpkpee    , Trigger.rk_ee_os),
+     (Component.bpkpmm    , Trigger.rk_mm_os),
+     (Component.bdkstkpiee, Trigger.rkst_ee_os),
+     (Component.bdkstkpimm, Trigger.rkst_mm_os)])
+def test_mcdecaytree(
+    sample  : Component,
+    trigger : Trigger,
+    tmp_path: Path):
+    '''
+    Builds dataframe from MCDecayTree
+    '''
+    with RDFGetter.max_entries(value=10_000):
+        gtr = RDFGetter(sample=sample, trigger=trigger, tree='MCDecayTree')
+        rdf = gtr.get_rdf(per_file=False)
+
+    rdf      = cast(RDataFrame, rdf)
+    nentries = rdf.Count().GetValue()
+
+    log.info(f'Found {nentries} entries')
+
+    assert nentries > 0
+
+    _check_mcdt(rdf=rdf, name=f'mcdt/{sample}', out_dir = tmp_path)
+# ------------------------------------------------
+@pytest.mark.basic
+@pytest.mark.parametrize('sample' , [Component.bdkstkpiee, Component.bdkstkpijpsiee])
+@pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rkst_ee_os])
+def test_mc_ee(
+    sample  : Component,
+    trigger : Trigger,
+    tmp_path: Path):
+    '''
+    Test of getter class in mc
+    '''
+    if sample == Component.bdkstkpijpsiee and trigger == Trigger.rk_ee_os:
+        return
+
+    with RDFGetter.max_entries(value=10_000):
+        gtr = RDFGetter(sample=sample, trigger=trigger)
+        rdf = gtr.get_rdf(per_file=False)
+
+    _plot_sim(rdf, f'test_mc/{sample}', out_dir = tmp_path, particle=   'B')
+    _plot_sim(rdf, f'test_mc/{sample}', out_dir = tmp_path, particle='Jpsi')
+
+    if 'B0ToKpPim' in trigger:
+        return
+
+    _print_dotted_branches(rdf)
+    _check_branches(rdf, is_ee=True, is_mc=sample.is_mc)
+
+    _plot_mc_qsq(rdf, f'test_mc/{sample}', sample, out_dir = tmp_path)
+    _plot_mva_mass(rdf, f'test_mc/{sample}', out_dir = tmp_path)
+    _plot_mva(rdf     , f'test_mc/{sample}', out_dir = tmp_path)
+    _plot_hop(rdf     , f'test_mc/{sample}', out_dir = tmp_path)
+# ------------------------------------------------
+@pytest.mark.basic
+@pytest.mark.parametrize('sample' , [Component.bpkpmm, Component.bdkstkpijpsimm])
+@pytest.mark.parametrize('trigger', [Trigger.rk_mm_os, Trigger.rkst_mm_os])
+def test_mc_mm(
+    sample  : Component,
+    trigger : Trigger,
+    tmp_path: Path):
+    '''
+    Test of getter class in mc
+    '''
+    if sample == Component.bdkstkpijpsimm and trigger == Trigger.rk_mm_os:
+        return
+
+    with RDFGetter.max_entries(value=10_000):
+        gtr = RDFGetter(sample=sample, trigger=trigger)
+        rdf = gtr.get_rdf(per_file=False)
+
+    _plot_sim(rdf, f'test_mc/{sample}', out_dir = tmp_path, particle=   'B')
+    _plot_sim(rdf, f'test_mc/{sample}', out_dir = tmp_path, particle='Jpsi')
+
+    if 'B0ToKpPim' in trigger:
+        return
+
+    _print_dotted_branches(rdf)
+    _check_branches(rdf, is_ee=True, is_mc=sample.is_mc)
+
+    _plot_mc_qsq(rdf, f'test_mc/{sample}', sample, out_dir = tmp_path)
+    _plot_mva_mass(rdf, f'test_mc/{sample}', out_dir = tmp_path)
+    _plot_mva(rdf     , f'test_mc/{sample}', out_dir = tmp_path)
+    _plot_hop(rdf     , f'test_mc/{sample}', out_dir = tmp_path)
+# ------------------------------------------------
+@pytest.mark.basic
+@pytest.mark.parametrize(
+    'sample' , [
+    Component.data_24_md_c2,
+    Component.data_24_md_c3,
+    Component.data_24_md_c4,
+    Component.data_24_mu_c2,
+    Component.data_24_mu_c3,
+    Component.data_24_mu_c4])
+@pytest.mark.parametrize('trigger',
+    [Trigger.rk_ee_os,
+     Trigger.rkst_ee_os,
+     Trigger.rk_mm_os,
+     Trigger.rkst_mm_os])
+def test_data(
+    sample  : Component,
+    trigger : Trigger,
+    tmp_path: Path):
+    '''
+    Test of getter class in data
+    '''
+    with RDFGetter.max_entries(value=1000):
+        gtr = RDFGetter(sample=sample, trigger=trigger)
+        rdf = gtr.get_rdf(per_file=False)
+
+    rdf = _apply_selection(rdf=rdf, trigger=trigger, sample=sample)
+    rep = rdf.Report()
+    rep.Print()
+
+    if 'B0ToKpPim' in trigger:
+        return
+
+    _run_default_checks(
+        rdf      = rdf,
+        sample   = sample,
+        trigger  = trigger,
+        tmp_path = tmp_path,
+        test_name= f'data_{sample}_{trigger}')
+# ------------------------------------------------
+# ------------------------------------------------
 def test_cocktail():
     '''
     Test that cocktail samples are actually merged
@@ -731,104 +865,6 @@ def test_electron(kind : str, trigger : Trigger, tmp_path : Path):
         tmp_path = tmp_path,
         sample   = sample)
 # ------------------------------------------------
-@pytest.mark.parametrize(
-    'sample' , [
-    Component.data_24_md_c2,
-    Component.data_24_md_c3,
-    Component.data_24_md_c4,
-    Component.data_24_mu_c2,
-    Component.data_24_mu_c3,
-    Component.data_24_mu_c4])
-@pytest.mark.parametrize('trigger',
-    [Trigger.rk_ee_os,
-     Trigger.rkst_ee_os,
-     Trigger.rk_mm_os,
-     Trigger.rkst_mm_os])
-def test_data(
-    sample  : Component,
-    trigger : Trigger,
-    tmp_path: Path):
-    '''
-    Test of getter class in data
-    '''
-    with RDFGetter.max_entries(value=100_000):
-        gtr = RDFGetter(sample=sample, trigger=trigger)
-        rdf = gtr.get_rdf(per_file=False)
-
-    rdf = _apply_selection(rdf=rdf, trigger=trigger, sample=sample)
-    rep = rdf.Report()
-    rep.Print()
-
-    if 'B0ToKpPim' in trigger:
-        return
-
-    _run_default_checks(
-        rdf      = rdf,
-        sample   = sample,
-        trigger  = trigger,
-        tmp_path = tmp_path,
-        test_name= f'data_{sample}_{trigger}')
-# ------------------------------------------------
-@pytest.mark.parametrize('sample' , [Component.bdkstkpiee, Component.bdkstkpijpsiee])
-@pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rkst_ee_os])
-def test_mc_ee(
-    sample  : Component,
-    trigger : Trigger,
-    tmp_path: Path):
-    '''
-    Test of getter class in mc
-    '''
-    if sample == Component.bdkstkpijpsiee and trigger == Trigger.rk_ee_os:
-        return
-
-    with RDFGetter.max_entries(value=10_000):
-        gtr = RDFGetter(sample=sample, trigger=trigger)
-        rdf = gtr.get_rdf(per_file=False)
-
-    _plot_sim(rdf, f'test_mc/{sample}', out_dir = tmp_path, particle=   'B')
-    _plot_sim(rdf, f'test_mc/{sample}', out_dir = tmp_path, particle='Jpsi')
-
-    if 'B0ToKpPim' in trigger:
-        return
-
-    _print_dotted_branches(rdf)
-    _check_branches(rdf, is_ee=True, is_mc=sample.is_mc)
-
-    _plot_mc_qsq(rdf, f'test_mc/{sample}', sample, out_dir = tmp_path)
-    _plot_mva_mass(rdf, f'test_mc/{sample}', out_dir = tmp_path)
-    _plot_mva(rdf     , f'test_mc/{sample}', out_dir = tmp_path)
-    _plot_hop(rdf     , f'test_mc/{sample}', out_dir = tmp_path)
-# ------------------------------------------------
-@pytest.mark.parametrize('sample' , [Component.bpkpmm, Component.bdkstkpijpsimm])
-@pytest.mark.parametrize('trigger', [Trigger.rk_mm_os, Trigger.rkst_mm_os])
-def test_mc_mm(
-    sample  : Component,
-    trigger : Trigger,
-    tmp_path: Path):
-    '''
-    Test of getter class in mc
-    '''
-    if sample == Component.bdkstkpijpsimm and trigger == Trigger.rk_mm_os:
-        return
-
-    with RDFGetter.max_entries(value=10_000):
-        gtr = RDFGetter(sample=sample, trigger=trigger)
-        rdf = gtr.get_rdf(per_file=False)
-
-    _plot_sim(rdf, f'test_mc/{sample}', out_dir = tmp_path, particle=   'B')
-    _plot_sim(rdf, f'test_mc/{sample}', out_dir = tmp_path, particle='Jpsi')
-
-    if 'B0ToKpPim' in trigger:
-        return
-
-    _print_dotted_branches(rdf)
-    _check_branches(rdf, is_ee=True, is_mc=sample.is_mc)
-
-    _plot_mc_qsq(rdf, f'test_mc/{sample}', sample, out_dir = tmp_path)
-    _plot_mva_mass(rdf, f'test_mc/{sample}', out_dir = tmp_path)
-    _plot_mva(rdf     , f'test_mc/{sample}', out_dir = tmp_path)
-    _plot_hop(rdf     , f'test_mc/{sample}', out_dir = tmp_path)
-# ------------------------------------------------
 @pytest.mark.parametrize('sample' , [Component.data_24_md_c2, Component.bdkstkpiee])
 @pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rkst_ee_os])
 def test_q2_track_electron(
@@ -911,31 +947,6 @@ def test_check_vars(sample : Component, trigger : Trigger):
     _check_branches(rdf, is_ee=True, is_mc=sample.is_mc)
 
     _print_dotted_branches(rdf)
-# ------------------------------------------------
-@pytest.mark.parametrize('sample, trigger',
-    [(Component.bpkpee    , Trigger.rk_ee_os),
-     (Component.bpkpmm    , Trigger.rk_mm_os),
-     (Component.bdkstkpiee, Trigger.rkst_ee_os),
-     (Component.bdkstkpimm, Trigger.rkst_mm_os)])
-def test_mcdecaytree(
-    sample  : Component,
-    trigger : Trigger,
-    tmp_path: Path):
-    '''
-    Builds dataframe from MCDecayTree
-    '''
-    with RDFGetter.max_entries(value=10_000):
-        gtr = RDFGetter(sample=sample, trigger=trigger, tree='MCDecayTree')
-        rdf = gtr.get_rdf(per_file=False)
-
-    rdf      = cast(RDataFrame, rdf)
-    nentries = rdf.Count().GetValue()
-
-    log.info(f'Found {nentries} entries')
-
-    assert nentries > 0
-
-    _check_mcdt(rdf=rdf, name=f'mcdt/{sample}', out_dir = tmp_path)
 # ------------------------------------------------
 @pytest.mark.parametrize('period'  ,['c2','c3','c4'])
 @pytest.mark.parametrize('polarity',['mu', 'md'])
@@ -1210,6 +1221,30 @@ def test_selection(
 
     _print_dotted_branches(rdf)
 # --------------------------
+@pytest.mark.parametrize('component' , [Component.bdkstkpimm, Component.data_24_md_c2])
+@pytest.mark.parametrize('q2bin'     , Data.l_q2bin)
+@pytest.mark.parametrize('trigger'   , [Trigger.rk_mm_os, Trigger.rkst_mm_os])
+def test_full_selection_muon(
+        component : Component,
+        q2bin     : Qsq,
+        trigger   : Trigger):
+    '''
+    Applies full selection to all q2 bins in muon channel
+    '''
+    with RDFGetter.max_entries(value=100_000):
+        gtr = RDFGetter(sample=component, trigger=trigger)
+        rdf = gtr.get_rdf(per_file=False)
+
+    rdf     = sel.apply_full_selection(rdf = rdf, trigger=trigger, q2bin=q2bin, process=component)
+    rep     = rdf.Report()
+    rep.Print()
+
+    nentries = rdf.Count().GetValue()
+
+    assert nentries > 0
+
+    _print_dotted_branches(rdf)
+# --------------------------
 @pytest.mark.parametrize('trigger'  , [Trigger.rk_ee_os    , Trigger.rkst_ee_os])
 @pytest.mark.parametrize('component', [Component.bdkstkpiee, Component.data_24_md_c2])
 @pytest.mark.parametrize('q2bin'    , Data.l_q2bin)
@@ -1257,30 +1292,6 @@ def test_full_selection_electron_prec(
         process = component,
         out_path= tmp_path,
     )
-    rep     = rdf.Report()
-    rep.Print()
-
-    nentries = rdf.Count().GetValue()
-
-    assert nentries > 0
-
-    _print_dotted_branches(rdf)
-# --------------------------
-@pytest.mark.parametrize('component' , [Component.bdkstkpimm, Component.data_24_md_c2])
-@pytest.mark.parametrize('q2bin'     , Data.l_q2bin)
-@pytest.mark.parametrize('trigger'   , [Trigger.rk_mm_os, Trigger.rkst_mm_os])
-def test_full_selection_muon(
-        component : Component,
-        q2bin     : Qsq,
-        trigger   : Trigger):
-    '''
-    Applies full selection to all q2 bins in muon channel
-    '''
-    with RDFGetter.max_entries(value=100_000):
-        gtr = RDFGetter(sample=component, trigger=trigger)
-        rdf = gtr.get_rdf(per_file=False)
-
-    rdf     = sel.apply_full_selection(rdf = rdf, trigger=trigger, q2bin=q2bin, process=component)
     rep     = rdf.Report()
     rep.Print()
 

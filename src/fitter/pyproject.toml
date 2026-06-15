@@ -37,6 +37,7 @@ dev = ["pytest"]
 
 [tool.ruff.lint]
 select = ["F", "PL", "B", 'A']
+ignore = ['PLR0913']
 
 [tool.pyright]
 include = ["src"]

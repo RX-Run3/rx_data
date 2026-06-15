@@ -11,7 +11,7 @@ from dmu.stats     import FitResult
 
 from pathlib       import Path
 from typing        import Any, Final
-from rx_common     import Component
+from rx_common     import Brem, Component
 from .fit_metadata import FitMetadata
 
 log=LogStore.add_logger('fitter:fit_summary')
@@ -115,10 +115,9 @@ class FitSummary:
         '''
         Parameters
         -------------
-        brem   : Brem for which file is read
-        kind   : dat or sim
-        path   : Path to JSON file with fit parameters
         by_fit : If True each row will represent a fit, otherwise each row represents a parameter
+        comp   : Component, e.g. data or signal MC 
+        path   : Path to JSON file with fit parameters
 
         Returns
         -------------
@@ -155,9 +154,8 @@ class FitSummary:
             data[f'{par.name}_error'] = par.error
 
         if comp.is_mc:
-            nentries = self._get_mc_nentries(path=path)
-            data[f'yld_{self._signal}_brem_x12_value'] = nentries
-            data[f'yld_{self._signal}_brem_x12_error'] = math.sqrt(nentries)
+            mc_brem_info = self._get_mc_brem_info(path = path)
+            data.update(mc_brem_info)
 
         if res.gof is None:
             data['pvalue_value'] = -1 
@@ -218,6 +216,38 @@ class FitSummary:
 
         return data
     # ----------------------
+    def _get_mc_brem_info(self, path : Path) -> dict[str,float]:
+        '''
+        Parameters
+        ----------------
+        path: Path to `parameters.json` file with fit parameters
+
+        Returns
+        ----------------
+        Dictionary with information associated to brem (yields, fractions, etc)
+        '''
+        data : dict[str,float] = {}
+        if str(Brem.one) in str(path):
+            path_b1  = path
+            path_b2  = Path(str(path).replace(str(Brem.one), str(Brem.two)))
+        else:
+            path_b1  = Path(str(path).replace(str(Brem.two), str(Brem.one)))
+            path_b2  = path
+
+        nentries_b1 = self._get_mc_nentries(path=path_b1)
+        nentries_b2 = self._get_mc_nentries(path=path_b2)
+
+        nentries = nentries_b1 + nentries_b2
+
+        data[f'yld_{self._signal}_brem_x12_value'] = nentries
+        data[f'yld_{self._signal}_brem_x12_error'] = math.sqrt(nentries)
+
+        # NOTE: We only store brem 1 fraction, either in brem 1 or brem 2 fits
+        data[f'{self._signal}_fraction_value'] = nentries_b1 / nentries
+        data[f'{self._signal}_fraction_error'] = math.sqrt(nentries_b1) / nentries
+
+        return data
+    # ----------------------
     def _get_mc_nentries(self, path : Path) -> float:
         '''
         This is needed to get entries from simulated datasets
@@ -230,6 +260,8 @@ class FitSummary:
         -------------
         Number of entries in dataset used in fit
         '''
+        log.debug(f'Getting MC entries from: {path}')
+
         json_path = path.parent / 'data.json'
         if not json_path.exists():
             raise FileNotFoundError(f'Cannot find: {json_path}')
@@ -277,8 +309,8 @@ class FitSummary:
 
             l_data += info
 
-        df              = pnd.DataFrame(l_data)
-        df['component'] = comp
+        df         = pnd.DataFrame(l_data)
+        df['comp'] = comp
 
         return df
     # ----------------------

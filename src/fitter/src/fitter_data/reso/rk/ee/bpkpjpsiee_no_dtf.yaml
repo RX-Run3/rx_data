@@ -34,7 +34,7 @@ categories:
       values:
         sg:
           - 120
-          -  90
+          -  60
           - 200
 fit:
   strategy  :

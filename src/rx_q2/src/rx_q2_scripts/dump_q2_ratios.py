@@ -12,7 +12,6 @@ For each brem category and block
 '''
 import math
 import argparse
-
 import mplhep
 import jacobi
 import matplotlib.pyplot     as plt
@@ -30,12 +29,12 @@ from rx_common       import Block, Correction, Project
 from rx_common       import Trigger, Component
 from rx_common       import Qsq 
 from rx_common       import Brem 
-from rx_common       import DataSet 
 
 log=LogStore.add_logger('rx_q2:dump_q2_ratios')
 
 PROJECTS   : list[str]        = ['rk_ee', 'rk_mm', 'rkst_ee', 'rkst_mm']
 _FRACTIONS : Final[list[str]] = ['fr']
+_DATA      : Component        = Component.data_24
 #-------------------------------------
 def _load_config(args : argparse.Namespace) -> ScalesConf:
     '''
@@ -60,24 +59,27 @@ def _get_Bx_df(cfg : ScalesConf) -> pnd.DataFrame:
     signal = Component.bpkpjpsiee 
     brems  = [Brem.one, Brem.two] 
     blocks = Block.blocks()
-    kinds  = ['dat', 'sim']
+    comps  = [_DATA, signal]
     suffix = f'{cfg.kind}_{cfg.comb.name}_{cfg.prec.name}_{cfg.year}'
 
-    smr = FitSummary(name = name, signal = signal)
+    smr = FitSummary(
+        name   = name, 
+        data   = _DATA,
+        signal = signal)
     smr.get_df(suffix = suffix)
 
     rdr    = FitParameterReader(name = name, suffix = suffix)
     l_data = []
     for brem in brems:
         for block in blocks:
-            for kind in kinds:
+            for comp in comps:
                 msr = rdr(
                     signame  = signal,
                     brem     = brem, 
                     block    = block, 
-                    cmb      = cfg.comb.name,
-                    prc      = cfg.prec.name,
-                    kind     = kind,
+                    cmb      = cfg.comb,
+                    prc      = cfg.prec,
+                    comp     = comp,
                     trigger  = Trigger.rk_ee_os, 
                     project  = Project.rk,
                     q2bin    = Qsq.jpsi)
@@ -102,7 +104,7 @@ def _get_Bx_df(cfg : ScalesConf) -> pnd.DataFrame:
                     # ---
                     'block'  : block.value,
                     'brem'   : brem.to_int(),
-                    'sample' : kind,
+                    'sample' : comp,
                 }
 
                 l_data.append(data)
@@ -142,12 +144,16 @@ def _get_q2_df(
 
     return df
 #-------------------------------------
-def _get_scales(df : pnd.DataFrame, cfg : ScalesConf) -> pnd.DataFrame:
+def _get_scales(
+    df     : pnd.DataFrame, 
+    signal : Component,
+    cfg    : ScalesConf) -> pnd.DataFrame:
     '''
     Parameters
     ---------------
-    df : Pandas dataframe with fitting parameters, e.g. mu, sg.
-    cfg: Configuration
+    df    : Pandas dataframe with fitting parameters, e.g. mu, sg.
+    signal: Signal component
+    cfg   : Configuration
 
     Returns
     ---------------
@@ -163,7 +169,7 @@ def _get_scales(df : pnd.DataFrame, cfg : ScalesConf) -> pnd.DataFrame:
         sbrem  = str(brem)
         ibrem  = int(sbrem) 
 
-        df_scale          = _scales_from_df(df=df_group)
+        df_scale          = _scales_from_df(df=df_group, signal = signal)
         df_scale['block'] = iblock
         df_scale['brem' ] = ibrem
 
@@ -188,23 +194,26 @@ def _reorder_blocks(df : pnd.DataFrame) -> pnd.DataFrame:
 
     return df
 #-------------------------------------
-def _scales_from_df(df : pnd.DataFrame) -> pnd.DataFrame:
+def _scales_from_df(
+    signal : Component,
+    df     : pnd.DataFrame) -> pnd.DataFrame:
     '''
     Parameters
     ------------------
-    df: Dataframe with fit parameters
+    signal: Signal component
+    df    : Dataframe with fit parameters
 
     Returns
     ------------------
     Dataframe with corrections
     '''
-    d_mu = _get_scale(df=df, corr= Correction.mass_scale     , fun=lambda x : x[0] - x[1])
-    d_sg = _get_scale(df=df, corr= Correction.mass_resolution, fun=lambda x : x[0] / x[1])
-    d_fr = _get_scale(df=df, corr= Correction.brem_fraction  , fun=lambda x : x[0] / x[1])
+    d_mu = _get_scale(df=df, corr= Correction.mass_scale     , signal = signal, fun=lambda x : x[0] - x[1])
+    d_sg = _get_scale(df=df, corr= Correction.mass_resolution, signal = signal, fun=lambda x : x[0] / x[1])
+    d_fr = _get_scale(df=df, corr= Correction.brem_fraction  , signal = signal, fun=lambda x : x[0] / x[1])
 
     corr     = Correction.blok_fraction
-    df_dat   = df.query('sample == "dat"')
-    val, err = _get_entry(corr=corr, df=df_dat)
+    df_dat   = df.query(f'sample == \"{_DATA}\"')
+    val, err = _get_entry(corr=corr, df=df_dat, comp = _DATA)
     d_bk     = {f'{corr}_val' : [val], f'{corr}_err' : [err]}
 
     df   = pnd.DataFrame({**d_mu, **d_sg, **d_fr, **d_bk})
@@ -212,15 +221,17 @@ def _scales_from_df(df : pnd.DataFrame) -> pnd.DataFrame:
     return df
 #-------------------------------------
 def _get_scale(
-    df   : pnd.DataFrame, 
-    corr : Correction, 
-    fun  : Callable) -> dict[str,list[float]]:
+    df     : pnd.DataFrame, 
+    signal : Component,
+    corr   : Correction, 
+    fun    : Callable) -> dict[str,list[float]]:
     '''
     Parameters
     ------------------
-    df  : Dataframe with mass scales and resolutions
-    corr: Variable whose scale or resolution will be calculated
-    fun : Function used to calculate scale or resolution
+    df    : Dataframe with mass scales and resolutions
+    corr  : Variable whose scale or resolution will be calculated
+    fun   : Function used to calculate scale or resolution
+    signal: Signal componnt
 
     Returns
     ------------------
@@ -229,11 +240,11 @@ def _get_scale(
     key  : Name of scale/resolution
     value: Numerical value
     '''
-    df_dat  = df.query('sample == "dat"')
-    df_sim  = df.query('sample == "sim"') 
+    df_dat  = df.query(f'sample == \"{_DATA}\"')
+    df_sim  = df.query(f'sample == \"{signal}\"') 
 
-    dat_val, dat_err = _get_entry(corr=corr, df=df_dat)
-    sim_val, sim_err = _get_entry(corr=corr, df=df_sim)
+    dat_val, dat_err = _get_entry(corr=corr, df=df_dat, comp = _DATA)
+    sim_val, sim_err = _get_entry(corr=corr, df=df_sim, comp = signal)
 
     cov : list[list[float]] = [
         [dat_err ** 2,            0],
@@ -256,6 +267,7 @@ def _get_scale(
 # ----------------------
 def _get_entry(
     corr : Correction, 
+    comp : Component,
     df   : pnd.DataFrame) -> tuple[float,float]:
     '''
     Parameters
@@ -269,7 +281,7 @@ def _get_entry(
     '''
     if len(df) != 1:
         log.error(df)
-        raise ValueError('Expected one and only one row')
+        raise ValueError(f'Expected one and only one row for correction: {corr}/{comp}')
 
     try:
         val = df[f'{corr.var}_val'].iloc[0]
@@ -286,17 +298,21 @@ def _plot_df(
     brem     : Brem,
     ax       : Axes) -> Axes:
 
-    if brem == 0 and variable == Correction.mass_resolution:
+    # Skip brem 0
+    if brem not in {Brem.one, Brem.two}:
         return ax
 
     val   = f'{variable}_val'
     err   = f'{variable}_err'
 
     try:
+        low = df[val] - df[err]
+        high= df[val] + df[err]
+
         ax.fill_between(
-            df['block'],
-            df[val] - df[err],
-            df[val] + df[err],
+            x    = df['block'],
+            y1   = low.to_numpy(dtype=float), # type: ignore
+            y2   = high.to_numpy(dtype=float),# type: ignore
             color= brem.color,
             label= brem.latex,
             alpha= 0.5)
@@ -340,20 +356,20 @@ def _plot_variables(
     df       : pnd.DataFrame, 
     cfg      : ScalesConf,
     variable : str, 
-    kind     : DataSet) -> None:
+    comp     : Component) -> None:
     '''
     Parameters
     -----------------
-    kind: dat or sim
+    comp: Component, e.g. data, bpkpee 
     '''
-    log.info(f'Plotting {variable} for {kind}')
+    log.info(f'Plotting {variable} for {comp}')
     _, ax = plt.subplots(figsize=(15, 10))
     for val, df_brem_unordered in df.groupby('brem'):
         sval    = str(val)
 
         # Block and brem fractions only make sense for brem one
         # and are the same for both brems
-        if variable in _FRACTIONS and sval != '2':
+        if variable in _FRACTIONS and sval == '2':
             log.debug(f'Skipping {sval}/{variable}')
             continue
 
@@ -369,42 +385,52 @@ def _plot_variables(
     else:
         plt.legend(labels = [])
 
+    latex = 'MC' if comp.is_mc else 'Data'
+
     if   variable == 'mu':
-        plt.ylabel(rf'$\mu^{{{kind.latex}}}$[MeV]')
+        plt.ylabel(rf'$\mu^{{{latex}}}$[MeV]')
         ax.axhline(y=cfg.jpsi_mass, color='black', linestyle=':', label='PDG')
     elif variable == 'sg':
-        plt.ylabel(rf'$\sigma^{{{kind.latex}}}$[MeV]')
+        plt.ylabel(rf'$\sigma^{{{latex}}}$[MeV]')
     elif variable == 'fr':
-        plt.ylabel(rf'$fr_{{Brem}}^{{{kind.latex}}}$[MeV]')
+        plt.ylabel(rf'$fr_{{Brem}}^{{{latex}}}$[MeV]')
     elif variable == 'bk':
-        plt.ylabel(rf'$fr_{{Block}}^{{{kind.latex}}}$[MeV]')
+        plt.ylabel(rf'$fr_{{Block}}^{{{latex}}}$[MeV]')
     else:
         raise ValueError(f'Invalid variable: {variable}')
 
     rng = cfg.get_range(var=variable)
     plt.ylim(rng)
     plt.grid()
-    plt.savefig(cfg.out_dir / f'{variable}_{kind}.png')
+    plt.savefig(cfg.out_dir / f'{variable}_{comp}.png')
     plt.close()
 #-------------------------------------
-def _plot(df : pnd.DataFrame, cfg : ScalesConf) -> None:
+def _plot(
+    df  : pnd.DataFrame, 
+    cfg : ScalesConf) -> None:
     '''
     Parameters
     ---------------
     df: Pandas dataframe with fitting parameters, e.g. mu, sg.
     '''
-
+    signal : Component | None = None
     for kind, df_kind in df.groupby('sample'):
-        skind = DataSet(kind)
+        comp = Component(kind)
 
-        _plot_variables(df=df_kind, variable='mu', kind = skind, cfg = cfg)
-        _plot_variables(df=df_kind, variable='sg', kind = skind, cfg = cfg)
-        _plot_variables(df=df_kind, variable='fr', kind = skind, cfg = cfg)
+        _plot_variables(df=df_kind, variable='mu', comp = comp, cfg = cfg)
+        _plot_variables(df=df_kind, variable='sg', comp = comp, cfg = cfg)
+        _plot_variables(df=df_kind, variable='fr', comp = comp, cfg = cfg)
 
-        if kind == DataSet.dat:
-            _plot_variables(df=df_kind, variable='bk', kind = skind, cfg = cfg)
+        if not comp.is_mc:
+            _plot_variables(df=df_kind, variable='bk', comp = comp, cfg = cfg)
 
-    df_scale = _get_scales(df = df, cfg = cfg)
+        if comp != _DATA:
+            signal = comp
+
+    if signal is None:
+        raise ValueError('Signal component not found')
+
+    df_scale = _get_scales(df = df, cfg = cfg, signal = signal)
     _plot_corrections(df=df_scale, cfg = cfg, correction=Correction.mass_resolution)
     _plot_corrections(df=df_scale, cfg = cfg, correction=Correction.mass_scale)
     _plot_corrections(df=df_scale, cfg = cfg, correction=Correction.brem_fraction)
@@ -440,7 +466,7 @@ def main():
     parser.add_argument('-y', '--year'   , type=str           , help='Year for data whose corrections are needed', default='2024')
     args = parser.parse_args()
 
-    plt.style.use(mplhep.style.LHCb2)
+    plt.style.use(mplhep.style.LHCb2) # type: ignore
 
     cfg  = _load_config(args = args)
 

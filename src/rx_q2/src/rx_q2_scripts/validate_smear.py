@@ -151,7 +151,7 @@ def get_rdf(trig, year, nbrem):
     if data.nevs > 0:
         total = rdf.Count().GetValue()
         log.warning(f'Picking up {data.nevs}/{total} events')
-        rdf = rdf.Range(data.nevs)
+        rdf = rdf.Filter(f'rdfentry_ < {data.nevs}')
 
     rdf=rdf.Define('brem_mult', 'L1_BremMultiplicity + L2_BremMultiplicity')
     rdf=rdf.Define('nbrem'    , 'brem_mult < 2 ? brem_mult : 2')

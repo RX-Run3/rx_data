@@ -52,7 +52,7 @@ def _get_rdf(file_path : str, tree_path : str) -> RDataFrame:
 def _preprocess_rdf(rdf : RDataFrame, cfg : dict) -> RDataFrame:
     if 'max_entries' in cfg:
         max_entries = cfg['max_entries']
-        rdf = rdf.Range(max_entries)
+        rdf = rdf.Filter(f'rdfentry_ < {max_entries}')
 
     return rdf
 # ----------------------------------

@@ -49,7 +49,7 @@ def test_unused_fold(tmp_path):
     rdf_sig    = ut.get_rdf(kind='sig')
     rdf_bkg    = ut.get_rdf(kind='bkg')
     l_model, _ = ut.get_models(rdf_sig, rdf_bkg, out_dir=tmp_path)
-    rdf        = rdf_sig.Range(3)
+    rdf        = rdf_sig.Filter('rdfentry_ < 3')
 
     cvp= CVPredict(models=l_model, rdf=rdf)
     cvp.predict()

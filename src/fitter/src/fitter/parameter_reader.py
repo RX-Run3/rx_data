@@ -8,15 +8,18 @@ import numpy
 import jacobi
 import pandas as pnd
 
+from typing     import Final
 from contextlib import contextmanager
 from pathlib    import Path
 from dmu        import LogStore
 from dmu.stats  import Measurement
-from rx_common  import Block, Brem, Project, Trigger 
-from rx_common  import Qsq 
-from rx_common  import info
+from rx_common  import Block, Brem, Component, Project, Trigger 
+from rx_common  import Qsq
+from .mva_conf  import MVAWp 
 
 log=LogStore.add_logger('fitter:parameter_reader')
+
+_NBREM : Final[int] = 2
 # ------------------------------------
 class FitMeasurement(Measurement):
     '''
@@ -116,7 +119,7 @@ class ParameterReader:
         ext_cols = [] if extra_columns is None else extra_columns
         columns  = [
             'project',
-            'kind',
+            'comp',
             'mva_cmb',
             'mva_prc',
             'brem', 
@@ -127,6 +130,8 @@ class ParameterReader:
         try:
             df_info = df[columns]
         except KeyError as exc:
+            log.error(f'Requested: {columns}')
+            log.error('Found:')
             for col in df.columns:
                 log.error(col)
             raise KeyError('Cannot find at least one column') from exc
@@ -214,7 +219,7 @@ class ParameterReader:
         Tuple with value of brem fraction, error and name of variable
         '''
         keys = [ key for key in data if 'fraction' in key ]
-        if len(keys) != 2:
+        if len(keys) != _NBREM:
             for key in data:
                 log.error(key)
             raise ValueError('Expected two entries corresponding to brem fraction')
@@ -222,7 +227,7 @@ class ParameterReader:
         [val] = [ data[key] for key in keys if key.endswith('_value') ]
         [err] = [ data[key] for key in keys if key.endswith('_error') ]
 
-        if brem == 2:
+        if brem == Brem.two:
             val = 1 - val # fraction stored is brem 1 one
 
         # Fraction needs to be named as mu and sg to be used for scales
@@ -234,16 +239,16 @@ class ParameterReader:
 
         signal = mtch.group(1) 
 
-        return f'fr_{signal}_brem_{brem}', val, err
+        return f'fr_{signal}_{brem}', val, err
     # ----------------------
     def __call__(
         self, 
         signame   : str,
         brem      : Brem,
         block     : Block,
-        cmb       : str,
-        prc       : str,
-        kind      : str,
+        cmb       : MVAWp,
+        prc       : MVAWp,
+        comp      : Component,
         project   : Project,
         q2bin     : Qsq,
         trigger   : Trigger) -> FitMeasurement:
@@ -253,8 +258,8 @@ class ParameterReader:
         signame  : Identifier for signal parameter, e.g. jpsi 
         brem     : Brem category, e.g. 0, 1, 2
         block    : Block number in 2024, e.g. 1, 2, 3...8
-        cmb/prc  : String specifying working point, e.g. 050
-        kind     : Either dat or sim
+        cmb/prc  : MVA working point 
+        comp     : Component, e.g. MC or data 
         project  : E.g. rk, rkst 
         q2bin    : E.g. jpsi
         trigger  : HLT2 trigger, used to pick channel, etc
@@ -263,17 +268,17 @@ class ParameterReader:
         -------------
         FitMeasurement instance, i.e. container with parameter names, values and errors
         '''
-        channel = info.channel_from_trigger(trigger=trigger, lower_case = True)
+        channel = trigger.channel
         df      = self._df
-        df      = self._query(df = df, cut = f'kind    == \"{kind}\"'   )
-        df      = self._query(df = df, cut = f'mva_cmb == \"{cmb}\"'    )
-        df      = self._query(df = df, cut = f'mva_prc == \"{prc}\"'    )
-        df      = self._query(df = df, cut = f'q2bin   == \"{q2bin}\"'  )
-        df      = self._query(df = df, cut = f'channel == \"{channel}\"')
-        df      = self._query(df = df, cut = f'project == \"{project}\"')
-        df      = self._query(df = df, cut = f'brem    == \"{brem}\"'   )
+        df      = self._query(df = df, cut = f'comp    == \"{comp}\"'     )
+        df      = self._query(df = df, cut = f'mva_cmb == \"{cmb.lower_str}\"')
+        df      = self._query(df = df, cut = f'mva_prc == \"{prc.lower_str}\"')
+        df      = self._query(df = df, cut = f'q2bin   == \"{q2bin}\"'    )
+        df      = self._query(df = df, cut = f'channel == \"{channel}\"'  )
+        df      = self._query(df = df, cut = f'project == \"{project}\"'  )
+        df      = self._query(df = df, cut = f'brem    == \"{brem}\"'     )
         df_all  = df.copy() # Data after all requirements, but with all blocks 
-        df      = self._query(df = df, cut = f'block   ==   {block}'    )
+        df      = self._query(df = df, cut = f'block   == \"{block}\"'    )
 
         if len(df) != 1:
             self._print_info(df=df)
@@ -287,9 +292,9 @@ class ParameterReader:
 
         # for simultaneous fits, this removes brem_002 parameters when one needs brem_001
         # and viceversa
-        data     = { key : value for key, value in data.items() if f'brem_{brem}' in key }
+        data     = { key : value for key, value in data.items() if str(brem) in key }
 
-        data[f'bk_{signame}'] = (math.nan, math.nan) if kind == 'sim' else self._get_block_fraction(
+        data[f'bk_{signame}'] = (math.nan, math.nan) if comp.is_mc else self._get_block_fraction(
             signame = signame,
             df      = df_all, 
             brem    = brem,

@@ -127,7 +127,7 @@ class Selector:
         mevt = self._d_sel['evt_max']
         log.warning(f'Limitting to first: {mevt}')
 
-        self._rdf = self._rdf.Range(mevt)
+        self._rdf = self._rdf.Filter(f'rdfentry_ < {mevt}')
     # -------------------------------------------------------------------
     def _print_info(self, rdf):
         log_lvl = log.level

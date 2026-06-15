@@ -7,7 +7,7 @@ import numpy
 from contextlib   import contextmanager
 from pathlib      import Path
 from typing       import Any, overload, Literal
-from ROOT         import RDF, GetThreadPoolSize, TFile # type: ignore
+from ROOT         import RDF, TFile # type: ignore
 from dmu          import LogStore
 from dmu.generic  import hashing
 from dmu.generic  import utilities as gut
@@ -17,6 +17,7 @@ from .spec_maker  import SpecMaker
 from .rdf_loader  import RDFLoader
 
 log=LogStore.add_logger('rx_data:rdf_getter')
+
 # ---------------------------------------------------
 class AlreadySetColumns(Exception):
     '''
@@ -39,6 +40,7 @@ class RDFGetter(SpecMaker):
     friends     : List of names of samples, to be treated as friend trees. By default this is None and everything will be processed
     skip_adding_columns : By default false. If true, it will skip defining new columns.
     '''
+    _ENABLE_ALIGNMENT_CHECK : bool    = False
     _max_entries                      = -1
     _skip_adding_columns              = False
     _d_custom_columns : dict[str,str] = {}
@@ -98,10 +100,9 @@ class RDFGetter(SpecMaker):
                                             # requested. They keys are the main tree file path, the value is the dataframe
                                             # with the main and friend trees
 
-        self._d_info : dict[str,Any] = {} # Used to store information related to transformations done to dataframe (e.g. Range), needed for hashing
+        self._d_info : dict[str,Any] = {} # Used to store information related to transformations done to dataframe (e.g. Cuts), needed for hashing
 
         self._set_logs()
-        self._check_multithreading()
     # ---------------------------------------------------
     def _load_config(self) -> DictConfig:
         '''
@@ -131,16 +132,6 @@ class RDFGetter(SpecMaker):
         to reduce noise
         '''
         LogStore.set_level('rx_data:path_splitter', 30)
-    # ---------------------------------------------------
-    def _check_multithreading(self) -> None:
-        '''
-        This method will raise if running with mulithreading and if it was not explicitly allowed
-        '''
-        nthreads = GetThreadPoolSize()
-        if nthreads > 1:
-            raise ValueError(f'Cannot run with mulithreading, using {nthreads} threads')
-
-        log.debug('Not using multithreading')
     # ---------------------------------------------------
     # TODO: This class is pretty large, all the lines below
     # have one job, adding columns to dataframe, put them in a class
@@ -486,7 +477,7 @@ class RDFGetter(SpecMaker):
 
         log.debug(f'Filtering for a range of {nent} entries')
         self._d_info['range'] = 0, nent 
-        rdf  = rdf.Range(0, nent)
+        rdf  = rdf.Filter(f'rdfentry_ < {nent}')
 
         log.warning(f'Picking up range: [{0}, {nent}] ')
 
@@ -556,8 +547,9 @@ class RDFGetter(SpecMaker):
 
         return rdf
     # ----------------------
-    @staticmethod
+    @classmethod
     def check_alignment(
+        cls,
         rdf    : RDF.RNode,
         index  : str) -> None:
         '''
@@ -568,6 +560,9 @@ class RDFGetter(SpecMaker):
         rdf   : ROOT dataframe
         index : Name of column whose values need to be aligned
         '''
+        if not cls._ENABLE_ALIGNMENT_CHECK:
+            return
+
         columns = [ name.c_str() for name in rdf.GetColumnNames() ]
         indexes = [ name         for name in columns if index in name ]
         ncol    = len(indexes)
@@ -706,6 +701,25 @@ class RDFGetter(SpecMaker):
                 yield
             finally:
                 cls._d_custom_columns = old_val
+
+        return _context()
+    # ---------------------------------------------------
+    @classmethod
+    def alignment_check(cls):
+        '''
+        Context manager that turns on alignment check
+        needed for tests
+        '''
+        old_val = cls._ENABLE_ALIGNMENT_CHECK
+
+        @contextmanager
+        def _context():
+            cls._ENABLE_ALIGNMENT_CHECK = True
+
+            try:
+                yield
+            finally:
+                cls._ENABLE_ALIGNMENT_CHECK = old_val
 
         return _context()
 # ---------------------------------------------------
