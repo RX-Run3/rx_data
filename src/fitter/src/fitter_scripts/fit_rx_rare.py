@@ -8,7 +8,6 @@ import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 from ROOT             import EnableImplicitMT # type: ignore
-from dask.distributed import Client, LocalCluster
 from typing           import Final
 from contextlib       import ExitStack
 from dmu.generic      import UnpackerModel, utilities as gut
@@ -18,7 +17,7 @@ from dmu.stats        import Constraint
 from dmu.workflow     import Cache
 from dmu              import LogStore
 from zfit.loss        import ExtendedUnbinnedNLL
-from rx_data          import RDFGetter, RDFLoader
+from rx_data          import RDFGetter
 from rx_selection     import selection as sel
 from rx_common        import Brem, Component, Region
 
