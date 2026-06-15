@@ -329,8 +329,8 @@ class ParameterReader:
             brem    = brem,
             signame = signame)
 
-        iblock   = numpy.argmax(arr_blk == block.to_int())
-        def fun(vals):
+        iblock  = numpy.argmax(arr_blk == block.to_int())
+        def fun(vals : numpy.ndarray) -> float:
             val = vals[iblock]
 
             return val / sum(vals)
