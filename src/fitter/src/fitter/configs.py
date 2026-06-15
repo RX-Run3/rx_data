@@ -584,6 +584,7 @@ class RXFitConfig(BaseModel):
     q2bin   : Qsq
 
     mod_cfg : FitModelConf
+    ncores  : int             = 1
     block   : int             = -1
     nproc   : int             = 1
     log_lvl : int             = 20
