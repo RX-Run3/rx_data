@@ -8,6 +8,7 @@ import argparse
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
+from ROOT          import EnableImplicitMT # type: ignore
 from contextlib    import ExitStack
 from dmu           import LogStore
 from dmu.stats     import GofCalculator
@@ -69,6 +70,7 @@ def _parse_args() -> RXFitConfig:
     parser.add_argument('-g', '--group'  , type=str    , help='Group to which fits belong, e.g. reso_no_dtf'    , required=True)
     parser.add_argument('-c', '--fit_cfg', type=str    , help='Name of configuration, e.g. reso/rkst/ee'        , required=True)
     parser.add_argument('-t', '--toy_cfg', type=str    , help='Name of toy config, e.g. toys/maker.yaml'        , default ='')
+    parser.add_argument('-n', '--ncores' , type=int    , help='Number of cores to process dataframes'           , default =1)
     parser.add_argument('-N', '--ntoys'  , type=int    , help='If specified, this will override ntoys in config', default =0)
     parser.add_argument('-l', '--log_lvl', type=int    , help='Logging level', choices=[5, 10, 20, 30]          , default =20)
     parser.add_argument('-q', '--q2bin'  , type=Qsq    , help='q2 bin'      , choices=Qsq                       , required=True)
@@ -105,6 +107,7 @@ def _parse_args() -> RXFitConfig:
         mod_cfg = fit_cfg,
         toy_cfg = toy_cfg,
         name    = name,
+        ncores  = args.ncores,
         group   = args.group,
         block   = args.block,
         q2bin   = args.q2bin,
@@ -198,6 +201,7 @@ def main():
     with UnpackerModel.package(name = 'fitter_data'):
         cfg = _parse_args()
 
+    EnableImplicitMT(cfg.ncores)
     with ExitStack() as stack:
         stack.enter_context(Cache.cache_root(path=cfg.output_directory))
         stack.enter_context(PL.parameter_schema(cfg=cfg.mod_cfg.yields))
