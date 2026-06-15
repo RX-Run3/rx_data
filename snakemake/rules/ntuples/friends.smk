@@ -166,11 +166,11 @@ rule _calculate:
         touch {output.done}
         '''
 # ───────────────────────────────────────────────────────────────────
-use rule _calculate as calculate_mva with:
-    '''Request mva trees'''
+use rule _calculate as calculate_brem_track_2 with:
+    '''Request brem_track_2 trees'''
     output:
         done   = _CALC
     wildcard_constraints:
-        friend = 'mva',
+        friend = 'brem_track_2',
         vers   = r'v\d+',
 # ───────────────────────────────────────────────────────────────────
