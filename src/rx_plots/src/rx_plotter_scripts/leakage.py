@@ -4,14 +4,14 @@ Script used to study Jpsi leakage in central q2 bin
 import os
 import mplhep
 import argparse
-from omegaconf import DictConfig
 import pandas            as pnd
 import matplotlib.pyplot as plt
 
-from rx_selection           import selection as sel
-from rx_data.rdf_getter     import RDFGetter
-
-from dmu.logging.log_store  import LogStore
+from omegaconf      import DictConfig
+from rx_common      import Component, Cuts, Qsq, Trigger
+from rx_selection   import selection as sel
+from rx_data        import RDFGetter
+from dmu            import LogStore
 
 log=LogStore.add_logger('rx_plot:leakage')
 # --------------------------------
@@ -23,10 +23,10 @@ class Data:
     cache_dir : str
     plots_dir : str
 
-    trigger : str
-    sample  : str
+    trigger : Trigger
+    sample  : Component 
 
-    q2bin   = 'central'
+    q2bin   = Qsq.central 
     columns = [
         'nbrem',
         'B_M',
@@ -50,7 +50,7 @@ def _initialize():
     os.makedirs(Data.cache_dir, exist_ok=True)
     os.makedirs(Data.plots_dir, exist_ok=True)
 # --------------------------------
-def _get_df(sample : str) -> pnd.DataFrame:
+def _get_df(sample : Component) -> pnd.DataFrame:
     out_path = f'{Data.cache_dir}/data_{sample}_{Data.trigger}_{Data.q2bin}.json'
     if os.path.isfile(out_path):
         log.debug(f'Loading data from: {out_path}')
@@ -63,8 +63,8 @@ def _get_df(sample : str) -> pnd.DataFrame:
     rdf = gtr.get_rdf(per_file=False)
 
     d_sel = sel.selection(trigger=Data.trigger, q2bin=Data.q2bin, process=sample)
-    d_sel['q2']   = '(1)'
-    d_sel['mass'] = '(1)'
+    d_sel[Cuts.q2  ] = '(1)'
+    d_sel[Cuts.mass] = '(1)'
 
     for cut_name, cut_expr in d_sel.items():
         rdf = rdf.Filter(cut_expr, cut_name)
