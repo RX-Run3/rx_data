@@ -3,7 +3,7 @@ This script will:
 
 - Read a JSON file containing fitting parameters for fits to data and MC
 - Transform them into JSON files with:
-    parameters.json : The peak positions 
+    parameters.json : The peak positions
     scales.json     : The scales
 
 For each brem category and block
@@ -23,12 +23,12 @@ from typing          import Callable, Final
 from matplotlib.axes import Axes
 from fitter          import FitSummary, MVAWp
 from rx_q2           import ScalesConf
-from rx_q2           import ParameterReader 
+from rx_q2           import ParameterReader
 from fitter          import ParameterReader as FitParameterReader
 from rx_common       import Block, Correction, Project
 from rx_common       import Trigger, Component
-from rx_common       import Qsq 
-from rx_common       import Brem 
+from rx_common       import Qsq
+from rx_common       import Brem
 
 log=LogStore.add_logger('rx_q2:dump_q2_ratios')
 
@@ -51,19 +51,19 @@ def _load_config(args : argparse.Namespace) -> ScalesConf:
 
     cfg  = ScalesConf(**data)
 
-    return cfg 
+    return cfg
 #-------------------------------------
 # TODO: This is too hardcoded
 def _get_Bx_df(cfg : ScalesConf) -> pnd.DataFrame:
     name   = 'reso_no_dtf'
-    signal = Component.bpkpjpsiee 
-    brems  = [Brem.one, Brem.two] 
+    signal = Component.bpkpjpsiee
+    brems  = [Brem.one, Brem.two]
     blocks = Block.blocks()
     comps  = [_DATA, signal]
     suffix = f'{cfg.kind}_{cfg.comb.name}_{cfg.prec.name}_{cfg.year}'
 
     smr = FitSummary(
-        name   = name, 
+        name   = name,
         data   = _DATA,
         signal = signal)
     smr.get_df(suffix = suffix)
@@ -75,12 +75,12 @@ def _get_Bx_df(cfg : ScalesConf) -> pnd.DataFrame:
             for comp in comps:
                 msr = rdr(
                     signame  = signal,
-                    brem     = brem, 
-                    block    = block, 
+                    brem     = brem,
+                    block    = block,
                     cmb      = cfg.comb,
                     prc      = cfg.prec,
                     comp     = comp,
-                    trigger  = Trigger.rk_ee_os, 
+                    trigger  = Trigger.rk_ee_os,
                     project  = Project.rk,
                     q2bin    = Qsq.jpsi)
 
@@ -109,7 +109,7 @@ def _get_Bx_df(cfg : ScalesConf) -> pnd.DataFrame:
 
                 l_data.append(data)
 
-    return pnd.DataFrame(l_data) 
+    return pnd.DataFrame(l_data)
 #-------------------------------------
 def _get_q2_df(
     cfg    : ScalesConf,
@@ -121,13 +121,13 @@ def _get_q2_df(
     '''
     if sample is None:
         df_dat = _get_q2_df(cfg = cfg, sample = 'dat')
-        df_dat['sample'] = 'dat' 
+        df_dat['sample'] = 'dat'
 
         df_sim = _get_q2_df(cfg = cfg, sample = 'sim')
-        df_sim['sample'] = 'sim' 
+        df_sim['sample'] = 'sim'
 
         return pnd.concat([df_dat, df_sim], axis=0, ignore_index=True)
-    
+
     path_wc = cfg.inp_dir / f'{sample}/{cfg.proj}_{cfg.year}'
     l_path  = list(path_wc.glob(pattern = '*/parameters.json'))
     nfiles  = len(l_path)
@@ -145,7 +145,7 @@ def _get_q2_df(
     return df
 #-------------------------------------
 def _get_scales(
-    df     : pnd.DataFrame, 
+    df     : pnd.DataFrame,
     signal : Component,
     cfg    : ScalesConf) -> pnd.DataFrame:
     '''
@@ -167,7 +167,7 @@ def _get_scales(
         iblock = int(sblock)
 
         sbrem  = str(brem)
-        ibrem  = int(sbrem) 
+        ibrem  = int(sbrem)
 
         df_scale          = _scales_from_df(df=df_group, signal = signal)
         df_scale['block'] = iblock
@@ -221,9 +221,9 @@ def _scales_from_df(
     return df
 #-------------------------------------
 def _get_scale(
-    df     : pnd.DataFrame, 
+    df     : pnd.DataFrame,
     signal : Component,
-    corr   : Correction, 
+    corr   : Correction,
     fun    : Callable) -> dict[str,list[float]]:
     '''
     Parameters
@@ -241,7 +241,7 @@ def _get_scale(
     value: Numerical value
     '''
     df_dat  = df.query(f'sample == \"{_DATA}\"')
-    df_sim  = df.query(f'sample == \"{signal}\"') 
+    df_sim  = df.query(f'sample == \"{signal}\"')
 
     dat_val, dat_err = _get_entry(corr=corr, df=df_dat, comp = _DATA)
     sim_val, sim_err = _get_entry(corr=corr, df=df_sim, comp = signal)
@@ -266,13 +266,13 @@ def _get_scale(
             raise ValueError(f'Invalid correction: {corr}')
 # ----------------------
 def _get_entry(
-    corr : Correction, 
+    corr : Correction,
     comp : Component,
     df   : pnd.DataFrame) -> tuple[float,float]:
     '''
     Parameters
     -------------
-    corr: Correction used 
+    corr: Correction used
     df  : DataFrame with scales and resolutions
 
     Returns
@@ -324,7 +324,7 @@ def _plot_df(
     return ax
 #-------------------------------------
 def _plot_corrections(
-    df         : pnd.DataFrame, 
+    df         : pnd.DataFrame,
     cfg        : ScalesConf,
     correction : Correction) -> None:
 
@@ -353,14 +353,14 @@ def _plot_corrections(
     plt.close()
 #-------------------------------------
 def _plot_variables(
-    df       : pnd.DataFrame, 
+    df       : pnd.DataFrame,
     cfg      : ScalesConf,
-    variable : str, 
+    variable : str,
     comp     : Component) -> None:
     '''
     Parameters
     -----------------
-    comp: Component, e.g. data, bpkpee 
+    comp: Component, e.g. data, bpkpee
     '''
     log.info(f'Plotting {variable} for {comp}')
     _, ax = plt.subplots(figsize=(15, 10))
@@ -406,7 +406,7 @@ def _plot_variables(
     plt.close()
 #-------------------------------------
 def _plot(
-    df  : pnd.DataFrame, 
+    df  : pnd.DataFrame,
     cfg : ScalesConf) -> None:
     '''
     Parameters
