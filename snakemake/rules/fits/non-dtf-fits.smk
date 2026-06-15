@@ -20,7 +20,7 @@ NAME   = 'reso_no_dtf'
 YEAR   = '2024'
 # ---------------------
 rule all:
-    input: 
+    input:
         expand(
             [
              f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}/rk_ee/plots/scales.json',
@@ -33,11 +33,11 @@ rule all:
             block = BLOCK)
 # ---------------------
 rule scales:
-    output : 
+    output :
         f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}/rk_ee/plots/scales.json',
         f'{ANADIR}/fits/data/{NAME}/parameters_B_{{cmb}}_{{prc}}_{YEAR}.parquet',
         f'{ANADIR}/fits/data/{NAME}/parameters_B_{{cmb}}_{{prc}}_{YEAR}.md',
-    input  : 
+    input  :
         expand(
             [
              f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx1/parameters.json',
@@ -62,14 +62,14 @@ rule scales:
         '''
 # ---------------------
 rule fits:
-    output   : 
+    output   :
         f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx1/parameters.json',
         f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx2/parameters.json',
         f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx1/brem_xx1/parameters.json',
         f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx2/brem_xx2/parameters.json',
         directory(f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24'),
         directory(f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/bpkpjpsiee'),
-    log   : 
+    log   :
         prc = f'{LOGDIR}/{{cmb}}_{{prc}}_b{{block}}.prc',
         err = f'{LOGDIR}/{{cmb}}_{{prc}}_b{{block}}.err',
         out = f'{LOGDIR}/{{cmb}}_{{prc}}_b{{block}}.out',
@@ -98,7 +98,7 @@ rule fits:
                     -C $CMB_WP\
                     -P $PRC_WP
 
-        echo "Fit done with status: $?" 
+        echo "Fit done with status: $?"
         ) > {log.prc} 2>&1
 
         JOBID=$(grep -m1 '^ClusterId' $_CONDOR_JOB_AD | awk '{{print $3}}')
