@@ -50,8 +50,7 @@ class CompareTask(law.Task):
         Name of required output, built from ANADIR and config settings
         '''
         cfg    = self._get_config()
-        ANADIR = os.environ['ANADIR']
-        PLTDIR = Path(ANADIR) / f'plots/comparison/{cfg.args.config}'
+        PLTDIR = _ANADIR / f'plots/comparison/{cfg.args.config}'
         names  = cfg.output[cfg.args.config]
 
         dir_path = PLTDIR / f'{cfg.args.sample}/{cfg.args.trigger}/{cfg.args.q2_bin}/{cfg.args.brem}_{cfg.args.block}/drop_mva'
