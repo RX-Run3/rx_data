@@ -7,6 +7,7 @@ import os
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
+from ROOT             import EnableImplicitMT # type: ignore
 from dask.distributed import Client, LocalCluster
 from typing           import Final
 from contextlib       import ExitStack
@@ -237,6 +238,7 @@ def main():
     with UnpackerModel.package(name = 'fitter_data'):
         cfg = _parse_args()
 
+    EnableImplicitMT(cfg.ncores)
     _set_logs()
 
     client = _get_client(cfg = cfg)
