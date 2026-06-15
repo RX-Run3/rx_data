@@ -331,7 +331,23 @@ def _get_inp(cfg : Config, cfg_plt : DictConfig) -> dict[str,RDF.RNode]:
 
     return d_rdf
 # ---------------------------------
-def main(settings : Config|None = None) -> list[Path]:
+def _omega_conf_to_config(settings : DictConfig) -> Config:
+    '''
+    Transforms DictConfig object from LAW workflow into
+    data class
+    '''
+    return Config(
+        q2_bin = Qsq(settings.q2_bin),
+        sample = Component(settings.sample),
+        trigger= Trigger(settings.trigger),
+        config = settings.config,
+        substr = settings.substr,
+        brem   = settings.brem,
+        block  = settings.block,
+        nomva  = settings.nomva,
+        emulate= settings.emulate)
+# ---------------------------------
+def main(settings : DictConfig|None = None) -> list[Path]:
     '''
     Parameters
     ------------------
@@ -344,7 +360,7 @@ def main(settings : Config|None = None) -> list[Path]:
     if settings is None:
         cfg = _cfg_from_args()
     else:
-        cfg = settings
+        cfg = _omega_conf_to_config(settings = settings)
 
     cfg_plt = _get_plot_cfg(cfg=cfg)
     mplhep.style.use('LHCb2')
