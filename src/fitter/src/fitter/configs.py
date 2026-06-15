@@ -5,7 +5,7 @@ import os
 import yaml
 
 from functools   import cached_property
-from pydantic    import BaseModel, ConfigDict
+from pydantic    import BaseModel, ConfigDict, model_validator
 from pathlib     import Path
 from typing      import Callable, Literal, Self
 
@@ -586,10 +586,17 @@ class RXFitConfig(BaseModel):
     mod_cfg : FitModelConf
     ncores  : int             = 1
     block   : int             = -1
-    nproc   : int             = 1
+    ncores  : int             = 1
     log_lvl : int             = 20
     ntoys   : int             = 0
     toy_cfg : ToyConf |  None = None
+    # ----------------------
+    @model_validator(mode = 'after')
+    def _validate(self) -> 'RXFitConfig':
+        if self.ncores < 1:
+            raise ValueError(f'Invalid number of cores: {self.ncores}')
+
+        return self
     # ----------------------
     def model_post_init(self, _):
         '''
