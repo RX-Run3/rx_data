@@ -14,6 +14,7 @@ from rx_data        import RDFGetter
 from dmu            import LogStore
 
 log=LogStore.add_logger('rx_plot:leakage')
+_ANADIR = os.environ['ANADIR']
 # --------------------------------
 class Data:
     '''
@@ -23,8 +24,8 @@ class Data:
     cache_dir : str
     plots_dir : str
 
-    trigger : Trigger
-    sample  : Component 
+    trigger   : Trigger
+    component : Component 
 
     q2bin   = Qsq.central 
     columns = [
@@ -35,23 +36,16 @@ class Data:
         'Jpsi_M',
         'Jpsi_Mass',
         'Jpsi_Mass_smr']
-
-    d_latex = {
-        'Bd_JpsiKst_ee_eq_DPC' : r'$B^0\to K^{*0}(\to K^+\pi^-) J/\psi(\to ee)$',
-        'Bd_psi2SKst_ee_eq_DPC': r'$B^0\to K^{*0}(\to K^+\pi^-) \psi(2S)(\to ee)$',
-        'Bu_JpsiK_ee_eq_DPC'   : r'$B^+\to K^+ J/\psi(\to ee)$',
-        'Bu_psi2SK_ee_eq_DPC'  : r'$B^+\to K^+ \psi(2S)(\to ee)$'}
 # --------------------------------
 def _initialize():
-    ana_dir        = os.environ['ANADIR']
     Data.cache_dir = '/tmp/cache/rx_plots/leakage'
-    Data.plots_dir = f'{ana_dir}/plots/checks/leakage/{Data.sample}_{Data.trigger}'
+    Data.plots_dir = f'{_ANADIR}/plots/checks/leakage/{Data.component}_{Data.trigger}'
 
     os.makedirs(Data.cache_dir, exist_ok=True)
     os.makedirs(Data.plots_dir, exist_ok=True)
 # --------------------------------
-def _get_df(sample : Component) -> pnd.DataFrame:
-    out_path = f'{Data.cache_dir}/data_{sample}_{Data.trigger}_{Data.q2bin}.json'
+def _get_df(component : Component) -> pnd.DataFrame:
+    out_path = f'{Data.cache_dir}/data_{component}_{Data.trigger}_{Data.q2bin}.json'
     if os.path.isfile(out_path):
         log.debug(f'Loading data from: {out_path}')
 
@@ -59,10 +53,10 @@ def _get_df(sample : Component) -> pnd.DataFrame:
 
         return df
 
-    gtr = RDFGetter(sample=sample, trigger=Data.trigger)
+    gtr = RDFGetter(sample=component, trigger=Data.trigger)
     rdf = gtr.get_rdf(per_file=False)
 
-    d_sel = sel.selection(trigger=Data.trigger, q2bin=Data.q2bin, process=sample)
+    d_sel = sel.selection(trigger=Data.trigger, q2bin=Data.q2bin, process=component)
     d_sel[Cuts.q2  ] = '(1)'
     d_sel[Cuts.mass] = '(1)'
 
@@ -93,7 +87,7 @@ def _define_columns(df : pnd.DataFrame) -> pnd.DataFrame:
     return df
 # --------------------------------
 def _check_q2_leakage(nbrem : int) -> None:
-    df = _get_df(sample=Data.sample)
+    df = _get_df(component=Data.component)
 
     if nbrem != -1:
         df = df[df['nbrem'] == nbrem]
@@ -106,7 +100,7 @@ def _check_q2_leakage(nbrem : int) -> None:
     df['qsq_cor'].plot.hist(bins=60, range=[-3, 22], density=True, label='Corrected', histtype='step', color='blue' )
     df['qsq_smr'].plot.hist(bins=60, range=[-3, 22], density=True, label='Smeared'  , histtype='step', color='red'  )
 
-    latex = Data.d_latex[Data.sample]
+    latex = Data.component.latex
 
     fig.legend(loc='upper left', bbox_to_anchor=(0.2, 0.9))
     plt.title(f'{latex}; Brem={nbrem_label}')
@@ -124,12 +118,12 @@ def _check_q2_leakage(nbrem : int) -> None:
 # ----------------------
 def _parse_args() -> None:
     parser = argparse.ArgumentParser(description='Script used to study leakage from resonant decays into rare regions')
-    parser.add_argument('-s', '--sample' , type=str, help='MC sample, e.g. Bu_JpsiK_ee_eq_DPC')
-    parser.add_argument('-t', '--trigger', type=str, help='HLT2 trigger, e.g. Hlt2RD_BuToKpEE_MVA')
+    parser.add_argument('-c', '--component', type=Component, help='MC sample, e.g. bpkpee'     , required = True)
+    parser.add_argument('-t', '--trigger'  , type=Trigger  , help='HLT2 trigger, e.g. rk_ee_os', required = True)
     args = parser.parse_args()
 
-    Data.sample = args.sample
-    Data.trigger= args.trigger
+    Data.component = args.component
+    Data.trigger   = args.trigger
 # --------------------------------
 def main(cfg : DictConfig | None = None):
     '''
@@ -138,7 +132,7 @@ def main(cfg : DictConfig | None = None):
     if cfg is None:
         _parse_args()
     else:
-        Data.sample = cfg.sample
+        Data.component = cfg.sample
         Data.trigger= cfg.trigger
 
     _initialize()
