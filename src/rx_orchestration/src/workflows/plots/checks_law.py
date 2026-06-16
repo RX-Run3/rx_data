@@ -63,9 +63,9 @@ class ChecksTask(law.Task):
         if   self.kind == 'efficiency_vs_q2':
             dir_path = plt_dir / f'{cfg.args.component}_{cfg.args.trigger}'
         elif self.kind == 'high_q2cut':
-            dir_path = plt_dir / f'{cfg.args.sample}/{cfg.args.run}'
+            dir_path = plt_dir / f'{cfg.args.component}/{cfg.args.run}'
         elif self.kind == 'leakage':
-            dir_path = plt_dir / f'{cfg.args.sample}_{cfg.args.trigger}'
+            dir_path = plt_dir / f'{cfg.args.component}_{cfg.args.trigger}'
         elif self.kind in ['validate_nopid']:
             dir_path = plt_dir 
         else:
