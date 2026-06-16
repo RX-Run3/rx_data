@@ -43,10 +43,10 @@ validate_nopid:
     - mm/l2_pidmu_Bu_Kmumu_eq_btosllball05_DPC.png
 leakage:
   args:
-    - {sample : Bu_JpsiK_ee_eq_DPC   , trigger : Hlt2RD_BuToKpEE_MVA}
-    - {sample : Bu_psi2SK_ee_eq_DPC  , trigger : Hlt2RD_BuToKpEE_MVA}
-    - {sample : Bd_JpsiKst_ee_eq_DPC , trigger : Hlt2RD_B0ToKpPimEE_MVA}
-    - {sample : Bd_psi2SKst_ee_eq_DPC, trigger : Hlt2RD_B0ToKpPimEE_MVA}
+    - {component : bpkpjpsiee    , trigger :   rk_ee_os}
+    - {component : bpkppsi2ee    , trigger :   rk_ee_os}
+    - {component : bdkstkpiee    , trigger : rkst_ee_os}
+    - {component : bdkstkpipsi2ee, trigger : rkst_ee_os}
   outputs:
     - 0.png
     - 1.png
