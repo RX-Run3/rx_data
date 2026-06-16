@@ -25,8 +25,8 @@ from rx_selection import selection as sel
 log=LogStore.add_logger('rx_plots:efficiency_vs_q2')
 
 random.seed(123)
-RANDOM : Final[float] = random.randint(0, 100)
-ANADIR : Final[Path ] = Path(os.environ['ANADIR'])
+_RANDOM : Final[float] = random.randint(0, 100)
+_ANADIR : Final[Path ] = Path(os.environ['ANADIR'])
 mplhep.style.use('LHCb2')
 # ----------------------
 class StyleConf(BaseModel):
@@ -241,7 +241,7 @@ def _plot_efficiencies(
     h_all = _get_hist(df=df, axis=axis, flag= qsqdef, cfg = cfg)
     h_den = _get_hist(df=df, axis=axis, flag= None  , cfg = cfg)
 
-    h_eff_tot = RANDOM * h_all / h_den
+    h_eff_tot = _RANDOM * h_all / h_den
 
     if qsqdef == QsqDef.default:
         h_eff_tot.plot(
@@ -272,7 +272,7 @@ def _plot(
     for qsqdef in QsqDef:
         _plot_efficiencies(df=df, qsqdef = qsqdef, cfg = cfg)
 
-    out_path = ANADIR / f'plots/checks/efficiency_vs_q2/{cfg.component}_{cfg.trigger}/{q2bin}/{cfg.qsqdef}.png'
+    out_path = _ANADIR / f'plots/checks/efficiency_vs_q2/{cfg.component}_{cfg.trigger}/{q2bin}/{cfg.qsqdef}.png'
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
     for bound in cfg.bounds.values():
@@ -294,11 +294,20 @@ def _set_logs() -> None:
     LogStore.set_level('rx_selection:selection'     , 30)
     LogStore.set_level('rx_data:rdf_getter'         , 30)
 # ----------------------
-def main() -> None:
+def main(args : dict[str,str] | None = None) -> None:
     '''
     Entry point
     '''
-    cfg = _parse_args()
+    if args:
+        data = gut.load_data(package = 'rx_plotter_data', fpath = 'efficiency/vs_q2.yaml')
+        cfg  = PlotConfig(
+            component = Component(args['component']),
+            trigger   = Trigger(args['trigger'  ]),
+            qsqdef    = QsqDef.true,
+            **data,
+        )
+    else:
+        cfg = _parse_args()
 
     _set_logs()
     log.debug('Loading configuration')
