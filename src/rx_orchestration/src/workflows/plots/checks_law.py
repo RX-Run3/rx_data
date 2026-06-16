@@ -34,8 +34,8 @@ class ChecksTask(law.Task):
         '''
         Returns
         --------------------
-        Transform JSON string `config_string` with configuration to DictConfig
-        and returns it
+        Transform JSON string `config_string` with configuration to 
+        DictConfig with arguments and outputs
         '''
         if hasattr(self, '_cfg'):
             return self._cfg
@@ -61,7 +61,7 @@ class ChecksTask(law.Task):
         plt_dir = _ANADIR / f'plots/checks/{self.kind}'
 
         if   self.kind == 'efficiency_vs_q2':
-            dir_path = plt_dir / f'{cfg.args.analysis}_{cfg.args.channel}'
+            dir_path = plt_dir / f'{cfg.args.component}_{cfg.args.trigger}'
         elif self.kind == 'high_q2cut':
             dir_path = plt_dir / f'{cfg.args.sample}/{cfg.args.run}'
         elif self.kind == 'leakage':
@@ -89,8 +89,9 @@ class ChecksTask(law.Task):
         module = importlib.import_module(_KIND_TO_MODULE[self.kind])
         runner = module.main
 
-        cfg = self._get_config() 
-        runner(cfg=cfg.args)
+        cfg  = self._get_config() 
+        args = OmegaConf.to_object(cfg.args)
+        runner(args=args)
 # -------------------------------------
 class WrapChecks(law.WrapperTask):
     '''
