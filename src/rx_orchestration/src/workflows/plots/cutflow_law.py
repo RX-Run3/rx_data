@@ -14,6 +14,8 @@ from dmu.generic   import utilities as gut
 from omegaconf     import DictConfig, OmegaConf
 
 log=LogStore.add_logger('rx_orchestration:cutflow_law')
+
+_KINDS   : Final[list[str]]     = ['cleanup', 'ss_shape', 'bdt', 'mass_shaping']
 _CONFIGS : Final[dict[str,str]] = {
     'cleanup'     : 'cutflow_os.yaml',
     'ss_shape'    : 'cutflow_ss.yaml',
