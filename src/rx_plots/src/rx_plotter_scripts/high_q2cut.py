@@ -57,27 +57,26 @@ class Data:
 # ---------------------------
 def _parse_args():
     parser = argparse.ArgumentParser(description='Used to check efficiency vs q2 for different q2 definitions')
-    parser.add_argument('-s', '--sample', type=str, help='MC sample', required=True, choices=Data.l_sample)
-    parser.add_argument('-r', '--run'   , type=str, help='Run from which to plot', default='run3', choices=['run12', 'run3'])
+    parser.add_argument('-c', '--component', type=Component, help='MC sample', required=True, choices=_COMPONENTS)
+    parser.add_argument('-r', '--run'      , type=      str, help='Run from which to plot', default='run3', choices=['run12', 'run3'])
     args = parser.parse_args()
 
-    Data.sample= args.sample 
-    Data.run   = args.run
+    Data.component = args.component
+    Data.run       = args.run
 # ---------------------------
 def _initialize():
-    ana_dir = os.environ['ANADIR']
-    plt_dir = f'{ana_dir}/plots/checks/high_q2cut/{Data.sample}/{Data.run}'
+    plt_dir = f'{_ANADIR}/plots/checks/high_q2cut/{Data.component}/{Data.run}'
 
     os.makedirs(plt_dir, exist_ok=True)
 
-    if Data.sample.startswith('DATA'):
-        Data.trigger = 'Hlt2RD_BuToKpEE_SameSign_MVA'
+    if Data.component.is_mc:
+        Data.trigger = Trigger.rk_ee_os 
     else:
-        Data.trigger = 'Hlt2RD_BuToKpEE_MVA'
+        Data.trigger = Trigger.rk_ee_ss 
 
     Data.plt_dir = plt_dir
 # ---------------------------
-def _get_rdf() -> RDataFrame:
+def _get_rdf() -> RDF.RNode:
     if Data.run == 'run3':
         return _get_run3_rdf()
 
@@ -86,26 +85,29 @@ def _get_rdf() -> RDataFrame:
 
     raise ValueError(f'Invalid run: {Data.run}')
 # ---------------------------
-def _get_run3_rdf() -> RDataFrame:
-    gtr = RDFGetter(sample=Data.sample, trigger=Data.trigger)
+def _get_run3_rdf() -> RDF.RNode:
+    gtr = RDFGetter(
+        sample  = Data.component, 
+        trigger = Data.trigger)
     rdf = gtr.get_rdf(per_file=False)
 
-    d_sel       = sel.selection(trigger=Data.trigger, q2bin=Data.q2bin, process=Data.sample)
-    d_sel['bdt']= '(1)'
-    d_sel['q2'] = '(1)'
+    d_sel           = sel.selection(trigger=Data.trigger, q2bin=Data.q2bin, process=Data.component)
+    d_sel[Cuts.cmb] = '(1)'
+    d_sel[Cuts.prc] = '(1)'
+    d_sel[Cuts.q2 ] = '(1)'
 
     for cut_name, cut_value in d_sel.items():
         rdf = rdf.Filter(cut_value, cut_name)
 
-    if log.getEffectiveLevel() < 20:
+    if log.getEffectiveLevel() < LogLevels.info:
         rep = rdf.Report()
         rep.Print()
 
     return rdf
 # ---------------------------
-def _get_run12_rdf() -> RDataFrame:
+def _get_run12_rdf() -> RDF.RNode:
     gtr = RDFGetter12(
-            sample = Data.sample,
+            sample = Data.component,
             trigger= Data.trigger,
             dset   = 'all')
 
@@ -123,8 +125,8 @@ def _reformat_q2(df : pnd.DataFrame) -> pnd.DataFrame:
 
     return df
 # ---------------------------
-def _rdf_to_df(rdf : RDataFrame) -> pnd.DataFrame:
-    if 'DATA' in Data.sample:
+def _rdf_to_df(rdf : RDF.RNode) -> pnd.DataFrame:
+    if 'DATA' in Data.component:
         l_q2var = [ var for var in Data.l_q2var if 'true' not in var ]
     else:
         l_q2var = Data.l_q2var
@@ -135,7 +137,7 @@ def _rdf_to_df(rdf : RDataFrame) -> pnd.DataFrame:
 
     return df
 # ---------------------------
-def _plot(rdf : RDataFrame) -> None:
+def _plot(rdf : RDF.RNode) -> None:
     df   = _rdf_to_df(rdf)
     for brem, df_brem in df.groupby('nbrem'):
         brem = cast(str, brem)
@@ -204,7 +206,7 @@ def _plot_reco_q2(brem : int|str, df : pnd.DataFrame) -> None:
     plt.close()
 # ---------------------------
 def _plot_true_q2(brem : int|str, df : pnd.DataFrame) -> None:
-    if 'DATA' in Data.sample:
+    if 'DATA' in Data.component:
         return
 
     df_raw = df
@@ -272,19 +274,17 @@ def _get_efficiencies_title(
     return title
 # ---------------------------
 def _get_title(brem : str|int) -> str:
-    latex = Data.d_latex[Data.sample]
-
-    return f'Brem = {brem}; {latex}'
+    return f'Brem = {brem}; {Data.component.latex}'
 # ---------------------------
-def main(cfg : DictConfig|None = None):
+def main(args : dict[str,str] | None = None):
     '''
     Start here
     '''
-    if cfg is None:
+    if args is None:
         _parse_args()
     else:
-        Data.sample= cfg.sample
-        Data.run   = cfg.run
+        Data.component= Component(args['component'])
+        Data.run      = args['run']
 
     _initialize()
 
