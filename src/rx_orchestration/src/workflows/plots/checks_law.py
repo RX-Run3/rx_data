@@ -13,9 +13,9 @@ from typing                import Final
 from law.parameter         import Parameter
 from omegaconf             import DictConfig, OmegaConf
 from dmu.generic           import utilities as gut
-from dmu.logging.log_store import LogStore
+from dmu                   import LogStore
 
-log=LogStore.add_logger('rx_orchestration:plot_2d_law')
+log=LogStore.add_logger('rx_orchestration:checks_law')
 
 _KIND_TO_MODULE : Final[dict[str,str]] = {
     'efficiency_vs_q2': 'rx_plotter_scripts.efficiency_vs_q2',
