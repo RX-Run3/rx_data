@@ -1,62 +1,64 @@
 args:
-  - {sample : bdkstkpiee     , trigger : Hlt2RD_B0ToKpPimEE_MVA           , q2bin : low    }
-  - {sample : bdkstkpiee     , trigger : Hlt2RD_B0ToKpPimEE_MVA           , q2bin : central}
-  - {sample : bdkstkpiee     , trigger : Hlt2RD_B0ToKpPimEE_MVA           , q2bin : high   }
+  - {sample : bdkstkpiee     , trigger : rkst_ee_os , q2bin : low    }
+  - {sample : bdkstkpiee     , trigger : rkst_ee_os , q2bin : central}
+  - {sample : bdkstkpiee     , trigger : rkst_ee_os , q2bin : high   }
   # ------------
-  - {sample : bpkpee         , trigger : Hlt2RD_BuToKpEE_MVA              , q2bin : low    }
-  - {sample : bpkpee         , trigger : Hlt2RD_BuToKpEE_MVA              , q2bin : central}
-  - {sample : bpkpee         , trigger : Hlt2RD_BuToKpEE_MVA              , q2bin : high   }
+  - {sample : bpkpee         , trigger : rk_ee_os   , q2bin : low    }
+  - {sample : bpkpee         , trigger : rk_ee_os   , q2bin : central}
+  - {sample : bpkpee         , trigger : rk_ee_os   , q2bin : high   }
   # ------------
-  - {sample : bdkstkpimm     , trigger : Hlt2RD_B0ToKpPimMuMu_MVA         , q2bin : low    }
-  - {sample : bdkstkpimm     , trigger : Hlt2RD_B0ToKpPimMuMu_MVA         , q2bin : central}
-  - {sample : bdkstkpimm     , trigger : Hlt2RD_B0ToKpPimMuMu_MVA         , q2bin : high   }
+  - {sample : bdkstkpimm     , trigger : rkst_mm_os , q2bin : low    }
+  - {sample : bdkstkpimm     , trigger : rkst_mm_os , q2bin : central}
+  - {sample : bdkstkpimm     , trigger : rkst_mm_os , q2bin : high   }
   # ------------
-  - {sample : bpkpmm         , trigger : Hlt2RD_BuToKpMuMu_MVA            , q2bin : low    }
-  - {sample : bpkpmm         , trigger : Hlt2RD_BuToKpMuMu_MVA            , q2bin : central}
-  - {sample : bpkpmm         , trigger : Hlt2RD_BuToKpMuMu_MVA            , q2bin : high   }
+  - {sample : bpkpmm         , trigger : rk_mm_os   , q2bin : low    }
+  - {sample : bpkpmm         , trigger : rk_mm_os   , q2bin : central}
+  - {sample : bpkpmm         , trigger : rk_mm_os   , q2bin : high   }
   # ------------
-  - {sample : bdkstkpijpsiee , trigger : Hlt2RD_B0ToKpPimEE_MVA           , q2bin : jpsi   }
-  - {sample : bpkpjpsiee     , trigger : Hlt2RD_BuToKpEE_MVA              , q2bin : jpsi   }
+  - {sample : bdkstkpijpsiee , trigger : rkst_ee_os , q2bin : jpsi   }
+  - {sample : bpkpjpsiee     , trigger :   rk_ee_os , q2bin : jpsi   }
   # ------------
-  - {sample : data_24        , trigger : Hlt2RD_B0ToKpPimMuMu_MVA         , q2bin : jpsi   }
-  - {sample : data_24        , trigger : Hlt2RD_B0ToKpPimMuMu_SameSign_MVA, q2bin : jpsi   }
-  - {sample : data_24        , trigger : Hlt2RD_B0ToKpPimEE_MVA           , q2bin : jpsi   }
-  - {sample : data_24        , trigger : Hlt2RD_B0ToKpPimEE_SameSign_MVA  , q2bin : jpsi   }
   # ------------
-  - {sample : data_24        , trigger : Hlt2RD_B0ToKpPimMuMu_MVA         , q2bin : low    }
-  - {sample : data_24        , trigger : Hlt2RD_B0ToKpPimMuMu_SameSign_MVA, q2bin : low    }
-  - {sample : data_24        , trigger : Hlt2RD_B0ToKpPimEE_MVA           , q2bin : low    }
-  - {sample : data_24        , trigger : Hlt2RD_B0ToKpPimEE_SameSign_MVA  , q2bin : low    }
+  - {sample : data_24        , trigger : rkst_mm_os , q2bin : low    }
+  - {sample : data_24        , trigger : rkst_mm_ss , q2bin : low    }
+  - {sample : data_24        , trigger : rkst_ee_os , q2bin : low    }
+  - {sample : data_24        , trigger : rkst_ee_ss , q2bin : low    }
   # ------------
-  - {sample : data_24        , trigger : Hlt2RD_B0ToKpPimMuMu_MVA         , q2bin : central}
-  - {sample : data_24        , trigger : Hlt2RD_B0ToKpPimMuMu_SameSign_MVA, q2bin : central}
-  - {sample : data_24        , trigger : Hlt2RD_B0ToKpPimEE_MVA           , q2bin : central}
-  - {sample : data_24        , trigger : Hlt2RD_B0ToKpPimEE_SameSign_MVA  , q2bin : central}
+  - {sample : data_24        , trigger : rkst_mm_os , q2bin : central}
+  - {sample : data_24        , trigger : rkst_mm_ss , q2bin : central}
+  - {sample : data_24        , trigger : rkst_ee_os , q2bin : central}
+  - {sample : data_24        , trigger : rkst_ee_ss , q2bin : central}
+  # ------------                                    
+  - {sample : data_24        , trigger : rkst_mm_os , q2bin : jpsi   }
+  - {sample : data_24        , trigger : rkst_mm_ss , q2bin : jpsi   }
+  - {sample : data_24        , trigger : rkst_ee_os , q2bin : jpsi   }
+  - {sample : data_24        , trigger : rkst_ee_ss , q2bin : jpsi   }
   # ------------
-  - {sample : data_24        , trigger : Hlt2RD_B0ToKpPimMuMu_MVA         , q2bin : high   }
-  - {sample : data_24        , trigger : Hlt2RD_B0ToKpPimMuMu_SameSign_MVA, q2bin : high   }
-  - {sample : data_24        , trigger : Hlt2RD_B0ToKpPimEE_MVA           , q2bin : high   }
-  - {sample : data_24        , trigger : Hlt2RD_B0ToKpPimEE_SameSign_MVA  , q2bin : high   }
+  - {sample : data_24        , trigger : rkst_mm_os , q2bin : high   }
+  - {sample : data_24        , trigger : rkst_mm_ss , q2bin : high   }
+  - {sample : data_24        , trigger : rkst_ee_os , q2bin : high   }
+  - {sample : data_24        , trigger : rkst_ee_ss , q2bin : high   }
+  # ------------                                    
+  # ------------                                    
+  - {sample : data_24        , trigger :   rk_mm_os , q2bin : low    }
+  - {sample : data_24        , trigger :   rk_mm_ss , q2bin : low    }
+  - {sample : data_24        , trigger :   rk_ee_os , q2bin : low    }
+  - {sample : data_24        , trigger :   rk_ee_ss , q2bin : low    }
+  # ------------                                    
+  - {sample : data_24        , trigger :   rk_mm_os , q2bin : central}
+  - {sample : data_24        , trigger :   rk_mm_ss , q2bin : central}
+  - {sample : data_24        , trigger :   rk_ee_os , q2bin : central}
+  - {sample : data_24        , trigger :   rk_ee_ss , q2bin : central}
   # ------------
-  - {sample : data_24        , trigger : Hlt2RD_BuToKpMuMu_MVA            , q2bin : jpsi   }
-  - {sample : data_24        , trigger : Hlt2RD_BuToKpMuMu_SameSign_MVA   , q2bin : jpsi   }
-  - {sample : data_24        , trigger : Hlt2RD_BuToKpEE_MVA              , q2bin : jpsi   }
-  - {sample : data_24        , trigger : Hlt2RD_BuToKpEE_SameSign_MVA     , q2bin : jpsi   }
-  # ------------
-  - {sample : data_24        , trigger : Hlt2RD_BuToKpMuMu_MVA            , q2bin : low    }
-  - {sample : data_24        , trigger : Hlt2RD_BuToKpMuMu_SameSign_MVA   , q2bin : low    }
-  - {sample : data_24        , trigger : Hlt2RD_BuToKpEE_MVA              , q2bin : low    }
-  - {sample : data_24        , trigger : Hlt2RD_BuToKpEE_SameSign_MVA     , q2bin : low    }
-  # ------------
-  - {sample : data_24        , trigger : Hlt2RD_BuToKpMuMu_MVA            , q2bin : central}
-  - {sample : data_24        , trigger : Hlt2RD_BuToKpMuMu_SameSign_MVA   , q2bin : central}
-  - {sample : data_24        , trigger : Hlt2RD_BuToKpEE_MVA              , q2bin : central}
-  - {sample : data_24        , trigger : Hlt2RD_BuToKpEE_SameSign_MVA     , q2bin : central}
-  # ------------
-  - {sample : data_24        , trigger : Hlt2RD_BuToKpMuMu_MVA            , q2bin : high   }
-  - {sample : data_24        , trigger : Hlt2RD_BuToKpMuMu_SameSign_MVA   , q2bin : high   }
-  - {sample : data_24        , trigger : Hlt2RD_BuToKpEE_MVA              , q2bin : high   }
-  - {sample : data_24        , trigger : Hlt2RD_BuToKpEE_SameSign_MVA     , q2bin : high   }
+  - {sample : data_24        , trigger :   rk_mm_os , q2bin : jpsi   }
+  - {sample : data_24        , trigger :   rk_mm_ss , q2bin : jpsi   }
+  - {sample : data_24        , trigger :   rk_ee_os , q2bin : jpsi   }
+  - {sample : data_24        , trigger :   rk_ee_ss , q2bin : jpsi   }
+  # ------------                                    
+  - {sample : data_24        , trigger :   rk_mm_os , q2bin : high   }
+  - {sample : data_24        , trigger :   rk_mm_ss , q2bin : high   }
+  - {sample : data_24        , trigger :   rk_ee_os , q2bin : high   }
+  - {sample : data_24        , trigger :   rk_ee_ss , q2bin : high   }
 output:
   - 1Trk_mas.png
   - 2Trk_mas.png
