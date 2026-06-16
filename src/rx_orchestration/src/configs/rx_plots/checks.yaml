@@ -54,12 +54,12 @@ leakage:
     - all.png
 high_q2cut:
   args:
-    - {run : run3, sample : Bu_JpsiX_ee_eq_JpsiInAcc}
-    - {run : run3, sample : Bd_JpsiX_ee_eq_JpsiInAcc}
-    - {run : run3, sample : Bs_JpsiX_ee_eq_JpsiInAcc}
-    - {run : run3, sample : Bu_Kee_eq_btosllball05_DPC}
-    - {run : run3, sample : Bu_JpsiK_ee_eq_DPC}
-    - {run : run3, sample : Bu_psi2SK_ee_eq_DPC}
+    - {run : run3, component : bpjpsixee }
+    - {run : run3, component : bdjpsixee }
+    - {run : run3, component : bsjpsixee }
+    - {run : run3, component : bpkpee    }
+    - {run : run3, component : bpkpjpsiee}
+    - {run : run3, component : bpkppsi2ee}
   outputs:
     - reco_q2_0.png
     - reco_q2_1.png
