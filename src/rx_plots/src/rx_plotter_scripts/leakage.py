@@ -7,7 +7,6 @@ import argparse
 import pandas            as pnd
 import matplotlib.pyplot as plt
 
-from omegaconf      import DictConfig
 from rx_common      import Component, Cuts, Qsq, Trigger
 from rx_selection   import selection as sel
 from rx_data        import RDFGetter
@@ -39,7 +38,7 @@ class Data:
 # --------------------------------
 def _initialize():
     Data.cache_dir = '/tmp/cache/rx_plots/leakage'
-    Data.plots_dir = f'{_ANADIR}/plots/checks/leakage/{Data.component}_{Data.trigger}'
+    Data.plots_dir = f'{_ANADIR}/plots/checks/leakage/{Data.component}_{Data.trigger.value}'
 
     os.makedirs(Data.cache_dir, exist_ok=True)
     os.makedirs(Data.plots_dir, exist_ok=True)
@@ -125,15 +124,15 @@ def _parse_args() -> None:
     Data.component = args.component
     Data.trigger   = args.trigger
 # --------------------------------
-def main(cfg : DictConfig | None = None):
+def main(args : dict[str,str] | None = None):
     '''
     Start here
     '''
-    if cfg is None:
+    if args is None:
         _parse_args()
     else:
-        Data.component = cfg.sample
-        Data.trigger= cfg.trigger
+        Data.component = Component(args['component'])
+        Data.trigger   = Trigger(args['trigger'  ])
 
     _initialize()
 
