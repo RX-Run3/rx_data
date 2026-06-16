@@ -44,7 +44,6 @@ class Data:
     trigger : Trigger
     q2_bin  : Qsq 
     cfg_dir : str
-    substr  : str|None
     brem    : int | None
     logl    : int
 
@@ -99,7 +98,6 @@ def _parse_args() -> None:
     parser.add_argument('-s', '--sample' , type=str, help='Sample' , required=True)
     parser.add_argument('-t', '--trigger', type=str, help='Trigger' , required=True)
     parser.add_argument('-c', '--config' , type=str, help='Configuration', required=True)
-    parser.add_argument('-x', '--substr' , type=str, help='Substring that must be contained in path, e.g. magup')
     parser.add_argument('-b', '--brem'   , type=int, help='Brem category', choices=[0, 1, 2])
     parser.add_argument('-l', '--logl'   , type=int, help='Log level'    , choices=[10, 20, 30], default=20)
     args = parser.parse_args()
@@ -110,7 +108,6 @@ def _parse_args() -> None:
     Data.sample = args.sample
     Data.trigger= args.trigger
     Data.config = f'{args.config}_{project}'
-    Data.substr = args.substr
     Data.brem   = args.brem
     Data.logl   = args.logl
 # ---------------------------------
@@ -136,11 +133,6 @@ def _get_out_dir() -> str:
         brem_name = f'{Data.brem:03}'
 
     out_dir = f'{Data.sample}/{Data.trigger}/{Data.q2_bin}/{brem_name}'
-    if Data.substr is None:
-        return out_dir
-
-    out_dir = f'{out_dir}/{Data.substr}'
-
     return out_dir
 # ---------------------------------
 def _get_inp() -> dict[str,RDF.RNode]:
@@ -194,7 +186,6 @@ def _initialize_pars(cfg : DictConfig) -> None:
     Data.sample = cfg.sample
     Data.trigger= cfg.trigger
     Data.config = f'{cfg.config}_{project}'
-    Data.substr = cfg.substr
     Data.brem   = cfg.brem
     Data.logl   = 20 
 # ---------------------------------
