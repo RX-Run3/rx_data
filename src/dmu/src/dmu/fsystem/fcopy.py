@@ -107,6 +107,7 @@ class FCopy:
 
         commands = [
             'rsync',
+            '--mkpath',
             '--progress',
             '--append-verify',
             '-a',
