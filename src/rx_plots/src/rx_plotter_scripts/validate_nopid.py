@@ -50,7 +50,6 @@ def _parse_args() -> argparse.Namespace:
     '''
 
     parser = argparse.ArgumentParser(description='Runs validation of simulation without PID')
-    #parser.add_argument('-n', '--name' , type=str, help='Identifier for pipeline, e.g. 22781/btoxll_mva_2024_nopid')
     args = parser.parse_args()
 
     return args
@@ -99,8 +98,8 @@ def _get_config_with_title(sample : str) -> DictConfig:
 # ----------------------------
 def _load_config(channel : str) -> None:
     cfg = gut.load_data(
-            package='rx_plotter_data',
-            fpath  =f'no_pid/{channel}.yaml')
+        package='rx_plotter_data',
+        fpath  =f'no_pid/{channel}.yaml')
 
     plt_dir = f'{_ANADIR}/plots/checks/validate_nopid/{channel}'
     cfg['saving'] = {'plt_dir' : plt_dir}
