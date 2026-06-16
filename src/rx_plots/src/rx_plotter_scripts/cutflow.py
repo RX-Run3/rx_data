@@ -16,18 +16,17 @@ from rx_selection  import selection
 from rx_common     import Component, Qsq, Trigger
 
 log=LogStore.add_logger('rx_selection:cutflow')
+_ANADIR = os.environ['ANADIR']
 # ---------------------------------
 class Data:
     '''
     Class used to share attributes
     '''
     d_reso     = {'jpsi' : 'B_const_mass_M', 'psi2' : 'B_const_mass_psi2S_M'}
-    ana_dir    = os.environ['ANADIR']
 
     mplhep.style.use('LHCb2')
 
     chanel    : str
-    substr    : str
     component : Component 
     trigger   : Trigger 
     q2_bin    : Qsq 
@@ -88,18 +87,16 @@ def _get_rdf() -> RDF.RNode:
 # ---------------------------------
 def _parse_args() -> None:
     parser = argparse.ArgumentParser(description='Script used to cutflow plots')
-    parser.add_argument('-q', '--q2bin'  , type=Qsq      , help='q2 bin'       , required=True, choices=Qsq)
-    parser.add_argument('-s', '--sample' , type=Component, help='Sample'       , required=True, choices=Component)
-    parser.add_argument('-t', '--trigger', type=Trigger  , help='Trigger'      , required=True, choices=Trigger)
+    parser.add_argument('-q', '--q2bin'  , type=Qsq      , help='q2 bin'       , required=True)
+    parser.add_argument('-s', '--sample' , type=Component, help='Sample'       , required=True)
+    parser.add_argument('-t', '--trigger', type=Trigger  , help='Trigger'      , required=True)
     parser.add_argument('-c', '--config' , type=str      , help='Configuration', required=True)
-    parser.add_argument('-x', '--substr' , type=str      , help='Substring that must be contained in path, e.g. magup')
     args = parser.parse_args()
 
     Data.q2_bin   = args.q2bin
     Data.component= args.sample
     Data.trigger  = args.trigger
     Data.config   = f'{args.config}_{Data.trigger.project}'
-    Data.substr   = args.substr
 # ---------------------------------
 def _get_cfg() -> DictConfig:
     cfg           = gut.load_conf(package='rx_plotter_data', fpath=f'cutflow/{Data.config}.yaml')
@@ -122,9 +119,7 @@ def _add_title(cfg : DictConfig) -> DictConfig:
     return cfg
 # ---------------------------------
 def _get_out_dir(plt_dir : str) -> str:
-    out_dir = f'{Data.ana_dir}/plots/{plt_dir}/{Data.component}_{Data.trigger}_{Data.q2_bin}'
-    if Data.substr is not None:
-        out_dir = f'{out_dir}/{Data.substr}'
+    out_dir = f'{_ANADIR}/plots/{plt_dir}/{Data.component}_{Data.trigger.value}_{Data.q2_bin}'
 
     return out_dir
 # ---------------------------------
@@ -168,27 +163,27 @@ def _plot(d_rdf : dict[str,RDF.RNode]) -> None:
     ptr=Plotter1D(d_rdf=d_rdf, cfg=cfg)
     ptr.run()
 # ---------------------------------
-def _set_config(settings : DictConfig) -> None:
+def _set_config(args : dict[str,str]) -> None:
     '''
     Parameters
     -------------
     settings: Dictionary with settings needed when used as a module
     '''
+    config = args['config']
 
-    Data.q2_bin   = settings.q2bin
-    Data.component= settings.sample
-    Data.trigger  = settings.trigger
-    Data.config   = f'{settings.config}_{Data.trigger.project}'
-    Data.substr   = settings.substr
+    Data.q2_bin   = Qsq(args['q2bin'])
+    Data.component= Component(args['sample'])
+    Data.trigger  = Trigger(args['trigger'])
+    Data.config   = f'{config}_{Data.trigger.project}'
 # ---------------------------------
-def main(settings : DictConfig|None = None):
+def main(args : dict[str,str] | None = None):
     '''
     Script starts here
     '''
-    if settings is None:
+    if args is None:
         _parse_args()
     else:
-        _set_config(settings=settings)
+        _set_config(args=args)
 
     Data.cfg = _get_cfg()
     with RDFGetter.max_entries(value=-1),\
