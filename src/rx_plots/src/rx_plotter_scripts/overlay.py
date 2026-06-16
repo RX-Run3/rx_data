@@ -1,20 +1,19 @@
 '''
 Script used to plot overlays
 '''
-# pylint: disable=no-name-in-module, logging-fstring-interpolation
 import os
 import argparse
-from dataclasses         import dataclass
-
-from omegaconf import DictConfig
 import mplhep
-import dmu.generic.utilities as gut
-from ROOT                    import RDataFrame, EnableImplicitMT # type: ignore
-from dmu.plotting.plotter_1d import Plotter1D
-from dmu.logging.log_store   import LogStore
-from rx_data.rdf_getter      import RDFGetter
-from rx_selection            import selection as sel
-from rx_common               import info
+
+from dataclasses   import dataclass
+from omegaconf     import DictConfig
+from dmu.generic   import utilities as gut
+from ROOT          import RDF, EnableImplicitMT # type: ignore
+from dmu.plotting  import Plotter1D
+from dmu           import LogLevels, LogStore
+from rx_data       import RDFGetter
+from rx_selection  import selection as sel
+from rx_common     import Component, Qsq, Trigger, info
 
 log=LogStore.add_logger('rx_selection:cutflow')
 # ---------------------------------
