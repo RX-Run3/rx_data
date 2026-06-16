@@ -453,6 +453,18 @@ class Component(StrEnum):
                 return r'$B^+\to K^+e^+e^-$'
             case Component.bpkpmm:
                 return r'$B^+\to K^+\mu^+\mu^-$'
+            case Component.bpjpsixee:
+                return r'$B^+\to J/\psi(2S)(\to e^+e^-)X$'
+            case Component.bdjpsixee:
+                return r'$B^0\to J/\psi(2S)(\to e^+e^-)X$'
+            case Component.bsjpsixee:
+                return r'$B_s\to J/\psi(2S)(\to e^+e^-)X$'
+            case Component.bpjpsixmm:
+                return r'$B^+\to J/\psi(2S)(\to \mu^+\mu^-)X$'
+            case Component.bdjpsixmm:
+                return r'$B^0\to J/\psi(2S)(\to \mu^+\mu^-)X$'
+            case Component.bsjpsixmm:
+                return r'$B_s\to J/\psi(2S)(\to \mu^+\mu^-)X$'
             case Component.data_24:
                 return 'Data'
             case _:
