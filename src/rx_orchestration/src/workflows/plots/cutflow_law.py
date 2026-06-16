@@ -5,6 +5,7 @@ import os
 import law
 import json
 
+from typing        import Final, cast
 from pathlib       import Path
 from functools     import cache
 from law.parameter import Parameter
@@ -13,6 +14,11 @@ from dmu.generic   import utilities as gut
 from omegaconf     import DictConfig, OmegaConf
 
 log=LogStore.add_logger('rx_orchestration:cutflow_law')
+_CONFIGS : Final[dict[str,str]] = {
+    'cleanup'     : 'cutflow_os.yaml',
+    'ss_shape'    : 'cutflow_ss.yaml',
+    'bdt'         : 'bdt.yaml',
+    'mass_shaping': 'mass_shaping.yaml'}
 # -------------------------------------
 class CutflowTask(law.Task):
     config_string : str = Parameter() # type: ignore
@@ -59,9 +65,11 @@ class CutflowTask(law.Task):
         os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
         from rx_plotter_scripts.cutflow import main as cutflow 
 
-        cfg = self._get_config() 
+        cfg  = self._get_config() 
+        obj  = OmegaConf.to_object(cfg = cfg)
+        obj  = cast(dict[str,dict[str,str]], obj)
 
-        cutflow(settings=cfg.args)
+        cutflow(args = obj['args'])
 # -------------------------------------
 class WrapCutflow(law.WrapperTask):
     '''
@@ -80,16 +88,9 @@ class WrapCutflow(law.WrapperTask):
         -------------
         Dictionary with configuration, from YAML file
         '''
-        if   kind in ['cleanup']:
-            fname = 'cutflow_os.yaml'
-        elif kind in ['ss_shape']:
-            fname = 'cutflow_ss.yaml'
-        elif kind in ['bdt']:
-            fname = 'bdt.yaml'
-        elif kind in ['mass_shaping']:
-            fname = 'mass_shaping.yaml'
-        else:
-            raise ValueError(f'Invalid kind of plot: {kind}')
+        fname  = _CONFIGS.get(kind)
+        if fname is None:
+            raise ValueError(f'No config found for: {kind}')
         
         config = gut.load_conf(package='configs', fpath=f'rx_plots/{fname}')
 
@@ -103,9 +104,8 @@ class WrapCutflow(law.WrapperTask):
         --------------
         List of JSON strings defining what each job will do
         '''
-    
         l_cfg = [] 
-        for kind in ['cleanup', 'ss_shape', 'bdt', 'mass_shaping']:
+        for kind in _KINDS:
             config = WrapCutflow._get_config(kind=kind)
     
             for args in config['args']:
@@ -118,8 +118,6 @@ class WrapCutflow(law.WrapperTask):
                 cfg['sample'  ] = sample
                 cfg['trigger' ] = trigger
                 cfg['config'  ] = kind 
-                cfg['substr'  ] = None 
-                cfg['nthreads'] = 7
 
                 output   = OmegaConf.to_container(config.output, resolve=True)
                 json_str = json.dumps({'args' : cfg, 'output' : output}) 
