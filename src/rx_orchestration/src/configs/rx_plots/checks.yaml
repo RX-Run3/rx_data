@@ -14,33 +14,32 @@ validate_nopid:
   args:
     - {'dummy_setting' : 1}
   outputs:
-    - ee/k_pidk_Bd_Kstee_eq_btosllball05_DPC.png
-    - ee/k_pidk_Bu_JpsiPi_ee_eq_DPC.png
-    - ee/k_pidk_Bu_Kee_eq_btosllball05_DPC.png
-    - ee/k_pidk_Bu_KplKplKmn_eq_sqDalitz_DPC.png
-    - ee/k_pidk_Bu_KplpiplKmn_eq_sqDalitz_DPC.png
-    - ee/k_pidk_Bu_piplpimnKpl_eq_sqDalitz_DPC.png
-    - ee/l1_pide_Bd_Kstee_eq_btosllball05_DPC.png
-    - ee/l1_pide_Bu_JpsiPi_ee_eq_DPC.png
-    - ee/l1_pide_Bu_Kee_eq_btosllball05_DPC.png
-    - ee/l1_pide_Bu_KplKplKmn_eq_sqDalitz_DPC.png
-    - ee/l1_pide_Bu_KplpiplKmn_eq_sqDalitz_DPC.png
-    - ee/l1_pide_Bu_piplpimnKpl_eq_sqDalitz_DPC.png
-    - ee/l2_pide_Bd_Kstee_eq_btosllball05_DPC.png
-    - ee/l2_pide_Bu_JpsiPi_ee_eq_DPC.png
-    - ee/l2_pide_Bu_Kee_eq_btosllball05_DPC.png
-    - ee/l2_pide_Bu_KplKplKmn_eq_sqDalitz_DPC.png
-    - ee/l2_pide_Bu_KplpiplKmn_eq_sqDalitz_DPC.png
-    - ee/l2_pide_Bu_piplpimnKpl_eq_sqDalitz_DPC.png
-    - mm/k_pidk_Bd_Kstmumu_eq_btosllball05_DPC.png
-    - mm/k_pidk_Bu_JpsiPi_mm_eq_DPC.png
-    - mm/k_pidk_Bu_Kmumu_eq_btosllball05_DPC.png
-    - mm/l1_pidmu_Bd_Kstmumu_eq_btosllball05_DPC.png
-    - mm/l1_pidmu_Bu_JpsiPi_mm_eq_DPC.png
-    - mm/l1_pidmu_Bu_Kmumu_eq_btosllball05_DPC.png
-    - mm/l2_pidmu_Bd_Kstmumu_eq_btosllball05_DPC.png
-    - mm/l2_pidmu_Bu_JpsiPi_mm_eq_DPC.png
-    - mm/l2_pidmu_Bu_Kmumu_eq_btosllball05_DPC.png
+    - ee/k_pidk_bppijpsiee.png
+    - ee/k_pidk_bpkpee.png
+    - ee/k_pidk_bpkkk.png
+    - ee/k_pidk_bpkpik.png
+    - ee/k_pidk_bpkpipi.png
+    # ------
+    - ee/l1_pide_bppijpsiee.png
+    - ee/l1_pide_bpkpee.png
+    - ee/l1_pide_bpkkk.png
+    - ee/l1_pide_bpkpik.png
+    - ee/l1_pide_bpkpipi.png
+    # ------
+    - ee/l2_pide_bppijpsiee.png
+    - ee/l2_pide_bpkpee.png
+    - ee/l2_pide_bpkkk.png
+    - ee/l2_pide_bpkpik.png
+    - ee/l2_pide_bpkpipi.png
+    # ------
+    - mm/k_pidk_bppijpsimm.png
+    - mm/k_pidk_bpkpmm.png
+    # ------
+    - mm/l1_pidmu_bppijpsimm.png
+    - mm/l1_pidmu_bpkpmm.png
+    # ------
+    - mm/l2_pidmu_bppijpsimm.png
+    - mm/l2_pidmu_bpkpmm.png
 leakage:
   args:
     - {component : bpkpjpsiee    , trigger :   rk_ee_os}
