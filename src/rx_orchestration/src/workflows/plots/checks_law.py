@@ -57,18 +57,17 @@ class ChecksTask(law.Task):
         ---------------
         Name of required output, built from ANADIR and config settings
         '''
-        cfg    = self._get_config()
-        ANADIR = os.environ['ANADIR']
-        PLTDIR = Path(ANADIR) / f'plots/checks/{self.kind}'
+        cfg     = self._get_config()
+        plt_dir = _ANADIR / f'plots/checks/{self.kind}'
 
         if   self.kind == 'efficiency_vs_q2':
-            dir_path = PLTDIR / f'{cfg.args.analysis}_{cfg.args.channel}'
+            dir_path = plt_dir / f'{cfg.args.analysis}_{cfg.args.channel}'
         elif self.kind == 'high_q2cut':
-            dir_path = PLTDIR / f'{cfg.args.sample}/{cfg.args.run}'
+            dir_path = plt_dir / f'{cfg.args.sample}/{cfg.args.run}'
         elif self.kind == 'leakage':
-            dir_path = PLTDIR / f'{cfg.args.sample}_{cfg.args.trigger}'
+            dir_path = plt_dir / f'{cfg.args.sample}_{cfg.args.trigger}'
         elif self.kind in ['validate_nopid']:
-            dir_path = PLTDIR 
+            dir_path = plt_dir 
         else:
             raise ValueError(f'Invalid kind: {self.kind}')
 
@@ -84,10 +83,10 @@ class ChecksTask(law.Task):
         Runs comparison
         '''
         os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-        if self.kind not in KIND_TO_MODULE: 
+        if self.kind not in _KIND_TO_MODULE: 
             raise ValueError(f'Invalid kind: {self.kind}')
 
-        module = importlib.import_module(KIND_TO_MODULE[self.kind])
+        module = importlib.import_module(_KIND_TO_MODULE[self.kind])
         runner = module.main
 
         cfg = self._get_config() 
@@ -115,8 +114,8 @@ class WrapChecks(law.WrapperTask):
         outputs  = OmegaConf.to_container(cfg_kind.outputs, resolve=True)
 
         for args in cfg_kind.args:
-            args     = OmegaConf.to_container(args, resolve=True)
-            json_str = json.dumps({'args' : args, 'outputs' : outputs}) 
+            args_dict= OmegaConf.to_container(args, resolve=True)
+            json_str = json.dumps({'args' : args_dict, 'outputs' : outputs}) 
             l_cfg.append(json_str)
     
         return l_cfg 
@@ -128,11 +127,7 @@ class WrapChecks(law.WrapperTask):
         cfg = gut.load_conf(package='configs', fpath='rx_plots/checks.yaml')
 
         log.info(20 * '-')
-        for kind in [
-            'efficiency_vs_q2', 
-            'validate_nopid', 
-            'high_q2cut',
-            'leakage']: 
+        for kind in _KIND_TO_MODULE: 
             log.info(f'Running: {kind}')
             l_settings = WrapChecks.get_settings(cfg_full=cfg, kind=kind)
             for settings in l_settings:
