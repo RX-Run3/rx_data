@@ -48,7 +48,7 @@ to print a table to markdown with the sizes of each sample in Megabytes. e.g.:
 If the original files are downloaded to a cluster and the user needs the files in e.g. a laptop one could:
 
 - Use SSHFS to mount the cluster's file system in the laptop.
-- Copy the files through
+- Copy the files through `copy_samples`
 
 ### Usage
 
@@ -84,7 +84,7 @@ which will allow the same connection to be used by the transfer and won't prompt
 I.e. to a laptop. For this one needs a _reverse forwarding_ SSH connection to IHEP. I.e.
 
 ```bash
-issh -R 2223:localhost:2223 $USER@lxlogin004.ihep.ac.cn
+ssh -R 2223:localhost:2223 $USER@lxlogin004.ihep.ac.cn
 ```
 
 which will listen in port 2223 in both the laptop and the cluster. 
