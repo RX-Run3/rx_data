@@ -272,7 +272,7 @@ def _plot(
     for qsqdef in QsqDef:
         _plot_efficiencies(df=df, qsqdef = qsqdef, cfg = cfg)
 
-    out_path = _ANADIR / f'plots/checks/efficiency_vs_q2/{cfg.component}_{cfg.trigger}/{q2bin}/{cfg.qsqdef}.png'
+    out_path = _ANADIR / f'plots/checks/efficiency_vs_q2/{cfg.component}_{cfg.trigger.value}/{q2bin}/{cfg.qsqdef}.png'
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
     for bound in cfg.bounds.values():
