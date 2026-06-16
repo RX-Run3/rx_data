@@ -40,17 +40,17 @@ class Data:
 
     chanel  : str
     config  : str
-    sample  : str
-    trigger : str
-    q2_bin  : str
+    sample  : Component 
+    trigger : Trigger
+    q2_bin  : Qsq 
     cfg_dir : str
     substr  : str|None
-    brem    : int|None
+    brem    : int | None
     logl    : int
 
     l_col  = []
 # ---------------------------------
-def _apply_definitions(rdf : RDataFrame, cfg : DictConfig) -> RDataFrame:
+def _apply_definitions(rdf : RDF.RNode, cfg : DictConfig) -> RDF.RNode:
     if 'definitions' not in cfg:
         return rdf
 
@@ -59,7 +59,7 @@ def _apply_definitions(rdf : RDataFrame, cfg : DictConfig) -> RDataFrame:
 
     return rdf
 # ---------------------------------
-def _filter_by_brem(rdf : RDataFrame) -> RDataFrame:
+def _filter_by_brem(rdf : RDF.RNode) -> RDF.RNode:
     if Data.brem is None:
         return rdf
 
@@ -69,7 +69,7 @@ def _filter_by_brem(rdf : RDataFrame) -> RDataFrame:
     return rdf
 # ---------------------------------
 @gut.timeit
-def _get_rdf() -> RDataFrame:
+def _get_rdf() -> RDF.RNode:
     cfg = _get_cfg()
     gtr = RDFGetter(sample=Data.sample, trigger=Data.trigger)
     rdf = gtr.get_rdf(per_file=False)
@@ -87,7 +87,7 @@ def _get_rdf() -> RDataFrame:
 
     rdf = _filter_by_brem(rdf)
 
-    if log.getEffectiveLevel() == 10:
+    if log.getEffectiveLevel() == LogLevels.info:
         rep = rdf.Report()
         rep.Print()
 
@@ -119,7 +119,7 @@ def _get_cfg() -> DictConfig:
     ini_dir = cfg.saving.plt_dir
     end_dir = _get_out_dir()
 
-    cfg.saving.plt_dir = f'{Data.ana_dir}/plots/{ini_dir}/{end_dir}'
+    cfg.saving.plt_dir = f'{_ANADIR}/plots/{ini_dir}/{end_dir}'
     log.info(f'Saving to: {cfg.saving.plt_dir}')
 
     return cfg
@@ -143,7 +143,7 @@ def _get_out_dir() -> str:
 
     return out_dir
 # ---------------------------------
-def _get_inp() -> dict[str,RDataFrame]:
+def _get_inp() -> dict[str,RDF.RNode]:
     cfg   = _get_cfg()
     rdf_in= _get_rdf()
 
@@ -156,7 +156,7 @@ def _get_inp() -> dict[str,RDataFrame]:
 
     return d_rdf
 # ---------------------------------
-def _plot(d_rdf : dict[str,RDataFrame]) -> None:
+def _plot(d_rdf : dict[str,RDF.RNode]) -> None:
     cfg= _get_cfg()
     cfg= _fix_ranges(cfg=cfg)
 
