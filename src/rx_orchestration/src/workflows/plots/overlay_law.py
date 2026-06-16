@@ -3,16 +3,17 @@ Script used to orchestrate plots made by the `cutflow` script
 '''
 import os
 import json
-from pathlib               import Path
-from functools             import cache
-
 import law
-from law.parameter         import Parameter
-from omegaconf             import DictConfig, OmegaConf
-from dmu.generic           import utilities as gut
-from dmu.logging.log_store import LogStore
+
+from pathlib       import Path
+from functools     import cache
+from law.parameter import Parameter
+from omegaconf     import DictConfig, OmegaConf
+from dmu.generic   import utilities as gut
+from dmu           import LogStore
 
 log=LogStore.add_logger('rx_orchestration:overlay_law')
+_ANADIR = Path(os.environ['ANADIR'])
 # -------------------------------------
 class OverlayTask(law.Task):
     config_string : str = Parameter() # type: ignore
@@ -45,8 +46,7 @@ class OverlayTask(law.Task):
         Name of required output, built from ANADIR and config settings
         '''
         cfg      = self._get_config()
-        ANADIR   = os.environ['ANADIR']
-        PLTDIR   = Path(ANADIR) / f'plots/overlay/{cfg.args.config}'
+        PLTDIR   = _ANADIR / f'plots/overlay/{cfg.args.config}'
         dir_path = PLTDIR / cfg.args.sample / cfg.args.trigger / cfg.args.q2bin / f'{cfg.args.brem:03}'
 
         return [ law.LocalFileTarget(dir_path / name) for name in cfg.output ]
