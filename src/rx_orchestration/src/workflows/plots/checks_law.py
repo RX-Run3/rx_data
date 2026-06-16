@@ -4,11 +4,12 @@ meant to do checks, e.g. efficiency vs q2
 '''
 import os
 import json
+import law
 import importlib
+
 from pathlib               import Path
 from functools             import cache
-
-import law
+from typing                import Final
 from law.parameter         import Parameter
 from omegaconf             import DictConfig, OmegaConf
 from dmu.generic           import utilities as gut
