@@ -167,14 +167,13 @@ def main(args : DictConfig | None = None):
             continue
 
         if 'btosllball' in component.sample:
-            Data.weight  = '0.5' if 'MuMu' in trigger else '0.1'
+            Data.weight  = '0.5' if trigger.is_muon else '0.1'
         elif component == Component.bppijpsiee:
-            Data.weight  = '0.5' if 'MuMu' in trigger else '2e-2'
+            Data.weight  = '0.5' if trigger.is_muon else '2e-2'
         else:
-            Data.weight  = '0.5' if 'MuMu' in trigger else '1e-4'
+            Data.weight  = '0.5' if trigger.is_muon else '1e-4'
 
-        channel      = 'mm'  if 'MuMu' in trigger else   'ee'
-        _load_config(channel=channel)
+        _load_config(channel=trigger.channel)
 
         rdf_nopid = _get_rdf(component = component, trigger=trigger, has_pid=False)
         rdf_yspid = _get_rdf(component = component, trigger=trigger, has_pid=True )
