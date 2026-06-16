@@ -15,16 +15,19 @@ import mplhep
 import matplotlib.pyplot as plt
 
 from ROOT                    import RDF # type: ignore
-from dmu.logging.log_store   import LogStore
+from dmu                     import LogStore
 from ap_utilities.decays     import utilities          as aput
-from dmu.plotting.plotter_1d import Plotter1D          as Plotter
+from dmu.plotting            import Plotter1D          as Plotter
 from dmu.generic             import utilities          as gut
 from dmu.generic             import version_management as vmn
 from omegaconf               import DictConfig, OmegaConf
-from rx_common.types         import Trigger
-from rx_data.rdf_getter      import RDFGetter
+from rx_common               import Component, Project
+from rx_common               import Trigger
+from rx_data                 import RDFGetter
 
 log = LogStore.add_logger('rx_plots:validate_nopid')
+
+_ANADIR = os.environ['ANADIR']
 # ----------------------------
 class Data:
     '''
@@ -32,11 +35,10 @@ class Data:
     '''
     cfg     : dict
     weight  : str
-    samples : dict[str,Trigger] # Dictionary with sample -> trigger name
+    samples : dict[Component,Trigger] # Dictionary with sample -> trigger name
     regex   = r'mc_\w+_\d{8}_(.*)_(Hlt2.*MVA)_\w+\.root' # Needed to extract sample and trigger name
 
-    plt.style.use(mplhep.style.LHCb2)
-    ana_dir = os.environ['ANADIR']
+    plt.style.use(mplhep.style.LHCb2) # type: ignore
 # ----------------------------
 def _parse_args() -> argparse.Namespace:
     '''
@@ -53,9 +55,9 @@ def _parse_args() -> argparse.Namespace:
 
     return args
 # ----------------------------
-def _get_rdf(sample : str, trigger : Trigger, has_pid : bool) -> RDF.RNode:
+def _get_rdf(component : Component, trigger : Trigger, has_pid : bool) -> RDF.RNode:
     if not has_pid:
-        trigger = Trigger(f'{trigger}_noPID')
+        trigger = Trigger.from_name(f'{trigger}_noPID')
 
     weight = '1.0' if has_pid else Data.weight
 
@@ -65,7 +67,7 @@ def _get_rdf(sample : str, trigger : Trigger, has_pid : bool) -> RDF.RNode:
         'mva',
         'swp_cascade',
         'swp_jpsi_misid']):
-        gtr = RDFGetter(sample=sample, trigger=trigger)
+        gtr = RDFGetter(sample=component, trigger=trigger)
         rdf = gtr.get_rdf(per_file=False)
         rdf = rdf.Define('weights', weight)
 
@@ -100,7 +102,7 @@ def _load_config(channel : str) -> None:
             package='rx_plotter_data',
             fpath  =f'no_pid/{channel}.yaml')
 
-    plt_dir = f'{Data.ana_dir}/plots/checks/validate_nopid/{channel}'
+    plt_dir = f'{_ANADIR}/plots/checks/validate_nopid/{channel}'
     cfg['saving'] = {'plt_dir' : plt_dir}
 
     Data.cfg = cfg
@@ -117,7 +119,7 @@ def _apply_pid(rdf : RDF.RNode) -> RDF.RNode:
 
     return rdf
 # ----------------------------
-def _get_sample_trigger(fpath : str) -> tuple[str,Trigger]:
+def _get_component_trigger(fpath : str) -> tuple[Component,Trigger]:
     '''
     Parameters
     ---------------
@@ -136,21 +138,21 @@ def _get_sample_trigger(fpath : str) -> tuple[str,Trigger]:
     sample = aput.name_from_lower_case(sample)
     log.debug(f'Found: {sample}/{trigger}')
 
-    return sample, Trigger(trigger)
+    return Component.from_sample(sample), Trigger.from_name(trigger)
 # ----------------------------
 def _load_samples() -> None:
     '''
     This is meant to fill Data.samples
     '''
-    fdir    = f'{Data.ana_dir}/Data/rk_nopid/main'
+    fdir    = f'{_ANADIR}/Data/{Project.rk_no_pid}/main'
     dpath   = vmn.get_last_version(dir_path=fdir, version_only=False)
     file_wc = f'{dpath}/*.root'
     l_fpath = glob.glob(file_wc)
     if len(l_fpath) == 0:
         raise FileNotFoundError(f'No files found in: {file_wc}')
 
-    l_sample_trigger = [ _get_sample_trigger(fpath=fpath) for fpath in l_fpath ]
-    Data.samples     = dict(l_sample_trigger)
+    l_component_trigger = [ _get_component_trigger(fpath=fpath) for fpath in l_fpath ]
+    Data.samples        = dict(l_component_trigger)
 # ----------------------------
 def main(cfg : DictConfig | None = None):
     '''
@@ -161,13 +163,13 @@ def main(cfg : DictConfig | None = None):
 
     _load_samples()
 
-    for sample, trigger in Data.samples.items():
-        if sample in ['Bu_JpsiK_ee_eq_DPC']:
+    for component, trigger in Data.samples.items():
+        if component == Component.bpkpjpsiee:
             continue
 
-        if 'btosllball' in sample:
+        if 'btosllball' in component.sample:
             Data.weight  = '0.5' if 'MuMu' in trigger else '0.1'
-        elif sample in ['Bu_JpsiPi_ee_eq_DPC']:
+        elif component == Component.bppijpsiee:
             Data.weight  = '0.5' if 'MuMu' in trigger else '2e-2'
         else:
             Data.weight  = '0.5' if 'MuMu' in trigger else '1e-4'
@@ -175,15 +177,15 @@ def main(cfg : DictConfig | None = None):
         channel      = 'mm'  if 'MuMu' in trigger else   'ee'
         _load_config(channel=channel)
 
-        rdf_nopid = _get_rdf(sample=sample, trigger=trigger, has_pid=False)
-        rdf_yspid = _get_rdf(sample=sample, trigger=trigger, has_pid=True )
+        rdf_nopid = _get_rdf(component = component, trigger=trigger, has_pid=False)
+        rdf_yspid = _get_rdf(component = component, trigger=trigger, has_pid=True )
         rdf_xcpid = _apply_pid(rdf_nopid)
 
         _compare(
-            sample   =   sample,
-            rdf_nopid=rdf_nopid,
-            rdf_yspid=rdf_yspid,
-            rdf_xcpid=rdf_xcpid)
+            sample    = component,
+            rdf_nopid = rdf_nopid,
+            rdf_yspid = rdf_yspid,
+            rdf_xcpid = rdf_xcpid)
 # ----------------------------
 if __name__ == '__main__':
     main()
