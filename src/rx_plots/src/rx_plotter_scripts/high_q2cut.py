@@ -9,8 +9,8 @@ import mplhep
 import pandas            as pnd
 import matplotlib.pyplot as plt
 
+from pathlib               import Path
 from typing                import Final, cast
-from omegaconf             import DictConfig
 from ROOT                  import RDF # type: ignore
 from rx_common             import Component, Cuts, Qsq, Trigger
 from rx_data               import RDFGetter
@@ -19,37 +19,31 @@ from rx_selection          import selection as sel
 from dmu                   import LogLevels, LogStore
 
 log=LogStore.add_logger('rx_plots:high_q2cut')
+plt.style.use(mplhep.style.LHCb2) # type: ignore
+
+_COMPONENTS : Final[list[Component]] = [
+    Component.data_24,
+    Component.bpjpsixee,
+    Component.bdjpsixee,
+    Component.bsjpsixee,
+    Component.bpkpee,
+    Component.bpkpjpsiee,
+    Component.bpkppsi2ee]
+
+
+_ANADIR : Final[Path] = Path(os.environ['ANADIR'])
 # ---------------------------
 class Data:
     '''
     Data class
     '''
-    plt_dir : str
-    sample  : str
-    run     : str
-    trigger : str
+    plt_dir  : str
+    component: Component 
+    trigger  : Trigger 
+    run      : str
 
-    l_sample = [
-            'DATA*',
-            'Bu_JpsiX_ee_eq_JpsiInAcc',
-            'Bd_JpsiX_ee_eq_JpsiInAcc',
-            'Bs_JpsiX_ee_eq_JpsiInAcc',
-            'Bu_Kee_eq_btosllball05_DPC',
-            'Bu_JpsiK_ee_eq_DPC',
-            'Bu_psi2SK_ee_eq_DPC']
-
-    d_latex   = {
-            'DATA*'                      : 'SS data',
-            'Bu_JpsiX_ee_eq_JpsiInAcc'   : r'$B^+\to H_s c\bar{c}(\to e^+e^-)$',
-            'Bd_JpsiX_ee_eq_JpsiInAcc'   : r'$B^0\to H_s c\bar{c}(\to e^+e^-)$',
-            'Bs_JpsiX_ee_eq_JpsiInAcc'   : r'$B_s\to H_s c\bar{c}(\to e^+e^-)$',
-            'Bu_Kee_eq_btosllball05_DPC' : r'$B^+\to K^+e^+e^-$',
-            'Bu_JpsiK_ee_eq_DPC'         : r'$B^+\to K^+J/\psi(\to e^+e^-)$',
-            'Bu_psi2SK_ee_eq_DPC'        : r'$B^+\to K^+\psi(2S)(\to e^+e^-)$'}
-
-    q2bin   = 'high'
+    q2bin   = Qsq.high
     bmass   = 'B_Mass_smr'
-    plt.style.use(mplhep.style.LHCb2)
 
     min_q2  = 10
     max_q2  = 24
