@@ -17,12 +17,14 @@ from dmu.logging.log_store import LogStore
 
 log=LogStore.add_logger('rx_orchestration:plot_2d_law')
 
-KIND_TO_MODULE = {
+_KIND_TO_MODULE : Final[dict[str,str]] = {
     'efficiency_vs_q2': 'rx_plotter_scripts.efficiency_vs_q2',
     'validate_nopid'  : 'rx_plotter_scripts.validate_nopid',
     'leakage'         : 'rx_plotter_scripts.leakage',
     'high_q2cut'      : 'rx_plotter_scripts.high_q2cut',
 }
+
+_ANADIR : Final[Path] = Path(os.environ['ANADIR'])
 # -------------------------------------
 class ChecksTask(law.Task):
     config_string : str = Parameter() # type: ignore
