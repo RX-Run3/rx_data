@@ -1,26 +1,15 @@
 efficiency_vs_q2:
   args:
-    - {analysis : rk  , channel : mm}
-    - {analysis : rk  , channel : ee}
-    - {analysis : rkst, channel : mm}
-    - {analysis : rkst, channel : ee}
+    - {component : bpkpee    , trigger :   rk_ee_os}
+    - {component : bpkpmm    , trigger :   rk_mm_os}
+    - {component : bdkstkpiee, trigger : rkst_ee_os}
+    - {component : bdkstkpimm, trigger : rkst_mm_os}
   outputs:
-    - low/q2.png
-    - low/q2_true.png
-    - cen_low/q2.png
-    - cen_low/q2_true.png
-    - cen_high/q2.png
-    - cen_high/q2_true.png
-    - central/q2.png
-    - central/q2_true.png
-    - jpsi/q2.png
-    - jpsi/q2_true.png
-    - psi2/q2.png
-    - psi2/q2_true.png
-    - high/q2.png
-    - high/q2_true.png
-    - none/q2.png
-    - none/q2_true.png
+    - low/true.png
+    - central/true.png
+    - jpsi/true.png
+    - psi2/true.png
+    - high/true.png
 validate_nopid:
   args:
     - {'dummy_setting' : 1}
