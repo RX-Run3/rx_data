@@ -154,11 +154,11 @@ def _load_samples() -> None:
     l_component_trigger = [ _get_component_trigger(fpath=fpath) for fpath in l_fpath ]
     Data.samples        = dict(l_component_trigger)
 # ----------------------------
-def main(cfg : DictConfig | None = None):
+def main(args : DictConfig | None = None):
     '''
     Start here
     '''
-    if cfg is None:
+    if args is None:
         _parse_args()
 
     _load_samples()
