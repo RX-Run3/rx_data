@@ -18,6 +18,7 @@ from rx_common     import Component, Qsq, Trigger, info
 log=LogStore.add_logger('rx_selection:cutflow')
 
 _ANADIR = os.environ['ANADIR']
+mplhep.style.use('LHCb2')
 # ---------------------------------
 @dataclass
 class Data:
@@ -26,17 +27,16 @@ class Data:
     '''
     nthreads   = 1
     d_reso     = {'jpsi' : 'B_const_mass_M', 'psi2' : 'B_const_mass_psi2S_M'}
-    l_kind     = ['ecal_xy',
-                  'brem',
-                  'block_no_tail',
-                  'npv',
-                  'resolution',
-                  'for_hlt',
-                  'q2_cut',
-                  'tail_cut',
-                  'no_dtf_mass_shape']
-
-    mplhep.style.use('LHCb2')
+    l_kind     = [
+        'ecal_xy',
+        'brem',
+        'block_no_tail',
+        'npv',
+        'resolution',
+        'for_hlt',
+        'q2_cut',
+        'tail_cut',
+        'no_dtf_mass_shape']
 
     chanel  : str
     config  : str
