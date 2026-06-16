@@ -16,6 +16,8 @@ from rx_selection  import selection as sel
 from rx_common     import Component, Qsq, Trigger, info
 
 log=LogStore.add_logger('rx_selection:cutflow')
+
+_ANADIR = os.environ['ANADIR']
 # ---------------------------------
 @dataclass
 class Data:
@@ -23,10 +25,7 @@ class Data:
     Class used to share attributes
     '''
     nthreads   = 1
-    trigger_mm = 'Hlt2RD_BuToKpMuMu_MVA'
-    trigger_ee = 'Hlt2RD_BuToKpEE_MVA'
     d_reso     = {'jpsi' : 'B_const_mass_M', 'psi2' : 'B_const_mass_psi2S_M'}
-    ana_dir    = os.environ['ANADIR']
     l_kind     = ['ecal_xy',
                   'brem',
                   'block_no_tail',
