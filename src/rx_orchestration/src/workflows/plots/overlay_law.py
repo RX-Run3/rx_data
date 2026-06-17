@@ -69,27 +69,6 @@ class WrapOverlay(law.WrapperTask):
     '''
     This class takes care of steering the workflow
     '''
-    @cache
-    @staticmethod
-    # ----------------------
-    def _get_config(kind : str) -> DictConfig:
-        '''
-        Parameters
-        -------------
-        kind: Type of check, e.g. block quality 
-
-        Returns
-        -------------
-        Dictionary with configuration, from YAML file
-        '''
-        if   kind in _KINDS:
-            fname = f'{kind}.yaml'
-        else:
-            raise ValueError(f'Invalid kind of plot: {kind}')
-        
-        config = gut.load_conf(package='configs', fpath=f'rx_plots/overlay/{fname}')
-
-        return config
     # ----------------------
     @cache
     @staticmethod
@@ -100,8 +79,8 @@ class WrapOverlay(law.WrapperTask):
         List of JSON strings defining what each job will do
         '''
         l_cfg = [] 
-        for kind in ['block_quality']: 
-            config = WrapOverlay._get_config(kind=kind)
+        for kind in _KINDS: 
+            config = gut.load_conf(package='configs', fpath=f'rx_plots/overlay/{kind}.yaml')
     
             for args in config['args']:
                 q2bin   = args['q2bin'  ]
