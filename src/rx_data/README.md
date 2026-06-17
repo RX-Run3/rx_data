@@ -72,4 +72,4 @@ rxdata patch-files -p rkst -v v1
 rxdata patch-files -p rk   -v v1
 ```
 
-where `v1` is the version of the trees
+where `v1` is the version of the main trees. However this is not needed if one won't use `MCDecayTree`
