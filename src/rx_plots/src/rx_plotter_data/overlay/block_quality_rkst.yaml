@@ -4,7 +4,8 @@ styling: &sty
 general:
   size : [15, 10]
 selection:
-  bdt      : (1)
+  cmb      : (1)
+  prc      : (1)
   kst_mass : (1)
   mas      : B_const_mass_M > 5250 && B_const_mass_M < 5300
 cutflow:
