@@ -47,8 +47,12 @@ class Plotter1D(Plotter):
             Value: Numpy array with values of variable
         '''
         variables = list(self._cfg.plots)
+        log.info(f'Will pick: {variables}')
         data : CategoryData = {}
+
+        log.info('Picking up data from dataframe:')
         for category, rdf in self._d_rdf.items():
+            log.info(category)
             data[category] = rdf.AsNumpy(variables) 
 
         # Swap keys, inner is variable, outer is category
