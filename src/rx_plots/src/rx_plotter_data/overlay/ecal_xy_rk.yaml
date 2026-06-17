@@ -1,0 +1,27 @@
+general:
+  size : [10, 8]
+definitions: {}
+overide_selection:
+  mass     : B_const_mass_M > 5180
+cutflow:
+  Inner : L1_BREMHYPOAREA == 2 && L2_BREMHYPOAREA == 2
+  Outer : L1_BREMHYPOAREA == 0 && L2_BREMHYPOAREA == 0
+saving:
+  plt_dir : overlay/ecal_xy
+plots:
+    B_M:
+        binning    : [4500, 6000, 100]
+        yscale     : 'linear'
+        labels     : ['$M(B^+)$', 'Normalized']
+        title      : ''
+        name       : 'DaVinci'
+        normalized : true 
+    B_Mass:
+        binning    : [4500, 6000, 100]
+        yscale     : 'linear'
+        labels     : ['$M(B^+)$', 'Normalized']
+        title      : ''
+        name       : 'Custom'
+        normalized : true 
+style:
+  skip_lines : true 
