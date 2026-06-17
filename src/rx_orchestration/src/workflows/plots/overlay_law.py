@@ -50,7 +50,12 @@ class OverlayTask(law.Task):
         '''
         cfg      = self._get_config()
         PLTDIR   = _ANADIR / f'plots/overlay/{cfg.args.config}'
-        dir_path = PLTDIR / cfg.args.sample / cfg.args.trigger / cfg.args.q2bin / f'{cfg.args.brem:03}'
+        if cfg.args.brem == -1:
+            brem = 'all'
+        else:
+            brem = f'{cfg.args.brem:03}'
+
+        dir_path = PLTDIR / cfg.args.sample / cfg.args.trigger / cfg.args.q2bin / brem
 
         return [ law.LocalFileTarget(dir_path / name) for name in cfg.output ]
     # -------------------------------------
