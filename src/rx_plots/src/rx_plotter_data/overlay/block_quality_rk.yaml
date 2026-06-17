@@ -7,11 +7,14 @@ selection:
   bdt : (1)
   mas : B_const_mass_M > 5250 && B_const_mass_M < 5300
 cutflow:
-  Blocks 1 and 2 : block == 1 || block == 2
-  Blocks 3 and 4 : block == 3 || block == 4
-  Block 5        : block == 5
-  Block 6        : block == 6
-  Blocks 7 and 8 : block == 7 || block == 8
+  Block 1: block == 1
+  Block 2: block == 2
+  Block 3: block == 3
+  Block 4: block == 4
+  Block 5: block == 5
+  Block 6: block == 6
+  Block 7: block == 7
+  Block 8: block == 8
 saving:
   plt_dir : overlay/block_quality
 plots:
