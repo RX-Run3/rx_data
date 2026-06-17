@@ -19,9 +19,11 @@ args:
   - { sample : data_24        , trigger :   rk_ee_os, q2bin : jpsi, brem : 2 }
 output:
   - bchi2.png
-  - bmass_dtf.png
   - bmass.png
+  - bmass_corr.png
+  - bmass_dtf.png
   - jmass.png
+  - jmass_corr.png
   - k_ghost.png
   - k_pidk.png
   - l1_ghost.png
