@@ -5,6 +5,7 @@ import os
 import argparse
 import mplhep
 
+from typing        import Final
 from dataclasses   import dataclass
 from omegaconf     import DictConfig
 from dmu.generic   import utilities as gut
@@ -17,7 +18,8 @@ from rx_common     import Component, Qsq, Trigger, info
 
 log=LogStore.add_logger('rx_selection:cutflow')
 
-_ANADIR = os.environ['ANADIR']
+_ANADIR       : Final[str] = os.environ['ANADIR']
+_MIN_ELEMENTS : Final[int] = 2
 mplhep.style.use('LHCb2')
 # ---------------------------------
 @dataclass
@@ -98,7 +100,7 @@ def _parse_args() -> None:
     parser.add_argument('-s', '--sample' , type=Component, help='Sample'       , required=True)
     parser.add_argument('-t', '--trigger', type=Trigger  , help='Trigger'      , required=True)
     parser.add_argument('-c', '--config' , type=str      , help='Configuration', required=True)
-    parser.add_argument('-b', '--brem'   , type=int      , help='Brem category', choices=[0, 1, 2])
+    parser.add_argument('-b', '--brem'   , type=int      , help='Brem category', choices=[-1, 0, 1, 2], required=True)
     parser.add_argument('-l', '--logl'   , type=int      , help='Log level'    , choices=[10, 20, 30], default=20)
     args = parser.parse_args()
 
@@ -125,19 +127,24 @@ def _get_out_dir() -> str:
     --------------
     String defining termination of the path defined in the config
     '''
-    if Data.brem is None:
+    if Data.brem == -1:
         brem_name = 'all'
     else:
         brem_name = f'{Data.brem:03}'
 
     out_dir = f'{Data.sample}/{Data.trigger}/{Data.q2_bin}/{brem_name}'
+
     return out_dir
 # ---------------------------------
-def _get_inp() -> dict[str,RDF.RNode]:
+def _get_dataframes() -> dict[str,RDF.RNode]:
     cfg   = _get_cfg()
     rdf_in= _get_rdf()
 
     d_rdf = {}
+
+    if len(cfg.cutflow) < _MIN_ELEMENTS:
+        raise ValueError('At least two elements needed in cutflow')
+
     log.info('Applying overlay')
     for name, cut in cfg.cutflow.items():
         log.info(f'   {name:<20}{cut}')
@@ -201,8 +208,8 @@ def main(cfg : DictConfig|None = None):
 
     LogStore.set_level('rx_selection:cutflow', Data.logl)
 
-    d_rdf = _get_inp()
-    _plot(d_rdf)
+    d_rdf = _get_dataframes()
+    _plot(d_rdf = d_rdf)
 # ---------------------------------
 if __name__ == '__main__':
     main()
