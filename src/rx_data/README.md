@@ -2,121 +2,65 @@
 
 # $R_X$ data
 
-> [!WARNING]
-> For the instructions below to work, you need to use the `root` and `xrootd`
-> versions from conda, due to [this](https://github.com/root-project/root/issues/20782) issue:
-> i.e.
-> ```bash
-> pip uninstall root
-> pip uninstall xrootd
-> micromamba install root xrootd
-> ```
+## Loading dataframes
 
-This project is meant to:
-
-- Download ntuples for a given AP
-- Reorganize them into a directory structure
-- Provide tools to access the data
-- Provide tools to correct the data and add extra information
-
-All the instructions below assume that there is a directory where the data will go.
-The location of that directory needs to be exported as in:
+- Copy the directory structure present in EOS at `/eos/lhcb/wg/RD/RX_run3`
+to a local file system
+- Export a variable with the location of the files, i.e.
 
 ```bash
-export ANADIR=/home/user/rk
+export ANADIR=/path/to/directory/with/Data
 ```
 
-ideally in the `~/.bashrc` file. The user should have around 1TB of storage in the location where `ANADIR` lives.
-
-## Downloading ntuples
-
-For this:
-
-- Setup the LHCb environment with:
+in EOS it would be
 
 ```bash
-. /cvmfs/lhcb.cern.ch/lib/LbEnv
+export ANADIR=/eos/lhcb/wg/RD/RX_run3
 ```
 
-- Create a grid proxy with `lhcb-proxy-init`
-- Log into APD with `apd-login`
-
-do:
+- Install this project in a separate mamba environment:
 
 ```bash
-rxdata download-ntuples -n 6 -v v1r5849
+git clone ssh://git@gitlab.cern.ch:7999/LHCb-RD/cal-rx-run3.git
+cd cal-rx-run3
+# Install the dependencies
+pip install -r requirements-dep.txt
+
+# Install the analysis packages
+pip install -r requirements-ana.txt
 ```
 
-where the downloaded ntuples will come from version `v1r5849` and they will be
-downloaded with 6 cores from the `rx_filter` project.
+- In a python script one should be able to do:
 
-## Transferring ntuples from server
+```python
+from rx_data    import RDFGetter
+from rx_common  import Trigger
+from rx_common  import Component 
 
-If the ntuples were downloaded to a local cluster and the user needs them in
-their laptop one can use the following snakemake workflow:
+component = Component.bpkpee
+trigger   = Trigger.rk_ee_os
 
-```bash
-snakemake -s snakemake/rules/ntuples/transfer.smk  --configfile snakemake/configs/ntuples/transfer.yaml -c 8
+gtr = RDFGetter(sample=component, trigger=trigger)
+rdf = gtr.get_rdf(per_file=False)
 ```
 
-Which requires:
+would provide a ROOT dataframe with the data associated to the respective
+sample under the given trigger.
 
-- `ANADIR` to also be defined in the laptop's environment
-- The remote filesystem to be mounted through SSHFS
-- The fields:
-```
-SERVER = 'ihep'
-DATASET= 'from_ap'
-```
-in the `smk` file to be updated accordingly
-- The `yaml` file to also be updated.
+To list all the components and triggers do in an interactive python session:
 
-## Organizing the ntuples into a directory structure
+```python
+from rx_common  import Trigger
+from rx_common  import Component 
 
-The ntuples downloaded above will end up in the `downloads/` directory
-and will contain files with a structure like:
+for val in Trigger:
+    print(val)
 
-```bash
-rootls -r 00383232_00000001_1.sim10g_ss.root
-FileSummaryRecord
-Hlt2RD_B0ToKpPimEE_SameSign_MVA
-  DecayTree
-Hlt2RD_BuToKpEE_SameSign_MVA
-  DecayTree
-MCDT
-  MCDecayTree
-MCDT_HEADONLY
-  MCDecayTree
+for val in Component:
+    print(val)
 ```
 
-But the files need to be:
-
-- Merged by job if they are still split, i.e. one file per job.
-- Split by project, i.e. placed in an `rk` and `rkst` 
-  project with the corresponding trees properly located
-- Renamed such that they follow the naming convention the code understands
-
-For this do:
-
-```bash
-rxdata organize-paths -v v1r5849
-```
-
-which will produce files that will look like:
-
-```bash
-MCDecayTree  # True information
-DecayTree    # Reco information for a given trigger
-```
-
-> [!NOTE]
-> The merging step will require writting large temporary files. 
-> These will live in `/tmp/`. This can be overriden with:
-> 
-> ```bash
-> export SCRATCH=/some/large/storage/device/
-> ```
-> In case `/tmp` has storage left. 
+check the tests at `src/rx_data/tests` for more examples and more functionality
 
 ## Adding missing block branch in MCDecayTree
 
