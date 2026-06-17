@@ -42,6 +42,9 @@ class Plotter:
         if not isinstance(d_rdf, dict):
             raise ValueError('Dataframe dictionary not passed')
 
+        if len(d_rdf) == 0:
+            raise ValueError('Empty dataframe dictionary')
+
         if isinstance(cfg, dict):
             self._cfg = OmegaConf.create(obj=cfg)
         else:
