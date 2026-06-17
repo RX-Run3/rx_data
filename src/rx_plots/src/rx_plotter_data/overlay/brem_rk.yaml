@@ -1,8 +1,7 @@
 general:
   size : [15, 10]
 definitions: {}
-cutflow    : {}
-overlay:
+cutflow : 
   Brem 0 : nbrem == 0
   Brem 1 : nbrem == 1
   Brem 2 : nbrem >= 2
