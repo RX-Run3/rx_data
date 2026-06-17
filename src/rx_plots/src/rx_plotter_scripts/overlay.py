@@ -185,14 +185,12 @@ def _initialize_pars(cfg : DictConfig) -> None:
     -------------
     cfg: User defined config, needed to initialize attributes of Data
     '''
-    project = info.project_from_trigger(trigger=cfg.trigger, lower_case=True)
-
-    Data.q2_bin = cfg.q2bin
-    Data.sample = cfg.sample
-    Data.trigger= cfg.trigger
-    Data.config = f'{cfg.config}_{project}'
+    Data.q2_bin = Qsq(cfg.q2bin)
+    Data.sample = Component(cfg.sample)
+    Data.trigger= Trigger(cfg.trigger)
+    Data.config = f'{cfg.config}_{Data.trigger.project}'
     Data.brem   = cfg.brem
-    Data.logl   = 20 
+    Data.logl   = LogLevels.info
 # ---------------------------------
 def main(cfg : DictConfig|None = None):
     '''
