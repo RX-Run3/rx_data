@@ -5,6 +5,7 @@ import os
 import json
 import law
 
+from typing        import Final
 from pathlib       import Path
 from functools     import cache
 from law.parameter import Parameter
@@ -13,7 +14,9 @@ from dmu.generic   import utilities as gut
 from dmu           import LogStore
 
 log=LogStore.add_logger('rx_orchestration:overlay_law')
-_ANADIR = Path(os.environ['ANADIR'])
+
+_ANADIR: Final[Path]      = Path(os.environ['ANADIR'])
+_KINDS : Final[list[str]] = ['block_quality']
 # -------------------------------------
 class OverlayTask(law.Task):
     config_string : str = Parameter() # type: ignore
@@ -79,12 +82,12 @@ class WrapOverlay(law.WrapperTask):
         -------------
         Dictionary with configuration, from YAML file
         '''
-        if   kind in ['block_quality']:
-            fname = 'block_quality.yaml'
+        if   kind in _KINDS:
+            fname = f'{kind}.yaml'
         else:
             raise ValueError(f'Invalid kind of plot: {kind}')
         
-        config = gut.load_conf(package='configs', fpath=f'rx_plots/{fname}')
+        config = gut.load_conf(package='configs', fpath=f'rx_plots/overlay/{fname}')
 
         return config
     # ----------------------
