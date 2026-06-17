@@ -14,7 +14,7 @@ from dmu.plotting  import Plotter1D
 from dmu           import LogLevels, LogStore
 from rx_data       import RDFGetter
 from rx_selection  import selection as sel
-from rx_common     import Component, Qsq, Trigger, info
+from rx_common     import Component, Qsq, Trigger
 
 log=LogStore.add_logger('rx_selection:cutflow')
 
@@ -132,7 +132,7 @@ def _get_out_dir() -> str:
     else:
         brem_name = f'{Data.brem:03}'
 
-    out_dir = f'{Data.sample}/{Data.trigger}/{Data.q2_bin}/{brem_name}'
+    out_dir = f'{Data.sample}/{Data.trigger.value}/{Data.q2_bin}/{brem_name}'
 
     return out_dir
 # ---------------------------------
