@@ -94,20 +94,18 @@ def _get_rdf() -> RDF.RNode:
 # ---------------------------------
 def _parse_args() -> None:
     parser = argparse.ArgumentParser(description='Script used to make generic plots')
-    parser.add_argument('-q', '--q2bin'  , type=str, help='q2 bin' , choices=['low', 'central', 'jpsi', 'psi2', 'high'], required=True)
-    parser.add_argument('-s', '--sample' , type=str, help='Sample' , required=True)
-    parser.add_argument('-t', '--trigger', type=str, help='Trigger' , required=True)
-    parser.add_argument('-c', '--config' , type=str, help='Configuration', required=True)
-    parser.add_argument('-b', '--brem'   , type=int, help='Brem category', choices=[0, 1, 2])
-    parser.add_argument('-l', '--logl'   , type=int, help='Log level'    , choices=[10, 20, 30], default=20)
+    parser.add_argument('-q', '--q2bin'  , type=Qsq      , help='q2 bin'       , choices=list(Qsq), required=True)
+    parser.add_argument('-s', '--sample' , type=Component, help='Sample'       , required=True)
+    parser.add_argument('-t', '--trigger', type=Trigger  , help='Trigger'      , required=True)
+    parser.add_argument('-c', '--config' , type=str      , help='Configuration', required=True)
+    parser.add_argument('-b', '--brem'   , type=int      , help='Brem category', choices=[0, 1, 2])
+    parser.add_argument('-l', '--logl'   , type=int      , help='Log level'    , choices=[10, 20, 30], default=20)
     args = parser.parse_args()
-
-    project = info.project_from_trigger(trigger=args.trigger, lower_case=True)
 
     Data.q2_bin = args.q2bin
     Data.sample = args.sample
     Data.trigger= args.trigger
-    Data.config = f'{args.config}_{project}'
+    Data.config = f'{args.config}_{Data.trigger.project}'
     Data.brem   = args.brem
     Data.logl   = args.logl
 # ---------------------------------
