@@ -1,7 +1,7 @@
 general:
   size : [15, 10]
-definitions:
-  nbrem : L1_BremMultiplicity + L2_BremMultiplicity
+definitions: {}
+cutflow    : {}
 overlay:
   Brem 0 : nbrem == 0
   Brem 1 : nbrem == 1
@@ -10,16 +10,18 @@ plots:
     B_M:
         binning    : [4500, 6000, 100]
         yscale     : 'linear'
-        labels     : ['$M(B^+)$', 'Normalized']
+        labels     : ['$M(B^0)$', 'Normalized']
         title      : ''
         name       : 'bmass_raw'
         normalized : true 
     B_const_mass_M:
         binning    : [5100, 5500, 100]
         yscale     : 'linear'
-        labels     : ['$M_{DTF}(B^+)$', 'Normalized']
+        labels     : ['$M_{DTF}(B^0)$', 'Normalized']
         title      : ''
         name       : 'bmass_dtf'
         normalized : true 
+saving:
+  plt_dir : overlay/brem
 style:
   skip_lines : true 
