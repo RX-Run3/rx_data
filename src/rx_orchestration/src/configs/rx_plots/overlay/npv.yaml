@@ -1,0 +1,32 @@
+args:
+  # -------
+  - { sample : bpkpee    , trigger :   rk_ee_os, q2bin :     low, brem : -1 }
+  - { sample : bpkpee    , trigger :   rk_ee_os, q2bin : central, brem : -1 }
+  - { sample : bpkpee    , trigger :   rk_ee_os, q2bin :    high, brem : -1 }
+  # -------
+  - { sample : data_24   , trigger :   rk_ee_os, q2bin :     low, brem : -1 }
+  - { sample : data_24   , trigger :   rk_ee_os, q2bin : central, brem : -1 }
+  - { sample : data_24   , trigger :   rk_ee_os, q2bin :    high, brem : -1 }
+  # -------
+  - { sample : bdkstkpiee, trigger : rkst_ee_os, q2bin :     low, brem : -1 }
+  - { sample : bdkstkpiee, trigger : rkst_ee_os, q2bin : central, brem : -1 }
+  - { sample : bdkstkpiee, trigger : rkst_ee_os, q2bin :    high, brem : -1 }
+  # -------
+  - { sample : data_24   , trigger : rkst_ee_os, q2bin :     low, brem : -1 }
+  - { sample : data_24   , trigger : rkst_ee_os, q2bin : central, brem : -1 }
+  - { sample : data_24   , trigger : rkst_ee_os, q2bin :    high, brem : -1 }
+output:
+  - bchi2.png
+  - bmass.png
+  - bmass_corr.png
+  - bmass_dtf.png
+  - jmass.png
+  - jmass_corr.png
+  - k_ghost.png
+  - k_pidk.png
+  - l1_ghost.png
+  - l1_pide.png
+  - l2_ghost.png
+  - l2_pide.png
+  - mva_cmb.png
+  - mva_prc.png
