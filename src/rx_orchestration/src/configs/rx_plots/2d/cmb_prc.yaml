@@ -1,0 +1,7 @@
+args:
+  - {sample : data_24, trigger :   rk_ee_os, q2bin : jpsi }
+  - {sample : data_24, trigger :   rk_mm_os, q2bin : jpsi }
+  - {sample : data_24, trigger : rkst_ee_os, q2bin : jpsi }
+  - {sample : data_24, trigger : rkst_mm_os, q2bin : jpsi }
+output:
+  - mva_cmb_mva_prc.png
