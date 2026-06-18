@@ -2,14 +2,16 @@
 Module use to hold RDFGetter12 class
 '''
 import os
-import glob
-from contextlib import contextmanager
 
+from contextlib  import contextmanager
+from pathlib     import Path
+from typing      import Final
 from ROOT        import RDataFrame, RDF # type: ignore
 from dmu         import LogLevels, LogStore
 from dmu.generic import utilities as gut
 
 log=LogStore.add_logger('rx_data:rdf_getter12')
+_ANADIR : Final[Path] = Path(os.environ['ANADIR'])
 # --------------------------
 class RDFGetter12:
     '''
@@ -113,18 +115,14 @@ class RDFGetter12:
         '''
         Returns ROOT dataframe with dataset
         '''
-        cas_dir = os.environ['CASDIR']
-        ntp_wc  = (
-            f'{cas_dir}/tools/apply_selection/'
-            f'{self._ntp_dir}/{self._sample}/'
-            f'{self._version}/{self._dset}_{self._trigger}/*.root')
+        ntp_dir  = _ANADIR / f'Data/run12/{self._sample}/{self._version}'
 
-        log.info(f'Picking paths from {ntp_wc}')
+        log.info(f'Picking paths from {ntp_dir}')
 
-        l_path = glob.glob(ntp_wc)
+        l_path = [ str(path) for path in ntp_dir.rglob(f'{self._dset}_{self._trigger}/*.root') ]
         npath  = len(l_path)
         if npath == 0:
-            raise ValueError(f'No file found in: {ntp_wc}')
+            raise ValueError(f'No file found in: {ntp_dir}')
 
         rdf = RDataFrame(self._trigger, l_path)
         rdf = self._add_columns(rdf=rdf)

@@ -1,4 +1,5 @@
 from .rdf_getter              import RDFGetter
+from .rdf_getter12            import RDFGetter12
 from .swp_calculator          import SWPCalculator
 from .spec_maker              import SpecMaker
 from .spec_maker              import Specification
@@ -33,6 +34,7 @@ from .sample_splitter         import SampleSplitter
 from .sample_splitter         import FilePart 
 
 __all__ = [
+    'RDFGetter12',
     'FilePart',
     'SampleSplitter',
     'UsedSamples',

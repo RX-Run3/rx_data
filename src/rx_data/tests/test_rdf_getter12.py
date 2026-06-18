@@ -1,28 +1,21 @@
 '''
 Script used to test RDFGetter12 class
 '''
-from ROOT import RDataFrame
+
 
 import pytest
-from dmu.logging.log_store import LogStore
-from rx_data.rdf_getter12 import RDFGetter12
 
-pytest.skip('Skipped because Run1/2 ntuples are not coppied yet', allow_module_level=True)
+from typing   import Final
+from ROOT     import RDF # type: ignore
+from dmu      import LogStore
+from rx_data  import RDFGetter12
 
 log=LogStore.add_logger('rx_data:test_rdf_getter12')
+
+_DATASETS : Final[list[str]] = ['2011', '2012', '2015', '2016', '2017', '2018', 'all']
+_SAMPLES  : Final[list[str]] = ['Bu_Kee_eq_btosllball05_DPC']
 # ---------------------------------------------
-class Data:
-    '''
-    Data class
-    '''
-    l_dset = ['2011', '2012', '2015', '2016', '2017', '2018', 'all']
-    l_samp = [
-        #'Bu_Kmumu_eq_btosllball05_DPC',
-        #'Bu_JpsiK_mm_eq_DPC',
-        #'Bu_JpsiK_ee_eq_DPC',
-        'Bu_Kee_eq_btosllball05_DPC']
-# ---------------------------------------------
-def _check_rdf(rdf : RDataFrame, name : str) -> None:
+def _check_rdf(rdf : RDF.RNode, name : str) -> None:
     nentries = rdf.Count().GetValue()
 
     assert nentries > 0
@@ -30,8 +23,8 @@ def _check_rdf(rdf : RDataFrame, name : str) -> None:
     log.info('')
     log.info(f'{name:<40}{nentries:<15}')
 # ---------------------------------------------
-@pytest.mark.parametrize('sample', Data.l_samp)
-@pytest.mark.parametrize('dset'  , Data.l_dset)
+@pytest.mark.parametrize('sample',  _SAMPLES)
+@pytest.mark.parametrize('dset'  , _DATASETS)
 def test_simple(sample : str, dset : str):
     '''
     Simplest test
@@ -47,8 +40,8 @@ def test_simple(sample : str, dset : str):
 
     _check_rdf(rdf=rdf, name = f'simple_{sample}_{dset}')
 # ---------------------------------------------
-@pytest.mark.parametrize('sample', Data.l_samp)
-@pytest.mark.parametrize('dset'  , Data.l_dset)
+@pytest.mark.parametrize('sample',  _SAMPLES)
+@pytest.mark.parametrize('dset'  , _DATASETS)
 def test_add_selection(sample : str, dset : str):
     '''
     Simplest test
