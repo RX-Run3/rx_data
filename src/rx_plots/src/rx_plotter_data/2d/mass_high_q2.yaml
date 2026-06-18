@@ -19,7 +19,7 @@ axes:
         label   : '$M_{corr}(B^+)$[MeV]'
     q2 :
         binning : [15000000, 22000000, 100]
-        label   : '$q^2$[MeV${}^2$]'
+        label   : '$q^2$[$MeV^2$]'
     q2_dtf :
         binning : [15000000, 22000000, 100]
-        label   : '$q_{DTF}^2$[MeV${}^2$]'
+        label   : '$q_{DTF}^2$[$MeV^2$]'
