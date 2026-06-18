@@ -1,0 +1,34 @@
+# Used to check how cut on DTF B mass changes shape of non-DTF B mass
+
+general:
+  size : [12, 8]
+definitions: {}
+selection:
+  q2      : (1)
+  mass    : (1) 
+cutflow:
+  'none'  : (1)
+  '5150'  : B_const_mass_M > 5150 
+  '5170'  : B_const_mass_M > 5170 
+  '5200'  : B_const_mass_M > 5200 
+plots:
+  B_M_corr:
+    binning    : [4500, 5800, 60]
+    yscale     : 'linear'
+    labels     : ['$M_{corr}(B^+)$', 'Normalized']
+    title      : ''
+    name       : 'bmass'
+    normalized : true
+    styling:
+      histtype : step
+  B_const_mass_M:
+    binning    : [5100, 5300, 60]
+    yscale     : 'linear'
+    labels     : ['$M_{DTF}(B^+)$', 'Normalized']
+    title      : ''
+    name       : 'bmass_dtf'
+    normalized : false 
+    styling:
+      histtype : step
+saving:
+  plt_dir : overlay/tail_cut
