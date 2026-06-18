@@ -1,0 +1,11 @@
+args:
+  - { sample : bpkpjpsiee    , trigger :   rk_ee_os, q2bin : jpsi, brem : -1 }
+  - { sample : bpkpjpsiee    , trigger :   rk_ee_os, q2bin : jpsi, brem : -1 }
+  - { sample : data_24       , trigger :   rk_ee_os, q2bin : jpsi, brem : -1 }
+  # ------------------
+  - { sample : bdkstkpijpsiee, trigger : rkst_ee_os, q2bin : jpsi, brem : -1 }
+  - { sample : bdkstkpijpsiee, trigger : rkst_ee_os, q2bin : jpsi, brem : -1 }
+  - { sample : data_24       , trigger : rkst_ee_os, q2bin : jpsi, brem : -1 }
+output:
+  - bmass.png
+  - bmass_dtf.png
