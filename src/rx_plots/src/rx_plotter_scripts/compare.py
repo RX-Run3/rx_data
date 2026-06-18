@@ -147,14 +147,7 @@ def _update_with_block(
         log.info('Not filtering by block')
         return d_sel
 
-    if   cfg.block == 12: # noqa
-        cut = '(block == 1) || (block == 2)'
-    elif cfg.block == 78: # noqa
-        cut = '(block == 7) || (block == 8)'
-    else:
-        cut = cfg.block
-
-    d_sel[Cuts.block] = f'block == {cut}'
+    d_sel[Cuts.block] = f'block == {cfg.block}'
 
     return d_sel
 # ---------------------------------
