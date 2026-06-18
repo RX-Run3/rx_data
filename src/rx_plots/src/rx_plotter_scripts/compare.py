@@ -7,6 +7,7 @@ import argparse
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
+from typing       import Final
 from rx_common    import Component, Cuts, Qsq, Trigger
 from dataclasses  import dataclass
 from pathlib      import Path
@@ -19,6 +20,8 @@ from rx_data      import RDFGetter
 from rx_selection import selection as sel
 
 log=LogStore.add_logger('rx_plots:compare')
+
+_BLOCKS : Final[list[int]] = [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 # ---------------------------------
 class EmptyInput(Exception):
     '''
@@ -227,7 +230,7 @@ def _cfg_from_args() -> Config:
     parser.add_argument('-c', '--config' , type=str      , help='Configuration', required=True)
     parser.add_argument('-x', '--substr' , type=str      , help='Substring that must be contained in path, e.g. magup')
     parser.add_argument('-b', '--brem'   , type=int      , help='Brem category, 12 = 1 or 2, -1 = all' , choices=[-1, 0, 1, 2, 12], required=True)
-    parser.add_argument('-B', '--block'  , type=int      , help='Block to which data belongs, -1 will put all the data together', choices=[-1, 0, 12, 3, 4, 5, 6, 78], required=True)
+    parser.add_argument('-B', '--block'  , type=int      , help='Block to which data belongs, -1 will put all the data together', choices=_BLOCKS, required=True)
     parser.add_argument('-l', '--log_lvl', type=int      , help='Logging level', choices=[10, 20, 30, 40], default=20)
     parser.add_argument('-r', '--nomva'  ,                 help='If used, it will remove the MVA requirement', action='store_true')
     parser.add_argument('-e', '--emulate',                 help='If used, it will emulate Run1/2 conditions', action='store_true')
