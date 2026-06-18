@@ -261,7 +261,7 @@ def _get_out_dir(
     brem  = 'all' if cfg.brem == -1 else str(cfg.brem)
     block = 'all' if cfg.block== -1 else str(cfg.block)
 
-    out_dir = cfg.ana_dir / plt_dir / f'{cfg.sample}/{cfg.trigger}/{cfg.q2_bin}/{brem}_{block}'
+    out_dir = cfg.ana_dir / plt_dir / f'{cfg.sample}/{cfg.trigger.value}/{cfg.q2_bin}/{brem}_{block}'
     out_dir = out_dir / 'drop_mva' if cfg.nomva else out_dir / 'with_mva'
 
     if cfg.substr is not None:
