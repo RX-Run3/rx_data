@@ -1,8 +1,8 @@
 args:
-  - {sample : DATA_24*, trigger : Hlt2RD_BuToKpEE_MVA     , q2bin : jpsi }
-  - {sample : DATA_24*, trigger : Hlt2RD_BuToKpMuMu_MVA   , q2bin : jpsi }
-  - {sample : DATA_24*, trigger : Hlt2RD_B0ToKpPimEE_MVA  , q2bin : jpsi }
-  - {sample : DATA_24*, trigger : Hlt2RD_B0ToKpPimMuMu_MVA, q2bin : jpsi }
+  - {sample : data_24, trigger :   rk_ee_os, q2bin : jpsi }
+  - {sample : data_24, trigger :   rk_mm_os, q2bin : jpsi }
+  - {sample : data_24, trigger : rkst_ee_os, q2bin : jpsi }
+  - {sample : data_24, trigger : rkst_mm_os, q2bin : jpsi }
 output:
   - mass_cor_q2_def_jpsi.png
   - mass_org_q2_def_jpsi.png
