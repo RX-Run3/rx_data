@@ -4,17 +4,12 @@ args:
   - { sample : bpkpee    , trigger :   rk_ee_os, q2bin : central, brem : -1 }
   - { sample : bpkpee    , trigger :   rk_ee_os, q2bin :    high, brem : -1 }
   # -------
-  - { sample : data_24   , trigger :   rk_ee_os, q2bin :     low, brem : -1 }
-  - { sample : data_24   , trigger :   rk_ee_os, q2bin : central, brem : -1 }
-  - { sample : data_24   , trigger :   rk_ee_os, q2bin :    high, brem : -1 }
-  # -------
   - { sample : bdkstkpiee, trigger : rkst_ee_os, q2bin :     low, brem : -1 }
   - { sample : bdkstkpiee, trigger : rkst_ee_os, q2bin : central, brem : -1 }
   - { sample : bdkstkpiee, trigger : rkst_ee_os, q2bin :    high, brem : -1 }
   # -------
-  - { sample : data_24   , trigger : rkst_ee_os, q2bin :     low, brem : -1 }
-  - { sample : data_24   , trigger : rkst_ee_os, q2bin : central, brem : -1 }
-  - { sample : data_24   , trigger : rkst_ee_os, q2bin :    high, brem : -1 }
+  - { sample : data_24   , trigger :   rk_ee_os, q2bin :    jpsi, brem : -1 }
+  - { sample : data_24   , trigger : rkst_ee_os, q2bin :    jpsi, brem : -1 }
 output:
   - bchi2.png
   - bmass.png
