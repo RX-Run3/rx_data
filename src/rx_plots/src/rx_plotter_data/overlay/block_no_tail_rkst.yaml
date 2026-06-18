@@ -4,6 +4,8 @@ definitions: {}
 selection:
   no_tail : B_const_mass_M > 5160
   mass    : (1)
+saving:
+  plt_dir : overlay/block_no_tail
 cutflow:
   Block 1 : block == 1
   Block 2 : block == 2
