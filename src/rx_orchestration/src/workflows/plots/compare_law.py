@@ -15,7 +15,7 @@ from dmu.logging.log_store import LogStore
 
 log=LogStore.add_logger('rx_orchestration:compare_law')
 _ANADIR : Final[Path]      = Path(os.environ['ANADIR'])
-_BLOCKS : Final[list[int]] = [1, 2, 5, 6, 7, 8]
+_BLOCKS : Final[list[int]] = [1, 2, 3, 4, 5, 6, 7, 8]
 _BREMS  : Final[list[int]] = [1, 2]
 _KINDS  : Final[list[str]] = ['resolution', 'smear']
 # -------------------------------------
