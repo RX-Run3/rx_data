@@ -15,7 +15,7 @@ from dmu           import LogStore
 
 log=LogStore.add_logger('rx_orchestration:plot_2d_law')
 _ANADIR : Final[Path]      = Path(os.environ['ANADIR'])
-_KINDS  : Final[list[str]] = ['mass_q2']
+_KINDS  : Final[list[str]] = ['mass_q2', 'cmb_prc']
 # -------------------------------------
 class Plot2DTask(law.Task):
     config_string : str = Parameter() # type: ignore
@@ -86,7 +86,7 @@ class WrapPlot2D(law.WrapperTask):
         else:
             raise ValueError(f'Invalid kind of plot: {kind}')
         
-        config = gut.load_conf(package='configs', fpath=f'rx_plots/{fname}')
+        config = gut.load_conf(package='configs', fpath=f'rx_plots/2d/{fname}')
 
         return config
     # ----------------------
@@ -99,7 +99,7 @@ class WrapPlot2D(law.WrapperTask):
         List of JSON strings defining what each job will do
         '''
         l_cfg = [] 
-        for kind in ['mass_q2']: 
+        for kind in _KINDS: 
             config = WrapPlot2D._get_config(kind=kind)
 
             for args in config['args']:
