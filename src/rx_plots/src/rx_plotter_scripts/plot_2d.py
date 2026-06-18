@@ -87,12 +87,11 @@ def _initialize_settings(cfg : DictConfig) -> None:
     -------------
     cfg: Configuration dictionary passed when this file is treated as a module
     '''
-    project = info.project_from_trigger(trigger=cfg.trigger, lower_case=True)
 
-    Data.sample   = cfg.sample
-    Data.trigger  = cfg.trigger
-    Data.q2bin    = cfg.q2bin
-    Data.config   = f'{cfg.config}_{project}'
+    Data.sample   = Component(cfg.sample)
+    Data.trigger  = Trigger(cfg.trigger)
+    Data.q2bin    = Qsq(cfg.q2bin)
+    Data.config   = f'{cfg.config}_{Data.trigger.project}'
     Data.loglvl   = 20 
     Data.nthreads = 1 
 # ---------------------------------
