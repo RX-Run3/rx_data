@@ -19,9 +19,11 @@ _ANADIR: Final[Path]      = Path(os.environ['ANADIR'])
 _KINDS : Final[list[str]] = [
     'psi2S_suppression',
     'block_quality', 
+    'q2_prec_mva',
     'ecal_xy',
+    'q2_cut',
     'brem',
-]
+    'npv']
 # -------------------------------------
 class OverlayTask(law.Task):
     config_string : str = Parameter() # type: ignore
