@@ -4,17 +4,21 @@ Script used to plot mass distributions
 
 import os
 import argparse
-
 import mplhep
-from dmu.generic             import utilities as gut
-from dmu.plotting.plotter_2d import Plotter2D
-from dmu.logging.log_store   import LogStore
-from omegaconf               import DictConfig
-from rx_selection            import selection as sel
-from rx_data.rdf_getter      import RDFGetter
-from rx_common               import info
+
+from dmu.generic   import utilities as gut
+from dmu.plotting  import Plotter2D
+from dmu           import LogStore
+from pathlib       import Path
+from typing        import Final
+from omegaconf     import DictConfig
+from rx_selection  import selection as sel
+from rx_data       import RDFGetter
+from rx_common     import Component, Qsq, Trigger, info
 
 log=LogStore.add_logger('rx_plots:plot_2d')
+
+_ANADIR : Final[Path] = Path(os.environ['ANADIR'])
 # ---------------------------------
 class Data:
     '''
@@ -24,12 +28,10 @@ class Data:
 
     nthreads: int = 1
     loglvl  : int = 20
-    q2bin   : str = ''
-    trigger : str = ''
     config  : str = ''
-    sample  : str = ''
-    trigger : str = ''
-    ana_dir : str = os.environ['ANADIR']
+    q2bin   : Qsq 
+    sample  : Component 
+    trigger : Trigger 
 # ---------------------------------
 def _set_logs() -> None:
     LogStore.set_level('rx_plots:plot_2d'      , Data.loglvl)
@@ -40,12 +42,12 @@ def _set_logs() -> None:
 # ---------------------------------
 def _parse_args() -> None:
     parser = argparse.ArgumentParser(description='Script used to make 2D plots')
-    parser.add_argument('-q', '--q2bin'   , type=str, help='q2 bin, optional' , choices=['low', 'central', 'jpsi', 'psi2', 'high'], required=True)
-    parser.add_argument('-c', '--config'  , type=str, help='Settings, i.e. mass_q2', required=True)
-    parser.add_argument('-s', '--sample'  , type=str, help='Name of sample, can use wildcards', required=True)
-    parser.add_argument('-t', '--trigger' , type=str, help='Name of trigger', required=True)
-    parser.add_argument('-l', '--loglvl'  , type=int, help='Log level', choices=[10, 20, 30], default=20)
-    parser.add_argument('-n', '--nthreads', type=int, help='Number of threads', default=Data.nthreads)
+    parser.add_argument('-q', '--q2bin'   , type=Qsq      , help='q2 bin, optional' , choices=list(Qsq), required=True)
+    parser.add_argument('-c', '--config'  , type=str      , help='Settings, i.e. mass_q2', required=True)
+    parser.add_argument('-s', '--sample'  , type=Component, help='Name of sample, can use wildcards', required=True)
+    parser.add_argument('-t', '--trigger' , type=Trigger  , help='Name of trigger', required=True)
+    parser.add_argument('-l', '--loglvl'  , type=int      , help='Log level', choices=[10, 20, 30], default=20)
+    parser.add_argument('-n', '--nthreads', type=int      , help='Number of threads', default=Data.nthreads)
     args = parser.parse_args()
 
     project = info.project_from_trigger(trigger=args.trigger, lower_case=True)
@@ -71,7 +73,7 @@ def _override_output(cfg : DictConfig) -> DictConfig:
     - Name of output file overriden
     '''
     plt_dir = cfg.saving.plt_dir
-    cfg.saving.plt_dir = f'{Data.ana_dir}/{plt_dir}/{Data.sample}/{Data.trigger}'
+    cfg.saving.plt_dir = f'{_ANADIR}/{plt_dir}/{Data.sample}/{Data.trigger}'
 
     for l_setting in cfg.plots_2d:
         name         = l_setting[3]
