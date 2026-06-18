@@ -35,7 +35,7 @@ plots:
   Jpsi_Mass:
     binning    : [3200, 3800, 30]
     yscale     : 'linear'
-    labels     : ['M${}_{corr}(J/\psi)$[MeV]', 'Normalized']
+    labels     : ['$M_{corr}(J/\psi)$[MeV]', 'Normalized']
     title      : Mass distribution for different lower cuts on $B^0_{DTF}$ 
     name       : jpsi_mass_mva_prc_cor
     normalized : false 
@@ -59,7 +59,7 @@ plots:
   B_Mass:
     binning    : [4500, 6000, 60]
     yscale     : 'linear'
-    labels     : ['M${}_{corr}(B^0)$[MeV]', 'Normalized']
+    labels     : ['$M_{corr}(B^0)$[MeV]', 'Normalized']
     title      : Mass distribution for different lower cuts on $B^0_{DTF}$ 
     name       : b_mass_mva_prc_cor
     normalized : true
@@ -68,7 +68,7 @@ plots:
   B_const_mass_M:
     binning    : [5100, 5500, 60]
     yscale     : 'linear'
-    labels     : ['M${}_{DTF}(B^0)$[MeV]', 'Normalized']
+    labels     : ['$M_{DTF}(B^0)$[MeV]', 'Normalized']
     title      : Mass distribution for different lower cuts on $B^0_{DTF}$ 
     name       : b_dtf_mass_mva_prc_raw
     normalized : true
