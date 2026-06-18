@@ -15,7 +15,7 @@ plots:
   B_M_corr:
     binning    : [4500, 5800, 60]
     yscale     : 'linear'
-    labels     : ['$M_{corr}(B^+)$', 'Normalized']
+    labels     : ['$M_{corr}(B^0)$', 'Normalized']
     title      : ''
     name       : 'bmass'
     normalized : true
