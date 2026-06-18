@@ -1,0 +1,17 @@
+# This config file is meant to be used by `copy_samples`, it specifies:
+# Where the samples are
+# Where the samples should be copied to
+# What samples should be copied
+
+triggers:
+  - rkst_ee_os 
+  - rkst_ee_misid 
+  - rkst_ee_ss 
+samples :
+  data:
+    - DATA_24_MagDown_24c2
+    - DATA_24_MagDown_24c3
+    - DATA_24_MagDown_24c4
+    - DATA_24_MagUp_24c2
+    - DATA_24_MagUp_24c3
+    - DATA_24_MagUp_24c4
