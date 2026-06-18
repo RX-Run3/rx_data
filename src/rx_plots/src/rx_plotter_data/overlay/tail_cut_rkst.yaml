@@ -12,7 +12,7 @@ cutflow:
   '5170'  : B_const_mass_M > 5170 
   '5200'  : B_const_mass_M > 5200 
 plots:
-  B_M_corr:
+  B_Mass:
     binning    : [4500, 5800, 60]
     yscale     : 'linear'
     labels     : ['$M_{corr}(B^0)$', 'Normalized']
