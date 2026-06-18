@@ -21,7 +21,7 @@ plots:
     yscale     : 'linear'
     labels     : ['$BDT_{PRC}$', 'Normalized']
     title      : PRec MVA distribution in $BDT_{prc}$ bins
-    name       : mva_prc_mva_prc
+    name       : mva_prc
     normalized : false 
     styling:
       histtype : step
@@ -30,7 +30,7 @@ plots:
     yscale     : 'linear'
     labels     : ['M$(J/\psi)$[MeV]', 'Normalized']
     title      : Mass distribution in $BDT_{prc}$ bins
-    name       : jpsi_mass_mva_prc_raw
+    name       : jpsi_mass_raw
     normalized : false 
     styling:
       histtype : step
@@ -39,7 +39,7 @@ plots:
     yscale     : 'linear'
     labels     : ['M${}_{corr}(J/\psi)$[MeV]', 'Normalized']
     title      : Mass distribution in $BDT_{prc}$ bins
-    name       : jpsi_mass_mva_prc_cor
+    name       : jpsi_mass_cor
     normalized : false 
     styling:
       histtype : step
@@ -48,7 +48,7 @@ plots:
     yscale     : 'linear'
     labels     : ['M$(B^+)$[MeV]', 'Normalized']
     title      : Mass distribution in $BDT_{prc}$ bins
-    name       : b_mass_mva_prc_raw
+    name       : b_mass_raw
     normalized : false 
     styling:
       histtype : step
@@ -57,7 +57,7 @@ plots:
     yscale     : 'linear'
     labels     : ['M${}_{corr}(B^+)$[MeV]', 'Normalized']
     title      : Mass distribution in $BDT_{prc}$ bins
-    name       : b_mass_mva_prc_cor
+    name       : b_mass_cor
     normalized : false 
     styling:
       histtype : step
@@ -66,7 +66,7 @@ plots:
     yscale     : 'linear'
     labels     : ['M${}_{DTF}(B^+)$[MeV]', 'Normalized']
     title      : Mass distribution in $BDT_{prc}$ bins
-    name       : b_dtf_mass_mva_prc_raw
+    name       : b_mass_dtf
     normalized : false 
     styling:
       histtype : step
@@ -75,7 +75,7 @@ plots:
     yscale     : 'linear'
     labels     : ['nPVs', 'Normalized']
     title      : Number of Primary vertices in $BDT_{prc}$ bins
-    name       : npvs_mva_prc_raw
+    name       : npvs
     normalized : false 
     styling:
       histtype : step
