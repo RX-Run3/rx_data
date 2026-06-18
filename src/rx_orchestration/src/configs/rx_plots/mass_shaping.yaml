@@ -1,8 +1,8 @@
 args:
-  - { sample : bpkpjpsiee    , trigger :   rk_ee_os, q2bin : jpsi }
-  - { sample : bpkpjpsimm    , trigger :   rk_mm_os, q2bin : jpsi }
-  - { sample : bdkstkpijpsiee, trigger : rkst_ee_os, q2bin : jpsi }
-  - { sample : bdkstkpijpsimm, trigger : rkst_mm_os, q2bin : jpsi }
+  - { sample : bpkpjpsiee    , trigger :   rk_ee_os, q2bin : jpsi, brem : -1 }
+  - { sample : bpkpjpsimm    , trigger :   rk_mm_os, q2bin : jpsi, brem : -1 }
+  - { sample : bdkstkpijpsiee, trigger : rkst_ee_os, q2bin : jpsi, brem : -1 }
+  - { sample : bdkstkpijpsimm, trigger : rkst_mm_os, q2bin : jpsi, brem : -1 }
 output:
   - bmass.png
   - jmass.png
