@@ -1,0 +1,17 @@
+# Config used to make 2D plots of BDT vs q2
+
+selection:
+  bdt : (1)
+saving:
+  plt_dir : plots/2d/bdt_q2
+general:
+  size : [20, 15]
+plots_2d:
+  - [mva_cmb, mva_prc, null, 'cmb_prc', true]
+axes:
+  mva_cmb:
+    binning : [0.0, 1.0, 100]
+    label   : '$\text{Prob}_{cmb}$'
+  mva_prc:
+    binning : [0.0, 1.0, 100]
+    label   : '$\text{Prob}_{prc}$'
