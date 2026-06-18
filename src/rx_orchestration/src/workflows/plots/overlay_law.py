@@ -16,7 +16,11 @@ from dmu           import LogStore
 log=LogStore.add_logger('rx_orchestration:overlay_law')
 
 _ANADIR: Final[Path]      = Path(os.environ['ANADIR'])
-_KINDS : Final[list[str]] = ['block_quality']
+_KINDS : Final[list[str]] = [
+    'block_quality', 
+    'ecal_xy',
+    'brem',
+]
 # -------------------------------------
 class OverlayTask(law.Task):
     config_string : str = Parameter() # type: ignore
