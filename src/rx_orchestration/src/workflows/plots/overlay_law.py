@@ -19,7 +19,9 @@ _ANADIR: Final[Path]      = Path(os.environ['ANADIR'])
 _KINDS : Final[list[str]] = [
     'psi2S_suppression',
     'block_quality', 
+    'block_no_tail',
     'q2_prec_mva',
+    'tail_cut',
     'ecal_xy',
     'q2_cut',
     'brem',
