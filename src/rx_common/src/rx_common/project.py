@@ -15,11 +15,13 @@ class Project(StrEnum):
     rk_no_pid     = auto() 
     rk_no_refit   = auto() 
     rk_sim10d     = auto() 
+    rk_bad_ecal   = auto()
     # ---------------
     rkst          = auto() 
     rkst_no_pid   = auto() 
     rkst_no_refit = auto() 
     rkst_sim10d   = auto() 
+    rkst_bad_ecal = auto()
     # ----------------------
     @classmethod
     def rk_projects(cls) -> set['Project']:
