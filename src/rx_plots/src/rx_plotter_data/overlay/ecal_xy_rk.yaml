@@ -23,5 +23,3 @@ plots:
         title      : ''
         name       : 'Custom'
         normalized : true 
-style:
-  skip_lines : true 
