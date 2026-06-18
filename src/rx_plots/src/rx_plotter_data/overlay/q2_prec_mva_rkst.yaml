@@ -1,0 +1,81 @@
+# This config is used to overlay different distributions (mostly masses) 
+# in different mva_prc bins
+
+general:
+  size : [12, 8]
+selection:
+  bdt  : (1)
+  q2   : (1)
+  mass : (1)
+cutflow:
+  '0.00-0.15' : mva_prc > 0.00 && mva_prc < 0.15
+  '0.15-0.30' : mva_prc > 0.15 && mva_prc < 0.30
+  '0.30-0.50' : mva_prc > 0.30 && mva_prc < 0.50
+  '0.50-0.80' : mva_prc > 0.50 && mva_prc < 0.80
+  '0.80-1.00' : mva_prc > 0.80 && mva_prc < 1.00
+saving:
+  plt_dir : overlay/q2_cut
+plots:
+  mva_prc:
+    binning    : [0, 1, 20]
+    yscale     : 'linear'
+    labels     : ['$BDT_{PRC}$', 'Normalized']
+    title      : PRec MVA distribution in $BDT_{prc}$ bins
+    name       : mva_prc_mva_prc
+    normalized : false 
+    styling:
+      histtype : step
+  Jpsi_M:
+    binning    : [2200, 3800, 60]
+    yscale     : 'linear'
+    labels     : ['M$(J/\psi)$[MeV]', 'Normalized']
+    title      : Mass distribution in $BDT_{prc}$ bins
+    name       : jpsi_mass_mva_prc_raw
+    normalized : false 
+    styling:
+      histtype : step
+  Jpsi_Mass:
+    binning    : [2200, 3800, 60]
+    yscale     : 'linear'
+    labels     : ['M${}_{corr}(J/\psi)$[MeV]', 'Normalized']
+    title      : Mass distribution in $BDT_{prc}$ bins
+    name       : jpsi_mass_mva_prc_cor
+    normalized : false 
+    styling:
+      histtype : step
+  B_M:
+    binning    : [4500, 6000, 60]
+    yscale     : 'linear'
+    labels     : ['M$(B^0)$[MeV]', 'Normalized']
+    title      : Mass distribution in $BDT_{prc}$ bins
+    name       : b_mass_mva_prc_raw
+    normalized : false 
+    styling:
+      histtype : step
+  B_Mass:
+    binning    : [4500, 6000, 60]
+    yscale     : 'linear'
+    labels     : ['M${}_{corr}(B^0)$[MeV]', 'Normalized']
+    title      : Mass distribution in $BDT_{prc}$ bins
+    name       : b_mass_mva_prc_cor
+    normalized : false 
+    styling:
+      histtype : step
+  B_const_mass_M:
+    binning    : [5100, 5500, 60]
+    yscale     : 'linear'
+    labels     : ['M${}_{DTF}(B^0)$[MeV]', 'Normalized']
+    title      : Mass distribution in $BDT_{prc}$ bins
+    name       : b_dtf_mass_mva_prc_raw
+    normalized : false 
+    styling:
+      histtype : step
+  nPVs:
+    binning    : [0, 10, 10]
+    yscale     : 'linear'
+    labels     : ['nPVs', 'Normalized']
+    title      : Number of Primary vertices in $BDT_{prc}$ bins
+    name       : npvs_mva_prc_raw
+    normalized : false 
+    styling:
+      histtype : step
