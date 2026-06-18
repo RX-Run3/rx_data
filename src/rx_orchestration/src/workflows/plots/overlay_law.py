@@ -21,6 +21,7 @@ _KINDS : Final[list[str]] = [
     'block_quality', 
     'block_no_tail',
     'q2_prec_mva',
+    'resolution',
     'tail_cut',
     'ecal_xy',
     'q2_cut',
