@@ -1,7 +1,8 @@
 # Config used to make 2D plots of BDT vs q2
 
 selection:
-  bdt : (1)
+  cmb : (1)
+  prc : (1)
 saving:
   plt_dir : plots/2d/bdt_q2
 general:
