@@ -6,6 +6,7 @@ import multiprocessing
 import tqdm
 import numpy
 
+from rx_common    import Project
 from pydantic     import BaseModel
 from dmu.generic  import version_management as vman 
 from typing       import Final
@@ -40,7 +41,7 @@ class Config(BaseModel):
     l_source: 
     '''
     kind    : str
-    proj    : str
+    proj    : Project 
     dry     : bool
     nprc    : int
     conf    : UsedSamples 
@@ -57,7 +58,7 @@ class Config(BaseModel):
 def _parse_args() -> Config:
     parser = argparse.ArgumentParser(description='Script used to copy files from remote server to laptop')
     parser.add_argument('-k', '--kind', type=    str, help='Type of files', choices=_FRIENDS, required=True)
-    parser.add_argument('-p', '--proj', type=    str, help='Name of YAML config file, e.g. rk', required=True, choices=['rk', 'rkst', 'rk_nopid', 'rkst_nopid'])
+    parser.add_argument('-p', '--proj', type=Project, help='Name of YAML config file, e.g. rk', required=True, choices=list(Project))
     parser.add_argument('-s', '--skip', type=    str, help='Friend tree to skip', choices=_FRIENDS)
     parser.add_argument('-l', '--logl', type=    int, help='Logger level', choices=[5, 10, 20, 30], default=20)
     parser.add_argument('-n', '--nprc', type=    int, help='Number of process to transfer with, with zero will transfer all files at once', default=1)
