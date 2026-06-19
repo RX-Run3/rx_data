@@ -10,8 +10,11 @@ categories:
       shared        :
         - mu
         - sg
-      floating      : []
-      values        : {}
+      floating      :
+        - mu
+        - sg
+      values        :
+        sg : [20, 8, 30]
   brem_xx2:
     selection : {}
     model:
@@ -22,8 +25,11 @@ categories:
       shared        :
         - mu
         - sg
-      floating      : []
-      values        : {}
+      floating      :
+        - mu
+        - sg
+      values        :
+        sg : [20, 8, 30]
 fit:
   strategy  :
     ntries : 15
@@ -36,5 +42,5 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
     cbl_1  : Crystal Ball 
   plot_components : []
   plot_range:
-    - 5000
-    - 5600
+    - 5100
+    - 5500
