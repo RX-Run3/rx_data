@@ -162,7 +162,9 @@ def _get_region_nll(region : Region, cfg : RXFitConfig) -> NLLConf:
 # ----------------------
 def _fit_electron(cfg : RXFitConfig) -> None:
     '''
-    This is where DataFitter is used
+    Parameters
+    -------------
+    cfg: Full config controlling fit
     '''
     d_nll : dict[Region,NLLConf] = {}
 
@@ -179,7 +181,9 @@ def _fit_electron(cfg : RXFitConfig) -> None:
 # ----------------------
 def _fit_muon(cfg : RXFitConfig) -> None:
     '''
-    This is where DataFitter is used
+    Parameters
+    -------------
+    cfg: Full config controlling fit
     '''
     d_nll : dict[Region,NLLConf] = {}
     cfg.name = Region.brem_xx0
