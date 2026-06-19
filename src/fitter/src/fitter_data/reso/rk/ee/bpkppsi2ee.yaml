@@ -1,21 +1,29 @@
 component : bpkppsi2ee 
 categories:
-  main:
+  brem_xx1:
     selection : {}
-    model :
-      pdfs:
-        - dscb 
-        - cbl
+    model:
+      pdfs :
+        - dscb
+      fix           : {}
+      reparametrize : {}
       shared        :
         - mu
         - sg
-      floating      :
+      floating      : []
+      values        : {}
+  brem_xx2:
+    selection : {}
+    model:
+      pdfs :
+        - dscb
+      fix           : {}
+      reparametrize : {}
+      shared        :
         - mu
         - sg
-        - ar
-        - nr
-      reparametrize : {}
-      fix           : {}
+      floating      : []
+      values        : {}
 fit:
   strategy  :
     ntries : 15
