@@ -7,7 +7,7 @@ weights:
   sam : True 
 fit:
   kind      : KDE1DimFFT
-  bandwidth : 15 
+  bandwidth : 20 
   padding   : 
     flag : False
 plots:
