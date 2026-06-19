@@ -401,7 +401,7 @@ def apply_full_selection(
         try:
             rdf = rdf.Filter(cut_value, cut_name)
         except Exception as exc:
-            raise ValueError(f'Cannot apply cut {cut_name} = {cut_value}') from exc
+            raise ValueError(f'Cannot apply cut \"{cut_name}\" -> \"{cut_value}\"') from exc
 
     if out_path:
         _save_cutflow(path=out_path, rdf=rdf, cuts=d_sel)
