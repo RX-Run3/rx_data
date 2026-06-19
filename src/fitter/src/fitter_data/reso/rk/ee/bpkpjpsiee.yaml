@@ -36,5 +36,5 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
     cbl_1  : Crystal Ball 
   plot_components : []
   plot_range:
-    - 4800
-    - 6000
+    - 5000
+    - 5600
