@@ -125,9 +125,9 @@ class CharmoniumComponent(BaseModel):
         ------------
         Number of entries in observable range
         '''
-        min, max = sut.range_from_obs(obs = self.obs)
+        lo, hi = sut.range_from_obs(obs = self.obs)
 
-        nentries = numpy.sum((self.mass > min) & (self.mass < max))
+        nentries = numpy.sum((self.mass > lo) & (self.mass < hi))
 
         return int(nentries)
 # ------------------------------
@@ -737,32 +737,32 @@ class PRec(Cache):
             obj = ZFitPlotter(data=model.mass, model=model.pdf, weights=model.wgt)
             obj.run(cfg = self._cfg.plots)
 
-            obj.axs[0].set_title(f'#Entries: {model.mass.size}; {title}') # type: ignore[reportUnknownMemberType]
+            obj.axs[0].set_title(f'#Entries: {model.mass.size}; {title}')
 
             if maxy is not None:
                 obj.axs[0].set_ylim(bottom=0, top=maxy)
 
-            obj.axs[0].axvline(x=5080, linestyle=':') # type: ignore[reportUnknownMemberType]
-            obj.axs[0].axvline(x=5680, linestyle=':') # type: ignore[reportUnknownMemberType]
-            obj.axs[0].axvline(x=5280, label=r'$B^+$', color='gray', linestyle='--') # type: ignore[reportUnknownMemberType]
+            obj.axs[0].axvline(x=5080, linestyle=':')
+            obj.axs[0].axvline(x=5680, linestyle=':')
+            obj.axs[0].axvline(x=5280, label=r'$B^+$', color='gray', linestyle='--')
 
             obj.axs[1].set_ylim(-5, +5)
-            obj.axs[1].axhline(y=-3, color='red') # type: ignore[reportUnknownMemberType]
-            obj.axs[1].axhline(y=+3, color='red') # type: ignore[reportUnknownMemberType]
+            obj.axs[1].axhline(y=-3, color='red')
+            obj.axs[1].axhline(y=+3, color='red')
             obj.axs[1].set_label('M$(B^+)$[MeV/${}_{c^2}$]')
         else:
             log.warning(f'PDF {name} not built')
             nentries = len(model.mass)
 
-            plt.figure(figsize=(15,10)) # type: ignore[reportUnknownMemberType]
-            plt.title(f'Entries = {nentries}; {title}') # type: ignore[reportUnknownMemberType]
-            plt.hist(model.mass, weights=model.wgt, bins=100) # type: ignore[reportUnknownMemberType]
+            plt.figure(figsize=(15,10))
+            plt.title(f'Entries = {nentries}; {title}')
+            plt.hist(model.mass, weights=model.wgt, bins=100)
 
         out_dir.mkdir(parents = True, exist_ok = True)
 
         plot_path = out_dir / f'{name}.png'
         log.info(f'Saving to: {plot_path}')
-        plt.savefig(plot_path) # type: ignore[reportUnknownMemberType]
+        plt.savefig(plot_path)
         plt.close('all')
     #-----------------------------------------------------------
     def _plot_weights(
@@ -784,13 +784,13 @@ class PRec(Cache):
         if isinstance(model, CCbarModel) and model.is_empty:
             return
 
-        plt.hist(model.sam, bins=30, label='sample', histtype='step', linestyle='-' ) # type: ignore[reportUnknownMemberType]
-        plt.hist(model.dec, bins=30, label='decay' , histtype='step', linestyle='--') # type: ignore[reportUnknownMemberType]
-        plt.hist(model.wgt, bins=30, label='Total' , histtype='step', linestyle=':' ) # type: ignore[reportUnknownMemberType]
+        plt.hist(model.sam, bins=30, label='sample', histtype='step', linestyle='-' )
+        plt.hist(model.dec, bins=30, label='decay' , histtype='step', linestyle='--')
+        plt.hist(model.wgt, bins=30, label='Total' , histtype='step', linestyle=':' )
 
-        plt.legend() # type: ignore[reportUnknownMemberType]
-        plt.title(title) # type: ignore[reportUnknownMemberType]
-        plt.savefig(out_dir / f'{name}_wgt.png') # type: ignore[reportUnknownMemberType]
+        plt.legend()
+        plt.title(title)
+        plt.savefig(out_dir / f'{name}_wgt.png')
         plt.close('all')
 
         if model.pdf is None:
