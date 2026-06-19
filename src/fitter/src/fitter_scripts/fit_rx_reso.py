@@ -24,7 +24,6 @@ from fitter        import ToyConf
 from fitter        import RXFitConfig
 from fitter        import DataFitter
 from fitter        import LikelihoodFactory
-from rx_data       import RDFGetter
 from rx_selection  import selection as sel
 from rx_common     import Qsq, Component, Region
 
@@ -84,6 +83,7 @@ def _parse_args() -> RXFitConfig:
     else:
         conf_name = 'data.yaml'
 
+    log.info(f'Using {conf_name} config')
     data = gut.load_data(
         package='fitter_data',
         fpath  =f'{args.fit_cfg}/{conf_name}')
@@ -206,7 +206,6 @@ def main():
         log.info(f'Using {cfg.ncores} cores')
 
     with ExitStack() as stack:
-        stack.enter_context(RDFGetter.custom_friends(versions = {'brem_track_2': 'v4'}))
         stack.enter_context(Cache.cache_root(path=cfg.output_directory))
         stack.enter_context(PL.parameter_schema(cfg=cfg.mod_cfg.yields))
         stack.enter_context(sel.custom_selection(d_sel=cfg.overriding_selection))
