@@ -299,7 +299,9 @@ class ParametricConf(ComponentConf):  # Tested
             new_categories[cat_name] = conf
 
         if not new_categories:
-            raise ValueError(f'No category found with name: {name}')
+            for cat_name in self.categories:
+                log.error(cat_name)
+            raise ValueError(f'No category found for {self.component} with name: {name}')
 
         return self.model_copy(update = {'categories' : new_categories})
 # ------------------------------
