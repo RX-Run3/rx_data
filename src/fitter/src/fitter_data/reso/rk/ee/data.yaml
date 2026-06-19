@@ -13,9 +13,9 @@ plots_settings: &plots_settings
     - 4800
     - 6000
 # ------------------------------
-trigger          : rk_ee_os
-yields           : model/yields/rk/reso_electron.yaml
-selection        : {}
+trigger   : rk_ee_os
+yields    : model/yields/rk/reso_electron.yaml
+selection : {}
 observable:
   jpsi:
     name : B_const_mass_M
