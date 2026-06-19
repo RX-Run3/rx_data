@@ -7,6 +7,10 @@ weights:
   sam : True 
 fit:
   kind      : KDE1DimFFT
-  bandwidth : 20
+  bandwidth : 15 
   padding   : 
     flag : False
+plots:
+  nbins  : 40
+  stacked: True
+  plot_range : [4800, 5500]
