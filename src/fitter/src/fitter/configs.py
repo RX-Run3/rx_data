@@ -156,6 +156,7 @@ class CCbarConf(ComponentConf):         # Tested
     samples : list[CCbarComponent]
     weights : dict[CCbarWeight,bool]
     fit     : KDEConf
+    plots   : ZFitPlotterConf
     # -----------------
     @classmethod
     def default(
@@ -177,7 +178,9 @@ class CCbarConf(ComponentConf):         # Tested
             cfg_obs   = cfg_obs,
             samples   = samples,
             weights   = weights,
-            fit       = KDEConf.default())
+            fit       = KDEConf.default(),
+            plots     = ZFitPlotterConf.default(),
+        )
 # ------------------------------
 class ParametricConf(ComponentConf):  # Tested
     '''
