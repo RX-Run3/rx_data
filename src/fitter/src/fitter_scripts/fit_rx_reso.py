@@ -177,7 +177,9 @@ def _fit_electron(cfg : RXFitConfig) -> None:
             d_nll = d_nll,
             cfg   = cfg.mod_cfg)
 
-        ftr.run()
+        res = ftr.run()
+
+    log.info(res)
 # ----------------------
 def _fit_muon(cfg : RXFitConfig) -> None:
     '''
@@ -194,7 +196,9 @@ def _fit_muon(cfg : RXFitConfig) -> None:
             q2bin= cfg.q2bin,
             d_nll= d_nll,
             cfg  = cfg.mod_cfg)
-        ftr.run()
+        res = ftr.run()
+
+    log.info(res)
 # ----------------------
 def main():
     '''
