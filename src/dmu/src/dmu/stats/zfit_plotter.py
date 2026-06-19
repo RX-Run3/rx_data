@@ -578,7 +578,7 @@ class ZFitPlotter:
 
         return xlabel, ylabel
     #----------------------------------------
-    def _get_xcoor(self, plot_range):
+    def _get_xcoor(self, plot_range : tuple[float,float] | None) -> np.ndarray:
         if plot_range is not None:
             try:
                 self.lower, self.upper = plot_range
@@ -649,7 +649,6 @@ class ZFitPlotter:
         leg_loc (str)         : Location of legend, default 'best'
         yscale (str)          : Scale for y axis of main plot, either log or linear
         '''
-        # pylint: disable=too-many-locals, too-many-positional-arguments, too-many-arguments
         d_leg           = {} if           d_leg is None else d_leg
         d_col           = {} if           d_col is None else d_col
         plot_components = [] if plot_components is None else plot_components
@@ -674,10 +673,9 @@ class ZFitPlotter:
 
         try:
             self.errors   = self._get_errors(nbins, ranges)
-        except EmptyDataSet as exc:
+        except EmptyDataSet:
             log.warning('Found empty dataset, skipping plot')
             return
-
 
         if not stacked:
             log.debug('Plotting full model, for non-stacked case')
@@ -699,6 +697,7 @@ class ZFitPlotter:
 
         self.axs[0].legend(title=text, fontsize=20, title_fontsize=20, loc=self._leg_loc)
         self.axs[0].set(xlabel=xlabel, ylabel=ylabel)
+
         self.axs[0].set_xlim((self.lower, self.upper))
 
         if yscale is not None:
@@ -708,11 +707,11 @@ class ZFitPlotter:
             self.axs[0].set_title(title)
 
         if ymax is not None:
-            self.axs[0].set_ylim((0, ymax))
+            self.axs[0].set_ylim(bottom = 0, top = ymax)
 
         if not skip_pulls:
             self.axs[1].set(xlabel=xlabel, ylabel="pulls")
-            self.axs[1].set_xlim([self.lower, self.upper])
+            self.axs[1].set_xlim(xmin = self.lower, xmax = self.upper)
 
         for ax in self.axs:
             ax.label_outer()
