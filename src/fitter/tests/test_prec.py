@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 from pathlib      import Path
 from dmu          import LogStore
-from dmu.stats    import PaddingConf
+from dmu.stats    import PaddingConf, ZFitPlotterConf
 from dmu.stats    import Fitter, KDEConf
 from dmu.stats    import utilities as sut
 from dmu.stats    import zfit
@@ -46,6 +46,9 @@ def test_electron(tmp_path : Path, trig : Trigger):
         limits=(4500, 6000))
 
     cfg = CCbarConf.default(channel = Channel.ee)
+    plt = ZFitPlotterConf.default()
+    plt = plt.model_copy(update = {'plot_range' : [4500, 5500]})
+    cfg = cfg.model_copy(update = {'plots'      :          plt})
 
     with RDFGetter.max_entries(value = 100_000),\
          Cache.cache_root(tmp_path):
