@@ -735,7 +735,7 @@ class PRec(Cache):
 
         if model.pdf:
             obj = ZFitPlotter(data=model.mass, model=model.pdf, weights=model.wgt)
-            obj.plot(stacked=True) # type: ignore[reportUnknownMemberType]
+            obj.run(cfg = self._cfg.plots)
 
             obj.axs[0].set_title(f'#Entries: {model.mass.size}; {title}') # type: ignore[reportUnknownMemberType]
 
