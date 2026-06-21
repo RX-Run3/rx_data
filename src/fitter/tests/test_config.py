@@ -123,7 +123,8 @@ def test_ccbar(analysis : str, kind : str):
         package = 'fitter_data', 
         fpath   = f'{kind}/{analysis}/ee/ccbar.yaml')
 
-    CCbarConf(**data)
+    obj = CCbarConf(**data)
+    print(obj)
 # ----------------------
 @pytest.mark.parametrize('component', [
     Component.bdkstkpiee, 
