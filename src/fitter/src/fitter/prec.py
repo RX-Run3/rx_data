@@ -155,6 +155,17 @@ class CCbarModel(BaseModel):
         if len(self.models) != len(self.fractions):
             raise ValueError('Fractions and models differ in number')
 
+        if not self.fractions:
+            return self
+
+        unity = sum(self.fractions)
+        if not numpy.isclose(unity, 1):
+            raise ValueError(f'Fractions do not add up to 1: {self.fractions}')
+
+        positive = all(fraction > 0 for fraction in self.fractions)
+        if not positive:
+            raise ValueError(f'Not all fractions are positive: {self.fractions}')
+
         return self
     # -------------------------
     @cached_property
