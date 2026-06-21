@@ -61,7 +61,7 @@ class CharmoniumComponent(BaseModel):
     dec : numpy.ndarray # Weights for individual decays in cocktail
     # ------------------------------
     @cached_property
-    def pdf(self) -> KDEPDF | None:
+    def pdf(self) -> _KDEPDF | None:
         '''
         Returns
         ---------------
@@ -71,10 +71,10 @@ class CharmoniumComponent(BaseModel):
             log.debug('Using fitting options:')
             log.debug(self.cfg)
 
-        if self.nentries < MIN_ENTRIES:
+        if self.nentries < _MIN_ENTRIES:
             return
 
-        pdf = zfit.pdf.KDE1DimFFT(
+        pdf = _KDEPDF(
             name      = self.name,
             norm      = self.obs,
             obs       = self._extended_obs,
@@ -93,7 +93,7 @@ class CharmoniumComponent(BaseModel):
         '''
         Observable used to build KDE, defined where data exists
         '''
-        if len(self.mass) < MIN_ENTRIES:
+        if len(self.mass) < _MIN_ENTRIES:
             log.debug('For small dataset, reusing default observable as normalization observable')
             return self.obs
 
@@ -109,7 +109,7 @@ class CharmoniumComponent(BaseModel):
 
         return obs
     # ------------------------------
-    def get_pdf(self) -> KDEPDF:
+    def get_pdf(self) -> _KDEPDF:
         '''
         Returns PDF or raises if PDF not found
         '''
@@ -138,7 +138,7 @@ class CCbarModel(BaseModel):
     model_config = ConfigDict(
         arbitrary_types_allowed = True,
         frozen                  = True)
-
+    # -------------------------
     obs       : zobs
     models    : list[CharmoniumComponent] 
     fractions : list[float]
@@ -158,7 +158,7 @@ class CCbarModel(BaseModel):
         return self
     # -------------------------
     @cached_property
-    def pdf(self) -> SumPDF | KDEPDF | None:
+    def pdf(self) -> SumPDF | _KDEPDF | None:
         '''
         Returns
         -----------------
@@ -251,7 +251,6 @@ class PRec(Cache):
         self._d_rdf    = d_rdf
 
         self._d_match  = self.__get_match_str()
-        self._l_mass   = ['B_M', 'B_Mass', 'B_Mass_smr', 'B_const_mass_M', 'B_const_mass_psi2S_M']
 
         # This should be usable to make hashes
         # backlashes and dollar signs are not hashable in strings
@@ -292,7 +291,7 @@ class PRec(Cache):
         if name.endswith('ID'):
             needed = True
 
-        if name in self._l_mass:
+        if name in _MASSES:
             needed = True
 
         if needed:
@@ -554,7 +553,7 @@ class PRec(Cache):
 
         return d_cut
     #-----------------------------------------------------------
-    def __normalize_weights(self, arr_wgt : numpy.ndarray):
+    def __normalize_weights(self, arr_wgt : numpy.ndarray) -> numpy.ndarray:
         tot_wgt = arr_wgt.sum()
         num_wgt = arr_wgt.shape[0]
         fact    = num_wgt / tot_wgt
