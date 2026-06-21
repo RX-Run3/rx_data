@@ -37,12 +37,10 @@ from .inclusive_sample_weights import Reader as SampleWeightReader
 
 log=LogStore.add_logger('fitter:prec')
 
-KDEPDF                   = KDE1DimFFT
-MIN_ENTRIES : Final[int] =  40 # Will not build KDE if fewer entries than this are found
-
-# TODO: Need separate normalization and observable ranges
-# to pick all the dataset in the construction of KDEs and avoid/aliviate
-# problem with edge effects
+_KDEPDF                         = KDE1DimFFT
+_MIN_ENTRIES : Final[int]       =  40 # Will not build KDE if fewer entries than this are found
+_MODEL_ATTRS : Final[list[str]] = ['mass', 'wgt', 'dec', 'sam']
+_MASSES      : Final[list[str]] = ['B_M', 'B_Mass', 'B_Mass_smr', 'B_const_mass_M', 'B_const_mass_psi2S_M']
 #-----------------------------------------------------------
 class CharmoniumComponent(BaseModel):
     '''
@@ -179,31 +177,32 @@ class CCbarModel(BaseModel):
         - Single component PDF when only one survives
         - None if no model could be built
         '''
-        models = [ model for model in self.models if model.pdf is not None ]
+        pdfs = [ model.pdf for model in self.models if model.pdf is not None ]
 
-        if not models:
+        if not pdfs:
             return
 
-        if len(models) == 1:
-            pdf = models[0].get_pdf()
-            return pdf
+        if len(pdfs) == 1:
+            return pdfs[0]
 
         fractions = [ 
             fraction for model, fraction in zip(self.models, self.fractions, strict = True) 
             if model.pdf is not None ]
 
         arrays : dict[str,numpy.ndarray] = dict()
-        for attr_name in ['mass', 'wgt', 'dec', 'sam']:
-            l_value = [ getattr(model, attr_name) for model in self.models ]
-            arrays[attr_name] = numpy.concatenate(l_value)
+        for attr_name in _MODEL_ATTRS:
+            arrays[attr_name] = getattr(self, attr_name) 
 
-        pdfs = [ model.pdf for model in  models if model.pdf is not None ]
+        norm_fractions = [ fraction / sum(fractions) for fraction in fractions ]
         
         log.debug('Adding PDFs')
         pdf  = zfit.pdf.SumPDF(
             obs  = self.obs,
             pdfs = pdfs, 
-            fracs= fractions)
+            fracs= norm_fractions)
+
+        for name, array in arrays.items():
+            setattr(pdf, name, array)
 
         return pdf
     # -------------------------
@@ -753,7 +752,10 @@ class PRec(Cache):
             return
 
         if model.pdf:
-            obj = ZFitPlotter(data=model.mass, model=model.pdf, weights=model.wgt)
+            obj = ZFitPlotter(
+                data   = model.mass, 
+                model  = model.pdf, 
+                weights= model.wgt)
             obj.run(cfg = self._cfg.plots)
 
             obj.axs[0].set_title(f'#Entries: {model.mass.size}; {title}')
