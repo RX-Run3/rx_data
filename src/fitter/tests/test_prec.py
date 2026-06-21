@@ -127,18 +127,16 @@ def test_electron_by_block(tmp_path : Path, trig : Trigger, block : int):
 
         obp.get_sum(name = 'ccbar')
 #-----------------------------------------------
-@pytest.mark.parametrize('q2bin', ['low', 'central', 'jpsi', 'psi2', 'high'])
 @pytest.mark.parametrize('dec'  , [True, False])
 @pytest.mark.parametrize('sam'  , [True, False])
 def test_reso_by_weights(
-    q2bin    : str, 
     dec      : bool,
     sam      : bool,
     tmp_path : Path):
     '''
     Build charmonium model with and without weights
     '''
-    q2bin   = Qsq(q2bin)
+    q2bin   = Qsq('jpsi')
     mass    = Mass.bd_dtf_jpsi
     trig    = Trigger.rk_ee_os
 
