@@ -6,6 +6,7 @@ import mplhep
 import pytest
 import matplotlib.pyplot as plt
 
+from ROOT         import EnableImplicitMT # type: ignore
 from pathlib      import Path
 from dmu          import LogStore
 from dmu.stats    import PaddingConf, ZFitPlotterConf
@@ -168,8 +169,8 @@ def test_fit(tmp_path : Path):
     '''
     Tests that the PDF is fittable
     '''
-    q2bin   = Qsq.high
-    mass    = Mass.bp_bcor_smr
+    q2bin   = Qsq.jpsi
+    mass    = Mass.bp_dtf_jpsi
     trig    = Trigger.rk_ee_os 
     obs     = zfit.Space(
         obs   = mass.latex, 
@@ -177,11 +178,15 @@ def test_fit(tmp_path : Path):
         limits=(4500, 6000))
 
     cfg = CCbarConf.default(channel = Channel.ee)
+    plt = ZFitPlotterConf.default()
+    plt = plt.model_copy(update = {'plot_range' : [4800, 5500]})
+    cfg = cfg.model_copy(update = {'plots' : plt})
 
-    with RDFGetter.max_entries(value = 100_000),\
+    EnableImplicitMT(4)
+    with RDFGetter.max_entries(value = -1),\
          Cache.cache_root(tmp_path):
         obp = PRec(
-            name  = 'main',
+            name  = 'test',
             cfg   = cfg,
             obs   = obs,
             trig  = trig, 
