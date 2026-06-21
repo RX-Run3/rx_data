@@ -5,6 +5,7 @@ categories:
     model:
       pdfs :
         - dscb
+        - gauss
       fix           : {}
       reparametrize : {}
       shared        :
@@ -20,6 +21,7 @@ categories:
     model:
       pdfs :
         - dscb
+        - gauss
       fix           : {}
       reparametrize : {}
       shared        :
