@@ -10,3 +10,7 @@ fit:
   bandwidth : 40
   padding   :
     flag : False
+plots:
+  nbins  : 40
+  stacked: True
+  plot_range : [4500, 6000]
