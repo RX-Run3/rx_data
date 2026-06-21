@@ -506,9 +506,9 @@ class PRec(Cache):
         - Latex string describing process
         - Truth matching string isolating process
         '''
-        bs          = '(abs(B_TRUEID) == 531)'
-        bd          = '(abs(B_TRUEID) == 511)'
-        bp          = '(abs(B_TRUEID) == 521)'
+        bs = '(abs(B_TRUEID) == 531)'
+        bd = '(abs(B_TRUEID) == 511)'
+        bp = '(abs(B_TRUEID) == 521)'
 
         d_cut : dict[str,str] = {}
         if self._trig.is_electron:
@@ -680,7 +680,16 @@ class PRec(Cache):
 
         return self.__yield_from_arrays(masses = arr_mass, weights = arr_weight, obs = obs)
     #-----------------------------------------------------------
-    def __yield_from_arrays(self, masses :  numpy.ndarray, weights : numpy.ndarray, obs : zobs) -> float:
+    def __yield_from_arrays(
+        self, 
+        masses  : numpy.ndarray, 
+        weights : numpy.ndarray, 
+        obs     : zobs) -> float:
+        '''
+        Returns
+        -----------------
+        Yeld in observable from sum of weights
+        '''
         minx, maxx = sut.range_from_obs(obs=obs)
         mask       = (minx < masses) & (masses < maxx)
         wgt        = weights[mask]
