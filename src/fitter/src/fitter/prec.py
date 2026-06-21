@@ -697,10 +697,12 @@ class PRec(Cache):
     #-----------------------------------------------------------
     def __get_full_model(
         self, 
-        d_df : dict[str,pnd.DataFrame]) -> CCbarModel: 
+        merged : bool,
+        d_df   : dict[str,pnd.DataFrame]) -> CCbarModel: 
         '''
         Parameters
         -------------------
+        merged: If true, will provide a single PDF from the sum of the data
         d_df  : Dictionary with:
             Key  : Latex name of component, not necessarily Bu/Bd... This was re-split
             Value: Dataframe with data to fit
@@ -712,6 +714,30 @@ class PRec(Cache):
         if not d_df:
             raise ValueError('No dataframes with components data')
 
+        if merged:
+            return self.__get_full_merged_model(d_df = d_df)
+        else:
+            return self.__get_full_split_model(d_df = d_df)
+    #-----------------------------------------------------------
+    def __get_full_merged_model(self, d_df : dict[str,pnd.DataFrame]) -> CCbarModel:
+        dfs   = [ df for df in d_df.values() ]
+        df    = pnd.concat(objs = dfs, axis = 0)
+        model = self.__get_model(
+            mass           = Mass(self._obs.label), 
+            component_name = r'$c\bar{c}$', 
+            df             = df, 
+            cfg            = self._cfg.fit)
+
+        model = CCbarModel(
+            obs       = self._obs,
+            models    = [model], 
+            fractions = [1])
+
+        return model
+    #-----------------------------------------------------------
+    def __get_full_split_model(
+        self, 
+        d_df : dict[str,pnd.DataFrame]) -> CCbarModel:
         all_models: list[CharmoniumComponent] = [ 
             self.__get_model(
                 mass           = Mass(self._obs.label), 
@@ -840,7 +866,7 @@ class PRec(Cache):
         if self._copy_from_cache():
             log.info(f'Data found cached, reloading from {self._out_path}')
             d_df = { ltex : pnd.read_parquet(path) for ltex , path in d_path.items() }
-            model= self.__get_full_model(d_df=d_df)
+            model= self.__get_full_model(d_df=d_df, merged = True)
 
             self._plot_weights(
                 model   = model, 
@@ -859,7 +885,7 @@ class PRec(Cache):
         log.info(f'Recalculating, cached data not found in: {self._out_path}')
 
         d_df = self.__get_df()
-        model= self.__get_full_model(d_df = d_df)
+        model= self.__get_full_model(d_df = d_df, merged = True)
 
         for sample in self._cut_info:
             rep, d_sel = self._cut_info[sample]
