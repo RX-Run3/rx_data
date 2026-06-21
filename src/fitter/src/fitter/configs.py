@@ -158,6 +158,30 @@ class CCbarConf(ComponentConf):         # Tested
     fit     : KDEConf
     plots   : ZFitPlotterConf
     # -----------------
+    def __str__(self):
+        samples = [ f'{sample}' for sample in self.samples ] 
+        weights = ''
+        for key, val in self.weights.items():
+            weights += f'{key:<20}{val}\n'
+
+        return f'''
+Samples
+----------------
+{samples}
+
+Weights
+----------------
+{weights}
+
+Fit
+----------------
+{self.fit}
+
+Plot
+----------------
+{self.plots}'
+        '''
+    # -----------------
     @classmethod
     def default(
         cls,
