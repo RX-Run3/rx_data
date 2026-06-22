@@ -7,7 +7,7 @@ import yaml
 from functools   import cached_property
 from pydantic    import BaseModel, ConfigDict, model_validator
 from pathlib     import Path
-from typing      import Callable, Literal, Self
+from typing      import Callable, Literal, Self, Sequence
 
 from rx_common   import Channel, Mass, Project, Qsq, MisID, Region
 from rx_common   import Component, Trigger, CCbarComponent, Cuts
@@ -885,6 +885,20 @@ class RXFitConfig(BaseModel):
         out_dir.mkdir(parents = True, exist_ok = True)
 
         return out_dir
+    # ----------------------
+    def data_fit_directory(self, regions : Sequence[str]) -> Path:
+        '''
+        Parameters
+        ------------------
+        regions: Sequence of fitting regions, e.g. brem_xx1, brem_xx2
+
+        Returns
+        ------------------
+        Directory where region directories go 
+        '''
+        regs = '_'.join(regions)
+
+        return self.output_directory / Path(Component.data_24) / 'fit' / regs
     # ----------------------
     @cached_property
     def obs(self) -> zobs:
