@@ -17,6 +17,7 @@ from .utilities           import is_pdf_usable
 from .zfit_plotter        import ZFitPlotter, ZFitPlotterConf
 from .zfit_models         import ModExp
 from .zfit_models         import HypExp
+from .function            import Function
 from .zfit_models         import FermiDirac 
 from .fit_conf            import FitConf, KDEConf, PaddingConf
 from .imports             import zfit
@@ -35,6 +36,7 @@ from .configs             import YieldConf
 from .configs             import YieldsConf
 
 __all__ = [
+    'Function',
     'CorrectionImplementation',
     'ConstraintType',
     'SimpleYieldConf',
