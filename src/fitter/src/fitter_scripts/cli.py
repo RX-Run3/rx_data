@@ -6,23 +6,25 @@ provided by this project
 import typer
 import matplotlib.pyplot as plt
 
-from dmu       import LogStore
+from dmu       import LogLevels, LogStore
 from pathlib   import Path
+from rx_common import Component
 
 app = typer.Typer(help=__doc__)
 log = LogStore.add_logger('rx_fitter:cli')
 # ----------------------
 @app.command()
 def fit_summary(
-    name    : str = typer.Option(..., '--name'   , '-n', help='Name of fits, e.g. mid_window'),
-    signal  : str = typer.Option(..., '--signal' , '-s', help='Name of signal, e.g. bpkpee'),
-    log_lvl : int = typer.Option(20 , '--log_lvl', '-l', help='Logging level'))-> None:
+    name    : str       = typer.Option(...           , '--name'   , '-n', help='Name of fits, e.g. mid_window'),
+    signal  : Component = typer.Option(...           , '--signal' , '-s', help='Name of signal, e.g. bpkpee'), # noqa: B008
+    log_lvl : int       = typer.Option(LogLevels.info, '--log_lvl', '-l', help='Logging level'))-> None:
     '''
     This will create a fit summary for a given fit
     '''
     from fitter    import FitSummary
 
     smr = FitSummary(
+        data   = Component.data_24,
         signal = signal,
         name   = name)
     smr.get_df()
@@ -33,7 +35,7 @@ def fit_summary(
 def make_dummy_plot(
     text   : str = typer.Option('Placeholder', '--text'  , '-t', help='Text that will go in plot'),
     source : str = typer.Option('Placeholder', '--source', '-s', help='Path to source of file to be copied'),
-    path   : Path= typer.Option(...          , '--path'  , '-p', help='Path to PNG file to be made')) -> None:
+    path   : Path= typer.Option(...          , '--path'  , '-p', help='Path to PNG file to be made')) -> None: # noqa: B008
     '''
     This will check if a plot exists and if not, will create a placeholder
     '''
