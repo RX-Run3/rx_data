@@ -23,7 +23,9 @@ argparse-dataclass==2.0.0
     #   snakemake-interface-executor-plugins
     #   yte
 asdf==5.1.0
-    # via -r requirements-dep.in
+    # via
+    #   -r requirements-dep.in
+    #   hepstats
 asdf-standard==1.4.0
     # via
     #   asdf
@@ -172,6 +174,8 @@ h5py==3.15.1
     # via
     #   keras
     #   tensorflow
+hepstats==0.10.0
+    # via -r requirements-dep.in
 hepunits==2.4.3
     # via
     #   formulate
@@ -317,6 +321,7 @@ numpy==2.3.5
     #   dask
     #   dm-tree
     #   h5py
+    #   hepstats
     #   hist
     #   histoprint
     #   iminuit
@@ -385,6 +390,7 @@ pandas==2.3.3
     #   awkward-pandas
     #   bokeh
     #   dask
+    #   hepstats
     #   matplotlib-stubs
     #   seaborn
     #   zfit
@@ -492,6 +498,7 @@ scikit-learn==1.8.0
 scipy==1.16.3
     # via
     #   -r requirements-dep.in
+    #   hepstats
     #   numdifftools
     #   scikit-learn
     #   zfit
@@ -622,6 +629,7 @@ tornado==6.5.4
 tqdm==4.67.1
     # via
     #   -r requirements-dep.in
+    #   hepstats
     #   optuna
 traitlets==5.14.3
     # via
@@ -658,6 +666,7 @@ tzdata==2025.3
     # via pandas
 uhi==1.0.0
     # via
+    #   hepstats
     #   histoprint
     #   mplhep
     #   zfit
