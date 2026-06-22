@@ -10,7 +10,9 @@ from dmu       import LogLevels, LogStore
 from pathlib   import Path
 from rx_common import Component
 
-app = typer.Typer(help=__doc__)
+app = typer.Typer(
+    help            = __doc__,
+    context_settings= {"help_option_names": ["-h", "--help"]})
 log = LogStore.add_logger('rx_fitter:cli')
 # ----------------------
 @app.command()

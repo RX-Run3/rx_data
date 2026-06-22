@@ -6,7 +6,9 @@ import typer
 from pathlib import Path
 from dmu     import LogStore
 
-app = typer.Typer(help=__doc__)
+app = typer.Typer(
+    help            = __doc__,
+    context_settings= {"help_option_names": ["-h", "--help"]})
 log = LogStore.add_logger('dmu:cli')
 # ----------------------
 @app.command()

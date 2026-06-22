@@ -19,7 +19,9 @@ from rx_plotter.refitting  import plot      as refitting_plot
 from rx_selection          import selection as sel
 
 plt.style.use(mplhep.style.LHCb2)
-app = typer.Typer(help=__doc__)
+app = typer.Typer(
+    help            = __doc__,
+    context_settings= {"help_option_names": ["-h", "--help"]})
 log = LogStore.add_logger('rx_plots:cli')
 # ----------------------
 @app.command()

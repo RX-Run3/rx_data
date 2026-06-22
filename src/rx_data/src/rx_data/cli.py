@@ -21,7 +21,9 @@ from post_ap    import ProductionConf
 from post_ap    import PFNReaderConf, Production
 from post_ap    import PFNReader, Samples
 
-app = typer.Typer(help=__doc__)
+app = typer.Typer(
+    help            = __doc__,
+    context_settings= {"help_option_names": ["-h", "--help"]})
 log = LogStore.add_logger('rx_data:cli')
 _ANADIR  : Final[Path] = Path(os.environ['ANADIR'])
 _STORAGE : Final[Path] = Path(f'{_ANADIR}/downloaded')

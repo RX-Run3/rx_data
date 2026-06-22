@@ -11,7 +11,9 @@ from post_ap     import PFNReaderConf
 from post_ap     import PFNReader
 from post_ap     import Production
 
-app = typer.Typer(help=__doc__)
+app = typer.Typer(
+    help            = __doc__,
+    context_settings= {"help_option_names": ["-h", "--help"]})
 log = LogStore.add_logger('post_ap:cli')
 # ----------------------
 @app.command()

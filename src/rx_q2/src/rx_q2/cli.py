@@ -7,7 +7,9 @@ import typer
 from dmu     import LogStore
 from rx_q2   import ScaleCombiner
 
-app = typer.Typer(help=__doc__)
+app = typer.Typer(
+    help            = __doc__,
+    context_settings= {"help_option_names": ["-h", "--help"]})
 log = LogStore.add_logger('rx_q2:cli')
 # ----------------------
 @app.command()
