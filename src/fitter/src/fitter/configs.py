@@ -862,8 +862,7 @@ class RXFitConfig(BaseModel):
         '''
         Returns
         -----------------
-        This function will return the directory WRT which
-        the `output_directory` key in the fit config will be defined
+        Directory WRT which the `output_directory` key in the fit config will be defined
         '''
         if not isinstance(self.block, int):
             raise ValueError(f'Block is not an int but {type(self.block)} = {self.block}')
