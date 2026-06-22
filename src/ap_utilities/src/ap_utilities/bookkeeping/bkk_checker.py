@@ -157,7 +157,7 @@ class DatasetInfo(RootModel[list[BkkInfo]]):
         cache_path = _CACHE_DIR / f'{name}.yaml' 
 
         log.info(f'Saving to: {cache_path}')
-        _CACHE_DIR.parent.mkdir(exist_ok=True, parents=True)
+        cache_path.parent.mkdir(exist_ok=True, parents=True)
 
         data = self.model_dump_json(indent = 2)
         cache_path.write_text(data = data)
