@@ -23,7 +23,7 @@ def fit_summary(
     '''
     This will create a fit summary for a given fit
     '''
-    from fitter    import FitSummary
+    from fitter    import FitSummary # noqa: PLC0415 
 
     smr = FitSummary(
         data   = Component.data_24,
@@ -83,7 +83,7 @@ def prefit_postfit(
     '''
     Makes prefit and postfit plots of fit parameters
     '''
-    from fitter    import plot_prefit_postfit
+    from fitter    import plot_prefit_postfit # noqa: PLC0415 
 
     plot_prefit_postfit(update = update)
 # ----------------------
