@@ -8,7 +8,9 @@ from pathlib               import Path
 from dmu.logging.log_store import LogStore
 from dmu.generic           import utilities as gut
 
-app = typer.Typer(help=__doc__)
+app = typer.Typer(
+    help            = __doc__,
+    context_settings= {"help_option_names": ["-h", "--help"]})
 log = LogStore.add_logger('rx_orchestration:cli')
 # ----------------------
 @app.command()
