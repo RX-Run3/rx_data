@@ -126,7 +126,14 @@ class SampleConfig:
         -------------
         Configuration with both samples and settings
         '''
+        if category not in self._cfg_sam.root:
+            for val in self._cfg_sam.root:
+                log.error(val)
+
+            raise ValueError(f'Missing category {category}')
+
         samples = self._cfg_sam.root[category]
+
         ntypes  = len(samples.samples)
         if ntypes == 0:
             log.warning(f'Found {ntypes} event types')
