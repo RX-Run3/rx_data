@@ -122,6 +122,16 @@ CONTAINER_MOUNT_PATH=/publicfs/ucas/user/campoverde
 BACKEND_CORS_ORIGINS=["http://localhost","http://localhost:3100"]
 ```
 
+while a typical config file would look like:
+
+```yaml
+FLOWO_HOST = "http://localhost:3100"                                                                                                                                            
+FLOWO_USER_TOKEN = "This is a key from the flowo dashboard, obtained in settings"                                                                                                            
+FLOWO_WORKING_PATH = "/publicfs/ucas/user/campoverde"     
+```
+
+which is located in `$HOME/.config/flowo/config.yaml`
+
 ## Connecting from Your Laptop
 
 Open an SSH tunnel:
