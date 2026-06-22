@@ -24,9 +24,7 @@ YEAR   = '2024'
 rule all:
     input:
         expand(
-            [
-             f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/{brem}/parameters.json',
-             f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/bpkpjpsiee/fit/{brem}/{brem}/parameters.json'],
+             f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/{{brem}}/sweights.json',
             cmb   = CMB,
             prc   = PRC,
             brem  = BREM,
@@ -34,19 +32,19 @@ rule all:
 # ---------------------
 rule sweights:
     output :
-        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/{brem}/sweights.json',
+        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/{{brem}}/sweights.json',
     input  :
-        expand(f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/{brem}/nll.bytes',
+        expand(f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/{{brem}}/nll.bytes',
             cmb   = CMB,
             prc   = PRC,
             brem  = BREM,
             block = BLOCK)
-    log    : f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}/rk_ee/plots/sweights.log'
+    log    : f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_{{block}}_{{brem}}/rk_ee/plots/sweights.log'
     params :
         home    = HOME,
         env     = ENV,
-        ana_dir = ANADIR
-        nll_path= lambda wc : f'{ANADIR}/fits/data/{wc.NAME}/{wc.cmb}_{wc.prc}_b{wc.block}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/{wc.brem}/nll.bytes'
+        ana_dir = ANADIR,
+        nll_path= lambda wc : f'{ANADIR}/fits/data/{NAME}/{wc.cmb}_{wc.prc}_b{wc.block}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/{wc.brem}/nll.bytes',
     shell  :
         '''
         source setup.sh {params.env} {params.home}
@@ -55,6 +53,8 @@ rule sweights:
 # ---------------------
 rule fits:
     output   :
+        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx1/nll.bytes',
+        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx2/nll.bytes',
         f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx1/parameters.json',
         f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx2/parameters.json',
         f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx1/brem_xx1/parameters.json',
