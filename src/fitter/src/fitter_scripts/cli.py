@@ -4,11 +4,15 @@ provided by this project
 '''
 
 import typer
+import mplhep
 import matplotlib.pyplot as plt
 
-from dmu       import LogLevels, LogStore
-from pathlib   import Path
-from rx_common import Component
+from hepstats    import splot
+from dmu         import LogLevels, LogStore
+from pathlib     import Path
+from rx_common   import Component
+from dmu.stats   import utilities as sut
+from dmu.stats   import Function
 
 app = typer.Typer(
     help            = __doc__,
@@ -86,6 +90,31 @@ def prefit_postfit(
     from fitter    import plot_prefit_postfit # noqa: PLC0415 
 
     plot_prefit_postfit(update = update)
+# ----------------------
+@app.command()
+def calculate_sweights(
+    nll_path : Path = typer.Option(..., '--file', '-f', help='Full path to file with NLL')) -> None: # noqa: B008
+    '''
+    Makes prefit and postfit plots of fit parameters
+    '''
+    nll    = sut.load_nll(path = nll_path)
+    pdf    = nll.model[0]
+    dat    = nll.data[0]
+    masses = dat.to_numpy().flatten()
+
+    sweights  = splot.compute_sweights(
+        model = pdf, 
+        x     = masses)
+
+    plt.style.use(mplhep.style.LHCb2) # type: ignore
+
+    for par, weights in sweights.items():
+        swt_path = nll_path.parent / f'swt_{par.name}.json'
+
+        fun   = Function(
+            x = masses,
+            y = weights)
+        fun.save(path = swt_path, plot = True)
 # ----------------------
 if __name__ == '__main__':
     app()
