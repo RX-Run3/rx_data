@@ -191,6 +191,11 @@ charmonium:
     12442001  : $B^+ \to J/\psi(\to \mu^+ \mu^-) X$
     11442001  : $B^0 \to J/\psi(\to \mu^+ \mu^-) X$
     13442001  : $B_s \to J/\psi(\to \mu^+ \mu^-) X$
+sim10g_new_rkst:
+  filter : null
+  samples:
+    11154002 : $B^0 \to J/\psi(\to e^+ e^-) K^{*0}$
+    11144002 : $B^0 \to J/\psi(\to \mu^+ \mu^-) K^{*0}$
 sim10g_filtered:
   filter : ^(Hlt2RD_BuToKpEE|Hlt2RD_BuToKpEE_MVA|Hlt2RD_B0ToKpPimEE|Hlt2RD_B0ToKpKmEE|Hlt2RD_B0ToKpPimEE_MVA|Hlt2RD_LbTopKEE_MVA|Hlt2RD_LbToPKJpsi_JpsiToEE|Hlt2RD_BsToPhiEE_MVA)$
   samples:
