@@ -382,20 +382,25 @@ def _print_component_pdfs(pdf : zpdf) -> list[str]:
 
     return msg
 #---------------------------------------------
-def save_nll(loss : Loss) -> Path:
+def save_nll(loss : Loss, path : Path | None = None) -> Path:
     '''
     Parameters
     -------------
     loss: NLL
+    path: Path to file where NLL is saved, by default None, it will be saved to /tmp/
 
     Returns
     -------------
     Path where it was saved
     '''
     loss_bytes = dill.dumps(loss)
+    if path:
+        path.parent.mkdir(parents = True, exist_ok = True)
+        path.write_bytes(data = loss_bytes)
+        return path
+
     with tempfile.NamedTemporaryFile(mode='w+b', delete=False) as temp:
         path = Path(temp.name)
-
         path.write_bytes(data = loss_bytes)
 
     return path
