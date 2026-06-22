@@ -199,9 +199,9 @@ sim10g_filtered:
 sim10g:
   filter : null
   samples:
-    11154001 : $B^0 \to J/\psi(\to e^+ e^-) K^{*0}$
+    11154002 : $B^0 \to J/\psi(\to e^+ e^-) K^{*0}$
+    11144002 : $B^0 \to J/\psi(\to \mu^+ \mu^-) K^{*0}$
     12153001 : $B^+ \to J/\psi(\to e^+ e^-) K^+$
-    11144001 : $B^0 \to J/\psi(\to \mu^+ \mu^-) K^{*0}$
     12143001 : $B^+ \to J/\psi(\to \mu^+ \mu^-) K^+$ 
     # ----------
     11154011 : $B^0 \to \psi(2S)(\to e^+ e^-) K^{*0}$
