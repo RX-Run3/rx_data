@@ -14,6 +14,7 @@ from dmu           import LogStore
 from dmu.stats     import GofCalculator
 from dmu.workflow  import Cache
 from dmu.stats     import ParameterLibrary as PL
+from dmu.stats     import utilities as sut 
 from dmu.generic   import utilities as gut
 from dmu.generic   import UnpackerModel
 
@@ -160,11 +161,15 @@ def _get_region_nll(region : Region, cfg : RXFitConfig) -> NLLConf:
 
         return _get_nll(cfg=cfg)
 # ----------------------
-def _fit_electron(cfg : RXFitConfig) -> None:
+def _fit_electron(cfg : RXFitConfig) -> dict[Region, NLLConf]:
     '''
     Parameters
     -------------
     cfg: Full config controlling fit
+
+    Returns
+    -------------
+    Dictionary with fitting region mapped to NLLConf
     '''
     d_nll : dict[Region,NLLConf] = {}
 
@@ -180,12 +185,18 @@ def _fit_electron(cfg : RXFitConfig) -> None:
         res = ftr.run()
 
     log.info(res)
+
+    return d_nll
 # ----------------------
-def _fit_muon(cfg : RXFitConfig) -> None:
+def _fit_muon(cfg : RXFitConfig) -> dict[Region,NLLConf]:
     '''
     Parameters
     -------------
     cfg: Full config controlling fit
+
+    Returns
+    -------------
+    Dictionary with fitting region mapped to NLLConf
     '''
     d_nll : dict[Region,NLLConf] = {}
     cfg.name = Region.brem_xx0
@@ -199,6 +210,8 @@ def _fit_muon(cfg : RXFitConfig) -> None:
         res = ftr.run()
 
     log.info(res)
+
+    return d_nll
 # ----------------------
 def main():
     '''
@@ -219,9 +232,14 @@ def main():
         stack.enter_context(sel.custom_selection(d_sel=cfg.overriding_selection))
 
         if cfg.is_electron:
-            _fit_electron(cfg=cfg)
+            d_nll = _fit_electron(cfg=cfg)
         else:
-            _fit_muon(cfg=cfg)
+            d_nll = _fit_muon(cfg=cfg)
+
+    reg_dir = cfg.data_fit_directory(regions = list(d_nll.keys()))
+    for region, nll_cfg in d_nll.items():
+        out_dir = reg_dir / region / 'nll.bytes'
+        sut.save_nll(loss = nll_cfg.nll, path = out_dir)
 # ----------------------
 if __name__ == '__main__':
     main()
