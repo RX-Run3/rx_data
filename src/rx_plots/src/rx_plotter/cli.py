@@ -13,12 +13,12 @@ import matplotlib.pyplot   as plt
 from pathlib               import Path
 from dmu                   import LogStore
 from rx_data.rdf_getter    import RDFGetter
-from rx_common             import Trigger, Qsq, Component
+from rx_common             import Trigger, Qsq
 from rx_common             import info
 from rx_plotter.refitting  import plot      as refitting_plot
 from rx_selection          import selection as sel
 
-plt.style.use(mplhep.style.LHCb2)
+plt.style.use(mplhep.style.LHCb2) # type: ignore
 app = typer.Typer(
     help            = __doc__,
     context_settings= {"help_option_names": ["-h", "--help"]})
