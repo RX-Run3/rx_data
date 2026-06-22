@@ -1,6 +1,19 @@
 component : bdkstkpipsi2ee 
 categories:
-  brem    :
+  brem_xx1    :
+    selection : {}
+    model:
+      pdfs :
+        - dscb
+      shared        : 
+        - mu
+        - sg
+      floating      :
+        - mu
+        - sg
+      reparametrize : {}
+      fix           : {}
+  brem_xx2    :
     selection : {}
     model:
       pdfs :

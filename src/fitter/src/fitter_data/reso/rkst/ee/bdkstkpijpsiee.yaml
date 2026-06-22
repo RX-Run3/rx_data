@@ -1,6 +1,6 @@
 component : bdkstkpijpsiee 
 categories:
-  brem:
+  brem_xx1:
     selection : {}
     model:
       pdfs:
@@ -13,6 +13,23 @@ categories:
         - sg
       reparametrize : {}
       fix           : {}
+      values        :
+        sg : [20, 8, 30]
+  brem_xx2:
+    selection : {}
+    model:
+      pdfs:
+        - dscb
+      shared        : 
+        - mu
+        - sg
+      floating      :
+        - mu
+        - sg
+      reparametrize : {}
+      fix           : {}
+      values        :
+        sg : [20, 8, 30]
 fit:
   strategy  :
     ntries : 10
