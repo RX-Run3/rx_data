@@ -12,7 +12,7 @@ from rx_common    import Component, Cuts, Qsq, Trigger
 from dataclasses  import dataclass
 from pathlib      import Path
 from omegaconf    import DictConfig
-from ROOT         import RDF # type: ignore
+from ROOT         import RDF, EnableImplicitMT # type: ignore
 from dmu          import LogLevels, LogStore
 from dmu.generic  import utilities as gut
 from dmu.plotting import Plotter1D
@@ -45,6 +45,7 @@ class Config:
     block   : int
     nomva   : bool
     emulate : bool
+    ncores  : int
 
     d_reso  = {Qsq.jpsi : 'B_const_mass_M', Qsq.psi2 : 'B_const_mass_psi2S_M'}
     ana_dir = Path(os.environ['ANADIR'])
@@ -223,6 +224,7 @@ def _cfg_from_args() -> Config:
     parser.add_argument('-b', '--brem'   , type=int      , help='Brem category, 12 = 1 or 2, -1 = all' , choices=[-1, 0, 1, 2, 12], required=True)
     parser.add_argument('-B', '--block'  , type=int      , help='Block to which data belongs, -1 will put all the data together', choices=_BLOCKS, required=True)
     parser.add_argument('-l', '--log_lvl', type=int      , help='Logging level', choices=[10, 20, 30, 40], default=20)
+    parser.add_argument('-n', '--ncores' , type=int      , help='Number of cores if using multithreading', default=1)
     parser.add_argument('-r', '--nomva'  ,                 help='If used, it will remove the MVA requirement', action='store_true')
     parser.add_argument('-e', '--emulate',                 help='If used, it will emulate Run1/2 conditions', action='store_true')
     args = parser.parse_args()
@@ -237,6 +239,7 @@ def _cfg_from_args() -> Config:
     brem   = args.brem,
     block  = args.block,
     nomva  = args.nomva,
+    ncores = args.ncores,
     emulate= args.emulate)
 
     return cfg
@@ -334,7 +337,8 @@ def _omega_conf_to_config(settings : DictConfig) -> Config:
         brem   = settings.brem,
         block  = settings.block,
         nomva  = settings.nomva,
-        emulate= settings.emulate)
+        emulate= settings.emulate,
+        ncores = 1) # Use one core per run with workflows
 # ---------------------------------
 def main(settings : DictConfig|None = None) -> list[Path]:
     '''
@@ -350,6 +354,10 @@ def main(settings : DictConfig|None = None) -> list[Path]:
         cfg = _cfg_from_args()
     else:
         cfg = _omega_conf_to_config(settings = settings)
+
+    if cfg.ncores > 1:
+        log.info(f'Using {cfg.ncores} cores')
+        EnableImplicitMT(cfg.ncores)
 
     cfg_plt = _get_plot_cfg(cfg=cfg)
     mplhep.style.use('LHCb2')
