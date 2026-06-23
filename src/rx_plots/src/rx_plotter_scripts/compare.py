@@ -49,8 +49,7 @@ class Config:
 
     d_reso  = {Qsq.jpsi : 'B_const_mass_M', Qsq.psi2 : 'B_const_mass_psi2S_M'}
     ana_dir = Path(os.environ['ANADIR'])
-
-    l_col  = []
+    l_col   = []
 # ---------------------------------
 def _get_plot_cfg(cfg : Config) -> DictConfig: 
     '''
@@ -229,7 +228,9 @@ def _cfg_from_args() -> Config:
     parser.add_argument('-e', '--emulate',                 help='If used, it will emulate Run1/2 conditions', action='store_true')
     args = parser.parse_args()
 
-    LogStore.set_level('rx_plots:compare', args.log_lvl)
+    LogStore.set_level('rx_plots:compare'      , args.log_lvl)
+    LogStore.set_level('dmu:plotting:Plotter'  , args.log_lvl)
+    LogStore.set_level('dmu:plotting:Plotter1D', args.log_lvl)
 
     cfg = Config(
     q2_bin = args.q2bin,
