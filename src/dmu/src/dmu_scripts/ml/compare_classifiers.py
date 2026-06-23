@@ -8,9 +8,10 @@ import mplhep
 import matplotlib.pyplot as plt
 import pandas            as pnd
 
-from sklearn.metrics       import auc
-from dmu.logging.log_store import LogStore
+from sklearn.metrics import auc
+from dmu             import LogStore
 
+plt.style.use(mplhep.style.LHCb2) # type: ignore
 log=LogStore.add_logger('dmu:ml:compare_classifiers')
 # ------------------------------
 class Data:
@@ -21,8 +22,6 @@ class Data:
     cfg_path : str
     logl     : int
     cfg      : dict
-
-    plt.style.use(mplhep.style.LHCb2)
 # ------------------------------
 def _initialize() -> None:
     log.info(f'Loading settings from: {Data.cfg_path}')
