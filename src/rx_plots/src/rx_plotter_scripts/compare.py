@@ -234,15 +234,15 @@ def _cfg_from_args() -> Config:
     LogStore.set_level('dmu:plotting:Plotter1D', args.log_lvl)
 
     cfg = Config(
-    q2_bin = args.q2bin,
-    sample = args.sample,
-    trigger= args.trigger,
-    config = args.config,
-    brem   = args.brem,
-    block  = args.block,
-    nomva  = args.nomva,
-    ncores = args.ncores,
-    emulate= args.emulate)
+        q2_bin = args.q2bin,
+        sample = args.sample,
+        trigger= args.trigger,
+        config = args.config,
+        brem   = args.brem,
+        block  = args.block,
+        mva    = args.mva,
+        ncores = args.ncores,
+        emulate= args.emulate)
 
     return cfg
 # ---------------------------------
