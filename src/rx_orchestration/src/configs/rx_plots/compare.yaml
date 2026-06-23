@@ -15,6 +15,7 @@ args:
 output:
   resolution:
     - bmass_correction.png
+    - brem_fraction.png
     - long_tracks.png
     - npv.png
   smear:
