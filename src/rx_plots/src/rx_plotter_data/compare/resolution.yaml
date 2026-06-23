@@ -1,3 +1,14 @@
+styles: &styles
+  Original:
+    histtype : step
+    linestyle: '-'
+  Corrected:
+    histtype : step
+    linestyle: '-'
+  Corrected and L0:
+    histtype : step
+    linestyle: '-'
+
 general:
   size : [15, 10]
 definitions:
@@ -16,7 +27,7 @@ comparison:
       bmass : B_Mass
       jmass : Jpsi_Mass
       xbrem : nbrem
-  Corrected and L0(nPVs):
+  Corrected and L0:
     cuts:
       npv   : nPVs < 4
       L0    : max_ll_pt > 2500
@@ -28,11 +39,13 @@ saving:
   plt_dir : plots/comparison/resolution
 plots:
   xbrem:
-    binning    : [0, 3, 3]
+    binning    : [-0.5, 3.5, 5]
     yscale     : linear
     labels     : ['n$\gamma$', 'Brem Fraction']
     name       : brem_fraction 
     normalized : true
+    styling :          
+      <<: *styles
   bmass:
     binning    : [4500, 6500, 40]
     yscale     : linear
@@ -45,19 +58,21 @@ plots:
       ls    : ':'
       c     : green
   nLongTracks:
-    binning    : [0, 400, 20]
+    binning    : [0, 20, 20]
     yscale     : linear
     labels     : ['Long Tracks', 'Normalized']
     name       : long_tracks
     normalized : true
     styling :          
-      linestyle: '-'
+      <<: *styles
   nPVs:
     binning    : [1, 7, 6]
     yscale     : linear
     labels     : ['nPVs', 'Normalized']
     name       : npv 
     normalized : true
+    styling :          
+      <<: *styles
 plugin:
   fwhm:
     bmass:
