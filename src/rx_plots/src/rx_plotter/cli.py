@@ -10,13 +10,13 @@ import mplhep
 import pandas              as pnd
 import matplotlib.pyplot   as plt
 
-from pathlib               import Path
-from dmu                   import LogStore
-from rx_data.rdf_getter    import RDFGetter
-from rx_common             import Channel, Component, Cuts, Project, Trigger, Qsq
-from rx_common             import info
-from rx_plotter.refitting  import plot      as refitting_plot
-from rx_selection          import selection as sel
+from pathlib      import Path
+from dmu          import LogStore
+from rx_data      import RDFGetter
+from rx_common    import Channel, Component, Cuts, Project, Trigger, Qsq
+from rx_common    import info
+from rx_plotter   import refitting_plot
+from rx_selection import selection as sel
 
 plt.style.use(mplhep.style.LHCb2) # type: ignore
 app = typer.Typer(
