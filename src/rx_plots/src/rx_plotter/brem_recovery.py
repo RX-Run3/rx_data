@@ -83,9 +83,9 @@ class BremRecovery:
 
             str_path = str(corr_path)
             org_path = str_path.replace('Corrected', 'Original')
-            path     = Path(org_path)
+            path_org = Path(org_path)
 
-            self._add_row(df = df, path = path, kind = 'Original')
+            self._add_row(df = df, path = path_org, kind = 'Original')
 
         for brem, df_brem in df.groupby('brem'):
             ax = None
@@ -103,5 +103,9 @@ class BremRecovery:
             plt.ylim(bottom = 0, top = 800)
             plt.ylabel('FWHM [MeV]')
             plt.grid()
-            plt.show()
+
+            img_path = path / f'brem_{brem:03}.png'
+            log.info(f'Saving to: {img_path}')
+            plt.savefig(img_path)
+            plt.close()
 # ----------------------
