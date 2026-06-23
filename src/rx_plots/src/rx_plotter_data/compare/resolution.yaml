@@ -3,16 +3,19 @@ general:
 definitions:
   max_ll_pt   : TMath::Max(L1_TRACK_PT, L2_TRACK_PT)
 selection:
-  mass  : B_const_mass_M > 5160
+  mass  : B_const_mass_M > 5160  # Remove part reco
+  cmb   : mva_cmb > 0.99         # Remove combinatorial
 comparison:
   Original:
     vars:
       bmass :    B_M
       jmass : Jpsi_M
+      xbrem : nbrem_org
   Corrected:
     vars:
       bmass : B_Mass
       jmass : Jpsi_Mass
+      xbrem : nbrem
   Corrected and L0(nPVs):
     cuts:
       npv   : nPVs < 4
@@ -20,9 +23,16 @@ comparison:
     vars:
       bmass : B_Mass
       jmass : Jpsi_Mass
+      xbrem : nbrem
 saving:
   plt_dir : plots/comparison/resolution
 plots:
+  xbrem:
+    binning    : [0, 3, 3]
+    yscale     : linear
+    labels     : ['n$\gamma$', 'Brem Fraction']
+    name       : brem_fraction 
+    normalized : true
   bmass:
     binning    : [4500, 6500, 40]
     yscale     : linear
