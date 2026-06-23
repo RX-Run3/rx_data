@@ -20,6 +20,7 @@ from rx_selection          import selection as sel
 from rx_classifier         import utilities as cut
 
 log=LogStore.add_logger('rx_classifier:compare_classifier')
+plt.style.use(mplhep.style.LHCb2) # type: ignore
 # -------------------------------
 class Data:
     '''
@@ -32,7 +33,6 @@ class Data:
     out_dir : str
 
     cvp = CVPerformance()
-    plt.style.use(mplhep.style.LHCb2)
 # -------------------------------
 def _initialize():
     LogStore.set_level('rx_data:rdf_getter'             , 30)
@@ -74,7 +74,7 @@ def _get_models(path : str) -> list[CVClassifier]:
 
     return l_model
 # -------------------------------
-def _override_selection(cfg : dict, d_sel : dict[str,str]) -> dict[str,str]:
+def _override_selection(cfg : dict, d_sel : dict[Cuts,str]) -> dict[Cuts,str]:
     if 'selection' not in cfg:
         return d_sel
 
@@ -88,7 +88,7 @@ def _apply_selection(rdf : RDF.RNode, cfg : dict) -> RDF.RNode:
     q2bin = cfg['q2bin']
     trig  = cfg['trigger']
 
-    d_sel = sel.selection(
+    d_sel : dict[Cuts,str] = sel.selection(
             q2bin  =q2bin,
             trigger=trig,
             process=name,
@@ -114,13 +114,13 @@ def _get_rdf(cfg : dict) -> RDF.RNode:
 
     with RDFGetter.custom_friends(versions=d_vers):
         gtr  = RDFGetter(sample=name, trigger=trig)
-        rdf  = gtr.get_rdf()
+        rdf  = gtr.get_rdf(per_file = False)
 
     if 'MuMu' in trig:
         rdf = cut.add_muon_columns(rdf=rdf)
 
     rdf  = _apply_selection(rdf, cfg)
-    if Data.nev is None:
+    if Data.nev == -1:
         return rdf
 
     rdf = rdf.Filter(f'rdfentry_ < {Data.nev}')
@@ -132,7 +132,12 @@ def _plot_roc(kind : str, cfg : dict) -> None:
     rdf_bkg = _get_rdf(cfg['samples']['background'])
     color   = cfg['color']
     models  = _get_models(cfg['model'])
-    auc     = Data.cvp.plot_roc(sig=rdf_sig, bkg=rdf_bkg, model=models, name=kind, color=color)
+    auc     = Data.cvp.plot_roc(
+        sig  = rdf_sig, 
+        bkg  = rdf_bkg, 
+        model= models, 
+        name = kind, 
+        color= color)
 
     log.info(f'For {kind} found AUC: {auc:.3f}')
 # -------------------------------
