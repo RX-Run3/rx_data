@@ -17,9 +17,11 @@ from rx_common    import Channel, Component, Cuts, Project, Trigger, Qsq
 from rx_common    import info
 from rx_plotter   import refitting_plot
 from rx_selection import selection as sel
+from rx_plotter   import BremRecovery
 
 plt.style.use(mplhep.style.LHCb2) # type: ignore
-app = typer.Typer(
+_ANADIR = Path(os.environ['ANADIR'])
+app     = typer.Typer(
     help            = __doc__,
     context_settings= {"help_option_names": ["-h", "--help"]})
 log = LogStore.add_logger('rx_plots:cli')
@@ -31,10 +33,9 @@ def sumarize_brem_recovery(
     '''
     This will create summary plots for custom brem recovery
     '''
-    brc = BremRecovery(
-        component = component, 
-        trigger   = trigger)
-    brc.resolution()
+    path = _ANADIR / f'plots/comparison/resolution_v1/{component}/{trigger.value}'
+    brc  = BremRecovery()
+    brc.resolution(path = path)
 # ----------------------
 @app.command()
 def refitting(
