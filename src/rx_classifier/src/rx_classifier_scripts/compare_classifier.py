@@ -4,19 +4,18 @@ Script in charge of comparing different classifiers' performances
 import os
 import glob
 import argparse
-from importlib.resources   import files
-
 import joblib
 import mplhep
 import matplotlib.pyplot as plt
 
+from importlib.resources   import files
 from ROOT                  import RDF # type: ignore 
-from dmu.ml.cv_performance import CVPerformance
-from dmu.ml.cv_classifier  import CVClassifier
-
-from dmu.logging.log_store import LogStore
+from dmu                   import LogStore
+from dmu.ml                import CVPerformance
+from dmu.ml                import CVClassifier
 from dmu.generic           import utilities as gut
-from rx_data.rdf_getter    import RDFGetter
+from rx_common             import Cuts
+from rx_data               import RDFGetter
 from rx_selection          import selection as sel
 from rx_classifier         import utilities as cut
 
