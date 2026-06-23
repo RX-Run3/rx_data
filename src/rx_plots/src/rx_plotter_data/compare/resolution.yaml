@@ -58,7 +58,7 @@ plots:
       ls    : ':'
       c     : green
   nLongTracks:
-    binning    : [0, 100, 100]
+    binning    : [0, 150, 30]
     yscale     : linear
     labels     : ['Long Tracks', 'Normalized']
     name       : long_tracks
