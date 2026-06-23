@@ -1,12 +1,12 @@
 '''
 Module used to store utility functions
 '''
-from ROOT                  import RDataFrame
+from ROOT                  import RDF # type: ignore
 from dmu.logging.log_store import LogStore
 
 log=LogStore.add_logger('rx_classifier:utilities')
 #---------------------------------
-def add_muon_columns(rdf : RDataFrame) -> RDataFrame:
+def add_muon_columns(rdf : RDF.RNode) -> RDF.RNode:
     '''
     Defines columns in dataframe, needed only for muon channel:
 

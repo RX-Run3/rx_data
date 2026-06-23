@@ -10,7 +10,7 @@ import joblib
 import mplhep
 import matplotlib.pyplot as plt
 
-from ROOT                  import RDataFrame
+from ROOT                  import RDF # type: ignore 
 from dmu.ml.cv_performance import CVPerformance
 from dmu.ml.cv_classifier  import CVClassifier
 
@@ -84,7 +84,7 @@ def _override_selection(cfg : dict, d_sel : dict[str,str]) -> dict[str,str]:
 
     return d_sel
 # -------------------------------
-def _apply_selection(rdf : RDataFrame, cfg : dict) -> RDataFrame:
+def _apply_selection(rdf : RDF.RNode, cfg : dict) -> RDF.RNode:
     name  = cfg['name']
     q2bin = cfg['q2bin']
     trig  = cfg['trigger']
@@ -103,7 +103,7 @@ def _apply_selection(rdf : RDataFrame, cfg : dict) -> RDataFrame:
 
     return rdf
 # -------------------------------
-def _get_rdf(cfg : dict) -> RDataFrame:
+def _get_rdf(cfg : dict) -> RDF.RNode:
     name = cfg['name']
     trig = cfg['trigger']
 

@@ -3,7 +3,7 @@ This module contains the class CVPerformance
 '''
 # pylint: disable=too-many-positional-arguments, too-many-arguments
 
-from ROOT                  import RDataFrame
+from ROOT                  import RDF # type: ignore
 from dmu.ml.cv_classifier  import CVClassifier
 from dmu.ml.cv_predict     import CVPredict
 from dmu.ml.train_mva      import TrainMva
@@ -22,8 +22,8 @@ class CVPerformance:
             self,
             name  : str,
             color : str,
-            sig   : RDataFrame,
-            bkg   : RDataFrame,
+            sig   : RDF.RNode,
+            bkg   : RDF.RNode,
             model : list[CVClassifier] ) -> float:
         '''
         Method in charge of picking up model and data and plotting ROC curve
