@@ -53,7 +53,9 @@ class CompareTask(law.Task):
         PLTDIR = _ANADIR / f'plots/comparison/{cfg.args.config}'
         names  = cfg.output[cfg.args.config]
 
-        dir_path = PLTDIR / f'{cfg.args.sample}/{cfg.args.trigger}/{cfg.args.q2_bin}/{cfg.args.brem}_{cfg.args.block}/drop_mva'
+        mva_name = 'drop_mva' if cfg.args.mva  == 0  else 'with_mva'
+        brem_name= 'all'      if cfg.args.brem == -1 else cfg.args.brem
+        dir_path = PLTDIR / f'{cfg.args.sample}/{cfg.args.trigger}/{cfg.args.q2_bin}/{brem_name}_{cfg.args.block}/{mva_name}'
 
         return [ law.LocalFileTarget(dir_path / name) for name in names ]
     # -------------------------------------
@@ -96,8 +98,8 @@ class WrapCompare(law.WrapperTask):
                         cfg['substr' ] = None 
                         cfg['brem'   ] = brem 
                         cfg['block'  ] = block
-                        cfg['nomva'  ] = True
-                        cfg['emulate'] = False
+                        cfg['mva'    ] = 1 
+                        cfg['emulate'] = 1 
 
                         output   = OmegaConf.to_container(config.output, resolve=True)
                         json_str = json.dumps({'args' : cfg, 'output' : output}) 
