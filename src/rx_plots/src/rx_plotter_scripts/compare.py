@@ -43,8 +43,8 @@ class Config:
     config  : str
     brem    : int
     block   : int
-    nomva   : bool
-    emulate : bool
+    mva     : int 
+    emulate : int
     ncores  : int
 
     d_reso  = {Qsq.jpsi : 'B_const_mass_M', Qsq.psi2 : 'B_const_mass_psi2S_M'}
@@ -70,7 +70,7 @@ def _get_plot_cfg(cfg : Config) -> DictConfig:
     # If user does not request emulation
     # Drop these plots
     run12_key = 'Corrected and L0(nPVs)'
-    if not cfg.emulate and cfg.config == 'resolution':
+    if cfg.emulate == 0 and cfg.config == 'resolution':
         log.info('Not emulating Run1/2 conditions')
         del cfg_plt.comparison[run12_key]
     else:
@@ -190,9 +190,10 @@ def _get_selection(
     '''
     d_sel = sel.selection(trigger=cfg.trigger, q2bin=cfg.q2_bin, process=cfg.sample)
 
-    if cfg.nomva:
+    if cfg.mva == 0:
         log.info('Removing MVA requirement')
         d_sel[Cuts.cmb] = '(1)'
+        d_sel[Cuts.prc] = '(1)'
 
     if 'selection' in cfg_plt:
         d_cut = cfg_plt.selection
@@ -216,16 +217,16 @@ def _cfg_from_args() -> Config:
     Configuration instance built from arguments passed by user
     '''
     parser = argparse.ArgumentParser(description='Script used to make comparison plots between distributions in the same dataframe')
-    parser.add_argument('-q', '--q2bin'  , type=Qsq      , help='q2 bin' , choices=list(Qsq), required=True)
     parser.add_argument('-s', '--sample' , type=Component, help='Sample' , required=True)
-    parser.add_argument('-t', '--trigger', type=Trigger  , help='Trigger' , required=True)
+    parser.add_argument('-t', '--trigger', type=Trigger  , help='Trigger', required=True)
+    parser.add_argument('-q', '--q2bin'  , type=Qsq      , help='q2 bin' , choices=list(Qsq), required=True)
     parser.add_argument('-c', '--config' , type=str      , help='Configuration', required=True)
     parser.add_argument('-b', '--brem'   , type=int      , help='Brem category, 12 = 1 or 2, -1 = all' , choices=[-1, 0, 1, 2, 12], required=True)
     parser.add_argument('-B', '--block'  , type=int      , help='Block to which data belongs, -1 will put all the data together', choices=_BLOCKS, required=True)
     parser.add_argument('-l', '--log_lvl', type=int      , help='Logging level', choices=list(LogLevels), default=LogLevels.info)
     parser.add_argument('-n', '--ncores' , type=int      , help='Number of cores if using multithreading', default=1)
-    parser.add_argument('-r', '--nomva'  ,                 help='If used, it will remove the MVA requirement', action='store_true')
-    parser.add_argument('-e', '--emulate',                 help='If used, it will emulate Run1/2 conditions', action='store_true')
+    parser.add_argument('-m', '--mva'    , type=int      , help='If 1, will use mva, otherwise will drop it', choices=[0, 1])
+    parser.add_argument('-e', '--emulate', type=int      , help='If 1, will emulate Run1/2 conditions'      , choices=[0, 1])
     args = parser.parse_args()
 
     LogStore.set_level('rx_plots:compare'      , args.log_lvl)
@@ -263,7 +264,7 @@ def _get_out_dir(
     block = 'all' if cfg.block== -1 else str(cfg.block)
 
     out_dir = cfg.ana_dir / plt_dir / f'{cfg.sample}/{cfg.trigger.value}/{cfg.q2_bin}/{brem}_{block}'
-    out_dir = out_dir / 'drop_mva' if cfg.nomva else out_dir / 'with_mva'
+    out_dir = out_dir / 'drop_mva' if cfg.mva == 0 else out_dir / 'with_mva'
 
     return out_dir
 # ---------------------------------
@@ -337,7 +338,7 @@ def _omega_conf_to_config(settings : DictConfig) -> Config:
         config = settings.config,
         brem   = settings.brem,
         block  = settings.block,
-        nomva  = settings.nomva,
+        mva    = settings.mva,
         emulate= settings.emulate,
         ncores = 1) # Use one core per run with workflows
 # ---------------------------------
