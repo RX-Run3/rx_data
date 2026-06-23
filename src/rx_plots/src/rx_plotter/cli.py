@@ -26,11 +26,14 @@ log = LogStore.add_logger('rx_plots:cli')
 # ----------------------
 @app.command()
 def sumarize_brem_recovery(
-    project : Project = typer.Option(..., '--project', '-p', help='Either rk or rkst')) -> None: # noqa: B008
+    trigger   : Trigger   = typer.Option(..., '--trigger'  , '-t', help='Hlt2 trigger'     ),          # noqa: B008
+    component : Component = typer.Option(..., '--component', '-c', help='MC or data sample')) -> None: # noqa: B008
     '''
     This will create summary plots for custom brem recovery
     '''
-    brc = BremRecovery(project = project)
+    brc = BremRecovery(
+        component = component, 
+        trigger   = trigger)
     brc.resolution()
 # ----------------------
 @app.command()
