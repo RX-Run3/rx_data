@@ -21,7 +21,7 @@ class BremRecovery:
     associated to brem recovery
     '''
     # ----------------------
-    def _get_brem_block(self, path : Path) -> tuple[str,int]:
+    def _get_brem_block_mva(self, path : Path) -> tuple[str,int, str]:
         '''
         Parameters
         -------------
@@ -29,7 +29,7 @@ class BremRecovery:
 
         Returns
         -------------
-        Tuple with brem and block associated
+        Tuple with brem, block and mva flag associated
         '''
         match = re.search(_BLOCK_BREM_RGX, str(path))
         if not match:
@@ -38,7 +38,15 @@ class BremRecovery:
         brem  = match.group(1)
         block = match.group(2)
 
-        return brem, int(block)
+        path_str = str(path)
+        if   'with_mva' in path_str:
+            mva = 'with_mva'
+        elif 'drop_mva' in path_str:
+            mva = 'drop_mva'
+        else:
+            raise ValueError(f'Cannot find mva string in: {path}')
+
+        return brem, int(block), mva
     # ----------------------
     def _add_row(
         self, 
@@ -52,12 +60,13 @@ class BremRecovery:
         path: Path to JSON file with values
         kind: Either corrected or not, neededin dataframe
         '''
-        brem, block = self._get_brem_block(path = path)
-        data        = gut.load_json(path = path)
-        row         = {
+        brem, block, mva = self._get_brem_block_mva(path = path)
+        data             = gut.load_json(path = path)
+        row              = {
             'kind' : kind, 
             'brem' : brem, 
             'block': block,
+            'mva'  : mva,
             'fwhm' : data['fwhm'],
         }
 
@@ -77,7 +86,7 @@ class BremRecovery:
         npath = len(paths)
         log.info(f'Found {npath} paths')
 
-        df = pnd.DataFrame(columns=['kind', 'brem', 'block', 'fwhm'])
+        df = pnd.DataFrame(columns=['kind', 'brem', 'block', 'fwhm', 'mva'])
         for corr_path in paths:
             self._add_row(df = df, path = corr_path, kind = 'Corrected')
 
@@ -88,24 +97,25 @@ class BremRecovery:
             self._add_row(df = df, path = path_org, kind = 'Original')
 
         for brem, df_brem in df.groupby('brem'):
-            ax = None
-            for kind, df_kind in df_brem.groupby('kind'):
-                df_sort = df_kind.sort_values(by = 'block')
-                ax = df_sort.plot(
-                    x         ='block', 
-                    y         ='fwhm', 
-                    label     = kind, 
-                    marker    = 'o',
-                    linestyle = 'none',
-                    ax        = ax)
+            for mva, df_mva in df_brem.groupby('mva'):
+                ax = None
+                for kind, df_kind in df_mva.groupby('kind'):
+                    df_sort = df_kind.sort_values(by = 'block')
+                    ax = df_sort.plot(
+                        x         ='block', 
+                        y         ='fwhm', 
+                        label     = kind, 
+                        marker    = 'o',
+                        linestyle = 'none',
+                        ax        = ax)
 
-            plt.title(rf'${brem}\gamma$')
-            plt.ylim(bottom = 0, top = 800)
-            plt.ylabel('FWHM [MeV]')
-            plt.grid()
+                plt.title(rf'${brem}\gamma$')
+                plt.ylim(bottom = 0, top = 800)
+                plt.ylabel('FWHM [MeV]')
+                plt.grid()
 
-            img_path = path / f'brem_{brem:03}.png'
-            log.info(f'Saving to: {img_path}')
-            plt.savefig(img_path)
-            plt.close()
+                img_path = path / f'{mva}_brem_{brem:03}.png'
+                log.info(f'Saving to: {img_path}')
+                plt.savefig(img_path)
+                plt.close()
 # ----------------------
