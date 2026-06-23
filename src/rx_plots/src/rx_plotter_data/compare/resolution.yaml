@@ -39,7 +39,7 @@ saving:
   plt_dir : plots/comparison/resolution
 plots:
   xbrem:
-    binning    : [-0.5, 3.5, 5]
+    binning    : [0, 3, 3]
     yscale     : linear
     labels     : ['n$\gamma$', 'Brem Fraction']
     name       : brem_fraction 
@@ -58,7 +58,7 @@ plots:
       ls    : ':'
       c     : green
   nLongTracks:
-    binning    : [0, 20, 20]
+    binning    : [0, 100, 100]
     yscale     : linear
     labels     : ['Long Tracks', 'Normalized']
     name       : long_tracks
