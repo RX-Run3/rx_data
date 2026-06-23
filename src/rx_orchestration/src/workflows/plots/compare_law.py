@@ -16,8 +16,9 @@ from dmu.logging.log_store import LogStore
 log=LogStore.add_logger('rx_orchestration:compare_law')
 _ANADIR : Final[Path]      = Path(os.environ['ANADIR'])
 _BLOCKS : Final[list[int]] = [1, 2, 3, 4, 5, 6, 7, 8]
-_BREMS  : Final[list[int]] = [1, 2]
-_KINDS  : Final[list[str]] = ['resolution', 'smear']
+_BREMS  : Final[list[int]] = [-1, 1, 2]
+_KINDS  : Final[list[str]] = ['resolution'] #, 'smear']
+_MVAS   : Final[list[int]] = [0, 1]
 # -------------------------------------
 class CompareTask(law.Task):
     config_string : str = Parameter() # type: ignore
@@ -90,20 +91,23 @@ class WrapCompare(law.WrapperTask):
             for block in _BLOCKS:
                 for kind in _KINDS:
                     for brem in _BREMS:
-                        cfg            = {}
-                        cfg['q2_bin' ] = q2bin 
-                        cfg['sample' ] = sample
-                        cfg['trigger'] = trigger
-                        cfg['config' ] = kind 
-                        cfg['substr' ] = None 
-                        cfg['brem'   ] = brem 
-                        cfg['block'  ] = block
-                        cfg['mva'    ] = 1 
-                        cfg['emulate'] = 1 
+                        for mva in _MVAS:
+                            cfg            = {}
+                            cfg['q2_bin' ] = q2bin 
+                            cfg['sample' ] = sample
+                            cfg['trigger'] = trigger
+                            cfg['config' ] = kind 
+                            cfg['substr' ] = None 
+                            cfg['brem'   ] = brem 
+                            cfg['block'  ] = block
+                            cfg['mva'    ] = mva
+                            cfg['emulate'] = 1 
 
-                        output   = OmegaConf.to_container(config.output, resolve=True)
-                        json_str = json.dumps({'args' : cfg, 'output' : output}) 
-                        l_cfg.append(json_str)
+                            output   = OmegaConf.to_container(config.output, resolve=True)
+                            json_str = json.dumps({'args' : cfg, 'output' : output}) 
+                            l_cfg.append(json_str)
+        ntask = len(l_cfg)
+        log.info(f'Found {ntask} tasks')
 
         return l_cfg 
     # --------------------------
