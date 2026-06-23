@@ -41,3 +41,4 @@ run123              = "rx_plotter_scripts.run123:main"
 
 [tool.ruff]
 select = ["F", "PL", "B"]
+ignore = ['PLR0913']
