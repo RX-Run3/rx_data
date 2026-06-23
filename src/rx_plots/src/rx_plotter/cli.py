@@ -13,7 +13,7 @@ import matplotlib.pyplot   as plt
 from pathlib               import Path
 from dmu                   import LogStore
 from rx_data.rdf_getter    import RDFGetter
-from rx_common             import Trigger, Qsq
+from rx_common             import Channel, Component, Cuts, Project, Trigger, Qsq
 from rx_common             import info
 from rx_plotter.refitting  import plot      as refitting_plot
 from rx_selection          import selection as sel
@@ -30,8 +30,8 @@ def refitting(
     log_lvl : int     = typer.Option(20 , '--log_lvl', '-l', help='Logging level'),
     nthread : int     = typer.Option(4  , '--nthread', '-n', help='Number of threads'),
     project : str     = typer.Option(..., '--project', '-p', help='E.g. rk, rkst'),
-    qsq     : Qsq     = typer.Option(..., '--qsq'    , '-q', help='q2 bin'),
-    trigger : Trigger = typer.Option(..., '--trigger', '-t')) -> None:
+    qsq     : Qsq     = typer.Option(..., '--qsq'    , '-q', help='q2 bin'), # noqa: B008
+    trigger : Trigger = typer.Option(..., '--trigger', '-t')) -> None:       # noqa: B008
     '''
     This will compare refitted and non-refitted data
     '''
@@ -50,18 +50,17 @@ def refitting(
 # ----------------------
 @app.command()
 def control_region(
-    chan : str = typer.Option(... , '--chan', '-c', help='E.g. EE'      ),
-    kind : str = typer.Option(... , '--kind', '-k', help='E.g, OS, SS, EXT'),
-    mass : str = typer.Option(... , '--mass', '-m', help='E.g, B_Mass_hdkk, B_Mass_hdpipi'),
-    proj : str = typer.Option(... , '--proj', '-p', help='E.g. RK'      ),
-    qsq  : str = typer.Option(... , '--qsq' , '-q', help='E.g. central' )) -> None:
+    kind : str     = typer.Option(... , '--kind', '-k', help='E.g, OS, SS, EXT'),
+    mass : str     = typer.Option(... , '--mass', '-m', help='E.g, B_Mass_hdkk, B_Mass_hdpipi'),
+    chan : Channel = typer.Option(... , '--chan', '-c', help='E.g. EE'      ),          # noqa: B008
+    proj : Project = typer.Option(... , '--proj', '-p', help='E.g. RK'      ),          # noqa: B008
+    qsq  : Qsq     = typer.Option(... , '--qsq' , '-q', help='E.g. central' )) -> None: # noqa: B008
     '''
     This can be used to plot control regions for data
     '''
     trig   = info.get_trigger(project = proj, channel = chan, kind = kind)
-    sample = 'DATA_24*'
 
-    gtr = RDFGetter(sample = Sample(sample), trigger = Trigger(trig))
+    gtr = RDFGetter(sample = Component.data_24, trigger = Trigger(trig))
     rdf = gtr.get_rdf(per_file = False)
 
     if   mass == 'B_Mass_hdpipi':
@@ -73,13 +72,18 @@ def control_region(
 
     l1_cut = 'L1_ProbNNe < 0.2 || L1_PIDe < 3.0'
     l2_cut = 'L2_ProbNNe < 0.2 || L2_PIDe < 3.0'
-    mv_cut = '(mva_cmb > 0.50) && (mva_prc > 0.50)'
 
-    with sel.custom_selection(d_sel = {'pid_l' : f'({l1_cut}) && ({l2_cut}) && ({tg_cut})', 'bdt' : mv_cut}):
+    selection : dict[Cuts, str] = {
+        Cuts.pid_l : f'({l1_cut}) && ({l2_cut}) && ({tg_cut})', 
+        Cuts.cmb   : 'mva_cmb > 0.5',
+        Cuts.prc   : 'mva_prc > 0.5',
+    }
+
+    with sel.custom_selection(d_sel = selection):
         rdf = sel.apply_full_selection(
             rdf     = rdf, 
             q2bin   = qsq, 
-            process = sample, 
+            process = Component.data_24, 
             out_path= Path('./cutflow'),
             trigger = trig)
 
@@ -88,7 +92,9 @@ def control_region(
     lmass = {'B_Mass_hdpipi' : r'$M_{e\to\pi}$', 'B_Mass_hdkk' : r'$M_{e\to K}$'}[mass]
     label = {'RK' : f'{lmass}$(B^+)$[MeV]' , 'RKst' : f'{lmass}$(B^0)$[MeV]'}[proj]
 
-    title = f'{l1_cut}\n {l2_cut}\n {mv_cut}\n {tg_cut}' 
+    cmb_cut= selection[Cuts.cmb]
+    prc_cut= selection[Cuts.prc]
+    title  = f'{l1_cut}\n {l2_cut}\n {prc_cut}\n {cmb_cut}\n {tg_cut}' 
     plt.hist(arr_mass, bins = 100, range=(5000, 5500), label = 'Control region', color='blue', alpha=0.5)
     plt.axvline(x=5280, color='red', linestyle=':', label = 'PDG')
     plt.title(title)
@@ -104,8 +110,8 @@ def control_region(
 # ----------------------
 @app.command()
 def block_fraction_vs_q2(
-    sample : Sample = typer.Option(..., '--sample' , '-s', help='MC sample, e.g. bpkpee'),
-    trigger: Trigger= typer.Option(..., '--trigger', '-t', help='Trigger, e.g. rk_os_ee')) -> None:
+    sample : Component = typer.Option(..., '--sample' , '-s', help='MC sample, e.g. bpkpee'),          # noqa: B008
+    trigger: Trigger   = typer.Option(..., '--trigger', '-t', help='Trigger, e.g. rk_os_ee')) -> None: # noqa: B008
     '''
     Used to plot block fraction in MC vs q2 
     '''
@@ -141,7 +147,7 @@ def _plot_block_fraction_vs_q2(df : pnd.DataFrame) -> None:
     plt.show()
 # ----------------------
 def _calculate_stats(
-    sample     : Sample,
+    sample     : Component,
     trigger    : Trigger,
     cache_path : Path) -> pnd.DataFrame:
     '''
@@ -161,7 +167,7 @@ def _calculate_stats(
     gtr_reco = RDFGetter(sample = sample, trigger = trigger, tree = 'DecayTree')
     rdf_reco = gtr_reco.get_rdf(per_file = False)
 
-    with sel.custom_selection(d_sel = {'q2' : '(1)'}):
+    with sel.custom_selection(d_sel = {Cuts.q2 : '(1)'}):
         rdf_reco = sel.apply_full_selection(
             rdf     = rdf_reco, 
             process = sample,
