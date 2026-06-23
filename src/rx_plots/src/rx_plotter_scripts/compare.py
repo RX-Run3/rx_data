@@ -41,7 +41,6 @@ class Config:
     sample  : Component 
     trigger : Trigger 
     config  : str
-    substr  : str
     brem    : int
     block   : int
     nomva   : bool
@@ -221,7 +220,6 @@ def _cfg_from_args() -> Config:
     parser.add_argument('-s', '--sample' , type=Component, help='Sample' , required=True)
     parser.add_argument('-t', '--trigger', type=Trigger  , help='Trigger' , required=True)
     parser.add_argument('-c', '--config' , type=str      , help='Configuration', required=True)
-    parser.add_argument('-x', '--substr' , type=str      , help='Substring that must be contained in path, e.g. magup')
     parser.add_argument('-b', '--brem'   , type=int      , help='Brem category, 12 = 1 or 2, -1 = all' , choices=[-1, 0, 1, 2, 12], required=True)
     parser.add_argument('-B', '--block'  , type=int      , help='Block to which data belongs, -1 will put all the data together', choices=_BLOCKS, required=True)
     parser.add_argument('-l', '--log_lvl', type=int      , help='Logging level', choices=[10, 20, 30, 40], default=20)
@@ -236,7 +234,6 @@ def _cfg_from_args() -> Config:
     sample = args.sample,
     trigger= args.trigger,
     config = args.config,
-    substr = args.substr,
     brem   = args.brem,
     block  = args.block,
     nomva  = args.nomva,
@@ -263,9 +260,6 @@ def _get_out_dir(
 
     out_dir = cfg.ana_dir / plt_dir / f'{cfg.sample}/{cfg.trigger.value}/{cfg.q2_bin}/{brem}_{block}'
     out_dir = out_dir / 'drop_mva' if cfg.nomva else out_dir / 'with_mva'
-
-    if cfg.substr is not None:
-        out_dir = out_dir / cfg.substr
 
     return out_dir
 # ---------------------------------
@@ -337,7 +331,6 @@ def _omega_conf_to_config(settings : DictConfig) -> Config:
         sample = Component(settings.sample),
         trigger= Trigger(settings.trigger),
         config = settings.config,
-        substr = settings.substr,
         brem   = settings.brem,
         block  = settings.block,
         nomva  = settings.nomva,
