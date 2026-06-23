@@ -11,7 +11,6 @@ from pydantic              import BaseModel, RootModel
 log=LogStore.add_logger('ap_utilities:sample_config')
 
 Block = Literal[
-'block_12',
 'block_1', 'block_2', 'block_3', 'block_4',
 'block_5', 'block_6', 'block_7', 'block_8',
 ]
