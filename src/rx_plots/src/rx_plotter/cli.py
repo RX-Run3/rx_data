@@ -33,7 +33,7 @@ def sumarize_brem_recovery(
     '''
     This will create summary plots for custom brem recovery
     '''
-    path = _ANADIR / f'plots/comparison/resolution_v1/{component}/{trigger.value}'
+    path = _ANADIR / f'plots/comparison/resolution/{component}/{trigger.value}'
     brc  = BremRecovery()
     brc.resolution(path = path)
 # ----------------------
