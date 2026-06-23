@@ -217,13 +217,13 @@ def _cfg_from_args() -> Config:
     Configuration instance built from arguments passed by user
     '''
     parser = argparse.ArgumentParser(description='Script used to make comparison plots between distributions in the same dataframe')
-    parser.add_argument('-q', '--q2bin'  , type=Qsq      , help='q2 bin' , choices=['low', 'central', 'jpsi', 'psi2', 'high'], required=True)
+    parser.add_argument('-q', '--q2bin'  , type=Qsq      , help='q2 bin' , choices=list(Qsq), required=True)
     parser.add_argument('-s', '--sample' , type=Component, help='Sample' , required=True)
     parser.add_argument('-t', '--trigger', type=Trigger  , help='Trigger' , required=True)
     parser.add_argument('-c', '--config' , type=str      , help='Configuration', required=True)
     parser.add_argument('-b', '--brem'   , type=int      , help='Brem category, 12 = 1 or 2, -1 = all' , choices=[-1, 0, 1, 2, 12], required=True)
     parser.add_argument('-B', '--block'  , type=int      , help='Block to which data belongs, -1 will put all the data together', choices=_BLOCKS, required=True)
-    parser.add_argument('-l', '--log_lvl', type=int      , help='Logging level', choices=[10, 20, 30, 40], default=20)
+    parser.add_argument('-l', '--log_lvl', type=int      , help='Logging level', choices=list(LogLevels), default=LogLevels.info)
     parser.add_argument('-n', '--ncores' , type=int      , help='Number of cores if using multithreading', default=1)
     parser.add_argument('-r', '--nomva'  ,                 help='If used, it will remove the MVA requirement', action='store_true')
     parser.add_argument('-e', '--emulate',                 help='If used, it will emulate Run1/2 conditions', action='store_true')
