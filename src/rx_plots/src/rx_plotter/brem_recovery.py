@@ -97,6 +97,8 @@ class BremRecovery:
             self._add_row(df = df, path = path_org, kind = 'Original')
 
         for brem, df_brem in df.groupby('brem'):
+            brem_str = f'{int(brem):03d}' if brem.isnumeric() else brem # type: ignore
+
             for mva, df_mva in df_brem.groupby('mva'):
                 ax = None
                 for kind, df_kind in df_mva.groupby('kind'):
@@ -114,7 +116,7 @@ class BremRecovery:
                 plt.ylabel('FWHM [MeV]')
                 plt.grid()
 
-                img_path = path / f'{mva}_brem_{brem:03}.png'
+                img_path = path / f'{mva}_brem_{brem_str}.png'
                 log.info(f'Saving to: {img_path}')
                 plt.savefig(img_path)
                 plt.close()
