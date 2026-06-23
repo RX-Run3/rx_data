@@ -25,6 +25,15 @@ app = typer.Typer(
 log = LogStore.add_logger('rx_plots:cli')
 # ----------------------
 @app.command()
+def sumarize_brem_recovery(
+    project : Project = typer.Option(..., '--project', '-p', help='Either rk or rkst')) -> None: # noqa: B008
+    '''
+    This will create summary plots for custom brem recovery
+    '''
+    brc = BremRecovery(project = project)
+    brc.resolution()
+# ----------------------
+@app.command()
 def refitting(
     max_evt : int     = typer.Option(-1 , '--max_evt', '-m', help='Maximum number of entries'),
     log_lvl : int     = typer.Option(20 , '--log_lvl', '-l', help='Logging level'),
