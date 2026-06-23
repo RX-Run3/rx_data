@@ -12,7 +12,7 @@ from dmu         import LogStore
 
 log=LogStore.add_logger('rx_plotter:brem_recovery')
 
-_BLOCK_BREM_RGX : Final[str] = r'(\d)_(\d)'
+_BLOCK_BREM_RGX : Final[str] = r'(\d|all)_(\d)'
 _RESO_WC        : Final[str] = '**/fwhm_bmass_Corrected.json'
 # ----------------------
 class BremRecovery:
@@ -21,7 +21,7 @@ class BremRecovery:
     associated to brem recovery
     '''
     # ----------------------
-    def _get_brem_block(self, path : Path) -> tuple[int,int]:
+    def _get_brem_block(self, path : Path) -> tuple[str,int]:
         '''
         Parameters
         -------------
@@ -38,7 +38,7 @@ class BremRecovery:
         brem  = match.group(1)
         block = match.group(2)
 
-        return int(brem), int(block)
+        return brem, int(block)
     # ----------------------
     def _add_row(
         self, 
