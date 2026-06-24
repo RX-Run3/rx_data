@@ -1,0 +1,28 @@
+datasets:
+  nominal:
+    friends:
+      brem_track_2 : v4
+  veto_v1:
+    friends:
+      brem_track_2 : v5
+  veto_v2:
+    friends:
+      brem_track_2 : v6
+# ------------------------------
+selection: {}
+general:
+  size : [15, 10]
+plots:
+  bmass:
+    binning    : [4500, 6500, 40]
+    yscale     : linear
+    labels     : ['$M(B^+)$', 'Normalized']
+    name       : bmass_correction
+    normalized : true
+    vline :
+      x     : 5280
+      label : $B$
+      ls    : ':'
+      c     : green
+saving:
+  plt_dir : plots/comparison/resolution
