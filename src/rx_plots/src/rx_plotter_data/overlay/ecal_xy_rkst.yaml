@@ -19,7 +19,7 @@ plots:
     B_Mass:
         binning    : [4500, 6000, 100]
         yscale     : 'linear'
-        labels     : ['$M(B^0)$', 'Normalized']
+        labels     : ['$M_{corr}(B^0)$', 'Normalized']
         title      : ''
         name       : 'Custom'
         normalized : true 
