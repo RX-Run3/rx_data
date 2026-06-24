@@ -29,14 +29,14 @@ class LineConf(BaseModel):
     '''
     Class configuring lines in plots
     '''
-    label : str
-    ls    : Literal['-', '--', ':', '.-', '']
-    c     : str 
+    label     : str
+    linestyle : LineStyles 
+    color     : str 
     # ---------------------------------
     @model_validator(mode = 'after')
     def _validate(self) -> 'LineConf':
-        if self.c not in mcolors.cnames:
-            raise ValueError(f'Invalid color: {self.c}')
+        if self.color not in mcolors.cnames:
+            raise ValueError(f'Invalid color: {self.color}')
 
         return self
 # --------------------------------------
@@ -79,4 +79,4 @@ class DsetOverlayConf(BaseModel):
     general  : GenericConf
     saving   : SavingConf 
     plots    : dict[str,PlotConf]
-
+# --------------------------------------
