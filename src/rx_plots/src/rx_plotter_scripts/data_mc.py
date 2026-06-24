@@ -1,20 +1,19 @@
 '''
 Script used to plot data and MC overlaid
 '''
-# pylint: disable=no-name-in-module, logging-fstring-interpolation
 import os
 import argparse
-from importlib.resources import files
-from dataclasses         import dataclass
-
 import yaml
 import mplhep
-import dmu.generic.utilities as gut
-from ROOT                    import RDataFrame # type: ignore
-from dmu.plotting.plotter_1d import Plotter1D
-from dmu.logging.log_store   import LogStore
-from rx_data.rdf_getter      import RDFGetter
-from rx_selection            import selection as sel
+
+from importlib.resources import files
+from dataclasses         import dataclass
+from dmu.generic         import utilities as gut
+from ROOT                import RDataFrame # type: ignore
+from dmu.plotting        import Plotter1D
+from dmu                 import LogStore
+from rx_data             import RDFGetter
+from rx_selection        import selection as sel
 
 log=LogStore.add_logger('rx_selection:cutflow')
 # ---------------------------------
