@@ -1,14 +1,12 @@
 '''
 Module containing plotter class
 '''
-
 import math
-from hist      import Hist
-from omegaconf import DictConfig
-
 import numpy
 import matplotlib.pyplot as plt
 
+from hist         import Hist
+from omegaconf    import DictConfig
 from ROOT         import RDF # type: ignore
 from scipy.stats  import norm
 from dmu          import LogStore
