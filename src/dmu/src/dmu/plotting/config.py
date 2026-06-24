@@ -9,6 +9,12 @@ from typing    import Literal
 from pydantic  import BaseModel, model_validator
 
 # --------------------------------------
+class SavingConf(BaseModel):
+    '''
+    Class holding configuration needed to save plots
+    '''
+    plt_dir : Path
+# --------------------------------------
 class LineConf(BaseModel):
     '''
     Class configuring lines in plots
@@ -60,6 +66,6 @@ class DsetOverlayConf(BaseModel):
     '''
     datasets : dict[str,Dataset]
     general  : GenericConf
-    saving   : Path
+    saving   : SavingConf 
     plots    : dict[str,PlotConf]
 
