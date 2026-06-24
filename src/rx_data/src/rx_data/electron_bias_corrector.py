@@ -300,12 +300,12 @@ class ElectronBiasCorrector:
             return row
 
         if   kind == 'ecalo_bias':
-            e_brem = self._get_ebrem(row, e_track)
+            e_brem = self._get_ebrem(row = row, e_track = e_track)
             e_corr = self._correct_with_bias_maps(e_track, e_brem, row)
         elif kind == 'brem_track_1':
-            e_corr = self._correct_with_track_brem_1(e_track, row)
+            e_corr = self._correct_with_track_brem_1(e_track = e_track, row = row)
         elif kind == 'brem_track_2':
-            e_corr = self._correct_with_track_brem_2(e_track, row)
+            e_corr = self._correct_with_track_brem_2(e_track = e_track, row = row)
         else:
             raise NotImplementedError(f'Invalid correction of type: {kind}')
 

@@ -117,7 +117,10 @@ class MassBiasCorrector:
         if self._skip_correction:
             return row
 
-        row = self._ebc.correct(row, name=name, kind=self._ecorr_kind)
+        row     = self._ebc.correct(
+            row = row, 
+            name= name, 
+            kind= self._ecorr_kind)
 
         return row
     # ----------------------
