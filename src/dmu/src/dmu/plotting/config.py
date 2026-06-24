@@ -8,6 +8,16 @@ from pathlib   import Path
 from typing    import Literal
 from pydantic  import BaseModel, model_validator
 
+LineStyles = Literal['-', '--', ':', '.-', '']
+HistTypes  = Literal['step', 'fill', 'bar', 'barstep', 'band']
+# --------------------------------------
+class HistConf(BaseModel):
+    '''
+    Class meant to hold configuration to
+    style plots of histograms
+    '''
+    linestyle: LineStyles
+    histtype : HistTypes
 # --------------------------------------
 class SavingConf(BaseModel):
     '''
@@ -45,6 +55,7 @@ class PlotConf(BaseModel):
     labels     : tuple[str,str]
     name       : str
     normalized : bool
+    styling    : dict[str,HistConf]
     vline      : VLineConf
 # --------------------------------------
 class GenericConf(BaseModel):
