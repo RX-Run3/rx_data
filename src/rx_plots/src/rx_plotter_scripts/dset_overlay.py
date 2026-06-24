@@ -35,7 +35,10 @@ class Config(DsetOverlayConf):
     @classmethod
     def _validate(cls, data):
         plt_dir = data['saving']['plt_dir']
-        data['saving']['plt_dir'] = f'{_ANADIR}/{plt_dir}'
+        trigger = data['trigger']
+        sample  = data['sample']
+
+        data['saving']['plt_dir'] = f'{_ANADIR}/{plt_dir}/{trigger}/{sample}'
 
         return data
     # ----------------------
