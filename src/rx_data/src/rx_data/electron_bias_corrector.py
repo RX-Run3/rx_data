@@ -196,10 +196,20 @@ class ElectronBiasCorrector:
 
         return e_corr
     # ---------------------------------
-    def _correct_with_track_brem_1(self, e_track : v4d, row : pnd.Series) -> v4d|None:
+    def _correct_with_track_brem_1(
+        self, 
+        e_track : v4d, 
+        row     : pnd.Series) -> v4d | None:
         '''
-        Take electron from tracking system and brem, as well as dataframe row representing entry in TTree
-        Create brem photon colinear to track, add it to track, return sum
+        Parameters
+        -------------
+        e_track : 4-vector representing track associated to electron
+        row     : Series holding candidate information
+
+        Returns
+        -------------
+        4-vector with kinematics of brem photon and electron 
+        or None if no correction is needed on original electron
         '''
         if self._skip_correction:
             return None
