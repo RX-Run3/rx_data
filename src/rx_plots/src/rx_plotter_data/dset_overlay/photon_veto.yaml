@@ -13,7 +13,7 @@ selection: {}
 general:
   size : [15, 10]
 plots:
-  bmass:
+  B_Mass:
     binning    : [4500, 6500, 40]
     yscale     : linear
     labels     : ['$M(B^+)$', 'Normalized']
@@ -25,4 +25,4 @@ plots:
       ls    : ':'
       c     : green
 saving:
-  plt_dir : plots/comparison/resolution
+  plt_dir : plots/comparison/photon_veto
