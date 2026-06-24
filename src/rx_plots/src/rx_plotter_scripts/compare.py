@@ -1,5 +1,5 @@
 '''
-Script used to compare variables in the same dataframe
+Script used to compare different variables in the same dataframe
 '''
 import os
 import mplhep

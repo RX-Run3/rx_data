@@ -1,5 +1,6 @@
 '''
-Script used to plot overlays
+Script used to plot overlays of a given variable, in a given dataframe, 
+under diferent selections. E.g. the mass distribution for different blocks
 '''
 import os
 import argparse
