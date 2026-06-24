@@ -1,15 +1,19 @@
 datasets:
-  nominal:
+  Nominal:
     friends:
       brem_track_2 : v4
-  veto_v1:
+  v1:
     friends:
       brem_track_2 : v5
-  veto_v2:
+  v2:
     friends:
       brem_track_2 : v6
 # ------------------------------
-selection: {}
+selection:
+  extra: L1_BREMHYPOAREA == 2 && L2_BREMHYPOAREA == 2
+  mass : B_const_mass_M > 5180
+  prc  : (1)
+  cmb  : (1)
 general:
   size : [15, 10]
 plots:
@@ -19,10 +23,20 @@ plots:
     labels     : ['$M(B^+)$', 'Normalized']
     name       : bmass_correction
     normalized : true
+    styling    :
+      Nominal  :
+        histtype : step
+        linestyle: '-'
+      v1       :
+        histtype : step
+        linestyle: '-'
+      v2       :
+        histtype : step
+        linestyle: '-'
     vline :
-      x     : 5280
-      label : $B$
-      ls    : ':'
-      c     : green
+      x         : 5280
+      label     : $B$
+      linestyle : ':'
+      color     : green
 saving:
-  plt_dir : plots/comparison/photon_veto
+  plt_dir : plots/dset_overlay/photon_veto
