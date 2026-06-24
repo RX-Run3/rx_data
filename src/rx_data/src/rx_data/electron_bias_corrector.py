@@ -40,11 +40,11 @@ class ElectronBiasCorrector:
         skip_correction      : If true, will not correct electrons, but run all the code up to the last stage, default False
         brem_energy_threshold: Energy deposits in ECAL will be considered brem if their energy is above this value, default 300 MeV
         '''
-        self._skip_correction = skip_correction
-        self._min_brem_energy = brem_energy_threshold
-        self._bcor            = BremBiasCorrector()
-        self._name      : str
-        self._veto            = PhotonVeto(version = photon_veto_version)
+        self._lep_name : str | None= None 
+        self._skip_correction      = skip_correction
+        self._min_brem_energy      = brem_energy_threshold
+        self._bcor                 = BremBiasCorrector()
+        self._veto                 = PhotonVeto(version = photon_veto_version)
 
         # This will turn ON/OFF the code that reads the regressor
         # to apply the energy scaling to electrons based on kinematic balance
@@ -59,9 +59,9 @@ class ElectronBiasCorrector:
 
         kind : TRACK or empty string for track electron or full electron, respectively
         '''
-        px = self._attr_from_row(row, f'{self._name}_{kind}PX')
-        py = self._attr_from_row(row, f'{self._name}_{kind}PY')
-        pz = self._attr_from_row(row, f'{self._name}_{kind}PZ')
+        px = self._attr_from_row(row, f'{self._lep_name}_{kind}PX')
+        py = self._attr_from_row(row, f'{self._lep_name}_{kind}PY')
+        pz = self._attr_from_row(row, f'{self._lep_name}_{kind}PZ')
 
         e_3d = vector.obj(px=px, py=py, pz=pz)
         pt   = e_3d.pt
@@ -125,19 +125,19 @@ class ElectronBiasCorrector:
 
         log.debug('Electron was brem corrected')
         l_var = [
-                f'{self._name}_PX',
-                f'{self._name}_PY',
-                f'{self._name}_PZ']
+                f'{self._lep_name}_PX',
+                f'{self._lep_name}_PY',
+                f'{self._lep_name}_PZ']
 
         row.loc[l_var] = [e_corr.px, e_corr.py, e_corr.pz]
 
         l_var = [
-                f'{self._name}_PT' ,
-                f'{self._name}_ETA',
-                f'{self._name}_PHI']
+                f'{self._lep_name}_PT' ,
+                f'{self._lep_name}_ETA',
+                f'{self._lep_name}_PHI']
 
         row.loc[l_var] = [e_corr.pt, e_corr.eta, e_corr.phi]
-        row.loc[[f'{self._name}_HASBREMADDED']] = [1]
+        row.loc[[f'{self._lep_name}_HASBREMADDED']] = [1]
 
         return row
     # ---------------------------------
@@ -163,7 +163,7 @@ class ElectronBiasCorrector:
             return e_corr
 
         # Will only correct brem, no brem => no correction
-        if not self._attr_from_row(row, f'{self._name}_HASBREMADDED'):
+        if not self._attr_from_row(row, f'{self._lep_name}_HASBREMADDED'):
             e_corr = e_track + e_brem
             e_corr = cast(v4d, e_corr)
 
@@ -171,9 +171,9 @@ class ElectronBiasCorrector:
 
         log.info('Applying ecalo_bias correction')
 
-        brem_row = self._attr_from_row(row, f'{self._name}_BREMHYPOROW')
-        brem_col = self._attr_from_row(row, f'{self._name}_BREMHYPOCOL')
-        brem_area= self._attr_from_row(row, f'{self._name}_BREMHYPOAREA')
+        brem_row = self._attr_from_row(row, f'{self._lep_name}_BREMHYPOROW')
+        brem_col = self._attr_from_row(row, f'{self._lep_name}_BREMHYPOCOL')
+        brem_area= self._attr_from_row(row, f'{self._lep_name}_BREMHYPOAREA')
 
         e_brem_corr = self._bcor.correct(brem=e_brem, row=int(brem_row), col=int(brem_col), area=int(brem_area))
 
@@ -204,7 +204,7 @@ class ElectronBiasCorrector:
         if self._skip_correction:
             return None
 
-        brem_energy = self._attr_from_row(row, f'{self._name}_BREMTRACKBASEDENERGY')
+        brem_energy = self._attr_from_row(row, f'{self._lep_name}_BREMTRACKBASEDENERGY')
         if brem_energy < self._min_brem_energy:
             return None 
 
@@ -245,11 +245,11 @@ class ElectronBiasCorrector:
         - 4-vector representing electron with brem added
         - None, if no brem needs/can be added
         '''
-        if self._attr_from_row(row, f'{self._name}_HASBREMADDED'):
+        if self._attr_from_row(row, f'{self._lep_name}_HASBREMADDED'):
             log.debug('Electron has already brem, skipping correction')
             return None 
 
-        brem_energy = self._attr_from_row(row, f'{self._name}_BREMTRACKBASEDENERGY')
+        brem_energy = self._attr_from_row(row, f'{self._lep_name}_BREMTRACKBASEDENERGY')
         if brem_energy <  self._min_brem_energy:
             log.debug(f'Brem energy is below threshold: {brem_energy:.0f} < {self._min_brem_energy:.0f}')
             log.debug('Skipping correction')
@@ -290,10 +290,10 @@ class ElectronBiasCorrector:
         '''
         log.debug(f'Correcting {name} with {kind}')
 
-        self._name = name
+        self._lep_name = name
         e_track    = self._get_electron(row, kind='TRACK_')
 
-        if self._veto.veto(row = row, lepton_name = self._name):
+        if self._veto.veto(row = row, lepton_name = self._lep_name):
             log.debug('Photon falls in vetoed ECAL region, skipping correction')
             row = self._update_row(row = row, e_corr = e_track)
 
