@@ -5,7 +5,7 @@ import os
 import argparse
 import mplhep
 
-from ROOT          import RDF # type: ignore
+from ROOT          import RDF, EnableImplicitMT # type: ignore
 from dmu           import LogStore
 from dmu.generic   import utilities as gut
 from dmu.plotting  import Plotter1D
@@ -27,6 +27,7 @@ class Data:
     mplhep.style.use('LHCb2')
 
     chanel    : str
+    ncores    : int
     component : Component 
     trigger   : Trigger 
     q2_bin    : Qsq 
@@ -87,15 +88,17 @@ def _get_rdf() -> RDF.RNode:
 # ---------------------------------
 def _parse_args() -> None:
     parser = argparse.ArgumentParser(description='Script used to cutflow plots')
-    parser.add_argument('-q', '--q2bin'  , type=Qsq      , help='q2 bin'       , required=True)
-    parser.add_argument('-s', '--sample' , type=Component, help='Sample'       , required=True)
-    parser.add_argument('-t', '--trigger', type=Trigger  , help='Trigger'      , required=True)
-    parser.add_argument('-c', '--config' , type=str      , help='Configuration', required=True)
+    parser.add_argument('-q', '--q2bin'  , type=Qsq      , help='q2 bin'         , required=True)
+    parser.add_argument('-s', '--sample' , type=Component, help='Sample'         , required=True)
+    parser.add_argument('-t', '--trigger', type=Trigger  , help='Trigger'        , required=True)
+    parser.add_argument('-c', '--config' , type=str      , help='Configuration'  , required=True)
+    parser.add_argument('-n', '--ncores' , type=int      , help='Number of cores', default =   1)
     args = parser.parse_args()
 
     Data.q2_bin   = args.q2bin
     Data.component= args.sample
     Data.trigger  = args.trigger
+    Data.ncores   = args.ncores
     Data.config   = f'{args.config}_{Data.trigger.project}'
 # ---------------------------------
 def _get_cfg() -> DictConfig:
@@ -184,6 +187,10 @@ def main(args : dict[str,str] | None = None):
         _parse_args()
     else:
         _set_config(args=args)
+
+    if Data.ncores > 1:
+        log.info(f'Using {Data.ncores} cores')
+        EnableImplicitMT(Data.ncores)
 
     Data.cfg = _get_cfg()
     with RDFGetter.max_entries(value=-1),\
