@@ -22,11 +22,12 @@ from .electron_bias_corrector import ElectronBiasCorrector
 
 log=LogStore.add_logger('rx_data:mass_bias_corrector')
 
-_EMASS        : Final[float] = 0.511
-_KMASS        : Final[float] = 493.6
-_PIMASS       : Final[float] = 137.57
-_MUON_PID     : Final[int] = 13
-_ELECTRON_PID : Final[int] = 11
+_EMASS        : Final[float]     = 0.511
+_KMASS        : Final[float]     = 493.6
+_PIMASS       : Final[float]     = 137.57
+_MUON_PID     : Final[int]       = 13
+_ELECTRON_PID : Final[int]       = 11
+_INDEX_COLUMNS: Final[list[str]] = ['EVENTNUMBER', 'RUNNUMBER']
 # ------------------------------------------
 class InvalidID(Exception):
     def __init__(self, message : str) -> None:
@@ -295,7 +296,7 @@ class MassBiasCorrector:
         if suffix is not None:
             df_corr = df_corr.add_suffix(f'_{suffix}')
 
-        for variable in ['EVENTNUMBER', 'RUNNUMBER']:
+        for variable in _INDEX_COLUMNS:
             df_corr[variable] = self._df[variable]
 
         df_corr = df_corr.fillna(-1) # For some candidates the B mass after correction becomes NaN
