@@ -258,12 +258,6 @@ class MassBiasCorrector:
             return self._df.apply(self._calculate_correction, axis=1)
 
         raise ValueError(f'Cannot run with more than one worker, using: {self._nproc}')
-
-        log.info(f'Using {self._nproc} processes to correct data')
-        ddf = dd.from_pandas(self._df, npartitions=self._nproc)
-        df  = ddf.map_partitions(lambda x : x.apply(self._calculate_correction, axis=1)).compute()
-
-        return df
     # ------------------------------------------
     @property
     def photons_vetoed(self) -> int:
