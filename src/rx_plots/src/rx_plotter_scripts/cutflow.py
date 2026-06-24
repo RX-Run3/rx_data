@@ -69,9 +69,6 @@ def _apply_selection(rdf : RDF.RNode) -> tuple[RDF.RNode, dict[Cuts,str]]:
         good_name = naming.clean_special_characters(name=cut_name)
         rdf       = rdf.Filter(cut_expr, good_name)
 
-    rep = rdf.Report()
-    rep.Print()
-
     nentries = rdf.Count().GetValue()
     if nentries == 0:
         raise ValueError('No entries found after selection')
@@ -205,7 +202,7 @@ def main(args : dict[str,str] | None = None):
          RDFGetter.custom_columns(columns=Data.d_def):
 
         d_rdf = _get_inp()
-        _plot(d_rdf)
+        _plot(d_rdf = d_rdf)
 # ---------------------------------
 if __name__ == '__main__':
     main()
