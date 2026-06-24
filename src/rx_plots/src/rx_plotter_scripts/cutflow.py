@@ -5,6 +5,7 @@ import os
 import argparse
 import mplhep
 
+from copy          import deepcopy
 from ROOT          import RDF, EnableImplicitMT # type: ignore
 from dmu           import LogStore
 from dmu.generic   import utilities as gut
@@ -13,7 +14,7 @@ from dmu.generic   import naming
 from omegaconf     import DictConfig
 from rx_data       import RDFGetter
 from rx_selection  import selection
-from rx_common     import Component, Qsq, Trigger
+from rx_common     import Component, Cuts, Qsq, Trigger
 
 log=LogStore.add_logger('rx_selection:cutflow')
 _ANADIR = os.environ['ANADIR']
@@ -50,7 +51,7 @@ def _apply_definitions(rdf : RDF.RNode) -> RDF.RNode:
 
     return rdf
 # ---------------------------------
-def _apply_selection(rdf : RDF.RNode) -> RDF.RNode:
+def _apply_selection(rdf : RDF.RNode) -> tuple[RDF.RNode, dict[Cuts,str]]:
     d_sel = selection.selection(
         trigger=Data.trigger, 
         q2bin  =Data.q2_bin, 
@@ -75,16 +76,16 @@ def _apply_selection(rdf : RDF.RNode) -> RDF.RNode:
     if nentries == 0:
         raise ValueError('No entries found after selection')
 
-    return rdf
+    return rdf, d_sel
 # ---------------------------------
 @gut.timeit
-def _get_rdf() -> RDF.RNode:
-    gtr = RDFGetter(sample=Data.component, trigger=Data.trigger)
-    rdf = gtr.get_rdf(per_file=False)
-    rdf = _apply_definitions(rdf=rdf)
-    rdf = _apply_selection(rdf=rdf)
+def _get_rdf() -> tuple[RDF.RNode, dict[Cuts,str]]:
+    gtr      = RDFGetter(sample=Data.component, trigger=Data.trigger)
+    rdf      = gtr.get_rdf(per_file=False)
+    rdf      = _apply_definitions(rdf=rdf)
+    rdf, sel = _apply_selection(rdf=rdf)
 
-    return rdf
+    return rdf, sel
 # ---------------------------------
 def _parse_args() -> None:
     parser = argparse.ArgumentParser(description='Script used to cutflow plots')
@@ -126,20 +127,23 @@ def _get_out_dir(plt_dir : str) -> str:
 
     return out_dir
 # ---------------------------------
-def _get_inp() -> dict[str,RDF.RNode]:
-    rdf   = _get_rdf()
+def _get_inp() -> dict[str, tuple[RDF.RNode, dict[Cuts,str]]]:
+    rdf, sel = _get_rdf()
 
     if 'cutflow' not in Data.cfg:
-        return {'None' : rdf}
+        return {'None' : (rdf, sel)}
 
     d_cut = Data.cfg['cutflow'][Data.q2_bin]
-    d_rdf = {}
+    d_rdf : dict[str, tuple[RDF.RNode,dict[Cuts,str]]]= {}
     log.info('Applying cutflow')
     for name, cut in d_cut.items():
         log.info(f'{"":<4}{name:<15}{cut}')
-        good_name   = naming.clean_special_characters(name=name)
-        rdf         = rdf.Filter(cut, good_name)
-        d_rdf[name] = rdf
+        good_name      = naming.clean_special_characters(name=name)
+        sel[name]      = cut
+        sel_copy       = deepcopy(sel)
+
+        rdf            = rdf.Filter(cut, good_name)
+        d_rdf[name]    = (rdf, sel_copy)
 
     return d_rdf
 # ---------------------------------
@@ -159,11 +163,15 @@ def _fix_ranges(cfg : DictConfig) -> DictConfig:
 
     return cfg
 # ---------------------------------
-def _plot(d_rdf : dict[str,RDF.RNode]) -> None:
-    cfg= _get_cfg()
-    cfg= _fix_ranges(cfg=cfg)
+def _plot(d_rdf : dict[str,tuple[RDF.RNode, dict[Cuts,str]]]) -> None:
+    cfg  = _get_cfg()
+    cfg  = _fix_ranges(cfg=cfg)
+    rdfs = { key : rdf for key, (rdf,   _) in d_rdf.items() }
+    sels = { key : sel for key, (_  , sel) in d_rdf.items() }
 
-    ptr=Plotter1D(d_rdf=d_rdf, cfg=cfg)
+    gut.dump_json(data = sels, path = f'{cfg.saving.plt_dir}/selection.json')
+
+    ptr=Plotter1D(d_rdf=rdfs, cfg=cfg)
     ptr.run()
 # ---------------------------------
 def _set_config(args : dict[str,str]) -> None:
