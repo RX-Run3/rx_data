@@ -34,11 +34,14 @@ class Config(DsetOverlayConf):
     @model_validator(mode = 'before')
     @classmethod
     def _validate(cls, data):
-        plt_dir = data['saving']['plt_dir']
+        plt_dir = data['saving' ]['plt_dir']
         trigger = data['trigger']
-        sample  = data['sample']
+        sample  = data['sample' ]
+        qsq     = data['qsq'    ]
 
-        data['saving']['plt_dir'] = f'{_ANADIR}/{plt_dir}/{trigger}/{sample}'
+        trg_nic = Trigger(trigger).value
+
+        data['saving']['plt_dir'] = f'{_ANADIR}/{plt_dir}/{trg_nic}/{sample}/{qsq}'
 
         return data
     # ----------------------
