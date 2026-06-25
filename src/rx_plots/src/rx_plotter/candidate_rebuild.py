@@ -2,9 +2,11 @@
 Module containing Candidate class
 '''
 
-from pydantic  import BaseModel, model_validator
-from rx_common import Component, Trigger
-from rx_data   import CandidateRebuilder
+from ROOT         import RDF # type: ignore
+from pydantic     import BaseModel, model_validator
+from rx_common    import Component, Qsq, Trigger
+from rx_data      import CandidateRebuilder, RDFGetter
+from rx_selection import selection as sel 
 
 # ------------------------------------------------
 class CandidateRebuildConf(BaseModel):
@@ -12,9 +14,10 @@ class CandidateRebuildConf(BaseModel):
     Class meant to hold configuration needed
     to plot rebuilt candidates
     '''
+    q2bin       : Qsq
     trigger     : Trigger
     sample      : Component
-    particles   : list[str]
+    particles   : set[str]
     constraints : dict[int,list[str]]
     swaps       : dict[str,int]
     # ------------------------------------------------
@@ -37,6 +40,7 @@ class CandidateRebuild:
     Class meant to plot quantities associated to
     rebuilt candidates
     '''
+    # --------------------------------
     def __init__(self, cfg : CandidateRebuildConf):
         '''
         Parameters
@@ -45,13 +49,40 @@ class CandidateRebuild:
         '''
         self._cfg = cfg
     # --------------------------------
+    def _filter_rdf(self, rdf : RDF.RNode) -> RDF.RNode:
+        '''
+        Parameters
+        ---------------
+        rdf: ROOT dataframe before selection
+
+        Returns
+        ---------------
+        ROOT dataframe after selection
+        '''
+        rdf = sel.apply_full_selection(
+            rdf     = rdf, 
+            q2bin   = self._cfg.q2bin,
+            process = self._cfg.sample, 
+            trigger = self._cfg.trigger)
+
+        return rdf
+    # --------------------------------
     def run(self) -> None:
-        gtr = 
+        gtr = RDFGetter(
+            trigger = self._cfg.trigger,
+            sample  = self._cfg.sample)
+        rdf = gtr.get_rdf(per_file = False)
+        rdf = self._filter_rdf(rdf = rdf)
 
         bdr = CandidateRebuilder(
             rdf          = rdf,
             replacements = self._cfg.swaps,
-            tracks       = self._cfg.tracks)
+            tracks       = self._cfg.particles)
 
-        bdr.run()
+        df  = bdr.get_df(
+            progress_bar = True,
+            prefix       = 'plots',
+            format       = 'pandas')
+
+        print(df)
 # ------------------------------------------------
