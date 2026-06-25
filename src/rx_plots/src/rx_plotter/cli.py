@@ -10,6 +10,7 @@ import mplhep
 import pandas              as pnd
 import matplotlib.pyplot   as plt
 
+from ROOT         import EnableImplicitMT # type: ignore
 from pathlib      import Path
 from dmu          import LogStore
 from dmu.generic  import utilities as gut
@@ -143,6 +144,28 @@ def block_fraction_vs_q2(
 
     _plot_block_fraction_vs_q2(df = df)
 # ----------------------
+@app.command()
+def rebuild_candidates(
+    ncores : int = typer.Option(1   , '--ncores', '-n', help='Number of cores for multithreading'),
+    q2bin  : Qsq = typer.Option(... , '--q2bin' , '-q', help='q2 bin, e.g. jpsi, needed for selection'), # noqa: B008
+    config : str = typer.Option(... , '--conf'  , '-c', help='Name of config file')):
+    '''
+    Will make plots of distributions from rebuilt candidates
+    '''
+    if ncores > 1:
+        log.info(f'Using {ncores} cores')
+        EnableImplicitMT(ncores)
+
+    data        = gut.load_data(
+        package = 'rx_plotter_data', 
+        fpath   =f'candidate_rebuild/{config}.yaml')
+
+    data['q2bin'] = q2bin
+
+    cfg = CandidateRebuildConf(**data)
+    ptr = CandidateRebuild(cfg = cfg)
+    ptr.run()
+# ----------------------
 def _plot_block_fraction_vs_q2(df : pnd.DataFrame) -> None:
     '''
     Parameters
@@ -230,19 +253,6 @@ def _calculate_stats(
     df.to_json(cache_path, indent=2)
 
     return df
-# ----------------------
-def rebuild_candidates(
-    config : str = typer.Option(... , '--conf', '-c', help='Name of config file')):
-    '''
-    Will make plots of distributions from rebuilt candidates
-    '''
-    data        = gut.load_data(
-        package = 'rx_plotter_data', 
-        fpath   =f'rebuild_candidates/{config}.yaml')
-
-    cfg = CandidateRebuildConf(**data)
-    ptr = CandidateRebuild(cfg = cfg)
-    ptr.run()
 # ----------------------
 if __name__ == '__main__':
     app()
