@@ -33,10 +33,10 @@ log=LogStore.add_logger('fitter:sim_fitter')
 
 # Will not build (fit) a parametric PDF if fewer than these entries
 # will return None
-MIN_FIT_ENTRIES : Final[int] = 50
+_MIN_FIT_ENTRIES : Final[int] = 50
 
 # Will not build KDE if fewer than these entries in dataset
-MIN_KDE_ENTRIES : Final[int] = 50
+_MIN_KDE_ENTRIES : Final[int] = 50
 # ------------------------
 class SimFitter(BaseFitter, Cache):
     '''
@@ -297,8 +297,8 @@ class SimFitter(BaseFitter, Cache):
 
         cut_cfg = self._get_cut_config(cfg = cfg, category = name)
 
-        if sumw < MIN_FIT_ENTRIES:
-            log.warning(f'Found to few entries {sumw:.1f} < {MIN_FIT_ENTRIES}, skipping {self._component} component')
+        if sumw < _MIN_FIT_ENTRIES:
+            log.warning(f'Found to few entries {sumw:.1f} < {_MIN_FIT_ENTRIES}, skipping {self._component} component')
             self._save_fit(
                 cut_cfg  = cut_cfg,
                 plt_cfg  = cfg.plots,
@@ -476,8 +476,8 @@ class SimFitter(BaseFitter, Cache):
 
         data     = self._d_data[self._name]
         nentries = self._entries_from_data(data = data, obs = self._cfg.obs)
-        if nentries < MIN_KDE_ENTRIES:
-            log.info(f'Not bulding KDE, found too few entries: {nentries} < {MIN_KDE_ENTRIES}')
+        if nentries < _MIN_KDE_ENTRIES:
+            log.info(f'Not bulding KDE, found too few entries: {nentries} < {_MIN_KDE_ENTRIES}')
             return 
 
         kde_builder = getattr(zfit.pdf, cfg.fit.kind)
