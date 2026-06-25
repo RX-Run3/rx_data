@@ -81,6 +81,7 @@ class CandidateRebuild:
 
         df  = bdr.get_df(
             progress_bar = True,
+            only_new     = False,
             prefix       = 'plots',
             format       = 'pandas')
 
