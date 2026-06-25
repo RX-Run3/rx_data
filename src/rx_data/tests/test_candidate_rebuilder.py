@@ -21,7 +21,6 @@ def initialize():
     LogStore.set_level('rx_data:test_mass_rebuilder', 10)
 # ----------------------
 def _get_rdf(ientries : int) -> RDF.RNode:
-
 # ----------------------
 def test_dzero_misid():
     '''
@@ -33,8 +32,8 @@ def test_dzero_misid():
     obj = CandidateRebuilder(
         rdf, 
         constraint   = (443 , {'L1', 'L2'}),
-        tracks       = {'p', 'K', 'L1', 'L2'},
-        replacements = {'p' : 321, 'K' : 2212})
+        tracks       = {'H1', 'H2', 'L1', 'L2'},
+        replacements = {'H1' : 321, 'H2' : 2212})
     df  = obj.get_df(
         format      = 'pandas',
         prefix      = 'kkll',
