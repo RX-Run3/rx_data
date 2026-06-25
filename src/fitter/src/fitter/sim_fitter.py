@@ -33,7 +33,7 @@ log=LogStore.add_logger('fitter:sim_fitter')
 
 # Will not build (fit) a parametric PDF if fewer than these entries
 # will return None
-_MIN_FIT_ENTRIES : Final[int] = 50
+_MIN_FIT_ENTRIES : Final[int] = 100
 
 # Will not build KDE if fewer than these entries in dataset
 _MIN_KDE_ENTRIES : Final[int] = 50
