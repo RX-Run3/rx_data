@@ -12,9 +12,12 @@ import matplotlib.pyplot   as plt
 
 from pathlib      import Path
 from dmu          import LogStore
+from dmu.generic  import utilities as gut
 from rx_data      import RDFGetter
 from rx_common    import Channel, Component, Cuts, Project, Trigger, Qsq
 from rx_common    import info
+from rx_plotter   import CandidateRebuild
+from rx_plotter   import CandidateRebuildConf
 from rx_plotter   import refitting_plot
 from rx_selection import selection as sel
 from rx_plotter   import BremRecovery
@@ -227,6 +230,19 @@ def _calculate_stats(
     df.to_json(cache_path, indent=2)
 
     return df
+# ----------------------
+def rebuild_candidates(
+    config : str = typer.Option(... , '--conf', '-c', help='Name of config file')):
+    '''
+    Will make plots of distributions from rebuilt candidates
+    '''
+    data        = gut.load_data(
+        package = 'rx_plotter_data', 
+        fpath   =f'rebuild_candidates/{config}.yaml')
+
+    cfg = CandidateRebuildConf(**data)
+    ptr = CandidateRebuild(cfg = cfg)
+    ptr.run()
 # ----------------------
 if __name__ == '__main__':
     app()
