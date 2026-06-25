@@ -58,7 +58,7 @@ class CandidateRebuildConf(BaseModel):
         if not self.particles:
             raise ValueError('Missing particles')
 
-        if not all(swp in self.particles for swp in self.swaps):
+        if not all(swp in self.particles for swp in self.swaps.particles):
             raise ValueError(f'At least one swap does not involve a valid particle: {self.swaps}')
 
         _, parts = self.constraint
