@@ -32,8 +32,10 @@ from .file_patcher            import FilePatcher
 from .used_samples            import UsedSamples
 from .sample_splitter         import SampleSplitter
 from .sample_splitter         import FilePart 
+from .candidate_rebuilder     import CandidateRebuilder
 
 __all__ = [
+    'CandidateRebuilder',
     'RDFGetter12',
     'FilePart',
     'SampleSplitter',
