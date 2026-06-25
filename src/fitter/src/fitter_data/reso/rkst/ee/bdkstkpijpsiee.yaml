@@ -15,7 +15,7 @@ categories:
       fix           : {}
       values        :
         sg : [20  ,    8,   30]
-        mu : [5280, 5240, 5300]
+        mu : [5280, 5240, 5350]
   brem_xx2:
     selection : {}
     model:
@@ -31,7 +31,7 @@ categories:
       fix           : {}
       values        :
         sg : [20  ,    8,   30]
-        mu : [5280, 5240, 5300]
+        mu : [5280, 5240, 5350]
 fit:
   strategy  :
     ntries : 10
