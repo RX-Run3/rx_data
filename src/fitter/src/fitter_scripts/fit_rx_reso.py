@@ -30,8 +30,8 @@ from rx_selection  import selection as sel
 from rx_common     import AlternativeProject, Qsq, Component, Region
 
 log=LogStore.add_logger('fitter:fit_rx_reso')
-_DATA    : Final[Component ]         = Component.data_24
-_PROJECT : Final[AlternativeProject] = AlternativeProject.bad_ecal 
+_DATA        : Final[Component ]                 = Component.data_24
+_ALT_PROJECT : Final[AlternativeProject | None ] = AlternativeProject.bad_ecal 
 # ----------------------
 def _set_logs() -> None:
     '''
@@ -134,7 +134,7 @@ def _get_nll(cfg : RXFitConfig) -> NLLConf:
         - Negative log likelihood
         - Config related to model
     '''
-    project = cfg.mod_cfg.trigger.project.alternative(key = _PROJECT)
+    project = cfg.mod_cfg.trigger.project.alternative(key = _ALT_PROJECT)
 
     ftr = LikelihoodFactory(
         name   = cfg.name,
