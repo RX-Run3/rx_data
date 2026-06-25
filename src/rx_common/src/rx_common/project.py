@@ -5,6 +5,18 @@ Module with Project enum
 from enum       import StrEnum, auto
 from .component import Component
 
+# ---------------
+class AlternativeProject(StrEnum):
+    '''
+    Enum meant to describe alternative versions
+    of different projects
+    '''
+    no_pid   = auto()
+    no_refit = auto()
+    sim10d   = auto()
+    sim10f   = auto()
+    bad_ecal = auto()
+# ---------------
 class Project(StrEnum):
     '''
     This class represents the projects
@@ -72,3 +84,27 @@ class Project(StrEnum):
                 return f'yld_{Component.bdkstkpiee}_brem_x12'
             case _:
                 raise ValueError(f'Invalid project: {self}')
+    # ----------------------
+    def alternative(self, key : AlternativeProject | None) -> 'Project | None':
+        '''
+        Parameters
+        ------------------
+        key: Denotes alternative version of this project, e.g. bad_ecal
+        '''
+        if key is None:
+            return None 
+
+        if key == AlternativeProject.no_pid   and self == Project.rk:
+            return Project.rk_no_pid
+
+        if key == AlternativeProject.no_pid   and self == Project.rkst:
+            return Project.rkst_no_pid
+
+        if key == AlternativeProject.bad_ecal and self == Project.rk:
+            return Project.rk_bad_ecal
+
+        if key == AlternativeProject.bad_ecal and self == Project.rkst:
+            return Project.rkst_bad_ecal
+
+        raise ValueError(f'Invalid/Not implemented key: {key}')
+# ----------------------

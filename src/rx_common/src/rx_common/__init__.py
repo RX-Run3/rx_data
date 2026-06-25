@@ -12,7 +12,7 @@ from .component import MissingComponent
 from .component import CCbarComponent
 from .component import Component
 from .process   import set_nproc, get_nproc 
-from .project   import Project 
+from .project   import Project, AlternativeProject
 from .channel   import Channel 
 from .region    import Region
 from .cuts      import Cuts
@@ -21,6 +21,7 @@ from .qsq       import Qsq
 from .qsq       import QsqDef
 
 __all__ = [
+    'AlternativeProject',
     'MissingComponent',
     'CCbarComponent',
     'Correction',
