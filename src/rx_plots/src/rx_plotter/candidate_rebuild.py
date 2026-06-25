@@ -7,12 +7,29 @@ from typing       import Final
 from dmu.plotting import OverlayConf
 from dmu.plotting import Plotter1D
 from ROOT         import RDF # type: ignore
-from pydantic     import BaseModel, model_validator
+from pydantic     import BaseModel, RootModel, model_validator
 from rx_common    import Component, Qsq, Trigger
 from rx_data      import CandidateRebuilder, RDFGetter
 from rx_selection import selection as sel 
 
 _ANADIR : Final[str] = os.environ['ANADIR']
+# ------------------------------------------------
+class SwapConf(RootModel[dict[str,dict[str,int]]]):
+    '''
+    Class representing ID swap configuration
+    Keys are labels of swaps, inner dictionary keys
+    are particle labels and values are PDG ID to swap for
+    '''
+    @property
+    def particles(self) -> set[str]:
+        '''
+        All particles involved in swaps
+        '''
+        parts : list[str] = []
+        for val in self.root.values():
+            parts += list(val)
+
+        return set(parts)
 # ------------------------------------------------
 class CandidateRebuildConf(BaseModel):
     '''
@@ -24,7 +41,7 @@ class CandidateRebuildConf(BaseModel):
     sample     : Component
     particles  : set[str]
     constraint : tuple[int,set[str]]
-    swaps      : dict[str,int]
+    swaps      : SwapConf 
     plots      : OverlayConf
     # ------------------------------------------------
     @model_validator(mode = 'before')
