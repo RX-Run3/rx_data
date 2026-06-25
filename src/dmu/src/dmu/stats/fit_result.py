@@ -181,7 +181,7 @@ class FitParameter(BaseModel):
         -------------
         String representation
         '''
-        msg = f'{self.name:<30}{self.value:<30}{"±":<10}{self.error:<30}'
+        msg = f'{self.name:<50}{self.value:<20.3g}{"±":5}{self.error:<20.3g}'
 
         return msg
     # ----------------------
@@ -395,7 +395,7 @@ class FitResult(BaseModel):
 
         msg  = '\n'
         msg += 100 * '-' + '\n'
-        msg += f'{"Name":<30}{"Value":<30}{"":<10}{"Error":<30}\n'
+        msg += f'{"Name":<50}{"Value":<20}{"":<5}{"Error":<20}\n'
         msg += 100 * '-' + '\n'
         for par in self.parameters:
             msg += str(par) + '\n' 

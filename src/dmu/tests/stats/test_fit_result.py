@@ -152,7 +152,5 @@ def test_prefix(prefix : str | None):
     res.hesse(name = 'minuit_hesse')
 
     val = FitResult.from_zfit(res = res)
-
-    for par in val.parameters:
-        log.info(f'{par.prefix:<20}{par.name:<20}')
+    print(val)
 # -----------------------------
