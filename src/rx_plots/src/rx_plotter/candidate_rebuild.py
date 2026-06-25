@@ -25,11 +25,11 @@ class SwapConf(RootModel[dict[str,dict[str,int]]]):
         '''
         All particles involved in swaps
         '''
-        parts : list[str] = []
-        for val in self.root.values():
-            parts += list(val)
+        particles : list[str] = []
+        for swaps in self.root.values():
+            particles.extend(swaps.keys())
 
-        return set(parts)
+        return set(particles)
 # ------------------------------------------------
 class CandidateRebuildConf(BaseModel):
     '''
