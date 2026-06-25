@@ -8,6 +8,7 @@ from .parameters          import ParameterLibrary
 from .measurement         import Measurement
 from .gof_calculator      import GofCalculator
 from .model_factory       import ModelFactory, MethodRegistry, ModelFactoryConf
+from .candidate_rebuilder import CandidateRebuilder
 from .fitter              import Fitter
 from .protocols           import ParsHolder
 from .utilities           import print_pdf
@@ -37,6 +38,7 @@ from .configs             import YieldsConf
 
 __all__ = [
     'Function',
+    'CandidateRebuilder',
     'CorrectionImplementation',
     'ConstraintType',
     'SimpleYieldConf',
