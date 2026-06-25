@@ -25,13 +25,12 @@ from zfit.param          import Parameter
 from .category           import Category, FitCategory
 from .category_merger    import CategoryMerger, FitCategoryMerger
 from .base_fitter        import BaseFitter
-from .configs            import CombinatorialConf, CombinatorialConfUnconstrained, MisIDConf, NonParametricConf, ParametricConf, CCbarConf 
+from .configs            import CombinatorialConf, CombinatorialConfUnconstrained, MisIDConf, NonParametricConf, ParametricConf, CCbarConf, AnyModelConf
 from .data_preprocessor  import DataPreprocessor
 from .prec               import PRec
 
 log=LogStore.add_logger('fitter:sim_fitter')
 
-ModelConf = CombinatorialConf | ParametricConf | NonParametricConf | CCbarConf | MisIDConf
 # Will not build (fit) a parametric PDF if fewer than these entries
 # will return None
 MIN_FIT_ENTRIES : Final[int] = 50
@@ -50,7 +49,7 @@ class SimFitter(BaseFitter, Cache):
         component : Component,
         trigger   : Trigger,
         q2bin     : Qsq,
-        cfg       : ModelConf):
+        cfg       : AnyModelConf):
         '''
         Parameters
         --------------------
@@ -228,7 +227,7 @@ class SimFitter(BaseFitter, Cache):
     # ------------------------
     def _get_nomc_pdf(
         self,
-        cfg : CombinatorialConf) -> zpdf:
+        cfg : CombinatorialConf | CombinatorialConfUnconstrained) -> zpdf:
         '''
         Returns
         -------------
