@@ -3,10 +3,13 @@ from .plotter_2d import Plotter2D
 from .band       import Style 
 from .band       import BandPlotter 
 from .band       import BandPlotterConf
-from .config     import DsetOverlayConf, Dataset
+from .config     import DsetOverlayConf, Dataset, PlotConf
+from .config     import OverlayConf
 
 __all__ = [
     'Style',
+    'PlotConf',
+    'OverlayConf',
     'DsetOverlayConf',
     'Dataset',
     'BandPlotterConf',
