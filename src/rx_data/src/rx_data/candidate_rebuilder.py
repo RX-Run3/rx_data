@@ -258,7 +258,7 @@ class CandidateRebuilder:
         format       : Literal['root'],
         prefix       : str,
         only_new     : bool = False,
-        progress_bar : bool = False) -> pnd.DataFrame: ...
+        progress_bar : bool = False) -> RDF.RNode: ...
     def get_df(
         self,
         format       : Literal['pandas', 'root'],
