@@ -28,7 +28,7 @@ class CandidateRebuilder:
         rdf          : RDF.RNode,
         tracks       : set[str],
         replacements : dict[str,int],
-        constraint   : tuple[int,set[str]] | None = None):
+        constraint   : tuple[int,set[str]] | None):
         '''
         Parameters
         --------------

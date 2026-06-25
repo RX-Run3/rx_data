@@ -92,6 +92,7 @@ class CandidateRebuild:
         bdr = CandidateRebuilder(
             rdf          = rdf,
             replacements = self._cfg.swaps,
+            constraint   = self._cfg.constraint,
             tracks       = self._cfg.particles)
 
         rdf  = bdr.get_df(
