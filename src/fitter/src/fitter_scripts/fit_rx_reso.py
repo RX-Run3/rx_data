@@ -8,6 +8,7 @@ import argparse
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
+from typing        import Final
 from ROOT          import EnableImplicitMT # type: ignore
 from contextlib    import ExitStack
 from dmu           import LogStore
@@ -26,9 +27,11 @@ from fitter        import RXFitConfig
 from fitter        import DataFitter
 from fitter        import LikelihoodFactory
 from rx_selection  import selection as sel
-from rx_common     import Qsq, Component, Region
+from rx_common     import AlternativeProject, Qsq, Component, Region
 
 log=LogStore.add_logger('fitter:fit_rx_reso')
+_DATA    : Final[Component ]         = Component.data_24
+_PROJECT : Final[AlternativeProject] = AlternativeProject.bad_ecal 
 # ----------------------
 def _set_logs() -> None:
     '''
@@ -131,13 +134,15 @@ def _get_nll(cfg : RXFitConfig) -> NLLConf:
         - Negative log likelihood
         - Config related to model
     '''
+    project = cfg.mod_cfg.trigger.project.alternative(key = _PROJECT)
+
     ftr = LikelihoodFactory(
         name   = cfg.name,
         obs    = cfg.obs,
         q2bin  = cfg.q2bin,
-        sample = Component.data_24,
+        sample = _DATA,
         cfg    = cfg.mod_cfg)
-    nll = ftr.run()
+    nll = ftr.run(project = project)
 
     return nll
 # ----------------------
@@ -181,7 +186,6 @@ def _fit_electron(cfg : RXFitConfig) -> dict[Region, NLLConf]:
             q2bin = cfg.q2bin,
             d_nll = d_nll,
             cfg   = cfg.mod_cfg)
-
         res = ftr.run()
 
     log.info(res)
