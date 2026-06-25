@@ -1,0 +1,11 @@
+trigger : rkst_ee_os
+sample  : data_24
+particles:
+  - H1
+  - H2
+  - L1
+  - L2
+constraints:
+  443 : [L1, L2]
+swaps:
+  H2 : 2212
