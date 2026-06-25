@@ -2,6 +2,9 @@ style: &style
   linestyle : '-'
   histtype  : step
 # --------------------
+selection:
+  pid_k  : (1) 
+  pid_pi : (1)
 particles:
   - H1
   - H2

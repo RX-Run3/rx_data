@@ -3,12 +3,13 @@ Module containing Candidate class
 '''
 import os
 
+from contextlib   import ExitStack
 from typing       import Final
 from dmu.plotting import OverlayConf
 from dmu.plotting import Plotter1D
 from ROOT         import RDF # type: ignore
 from pydantic     import BaseModel, RootModel, model_validator
-from rx_common    import Component, Qsq, Trigger
+from rx_common    import Component, Cuts, Qsq, Trigger
 from rx_data      import CandidateRebuilder, RDFGetter
 from rx_selection import selection as sel 
 
@@ -45,6 +46,7 @@ class CandidateRebuildConf(BaseModel):
     Class meant to hold configuration needed
     to plot rebuilt candidates
     '''
+    selection  : dict[Cuts, str] | None
     q2bin      : Qsq
     trigger    : Trigger
     sample     : Component
@@ -103,11 +105,16 @@ class CandidateRebuild:
         ---------------
         ROOT dataframe after selection
         '''
-        rdf = sel.apply_full_selection(
-            rdf     = rdf, 
-            q2bin   = self._cfg.q2bin,
-            process = self._cfg.sample, 
-            trigger = self._cfg.trigger)
+        with ExitStack() as stack:
+            if self._cfg.selection:
+                ctx_sel = sel.custom_selection(d_sel = self._cfg.selection)
+                stack.enter_context(ctx_sel)
+
+            rdf = sel.apply_full_selection(
+                rdf     = rdf, 
+                q2bin   = self._cfg.q2bin,
+                process = self._cfg.sample, 
+                trigger = self._cfg.trigger)
 
         return rdf
     # --------------------------------
