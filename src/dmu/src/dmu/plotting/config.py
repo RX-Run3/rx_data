@@ -80,6 +80,22 @@ class OverlayConf(BaseModel):
     saving   : SavingConf 
     plots    : dict[str,PlotConf]
     # --------------------------------------
+    def copy_cfg(self, suffix : str) -> 'OverlayConf':
+        '''
+        Parameters
+        ----------------
+        suffix: Used for naming to distinguish this config
+
+        Returns
+        ----------------
+        Copy of current object with prefix wherever it makes sense, e.g. paths
+        '''
+        plt_dir    = str(self.saving.plt_dir)
+        new_plt_dir= plt_dir.replace('.png', f'_{suffix}.png')
+        new_saving = self.saving.model_copy(update = {'plt_dir' : new_plt_dir})
+
+        return self.model_copy(update = {'saving' : new_saving})
+    # --------------------------------------
     @property
     def as_dictconfig(self):
         data = self.model_dump()
