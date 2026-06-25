@@ -35,7 +35,7 @@ class CandidateRebuilder:
         rdf        : ROOT dataframe
         tracks     : Set of strings representing particle prefixes, e.g. {L1, L2,...} 
         d_had      : Dictionary mapping hadron names with mass hypetheses to swap, e.g. {H : 312}
-        constraints: Tuple with PDG ID and set of strings representing particles
+        constraint : Tuple with PDG ID and set of strings representing particles
                      whose combined mass is constrainted to the PDG ID's value
                      by default None
         '''
