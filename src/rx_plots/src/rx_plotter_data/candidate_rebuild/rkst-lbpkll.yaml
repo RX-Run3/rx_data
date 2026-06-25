@@ -16,9 +16,9 @@ plots:
     size : [15, 10]
   plots:
     Mass:
-      binning    : [60, 4800, 6000]
+      binning    : [4800, 6000, 60]
       yscale     : linear
-      labels     : ['Entries', '$M(B^0)$']
+      labels     : ['$M(B^0)$', 'Entries']
       name       : rkst-lbpkll
       normalized : False
       styling    :
