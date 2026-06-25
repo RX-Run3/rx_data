@@ -1,6 +1,9 @@
 '''
 Module containing Candidate class
 '''
+import os
+
+from typing       import Final
 from dmu.plotting import OverlayConf
 from dmu.plotting import Plotter1D
 from ROOT         import RDF # type: ignore
@@ -9,6 +12,7 @@ from rx_common    import Component, Qsq, Trigger
 from rx_data      import CandidateRebuilder, RDFGetter
 from rx_selection import selection as sel 
 
+_ANADIR : Final[str] = os.environ['ANADIR']
 # ------------------------------------------------
 class CandidateRebuildConf(BaseModel):
     '''
@@ -23,8 +27,17 @@ class CandidateRebuildConf(BaseModel):
     swaps       : dict[str,int]
     plots       : OverlayConf
     # ------------------------------------------------
+    @model_validator(mode = 'before')
+    @classmethod
+    def _pre_validate(cls, data):
+        path = data['plots']['saving']['plt_dir']
+        path =f'{_ANADIR}/plots/{path}' 
+        data['plots']['saving']['plt_dir'] = path
+
+        return data
+    # ------------------------------------------------
     @model_validator(mode = 'after')
-    def _validate(self) -> 'CandidateRebuildConf':
+    def _post_validate(self) -> 'CandidateRebuildConf':
         if not self.particles:
             raise ValueError('Missing particles')
 
