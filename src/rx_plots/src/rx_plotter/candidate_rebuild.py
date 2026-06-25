@@ -90,7 +90,7 @@ class CandidateRebuild:
         d_rdf : dict[str,RDF.RNode] = {}
 
         d_rdf['Old'] = rdf.Define('Mass', 'plots_mass_old')
-        d_rdf['New'] = rdf.Define('Mass', 'plots_mass_New')
+        d_rdf['New'] = rdf.Define('Mass', 'plots_mass_new')
 
         ptr = Plotter1D(d_rdf = d_rdf, cfg = self._cfg.plots.as_dictconfig)
         ptr.run()
