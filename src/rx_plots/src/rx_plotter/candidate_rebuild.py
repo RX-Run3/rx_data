@@ -14,12 +14,21 @@ from rx_selection import selection as sel
 
 _ANADIR : Final[str] = os.environ['ANADIR']
 # ------------------------------------------------
-class SwapConf(RootModel[dict[str,dict[str,int]]]):
+class SwapConf(RootModel[dict[str, dict[str, int]]]):
     '''
     Class representing ID swap configuration
     Keys are labels of swaps, inner dictionary keys
     are particle labels and values are PDG ID to swap for
     '''
+    def __iter__(self): # type: ignore[override]
+        return iter(self.root)
+
+    def __getitem__(self, key):
+        return self.root[key]
+
+    def items(self):
+        return self.root.items()
+    # --------------------------------
     @property
     def particles(self) -> set[str]:
         '''
