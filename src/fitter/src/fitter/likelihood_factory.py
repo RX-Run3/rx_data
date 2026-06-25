@@ -5,9 +5,10 @@ from dmu                import LogStore
 from dmu.stats          import zfit
 from dmu.stats          import Constraint
 from typing             import Sequence
-from rx_common          import Qsq, Component, Cuts
+from rx_common          import Project, Qsq, Component, Cuts
+from rx_data            import RDFGetter
 from rx_selection       import selection  as sel
-
+from contextlib         import ExitStack
 from zfit.loss          import ExtendedUnbinnedNLL
 from zfit               import Space  as zobs
 
@@ -83,7 +84,9 @@ class LikelihoodFactory:
             'default' : cuts_def,
             'fit'     : cuts_fit}
     # ------------------------
-    def run(self) -> NLLConf:
+    def run(
+        self,
+        project : Project | None = None) -> NLLConf:
         '''
         Creates negative log-likelihood
 
@@ -106,14 +109,18 @@ class LikelihoodFactory:
         log.info('Getting real data')
         log.info(30 * '-')
 
-        dpr  = DataPreprocessor(
-            name   = self._name,
-            obs    = self._obs,
-            q2bin  = self._q2bin,
-            sample = self._sample,
-            trigger= self._trigger,
-            wgt_cfg= None) # Do not need weights for data
-        data = dpr.get_data()
+        with ExitStack() as stack:
+            if project:
+                stack.enter_context(RDFGetter.project(project = project))
+
+            dpr  = DataPreprocessor(
+                name   = self._name,
+                obs    = self._obs,
+                q2bin  = self._q2bin,
+                sample = self._sample,
+                trigger= self._trigger,
+                wgt_cfg= None) # Do not need weights for data
+            data = dpr.get_data()
 
         log.info(50 * '-')
         log.info(f'Making likelihood for: {self._sample}/{self._trigger}/{self._q2bin}/{self._name}')
