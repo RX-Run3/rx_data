@@ -106,23 +106,25 @@ class CandidateRebuild:
         rdf = gtr.get_rdf(per_file = False)
         rdf = self._filter_rdf(rdf = rdf)
 
-        bdr = CandidateRebuilder(
-            rdf          = rdf,
-            replacements = self._cfg.swaps,
-            constraint   = self._cfg.constraint,
-            tracks       = self._cfg.particles)
+        for category, swap in self._cfg.swaps:
+            bdr = CandidateRebuilder(
+                rdf          = rdf,
+                replacements = swap,
+                constraint   = self._cfg.constraint,
+                tracks       = self._cfg.particles)
 
-        rdf  = bdr.get_df(
-            progress_bar = True,
-            only_new     = False,
-            prefix       = 'plots',
-            format       = 'root')
+            rdf  = bdr.get_df(
+                progress_bar = True,
+                only_new     = False,
+                prefix       = 'plots',
+                format       = 'root')
 
-        d_rdf : dict[str,RDF.RNode] = {}
+            d_rdf : dict[str,RDF.RNode] = {}
 
-        d_rdf['Old'] = rdf.Define('Mass', 'plots_mass_old')
-        d_rdf['New'] = rdf.Define('Mass', 'plots_mass_new')
+            d_rdf['Old'] = rdf.Define('Mass', 'plots_mass_old')
+            d_rdf['New'] = rdf.Define('Mass', 'plots_mass_new')
 
-        ptr = Plotter1D(d_rdf = d_rdf, cfg = self._cfg.plots.as_dictconfig)
-        ptr.run()
+            plt_cfg = self._cfg.plots.copy_cfg(suffix = category)
+            ptr = Plotter1D(d_rdf = d_rdf, cfg = plt_cfg.as_dictconfig)
+            ptr.run()
 # ------------------------------------------------
