@@ -1,5 +1,3 @@
-trigger : rkst_ee_os
-sample  : data_24
 particles:
   - H1
   - H2

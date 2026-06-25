@@ -146,9 +146,11 @@ def block_fraction_vs_q2(
 # ----------------------
 @app.command()
 def rebuild_candidates(
-    ncores : int = typer.Option(1   , '--ncores', '-n', help='Number of cores for multithreading'),
-    q2bin  : Qsq = typer.Option(... , '--q2bin' , '-q', help='q2 bin, e.g. jpsi, needed for selection'), # noqa: B008
-    config : str = typer.Option(... , '--conf'  , '-c', help='Name of config file')):
+    q2bin  : Qsq       = typer.Option(... , '--q2bin'  , '-q', help='q2 bin, e.g. jpsi, needed for selection'), # noqa: B008
+    trigger: Trigger   = typer.Option(... , '--trigger', '-t', help='Hlt2 trigger, e.g. rk_ee_os'), # noqa: B008
+    sample : Component = typer.Option(... , '--sample' , '-s', help='Sample, e.g. data_24'), # noqa: B008
+    ncores : int       = typer.Option(1   , '--ncores' , '-n', help='Number of cores for multithreading'),
+    config : str       = typer.Option(... , '--conf'   , '-c', help='Name of config file')):
     '''
     Will make plots of distributions from rebuilt candidates
     '''
@@ -160,7 +162,9 @@ def rebuild_candidates(
         package = 'rx_plotter_data', 
         fpath   =f'candidate_rebuild/{config}.yaml')
 
-    data['q2bin'] = q2bin
+    data['q2bin'  ] = q2bin
+    data['trigger'] = trigger 
+    data['sample' ] = sample 
 
     cfg = CandidateRebuildConf(**data)
     ptr = CandidateRebuild(cfg = cfg)
