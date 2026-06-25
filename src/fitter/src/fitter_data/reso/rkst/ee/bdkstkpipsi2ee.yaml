@@ -13,6 +13,9 @@ categories:
         - sg
       reparametrize : {}
       fix           : {}
+      values        :
+        sg : [20  ,    8,   30]
+        mu : [4500, 5240, 5300]
   brem_xx2    :
     selection : {}
     model:
@@ -26,6 +29,9 @@ categories:
         - sg
       reparametrize : {}
       fix           : {}
+      values        :
+        sg : [20  ,    8,   30]
+        mu : [4500, 5240, 5300]
 fit:
   strategy  :
     ntries : 10
