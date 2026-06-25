@@ -1,7 +1,8 @@
 '''
 Module containing Candidate class
 '''
-
+from dmu.plotting import OverlayConf
+from dmu.plotting import Plotter1D
 from ROOT         import RDF # type: ignore
 from pydantic     import BaseModel, model_validator
 from rx_common    import Component, Qsq, Trigger
@@ -20,6 +21,7 @@ class CandidateRebuildConf(BaseModel):
     particles   : set[str]
     constraints : dict[int,list[str]]
     swaps       : dict[str,int]
+    plots       : OverlayConf
     # ------------------------------------------------
     @model_validator(mode = 'after')
     def _validate(self) -> 'CandidateRebuildConf':
@@ -79,11 +81,17 @@ class CandidateRebuild:
             replacements = self._cfg.swaps,
             tracks       = self._cfg.particles)
 
-        df  = bdr.get_df(
+        rdf  = bdr.get_df(
             progress_bar = True,
             only_new     = False,
             prefix       = 'plots',
-            format       = 'pandas')
+            format       = 'root')
 
-        print(df)
+        d_rdf : dict[str,RDF.RNode] = {}
+
+        d_rdf['Old'] = rdf.Define('Mass', 'plots_mass_old')
+        d_rdf['New'] = rdf.Define('Mass', 'plots_mass_New')
+
+        ptr = Plotter1D(d_rdf = d_rdf, cfg = self._cfg.plots.as_dictconfig)
+        ptr.run()
 # ------------------------------------------------
