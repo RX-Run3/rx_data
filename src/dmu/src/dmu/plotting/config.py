@@ -4,6 +4,7 @@ Module holding configuration classes for plots
 
 import matplotlib.colors as mcolors
 
+from omegaconf import OmegaConf
 from pathlib   import Path
 from typing    import Literal
 from pydantic  import BaseModel, model_validator
@@ -70,13 +71,24 @@ class Dataset(BaseModel):
     '''
     friends : dict[str,str]
 # --------------------------------------
-class DsetOverlayConf(BaseModel):
+class OverlayConf(BaseModel):
+    '''
+    Class holding configuration for overlays
+    of variables 
+    '''
+    general  : GenericConf
+    saving   : SavingConf 
+    plots    : dict[str,PlotConf]
+    # --------------------------------------
+    @property
+    def as_dictconfig(self):
+        data = self.model_dump()
+        return OmegaConf.create(data)
+# --------------------------------------
+class DsetOverlayConf(OverlayConf):
     '''
     Class controlling configuration of
     DsetOverlay
     '''
     datasets : dict[str,Dataset]
-    general  : GenericConf
-    saving   : SavingConf 
-    plots    : dict[str,PlotConf]
 # --------------------------------------
