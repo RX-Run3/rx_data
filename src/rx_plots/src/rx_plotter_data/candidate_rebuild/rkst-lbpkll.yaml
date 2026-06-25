@@ -32,4 +32,4 @@ plots:
         linestyle : ':'
         color     : green
   saving:
-    plt_dir : swap_mass/rkst
+    plt_dir : candidate_rebuild/rkst
