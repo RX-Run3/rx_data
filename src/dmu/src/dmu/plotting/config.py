@@ -58,6 +58,18 @@ class PlotConf(BaseModel):
     normalized : bool
     styling    : dict[str,HistConf]
     vline      : VLineConf
+    # --------------------------------------
+    def copy_cfg(self, suffix : str) -> 'PlotConf':
+        '''
+        Parameters
+        ----------------
+        suffix: Used for naming to distinguish this config
+
+        Returns
+        ----------------
+        Copy of current object with prefix wherever it makes sense, e.g. name 
+        '''
+        return self.model_copy(update = {'name' : f'{self.name}-{suffix}'})
 # --------------------------------------
 class GenericConf(BaseModel):
     '''
@@ -90,11 +102,9 @@ class OverlayConf(BaseModel):
         ----------------
         Copy of current object with prefix wherever it makes sense, e.g. paths
         '''
-        plt_dir    = str(self.saving.plt_dir)
-        new_plt_dir= plt_dir.replace('.png', f'_{suffix}.png')
-        new_saving = self.saving.model_copy(update = {'plt_dir' : new_plt_dir})
+        new_plots = {key : val.copy_cfg(suffix = suffix) for key, val in self.plots.items() }
 
-        return self.model_copy(update = {'saving' : new_saving})
+        return self.model_copy(update = {'plots' : new_plots})
     # --------------------------------------
     @property
     def as_dictconfig(self):
