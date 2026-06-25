@@ -56,8 +56,11 @@ class CandidateRebuildConf(BaseModel):
     @model_validator(mode = 'before')
     @classmethod
     def _pre_validate(cls, data):
-        path = data['plots']['saving']['plt_dir']
-        path =f'{_ANADIR}/plots/{path}' 
+        trigger = data['trigger']
+        sample  = data['sample' ]
+        path    = data['plots']['saving']['plt_dir']
+        path    =f'{_ANADIR}/plots/{path}/{trigger}-{sample}' 
+
         data['plots']['saving']['plt_dir'] = path
 
         return data
