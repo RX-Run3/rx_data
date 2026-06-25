@@ -5,9 +5,11 @@ import mplhep
 import pytest
 import matplotlib.pyplot as plt
 
-from ROOT      import RDF # type: ignore
 from dmu       import LogStore
-from dmu.stats import CandidateRebuilder
+from rx_data   import CandidateRebuilder
+from rx_common import Component, Trigger
+
+from rx_data.rdf_getter import RDFGetter
 
 plt.style.use(mplhep.style.LHCb2) # type: ignore
 log = LogStore.add_logger('rx_data:test_mass_rebuilder')
@@ -20,20 +22,23 @@ def initialize():
     LogStore.set_level('rx_data:mass_rebuilder'     , 10)
     LogStore.set_level('rx_data:test_mass_rebuilder', 10)
 # ----------------------
-def _get_rdf(ientries : int) -> RDF.RNode:
-# ----------------------
 def test_dzero_misid():
     '''
     Tests dzero decay contamination
     '''
     ientries = 10_000
-    rdf      = _get_rdf(ientries = ientries)
+    gtr = RDFGetter(
+        trigger= Trigger.rkst_ee_os,
+        sample = Component.data_24)
+    rdf = gtr.get_rdf(per_file = False)
+
+    rdf = rdf.Range(100_000, 100_000 + ientries)
 
     obj = CandidateRebuilder(
         rdf, 
         constraint   = (443 , {'L1', 'L2'}),
         tracks       = {'H1', 'H2', 'L1', 'L2'},
-        replacements = {'H1' : 321, 'H2' : 2212})
+        replacements = {'H2' : 2212})
     df  = obj.get_df(
         format      = 'pandas',
         prefix      = 'kkll',
