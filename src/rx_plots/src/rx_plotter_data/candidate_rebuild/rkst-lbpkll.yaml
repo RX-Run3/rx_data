@@ -11,7 +11,11 @@ constraint:
   - 443 
   - [L1, L2]
 swaps:
-  H2 : 2212
+  single:
+    H2 : 2212
+  double:
+    H1 : 2212 # K  -> p
+    H2 :  321 # pi -> K
 plots:
   general :
     size : [15, 10]
