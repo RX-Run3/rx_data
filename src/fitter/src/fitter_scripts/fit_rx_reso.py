@@ -31,7 +31,7 @@ from rx_common     import AlternativeProject, Qsq, Component, Region
 
 log=LogStore.add_logger('fitter:fit_rx_reso')
 _DATA        : Final[Component ]                 = Component.data_24
-_ALT_PROJECT : Final[AlternativeProject | None ] = AlternativeProject.bad_ecal 
+_ALT_PROJECT : Final[AlternativeProject | None ] = None # AlternativeProject.bad_ecal 
 # ----------------------
 def _set_logs() -> None:
     '''
