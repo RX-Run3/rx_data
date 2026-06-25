@@ -7,8 +7,9 @@ particles:
   - H2
   - L1
   - L2
-constraints:
-  443 : [L1, L2]
+constraint:
+  - 443 
+  - [L1, L2]
 swaps:
   H2 : 2212
 plots:
