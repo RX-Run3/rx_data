@@ -19,13 +19,13 @@ class CandidateRebuildConf(BaseModel):
     Class meant to hold configuration needed
     to plot rebuilt candidates
     '''
-    q2bin       : Qsq
-    trigger     : Trigger
-    sample      : Component
-    particles   : set[str]
-    constraints : dict[int,list[str]]
-    swaps       : dict[str,int]
-    plots       : OverlayConf
+    q2bin      : Qsq
+    trigger    : Trigger
+    sample     : Component
+    particles  : set[str]
+    constraint : tuple[int,set[str]]
+    swaps      : dict[str,int]
+    plots      : OverlayConf
     # ------------------------------------------------
     @model_validator(mode = 'before')
     @classmethod
