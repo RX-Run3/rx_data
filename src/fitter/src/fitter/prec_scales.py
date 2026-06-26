@@ -70,11 +70,11 @@ class PrecScales:
 
         return fx
     #------------------------------------------
-    def _mult_brs(self, l_br : list[tuple[float,float]]) -> tuple[float,float]:
+    def _mult_brs(self, bfractions : list[tuple[float,float]]) -> tuple[float,float]:
         '''
         Parameters
         -----------------------
-        l_br: List of branching fraction, branching fraction error tuples
+        bfractions: List of branching fraction, branching fraction error tuples
 
         Returns
         -----------------------
@@ -82,8 +82,8 @@ class PrecScales:
         '''
         log.debug('Multiplying branching fractions')
 
-        l_br_val = [ float(br[0]) for br in l_br ] # These numbers come from YAML files
-        l_br_err = [ float(br[1]) for br in l_br ] # when using "e" in scientific notation, these numbers are made into strings
+        l_br_val = [ float(br[0]) for br in bfractions ] # These numbers come from YAML files
+        l_br_err = [ float(br[1]) for br in bfractions ] # when using "e" in scientific notation, these numbers are made into strings
 
         br_cov   = numpy.diag(l_br_err) ** 2
         val, var = jac.propagate( # type: ignore
