@@ -1,3 +1,7 @@
+# --------------------
+# fu and fd taken from https://hflav-eos.web.cern.ch/hflav-eos/osc/PDG_2020/
+# flb was taken from page 7 of https://arxiv.org/pdf/1902.06794
+# --------------------
 fr: 
   fu: 
     - 0.408
@@ -7,7 +11,10 @@ fr:
     - 0.007
   fs: 
     - 0.1
-    - 0.008
+    - 0.01
+  flb:
+    - 0.211 
+    - 0.015
 bf: 
   # B+ -> J/psi K+
   bpjk: 
