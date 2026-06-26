@@ -68,6 +68,7 @@ class AcceptanceReader:
         if not prc_path.exists():
             raise FileNotFoundError(f'File not found: {prc_path}')
 
+        log.info(f'Loading acceptances from: {prc_path}')
         df          = pnd.read_json(prc_path)
         df_filtered = df[ df.Sample == self._sample.value ]
         if len(df_filtered) == 0:
