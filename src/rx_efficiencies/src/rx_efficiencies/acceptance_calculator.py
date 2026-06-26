@@ -13,9 +13,26 @@ from rx_common import Channel, Project
 
 log = LogStore.add_logger('prec_acceptances::calculator')
 
-_MIN_THETA   : Final[float] = 0.010
-_MAX_THETA   : Final[float] = 0.400
-_N_RK_TRACKS : Final[int  ] = 3
+_MIN_THETA   : Final[float]    = 0.010
+_MAX_THETA   : Final[float]    = 0.400
+_N_RK_TRACKS : Final[int  ]    = 3
+_LEPTONS     : Final[set[str]] = {'ep', 'em', 'mup', 'mum'}
+
+# Components associated to these tracks are in
+# rx_efficiencies/utilities.py
+_RK_HADRONS    : Final[list[set[str]]] = [
+    {'Kp_0', 'pi0_0'},
+    {'Kp_0', 'pim_0'},
+    {'Kp_0'},
+    {'pip_0'},
+    {'Kp_0', 'Km_0'},
+]
+_RKST_HADRONS  : Final[list[set[str]]] = [
+    {'Kp_0', 'pim_0'},
+    {'Kp_0', 'pim_0', 'pip_0'},
+    {'Kp_0', 'Km_0'},
+    {'Kp_0', 'pm_0'},
+]
 #-----------------------------
 class AcceptanceCalculator:
     '''
@@ -146,7 +163,7 @@ class AcceptanceCalculator:
         plt.close('all')
     #-----------------------------
     @cached_property
-    def _all_tracks(self) -> list[str]:
+    def _all_tracks(self) -> set[str]:
         '''
         Returns
         -------------
@@ -161,7 +178,23 @@ class AcceptanceCalculator:
         for trk in l_trk:
             log.info(trk)
 
-        return l_trk
+        return set(l_trk)
+    #-----------------------------
+    @cached_property
+    def _all_hadrons(self) -> set[str]:
+        '''
+        Returns
+        -------------
+        List of strings, each of them is the name of a hadron track, e.g. Kp_0
+        '''
+        hadrons : set[str] = set()
+        for track in self._all_tracks:
+            if any(track.startswith(lep) for lep in _LEPTONS):
+                continue
+
+            hadrons.add(track)
+
+        return hadrons
     #-----------------------------
     @cached_property
     def _leptons(self) -> tuple[str,str]:
