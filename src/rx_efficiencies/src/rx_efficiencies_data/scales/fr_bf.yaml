@@ -16,6 +16,10 @@ fr:
     - 0.211 
     - 0.015
 bf: 
+  # Bs -> phi J/\psi, from https://pdglive.lbl.gov/BranchingRatio.action?desig=7&parCode=S086&home=MXXX046
+  bsphjp:
+    - 0.00101
+    - 0.00040
   # B+ -> J/psi K+
   bpjk: 
     - 0.00102

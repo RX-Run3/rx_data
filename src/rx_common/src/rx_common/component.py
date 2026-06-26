@@ -417,6 +417,10 @@ class Component(StrEnum):
                 return ['bpk2', 'k23h']
             case 'bpkstkpiee':
                 return ['bpks', 'kokp']
+            case 'bsphijpsiee':
+                return ['bsphjp', 'phkk', 'jpee']
+            case 'bsphijpsimm':
+                return ['bsphjp', 'phkk', 'jpmm']
             case _:
                 raise NotImplementedError(f'Cannot find subdecays for: {self.name}')
     # --------------------------------------------
