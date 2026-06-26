@@ -182,7 +182,9 @@ def _save_tables(
     '''
     tex_path = f'{Data.out_dir}/acceptances_{energy}.tex'
     log.info(f'Saving to: {tex_path}')
-    put.df_to_tex(df, tex_path, hide_index=True, d_format={'Sample' : '{}', 'Physical' : '{:.3f}', 'LHCb' : '{:.3f}'})
+
+    df_for_tex = df.assign(Sample=df['Sample'].apply(lambda sample : Component(sample).latex))
+    put.df_to_tex(df_for_tex, tex_path, hide_index=True, d_format={'Sample' : '{}', 'Physical' : '{:.3f}', 'LHCb' : '{:.3f}'})
 
     jsn_path = f'{Data.out_dir}/acceptances_{energy}.json'
     log.info(f'Saving to: {jsn_path}')
