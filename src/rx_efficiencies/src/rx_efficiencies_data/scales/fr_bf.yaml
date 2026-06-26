@@ -32,6 +32,10 @@ bf:
   bppk: 
     - 0.000624
     - 0.000020
+  # B0 -> Jpsi Kst, from https://pdglive.lbl.gov/BranchingRatio.action?desig=22&parCode=S042&home=MXXX045
+  bdjkst:
+    - 0.00127
+    - 0.00005
   # J/psi -> mumu 
   jpmm: 
     - 0.0596
