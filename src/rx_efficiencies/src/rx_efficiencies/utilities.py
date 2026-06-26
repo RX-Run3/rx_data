@@ -5,30 +5,54 @@ from typing    import Final
 from rx_common import Project, Component
 
 _BOTH        : Final[list[Component]] = [
+    # ----
+    # Kpi ll
+    # ----
     Component.bdkstkpiee,
     Component.bdkstkpimm,
 ]
 _RK          : Final[list[Component]] = [
+    # ----
+    # K ll
+    # ----
+    Component.bpkstkpiee,
     Component.bpkpee,
     Component.bpkpmm,
     Component.bpkpjpsiee,
     Component.bpkpjpsimm,
     Component.bpkppsi2ee,
     Component.bpkppsi2mm,
+    # ----
+    # pi ll
+    # ----
     Component.bppijpsiee,
     Component.bppijpsimm,
+    # ----
+    # KK ll
+    # ----
     Component.bsphiee,
 ]
 _RKST        : Final[list[Component]] = [
-    Component.bpkstkpiee,
+    # ----
+    # Kpipi ll 
+    # ----
     Component.bpk1kpipiee,
     Component.bpk2kpipiee,
+    # ----
+    # Kpi ll 
+    # ----
     Component.bdkstkpijpsiee,
     Component.bdkstkpijpsimm,
     Component.bdkstkpipsi2ee,
     Component.bdkstkpipsi2mm,
+    # ----
+    # KK ll
+    # ----
     Component.bsphijpsiee,
     Component.bsphijpsimm,
+    # ----
+    # pK ll
+    # ----
     Component.lbpkjpsiee,
     Component.lbpkjpsimm,
 ]
