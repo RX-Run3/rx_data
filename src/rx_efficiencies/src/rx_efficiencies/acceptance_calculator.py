@@ -15,7 +15,6 @@ log = LogStore.add_logger('prec_acceptances::calculator')
 
 _MIN_THETA   : Final[float]    = 0.010
 _MAX_THETA   : Final[float]    = 0.400
-_N_RK_TRACKS : Final[int  ]    = 3
 _LEPTONS     : Final[set[str]] = {'ep', 'em', 'mup', 'mum'}
 
 # Components associated to these tracks are in
@@ -251,18 +250,19 @@ class AcceptanceCalculator:
         -------------
         DataFrame with is_phy defined
         '''
-        both_kaons   = 'Kp_0' in self._all_tracks and 'Km_0'     in self._all_tracks
-        if both_kaons:
+        if self._all_hadrons not in _RK_HADRONS:
+            raise ValueError(f'Hadrons {self._all_hadrons} not expected in RK project')
+
+        if self._all_hadrons == {'Kp_0', 'Km_0'}:
             # For Bs -> phi(KK) ll case
             return rdf.Define('is_phy', f'{lep_acceptance} && (Kp_0_in || Km_0_in)')
 
-        only_pion    = 'pip_0' in self._all_tracks and len(self._all_tracks) == _N_RK_TRACKS
-        if only_pion:
+        if self._all_hadrons == {'pip_0'}:
             # Cabibbo suppressed B -> pi ll
             return rdf.Define('is_phy', f'{lep_acceptance} && pip_0_in')
 
-        single_kaon  = 'Kp_0' in self._all_tracks
-        if single_kaon:
+        if self._all_hadrons in [{'Kp_0'}, {'Kp_0', 'pim_0'}, {'Kp_0', 'pi0_0'}]:
+            # Signal or part reco 
             return rdf.Define('is_phy', f'{lep_acceptance} && Kp_0_in')
 
         raise ValueError(f'For project {self._project}, found tracks: {self._all_tracks}')
@@ -278,11 +278,26 @@ class AcceptanceCalculator:
         -------------
         DataFrame with is_phy defined
         '''
-        both_hadrons = 'Kp_0' in self._all_tracks and 'pim_0' in self._all_tracks
-        if both_hadrons:
+        if self._all_hadrons not in _RKST_HADRONS:
+            raise ValueError(f'Hadrons {self._all_hadrons} not expected in RK* project')
+
+        if self._all_hadrons == {'Kp_0', 'pim_0'}:
+            # Signal, rare or resonant
             return rdf.Define('is_phy', f'{lep_acceptance} && Kp_0_in && pim_0_in')
 
-        raise ValueError(f'For project {self._project} found tracks: {self._all_tracks}')
+        if self._all_hadrons == {'Kp_0', 'pim_0', 'pip_0'}:
+            # Part reco 
+            return rdf.Define('is_phy', f'{lep_acceptance} && Kp_0_in && pim_0_in')
+
+        if self._all_hadrons == {'Kp_0', 'Km_0'}:
+            # Kaon mis-ID, K -> pi in resonant mode
+            return rdf.Define('is_phy', f'{lep_acceptance} && Kp_0_in && Km_0_in')
+
+        if self._all_hadrons == {'Kp_0', 'pm_0'}:
+            # Single or double misid Kp -> K pi in resonant mode
+            return rdf.Define('is_phy', f'{lep_acceptance} && Kp_0_in && pm_0_in')
+
+        raise ValueError(f'For project {self._project} found hadron tracks: {self._all_hadrons}')
     #-----------------------------
     def get_acceptances(self) -> tuple[float,float]:
         '''
