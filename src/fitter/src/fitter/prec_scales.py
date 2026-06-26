@@ -1,5 +1,5 @@
 '''
-Module containing class ModelScales and helper functions
+Module containing class PrecScales 
 '''
 
 import math
@@ -23,27 +23,28 @@ log=LogStore.add_logger('fitter:prec_scales')
 #------------------------------------------
 class PrecScales:
     '''
-    Class used to calculate scale factor between yields of partially reconstructed component and signal
+    Class used to calculate scale factor between yields of background component and signal
     '''
     #------------------------------------------
     def __init__(
         self, 
         output_directory : Path,
-        comp             : Component, 
+        trigger          : Trigger,
         brem             : Brem,
         q2bin            : Qsq):
         '''
-        output_directory: This is the full path to the directory where outputs will be saved
-        proc            : Nickname of decay process, nicknames are in the DecayNames class
-        q2bin           : Needed to apply correct selection to get correct efficiencies and scales
+        Parameters
+        --------------------
+        output_directory : This is the full path to the directory where outputs will be saved
+        trigger          : Hlt2 trigger, needed to pick selection to get efficiencies
+        brem             : Bremsstrahlung category to get this scale for
+        q2bin            : Needed to apply correct selection to get correct efficiencies and scales
         '''
         self._out_dir     = output_directory
-        self._comp        = comp 
+        self._trigger     = trigger 
         self._brem        = brem
         self._q2bin       = q2bin
 
-        self._d_frbf      : dict[str,dict[str,tuple[float,float]]]
-        self._trigger     = Trigger.rk_ee_os
         self._initialized = False
 
         self._hash        = self._get_hash()
@@ -57,6 +58,7 @@ class PrecScales:
         hsh = hashing.hash_object([self._comp, self._q2bin, d_sel])
 
         return hsh
+        self._d_frbf      : dict[str,dict[str,tuple[float,float]]]
     #------------------------------------------
     def _check_arg(self, l_val, val, name):
         if val not in l_val:
@@ -157,25 +159,29 @@ class PrecScales:
             log.debug(f'{name:<20}{val:<20.3e}{err:<20.3e}')
         log.debug('-' * 20)
     #------------------------------------------
-    def get_scale(self, signal : Component) -> tuple[float,float]:
+    def get_scale(
+        self, 
+        background : Component,
+        signal     : Component) -> tuple[float,float]:
         '''
         Parameters
         -----------------------
-        signal: String representing signal WRT which to scale, e.g. bpkpee
+        background: Component associated to background to scale
+        signal    : Component associated to signal WRT which to scale, e.g. bpkpee
 
         Returns
         ---------------
         Scale factor k and error, meant to be used in:
 
-        Nprec = k * Nsignal
+        Nbackground = k * Nsignal
 
         reparametrization, during fit.
         '''
         self._initialize()
 
-        fr_bkg = self._get_fr(self._comp)
-        br_bkg = self._get_br(self._comp)
-        ef_bkg = self._get_ef(self._comp)
+        fr_bkg = self._get_fr(background)
+        br_bkg = self._get_br(background)
+        ef_bkg = self._get_ef(background)
 
         fr_sig = self._get_fr(signal)
         br_sig = self._get_br(signal)
@@ -187,7 +193,7 @@ class PrecScales:
         cov   = numpy.diag(l_err) ** 2
 
         self._print_vars(l_tup[:3], proc=    signal)
-        self._print_vars(l_tup[3:], proc=self._comp)
+        self._print_vars(l_tup[3:], proc=background)
 
         val, var = jac.propagate(lambda x : (x[3] * x[4] * x[5]) / (x[0] * x[1] * x[2]), l_val, cov) # type: ignore
         val = float(val)
@@ -197,19 +203,23 @@ class PrecScales:
     #------------------------------------------
     def get_constraint(
         self, 
-        signal : Component, 
-        par    : str) -> Constraint1D:
+        background : Component,
+        signal     : Component, 
+        par        : str) -> Constraint1D:
         '''
         Parameters
         ---------------
-        signal: Signal component
-        par   : Name of parameter to constrain
+        background : Background component
+        signal     : Signal component
+        par        : Name of parameter to constrain
 
         Returns
         ---------------
         Constrain
         '''
-        val, err = self.get_scale(signal = signal)
+        val, err = self.get_scale(
+            background = background,
+            signal     = signal)
 
         cns = Constraint1D(
             name = par,
