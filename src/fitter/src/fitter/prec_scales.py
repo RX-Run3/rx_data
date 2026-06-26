@@ -47,17 +47,6 @@ class PrecScales:
 
         self._initialized = False
 
-        self._hash        = self._get_hash()
-    #------------------------------------------
-    def _get_hash(self) -> str:
-        d_sel   = sel.selection(
-            q2bin   = self._q2bin, 
-            trigger = self._trigger, 
-            process = self._comp)
-
-        hsh = hashing.hash_object([self._comp, self._q2bin, d_sel])
-
-        return hsh
         self._d_frbf      : dict[str,dict[str,tuple[float,float]]]
     #------------------------------------------
     def _check_arg(self, l_val, val, name):
