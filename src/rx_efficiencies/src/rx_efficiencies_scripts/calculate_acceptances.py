@@ -9,41 +9,42 @@ import mplhep
 import pandas                   as pnd
 import matplotlib.pyplot        as plt
 
-from typing         import Union
 from pathlib        import Path
 from ROOT           import RDataFrame # type: ignore
 from dmu.pdataframe import utilities as put
 from dmu            import LogStore
 from rx_common      import Project, Component
 
-from rx_efficiencies.acceptance_calculator import AcceptanceCalculator
-from rx_efficiencies.utilities             import is_acceptance_defined
+from rx_efficiencies           import AcceptanceCalculator
+from rx_efficiencies.utilities import is_acceptance_defined
 
 log = LogStore.add_logger('rx_efficiencies:calculate_acceptance')
+plt.style.use(mplhep.style.LHCb2) # type: ignore
 #----------------------------------
 class Data:
     '''
     Class used to share data
     '''
+    update  : bool
     out_dir : Path 
     version : str
     project : Project
 
     ana_dir = Path(os.environ['ANADIR'])
     l_energy= ['8TeV', '13TeV', '14TeV']
-
-    plt.style.use(mplhep.style.LHCb2)
 #----------------------------------
 def _get_args():
     parser = argparse.ArgumentParser(description='Used to dump JSON file with acceptances')
     parser.add_argument('-e', '--energy' , nargs='+'    , help='Center of mass energy', default=Data.l_energy, choices=Data.l_energy)
     parser.add_argument('-p', '--project', type =Project, help='E.g. rk or rkst'                                             , required=True) 
     parser.add_argument('-v', '--version', type =str    , help='Version for directory containing JSON files with acceptances', required=True)
+    parser.add_argument('-u', '--update' ,                help='If used, will update acceptances, even if found', action = 'store_true')
     args = parser.parse_args()
 
     Data.l_energy = args.energy
     Data.version  = args.version
     Data.project  = args.project
+    Data.update   = args.update
     Data.out_dir  = Data.ana_dir / f'efficiencies/acceptances/{Data.version}/{Data.project}'
     Data.out_dir.mkdir(parents = True, exist_ok=True)
 #---------------------------------
@@ -120,9 +121,14 @@ def _get_acceptances(
 
     return acc_phy, acc_lhc
 #----------------------------------
-def _load_df(energy : str) -> Union[None, pnd.DataFrame]:
+def _load_df(energy : str) -> None | pnd.DataFrame:
     jsn_path = f'{Data.out_dir}/acceptances_{energy}.json'
+    if Data.update:
+        log.info('Updating acceptances')
+        return None
+
     if not os.path.isfile(jsn_path):
+        log.info('Acceptances not found, calculating them')
         return None
 
     log.warning(f'Using cached acceptances in: {jsn_path}')
