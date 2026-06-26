@@ -2,9 +2,11 @@ style: &style
   linestyle : '-'
   histtype  : step
 # --------------------
+#selection:
+#  pid_k  : (H1_PROBNN_P * (1 - H1_ProbNNk) > 0.05) && H1_PID_P > 0
+#  pid_pi :  H2_ProbNNk  * (1 - H2_PROBNN_P) * (1 - H2_PROBNN_PI) > 0.1
 selection:
-  pid_k  : (1) 
-  pid_pi : (1)
+  pid_pi : (H1_PROBNN_P * (1 - H1_ProbNNk) > 0.10) * (1 - H2_PROBNN_PI) > 0.8
 particles:
   - H1
   - H2
@@ -16,9 +18,9 @@ constraint:
 swaps:
   single:
     H2 : 2212
-  double:
-    H1 : 2212 # K  -> p
-    H2 :  321 # pi -> K
+  #double:
+  #  H1 : 2212 # K  -> p
+  #  H2 :  321 # pi -> K
 plots:
   general :
     size : [15, 10]
