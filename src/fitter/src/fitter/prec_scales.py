@@ -9,7 +9,6 @@ import jacobi   as jac
 from pathlib         import Path
 from dmu             import LogStore
 from dmu.stats       import Constraint1D, ConstraintType
-from dmu.generic     import hashing
 from dmu.generic     import utilities  as gut
 from rx_common       import Qsq, Brem
 from rx_common       import Component
@@ -226,10 +225,10 @@ def get_constraints(
     '''
     Parameters
     ------------------
-    brem  : Category needed to name constraints
-    pars  : Parameters known, e.g. in NLL
-    signal: Signal component w.r.t which constraint
-    cfg   : Full fit configuration
+    brem   : Category needed to name constraints
+    pars   : Parameters known, e.g. in NLL
+    signal : Signal component w.r.t which constraint
+    cfg    : Full fit configuration
 
     Returns
     ------------------
@@ -245,6 +244,12 @@ def get_constraints(
     for scale in scales:
         log.debug(scale)
 
+    obj = PrecScales(
+        output_directory = cfg.output_directory,
+        trigger          = cfg.mod_cfg.trigger,
+        brem             = brem,
+        q2bin            = cfg.q2bin)
+
     constraints : list[Constraint1D] = []
     for par in pars:
         if par not in scales:
@@ -253,12 +258,11 @@ def get_constraints(
 
         log.info(f'Adding part reco constraint for: {par}')
 
-        obj = PrecScales(
-            output_directory = cfg.output_directory,
-            brem             = brem,
-            comp             = scales[par], 
-            q2bin            = cfg.q2bin)
-        cns = obj.get_constraint(par = par, signal = signal)
+        background = scales[par]
+        cns = obj.get_constraint(
+            par        = par, 
+            background = background,
+            signal     = signal)
         constraints.append(cns)
 
     return constraints 
