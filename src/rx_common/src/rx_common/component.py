@@ -401,13 +401,13 @@ class Component(StrEnum):
                 return ['bppsk', 'psmm']
             # ------
             case 'bdkstkpijpsiee':
-                return ['bdjkst' , 'jpee', 'kstkpi']
+                return ['bdjkst' , 'jpee', 'kokp']
             case 'bdkstkpijpsimm':
-                return ['bdjkst' , 'jpmm', 'kstkpi']
+                return ['bdjkst' , 'jpmm', 'kokp']
             case 'bdkstkpipsi2ee':
-                return ['bdpskst', 'psee', 'kstkpi']
+                return ['bdpskst', 'psee', 'kokp']
             case 'bdkstkpipsi2mm':
-                return ['bdpskst', 'psmm', 'kstkpi']
+                return ['bdpskst', 'psmm', 'kokp']
             # ------
             case 'bsphiee':
                 return ['bsph', 'phkk']
