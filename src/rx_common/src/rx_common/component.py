@@ -497,6 +497,12 @@ class Component(StrEnum):
                 return r'$B^+\to K_1(\to K^+\pi^+\pi^-) e^+e^-$'
             case Component.bpk2kpipiee:
                 return r'$B^+\to K_2(\to K^+\pi^+\pi^-) e^+e^-$'
+            case Component.bpkppsi2mm:
+                return r'$B^+\to K^+ \psi(2S)(\to \mu+\mu^-)$'
+            case Component.bpkppsi2ee:
+                return r'$B^+\to K^+ \psi(2S)(\to e^+e^-)$'
+            case Component.bpkstkpiee:
+                return r'$B^+\to K^{*+}(\to K^+\pi^0) e^+e^-$'
             case Component.data_24:
                 return 'Data'
             case _:
