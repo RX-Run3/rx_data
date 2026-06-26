@@ -13,8 +13,8 @@ from rx_common import Channel, Project
 
 log = LogStore.add_logger('prec_acceptances::calculator')
 
-MIN_THETA : Final[float] = 0.010
-MAX_THETA : Final[float] = 0.400
+_MIN_THETA   : Final[float] = 0.010
+_MAX_THETA   : Final[float] = 0.400
 #-----------------------------
 class AcceptanceCalculator:
     '''
@@ -58,7 +58,7 @@ class AcceptanceCalculator:
         for track in self._all_tracks:
             self._rdf = self._rdf.Define(f'{track}_et', f'{track}_eta_TRUE')
             self._rdf = self._rdf.Define(f'{track}_th', f'2 * TMath::ATan( TMath::Exp(-{track}_et) )')
-            self._rdf = self._rdf.Define(f'{track}_in', f'({track}_th > {MIN_THETA}) && ({track}_th < {MAX_THETA})')
+            self._rdf = self._rdf.Define(f'{track}_in', f'({track}_th > {_MIN_THETA}) && ({track}_th < {_MAX_THETA})')
 
             self._plot_split(
                 rdf   = self._rdf, 
