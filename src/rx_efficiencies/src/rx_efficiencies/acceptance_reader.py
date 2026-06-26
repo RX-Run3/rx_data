@@ -8,7 +8,7 @@ import pandas as pnd
 from pathlib     import Path
 from dmu         import LogStore
 from dmu.generic import get_last_version
-from rx_common   import Project
+from rx_common   import Component, Project
 
 log=LogStore.add_logger('rx_efficiencies:acceptance_reader')
 #----------------------------------
@@ -21,7 +21,7 @@ class AcceptanceReader:
         self, 
         year   : str, 
         project: Project,
-        sample : str):
+        sample : Component):
         '''
         Parameters
         ---------------
@@ -68,13 +68,14 @@ class AcceptanceReader:
         if not prc_path.exists():
             raise FileNotFoundError(f'File not found: {prc_path}')
 
-        df  = pnd.read_json(prc_path)
-        df  = df[ df.Sample == self._sample ]
-        if len(df) == 0:
+        df          = pnd.read_json(prc_path)
+        df_filtered = df[ df.Sample == self._sample.value ]
+        if len(df_filtered) == 0:
+            log.info(df)
             raise ValueError(f'Process {self._sample} not found in {prc_path}')
 
         try:
-            [val] = df.Physical.tolist()
+            [val] = df_filtered.Physical.tolist()
         except ValueError as exc:
             raise ValueError(f'More than one acceptance for process: {self._sample}') from exc
 

@@ -97,7 +97,7 @@ class EfficiencyCalculator(Cache):
         Takes sample and returns geometric acceptance
         '''
         obj = AcceptanceReader(
-            sample =sample.sample, 
+            sample =sample, 
             year   =self._year, 
             project=self._trigger.project)
 
