@@ -63,6 +63,8 @@ class PrecScales:
             name = 'fd'
         elif proc.startswith('bs'):
             name = 'fs'
+        elif proc.startswith('lb'):
+            name = 'flb'
         else:
             raise ValueError(f'Cannot find hadronization fraction for: {proc}')
 
