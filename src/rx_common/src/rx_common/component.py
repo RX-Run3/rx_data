@@ -417,6 +417,8 @@ class Component(StrEnum):
                 return ['bpk2', 'k23h']
             case 'bpkstkpiee':
                 return ['bpks', 'kokp']
+            case 'lbpkjpsiee':
+                return ['lbpkjpsi', 'jpee']
             case 'bsphijpsiee':
                 return ['bsphjp', 'phkk', 'jpee']
             case 'bsphijpsimm':
