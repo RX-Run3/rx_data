@@ -157,8 +157,6 @@ class PrecScales:
 
         reparametrization, during fit.
         '''
-        self._initialize()
-
         fr_bkg = self._get_fr(background)
         br_bkg = self._get_br(background)
         ef_bkg = self._get_ef(background)
