@@ -22,11 +22,32 @@ from rx_efficiencies.utilities import is_acceptance_defined
 log = LogStore.add_logger('rx_efficiencies:calculate_acceptance')
 plt.style.use(mplhep.style.LHCb2) # type: ignore
 
-_GROUPS : Final[dict[str,list[str]]] = {
-    'Rare $R_K$'     : ['bsphiee', 'bpk1kpipiee', 'bpk2kpipiee', 'bpkpee', 'bpkpmm'],
-    'Rare $R_{K^*}$' : ['bdkstkpiee', 'bdkstkpimm'],
-    'Reso $R_K$'     : ['bpkpjpsiee', 'bppijpsiee', 'bpkpjpsimm', 'bppijpsimm'],
-    'Reso $R_{K^*}$' : ['bdkstkpijpsiee', 'bdkstkpijpsimm', 'bsphijpsiee', 'bsphijpsimm', 'lbpkjpsiee', 'lbpkjpsimm']
+_RARE_RK : Final[list[Component]] = [
+    Component.bsphiee, 
+    Component.bpk1kpipiee, 
+    Component.bpk2kpipiee, 
+    Component.bpkpee, 
+    Component.bpkpmm]
+_RARE_RKST : Final[list[Component]] = [
+    Component.bdkstkpiee, 
+    Component.bdkstkpimm]
+_RESO_RK : Final[list[Component]] = [
+    Component.bpkpjpsiee, 
+    Component.bppijpsiee, 
+    Component.bpkpjpsimm, 
+    Component.bppijpsimm]
+_RESO_RKST: Final[list[Component]] = [
+    Component.bdkstkpijpsiee, 
+    Component.bdkstkpijpsimm, 
+    Component.bsphijpsiee, 
+    Component.bsphijpsimm, 
+    Component.lbpkjpsiee, 
+    Component.lbpkjpsimm]
+_GROUPS : Final[dict[str,list[Component]]] = {
+    'Rare $R_K$'     : _RARE_RK,
+    'Rare $R_{K^*}$' : _RARE_RKST,
+    'Reso $R_K$'     : _RESO_RK,
+    'Reso $R_{K^*}$' : _RESO_RKST,
 }
 #----------------------------------
 class Data:
