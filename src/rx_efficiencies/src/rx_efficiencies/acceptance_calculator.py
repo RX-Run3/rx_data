@@ -15,6 +15,7 @@ log = LogStore.add_logger('prec_acceptances::calculator')
 
 _MIN_THETA   : Final[float] = 0.010
 _MAX_THETA   : Final[float] = 0.400
+_N_RK_TRACKS : Final[int  ] = 3
 #-----------------------------
 class AcceptanceCalculator:
     '''
@@ -213,6 +214,11 @@ class AcceptanceCalculator:
         if both_kaons:
             # For Bs -> phi(KK) ll case
             return rdf.Define('is_phy', f'{lep_acceptance} && (Kp_0_in || Km_0_in)')
+
+        only_pion    = 'pip_0' in self._all_tracks and len(self._all_tracks) == _N_RK_TRACKS
+        if only_pion:
+            # Cabibbo suppressed B -> pi ll
+            return rdf.Define('is_phy', f'{lep_acceptance} && pip_0_in')
 
         single_kaon  = 'Kp_0' in self._all_tracks
         if single_kaon:
