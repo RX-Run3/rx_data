@@ -9,6 +9,7 @@ import mplhep
 import pandas                   as pnd
 import matplotlib.pyplot        as plt
 
+from typing         import Final
 from pathlib        import Path
 from ROOT           import RDataFrame # type: ignore
 from dmu.pdataframe import utilities as put
@@ -20,6 +21,13 @@ from rx_efficiencies.utilities import is_acceptance_defined
 
 log = LogStore.add_logger('rx_efficiencies:calculate_acceptance')
 plt.style.use(mplhep.style.LHCb2) # type: ignore
+
+_GROUPS : Final[dict[str,list[str]]] = {
+    'Rare $R_K$'     : ['bsphiee', 'bpk1kpipiee', 'bpk2kpipiee', 'bpkpee', 'bpkpmm'],
+    'Rare $R_{K^*}$' : ['bdkstkpiee', 'bdkstkpimm'],
+    'Reso $R_K$'     : ['bpkpjpsiee', 'bppijpsiee', 'bpkpjpsimm', 'bppijpsimm'],
+    'Reso $R_{K^*}$' : ['bdkstkpijpsiee', 'bdkstkpijpsimm', 'bsphijpsiee', 'bsphijpsimm', 'lbpkjpsiee', 'lbpkjpsimm']
+}
 #----------------------------------
 class Data:
     '''
@@ -182,6 +190,7 @@ def _save_tables(
 #----------------------------------
 def _plot_acceptance(
     df   : pnd.DataFrame, 
+    label: str,
     kind : str) -> None:
     '''
     Parameters
@@ -191,14 +200,16 @@ def _plot_acceptance(
     '''
     _, ax = plt.subplots(figsize=(8,6))
     for process, df_p in df.groupby('Sample'):
-        df_p.plot(x='Energy', y=kind, ax=ax, label=process, figsize=(12, 8))
+        sample = Component(process)
+
+        df_p.plot(x='Energy', y=kind, ax=ax, label=sample.latex, figsize=(12, 8))
 
     plt.ylim(0.0, 0.20)
     plt.grid()
-    plt.title(kind)
+    plt.title(f'{kind}; {label}')
     plt.ylabel('Acceptance')
     plt.xlabel('')
-    plot_path = f'{Data.out_dir}/acceptances_{kind}.png'
+    plot_path = f'{Data.out_dir}/acceptances_{kind}_{label}.png'
     log.info(f'Saving to: {plot_path}')
     plt.savefig(plot_path)
     plt.close('all')
@@ -208,7 +219,7 @@ def main():
     Start here
     '''
     _get_args()
-    l_df = []
+    l_df : list[pnd.DataFrame] = []
     for energy in Data.l_energy:
         df=_get_df(energy)
         _save_tables(df, energy)
@@ -218,8 +229,11 @@ def main():
 
     df = pnd.concat(l_df, axis=0)
 
-    _plot_acceptance(df, 'LHCb')
-    _plot_acceptance(df, 'Physical')
+    for label, group in _GROUPS.items():
+        df_group = df[df['Sample'].isin(group) ]
+
+        _plot_acceptance(df = df_group, kind =     'LHCb', label = label)
+        _plot_acceptance(df = df_group, kind = 'Physical', label = label)
 #----------------------------------
 if __name__ == '__main__':
     main()
