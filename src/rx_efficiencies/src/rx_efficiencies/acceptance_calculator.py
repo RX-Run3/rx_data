@@ -89,7 +89,7 @@ class AcceptanceCalculator:
         Returns path to directory where validation plots go
         '''
         return self._plot_dir
-
+    #-----------------------------
     @plot_dir.setter
     def plot_dir(self, value) -> None:
         try:
@@ -179,6 +179,14 @@ class AcceptanceCalculator:
         raise ValueError(f'Invalid channel: {self._channel}')
     #-----------------------------
     def _get_numerators(self) -> tuple[int,int]:
+        '''
+        Returns
+        -------------------
+        Tuple with number of track sets passing acceptance
+
+        first element : Physical acceptance, i.e. what would be seen in the targetted final state
+        second element: LHCb acceptance, i.e. all the track (even the unused ones) need to be in acceptance
+        '''
         rdf          = self._rdf
         l_all_trk_in = [ f'{trk}_in' for trk in self._all_tracks ]
         all_in       = '&&'.join(l_all_trk_in)
