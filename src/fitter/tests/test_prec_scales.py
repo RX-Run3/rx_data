@@ -7,7 +7,7 @@ import pytest
 
 from typing        import Any, Final
 from pathlib       import Path
-from rx_common     import Brem, Component, Qsq, Cuts
+from rx_common     import Brem, Component, Qsq, Cuts, Trigger
 from rx_selection  import selection  as sel
 from fitter        import PrecScales
 
@@ -65,7 +65,10 @@ def _validate_scales(scales : Any) -> None:
     Component.bdkstkpiee,
     Component.bpkstkpiee,
     Component.bsphiee])
-@pytest.mark.parametrize('brem', [ Brem.one, Brem.two, Brem.brx12 ])
+@pytest.mark.parametrize('brem', [ 
+    Brem.one, 
+    Brem.two, 
+    Brem.brx12])
 def test_all_datasets(
     q2bin    : Qsq,
     brem     : Brem,
@@ -78,11 +81,13 @@ def test_all_datasets(
     with Cache.cache_root(path = tmp_path):
         obj    = PrecScales(
             output_directory= tmp_path,
+            trigger         = Trigger.rk_ee_os,
             brem            = brem,
-            comp            = component,
             q2bin           = q2bin)
 
-        scales = obj.get_scale(signal=signal)
+        scales = obj.get_scale(
+            background = component,
+            signal     = signal)
 
     _validate_scales(scales = scales)
 #-------------------------------
@@ -110,10 +115,12 @@ def test_seq_scan_scales(
          Cache.cache_root(path = tmp_path):
         obj    = PrecScales(
             output_directory= tmp_path,
-            comp            = component,
+            trigger         = Trigger.rk_ee_os,
             brem            = brem,
             q2bin           = q2bin)
-        scales = obj.get_scale(signal=signal)
+        scales = obj.get_scale(
+            signal     = signal, 
+            background = component)
 
     _validate_scales(scales = scales)
 #-------------------------------
