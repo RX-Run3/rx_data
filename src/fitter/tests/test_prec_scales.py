@@ -69,7 +69,7 @@ def _validate_scales(scales : Any) -> None:
     Brem.one, 
     Brem.two, 
     Brem.brx12])
-def test_all_datasets(
+def test_rk_datasets(
     q2bin    : Qsq,
     brem     : Brem,
     component: Component,
@@ -87,6 +87,35 @@ def test_all_datasets(
 
         scales = obj.get_scale(
             background = component,
+            signal     = signal)
+
+    _validate_scales(scales = scales)
+#-------------------------------
+@pytest.mark.parametrize('q2bin'    , [
+    Qsq.jpsi])
+@pytest.mark.parametrize('background', [
+    Component.bsphijpsiee,
+    Component.lbpkjpsiee])
+@pytest.mark.parametrize('brem', [ 
+    Brem.brx12])
+def test_rkst_reso(
+    q2bin     : Qsq,
+    brem      : Brem,
+    background: Component,
+    tmp_path  : Path):
+    '''
+    Test with samples used for resonant rkstar
+    '''
+    signal   = Component.bdkstkpijpsiee
+    with Cache.cache_root(path = tmp_path):
+        obj    = PrecScales(
+            output_directory= tmp_path,
+            trigger         = Trigger.rkst_ee_os,
+            brem            = brem,
+            q2bin           = q2bin)
+
+        scales = obj.get_scale(
+            background = background,
             signal     = signal)
 
     _validate_scales(scales = scales)
