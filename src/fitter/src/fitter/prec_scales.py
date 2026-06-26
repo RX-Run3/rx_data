@@ -43,25 +43,15 @@ class PrecScales:
         self._trigger     = trigger 
         self._brem        = brem
         self._q2bin       = q2bin
-
-        self._initialized = False
-
-        self._d_frbf      : dict[str,dict[str,tuple[float,float]]]
+        self._d_frbf      = gut.load_data(
+            package='rx_efficiencies_data', 
+            fpath  ='scales/fr_bf.yaml')
     #------------------------------------------
     def _check_arg(self, l_val, val, name):
         if val not in l_val:
             raise ValueError(f'{name} {val} not allowed')
 
         log.debug(f'{name:<20}{"->":20}{val:<20}')
-    #------------------------------------------
-    def _initialize(self):
-        if self._initialized:
-            return
-
-        log.debug('Initializing')
-        self._d_frbf = gut.load_data(package='rx_efficiencies_data', fpath='scales/fr_bf.yaml')
-
-        self._initialized = True
     #------------------------------------------
     def _get_fr(self, proc : str) -> tuple[float,float]:
         '''
