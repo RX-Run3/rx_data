@@ -2,16 +2,21 @@
 Module containing ScalesTabulator
 '''
 import os
+import pandas as pnd
  
-from pathlib     import Path
-from typing      import Final
-from pydantic    import BaseModel, model_validator
-from dmu.generic import utilities as gut
-from rx_common   import Brem, Component, Qsq, Trigger
+from dmu.workflow import Cache
+from pathlib      import Path
+from typing       import Final
+from dmu          import LogStore
+from pydantic     import BaseModel, model_validator
+from dmu.generic  import utilities as gut
+from rx_common    import Brem, Component, Qsq, Trigger
+from fitter       import PrecScales
 
 _ANADIR : Final[Path] = Path(os.environ['ANADIR'])
+log = LogStore.add_logger('fitter:scales_tabulator')
 # ----------------------------------------
-class ScalesGroup(BaseModel):
+class ScalesCategory(BaseModel):
     '''
     Class representing a group of signal/background scales
     '''
@@ -19,7 +24,7 @@ class ScalesGroup(BaseModel):
     brem       : Brem
     q2bin      : list[Qsq]
     backgrounds: list[Component]
-    signal     : list[Component]
+    signal     : Component
     # ------------------
     @model_validator(mode = 'before')
     @classmethod
@@ -34,7 +39,7 @@ class ScalesTabulatorConf(BaseModel):
     Class used to configure ScalesTabulator
     '''
     output_directory : Path
-    categories       : dict[str,ScalesGroup]
+    categories       : dict[str,ScalesCategory]
     # ------------------
     @model_validator(mode = 'before')
     @classmethod
@@ -71,8 +76,44 @@ class ScalesTabulator:
         '''
         self._cfg = cfg
     # ----------------------------------------
+    def _tabulate(self, name : str, category : ScalesCategory) -> None:
+        '''
+        Parameters
+        --------------
+        name    : Name of category
+        category: Config to plot a given group of scale factors
+        '''
+        df = pnd.DataFrame(columns = ['Signal', 'Background', 'Value', 'Error'])
+
+        signal = category.signal
+        for q2bin in category.q2bin:
+            obj = PrecScales(
+                output_directory = self._cfg.output_directory,
+                trigger          = category.trigger,
+                brem             = category.brem,
+                q2bin            = q2bin)
+
+            for background in category.backgrounds:
+                val, err       = obj.get_scale(
+                    signal     = category.signal, 
+                    background = background)
+
+                log.debug(f'{val:10.3g}{err:10.3g}')
+
+                df.loc[len(df)] = {
+                    'Signal'     : signal, 
+                    'Background' : background,
+                    'Value'      : val,
+                    'Error'      : err, 
+                }
+
+        print(df)
+    # ----------------------------------------
     def run(self) -> None:
         '''
         Runs plotting
         '''
+        for name, category in self._cfg.categories.items():
+            with Cache.cache_root(path = _ANADIR / 'scales/.cache' ):
+                self._tabulate(name = name, category = category)
 # ----------------------------------------
