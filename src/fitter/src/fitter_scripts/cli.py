@@ -7,14 +7,15 @@ import typer
 import mplhep
 import matplotlib.pyplot as plt
 
-from hepstats    import splot
-from dmu         import LogLevels, LogStore
-from pathlib     import Path
-from fitter      import ScalesTabulator
-from fitter      import ScalesTabulatorConf
-from rx_common   import Component
-from dmu.stats   import utilities as sut
-from dmu.stats   import Function
+from ROOT      import EnableImplicitMT # type: ignore
+from hepstats  import splot
+from dmu       import LogLevels, LogStore
+from pathlib   import Path
+from fitter    import ScalesTabulator
+from fitter    import ScalesTabulatorConf
+from rx_common import Component
+from dmu.stats import utilities as sut
+from dmu.stats import Function
 
 app = typer.Typer(
     help            = __doc__,
@@ -22,10 +23,15 @@ app = typer.Typer(
 log = LogStore.add_logger('rx_fitter:cli')
 # ----------------------
 @app.command()
-def tabulate_scales() -> None:
+def tabulate_scales(
+    ncores : int = typer.Option(1, '--ncores', '-n', help='Number of cores')) -> None: # noqa: B008
     '''
     Makes table of signal over background scale factors
     '''
+    if ncores > 1:
+        log.info(f'Using {ncores} cores')
+        EnableImplicitMT(ncores)
+
     cfg = ScalesTabulatorConf.load()
     ptr = ScalesTabulator(cfg = cfg)
     ptr.run()
