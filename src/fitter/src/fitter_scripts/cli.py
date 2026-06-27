@@ -10,6 +10,8 @@ import matplotlib.pyplot as plt
 from hepstats    import splot
 from dmu         import LogLevels, LogStore
 from pathlib     import Path
+from fitter      import ScalesTabulator
+from fitter      import ScalesTabulatorConf
 from rx_common   import Component
 from dmu.stats   import utilities as sut
 from dmu.stats   import Function
@@ -18,6 +20,15 @@ app = typer.Typer(
     help            = __doc__,
     context_settings= {"help_option_names": ["-h", "--help"]})
 log = LogStore.add_logger('rx_fitter:cli')
+# ----------------------
+@app.command()
+def tabulate_scales() -> None:
+    '''
+    Makes table of signal over background scale factors
+    '''
+    cfg = ScalesTabulatorConf.load()
+    ptr = ScalesTabulator(cfg = cfg)
+    ptr.run()
 # ----------------------
 @app.command()
 def fit_summary(

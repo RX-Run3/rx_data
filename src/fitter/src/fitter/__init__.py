@@ -45,6 +45,10 @@ from .configs  import ParametricConf
 from .configs  import RXFitConfig
 from .configs  import ObservableConf 
 from .configs  import CmbConstraintConf
+# ----------
+from .scales_tabulator import ScalesTabulator
+from .scales_tabulator import ScalesTabulatorConf
+
 __all__ = [
     'plot_prefit_postfit',
     # ------------------
@@ -63,6 +67,9 @@ __all__ = [
     'Category',
     'CategoryMerger',
     'NLLConf',
+    # ------------------
+    'ScalesTabulator',
+    'ScalesTabulatorConf',
     # ------------------
     'ObservableConf',
     'RXFitConfig',
