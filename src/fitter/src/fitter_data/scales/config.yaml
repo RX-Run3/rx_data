@@ -33,7 +33,7 @@ categories:
       - bppijpsimm
   # ------------------------
   rkst_reso_electron:
-    trigger : rk_ee_os
+    trigger : rkst_ee_os
     brem    : x12
     q2bin   :
       - jpsi
