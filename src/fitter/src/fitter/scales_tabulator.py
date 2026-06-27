@@ -83,6 +83,8 @@ class ScalesTabulator:
         name    : Name of category
         category: Config to plot a given group of scale factors
         '''
+        log.info(f'Tabulating {name}')
+
         df = pnd.DataFrame(columns = ['Signal', 'Background', 'Value', 'Error'])
 
         signal = category.signal
@@ -106,8 +108,6 @@ class ScalesTabulator:
                     'Value'      : val,
                     'Error'      : err, 
                 }
-
-        print(df)
     # ----------------------------------------
     def run(self) -> None:
         '''
