@@ -4,14 +4,15 @@ Module containing ScalesTabulator
 import os
 import pandas as pnd
  
-from dmu.workflow import Cache
-from pathlib      import Path
-from typing       import Final
-from dmu          import LogStore
-from pydantic     import BaseModel, model_validator
-from dmu.generic  import utilities as gut
-from rx_common    import Brem, Component, Qsq, Trigger
-from fitter       import PrecScales
+from dmu.workflow   import Cache
+from pathlib        import Path
+from typing         import Final
+from dmu            import LogStore
+from pydantic       import BaseModel, model_validator
+from dmu.pdataframe import utilities as put
+from dmu.generic    import utilities as gut
+from rx_common      import Brem, Component, Qsq, Trigger
+from fitter         import PrecScales
 
 _ANADIR : Final[Path] = Path(os.environ['ANADIR'])
 log = LogStore.add_logger('fitter:scales_tabulator')
@@ -74,20 +75,28 @@ class ScalesTabulator:
         ---------------
         cfg: Configuration object
         '''
+        LogStore.set_level('rx_selection:selection'               , 30)
+        LogStore.set_level('rx_efficiencies:efficiency_calculator', 30)
+
         self._cfg = cfg
     # ----------------------------------------
-    def _tabulate(self, name : str, category : ScalesCategory) -> None:
+    def _get_df(self, name : str, category : ScalesCategory) -> tuple[pnd.DataFrame, Component]:
         '''
         Parameters
         --------------
         name    : Name of category
         category: Config to plot a given group of scale factors
+
+        Returns
+        --------------
+        Tuple with:
+
+        Dataframe with values and errors of scales for different backgrounds
+        Signal component with respect to which the scales are calculated 
         '''
         log.info(f'Tabulating {name}')
 
-        df = pnd.DataFrame(columns = ['Signal', 'Background', 'Value', 'Error'])
-
-        signal = category.signal
+        df = pnd.DataFrame(columns = ['Background', 'Value', 'Error', '$q^2$ bin'])
         for q2bin in category.q2bin:
             obj = PrecScales(
                 output_directory = self._cfg.output_directory,
@@ -103,11 +112,32 @@ class ScalesTabulator:
                 log.debug(f'{val:10.3g}{err:10.3g}')
 
                 df.loc[len(df)] = {
-                    'Signal'     : signal, 
                     'Background' : background,
                     'Value'      : val,
                     'Error'      : err, 
+                    '$q^2$ bin'  : q2bin,
                 }
+
+        return df, category.signal
+    # ----------------------------------------
+    def _tabulate(self, name : str, category : ScalesCategory) -> None:
+        '''
+        Parameters
+        --------------
+        name    : Name of category
+        category: Config to plot a given group of scale factors
+        '''
+        df, signal = self._get_df(name = name, category = category)
+        df_for_tex = df.assign(Background=df['Background'].apply(lambda sample : Component(sample).latex))
+
+        path = self._cfg.output_directory / f'{name}-{signal.value}.tex'
+        log.info(f'Saving to: {path}')
+
+        put.df_to_tex(
+            df        = df_for_tex, 
+            path      = path, 
+            hide_index=True, 
+            d_format  ={'Background' : '{}', 'Value' : '{:.3g}', 'Error' : '{:.3g}'})
     # ----------------------------------------
     def run(self) -> None:
         '''
