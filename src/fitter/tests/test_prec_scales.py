@@ -16,7 +16,7 @@ from dmu.workflow  import Cache
 
 log=LogStore.add_logger('fitter:test_prec_scales')
 
-NSCALES : Final[int] = 2
+_NSCALES : Final[int] = 2
 # -----------------------------------
 @staticmethod
 def _get_seq_wp(min_cmb : float, min_prc : float, step : float) -> list[str]:
@@ -51,11 +51,14 @@ def _validate_scales(scales : Any) -> None:
     '''
     Validates prec scale and error
     '''
-    assert len(scales) == NSCALES
+    assert len(scales) == _NSCALES
     val, err = scales
 
     assert isinstance(val, float)
     assert isinstance(err, float)
+
+    assert err > 0
+    assert 0 < val < 1
 #-------------------------------
 @pytest.mark.parametrize('q2bin'    , [
     Qsq.low,
