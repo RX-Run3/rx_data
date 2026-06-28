@@ -8,7 +8,7 @@ from typing         import Final, cast
 from pathlib        import Path
 from dmu.workflow   import Cache
 from dmu            import LogStore
-from dmu.stats      import ModelFactory, print_constraints
+from dmu.stats      import ModelFactory, ParameterLibrary, SimpleYieldConf, YieldConf, YieldsConf, print_constraints
 from dmu.stats      import zfit
 from dmu.stats      import ParameterLibrary as PL
 from dmu.generic    import UnpackerModel, utilities           as gut
@@ -329,7 +329,11 @@ def test_all_but_cmb(
     nll = Parameters(kind = kind, obs = obs) 
     nll = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
 
-    cfg = _get_fit_config(q2bin = q2bin)
+    cfg = _get_fit_config(
+        project = Project.rk,
+        channel = Channel.ee,
+        q2bin   = q2bin)
+
     del cfg.mod_cfg.components[Component.comb]
 
     if not slow_mode:
@@ -520,7 +524,10 @@ def test_only_prec(
     obs  = zfit.Space('dummy', limits=(4500, 6000))
     nll  = Parameters(kind = f'rare_prec_rk_{brem}', obs = obs) 
     nll  = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
-    cfg  = _get_fit_config(q2bin = q2bin)
+    cfg  = _get_fit_config(
+        project = Project.rk,
+        channel = Channel.ee,
+        q2bin   = q2bin)
 
     for component in _PRC_COMPONENTS:
         cfg.mod_cfg.components.pop(component, None)
@@ -546,20 +553,32 @@ def test_only_prec(
 # --------------------------------------------------------------
 @pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
 def test_save(
-    tmp_path : Path, 
+    tmp_path : Path,
     q2bin    : Qsq):
     '''
-
     Parameters
     -------------
     q2bin: q2 bin
     '''
     brem = Brem.brx12
     obs  = zfit.Space('B_Mass_smr', limits=(4500, 7000))
-    cfg  = _get_fit_config(q2bin = q2bin)
+    cfg  = _get_fit_config(
+        project = Project.rk,
+        channel = Channel.ee,
+        q2bin   = q2bin)
+
     nll  = _get_nll(obs=obs, cfg=cfg, q2bin = q2bin, reg = brem.region) 
 
-    with Cache.cache_root(path = tmp_path):
+    yld_cfg   = SimpleYieldConf(val = 10, min = 0, max = 100_000)
+    yld       = YieldConf(root = yld_cfg)
+    par_cfg   = YieldsConf(root = {f'yld_comb_{brem}' : yld})
+
+    ctx_1 = Cache.cache_root(path = tmp_path)
+    ctx_2 = ParameterLibrary.parameter_schema(cfg = par_cfg)
+    with ExitStack() as stack:
+        stack.enter_context(ctx_1)
+        stack.enter_context(ctx_2)
+
         obj         = ConstraintReader(
             brem    = brem,
             signal  = Component.bpkpee,
