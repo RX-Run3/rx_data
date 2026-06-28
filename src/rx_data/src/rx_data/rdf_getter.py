@@ -523,7 +523,12 @@ class RDFGetter(SpecMaker):
         conf_path = self.get_spec_path(per_file=per_file)
         self._rdf = self._rdf_from_conf(fpath='joint_files', conf_path=conf_path)
 
-        rdf = self._emulator.post_process(rdf=self._rdf)
+        if self._tree_name == 'DecayTree':
+            rdf = self._emulator.post_process(rdf=self._rdf)
+        else:
+            rdf = self._rdf
+            log.info(f'Not emulating tree: {self._tree_name}')
+
         rdf = self._check_rdf(rdf = rdf)
 
         return rdf
