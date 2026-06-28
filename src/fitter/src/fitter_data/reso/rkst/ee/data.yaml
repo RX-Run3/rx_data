@@ -44,7 +44,7 @@ components:
   bdkstkpijpsiee  : reso/rkst/ee/bdkstkpijpsiee.yaml
   bdkstkpipsi2ee  : reso/rkst/ee/bdkstkpipsi2ee.yaml
 constraints:
-  pre_rare      : []
+  signal_fractions      : []
   combinatorial : false
   signal_shape  : false
 fit: {}

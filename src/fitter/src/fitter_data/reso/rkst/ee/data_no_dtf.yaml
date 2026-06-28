@@ -26,7 +26,7 @@ components:
   bdkstkpijpsiee  : reso/rkst/ee/bdkstkpijpsiee.yaml
   bdkstkpipsi2ee  : reso/rkst/ee/bdkstkpipsi2ee.yaml
 constraints:
-  pre_rare: []
+  signal_fractions: []
 fit: {}
 plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#fit-plotting
   nbins     : 50

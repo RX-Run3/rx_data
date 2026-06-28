@@ -78,7 +78,7 @@ components:
   bdkstkpipsi2ee : rare/rkst/ee/bdkstkpipsi2ee_np.yaml
   bdkstkpiee     : rare/rkst/ee/bdkstkpiee.yaml.j2
 constraints :
-  pre_rare      : []
+  signal_fractions      : []
   combinatorial : true 
   signal_shape  : true 
 fit: {}

@@ -22,7 +22,7 @@ components:
   bdkstjpsimm_swp : reso/rkst/mm/bdkstjpsimm_swp_np.yaml
   bdkstkpipsi2mm  : reso/rkst/mm/bdkstkpipsi2mm.yaml
 constraints:
-  pre_rare      : []
+  signal_fractions      : []
   combinatorial : false
   signal_shape  : false
 fit: {}

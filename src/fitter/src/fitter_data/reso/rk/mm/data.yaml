@@ -22,7 +22,7 @@ components:
   bpkppsi2mm : reso/rk/mm/bpkppsi2mm.yaml
   bpkpjpsimm : reso/rk/mm/bpkpjpsimm.yaml
 constraints:
-  pre_rare      : []
+  signal_fractions      : []
   combinatorial : false
   signal_shape  : false
 fit: {}
