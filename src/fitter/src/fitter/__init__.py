@@ -39,6 +39,7 @@ from .mva_conf import MVAConf, MVAWp
 from .configs  import FitModelConf
 from .configs  import MisIDConf
 from .configs  import CombinatorialConf
+from .configs  import CombinatorialConfUnconstrained
 from .configs  import CCbarConf
 from .configs  import NonParametricConf
 from .configs  import ParametricConf
@@ -78,6 +79,7 @@ __all__ = [
     'ParametricConf',
     'CCbarConf',
     'CombinatorialConf',
+    'CombinatorialConfUnconstrained',
     'MisIDConf',
     'PrecScales',
     # ------------------
