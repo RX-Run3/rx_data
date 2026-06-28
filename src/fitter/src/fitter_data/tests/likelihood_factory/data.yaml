@@ -27,7 +27,7 @@ components:
   comb   : tests/likelihood_factory/comb.yaml
   bpkpmm : tests/likelihood_factory/bpkpmm.yaml
 constraints:
-  signal_fractions: []
+  signal_fraction: []
 fit: {}
 plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#fit-plotting
   nbins   : 50
