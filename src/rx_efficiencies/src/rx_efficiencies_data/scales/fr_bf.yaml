@@ -24,6 +24,10 @@ bf:
   bsphjp:
     - 0.00101
     - 0.00040
+  # Bs -> K* J/\psi, https://pdglive.lbl.gov/BranchingRatio.action?desig=45&parCode=S086&home=MXXX046
+  bsjkst:
+    - 0.0000395
+    - 0.0000024
   # B+ -> J/psi pi+, from https://pdglive.lbl.gov/BranchingRatio.action?desig=222&parCode=S041&home=MXXX045
   bpjp:
     - 0.000041
