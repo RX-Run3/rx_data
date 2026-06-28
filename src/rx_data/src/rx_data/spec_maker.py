@@ -27,6 +27,7 @@ log=LogStore.add_logger('rx_data:spec_maker')
 
 _MAIN_TREE           : Final[str]       = 'main'
 _ELECTRON_ONLY_TREES : Final[list[str]] = ['brem_track_2']
+_ALLOWED_TREES       : Final[list[str]] = ['DecayTree', 'MCDecayTree']
 # --------------------------
 class SpecMaker:
     '''
@@ -57,6 +58,9 @@ class SpecMaker:
         trigger   : rk_ee_os
         skip_patch: If true, it will not patch for missing samples, false by default
         '''
+        if tree not in _ALLOWED_TREES:
+            raise ValueError(f'Tree {tree} not in allowed trees: {_ALLOWED_TREES}')
+
         self._component = component
         self._emulator  = SampleEmulator(sample=component.sample)
         self._cfg_samp  = self._emulator.get_samples()
