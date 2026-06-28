@@ -15,6 +15,7 @@ from fitter      import ParametricConf
 from fitter      import FitModelConf
 from fitter      import MVAWp
 from fitter      import CmbConstraintConf
+from fitter      import CombinatorialConfUnconstrained
 
 log=LogStore.add_logger('fitter:test_config')
 # ----------------------
@@ -101,10 +102,15 @@ def test_combinatorial_sr(
         package = 'fitter_data', 
         fpath   = f'{kind}/{analysis}/{channel}/comb.yaml')
 
-    obj = CombinatorialConf(**data)
+    if   kind == 'rare' and channel == 'ee':
+        obj = CombinatorialConf(**data)
+        assert isinstance(obj.constraints, CmbConstraintConf)
+    elif kind == 'reso'  or channel == 'mm':
+        obj = CombinatorialConfUnconstrained(**data)
+    else:
+        raise ValueError(f'Invalid kind: {kind}')
 
-    assert isinstance(obj.models     , dict)
-    assert isinstance(obj.constraints, CmbConstraintConf)
+    assert isinstance(obj.models, dict)
 # ----------------------
 def test_combinatorial_cr():
     '''
@@ -114,7 +120,7 @@ def test_combinatorial_cr():
         package = 'fitter_data', 
         fpath   = 'misid/rk/ee/comb.yaml')
 
-    CombinatorialConf(**data)
+    CombinatorialConfUnconstrained(**data)
 # ----------------------
 @pytest.mark.parametrize('analysis', ['rk'  , 'rkst'])
 @pytest.mark.parametrize('kind'    , ['reso', 'rare'])
