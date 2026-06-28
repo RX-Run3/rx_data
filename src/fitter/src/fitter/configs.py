@@ -75,10 +75,10 @@ class ConstraintsCfg(UnpackerModel):
     '''
     model_config = ConfigDict(frozen=True)
 
-    pre_rare      : list[Component]
-    combinatorial : bool
-    signal_shape  : bool
-    misid         : 'FitModelConf | None' = None
+    signal_fraction : list[Component]
+    combinatorial   : bool
+    signal_shape    : bool
+    misid           : 'FitModelConf | None' = None
     # ---------------------
     @classmethod
     def default(cls) -> 'ConstraintsCfg':
@@ -88,16 +88,16 @@ class ConstraintsCfg(UnpackerModel):
         Default configuration, mostly needed for tests
         '''
         return cls(
-            combinatorial = True,
-            signal_shape  = True,
-            pre_rare      = [])
+            combinatorial   = True,
+            signal_shape    = True,
+            signal_fraction = [])
     # ---------------------
     @property
     def is_empty(self) -> bool:
         '''
         True if no constraints are present
         '''
-        return self.misid is None and self.pre_rare is None
+        return self.misid is None and self.signal_fraction is None
 # ------------------------------
 # Components
 # ------------------------------
