@@ -1,6 +1,6 @@
 component    : bpkpipi
 trigger      : rk_ee_nopid
-project      : rk_nopid
+project      : rk_no_pid
 events_range :
   - 4200
   - 6000
