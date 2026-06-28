@@ -31,8 +31,46 @@ _PRC_COMPONENTS : Final[list[Component]] = [
     Component.bdkstkpiee
 ]
 
+_RESO_MISID_RKST_EE_COMPONENTS : Final[list[Component]] = [
+    Component.bskstjpsiee,
+    Component.lbpkjpsiee,
+    Component.bsphijpsiee,
+]
+
+_RESO_MISID_RKST_MM_COMPONENTS : Final[list[Component]] = [
+    Component.bskstjpsimm,
+    Component.lbpkjpsimm,
+    Component.bsphijpsimm,
+]
+
+_RESO_MISID_RK_EE_COMPONENTS : Final[list[Component]] = [
+    Component.bppijpsiee,
+]
+
+_RESO_MISID_RK_MM_COMPONENTS : Final[list[Component]] = [
+    Component.bppijpsimm,
+]
+
+_RESO_MISID_RK_CONSTRAINTS : Final[list[str]] = [
+    f'reso_misid_rk_{Brem.zero}',
+    f'reso_misid_rk_{Brem.one}',
+    f'reso_misid_rk_{Brem.two}',
+    f'reso_misid_rk_{Brem.brx12}',
+]
+
+_RESO_MISID_RKST_CONSTRAINTS : Final[list[str]] = [
+    f'reso_misid_rkst_{Brem.zero}',
+    f'reso_misid_rkst_{Brem.one}',
+    f'reso_misid_rkst_{Brem.two}',
+    f'reso_misid_rkst_{Brem.brx12}',
+]
+
+_RESO_MISID_CONSTRAINTS = _RESO_MISID_RK_CONSTRAINTS + _RESO_MISID_RKST_CONSTRAINTS
+
 _CONSTRAINTS : Final[list[str]] = [
     'sig_par', 
+    'reso_misid_rk',
+    'reso_misid_rkst',
     'rare_prec_rk', 
     'rare_misid',
     'combinatorial', 
