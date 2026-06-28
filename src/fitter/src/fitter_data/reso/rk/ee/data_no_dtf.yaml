@@ -31,7 +31,7 @@ components:
   bpkpjpsiee : reso/rk/ee/bpkpjpsiee_no_dtf.yaml
   #bpkppsi2ee : reso/rk/ee/bpkppsi2ee.yaml
 constraints:
-  signal_fractions : []
+  signal_fraction : []
   combinatorial : false
   signal_shape  : false
 fit: {}

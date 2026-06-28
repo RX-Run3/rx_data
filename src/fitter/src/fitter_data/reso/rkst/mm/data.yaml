@@ -22,9 +22,12 @@ components:
   bdkstjpsimm_swp : reso/rkst/mm/bdkstjpsimm_swp_np.yaml
   bdkstkpipsi2mm  : reso/rkst/mm/bdkstkpipsi2mm.yaml
 constraints:
-  signal_fractions      : []
-  combinatorial : false
-  signal_shape  : false
+  signal_fraction:
+    - bskstjpsimm
+    - bsphijpsimm
+    - lbpkjpsimm
+  combinatorial   : false
+  signal_shape    : false
 fit: {}
 plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#fit-plotting
   merging : {}

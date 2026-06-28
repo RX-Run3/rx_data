@@ -36,9 +36,10 @@ components:
   bpkpjpsiee : reso/rk/ee/bpkpjpsiee.yaml
   bpkppsi2ee : reso/rk/ee/bpkppsi2ee.yaml
 constraints:
-  signal_fractions      : []
-  combinatorial : false
-  signal_shape  : false
+  signal_fraction:
+    - bppijpsiee
+  combinatorial   : false
+  signal_shape    : false
 fit: {}
 plots:
   merging : {}

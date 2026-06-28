@@ -36,7 +36,7 @@ components:
       nbins  : 60
       stacked: True
 constraints:
-  signal_fractions : []
+  signal_fraction : []
 fit: {}
 plots:
   merging:

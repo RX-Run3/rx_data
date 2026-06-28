@@ -85,7 +85,7 @@ components:
   #bpkpee     : rare/rk/ee/bpkpee_np.yaml
 constraints:
   misid    : misid/rk/ee/data_misid.yaml
-  signal_fractions :
+  signal_fraction :
     - bdkstkpiee
     - bpkstkpiee
     - bsphiee

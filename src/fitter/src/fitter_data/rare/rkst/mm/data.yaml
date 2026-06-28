@@ -25,7 +25,7 @@ components:
   comb       : rare/rkst/mm/comb.yaml
   bdkstkpimm : rare/rkst/mm/bdkstkpimm.yaml
 constraints:
-  signal_fractions      : []
+  signal_fraction      : []
   combinatorial : false
   signal_shape  : false
 fit: {}

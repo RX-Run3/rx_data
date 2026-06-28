@@ -24,7 +24,7 @@ components:
   bpkpipi: misid/rk/ee/bpkpipi.yaml
   bpkkk  : misid/rk/ee/bpkkk.yaml
 constraints:
-  signal_fractions      : []
+  signal_fraction      : []
   combinatorial : false
   signal_shape  : false
   misid         : null

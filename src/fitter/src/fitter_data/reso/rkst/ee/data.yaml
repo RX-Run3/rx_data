@@ -44,9 +44,12 @@ components:
   bdkstkpijpsiee  : reso/rkst/ee/bdkstkpijpsiee.yaml
   bdkstkpipsi2ee  : reso/rkst/ee/bdkstkpipsi2ee.yaml
 constraints:
-  signal_fractions      : []
-  combinatorial : false
-  signal_shape  : false
+  signal_fraction:
+    - bskstjpsiee 
+    - bsphijpsiee
+    - lbpkjpsiee
+  combinatorial   : false
+  signal_shape    : false
 fit: {}
 plots:
   merging : {}

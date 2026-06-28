@@ -75,7 +75,7 @@ mod_cfg: &mod_cfg
     comb       : rare/rkst/ee/comb_ss.yaml
   constraints:
     misid        : null 
-    signal_fractions     : []
+    signal_fraction     : []
     combinatorial: false 
     signal_shape : false 
   fit  :

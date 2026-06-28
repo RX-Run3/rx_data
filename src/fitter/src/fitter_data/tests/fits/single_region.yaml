@@ -36,7 +36,7 @@ components:
       nbins  : 60
       stacked: True
 constraints:
-  signal_fractions : []
+  signal_fraction : []
 fit: {}
 plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#fit-plotting
   merging : {}
