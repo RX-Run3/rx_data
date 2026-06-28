@@ -106,12 +106,32 @@ class Parameters:
         if   kind == 'dummy':
             return set()
         # -----------------------------
+        elif kind == f'reso_misid_rkst_{Brem.zero}':
+            l_par_name = [ f's_{comp}_{Brem.zero}'  for comp in _RESO_MISID_RKST_MM_COMPONENTS ]
+        # -----------------------------
+        elif kind == f'reso_misid_rkst_{Brem.brx12}':
+            l_par_name = [ f's_{comp}_{Brem.brx12}' for comp in _RESO_MISID_RKST_EE_COMPONENTS ]
+        elif kind == f'reso_misid_rkst_{Brem.one}':
+            l_par_name = [ f's_{comp}_{Brem.one}'   for comp in _RESO_MISID_RKST_EE_COMPONENTS ]
+        elif kind == f'reso_misid_rkst_{Brem.two}':
+            l_par_name = [ f's_{comp}_{Brem.two}'   for comp in _RESO_MISID_RKST_EE_COMPONENTS ]
+        # -----------------------------
+        elif kind == f'reso_misid_rk_{Brem.zero}':
+            l_par_name = [ f's_{comp}_{Brem.zero}'  for comp in _RESO_MISID_RK_MM_COMPONENTS ]
+        # -----------------------------
+        elif kind == f'reso_misid_rk_{Brem.brx12}':
+            l_par_name = [ f's_{comp}_{Brem.brx12}' for comp in _RESO_MISID_RK_EE_COMPONENTS ]
+        elif kind == f'reso_misid_rk_{Brem.one}':
+            l_par_name = [ f's_{comp}_{Brem.one}'   for comp in _RESO_MISID_RK_EE_COMPONENTS ]
+        elif kind == f'reso_misid_rk_{Brem.two}':
+            l_par_name = [ f's_{comp}_{Brem.two}'   for comp in _RESO_MISID_RK_EE_COMPONENTS ]
+        # -----------------------------
         elif kind == f'rare_prec_rk_{Brem.brx12}':
             l_par_name = [ f's_{comp}_{Brem.brx12}' for comp in _PRC_COMPONENTS ]
         elif kind == f'rare_prec_rk_{Brem.one}':
-            l_par_name = [ f's_{comp}_{Brem.one}' for comp in _PRC_COMPONENTS ]
+            l_par_name = [ f's_{comp}_{Brem.one}'   for comp in _PRC_COMPONENTS ]
         elif kind == f'rare_prec_rk_{Brem.two}':
-            l_par_name = [ f's_{comp}_{Brem.two}' for comp in _PRC_COMPONENTS ]
+            l_par_name = [ f's_{comp}_{Brem.two}'   for comp in _PRC_COMPONENTS ]
         # -----------------------------
         elif kind == 'rare_prec_rkst':
             l_par_name = []
@@ -150,6 +170,12 @@ class Parameters:
             raise ValueError(f'Invalid kind of parameters: {kind}')
 
         return { zfit.Parameter(name, 0, 0, 1) for name in l_par_name }
+    # ----------------------
+    def __str__(self):
+        names = [ par.name for par in self._s_par ]
+        msg   = '\n'.join(names)
+
+        return f'\n{msg}'
     # ----------------------
     def get_params(self, floating : bool, is_yield : bool = False) -> set[zpar]:
         '''
@@ -223,7 +249,11 @@ def _get_fit_config(q2bin : Qsq) -> RXFitConfig:
     -------------
     Object storing fit configuration
     '''
-    data    = gut.load_data(package='fitter_data', fpath = 'rare/rk/ee/data.yaml')
+    if q2bin.is_rare:
+        data = gut.load_data(package='fitter_data', fpath = 'rare/rk/ee/data.yaml')
+    else:
+        data = gut.load_data(package='fitter_data', fpath = 'reso/rk/ee/data.yaml')
+
     mod_cfg = FitModelConf(**data)
 
     return RXFitConfig(
