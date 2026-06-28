@@ -45,6 +45,8 @@ _RKST        : Final[list[Component]] = [
     Component.bdkstkpijpsimm,
     Component.bdkstkpipsi2ee,
     Component.bdkstkpipsi2mm,
+    Component.bskstjpsiee,
+    Component.bskstjpsimm,
     # ----
     # KK ll
     # ----
