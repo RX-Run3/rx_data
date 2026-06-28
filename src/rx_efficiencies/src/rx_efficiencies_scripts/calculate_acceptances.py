@@ -36,20 +36,22 @@ _RESO_RK : Final[list[Component]] = [
     Component.bppijpsiee, 
     Component.bpkpjpsimm, 
     Component.bppijpsimm]
-_RESO_RKST: Final[list[Component]] = [
+_RESO_RKST_EE: Final[list[Component]] = [
     Component.bdkstkpijpsiee, 
-    Component.bdkstkpijpsimm, 
     Component.bskstjpsiee, 
-    Component.bskstjpsimm, 
     Component.bsphijpsiee, 
+    Component.lbpkjpsiee]
+_RESO_RKST_MM: Final[list[Component]] = [
+    Component.bdkstkpijpsimm, 
+    Component.bskstjpsimm, 
     Component.bsphijpsimm, 
-    Component.lbpkjpsiee, 
     Component.lbpkjpsimm]
 _GROUPS : Final[dict[str,list[Component]]] = {
-    'Rare $R_K$'     : _RARE_RK,
-    'Rare $R_{K^*}$' : _RARE_RKST,
-    'Reso $R_K$'     : _RESO_RK,
-    'Reso $R_{K^*}$' : _RESO_RKST,
+    'Rare $R_K$'              : _RARE_RK,
+    'Rare $R_{K^*}$'          : _RARE_RKST,
+    'Reso $R_K$'              : _RESO_RK,
+    'Reso $R_{K^*}$ electron' : _RESO_RKST_EE,
+    'Reso $R_{K^*}$ muon'     : _RESO_RKST_MM,
 }
 #----------------------------------
 class Data:
