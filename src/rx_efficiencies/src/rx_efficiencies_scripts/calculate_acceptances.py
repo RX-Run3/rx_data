@@ -39,6 +39,8 @@ _RESO_RK : Final[list[Component]] = [
 _RESO_RKST: Final[list[Component]] = [
     Component.bdkstkpijpsiee, 
     Component.bdkstkpijpsimm, 
+    Component.bskstjpsiee, 
+    Component.bskstjpsimm, 
     Component.bsphijpsiee, 
     Component.bsphijpsimm, 
     Component.lbpkjpsiee, 
