@@ -329,7 +329,7 @@ def test_only_cmb(
 # --------------------------------------------------------------
 @pytest.mark.skip(reason = 'Includes misID, too slow')
 @pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
-def test_only_misid(
+def test_rare_misid(
     tmp_path : Path, 
     q2bin    : Qsq):
     '''
@@ -378,9 +378,9 @@ def test_only_prec(
     nll  = Parameters(kind = f'rare_prec_rk_{brem}', obs = obs) 
     nll  = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
     cfg  = _get_fit_config(q2bin = q2bin)
-    cfg.mod_cfg.components.pop(Component.bpkkk  , None)
-    cfg.mod_cfg.components.pop(Component.bpkpipi, None)
-    cfg.mod_cfg.components.pop(Component.comb   , None)
+
+    for component in _PRC_COMPONENTS:
+        cfg.mod_cfg.components.pop(component, None)
 
     with Cache.cache_root(path = tmp_path):
         obj         = ConstraintReader(
@@ -399,7 +399,7 @@ def test_only_prec(
     print_constraints(constraints = constraints)
     log.error('-------------------------------')
 
-    assert len(constraints) == 3
+    assert len(constraints) == len(_PRC_COMPONENTS)
 # --------------------------------------------------------------
 @pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
 def test_save(
