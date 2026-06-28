@@ -513,6 +513,10 @@ class Component(StrEnum):
                 return r'$B^0 \to K^*(\to K^+\pi^-)\psi(2S)(\to e^+e^-)$'
             case Component.bdkstkpipsi2mm:
                 return r'$B^0 \to K^*(\to K^+\pi^-)\psi(2S)(\to \mu^+\mu^-)$'
+            case Component.bskstjpsiee:
+                return r'$B_s \to K^*(\to K^+\pi^-)J/\psi(\to e^+e^-)$'
+            case Component.bskstjpsimm:
+                return r'$B_s \to K^*(\to K^+\pi^-)J/\psi(\to \mu^+\mu^-)$'
             case Component.data_24:
                 return 'Data'
             case _:
