@@ -410,6 +410,8 @@ class Component(StrEnum):
                 return ['bdpskst', 'psmm', 'kokp']
             case 'bskstjpsiee':
                 return ['bsjkst' , 'jpee', 'kokp']
+            case 'bskstjpsimm':
+                return ['bsjkst' , 'jpmm', 'kokp']
             # ------
             case 'bsphiee':
                 return ['bsph', 'phkk']
@@ -421,6 +423,8 @@ class Component(StrEnum):
                 return ['bpks', 'kokp']
             case 'lbpkjpsiee':
                 return ['lbpkjpsi', 'jpee']
+            case 'lbpkjpsimm':
+                return ['lbpkjpsi', 'jpmm']
             case 'bsphijpsiee':
                 return ['bsphjp', 'phkk', 'jpee']
             case 'bsphijpsimm':
