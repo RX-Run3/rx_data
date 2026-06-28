@@ -432,6 +432,78 @@ def test_rare_misid(
 
     print_constraints(constraints = constraints)
 # --------------------------------------------------------------
+@pytest.mark.parametrize('kind', _RESO_MISID_CONSTRAINTS)
+def test_reso_misid(
+    tmp_path : Path, 
+    kind     : str):
+    '''
+    Tests resonant misID constraints 
+
+    Parameters
+    -------------
+    kind : Type of parameters
+    '''
+    q2bin= Qsq.jpsi
+
+    if kind.endswith(str(Brem.zero)):
+        channel = Channel.mm
+        brem    = Brem.zero
+    elif kind.endswith(str(Brem.one)):
+        channel = Channel.ee
+        brem    = Brem.one
+    elif kind.endswith(str(Brem.two)):
+        channel = Channel.ee
+        brem    = Brem.two
+    elif kind.endswith(str(Brem.brx12)):
+        channel = Channel.ee
+        brem    = Brem.brx12
+    else:
+        raise ValueError(f'Invalid kind: {kind}')
+
+    if '_rkst_' in kind:
+        project = Project.rkst
+        is_rkst = True
+    elif '_rk_' in kind:
+        project = Project.rk
+        is_rkst = False 
+    else:
+        raise ValueError(f'Cannot determine project for: {kind}')
+
+    obs = zfit.Space('dummy', limits=(4500, 6000))
+    nll = Parameters(kind = kind, obs = obs) 
+    nll = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
+
+    cfg = _get_fit_config(
+        q2bin   = q2bin, 
+        project = project,
+        channel = channel)
+
+    del cfg.mod_cfg.components[Component.comb]
+
+    if   is_rkst     and channel == Channel.ee:
+        signal = Component.bdkstkpijpsiee
+    elif is_rkst     and channel == Channel.mm:
+        signal = Component.bdkstkpijpsimm
+    elif not is_rkst and channel == Channel.ee:
+        signal = Component.bppijpsiee
+    elif not is_rkst and channel == Channel.mm:
+        signal = Component.bppijpsimm
+    else:
+        raise ValueError(f'Invalid kind: {kind}')
+
+    with Cache.cache_root(path = tmp_path):
+        obj        = ConstraintReader(
+            brem   = brem,
+            signal = signal,
+            nll    = nll, 
+            cfg    = cfg)
+        constraints= obj.get_constraints()
+
+    print_constraints(constraints = constraints)
+    log.info(nll)
+
+    assert len(constraints) > 0 
+# --------------------------------------------------------------
 @pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
 @pytest.mark.parametrize('brem' , [Brem.one, Brem.two, Brem.brx12])
 def test_only_prec(
