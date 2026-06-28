@@ -12,7 +12,7 @@ from dmu.stats      import ModelFactory, print_constraints
 from dmu.stats      import zfit
 from dmu.stats      import ParameterLibrary as PL
 from dmu.generic    import UnpackerModel, utilities           as gut
-from rx_common      import Brem, Qsq, Component, Region, Cuts
+from rx_common      import Brem, Channel, Project, Qsq, Component, Region
 from rx_selection   import selection           as sel
 from fitter         import RXFitConfig
 from zfit.loss      import ExtendedUnbinnedNLL
@@ -239,7 +239,10 @@ def _get_nll(
 
     return zfit.loss.ExtendedUnbinnedNLL(model=pdf, data=dat)
 # --------------------------------------------------------------
-def _get_fit_config(q2bin : Qsq) -> RXFitConfig:
+def _get_fit_config(
+    project : Project,
+    channel : Channel,
+    q2bin   : Qsq) -> RXFitConfig:
     '''
     Parameters
     -------------
@@ -250,9 +253,9 @@ def _get_fit_config(q2bin : Qsq) -> RXFitConfig:
     Object storing fit configuration
     '''
     if q2bin.is_rare:
-        data = gut.load_data(package='fitter_data', fpath = 'rare/rk/ee/data.yaml')
+        data = gut.load_data(package='fitter_data', fpath = f'rare/{project}/{channel}/data.yaml')
     else:
-        data = gut.load_data(package='fitter_data', fpath = 'reso/rk/ee/data.yaml')
+        data = gut.load_data(package='fitter_data', fpath = f'reso/{project}/{channel}/data.yaml')
 
     mod_cfg = FitModelConf(**data)
 
