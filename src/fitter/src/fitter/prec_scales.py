@@ -224,11 +224,11 @@ def get_constraints(
     ------------------
     List of constraints
     '''
-    if not cfg.mod_cfg.constraints.signal_fractions:
+    if not cfg.mod_cfg.constraints.signal_fraction:
         log.warning('Dropping part-reco constraints')
         return []
 
-    pre_scales = cfg.mod_cfg.constraints.signal_fractions
+    pre_scales = cfg.mod_cfg.constraints.signal_fraction
     scales     = {f's_{comp}_{brem.region}' : comp for comp in pre_scales}
     log.debug('Looking for scales:')
     for scale in scales:
