@@ -42,3 +42,14 @@ categories:
       - lbpkjpsiee
       - bsphijpsiee 
       - bskstjpsiee
+  # ------------------------
+  rkst_reso_muon:
+    trigger : rkst_mm_os
+    brem    : xx0
+    q2bin   :
+      - jpsi
+    signal     : bdkstkpijpsimm
+    backgrounds:
+      - lbpkjpsimm
+      - bsphijpsimm
+      - bskstjpsimm
