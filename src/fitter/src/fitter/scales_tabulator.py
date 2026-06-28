@@ -129,6 +129,8 @@ class ScalesTabulator:
         '''
         df, signal = self._get_df(name = name, category = category)
         df_for_tex = df.assign(Background=df['Background'].apply(lambda sample : Component(sample).latex))
+        df_for_tex = df_for_tex.assign(Value=df_for_tex['Value'].apply(lambda value : 100 * value))
+        df_for_tex = df_for_tex.assign(Error=df_for_tex['Error'].apply(lambda error : 100 * error))
 
         path = self._cfg.output_directory / f'{name}-{signal.value}.tex'
         log.info(f'Saving to: {path}')
