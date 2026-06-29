@@ -435,9 +435,9 @@ def test_reso_misid(
     elif is_rkst     and channel == Channel.mm:
         signal = Component.bdkstkpijpsimm
     elif not is_rkst and channel == Channel.ee:
-        signal = Component.bppijpsiee
+        signal = Component.bpkpjpsiee
     elif not is_rkst and channel == Channel.mm:
-        signal = Component.bppijpsimm
+        signal = Component.bpkpjpsimm
     else:
         raise ValueError(f'Invalid kind: {kind}')
 
