@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from typing             import cast
 from pathlib            import Path
 from ROOT               import RDF # type: ignore
-from dmu                import LogStore, LogLevels
+from dmu                import LogStore
 from dmu.workflow       import Cache
 from dmu.generic        import hashing
 
@@ -136,7 +136,7 @@ class EfficiencyCalculator(Cache):
             q2bin   = self._q2bin,
             trigger = self._trigger,
             process = sample,
-            out_path= self._out_dir / Path(sample),
+            out_path= self._out_path / sample,
             rdf     = rdf)
 
         nsel = rdf.Count().GetValue()
