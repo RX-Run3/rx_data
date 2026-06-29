@@ -162,13 +162,14 @@ class EfficiencyCalculator(Cache):
         '''
         Returns pandas dataframe with `Passed` and `Total` yields for a given `Process`
         '''
-        d_data   = {'Sample' : [], 'Passed' : [], 'Total' : []}
+        d_data   = {'Sample' : [], 'Passed' : [], 'Total' : [], 'Eff' : []}
         log.info(f'Calculating yields for sample: {self._sample}')
         pas, tot = self._get_yields(sample = self._sample)
 
         d_data['Sample' ].append(self._sample)
         d_data['Passed' ].append(pas)
         d_data['Total'  ].append(tot)
+        d_data['Eff'    ].append(pas / tot)
 
         df = pnd.DataFrame(d_data)
 
