@@ -19,6 +19,7 @@ from dmu.stats     import utilities as sut
 from dmu.generic   import utilities as gut
 from dmu.generic   import UnpackerModel
 
+from fitter        import add_constraints 
 from fitter        import NLLConf
 from fitter        import MVAWp
 from fitter        import FitModelConf
@@ -27,7 +28,7 @@ from fitter        import RXFitConfig
 from fitter        import DataFitter
 from fitter        import LikelihoodFactory
 from rx_selection  import selection as sel
-from rx_common     import AlternativeProject, Qsq, Component, Region
+from rx_common     import AlternativeProject, Brem, Qsq, Component, Region
 
 log=LogStore.add_logger('fitter:fit_rx_reso')
 _DATA        : Final[Component ]                 = Component.data_24
@@ -122,11 +123,14 @@ def _parse_args() -> RXFitConfig:
 
     return cfg
 # ----------------------
-def _get_nll(cfg : RXFitConfig) -> NLLConf:
+def _get_nll(
+    brem : Brem,
+    cfg  : RXFitConfig) -> NLLConf:
     '''
     Parameters
     -------------
     cfg : Fit configuration
+    brem: Bremsstrahlung category for current fit
 
     Returns
     -------------
@@ -142,11 +146,16 @@ def _get_nll(cfg : RXFitConfig) -> NLLConf:
         q2bin  = cfg.q2bin,
         sample = _DATA,
         cfg    = cfg.mod_cfg)
-    nll = ftr.run(project = project)
+    cfg_nll = ftr.run(project = project)
 
-    return nll
+    nll, cons = add_constraints(
+        brem  = brem,
+        nll   = cfg_nll.nll,
+        cfg   = cfg)
+
+    return cfg_nll.model_copy(update = {'nll' : nll, 'constraints' : cons})
 # ----------------------
-def _get_region_nll(region : Region, cfg : RXFitConfig) -> NLLConf:
+def _get_region_nll(brem : Brem, cfg : RXFitConfig) -> NLLConf:
     '''
     Parameters
     -------------
@@ -157,14 +166,14 @@ def _get_region_nll(region : Region, cfg : RXFitConfig) -> NLLConf:
     -------------
     NLL for fitting region
     '''
-    cfg = cfg.pick_category(name = region)
+    cfg = cfg.pick_category(name = brem.region)
 
-    with sel.update_selection(d_sel = region.selection):
+    with sel.update_selection(d_sel = brem.region.selection):
         replacements = {'BLOCK' : f'b{cfg.block}'}
-        cfg.name     = region
+        cfg.name     = brem.region
         cfg          = cfg.cfg_copy(replacements = replacements)
 
-        return _get_nll(cfg=cfg)
+        return _get_nll(cfg=cfg, brem = brem)
 # ----------------------
 def _fit_electron(cfg : RXFitConfig) -> dict[Region, NLLConf]:
     '''
@@ -178,8 +187,8 @@ def _fit_electron(cfg : RXFitConfig) -> dict[Region, NLLConf]:
     '''
     d_nll : dict[Region,NLLConf] = {}
 
-    d_nll[Region.brem_xx1] = _get_region_nll(region = Region.brem_xx1, cfg = cfg)
-    d_nll[Region.brem_xx2] = _get_region_nll(region = Region.brem_xx2, cfg = cfg)
+    d_nll[Region.brem_xx1] = _get_region_nll(brem = Brem.one, cfg = cfg)
+    d_nll[Region.brem_xx2] = _get_region_nll(brem = Brem.two, cfg = cfg)
 
     with GofCalculator.disabled(value=True):
         ftr = DataFitter(
@@ -204,7 +213,7 @@ def _fit_muon(cfg : RXFitConfig) -> dict[Region,NLLConf]:
     '''
     d_nll : dict[Region,NLLConf] = {}
     cfg.name = Region.brem_xx0
-    d_nll[cfg.name] = _get_nll(cfg=cfg)
+    d_nll[cfg.name] = _get_nll(cfg=cfg, brem = Brem.zero)
 
     with GofCalculator.disabled(value=True):
         ftr = DataFitter(
