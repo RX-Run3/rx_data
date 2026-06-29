@@ -9,7 +9,7 @@ from .data_model         import DataModel
 from .data_fitter        import NLLConf 
 from .sim_fitter         import SimFitter
 from .data_preprocessor  import DataPreprocessor
-from .constraint_reader  import ConstraintReader
+from .constraint_reader  import add_constraints 
 from .cmb_constraints    import CmbConstraints
 from .category           import Category
 from .category_merger    import CategoryMerger
@@ -51,6 +51,7 @@ from .scales_tabulator import ScalesTabulator
 from .scales_tabulator import ScalesTabulatorConf
 
 __all__ = [
+    'add_constraints',
     'plot_prefit_postfit',
     # ------------------
     'CmbConstraintConf',
@@ -92,7 +93,6 @@ __all__ = [
     'ParsLoader',
     'RXFitConfig',
     'MisIDConstraints',
-    'ConstraintReader',
     'CmbConstraints',
     'DataPreprocessor',
     'ParameterReader',

@@ -7,8 +7,10 @@ import yaml
 from pathlib             import Path
 from typing              import Final
 from dmu                 import LogStore
+from dmu.stats           import ConstraintAdder
 from dmu.stats           import Constraint, ParsHolder
 from rx_common           import Brem, Component
+from zfit.loss           import ExtendedUnbinnedNLL
 
 from .configs            import CombinatorialConf, RXFitConfig
 from .prec_scales        import get_constraints as get_prec_constraints 
@@ -196,4 +198,42 @@ class ConstraintReader:
         self._save_constraints(path = save_to)
 
         return self._constraints
+# -------------------------------------------------------------
+def add_constraints(
+    brem: Brem,
+    nll : ExtendedUnbinnedNLL,
+    cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL, list[Constraint]]:
+    '''
+    Parameters
+    -------------
+    brem: Brem region
+    nll : Likelihood
+    cfg : Object holding configuration for fit
+
+    Returns
+    -------------
+    Tuple with:
+
+    - Constrained likelihood
+    - List of constraints
+    '''
+    signal = cfg.mod_cfg.trigger.get_signal_component(qsq = cfg.q2bin)
+    crd  = ConstraintReader(
+        brem   = brem,
+        signal = signal,
+        nll    = nll,
+        cfg    = cfg)
+    cons = crd.get_constraints(save_to = cfg.output_directory / f'constraints/{brem.region}.yaml')
+
+    if not cons:
+        log.warning('Not using any constraints')
+
+    log.info('Constraints:')
+    for constraint in cons:
+        log.info(constraint)
+
+    cad  = ConstraintAdder(nll=nll, constraints=cons)
+    nll  = cad.get_nll()
+
+    return nll, cons
 # -------------------------------------------------------------
