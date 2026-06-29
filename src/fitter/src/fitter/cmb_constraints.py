@@ -21,9 +21,9 @@ from .signal_constraints import SignalConstraints
 from .likelihood_factory import LikelihoodFactory, NLLConf
 
 log=LogStore.add_logger('fitter:cmb_constraints')
-DATA_SAMPLE : Final[Component] = Component.data_24 # What will be used to constrain
-COMPONENT   : Final[Component] = Component.comb    # What will be constrained
-SIG_PREFIX  : Final[str]       = 'BREM'            # Signal category prefix
+_DATA_SAMPLE : Final[Component] = Component.data_24 # What will be used to constrain combinatorial shape
+_COMPONENT   : Final[Component] = Component.comb    # What will be constrained
+_SIG_PREFIX  : Final[str]       = 'BREM'            # Signal category prefix
 # ------------------------------------
 class CmbConstraints(BaseFitter, Cache):
     '''
@@ -48,19 +48,19 @@ class CmbConstraints(BaseFitter, Cache):
         BaseFitter.__init__(self)
 
         self._cfg_fit   = cfg_fit
-        cfg_cmb         = cfg_fit.mod_cfg.components[COMPONENT]
+        cfg_cmb         = cfg_fit.mod_cfg.components[_COMPONENT]
         if not isinstance(cfg_cmb, CombinatorialConf):
             ctype = type(cfg_cmb)
-            raise ValueError(f'Config for {COMPONENT} is of type {ctype}')
+            raise ValueError(f'Config for {_COMPONENT} is of type {ctype}')
 
         self._cfg_cmb   = cfg_cmb
-        self._mod_cfg   = self._cfg_cmb.constraints.mod_cfg.cfg_clone(prefix = SIG_PREFIX, regions = [brem.region])
+        self._mod_cfg   = self._cfg_cmb.constraints.mod_cfg.cfg_clone(prefix = _SIG_PREFIX, regions = [brem.region])
         self._signal    = signal 
 
         self._brem      = brem
         self._reg       = brem.region 
         self._q2bin     = self._cfg_fit.q2bin
-        self._component = COMPONENT
+        self._component = _COMPONENT
         self._base_path = Path(Component.comb) / 'fit' / self._reg
         self._trigger   = Trigger(self._mod_cfg.trigger)
         self._obs       = self._mod_cfg.obs
@@ -188,7 +188,7 @@ class CmbConstraints(BaseFitter, Cache):
             name   = self._reg,
             obs    = self._obs,
             q2bin  = self._q2bin,
-            sample = DATA_SAMPLE,
+            sample = _DATA_SAMPLE,
             cfg    = self._mod_cfg)
         cfg_nll    = ftr.run()
 
