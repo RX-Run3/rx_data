@@ -26,7 +26,8 @@ from .mva_conf   import MVAWp
 from .types      import CCbarWeight
 from .toy_maker  import ToyConf
 
-log=LogStore.add_logger('fitter:configs')
+log     = LogStore.add_logger('fitter:configs')
+_ANADIR = Path(os.environ['ANADIR'])
 # ------------------------------
 class ObservableConf(BaseModel):
     '''
@@ -872,12 +873,9 @@ class RXFitConfig(BaseModel):
         else:
             block_name = f'b{self.block}'
 
-        ana_dir = os.environ.get('ANADIR')
-        if ana_dir is None:
-            raise RuntimeError('ANADIR variable not set')
 
         trigger = self.mod_cfg.trigger
-        out_dir = Path(ana_dir) / 'fits/data' / self.group / f'{self.fit_name}_{block_name}'
+        out_dir = _ANADIR / 'fits/data' / self.group / f'{self.fit_name}_{block_name}'
         out_dir = out_dir / self.q2bin.kind / trigger.project / trigger.channel / self.q2bin
 
         log.debug(f'Using output directory: {out_dir}')
