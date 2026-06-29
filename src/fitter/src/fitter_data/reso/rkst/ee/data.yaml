@@ -1,7 +1,7 @@
 # This is a config file used for tests
 # It illustrates how a fit would run for data
 plots_settings: &plots_settings 
-  nbins           : 60
+  nbins           : 400 
   stacked         : True
   d_leg :
     comb            : Combinatorial
@@ -15,9 +15,9 @@ plots_settings: &plots_settings
   plot_components : 
     - ccbar
   plot_range :
-    - 4700
-    - 6000
-
+    - 4900
+    - 6200
+# ----------------------------------
 trigger          : rkst_ee_os
 yields           : model/yields/rkst/reso_electron.yaml
 selection        :
