@@ -42,7 +42,7 @@ components:
   bskstjpsiee     : reso/rkst/ee/bskstjpsiee.yaml
   bdkstjpsiee_swp : reso/rkst/ee/bdkstjpsiee_swp_np.yaml
   bdkstkpijpsiee  : reso/rkst/ee/bdkstkpijpsiee.yaml
-  bdkstkpipsi2ee  : reso/rkst/ee/bdkstkpipsi2ee.yaml
+  bdkstkpipsi2ee  : reso/rkst/ee/bdkstkpipsi2ee_np.yaml
 constraints:
   signal_fraction:
     - bskstjpsiee 

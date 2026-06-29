@@ -1,0 +1,13 @@
+component        : bdkstjpsiee_swp
+events_range     :
+  - 4200
+  - 6500
+fit:
+  kind      : KDE1DimFFT
+  bandwidth : 20
+  padding:
+    flag : False
+plots:
+  nbins   : 50
+  stacked : True
+  d_leg : {}
