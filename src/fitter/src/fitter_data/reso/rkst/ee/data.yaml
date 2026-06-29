@@ -18,9 +18,9 @@ plots_settings: &plots_settings
     - 4900
     - 6200
 # ----------------------------------
-trigger          : rkst_ee_os
-yields           : model/yields/rkst/reso_electron.yaml
-selection        :
+trigger   : rkst_ee_os
+yields    : model/yields/rkst/reso_electron.yaml
+selection :
   jpsi : {}
   psi2 : {}
 observable:

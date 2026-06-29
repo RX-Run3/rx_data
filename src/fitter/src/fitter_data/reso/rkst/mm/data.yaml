@@ -1,6 +1,8 @@
-trigger          : rkst_mm_os
-yields           : model/yields/rkst/reso_muon.yaml
-selection        : {}
+trigger   : rkst_mm_os
+yields    : model/yields/rkst/reso_muon.yaml
+selection :
+  jpsi : {} 
+  psi2 : {} 
 observable:
   jpsi:
     name : B_const_mass_M
