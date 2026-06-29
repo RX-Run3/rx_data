@@ -59,10 +59,10 @@ class Cache:
 
         # If _cache_root is not at the beggining of out_path
         # add it
-        if not out_path.is_relative_to(Cache._cache_root):
-            self._out_path  = Cache._cache_root / out_path
-        else:
+        if out_path.is_relative_to(Cache._cache_root):
             self._out_path  = out_path
+        else:
+            self._out_path  = Cache._cache_root / out_path
 
         log.debug(f'Using {self._out_path} output path')
         self._out_path.mkdir(parents=True, exist_ok=True)
