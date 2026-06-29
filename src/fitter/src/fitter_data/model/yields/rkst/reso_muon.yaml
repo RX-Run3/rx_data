@@ -1,24 +1,51 @@
-# This config file defines the yields and the relationships betwmmn them
+# This config file defines the yields and the relationships between them
 # For the fit of the resonant muon channel 
+# --------------------
+fractions: &fractions
+  val : 0.5 
+  min : 0.0
+  max : 1.0 
+# --------------------
 yields: &yields
   val : 10
   min : 0
   max : 1000000
 # -------------------------
-yld_bdkstjpsimm_swp_brem_xx0:
-  <<: *yields
-yld_lbpkjpsimm_brem_xx0:
-  <<: *yields
-yld_bsphijpsimm_brem_xx0:
-  <<: *yields
-yld_bskstjpsimm_brem_xx0:
-  <<: *yields
-yld_comb_brem_xx0:
-  <<: *yields
 yld_bdkstkpijpsimm_brem_xx0:
   <<: *yields
 yld_bdkstkpipsi2mm_brem_xx0:
   <<: *yields
 yld_ccbar_brem_xx0:
   <<: *yields
+yld_comb_brem_xx0:
+  <<: *yields
 # -------------------------
+s_bdkstjpsimm_swp_brem_xx0:
+  <<: *fractions
+s_lbpkjpsimm_brem_xx0:
+  <<: *fractions
+s_bsphijpsimm_brem_xx0:
+  <<: *fractions
+s_bskstjpsimm_brem_xx0:
+  <<: *fractions
+# -------------------------
+yld_bdkstjpsimm_swp_brem_xx0:
+  kind: mul
+  pars:
+    -  s_bdkstjpsimm_swp_brem_xx0
+    - yld_bdkstkpijpsimm_brem_xx0
+yld_lbpkjpsimm_brem_xx0:
+  kind: mul
+  pars:
+    -       s_lbpkjpsimm_brem_xx0
+    - yld_bdkstkpijpsimm_brem_xx0
+yld_bsphijpsimm_brem_xx0:
+  kind: mul
+  pars:
+    -      s_bsphijpsimm_brem_xx0
+    - yld_bdkstkpijpsimm_brem_xx0
+yld_bskstjpsimm_brem_xx0:
+  kind: mul
+  pars:
+    -      s_bskstjpsimm_brem_xx0
+    - yld_bdkstkpijpsimm_brem_xx0

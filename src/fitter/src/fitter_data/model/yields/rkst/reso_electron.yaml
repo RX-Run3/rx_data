@@ -1,9 +1,16 @@
 # This config file defines the yields and the relationships between them
 # For the fit of the resonant electron channel 
+# --------------------
+fractions: &fractions
+  val : 0.5 
+  min : 0.0
+  max : 1.0 
+# --------------------
 yields: &yields
   val : 10
   min : 0
   max : 1000000
+# --------------------
 bdkstkpijpsiee_fraction:
   val : 0.5
   min : 0.0
@@ -35,26 +42,6 @@ yld_bdkstkpipsi2ee_brem_xx2:
     - yld_bdkstkpipsi2ee
     - yld_bdkstkpipsi2ee_brem_xx1 
 # -------------------------
-yld_bdkstjpsiee_swp_brem_xx1:
-  <<: *yields
-yld_bdkstjpsiee_swp_brem_xx2:
-  <<: *yields
-yld_lbpkjpsiee_brem_xx1:
-  <<: *yields
-yld_lbpkjpsiee_brem_xx2:
-  <<: *yields
-yld_bsphijpsiee_brem_xx1:
-  <<: *yields
-yld_bsphijpsiee_brem_xx2:
-  <<: *yields
-yld_bskstjpsiee_brem_xx1:
-  <<: *yields
-yld_bskstjpsiee_brem_xx2:
-  <<: *yields
-yld_comb_brem_xx1:
-  <<: *yields
-yld_comb_brem_xx2:
-  <<: *yields
 yld_bdkstkpijpsiee_brem_xx1:
   <<: *yields
 yld_bdkstkpijpsiee_brem_xx2:
@@ -67,3 +54,65 @@ yld_ccbar_brem_xx1:
   <<: *yields
 yld_ccbar_brem_xx2:
   <<: *yields
+yld_comb_brem_xx1:
+  <<: *yields
+yld_comb_brem_xx2:
+  <<: *yields
+# -------------------------
+s_bdkstjpsiee_swp_brem_xx1:
+  <<: *fractions
+s_bdkstjpsiee_swp_brem_xx2:
+  <<: *fractions
+s_lbpkjpsiee_brem_xx1:
+  <<: *fractions
+s_lbpkjpsiee_brem_xx2:
+  <<: *fractions
+s_bsphijpsiee_brem_xx1:
+  <<: *fractions
+s_bsphijpsiee_brem_xx2:
+  <<: *fractions
+s_bskstjpsiee_brem_xx1:
+  <<: *fractions
+s_bskstjpsiee_brem_xx2:
+  <<: *fractions
+# -------------------------
+yld_bdkstjpsiee_swp_brem_xx1:
+  kind: mul
+  pars:
+    -  s_bdkstjpsiee_swp_brem_xx1
+    - yld_bdkstkpijpsiee_brem_xx1
+yld_bdkstjpsiee_swp_brem_xx2:
+  kind: mul
+  pars:
+    -  s_bdkstjpsiee_swp_brem_xx2
+    - yld_bdkstkpijpsiee_brem_xx2
+yld_lbpkjpsiee_brem_xx1:
+  kind: mul
+  pars:
+    -       s_lbpkjpsiee_brem_xx1
+    - yld_bdkstkpijpsiee_brem_xx1
+yld_lbpkjpsiee_brem_xx2:
+  kind: mul
+  pars:
+    -       s_lbpkjpsiee_brem_xx2
+    - yld_bdkstkpijpsiee_brem_xx2
+yld_bsphijpsiee_brem_xx1:
+  kind: mul
+  pars:
+    -      s_bsphijpsiee_brem_xx1
+    - yld_bdkstkpijpsiee_brem_xx1
+yld_bsphijpsiee_brem_xx2:
+  kind: mul
+  pars:
+    -      s_bsphijpsiee_brem_xx2
+    - yld_bdkstkpijpsiee_brem_xx2
+yld_bskstjpsiee_brem_xx1:
+  kind: mul
+  pars:
+    -      s_bskstjpsiee_brem_xx1
+    - yld_bdkstkpijpsiee_brem_xx1
+yld_bskstjpsiee_brem_xx2:
+  kind: mul
+  pars:
+    -      s_bskstjpsiee_brem_xx2
+    - yld_bdkstkpijpsiee_brem_xx2
