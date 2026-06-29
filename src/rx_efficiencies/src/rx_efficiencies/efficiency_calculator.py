@@ -129,17 +129,15 @@ class EfficiencyCalculator(Cache):
         return sel_yld, tot_yld
     #------------------------------------------
     def _get_sel_yld(self, sample : Component) -> int:
-        rdf      = self._get_rdf(sample=sample, tree_name='DecayTree')
-        d_sel    = sel.selection(trigger=self._trigger, q2bin=self._q2bin, process=sample)
-
         log.info('Calculating selected yield')
-        for cut_name, cut_expr in d_sel.items():
-            log.debug(f'{cut_name:<20}{cut_expr}')
-            rdf = rdf.Filter(cut_expr, cut_name)
 
-        if log.getEffectiveLevel() < LogLevels.info:
-            rep = rdf.Report()
-            rep.Print()
+        rdf = self._get_rdf(sample=sample, tree_name='DecayTree')
+        rdf = sel.apply_full_selection(
+            q2bin   = self._q2bin,
+            trigger = self._trigger,
+            process = sample,
+            out_path= self._out_dir / Path(sample),
+            rdf     = rdf)
 
         nsel = rdf.Count().GetValue()
 
