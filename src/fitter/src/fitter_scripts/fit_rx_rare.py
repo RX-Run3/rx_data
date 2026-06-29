@@ -12,17 +12,14 @@ from typing           import Final
 from contextlib       import ExitStack
 from dmu.generic      import UnpackerModel, utilities as gut
 from dmu.stats        import ParameterLibrary as PL
-from dmu.stats        import ConstraintAdder
-from dmu.stats        import Constraint
 from dmu.workflow     import Cache
 from dmu              import LogStore
-from zfit.loss        import ExtendedUnbinnedNLL
 from rx_data          import RDFGetter
 from rx_selection     import selection as sel
 from rx_common        import Brem, Component, Region
 
 from fitter           import RXFitConfig
-from fitter           import ConstraintReader
+from fitter           import add_constraints 
 from fitter           import DataFitter
 from fitter           import LikelihoodFactory
 from fitter           import FitModelConf
@@ -114,44 +111,6 @@ def _cfg_from_args(args : argparse.Namespace) -> RXFitConfig:
 
     return cfg
 # ----------------------
-def _add_constraints(
-    brem: Brem,
-    nll : ExtendedUnbinnedNLL,
-    cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL, list[Constraint]]:
-    '''
-    Parameters
-    -------------
-    brem: Brem region
-    nll : Likelihood
-    cfg : Object holding configuration for fit
-
-    Returns
-    -------------
-    Tuple with:
-
-    - Constrained likelihood
-    - List of constraints
-    '''
-    signal = cfg.mod_cfg.trigger.get_signal_component(qsq = cfg.q2bin)
-    crd  = ConstraintReader(
-        brem   = brem,
-        signal = signal,
-        nll    = nll,
-        cfg    = cfg)
-    cons = crd.get_constraints(save_to = cfg.output_directory / f'constraints/{brem.region}.yaml')
-
-    if not cons:
-        log.warning('Not using any constraints')
-
-    log.info('Constraints:')
-    for constraint in cons:
-        log.info(constraint)
-
-    cad  = ConstraintAdder(nll=nll, constraints=cons)
-    nll  = cad.get_nll()
-
-    return nll, cons
-# ----------------------
 def _get_region_nll(brem : Brem, cfg : RXFitConfig) -> NLLConf:
     ftr = LikelihoodFactory(
         name   = brem.region,
@@ -161,7 +120,7 @@ def _get_region_nll(brem : Brem, cfg : RXFitConfig) -> NLLConf:
         cfg    = cfg.mod_cfg)
     cfg_nll  = ftr.run()
 
-    nll, cons = _add_constraints(
+    nll, cons = add_constraints(
         brem  = brem,
         nll   = cfg_nll.nll,
         cfg   = cfg)
