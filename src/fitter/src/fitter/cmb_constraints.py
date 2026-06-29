@@ -203,7 +203,7 @@ class CmbConstraints(BaseFitter, Cache):
             comp   = self._signal,
             nll    = cfg_nll.nll,
         )
-        constraints += calc.get_constraints()
+        constraints+= calc.get_constraints()
 
         cfg_nll     = self._add_constraints(
             cons    = constraints,
@@ -211,7 +211,7 @@ class CmbConstraints(BaseFitter, Cache):
 
         ftr       = DataFitter(
             q2bin = self._q2bin,
-            d_nll = { self._reg: cfg_nll },
+            d_nll = { self._reg : cfg_nll },
             cfg   = self._mod_cfg)
         res = ftr.run()
 
