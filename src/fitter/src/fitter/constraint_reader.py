@@ -18,7 +18,7 @@ from .misid_constraints  import MisIDConstraints
 from .cmb_constraints    import CmbConstraints
 from .signal_constraints import SignalConstraints
 
-_MISID_COMPONENTS   : Final[set[Component]] = {Component.bpkkk, Component.bpkpipi}
+_RARE_RK_MISID_COMPONENTS : Final[set[Component]] = {Component.bpkkk, Component.bpkpipi}
 
 log=LogStore.add_logger('fitter:constraint_reader')
 # -------------------------------------------------------------
@@ -54,7 +54,7 @@ class ConstraintReader:
 
         self._constraints : list[Constraint] = []
     # ----------------------
-    def _add_prec_constraints(self, skip : bool) -> None:
+    def _add_bkg_fraction_constraints(self, skip : bool) -> None:
         '''
         Appends constraints to _constraints list for parameters in parameter holder
         whose names start with `pscale`
@@ -63,6 +63,7 @@ class ConstraintReader:
             log.warning('Dropping part-reco constraints')
             return
         
+        log.info('Getting background fraction constraints')
         self._constraints += get_prec_constraints(
             cfg    = self._cfg,
             pars   = self._l_par,
@@ -77,13 +78,13 @@ class ConstraintReader:
             return
 
         components= self._cfg.mod_cfg.components
-        all_found = all(component in components for component in _MISID_COMPONENTS)
-        any_found = any(component in components for component in _MISID_COMPONENTS)
+        all_found = all(component in components for component in _RARE_RK_MISID_COMPONENTS)
+        any_found = any(component in components for component in _RARE_RK_MISID_COMPONENTS)
         if not all_found and     any_found:
             raise ValueError('At least one misID component was found, but not all')
 
         if not all_found and not any_found:
-            log.info('Skipping misID constraints')
+            log.info('Skipping rare RK misID constraints')
             return
 
         log.info('Adding MisID constraints')
@@ -188,7 +189,7 @@ class ConstraintReader:
         Value: Tuple with mu and error
         '''
         self._add_misid_constraints(skip = skip_misid)
-        self._add_prec_constraints(skip = skip_prec)
+        self._add_bkg_fraction_constraints(skip = skip_prec)
         self._add_combinatorial_constraints(skip = skip_comb)
         self._add_signal_constraints(skip = skip_signal)
 
