@@ -7,6 +7,7 @@ import os
 import tqdm
 import typer
 
+from ROOT       import EnableImplicitMT # type: ignore
 from typing     import Final
 from pathlib    import Path
 from dmu        import LogLevels, LogStore
@@ -68,10 +69,16 @@ def _get_samples(version : str, level : LogLevels) -> Samples:
     return sam
 # ----------------------
 @app.command()
-def show_samples_by_block(project : Project = typer.Option(..., '--project', '-p')) -> None:
+def show_samples_by_block(
+    ncores  : int     = typer.Option(1  , '--ncores' , '-n'),
+    project : Project = typer.Option(..., '--project', '-p')) -> None: # noqa: B008
     '''
     This will print a table with the samples available for each block
     '''
+    if ncores > 1:
+        log.info(f'Using {ncores} cores')
+        EnableImplicitMT(ncores)
+
     printer = SamplesPrinter(project=project)
     printer.print_by_block()
 # ----------------------
