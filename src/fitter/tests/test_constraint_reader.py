@@ -12,7 +12,7 @@ from dmu.stats      import print_constraints
 from dmu.stats      import zfit
 from dmu.stats      import ParameterLibrary as PL
 from dmu.generic    import UnpackerModel, utilities           as gut
-from rx_common      import Brem, Channel, Cuts, Project, Qsq, Component
+from rx_common      import Brem, Channel, Project, Qsq, Component
 from rx_selection   import selection           as sel
 from fitter         import RXFitConfig
 from zfit.loss      import ExtendedUnbinnedNLL
@@ -214,6 +214,7 @@ class Parameters:
         return self._s_par 
 # ----------------------
 def _get_fit_config(
+    out_dir : Path,
     project : Project,
     channel : Channel,
     q2bin   : Qsq) -> RXFitConfig:
@@ -233,7 +234,7 @@ def _get_fit_config(
 
     mod_cfg = FitModelConf(**data)
 
-    return RXFitConfig(
+    cfg = RXFitConfig(
         name    = 'test',
         group   = 'test',
         mod_cfg = mod_cfg, 
@@ -242,6 +243,8 @@ def _get_fit_config(
         q2bin   = q2bin,
         log_lvl = 10,
     )
+
+    return cfg.model_copy(update = {'output_directory' : out_dir})
 # --------------------------------------------------------------
 @pytest.mark.skip(reason = 'Includes misID, too slow')
 @pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
@@ -266,6 +269,7 @@ def test_all_but_cmb(
     nll = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
 
     cfg = _get_fit_config(
+        out_dir = tmp_path,
         project = Project.rk,
         channel = Channel.ee,
         q2bin   = q2bin)
@@ -310,6 +314,7 @@ def test_only_cmb(
     signal = Component.bpkpee
     obs = zfit.Space('B_Mass_smr', limits=(4500, 7000))
     cfg = _get_fit_config(
+        out_dir = tmp_path,
         q2bin   = q2bin, 
         project = Project.rk,
         channel = Channel.ee)
@@ -356,6 +361,7 @@ def test_rare_misid(
     nll  = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
 
     cfg = _get_fit_config(
+        out_dir = tmp_path,
         q2bin   = q2bin, 
         project = Project.rk,
         channel = Channel.ee)
@@ -417,6 +423,7 @@ def test_reso_misid(
     nll = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
 
     cfg = _get_fit_config(
+        out_dir = tmp_path,
         q2bin   = q2bin, 
         project = project,
         channel = channel)
@@ -464,6 +471,7 @@ def test_only_prec(
     nll  = Parameters(kind = f'rare_prec_rk_{brem}', obs = obs) 
     nll  = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
     cfg  = _get_fit_config(
+        out_dir = tmp_path,
         project = Project.rk,
         channel = Channel.ee,
         q2bin   = q2bin)
@@ -499,6 +507,7 @@ def test_save(
     brem = Brem.brx12
     obs  = zfit.Space('B_Mass_smr', limits=(4500, 7000))
     cfg  = _get_fit_config(
+        out_dir = tmp_path,
         project = Project.rk,
         channel = Channel.ee,
         q2bin   = q2bin)
