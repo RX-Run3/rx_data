@@ -8,19 +8,18 @@ from typing         import Final, cast
 from pathlib        import Path
 from dmu.workflow   import Cache
 from dmu            import LogStore
-from dmu.stats      import ModelFactory, ParameterLibrary, SimpleYieldConf, YieldConf, YieldsConf, print_constraints
+from dmu.stats      import print_constraints
 from dmu.stats      import zfit
 from dmu.stats      import ParameterLibrary as PL
 from dmu.generic    import UnpackerModel, utilities           as gut
-from rx_common      import Brem, Channel, Project, Qsq, Component, Region
+from rx_common      import Brem, Channel, Cuts, Project, Qsq, Component
 from rx_selection   import selection           as sel
 from fitter         import RXFitConfig
 from zfit.loss      import ExtendedUnbinnedNLL
 from zfit.param     import Parameter           as zpar
 from zfit           import Space               as zobs
-from zfit.pdf       import BasePDF             as zpdf 
 from fitter         import ConstraintReader
-from fitter         import CombinatorialConf, FitModelConf
+from fitter         import FitModelConf
 from fitter         import MVAWp
 
 log=LogStore.add_logger('fitter:test_constraint_reader')
@@ -89,22 +88,6 @@ def initialize():
 
     with UnpackerModel.package(name = 'fitter_data'):
         yield
-# ----------------------
-def _get_signal(
-    obs   : zobs,
-    brem  : int, 
-    block : int) -> zpdf:
-    mu_name = f'mu_bpkpee_brem_xx{brem}_b{block}_scale_flt'
-    sg_name = f'sg_bpkpee_brem_xx{brem}_b{block}_reso_flt'
-
-    mu   = zfit.Parameter(mu_name, 5200, 4500, 6000)
-    sg   = zfit.Parameter(sg_name,  150,   10, 200)
-    pdf  = zfit.pdf.Gauss(obs=obs, mu=mu, sigma=sg)
-    nev  = zfit.param.Parameter(f'nsig_{brem}_{block}', 1000, 0, 1000_000)
-
-    sig  = pdf.create_extended(nev)
-
-    return sig
 # ----------------------
 class Parameters:
     '''
@@ -230,53 +213,6 @@ class Parameters:
 
         return self._s_par 
 # ----------------------
-def _get_nll(
-    obs  : zobs, 
-    reg  : Region,
-    q2bin: Qsq,
-    cfg  : RXFitConfig) -> ExtendedUnbinnedNLL:
-    '''
-    Parameters
-    -------------
-    reg  : Region
-    obs  : Observable
-    cfg  : Configuration for fit
-    q2bin: E.g. central
-
-    Returns
-    -------------
-    Likelihood with:
-
-    - PDF used to fit combinatorial
-    - Parameters needed for misID
-    '''
-    cfg_cmb = cfg.mod_cfg.components[Component.comb]
-    if not isinstance(cfg_cmb, CombinatorialConf):
-        ctype = type(cfg_cmb)
-        raise ValueError(f'Expected combinatorial config, found: {ctype}')
-
-    sig_11 = _get_signal(obs = obs, brem = 1, block = 1)
-    sig_21 = _get_signal(obs = obs, brem = 2, block = 1)
-    sig_12 = _get_signal(obs = obs, brem = 1, block = 2)
-    sig_22 = _get_signal(obs = obs, brem = 2, block = 2)
-
-    pdf_names = cfg_cmb.models[q2bin].pdfs
-    fct  = ModelFactory(
-        preffix = reg,
-        obs     = obs,
-        l_pdf   = pdf_names,
-        l_shared= [],
-        l_float = [])
-    expo = fct.get_pdf()
-
-    nexpo = zfit.param.Parameter('nbkg', 1000, 0, 1000_000)
-
-    bkg   = expo.create_extended(nexpo, name = f'{Component.comb}_{reg}')
-    pdf   = zfit.pdf.SumPDF(pdfs = [bkg, sig_11, sig_21, sig_22, sig_12])
-    dat   = pdf.create_sampler()
-
-    return zfit.loss.ExtendedUnbinnedNLL(model=pdf, data=dat)
-# --------------------------------------------------------------
 def _get_fit_config(
     project : Project,
     channel : Channel,
