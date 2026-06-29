@@ -308,14 +308,14 @@ def test_only_cmb(
     '''
     brem   = Brem.brx12
     signal = Component.bpkpee
+    obs = zfit.Space('B_Mass_smr', limits=(4500, 7000))
+    cfg = _get_fit_config(
+        q2bin   = q2bin, 
+        project = Project.rk,
+        channel = Channel.ee)
 
-    obs  = zfit.Space('B_Mass_smr', limits=(4500, 7000))
-    cfg  = _get_fit_config(q2bin = q2bin)
-    nll  = _get_nll(
-        obs   = obs, 
-        reg   = brem.region,
-        cfg   = cfg, 
-        q2bin = q2bin) 
+    nll = Parameters(kind = 'combinatorial', obs = obs) 
+    nll = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
 
     with ExitStack() as stack:
         stack.enter_context(Cache.cache_root(path = tmp_path))
@@ -355,7 +355,11 @@ def test_rare_misid(
     nll  = Parameters(kind = 'rare_misid', obs = obs) 
     nll  = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
 
-    cfg = _get_fit_config(q2bin = q2bin)
+    cfg = _get_fit_config(
+        q2bin   = q2bin, 
+        project = Project.rk,
+        channel = Channel.ee)
+
     del cfg.mod_cfg.components[Component.comb]
 
     with Cache.cache_root(path = tmp_path):
@@ -368,7 +372,6 @@ def test_rare_misid(
             skip_signal = True,
             skip_prec   = True,
     )
-
 
     print_constraints(constraints = constraints)
 # --------------------------------------------------------------
@@ -385,7 +388,7 @@ def test_reso_misid(
     '''
     q2bin= Qsq.jpsi
 
-    if kind.endswith(str(Brem.zero)):
+    if   kind.endswith(str(Brem.zero)):
         channel = Channel.mm
         brem    = Brem.zero
     elif kind.endswith(str(Brem.one)):
@@ -465,9 +468,6 @@ def test_only_prec(
         channel = Channel.ee,
         q2bin   = q2bin)
 
-    for component in _PRC_COMPONENTS:
-        cfg.mod_cfg.components.pop(component, None)
-
     with Cache.cache_root(path = tmp_path):
         obj         = ConstraintReader(
             brem    = brem,
@@ -503,17 +503,13 @@ def test_save(
         channel = Channel.ee,
         q2bin   = q2bin)
 
-    nll  = _get_nll(obs=obs, cfg=cfg, q2bin = q2bin, reg = brem.region) 
+    nll = Parameters(kind = 'sig_par', obs = obs) 
+    nll = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
 
-    yld_cfg   = SimpleYieldConf(val = 10, min = 0, max = 100_000)
-    yld       = YieldConf(root = yld_cfg)
-    par_cfg   = YieldsConf(root = {f'yld_comb_{brem}' : yld})
-
-    ctx_1 = Cache.cache_root(path = tmp_path)
-    ctx_2 = ParameterLibrary.parameter_schema(cfg = par_cfg)
     with ExitStack() as stack:
-        stack.enter_context(ctx_1)
-        stack.enter_context(ctx_2)
+        stack.enter_context(Cache.cache_root(path = tmp_path))
+        stack.enter_context(sel.custom_selection(d_sel = cfg.overriding_selection))
+        stack.enter_context(PL.parameter_schema(cfg = cfg.mod_cfg.yields))
 
         obj         = ConstraintReader(
             brem    = brem,
