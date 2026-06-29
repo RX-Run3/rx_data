@@ -7,9 +7,8 @@ import yaml
 from pathlib             import Path
 from typing              import Final
 from dmu                 import LogStore
-from dmu.stats           import Constraint
+from dmu.stats           import Constraint, ParsHolder
 from rx_common           import Brem, Component
-from zfit.loss           import ExtendedUnbinnedNLL
 
 from .configs            import CombinatorialConf, RXFitConfig
 from .prec_scales        import get_constraints as get_prec_constraints 
@@ -29,7 +28,7 @@ class ConstraintReader:
     def __init__(
         self, 
         brem  : Brem,
-        nll   : ExtendedUnbinnedNLL, 
+        nll   : ParsHolder, 
         cfg   : RXFitConfig,
         signal: Component):
         '''
