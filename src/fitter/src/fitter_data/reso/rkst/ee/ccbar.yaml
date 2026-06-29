@@ -13,4 +13,4 @@ fit:
 plots:
   nbins  : 40
   stacked: True
-  plot_range : [4800, 5600]
+  plot_range : [4700, 5500]
