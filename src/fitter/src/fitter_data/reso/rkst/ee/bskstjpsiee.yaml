@@ -8,9 +8,7 @@ categories:
       shared        : 
         - mu
         - sg
-      floating      :
-        - mu
-        - sg
+      floating      : []
       reparametrize : {}
       fix           : {}
       values        :
@@ -24,9 +22,7 @@ categories:
       shared        : 
         - mu
         - sg
-      floating      :
-        - mu
-        - sg
+      floating      : []
       reparametrize : {}
       fix           : {}
       values        :
