@@ -758,9 +758,13 @@ class RXFitConfig(BaseModel):
         new_components : dict[Component, AnyModelConf] = {}
         for comp, conf in self.mod_cfg.components.items():
             if not isinstance(conf, ParametricConf):
-                new_conf = conf.model_copy()
-            else:
+                new_components[comp] = conf.model_copy()
+                continue
+
+            try:
                 new_conf = conf.pick_category(name = name)
+            except ValueError as exc:
+                raise ValueError(f'Cannot find category {name} for component {comp}') from exc
 
             new_components[comp] = new_conf
 
