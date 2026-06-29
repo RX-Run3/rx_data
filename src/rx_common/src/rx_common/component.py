@@ -458,6 +458,20 @@ class Component(StrEnum):
         return self.name
     # --------------------------------------------
     @property
+    def original(self) -> 'Component':
+        '''
+        In case this is a derived sample (e.g. from double misID)
+        this method will return the original version
+        '''
+        if self == Component.bdkstjpsiee_swp:
+            return Component.bdkstkpijpsiee
+
+        if self == Component.bdkstjpsimm_swp:
+            return Component.bdkstkpijpsimm
+
+        return self
+    # --------------------------------------------
+    @property
     def latex(self) -> str:
         '''
         Returns
