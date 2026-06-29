@@ -67,12 +67,12 @@ pol3:
     max : +0.95
 suj:
   mu:
-    val : 4000
+    val : 4800
     min : 3000
     max : 5000
   sg:
-    val : 10
-    min : 2
+    val : 300
+    min : 2 
     max : 5000
   gm:
     val : 1
