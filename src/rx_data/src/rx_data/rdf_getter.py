@@ -69,32 +69,6 @@ class RDFGetter(SpecMaker):
         self._cfg : DictConfig= self._load_config()
         self._ext_weight      = '(L1_PIDe > 1 && L2_PIDe > 1) ? 1 : 10'
 
-        _l_bu_ee_trigger      = [
-            'Hlt2RD_BuToKpEE_MVA',
-            'Hlt2RD_BuToKpEE_MVA_cal',
-            'Hlt2RD_BuToKpEE_MVA_misid',
-            'Hlt2RD_BuToKpEE_MVA_noPID',
-            'Hlt2RD_BuToKpEE_SameSign_MVA']
-
-        _l_bd_ee_trigger = [
-            'Hlt2RD_B0ToKpPimEE_MVA',
-            'Hlt2RD_B0ToKpPimEE_MVA_cal',
-            'Hlt2RD_B0ToKpPimEE_MVA_misid',
-            'Hlt2RD_B0ToKpPimEE_MVA_noPID',
-            'Hlt2RD_B0ToKpPimEE_SameSign_MVA']
-
-        self._l_ee_trigger  = _l_bd_ee_trigger + _l_bu_ee_trigger
-
-        _l_bu_mm_trigger    = [
-            'Hlt2RD_BuToKpMuMu_MVA',
-            'Hlt2RD_BuToKpMuMu_SameSign_MVA']
-
-        _l_bd_mm_trigger    = [
-            'Hlt2RD_B0ToKpPimMuMu_MVA',
-            'Hlt2RD_B0ToKpPimMuMu_SameSign_MVA']
-
-        self._l_mm_trigger  = _l_bd_mm_trigger + _l_bu_mm_trigger
-
         self._rdf    : RDF.RNode            # This is where the dataframe will be stored, prevents recalculation
         self._d_rdf  : dict[Path,RDF.RNode] # This is where the dataframes are stored, when per_file splitting was
                                             # requested. They keys are the main tree file path, the value is the dataframe
