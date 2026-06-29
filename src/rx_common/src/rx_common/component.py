@@ -402,7 +402,11 @@ class Component(StrEnum):
             # ------
             case 'bdkstkpijpsiee':
                 return ['bdjkst' , 'jpee', 'kokp']
+            case 'bdkstjpsiee_swp':
+                return ['bdjkst' , 'jpee', 'kokp']
             case 'bdkstkpijpsimm':
+                return ['bdjkst' , 'jpmm', 'kokp']
+            case 'bdkstjpsimm_swp':
                 return ['bdjkst' , 'jpmm', 'kokp']
             case 'bdkstkpipsi2ee':
                 return ['bdpskst', 'psee', 'kokp']
