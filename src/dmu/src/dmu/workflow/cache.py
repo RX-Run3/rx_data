@@ -57,12 +57,12 @@ class Cache:
         else:
             log.warning('Not using code for hashing')
 
-        # If _cache_root is not at the beggining of out_path
-        # add it
-        if out_path.is_relative_to(Cache._cache_root):
-            self._out_path  = out_path
+        # If user uses absolute path, respect that
+        # If relative path, make it relative to _cache_root 
+        if   out_path.is_absolute():
+            self._out_path = out_path
         else:
-            self._out_path  = Cache._cache_root / out_path
+            self._out_path = Cache._cache_root / out_path
 
         log.debug(f'Using {self._out_path} output path')
         self._out_path.mkdir(parents=True, exist_ok=True)
