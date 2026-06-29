@@ -41,7 +41,7 @@ def _make_dir_path(name : str) -> str:
 
     return path
 #--------------------------------
-def test_simple():
+def test_simple(tmp_path : Path):
     '''
     Simplest test of plotting class
     '''
@@ -60,8 +60,7 @@ def test_simple():
     obj.plot(nbins=50, d_leg=d_leg, plot_range=(-10, 10), ext_text='Extra text here')
     obj.axs[1].set_ylim(-5, 5)
 
-    plt_dir = _make_dir_path(name = 'simple')
-    plt.savefig(f'{plt_dir}/fit.png', bbox_inches='tight')
+    plt.savefig(tmp_path / 'fit.png', bbox_inches='tight')
 #--------------------------------
 def test_run(tmp_path : Path):
     '''
