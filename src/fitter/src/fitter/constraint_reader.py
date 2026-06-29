@@ -57,7 +57,7 @@ class ConstraintReader:
     def _add_bkg_fraction_constraints(self, skip : bool) -> None:
         '''
         Appends constraints to _constraints list for parameters in parameter holder
-        whose names start with `pscale`
+        whose names start with `s_{COMPONENT}_brem_...`
         '''
         if skip: 
             log.warning('Dropping part-reco constraints')
