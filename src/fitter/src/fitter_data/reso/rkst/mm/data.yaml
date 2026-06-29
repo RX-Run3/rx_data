@@ -26,6 +26,7 @@ constraints:
     - bskstjpsimm
     - bsphijpsimm
     - lbpkjpsimm
+    - bdkstjpsimm_swp
   combinatorial   : false
   signal_shape    : false
 fit: {}

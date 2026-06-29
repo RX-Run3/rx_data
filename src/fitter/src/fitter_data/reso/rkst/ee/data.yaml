@@ -48,6 +48,7 @@ constraints:
     - bskstjpsiee 
     - bsphijpsiee
     - lbpkjpsiee
+    - bdkstjpsiee_swp
   combinatorial   : false
   signal_shape    : false
 fit: {}
