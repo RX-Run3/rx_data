@@ -345,11 +345,11 @@ def test_only_cmb(
 # --------------------------------------------------------------
 @pytest.mark.skip(reason = 'Includes misID, too slow')
 @pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
-def test_rare_misid(
+def test_rare_hadronic_misid(
     tmp_path : Path, 
     q2bin    : Qsq):
     '''
-    Tests all the constraints but the combinatorial shape
+    Test constraints for rare hadronic misID
 
     Parameters
     -------------
@@ -456,12 +456,12 @@ def test_reso_misid(
 # --------------------------------------------------------------
 @pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
 @pytest.mark.parametrize('brem' , [Brem.one, Brem.two, Brem.brx12])
-def test_only_prec(
+def test_rare_background_fraction(
     brem     : Brem,
     tmp_path : Path, 
     q2bin    : Qsq):
     '''
-    Tests all the constraints but the combinatorial shape
+    Tests scales for background fraction in rare mode
 
     Parameters
     -------------
