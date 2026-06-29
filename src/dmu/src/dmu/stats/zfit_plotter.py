@@ -12,7 +12,7 @@ import pandas                as pd
 import numpy                 as np
 import matplotlib.pyplot     as plt
 
-from typing                 import Self
+from typing                 import Final, Self
 from pydantic               import BaseModel, ConfigDict, Field
 from matplotlib.axes        import Axes
 from zfit.pdf               import BasePDF    as zpdf
@@ -25,6 +25,9 @@ from dmu.stats              import utilities  as sut
 from .imports               import zfit
 
 log = LogStore.add_logger('dmu:zfit_plotter')
+
+_NORMAL_BINNING : Final[int] = 100
+_FINE_BINNING   : Final[int] = 200
 #----------------------------------------
 class EmptyDataSet(Exception):
     '''
@@ -142,6 +145,24 @@ class ZFitPlotter:
             raise ValueError('Cannot get zfit data')
 
         return out_data
+    #----------------------------------------
+    def _get_marker_size(self, nbins : int) -> float:
+        '''
+        Parameters
+        -----------------
+        nbins: Number of bins used for data historam and pulls
+
+        Returns
+        -----------------
+        Size of marker
+        '''
+        if nbins <= _NORMAL_BINNING:
+            return 1.
+
+        if nbins <= _FINE_BINNING:
+            return 0.75
+
+        return 0.5
     #----------------------------------------
     def _get_errors(
             self,
@@ -269,12 +290,13 @@ class ZFitPlotter:
         data_hist.fill(dat, weight=wgt)
 
         mplhep.histplot(
-                data_hist,
-                yerr     = True,
-                color    = 'black',
-                histtype = 'errorbar',
-                label    = self._leg.get('Data', 'Data'),
-                ax       = ax)
+            data_hist,
+            yerr       = True,
+            markersize = self._get_marker_size(nbins = nbins),
+            color      = 'black',
+            histtype   = 'errorbar',
+            label      = self._leg.get('Data', 'Data'),
+            ax         = ax)
     #----------------------------------------
     def _pull_hist(self, pdf_hist, nbins, data_yield, l_range=None):
         pdf_values= pdf_hist.values()
@@ -328,10 +350,11 @@ class ZFitPlotter:
 
         mplhep.histplot(
             pull_hist,
-            color   = "black",
-            histtype= "errorbar",
-            yerr    = np.array(pull_errors),
-            ax      = ax,
+            color      = "black",
+            histtype   = "errorbar",
+            markersize = self._get_marker_size(nbins = nbins),
+            yerr       = np.array(pull_errors),
+            ax         = ax,
         )
     #----------------------------------------
     def _get_zfit_gof(self):
