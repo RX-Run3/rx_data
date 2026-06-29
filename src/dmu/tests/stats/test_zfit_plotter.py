@@ -62,6 +62,27 @@ def test_simple(tmp_path : Path):
 
     plt.savefig(tmp_path / 'fit.png', bbox_inches='tight')
 #--------------------------------
+def test_high_binning(tmp_path : Path):
+    '''
+    Test with large datasets and many bins
+    '''
+    arr = numpy.random.normal(0, 1, size=100_000)
+
+    obs = zfit.Space('m', limits=(-10, 10))
+    mu  = zfit.Parameter("mu", 0.0, -5, 5)
+    sg  = zfit.Parameter("sg", 1.0,  0, 5)
+
+    pdf = zfit.pdf.Gauss(obs=obs, mu=mu, sigma=sg, name='gauss')
+    nev = zfit.Parameter('nev', 100_000, 0, 1000_000)
+    pdf = pdf.create_extended(nev,)
+
+    obj   = ZFitPlotter(data=arr, model=pdf, result=None)
+    d_leg = {'gauss': 'New Gauss'}
+    obj.plot(nbins=400, d_leg=d_leg, plot_range=(-10, 10), ext_text='Extra text here')
+    obj.axs[1].set_ylim(-5, 5)
+
+    plt.savefig(tmp_path / 'fit.png', bbox_inches='tight')
+#--------------------------------
 def test_run(tmp_path : Path):
     '''
     Simplest test of plotting class
