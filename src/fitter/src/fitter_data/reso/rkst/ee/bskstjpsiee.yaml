@@ -1,18 +1,37 @@
 component : bskstjpsiee 
 categories:
-  brem    :
+  brem_xx1:
     selection : {}
     model:
-      pdfs :
+      pdfs:
         - dscb
-      shared   : 
+      shared        : 
         - mu
         - sg
-      floating :
+      floating      :
         - mu
         - sg
       reparametrize : {}
       fix           : {}
+      values        :
+        sg : [20  ,    8,   50]
+        mu : [5280, 5240, 5350]
+  brem_xx2:
+    selection : {}
+    model:
+      pdfs:
+        - dscb
+      shared        : 
+        - mu
+        - sg
+      floating      :
+        - mu
+        - sg
+      reparametrize : {}
+      fix           : {}
+      values        :
+        sg : [20  ,    8,   50]
+        mu : [5280, 5240, 5350]
 fit:
   strategy  :
     ntries : 10
