@@ -614,6 +614,7 @@ class RXFitConfig(BaseModel):
     q2bin   : Qsq
 
     mod_cfg : FitModelConf
+    output_directory : Path   = Path('/tmp')
     ncores  : int             = 1
     block   : int             = -1
     ncores  : int             = 1
@@ -625,6 +626,8 @@ class RXFitConfig(BaseModel):
     def _validate(self) -> 'RXFitConfig':
         if self.ncores < 1:
             raise ValueError(f'Invalid number of cores: {self.ncores}')
+
+        self.output_directory = self._get_output_directory()
 
         return self
     # ----------------------
@@ -858,8 +861,7 @@ class RXFitConfig(BaseModel):
 
         return name
     # ----------------------
-    @cached_property
-    def output_directory(self) -> Path:
+    def _get_output_directory(self) -> Path:
         '''
         Returns
         -----------------
@@ -872,7 +874,6 @@ class RXFitConfig(BaseModel):
             block_name = 'all'
         else:
             block_name = f'b{self.block}'
-
 
         trigger = self.mod_cfg.trigger
         out_dir = _ANADIR / 'fits/data' / self.group / f'{self.fit_name}_{block_name}'
