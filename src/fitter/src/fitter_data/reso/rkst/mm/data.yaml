@@ -7,13 +7,13 @@ observable:
   jpsi:
     name : B_const_mass_M
     range:
-      - 5000
-      - 6000
+      - 4700
+      - 7000
   psi2:
     name : B_const_mass_psi2S_M
     range:
-      - 4900
-      - 6000
+      - 4700
+      - 7000
 components:
   comb            : reso/rkst/mm/comb.yaml
   ccbar           : reso/rkst/mm/ccbar.yaml
