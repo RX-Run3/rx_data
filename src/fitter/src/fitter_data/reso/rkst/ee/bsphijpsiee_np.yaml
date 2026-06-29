@@ -1,4 +1,3 @@
-
 component        : bsphijpsiee 
 events_range     :
   - 4200
@@ -11,5 +10,4 @@ fit:
 plots:
   nbins   : 50
   stacked : True
-  d_leg :
-    gauss_1 : Gauss 
+  d_leg   : {}
