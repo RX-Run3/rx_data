@@ -70,7 +70,7 @@ class AcceptanceReader:
 
         log.info(f'Loading acceptances from: {prc_path}')
         df          = pnd.read_json(prc_path)
-        df_filtered = df[ df.Sample == self._sample.value ]
+        df_filtered = df[ df.Sample == self._sample.original.value ]
         if len(df_filtered) == 0:
             log.info(df)
             raise ValueError(f'Process {self._sample} not found in {prc_path}')
