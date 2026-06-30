@@ -132,6 +132,9 @@ class Block(BaseModel):
 
         return Block(value=new_value)
     # ----------------
+    def __format__(self, format_spec: str) -> str:
+        return format(str(self), format_spec)
+    # ----------------
     def __str__(self):
         return self.value
     # ----------------
