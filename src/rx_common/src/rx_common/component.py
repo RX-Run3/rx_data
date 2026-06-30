@@ -157,12 +157,14 @@ class Component(StrEnum):
         '''
         Parameters
         ----------------
-        sample: String representing MC sample
+        sample: String representing MC sample, can be lower or mixed case
 
         Returns
         ----------------
         Corresponding component
         '''
+        sample  = sample.lower()
+        sample  = aput.name_from_lower_case(lower_case = sample)
         samples = _get_samples()
 
         if sample in samples:
