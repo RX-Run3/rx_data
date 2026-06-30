@@ -66,7 +66,7 @@ class SamplePatcher:
         log.info('Using associations:')
         log.info(20 * '-')
         for key, val in associations.items():
-            log.debug(f'{key:<20}{val}')
+            log.info(f'{key:<20}{val}')
         log.info(20 * '-')
 
         return associations 
@@ -233,8 +233,8 @@ class SamplePatcher:
         block_needed : Block for which the condition is build
         *_index      : Index of first and last element that will be assigned this block
         '''
+        log.debug('Building block assignment conditions')
         condition = f'rdfentry_ + 1 > {min_index} && rdfentry_ < {max_index}'
-        log.debug(f'Condition: {condition}')
 
         if self._conditions is None:
             self._conditions = dict()
