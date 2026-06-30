@@ -64,7 +64,7 @@ class SpecMaker:
         self._emulator  = SampleEmulator(sample=component)
         self._cfg_samp  = self._emulator.get_samples()
 
-        cache_dir       = tempfile.mkdtemp(prefix=f'{component}_{trigger}_{tree}')
+        cache_dir       = tempfile.mkdtemp(prefix=f'{component}_{trigger}_{tree}_')
         self._cache_dir = Path(cache_dir)
 
         self._trigger   = trigger
@@ -234,8 +234,6 @@ class SpecMaker:
         nosamp = True
         for sample, data in samples.root.items():
             if not self._cfg_samp.contains(sample = sample):
-                log.debug('For target')
-                log.debug(self._cfg_samp)
                 log.debug(f'skipping {sample}')
                 continue
 
@@ -465,7 +463,8 @@ class SpecMaker:
         val    = val[:10]
 
         # Id of process plus random number 
-        proc_id  = self._identifier + secrets.randbelow(1000_000_000)
+        rand_id  = secrets.randbelow(1000_000_000)
+        proc_id  = f'{self._identifier}_{rand_id}'
         tmp_path = self._cache_dir / f'{identifier}_{proc_id}_{val}.json'
 
         log.debug(f'Using config JSON: {tmp_path}')
