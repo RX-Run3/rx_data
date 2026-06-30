@@ -1,9 +1,7 @@
 '''
 Module with tests for PFNSplitter class
 '''
-import os
 import json
-import yaml
 import pytest
 
 from typing                import Final
@@ -12,7 +10,7 @@ from importlib.resources   import files
 from functools             import cache
 from dmu                   import LogStore
 from dmu.generic           import version_management as vmn
-from rx_data               import PathSplitter, Samples, NestedSamples
+from rx_data               import PathSplitter
 
 # TODO: Add rkst_nopid project
 _PROJECTS : Final[list[str]] = ['rx', 'nopid']
@@ -20,25 +18,12 @@ _PROJECTS : Final[list[str]] = ['rx', 'nopid']
 log   = LogStore.add_logger('')
 log   = LogStore.add_logger('rx_data:test_path_splitter')
 # ----------------------------------------
-class Data:
-    '''
-    Class used to share attributes
-    '''
-    out_dir = '/tmp/tests/rx_data/path_splitter'
-# ----------------------------------------
 @pytest.fixture(scope='session', autouse=True)
 def initialize():
     '''
     This will run before any test
     '''
     LogStore.set_level('rx_data:path_splitter', 10)
-
-    os.makedirs(Data.out_dir, exist_ok=True)
-# ----------------------------------------
-def _save_samples(test : str, data : Samples | NestedSamples) -> None:
-    file_path = f'{Data.out_dir}/{test}.yaml'
-    with open(file_path, 'w', encoding='utf-8') as ofile:
-        yaml.dump(data, ofile, indent=2)
 # ----------------------------------------
 @cache
 def _get_pfns(analysis : str) -> list[Path]:
@@ -57,7 +42,7 @@ def _get_pfns(analysis : str) -> list[Path]:
     return l_pfn
 # ----------------------------------------
 @pytest.mark.parametrize('analysis', _PROJECTS)
-def test_default(analysis : str):
+def test_default(analysis : str, tmp_path : Path):
     '''
     Default usage
     '''
@@ -65,10 +50,12 @@ def test_default(analysis : str):
     spl   = PathSplitter(paths = pfns)
     data  = spl.split(nested=False)
 
-    _save_samples(f'default_{analysis}', data)
+    string = data.model_dump_json(indent = 2)
+    path   = tmp_path / f'default_{analysis}.json'
+    path.write_text(string)
 # ----------------------------------------
 @pytest.mark.parametrize('analysis', _PROJECTS)
-def test_nested(analysis : str):
+def test_nested(analysis : str, tmp_path : Path):
     '''
     Dumps it with nesting sample:trigger:list of files
     '''
@@ -76,10 +63,12 @@ def test_nested(analysis : str):
     spl   = PathSplitter(paths = l_pfn)
     data  = spl.split(nested=True)
 
-    _save_samples(f'nested_{analysis}', data)
+    string = data.model_dump_json(indent = 2)
+    path   = tmp_path / f'nested_{analysis}.json'
+    path.write_text(string)
 # ----------------------------------------
 @pytest.mark.parametrize('analysis', _PROJECTS)
-def test_max_files(analysis : str):
+def test_max_files(analysis : str, tmp_path : Path):
     '''
     Will only read 100 files
     '''
@@ -87,11 +76,16 @@ def test_max_files(analysis : str):
     spl   = PathSplitter(paths = l_pfn, max_files=100)
     data  = spl.split(nested=False)
 
-    _save_samples(f'max_files_{analysis}', data)
+    string = data.model_dump_json(indent = 2)
+    path   = tmp_path / f'max_files_{analysis}.json'
+    path.write_text(string)
 # ----------------------------------------
 @pytest.mark.parametrize('analysis', _PROJECTS)
 @pytest.mark.parametrize('naming'  , ['new', 'old'])
-def test_sample_naming(naming : str, analysis : str):
+def test_sample_naming(
+    naming   : str, 
+    tmp_path : Path,
+    analysis : str):
     '''
     Will only read 100 files
     '''
@@ -99,5 +93,7 @@ def test_sample_naming(naming : str, analysis : str):
     spl   = PathSplitter(paths = l_pfn, sample_naming=naming)
     data  = spl.split(nested=False)
 
-    _save_samples(f'naming_{naming}_{analysis}', data)
+    string = data.model_dump_json(indent = 2)
+    path   = tmp_path / f'naming_{analysis}.json'
+    path.write_text(string)
 # ----------------------------------------
