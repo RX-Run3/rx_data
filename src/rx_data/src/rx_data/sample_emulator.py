@@ -2,7 +2,6 @@
 Module holding SampleEmulator class
 '''
 
-from fnmatch     import fnmatch
 from ROOT        import RDF # type: ignore
 from dmu         import LogStore
 from dmu.generic import utilities as gut
@@ -160,7 +159,7 @@ class SampleEmulator:
         for var, expr in definitions.items():
             assert isinstance(var, str)
 
-            log.debug(f'{var:<30}{"--->"}\n{expr:<}')
+            log.debug(f'{var:<10}{"--->"}\n{expr}')
             rdf = rdf.Redefine(var, expr)
 
         return rdf
