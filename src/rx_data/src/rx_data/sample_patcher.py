@@ -148,6 +148,13 @@ class SamplePatcher:
 
             patching_paths.append(path)
 
+        npatch = len(patching_paths)
+        ntotal = len(paths)
+        if not patching_paths:
+            raise ValueError(f'Found {npatch}/{ntotal} patching files for: {block}')
+        else:
+            log.debug(f'Found {npatch}/{ntotal} patching paths for: {block}')
+
         self._patching_files[block] = patching_paths
 
         return patching_paths
@@ -172,10 +179,15 @@ class SamplePatcher:
         '''
         for block_needed, file_paths in patching_files.items():
             file_names = [ file_path.name for file_path in file_paths ] 
+            start      = sample.size
             sample     = self._patch_sample_for_block(
+                ftree        = ftree,
                 block_needed = block_needed, 
                 file_names   = file_names, 
                 sample       = sample)
+            end = sample.size
+
+            log.debug(f'Patched block {block_needed} appended extra files: {start} -> {end}')
 
         return sample
     # ----------------------
@@ -203,7 +215,7 @@ class SamplePatcher:
             for expected in file_names:
                 log.info(expected)
 
-            log.error('Files from friend category')
+            log.error(f'Files from {ftree} category')
             for found in patching_paths:
                 log.info(found.name)
 
@@ -235,7 +247,6 @@ class SamplePatcher:
         block_needed : Block for which the condition is build
         *_index      : Index of first and last element that will be assigned this block
         '''
-        log.debug('Building block assignment conditions')
         condition = f'rdfentry_ + 1 > {min_index} && rdfentry_ < {max_index}'
 
         if self._conditions is None:
@@ -270,8 +281,15 @@ class SamplePatcher:
 
         d_patching_files : dict[Block, list[Path]] = dict()
         for needed_block, patching_block in self._associations.items():
-            log.debug(f'Patching block: {needed_block}')
             d_patching_files[needed_block] = self._get_patching_files(block=patching_block, main_sample=main_sample)
+            log.debug(f'Patching block: {needed_block}')
+
+
+        log.debug(20 * '-')
+        log.debug('Conditions:')
+        for block, condition in self._conditions.items():
+            log.debug(f'    {block:<20}{condition}')
+        log.debug(20 * '-')
 
         patched_friends : dict[str, Sample] = dict()
         for friend_name, friend_sample in self._spec.friends.items():
