@@ -5,9 +5,10 @@ from ROOT           import RDataFrame # type: ignore
 from pathlib        import Path
 from dmu            import LogStore
 from dmu.generic    import utilities as gut
-from rx_common      import Component 
+from rx_common      import Component, Block
 
-from .specification import Specification, Sample
+from .specification   import Specification, Sample
+from .sample_emulator import EmulatorConf
 
 log=LogStore.add_logger('rx_data:sample_patcher')
 # ------------------------------------
@@ -26,13 +27,13 @@ class SamplePatcher:
         -------------
         sample : E.g. bpkpee 
         '''
-        self._sample                                = sample
-        self._spec                                  = spec.model_copy(deep=True)
-        self._associations   : dict[int,int]        = self._get_patching_dictionary()
-        self._conditions     : dict[int,str]        = dict() 
-        self._patching_files : dict[int,list[Path]] = dict()
+        self._sample                                  = sample
+        self._spec                                    = spec.model_copy(deep=True)
+        self._associations   : dict[Block,Block]      = self._get_patching_dictionary()
+        self._conditions     : dict[Block,str]        = dict() 
+        self._patching_files : dict[Block,list[Path]] = dict()
     # ----------------------
-    def _get_patching_dictionary(self) -> dict[int,int]:
+    def _get_patching_dictionary(self) -> dict[Block,Block]:
         '''
         This method will set redefinitions to an empty dictionary if patching
         not found
@@ -45,23 +46,21 @@ class SamplePatcher:
         If no patching is available, dictionary will be empty
         '''
         log.debug('Loading emulation configuration')
-        cfg = gut.load_conf(package='rx_data_data', fpath='emulated_trees/config.yaml')
+        data = gut.load_data(package='rx_data_data', fpath='emulated_trees/config.yaml')
+        cfg  = EmulatorConf(**data)
 
-        associations : dict[int,int] = dict()
-        if 'simulation' in cfg:
+        associations : dict[Block,Block] = dict()
+        if Component.mc in cfg.root:
             log.debug('Found patching section for simulation')
-            associations.update(cfg.simulation.patching)
+            cfg_sample = cfg.root[Component.mc]
+            associations.update(cfg_sample.patching)
 
-        if self._sample not in cfg:
+        if self._sample not in cfg.root:
             log.error(f'No sample specific patching needed for {self._sample}')
             return associations 
 
-        if 'patching' not in cfg[self._sample]:
-            log.error(f'No sample specific patching needed for {self._sample}')
-            return associations 
-
-        log.info(f'Using sample specifig patching for {self._sample}')
-        associations.update(cfg[self._sample].patching)
+        log.info(f'Using sample specific patching for {self._sample}')
+        associations.update(cfg.root[self._sample].patching)
 
         log.info(20 * '-')
         log.info('Using associations:')
@@ -111,7 +110,7 @@ class SamplePatcher:
     # ----------------------
     def _get_patching_files(
         self, 
-        block       : int, 
+        block       : Block, 
         main_sample : Sample) -> list[Path]:
         '''
         Parameters
@@ -154,7 +153,7 @@ class SamplePatcher:
     def _patch_sample(
         self, 
         sample         : Sample, 
-        patching_files : dict[int,list[Path]]) -> Sample:
+        patching_files : dict[Block,list[Path]]) -> Sample:
         '''
         Parameters
         -------------
@@ -181,7 +180,7 @@ class SamplePatcher:
     def _patch_sample_for_block(
         self, 
         sample       : Sample,
-        block_needed : int, 
+        block_needed : Block, 
         file_names   : list[str]) -> Sample:
         '''
         Parameters
@@ -214,15 +213,15 @@ class SamplePatcher:
 
         if sample.metadata['kind'] == 'main':
             self._build_conditions(
-                block_needed    = block_needed,
-                min_index = old_sample_size,
-                max_index = new_sample_size)
+                block_needed = block_needed,
+                min_index    = old_sample_size,
+                max_index    = new_sample_size)
 
         return sample
     # ----------------------
     def _build_conditions(
         self, 
-        block_needed: int,
+        block_needed: Block,
         min_index   : int, 
         max_index   : int) -> None:
         '''
@@ -267,7 +266,7 @@ class SamplePatcher:
 
         main_sample : Sample = self._spec.samples['main']
 
-        d_patching_files : dict[int, list[Path]] = dict()
+        d_patching_files : dict[Block, list[Path]] = dict()
         for needed_block, patching_block in self._associations.items():
             log.debug(f'Patching block: {needed_block}')
             d_patching_files[needed_block] = self._get_patching_files(block=patching_block, main_sample=main_sample)
