@@ -16,7 +16,6 @@ from rx_common        import Component
 from dmu              import LogStore
 from dmu.generic      import hashing
 from dmu.generic      import version_management as vmn
-from dmu.generic      import utilities          as gut
 
 from .path_splitter   import PathSplitter, NestedSamples
 from .sample_patcher  import SamplePatcher
@@ -62,7 +61,7 @@ class SpecMaker:
             raise ValueError(f'Tree {tree} not in allowed trees: {_ALLOWED_TREES}')
 
         self._component = component
-        self._emulator  = SampleEmulator(sample=component.sample)
+        self._emulator  = SampleEmulator(sample=component)
         self._cfg_samp  = self._emulator.get_samples()
 
         cache_dir       = tempfile.mkdtemp(prefix=f'{component}_{trigger}_{tree}')
@@ -168,9 +167,9 @@ class SpecMaker:
     # ---------------------------------------------------
     def _get_trigger_paths(
         self,
-        sample    : str,
+        component : Component,
         ftree     : str,
-        d_trigger : dict[str,list[Path]]) -> list[Path]:
+        d_trigger : dict[Trigger,list[Path]]) -> list[Path]:
         '''
         On noPID trigger for data: This is a _fake_ trigger made from the merge of the OS electron trigger and
         the misID trigger, when the later is given a weight of 10, to account for prescale in 2024 data.
@@ -186,21 +185,19 @@ class SpecMaker:
         ----------------
         List of paths to ROOT files for a given HLT2 trigger
         '''
-        component = Component.from_sample(sample = sample)
-
         if component.is_mc and self._trigger in d_trigger:
-            log.debug(f'Found paths for ROOT files associated to MC sample: {self._trigger}/{sample}/{ftree}')
+            log.debug(f'Found paths for ROOT files associated to MC sample: {self._trigger}/{component}/{ftree}')
             return d_trigger[self._trigger]
 
         if component.is_mc:
-            raise ValueError(f'Invalid trigger {self._trigger} for MC sample {sample}, project {self._project} and friend tree {ftree}')
+            raise ValueError(f'Invalid trigger {self._trigger} for MC sample {component}, project {self._project} and friend tree {ftree}')
 
         if self._trigger.has_pid and self._trigger in d_trigger:
-            log.debug(f'Found paths for ROOT files associated to data: {self._trigger}/{sample}/{ftree}')
+            log.debug(f'Found paths for ROOT files associated to data: {self._trigger}/{component}/{ftree}')
             return d_trigger[self._trigger]
 
         if self._trigger.has_pid:
-            raise ValueError(f'Invalid trigger {self._trigger} for data sample {sample}, project {self._project} and friend tree {ftree}')
+            raise ValueError(f'Invalid trigger {self._trigger} for data sample {component}, project {self._project} and friend tree {ftree}')
 
         log.debug(f'Found extended trigger: {self._trigger}')
         trig_default = self._trigger.pid_version
@@ -209,7 +206,7 @@ class SpecMaker:
         if trig_default not in d_trigger or trig_misid not in d_trigger:
             raise ValueError(
                 f'Could not find triggers {trig_default} or '
-                f'{trig_misid} for sample {sample}, project {self._project}, '
+                f'{trig_misid} for sample {component}, project {self._project}, '
                 f'friend tree {ftree}')
         
         return d_trigger[trig_default] + d_trigger[trig_misid]
