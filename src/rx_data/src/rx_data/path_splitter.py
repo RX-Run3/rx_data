@@ -1,17 +1,63 @@
 '''
 Module containing PathSplitter class
 '''
-from pathlib import Path
-from typing  import Literal, TypeAlias, overload
+from pathlib      import Path
+from typing       import Literal, overload
+from dmu          import LogLevels, LogStore
+from pydantic     import RootModel
+from rx_common    import Component, Trigger
+from rx_data      import utilities as ut
 
-import ap_utilities.decays.utilities as aput
-from dmu.logging.log_store  import LogStore
-from rx_data                import utilities as ut
+log = LogStore.add_logger('rx_data:path_splitter')
+# ------------------------------------------
+class NestedSamples(RootModel):
+    '''
+    Nested structure like:
 
-Samples       : TypeAlias = dict[tuple[str, str], list[Path]]
-NestedSamples : TypeAlias = dict[str, dict[str, list[Path]]]
+    sample:
+        trigger:
+            - path 1
+            - path 2
+            - path 3
+    '''
+    root : dict[Component, dict[Trigger, list[Path]]]
+# ------------------------------------------
+class Samples(RootModel):
+    root: dict[tuple[Component,Trigger], list[Path]]
+    # -------------------------------------------------------
+    def get_subset(self, max_files : int) -> 'Samples': 
+        '''
+        Will limit the number of paths in the values if Data.Max is larger than zero
+        '''
+        if max_files < 0:
+            return self 
 
-log   = LogStore.add_logger('rx_data:path_splitter')
+        log.warning(f'Truncating to {max_files} paths')
+
+        d_path_trunc = { key : val[:max_files] for key, val in self.root.items() }
+
+        return Samples(root = d_path_trunc)
+    # -------------------------------------------------------
+    def __str__(self):
+        msg = '\n' 
+        for sample, line in self.root:
+            msg += f'{sample:<50}{line:<30}\n'
+
+        return msg
+    # ------------------------------------------
+    @property
+    def nested(self) -> NestedSamples:
+        '''
+        Nested version of current object, i.e. component -> trigger -> ROOT paths
+        '''
+        samples = NestedSamples(root = {})
+        for (sample, line), l_path in self.root.items():
+            if sample not in samples.root:
+                samples.root[sample] = {}
+
+            samples.root[sample][line] = l_path
+
+        return samples 
 # ------------------------------------------
 class PathSplitter:
     '''
@@ -32,84 +78,6 @@ class PathSplitter:
         self._l_path       = paths
         self._max_files    = max_files
         self._sample_naming= sample_naming
-    # ------------------------------------------
-    def _truncate_paths(self, samples : Samples) -> Samples: 
-        '''
-        Will limit the number of paths in the values if Data.Max is larger than zero
-        '''
-        if self._max_files < 0:
-            return samples
-
-        log.warning(f'Truncating to {self._max_files} paths')
-
-        d_path_trunc = { key : val[:self._max_files] for key, val in samples.items() }
-
-        return d_path_trunc
-    # ------------------------------------------
-    def _rename_sample(self, samples : Samples) -> Samples:
-        '''
-        Parameters
-        ---------------
-        samples : Dictionary mapping sample, trigger tuple to list of ROOT file paths
-
-        Returns
-        ---------------
-        Same as input, with sample names changed to go from lower case (extracted from paths) to 
-        mixed case (needed by downstream code)
-        '''
-        log.debug('Renaming samples from lower-case only')
-        d_renamed = {}
-
-        for (sample, line_name), l_fpath in samples.items():
-            try:
-                sample = aput.name_from_lower_case(sample)
-            except ValueError as exc:
-                log.warning(f'Cannot find sample name for lowercase name: {sample}')
-                log.warning(exc)
-                log.warning('')
-                continue
-
-            log.debug(f'Using {self._sample_naming} sample_naming for samples')
-            if self._sample_naming != 'old' or sample.startswith('DATA_'):
-                d_renamed[(sample, line_name)] = l_fpath
-                continue
-
-            try:
-                sample = aput.old_from_new_nick(nickname=sample)
-            except ValueError as exc:
-                log.warning(exc)
-                continue
-
-            d_renamed[(sample, line_name)] = l_fpath
-
-        return d_renamed
-    # ------------------------------------------
-    def _nest_samples(self, samples : Samples ) -> NestedSamples:
-        '''
-        Parameters
-        ----------------
-        samples: Dictionary mapping sample name and trigger tuple to list of ROOT file paths
-
-        (sample, trigger) : path_1
-
-        Returns
-        ----------------
-        Nested structure like:
-
-        sample:
-            trigger:
-                - path 1
-                - path 2
-                - path 3
-        '''
-        d_struc : NestedSamples = {}
-        for (sample, line), l_path in samples.items():
-            if sample not in d_struc:
-                d_struc[sample] = {}
-
-            d_struc[sample][line] = l_path
-
-        return d_struc
     # ------------------------------------------
     @overload
     def split(self, nested : Literal[False]) -> Samples:...
@@ -136,24 +104,24 @@ class PathSplitter:
         npath = len(self._l_path)
         log.info(f'Splitting {npath} paths into categories')
 
-        samples : Samples = {}
+        samples = Samples(root = {})
         for path in self._l_path:
-            info = ut.info_from_path(path=path)
-            if info not in samples:
-                samples[info] = []
+            sample, trigger = ut.info_from_path(path=path)
+            component       = Component.from_sample(sample = sample)
+            key             = component, trigger
 
-            samples[info].append(path)
+            if key not in samples:
+                samples.root[key] = []
 
-        samples = self._truncate_paths(samples = samples)
-        samples = self._rename_sample(samples = samples)
+            samples.root[key].append(path)
 
-        log.debug('Found samples:')
-        samples = dict(sorted(samples.items()))
-        for sample, line in sorted(samples):
-            log.debug(f'{sample:<50}{line:<30}')
+        samples = samples.get_subset(max_files = self._max_files) 
+        if log.getEffectiveLevel() < LogLevels.info:
+            log.debug('Found samples:')
+            log.debug(samples)
 
         if not nested:
             return samples
 
-        return self._nest_samples(samples = samples)
+        return samples.nested 
 # ------------------------------------------
