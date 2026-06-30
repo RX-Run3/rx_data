@@ -8,6 +8,7 @@ import secrets
 import pprint
 import tempfile
 
+from contextvars      import ContextVar
 from contextlib       import contextmanager
 from pathlib          import Path
 from typing           import overload, Literal, Final
@@ -27,6 +28,7 @@ log=LogStore.add_logger('rx_data:spec_maker')
 _MAIN_TREE           : Final[str]       = 'main'
 _ELECTRON_ONLY_TREES : Final[list[str]] = ['brem_track_2']
 _ALLOWED_TREES       : Final[list[str]] = ['DecayTree', 'MCDecayTree']
+_SKIP_PATCH          : ContextVar[bool] = ContextVar('_validate_par_name', default = False)
 # --------------------------
 class SpecMaker:
     '''
@@ -48,7 +50,6 @@ class SpecMaker:
         self, 
         component  : Component, 
         trigger    : Trigger,
-        skip_patch : bool = False,
         tree       : str  = 'DecayTree') -> None:
         '''
         Parameters
@@ -74,7 +75,7 @@ class SpecMaker:
         self._samples   = self._get_json_paths()
         self._l_path : list[Path] = [] # list of paths to all the ROOT files
 
-        if skip_patch:
+        if _SKIP_PATCH.get():
             log.warning(f'Skipping patching of {component}')
             self._spec    = self._get_specification()
         else:
@@ -463,6 +464,24 @@ class SpecMaker:
     # ----------------------
     # Context managers
     # ----------------------
+    @classmethod
+    def skip_patching(cls, val : bool):
+        '''
+        Will allow skipping patching
+        '''
+        log.warning('Skipping patching')
+
+        @contextmanager
+        def _context():
+            token = _SKIP_PATCH.set(val)
+
+            try:
+                yield
+            finally:
+                _SKIP_PATCH.reset(token)
+
+        return _context()
+    # ---------------------------------------------------
     @classmethod
     def default_excluded(cls, names : list[str]):
         '''
