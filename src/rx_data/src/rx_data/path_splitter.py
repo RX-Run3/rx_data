@@ -112,17 +112,14 @@ class PathSplitter:
     # ------------------------------------------
     def __init__(
         self, 
-        paths         : list[Path], 
-        max_files     : int = -1, 
-        sample_naming : str = 'new'):
+        paths     : list[Path], 
+        max_files : int = -1):
         '''
         paths: List of LFNs/PFNs/Local paths
         max_files: If doing tests, the output lists will be limited to this number, default not truncate
-        sample_naming : Either `new` (for Run3) or `old` (for Run1/2 compatibility)
         '''
-        self._l_path       = paths
+        self._l_path       = sorted(paths)
         self._max_files    = max_files
-        self._sample_naming= sample_naming
     # ------------------------------------------
     @overload
     def split(self, nested : Literal[False]) -> Samples:...
@@ -155,10 +152,13 @@ class PathSplitter:
             component       = Component.from_sample(sample = sample)
             key             = component, trigger
 
-            if key not in samples:
+            if key not in samples.root:
                 samples.root[key] = []
 
             samples.root[key].append(path)
+
+        if npath != samples.npaths:
+            raise ValueError(f'Different size after/before splitting: {samples.npaths} != {npath}')
 
         samples = samples.get_subset(max_files = self._max_files) 
         if log.getEffectiveLevel() < LogLevels.info:
