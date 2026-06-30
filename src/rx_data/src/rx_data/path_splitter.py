@@ -21,9 +21,54 @@ class NestedSamples(RootModel):
             - path 3
     '''
     root : dict[Component, dict[Trigger, list[Path]]]
+    # ------------------------------------------
+    def get_paths(
+        self, 
+        ftree  : str, 
+        sample : Component, 
+        trigger: Trigger) -> list[Path]:
+        '''
+        Parameters
+        -----------------
+        ftree  : Friend tree name, e.g. mva
+        sample : E.g. bkpkee
+        trigger: Hlt2 trigger
+
+        Returns
+        -----------------
+        List of sorted paths to corresponding ROOT files
+        '''
+        if sample not in self.root:
+            raise ValueError(f'Missing sample {sample}')
+
+        if trigger not in self.root[sample]:
+            raise ValueError(f'Missing trigger {trigger} for sample {sample}')
+
+        all_paths    = self.root[sample][trigger]
+        friend_paths = [ path for path in all_paths if f'/{ftree}/' in str(path) ]
+
+        npath = len(all_paths)
+        log.info(20 * '-')
+        log.info(f'Found {npath} paths for {ftree}|{sample}|{trigger}')
+        for path in all_paths:
+            log.info(f'   {path}')
+        log.info(20 * '-')
+
+        return sorted(friend_paths)
 # ------------------------------------------
 class Samples(RootModel):
     root: dict[tuple[Component,Trigger], list[Path]]
+    # -------------------------------------------------------
+    @property
+    def npaths(self) -> int:
+        '''
+        Number of ROOT file paths in this object
+        '''
+        size = 0
+        for paths in self.root.values():
+            size += len(paths)
+
+        return size
     # -------------------------------------------------------
     def get_subset(self, max_files : int) -> 'Samples': 
         '''
