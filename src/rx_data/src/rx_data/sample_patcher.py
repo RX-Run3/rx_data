@@ -1,6 +1,7 @@
 '''
 Module containing SamplePatcher
 '''
+from typing         import Final
 from ROOT           import RDataFrame # type: ignore
 from pathlib        import Path
 from dmu            import LogStore
@@ -11,6 +12,7 @@ from .specification   import Specification, Sample
 from .sample_emulator import EmulatorConf
 
 log=LogStore.add_logger('rx_data:sample_patcher')
+_BLOCK : Final[str] = 'block' # name of branch with block number
 # ------------------------------------
 class SamplePatcher:
     '''
@@ -137,7 +139,7 @@ class SamplePatcher:
                 continue
 
             try:
-                arr_block = rdf.AsNumpy(['block'])['block']
+                arr_block = rdf.AsNumpy([_BLOCK])[_BLOCK]
             except Exception as exc:
                 raise ValueError(f'Cannot access block from: {path}:{tree}') from exc
 
