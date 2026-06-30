@@ -8,7 +8,6 @@ from dmu         import LogStore
 from dmu.generic import utilities as gut
 from pydantic    import BaseModel, RootModel
 from rx_common   import Block, Component 
-from rx_common   import MissingComponent
 
 log=LogStore.add_logger('rx_data:sample_emulator')
 # ----------------------
@@ -22,7 +21,17 @@ class SamplesConf(RootModel):
     root: Dictionary mapping sample name (e.g. Bs_JpsiKst_ee_eq_DPC) to
           fraction of it in cocktail
     '''
-    root : dict[str,float]
+    root : dict[Component,float]
+    # --------------------------------------
+    def __str__(self):
+        msg = '\n'
+        msg+= 20 * '-' + '\n'
+        msg+= 'Cocktail components\n'
+        msg+= 20 * '-' + '\n'
+        for component, fraction in self.root.items():
+            msg += f'{component:<30}{fraction:.3g}\n'
+
+        return msg
     # --------------------------------------
     @property
     def is_cocktail(self) -> bool:
@@ -36,13 +45,13 @@ class SamplesConf(RootModel):
         '''
         True if all keys are data samples
         '''
-        for sample in self.root:
-            if Component.from_sample(sample = sample).is_mc:
+        for component in self.root:
+            if component.is_mc:
                 return False
 
         return True
     # --------------------------------------
-    def contains(self, sample : str) -> bool:
+    def contains(self, sample : Component) -> bool:
         '''
         Parameters
         ---------------
@@ -55,18 +64,9 @@ class SamplesConf(RootModel):
         if sample in self.root:
             return True
 
-        try:
-            comp = Component.from_sample(sample = sample)
-        except MissingComponent:
-            # If cannot find sample, then it's MC (real data should always
-            # be associated to component)
-            # If MC and not found in config, skip sample 
-            return False
-
         # If MC and not found skip
-        if comp.is_mc:
+        if sample.is_mc:
             return False
-
         # ---------
         # Below this point `sample` is real data
         # ---------
@@ -103,7 +103,6 @@ class SamplesConf(RootModel):
         return emulator == sample
     # --------------------------------------
     def model_post_init(self, context) -> None:
-        self.__validate_sample()
         self.__validate_fraction()
 
         return super().model_post_init(context)
@@ -111,26 +110,11 @@ class SamplesConf(RootModel):
     def __validate_fraction(self):
         fractions = list(self.root.values())
 
+        if not all(0.0 < fraction <= 1.0 for fraction in fractions):
+            raise ValueError(f'Invalid sample fractions: {self}')
+
         if sum(fractions) != 1:
             raise ValueError(f'Sum of sample fractions not 1: {fractions}')
-    # --------------------------------------
-    def __validate_sample(self):
-        if len(self.root) == 1:
-            (name, frac), = self.root.items()
-            if name == 'any' and frac == 1.0:
-                return
-
-        for name, fraction in self.root.items():
-            self.__validate_sample_name(name = name)
-
-            if fraction < 0 or fraction > 1.0:
-                raise ValueError(f'Invalid sample fraction {fraction:.3f} for {name}')
-    # --------------------------------------
-    def __validate_sample_name(self, name : str):
-        try:
-            Component.from_sample(sample = name)
-        except MissingComponent as exc:
-            raise ValueError(f'No component associated to sample: {name}') from exc
 # ----------------------
 class EmulationConf(BaseModel):
     '''
@@ -159,7 +143,7 @@ class EmulatorConf(RootModel):
     Class meant to represent configuration needed to emulate
     samples
     '''
-    root : dict[str,EmulationConf]
+    root : dict[Component,EmulationConf]
 # ----------------------
 class SampleEmulator:
     '''
@@ -170,11 +154,11 @@ class SampleEmulator:
     - Postprocess original sample to make it suitable for emulation
     '''
     # ----------------------
-    def __init__(self, sample : str) -> None:
+    def __init__(self, sample : Component) -> None:
         '''
         Parameters
         ---------------
-        sample: Name of sample to emulate, e.g. Bs_JpsiKst_ee_eq_DPC
+        sample: Sample to emulate e.g. bpkpee 
         '''
         fpath= 'emulated_trees/config.yaml'
         data = gut.load_data(package='rx_data_data', fpath=fpath)
@@ -201,12 +185,12 @@ class SampleEmulator:
 
         Returns
         -------------
-        Dictionary after definitiions
+        Dataframe after definitiions
         '''
         for var, expr in definitions.items():
             assert isinstance(var, str)
 
-            log.debug(f'{var:<30}{"--->"}{expr:<}')
+            log.debug(f'{var:<30}{"--->"}\n{expr:<}')
             rdf = rdf.Redefine(var, expr)
 
         return rdf
