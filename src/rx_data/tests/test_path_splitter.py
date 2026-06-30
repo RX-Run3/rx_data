@@ -12,7 +12,7 @@ from importlib.resources   import files
 from functools             import cache
 from dmu                   import LogStore
 from dmu.generic           import version_management as vmn
-from rx_data               import PathSplitter
+from rx_data               import PathSplitter, Samples, NestedSamples
 
 # TODO: Add rkst_nopid project
 _PROJECTS : Final[list[str]] = ['rx', 'nopid']
@@ -35,7 +35,7 @@ def initialize():
 
     os.makedirs(Data.out_dir, exist_ok=True)
 # ----------------------------------------
-def _save_samples(test : str, data : dict) -> None:
+def _save_samples(test : str, data : Samples | NestedSamples) -> None:
     file_path = f'{Data.out_dir}/{test}.yaml'
     with open(file_path, 'w', encoding='utf-8') as ofile:
         yaml.dump(data, ofile, indent=2)
