@@ -1,9 +1,9 @@
 # This is a config meant to specify how to emulate a sample
 
 # ----------------------------------------
-any:
+mc:
   samples : 
-    any : 1.0
+    mc : 1.0
   patching:
     3 : 5
     4 : 5
