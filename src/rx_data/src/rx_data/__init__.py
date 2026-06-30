@@ -33,9 +33,12 @@ from .used_samples            import UsedSamples
 from .sample_splitter         import SampleSplitter
 from .sample_splitter         import FilePart 
 from .candidate_rebuilder     import CandidateRebuilder
+from .path_splitter           import Samples, NestedSamples
 
 __all__ = [
     'CandidateRebuilder',
+    'Samples',
+    'NestedSamples',
     'RDFGetter12',
     'FilePart',
     'SampleSplitter',
