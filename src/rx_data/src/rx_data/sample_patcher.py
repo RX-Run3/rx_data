@@ -143,7 +143,7 @@ class SamplePatcher:
             except Exception as exc:
                 raise ValueError(f'Cannot access block from: {path}:{tree}') from exc
 
-            if block not in arr_block:
+            if block.to_int() not in arr_block:
                 continue
 
             patching_paths.append(path)
@@ -161,11 +161,13 @@ class SamplePatcher:
     # ----------------------
     def _patch_sample(
         self, 
+        ftree          : str,
         sample         : Sample, 
         patching_files : dict[Block,list[Path]]) -> Sample:
         '''
         Parameters
         -------------
+        ftree : Friend tree name, e.g. mva
         sample: Object holding list of paths to be patched
         patching_files: Dictionary with:
             Key  : Block numbers needed
@@ -193,6 +195,7 @@ class SamplePatcher:
     # ----------------------
     def _patch_sample_for_block(
         self, 
+        ftree        : str,
         sample       : Sample,
         block_needed : Block, 
         file_names   : list[str]) -> Sample:
@@ -284,6 +287,11 @@ class SamplePatcher:
             d_patching_files[needed_block] = self._get_patching_files(block=patching_block, main_sample=main_sample)
             log.debug(f'Patching block: {needed_block}')
 
+        log.debug('Patching main tree')
+        patched_main = self._patch_sample(
+            ftree          = 'main',
+            sample         = main_sample, 
+            patching_files = d_patching_files)
 
         log.debug(20 * '-')
         log.debug('Conditions:')
@@ -294,11 +302,12 @@ class SamplePatcher:
         patched_friends : dict[str, Sample] = dict()
         for friend_name, friend_sample in self._spec.friends.items():
             log.debug(f'Patching friend: {friend_name}')
-            patched_friends[friend_name] = self._patch_sample(sample=friend_sample, patching_files = d_patching_files)
+            patched_friends[friend_name] = self._patch_sample(
+                ftree          = friend_name,
+                sample         = friend_sample, 
+                patching_files = d_patching_files)
 
-        log.debug('Patching main tree')
-        patched_main = self._patch_sample(sample=main_sample, patching_files = d_patching_files)
-        data         = {'friends' : patched_friends, 'samples' : {'main' : patched_main }}
+        data = {'friends' : patched_friends, 'samples' : {'main' : patched_main }}
 
         return Specification(**data) 
 # ------------------------------------
