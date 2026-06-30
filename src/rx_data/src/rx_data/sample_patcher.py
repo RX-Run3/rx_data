@@ -24,7 +24,7 @@ class SamplePatcher:
         '''
         Parameters
         -------------
-        sample : Name of sample, e.g. Bs_JpsiX_ee_eq_JpsiInAcc
+        sample : E.g. bpkpee 
         '''
         self._sample                                = sample
         self._spec                                  = spec.model_copy(deep=True)
@@ -44,6 +44,7 @@ class SamplePatcher:
 
         If no patching is available, dictionary will be empty
         '''
+        log.debug('Loading emulation configuration')
         cfg = gut.load_conf(package='rx_data_data', fpath='emulated_trees/config.yaml')
 
         associations : dict[int,int] = dict()
@@ -52,15 +53,22 @@ class SamplePatcher:
             associations.update(cfg.simulation.patching)
 
         if self._sample not in cfg:
-            log.debug(f'No sample specific patching needed for {self._sample}')
+            log.error(f'No sample specific patching needed for {self._sample}')
             return associations 
 
         if 'patching' not in cfg[self._sample]:
-            log.info(f'No sample specific patching needed for {self._sample}')
+            log.error(f'No sample specific patching needed for {self._sample}')
             return associations 
 
         log.info(f'Using sample specifig patching for {self._sample}')
         associations.update(cfg[self._sample].patching)
+
+        log.info(20 * '-')
+        log.info('Using associations:')
+        log.info(20 * '-')
+        for key, val in associations.items():
+            log.debug(f'{key:<20}{val}')
+        log.info(20 * '-')
 
         return associations 
     # ----------------------
@@ -261,6 +269,7 @@ class SamplePatcher:
 
         d_patching_files : dict[int, list[Path]] = dict()
         for needed_block, patching_block in self._associations.items():
+            log.debug(f'Patching block: {needed_block}')
             d_patching_files[needed_block] = self._get_patching_files(block=patching_block, main_sample=main_sample)
 
         patched_friends : dict[str, Sample] = dict()
