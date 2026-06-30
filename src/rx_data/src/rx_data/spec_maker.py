@@ -227,25 +227,23 @@ class SpecMaker:
         '''
         log.debug(f'Building section from: {json_path}')
 
-        d_data = gut.load_json(path=json_path)
-        if d_data is None:
-            raise ValueError(f'Cannot load {json_path}')
-
+        string = json_path.read_text()
+        samples= NestedSamples.model_validate_json(json_data = string) 
         l_path = []
         nopath = False
         nosamp = True
-        for sample in d_data:
+        for sample, data in samples.root.items():
             if not self._cfg_samp.contains(sample = sample):
-                log.debug(f'For target {self._cfg_samp} skipping {sample}')
+                log.debug('For target')
+                log.debug(self._cfg_samp)
+                log.debug(f'skipping {sample}')
                 continue
 
-            nosamp    = False
-            d_trigger = d_data[sample]
-
+            nosamp        = False
             l_path_sample = self._get_trigger_paths(
-                d_trigger = d_trigger,
+                d_trigger = data,
                 ftree     = ftree,
-                sample    = sample)
+                component = sample)
 
             nsamp = len(l_path_sample)
             if nsamp == 0:
@@ -260,8 +258,8 @@ class SpecMaker:
             raise ValueError('Samples with paths missing')
 
         if nosamp:
-            data = yaml.dump(d_data, sort_keys=False)
-            log.error(data)
+            string = samples.model_dump_json(indent = 2) 
+            log.error(string)
             raise ValueError(f'Could not find any sample matching {self._cfg_samp} with friend tree {ftree} in {json_path}')
 
         self._l_path += l_path
@@ -358,7 +356,8 @@ class SpecMaker:
 
         out_path = self._get_tmp_path(identifier='tree_structure', data=data)
         log.debug(f'Saving friend tree structure to {out_path}')
-        gut.dump_json(data, out_path)
+        string = data.model_dump_json(indent = 2)
+        out_path.write_text(string)
 
         return out_path
     # ---------------------------------------------------
@@ -461,13 +460,9 @@ class SpecMaker:
         if not isinstance(self._cache_dir, Path):
             raise ValueError(f'Caching directory not a path but: {type(self._cache_dir)}')
 
-        if isinstance(data, Specification):
-            serializable = data.model_dump_json()
-        else:
-            serializable = data
-
-        val      = hashing.hash_object(obj=[serializable])
-        val      = val[:10]
+        string = data.model_dump_json()
+        val    = hashing.hash_object(obj=[string])
+        val    = val[:10]
 
         # Id of process plus random number 
         proc_id  = self._identifier + secrets.randbelow(1000_000_000)
