@@ -165,52 +165,6 @@ class SpecMaker:
 
         return Specification(**data) 
     # ---------------------------------------------------
-    def _get_trigger_paths(
-        self,
-        component : Component,
-        ftree     : str,
-        d_trigger : dict[Trigger,list[Path]]) -> list[Path]:
-        '''
-        On noPID trigger for data: This is a _fake_ trigger made from the merge of the OS electron trigger and
-        the misID trigger, when the later is given a weight of 10, to account for prescale in 2024 data.
-        For 2025, prescale is gone.
-
-        Parameters
-        ----------------
-        d_trigger : Dictionary mapping HLT2 trigger names to lists of ROOT files
-        sample    : Name of sample, e.g Bu_Kp...
-        ftree     : Name of friend tree, e.g. mva
-
-        Returns
-        ----------------
-        List of paths to ROOT files for a given HLT2 trigger
-        '''
-        if component.is_mc and self._trigger in d_trigger:
-            log.debug(f'Found paths for ROOT files associated to MC sample: {self._trigger}/{component}/{ftree}')
-            return d_trigger[self._trigger]
-
-        if component.is_mc:
-            raise ValueError(f'Invalid trigger {self._trigger} for MC sample {component}, project {self._project} and friend tree {ftree}')
-
-        if self._trigger.has_pid and self._trigger in d_trigger:
-            log.debug(f'Found paths for ROOT files associated to data: {self._trigger}/{component}/{ftree}')
-            return d_trigger[self._trigger]
-
-        if self._trigger.has_pid:
-            raise ValueError(f'Invalid trigger {self._trigger} for data sample {component}, project {self._project} and friend tree {ftree}')
-
-        log.debug(f'Found extended trigger: {self._trigger}')
-        trig_default = self._trigger.pid_version
-        trig_misid   = trig_default.misid_version
-
-        if trig_default not in d_trigger or trig_misid not in d_trigger:
-            raise ValueError(
-                f'Could not find triggers {trig_default} or '
-                f'{trig_misid} for sample {component}, project {self._project}, '
-                f'friend tree {ftree}')
-        
-        return d_trigger[trig_default] + d_trigger[trig_misid]
-    # ---------------------------------------------------
     def _get_sample(
         self, 
         json_path : Path, 
@@ -229,40 +183,29 @@ class SpecMaker:
 
         string = json_path.read_text()
         samples= NestedSamples.model_validate_json(json_data = string) 
-        l_path = []
-        nopath = False
-        nosamp = True
-        for sample, data in samples.root.items():
-            if not self._cfg_samp.contains(sample = sample):
-                log.debug(f'skipping {sample}')
-                continue
 
-            nosamp        = False
-            l_path_sample = self._get_trigger_paths(
-                d_trigger = data,
-                ftree     = ftree,
-                component = sample)
+        paths : list[Path] = []
+        missing_paths = False
+        for target in self._cfg_samp.root:
+            sample_paths = samples.get_paths(
+                ftree    = ftree, 
+                sample   = target,
+                trigger  = self._trigger)
 
-            nsamp = len(l_path_sample)
-            if nsamp == 0:
-                log.error(f'No paths found for {sample}/{self._trigger} in {json_path} and friend tree {ftree}')
-                nopath = True
+            if not sample_paths:
+                missing_paths = True
+                log.warning(f'No paths found for: {target}')
             else:
-                log.debug(f'Found {nsamp} paths for {sample}/{self._trigger} in {json_path}')
+                paths.extend(sample_paths)
 
-            l_path += l_path_sample
-
-        if nopath:
-            raise ValueError('Samples with paths missing')
-
-        if nosamp:
+        if missing_paths:
             string = samples.model_dump_json(indent = 2) 
             log.error(string)
             raise ValueError(f'Could not find any sample matching {self._cfg_samp} with friend tree {ftree} in {json_path}')
 
-        self._l_path += l_path
+        self._l_path += paths 
 
-        return Sample(trees = [self._tree_name], files = l_path, metadata = {'kind' : ftree})
+        return Sample(trees = [self._tree_name], files = paths, metadata = {'kind' : ftree})
     # ---------------------------------------------------
     def _filter_friends(
         self, 
