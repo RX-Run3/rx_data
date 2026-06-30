@@ -207,7 +207,7 @@ class Component(StrEnum):
         '''
         True if there is a sample, MC or Data, associated to component
         '''
-        if self in {Component.undefined, Component.comb, Component.ccbar}:
+        if self in {Component.undefined, Component.comb, Component.ccbar, Component.mc}:
             return False
 
         return True
