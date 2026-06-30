@@ -33,6 +33,7 @@ class Component(StrEnum):
 
     - Except for data, undefined and combinatorial, all samples meant to be used with the electron/muon channel should end with ee/mm
     '''
+    any            = auto()
     undefined      = auto()
     comb           = auto()
     ccbar          = auto()
