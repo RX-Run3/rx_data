@@ -1,24 +1,24 @@
 # This is a config meant to specify how to emulate a sample
 
 # ----------------------------------------
-simulation:
-  samples  : 
+any:
+  samples : 
     any : 1.0
   patching:
     3 : 5
     4 : 5
 # ----------------------------------------
-Bu_KxKpipiee:
+bpkxkpipiee:
   samples:
-    Bu_K1ee_eq_DPC                 : 0.5
-    Bu_K2stee_Kpipi_eq_mK1430_DPC  : 0.5
+    bpk1kpipiee : 0.5
+    bpk2kpipiee : 0.5
 # ----------------------------------------
 # samples starting from Bs decay can be modelled
 # with samples starting from Bd decay
 # ----------------------------------------
-Bs_JpsiKst_mm_eq_DPC : 
+bskstjpsimm:
   samples : 
-    Bd_JpsiKst_mm_eq_DPC : 1.0
+    bdkstkpijpsimm : 1.0
   redefine : &red_001
     B_M                  : B_M                  + 87.23
     B_Mass               : B_Mass               + 87.23
@@ -29,52 +29,52 @@ Bs_JpsiKst_mm_eq_DPC :
     B_TRUEID             : 'TMath::Abs(B_TRUEID)         == 511 ? 531 :          B_TRUEID'
     Kst_MC_MOTHER_ID     : 'TMath::Abs(Kst_MC_MOTHER_ID) == 511 ? 531 :  Kst_MC_MOTHER_ID'
     Jpsi_MC_MOTHER_ID    : 'TMath::Abs(Jpsi_MC_MOTHER_ID)== 511 ? 531 : Jpsi_MC_MOTHER_ID'
-Bs_JpsiKst_ee_eq_DPC :
+bskstjpsiee:
   samples : 
-    Bd_JpsiKst_ee_eq_DPC : 1.0
+    bdkstkpijpsiee : 1.0
   redefine :
     <<: *red_001
 # ----------------------------------------
 # These samples are meant to represent
 # hadronic swapped (K -> pi and pi -> K) decays
 # ----------------------------------------
-Bd_JpsiKst_mm_had_swp:
+bdkstjpsimm_swp:
   samples   : 
-    Bd_JpsiKst_mm_eq_DPC : 1.0
-Bd_JpsiKst_ee_had_swp:
+    bdkstkpijpsimm : 1.0
+bdkstjpsiee_swp:
   samples   : 
-    Bd_JpsiKst_ee_eq_DPC : 1.0
+    bdkstkpijpsiee : 1.0
 # ----------------------------------------
-Bs_JpsiX_mm_eq_JpsiInAcc:
+bsjpsixmm:
   samples : 
-    Bs_JpsiX_mm_eq_JpsiInAcc : 1.0
+    bsjpsixmm : 1.0
   patching:
     1 : 5
     2 : 5
     3 : 5
     4 : 5
 # ----------------------------------------
-Bu_JpsiX_mm_eq_JpsiInAcc:
+bpjpsixmm:
   samples : 
-    Bu_JpsiX_mm_eq_JpsiInAcc : 1.0
+    bpjpsixmm : 1.0
   patching:
     1 : 5
     2 : 5
     3 : 5
     4 : 5
 # ----------------------------------------
-Bd_psi2SKst_mm_eq_DPC:
+bdkstkpipsi2mm:
   samples : 
-    Bd_psi2SKst_mm_eq_DPC : 1.0
+    bdkstkpipsi2mm : 1.0
   patching:
     4 : 2
     3 : 2
     7 : 6
     8 : 6
 # ----------------------------------------
-Bd_psi2SKst_ee_eq_DPC:
+bdkstkpipsi2ee:
   samples :
-    Bd_psi2SKst_ee_eq_DPC : 1.0
+    bdkstkpipsi2ee : 1.0
   patching:
     4 : 2
     3 : 2
