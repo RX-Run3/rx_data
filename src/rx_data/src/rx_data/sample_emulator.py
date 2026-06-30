@@ -51,36 +51,6 @@ class SamplesConf(RootModel):
 
         return True
     # --------------------------------------
-    def contains(self, sample : Component) -> bool:
-        '''
-        Parameters
-        ---------------
-        sample: E.g. Bs_JpsiKst_ee_eq_DPC
-
-        Returns
-        ---------------
-        True if `sample` is in dictionary
-        '''
-        if sample in self.root:
-            return True
-
-        # If MC and not found skip
-        if sample.is_mc:
-            return False
-        # ---------
-        # Below this point `sample` is real data
-        # ---------
-
-        # If sample did not match, root is wildcard
-        # and a single wildcard 
-        if len(self.root) != 1:
-            return False
-
-        (pattern, _), = self.root.items()
-
-        # If matches pattern, pick
-        return fnmatch(name = sample, pat = pattern)
-    # --------------------------------------
     def emulated_only_by(self, sample : str) -> bool:
         '''
         Parameters
