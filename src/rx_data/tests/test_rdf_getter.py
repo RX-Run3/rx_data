@@ -22,6 +22,7 @@ from dmu.rdataframe import utilities as ut
 from rx_common      import Component, Cuts, Project, Qsq
 from rx_selection   import selection as sel
 from rx_data        import collector as col
+from rx_data        import SpecMaker
 from rx_data        import RDFGetter
 from rx_common      import Trigger
 

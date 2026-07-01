@@ -4,20 +4,20 @@ Module holding RDFGetter class
 import copy
 import numpy
 
-from contextlib   import contextmanager
-from pathlib      import Path
-from typing       import Any, overload, Literal
-from ROOT         import RDF, TFile # type: ignore
-from dmu          import LogStore
-from dmu.generic  import hashing
-from dmu.generic  import utilities as gut
-from omegaconf    import DictConfig, OmegaConf
-from rx_common    import Component, Trigger
-from .spec_maker  import SpecMaker
-from .rdf_loader  import RDFLoader
+from contextlib     import contextmanager
+from pathlib        import Path
+from typing         import Any, overload, Literal
+from ROOT           import RDF, TFile # type: ignore
+from dmu            import LogStore
+from dmu.generic    import hashing
+from dmu.generic    import utilities as gut
+from dmu.rdataframe import utilities as rut
+from omegaconf      import DictConfig, OmegaConf
+from rx_common      import Component, Trigger
+from .spec_maker    import SpecMaker
+from .rdf_loader    import RDFLoader
 
 log=LogStore.add_logger('rx_data:rdf_getter')
-
 # ---------------------------------------------------
 class AlreadySetColumns(Exception):
     '''
