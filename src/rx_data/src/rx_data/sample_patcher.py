@@ -15,6 +15,24 @@ from .sample_emulator import EmulatorConf
 log                 = LogStore.add_logger('rx_data:sample_patcher')
 _BLOCK : Final[str] = 'block' # name of branch with block number
 # ------------------------------------
+class PatchRanges(RootModel[list[tuple[int,int,int]]]):
+    root : list[tuple[int,int,int]]
+    # ---------------------
+    @model_validator(mode = 'after')
+    def _validate(self) -> 'PatchRanges':
+        fail = False 
+        for lower, upper, _ in self.root:
+            if lower < upper:
+                continue
+
+            fail = True
+            log.error(f'{lower} >= {upper}')
+
+        if fail:
+            raise ValueError('Range validation failed')
+
+        return self
+# ------------------------------------
 class SamplePatcher:
     '''
     Class in charge of modifying specifications to patch for missing
@@ -23,17 +41,21 @@ class SamplePatcher:
     # ----------------------
     def __init__(
         self, 
-        sample : Component, 
-        spec   : Specification) -> None:
+        tree_name: str,
+        sample   : Component, 
+        spec     : Specification) -> None:
         '''
         Parameters
         -------------
-        sample : E.g. bpkpee 
+        tree_name: E.g. DecayTree
+        sample   : E.g. bpkpee 
+        spec     : Object specifying how to build dataframe withf riends
         '''
+        self._tree_name                               = tree_name
         self._sample                                  = sample
         self._spec                                    = spec.model_copy(deep=True)
         self._associations   : dict[Block,Block]      = self._get_patching_dictionary()
-        self._conditions     : dict[Block,str]        = dict() 
+        self._patching_ranges                         = PatchRanges(root = [])           
         self._patching_files : dict[Block,list[Path]] = dict()
     # ----------------------
     def _get_patching_dictionary(self) -> dict[Block,Block]:
@@ -225,15 +247,11 @@ class SamplePatcher:
 
             raise ValueError(f'Size of patching paths is different from expected number of files for block {block_needed}')
 
-        old_sample_size = sample.size
-        sample.files    = sample.files + sorted(list(patching_paths))
-        new_sample_size = sample.size
-
-        if sample.metadata['kind'] == 'main':
-            self._build_conditions(
-                block_needed = block_needed,
-                min_index    = old_sample_size,
-                max_index    = new_sample_size)
+        isize  = sample.size - 1
+        sample.files = sample.files + sorted(list(patching_paths))
+        fsize  = sample.size - 1
+        iblock = block_needed.to_int()
+        self._patching_ranges.root.append((isize, fsize, iblock))
 
         return sample
     # ----------------------
@@ -261,7 +279,7 @@ class SamplePatcher:
 
         self._conditions[block_needed] = condition 
     # ----------------------
-    def get_patched_specification(self) -> Specification:
+    def get_patched_specification(self) -> tuple[Specification, PatchRanges]:
         '''
         Parameters
         -------------
@@ -269,17 +287,20 @@ class SamplePatcher:
 
         Returns
         -------------
-        Patched version, which takes into account block patching
+        Tuple with:
+
+        Patched version of specification, which takes into account block patching
+        Patching tuples, holding the event range for each file and the block number
         '''
         # We expect to always have the full dataset
         # Only MC can be missing
         if not self._sample.is_mc:
             log.info(f'Not patching real data: {self._sample}')
-            return self._spec
+            return self._spec, PatchRanges(root = [])
 
         if not self._associations:
             log.debug('Returning unpatched specification')
-            return self._spec
+            return self._spec, PatchRanges(root = [])
 
         main_sample : Sample = self._spec.samples['main']
 
@@ -295,9 +316,9 @@ class SamplePatcher:
             patching_files = d_patching_files)
 
         log.debug(20 * '-')
-        log.debug('Conditions:')
-        for block, condition in self._conditions.items():
-            log.debug(f'    {block:<20}{condition}')
+        log.debug('Patching ranges:')
+        for ientry, fentry, iblock in self._patching_ranges.root:
+            log.debug(f'{ientry:<10}{fentry:<10}{iblock:<10}')
         log.debug(20 * '-')
 
         patched_friends : dict[str, Sample] = dict()
@@ -310,5 +331,5 @@ class SamplePatcher:
 
         data = {'friends' : patched_friends, 'samples' : {'main' : patched_main }}
 
-        return Specification(**data) 
+        return Specification(**data), self._patching_ranges
 # ------------------------------------
