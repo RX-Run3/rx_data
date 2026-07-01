@@ -362,7 +362,26 @@ class RDFGetter(SpecMaker):
 
         return rdf
     # ---------------------------------------------------
+    def _add_patching_redefinitions(self, rdf : RDF.RNode) -> RDF.RNode:
+        '''
+        Adds block patching definition of `_block`
+        '''
+        if not self._patch_ranges.root:
+            return rdf
+
+        patching_cpp_code = rut.get_sample_definer_expression(samples = self._patch_ranges.root)
+
+        rdf = rdf.DefinePerSample('_block', patching_cpp_code)
+        rdf = rdf.Redefine('block', '_block')
+
+        return rdf
+    # ---------------------------------------------------
     def _add_columns(self, rdf : RDF.RNode) -> RDF.RNode:
+        '''
+        Adds and redefines columns (e.g. block patching) to dataframe
+        '''
+        rdf = self._add_patching_redefinitions(rdf = rdf)
+
         if self._tree_name == 'MCDecayTree':
             rdf = self._add_mcdt_columns(rdf=rdf)
             return rdf
