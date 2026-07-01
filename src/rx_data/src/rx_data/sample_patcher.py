@@ -96,43 +96,6 @@ class SamplePatcher:
 
         return associations 
     # ----------------------
-    @property
-    def redefinitions(self) -> dict[str,str]:
-        '''
-        Here the conditions refer to redefinitions of the block column
-        such that for the entries at the end of the dataframe a block is reused
-        as a different block
-
-        Returns
-        --------------
-        Dictionary between column name and string with new definition
-        '''
-        if self._conditions is None:
-            raise ValueError(f'No conditions available for sample {self._sample}')
-
-        if not self._conditions:
-            return dict()
-
-        nconditions = len(self._conditions)
-        log.info(f'Using {nconditions} conditions')
-        for block, condition in self._conditions.items():
-            log.debug(f'{block:<10}{condition:<}')
-
-        # block times condition for that block to be true
-        terms     = [ f'{block} * ({condition})' for block, condition in self._conditions.items() ]
-
-        # New block is picked based on condition
-        new_block = ' + '.join(terms)
-
-        log.debug(f'Block condition: {new_block}')
-
-        # If this is a candidate where no new block is satisfied, pick old block
-        condition = f'{new_block} == 0 ? block : {new_block}'
-
-        log.debug(f'Block redefinition: {condition}')
-
-        return {'block' : condition} 
-    # ----------------------
     def _get_patching_files(
         self, 
         block       : Block, 
@@ -254,30 +217,6 @@ class SamplePatcher:
         self._patching_ranges.root.append((isize, fsize, iblock))
 
         return sample
-    # ----------------------
-    def _build_conditions(
-        self, 
-        block_needed: Block,
-        min_index   : int, 
-        max_index   : int) -> None:
-        '''
-        If block 3 needs to be used between two entry indexes.
-        This function will append the index condition and the block to _conditions.
-
-        Parameters
-        -------------
-        block_needed : Block for which the condition is build
-        *_index      : Index of first and last element that will be assigned this block
-        '''
-        condition = f'rdfentry_ + 1 > {min_index} && rdfentry_ < {max_index}'
-
-        if self._conditions is None:
-            self._conditions = dict()
-
-        if block_needed in self._conditions:
-            raise ValueError(f'Block {block_needed} already found in conditions dictionary')
-
-        self._conditions[block_needed] = condition 
     # ----------------------
     def get_patched_specification(self) -> tuple[Specification, PatchRanges]:
         '''
