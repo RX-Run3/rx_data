@@ -41,17 +41,14 @@ class SamplePatcher:
     # ----------------------
     def __init__(
         self, 
-        tree_name: str,
         sample   : Component, 
         spec     : Specification) -> None:
         '''
         Parameters
         -------------
-        tree_name: E.g. DecayTree
         sample   : E.g. bpkpee 
         spec     : Object specifying how to build dataframe withf riends
         '''
-        self._tree_name                               = tree_name
         self._sample                                  = sample
         self._spec                                    = spec.model_copy(deep=True)
         self._associations   : dict[Block,Block]      = self._get_patching_dictionary()
