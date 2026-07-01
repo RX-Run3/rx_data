@@ -366,13 +366,11 @@ class RDFGetter(SpecMaker):
         '''
         Adds block patching definition of `_block`
         '''
-        if not self._patch_ranges.root:
-            return rdf
-
-        patching_cpp_code = rut.get_sample_definer_expression(samples = self._patch_ranges.root)
+        patching_cpp_code = rut.get_sample_definer_expression(samples = self._spec.ranges.root)
 
         rdf = rdf.DefinePerSample('_block', patching_cpp_code)
-        rdf = rdf.Redefine('block', '_block')
+        # NOTE: This -999 is in specification.py
+        rdf = rdf.Redefine('block', '_block == -999 ? block : _block')
 
         return rdf
     # ---------------------------------------------------
