@@ -1,0 +1,3 @@
+
+def Declare(cpp_code : str) -> None:
+    ...
