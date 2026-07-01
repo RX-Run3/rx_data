@@ -451,8 +451,10 @@ class SpecMaker:
         if not per_file:
             log.debug('Not splitting per file')
             cfg_path = self._get_tmp_path(identifier='rdframe_config', data=self._spec)
+
             log.debug(f'Saving config path to {cfg_path}')
-            cfg_path.write_text(data=self._spec.model_dump_json(indent=2))
+            string = self._spec.model_dump_json(indent=2)
+            cfg_path.write_text(data=string)
 
             return cfg_path
 
