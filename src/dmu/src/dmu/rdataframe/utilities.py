@@ -4,16 +4,15 @@ Module containing utility functions to be used with ROOT dataframes
 # pylint: disable=no-name-in-module
 
 import re
-from dataclasses import dataclass
-from typing      import Union
-
+import ROOT
 import pandas  as pnd
 import awkward as ak
 import numpy
 
-from ROOT import RDataFrame, RDF, Numba # type: ignore
-
-from dmu.logging.log_store import LogStore
+from dataclasses import dataclass
+from typing      import Union
+from ROOT        import RDataFrame, RDF, Numba # type: ignore
+from dmu         import LogStore
 
 log = LogStore.add_logger('dmu:rdataframe:utilities')
 # ---------------------------------------------------------------------
@@ -187,4 +186,51 @@ def rdf_to_df(
         log.info(cutflow)
 
     return df
+# ---------------------------------------------------------------------
+def get_sample_definer_expression(samples : list[tuple[int,int,int]]) -> str:
+    '''
+    Parameters
+    ---------------
+    samples: List of tuples, each associated to a given sample, where
+             first/second element: Is the lower/upper index associated to file making dataframe 
+             third element: Value associated to this sample, e.g. year, block, etc
+
+    Returns
+    ---------------
+    String where return value (year, block, etc) will be provided for given sample. This is used to define
+    sample-wise columns as: 
+
+    ```python
+    expr = declare_indexer
+    rdf  = rdf.DefinePerSample('year', expr)
+    ```
+    '''
+    string = 'std::vector<std::tuple<int,int>> bounds;\n'
+    string+= 'std::vector<int>                 values;\n'
+    for lower, upper, _ in samples:
+        string += f'bounds.emplace_back({lower}, {upper});\n'
+
+    for _, _, value in samples:
+        string += f'values.emplace_back({value});\n'
+
+    text = rf'''
+    {string}
+
+    int GetValue(const std::tuple<int,int> &range)
+    {{
+        auto it    = std::find(bounds.begin(), bounds.end(), range);
+        auto index = std::distance(bounds.begin(), it);
+        auto value = values.at(index);
+
+        return value;
+    }}
+    '''
+
+    ROOT.gInterpreter.Declare(text)
+
+    return '''
+    auto range = rdfsampleinfo_.EntryRange();
+
+    return GetValue(range);
+    '''
 # ---------------------------------------------------------------------
