@@ -19,7 +19,7 @@ from dmu.generic      import hashing
 from dmu.generic      import version_management as vmn
 
 from .path_splitter   import PathSplitter, NestedSamples
-from .sample_patcher  import SamplePatcher
+from .sample_patcher  import PatchRanges, SamplePatcher
 from .specification   import Sample, Specification
 from .sample_emulator import SampleEmulator
 
@@ -71,8 +71,9 @@ class SpecMaker:
         self._trigger   = trigger
         self._tree_name = tree
 
-        self._project   = self._set_project(trigger=trigger) 
-        self._samples   = self._get_json_paths()
+        self._project      = self._set_project(trigger=trigger) 
+        self._samples      = self._get_json_paths()
+        self._patch_ranges = PatchRanges(root = []) 
         self._l_path : list[Path] = [] # list of paths to all the ROOT files
 
         if _SKIP_PATCH.get():
@@ -80,9 +81,8 @@ class SpecMaker:
             self._spec    = self._get_specification()
         else:
             spec          = self._get_specification()
-            self._patcher = SamplePatcher(sample = component, spec = spec)
-            self._spec    = self._patcher.get_patched_specification()
-            self._emulator.extend_redefinitions(redefinitions = self._patcher.redefinitions)
+            patcher       = SamplePatcher(sample = component, spec = spec)
+            self._spec, self._patch_ranges = patcher.get_patched_specification()
     # ----------------------
     def _set_project(self, trigger : Trigger) -> Project:
         '''
