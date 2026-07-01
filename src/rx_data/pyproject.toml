@@ -38,7 +38,7 @@ rx_data_lfns = ['**/*.json']
 
 [tool.ruff]
 select = ["F", "PL", "B"]
-ignore = ["PLR0913"]  # Too many arguments
+ignore = ["PLR0911", "PLR0913"]  # Too many arguments
 
 [tool.pyright]
 include = ["src"]
