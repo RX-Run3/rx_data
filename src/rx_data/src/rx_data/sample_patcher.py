@@ -1,17 +1,18 @@
 '''
 Module containing SamplePatcher
 '''
-from typing         import Final
-from ROOT           import RDataFrame # type: ignore
-from pathlib        import Path
-from dmu            import LogStore
-from dmu.generic    import utilities as gut
-from rx_common      import Component, Block
+from typing           import Final
+from ROOT             import RDataFrame # type: ignore
+from pathlib          import Path
+from dmu              import LogStore
+from dmu.generic      import utilities as gut
+from pydantic         import RootModel, model_validator
+from rx_common        import Component, Block
 
 from .specification   import Specification, Sample
 from .sample_emulator import EmulatorConf
 
-log=LogStore.add_logger('rx_data:sample_patcher')
+log                 = LogStore.add_logger('rx_data:sample_patcher')
 _BLOCK : Final[str] = 'block' # name of branch with block number
 # ------------------------------------
 class SamplePatcher:
