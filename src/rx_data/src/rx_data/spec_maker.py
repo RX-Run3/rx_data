@@ -19,8 +19,8 @@ from dmu.generic      import hashing
 from dmu.generic      import version_management as vmn
 
 from .path_splitter   import PathSplitter, NestedSamples
-from .sample_patcher  import PatchRanges, SamplePatcher
-from .specification   import Sample, Specification
+from .sample_patcher  import SamplePatcher
+from .specification   import Sample, Specification, File
 from .sample_emulator import SampleEmulator
 
 log=LogStore.add_logger('rx_data:spec_maker')
@@ -73,7 +73,6 @@ class SpecMaker:
 
         self._project      = self._set_project(trigger=trigger) 
         self._samples      = self._get_json_paths()
-        self._patch_ranges = PatchRanges(root = []) 
         self._l_path : list[Path] = [] # list of paths to all the ROOT files
 
         if _SKIP_PATCH.get():
@@ -82,7 +81,7 @@ class SpecMaker:
         else:
             spec          = self._get_specification()
             patcher       = SamplePatcher(sample = component, spec = spec)
-            self._spec, self._patch_ranges = patcher.get_patched_specification()
+            self._spec    = patcher.get_patched_specification()
     # ----------------------
     def _set_project(self, trigger : Trigger) -> Project:
         '''
@@ -206,7 +205,13 @@ class SpecMaker:
 
         self._l_path += paths 
 
-        return Sample(trees = [self._tree_name], files = paths, metadata = {'kind' : ftree})
+        files = [ File.from_path(path = path, tree = self._tree_name) for path in paths ]
+        sam   = Sample(
+            trees    = [self._tree_name], 
+            files    = files, 
+            metadata = {'kind' : ftree})
+
+        return sam
     # ---------------------------------------------------
     def _filter_friends(
         self, 
@@ -329,12 +334,12 @@ class SpecMaker:
         d_config : dict[Path, Path] = {}
         for ifile in range(nfiles):
             log.debug(f'Removing {ifile}-th file')
-            single_file_spec, fpath = self._remove_all_but(spec=spec, ifile=ifile, main=main)
-            config_path             = self._get_tmp_path(identifier='rdframe_config', data=single_file_spec)
+            single_file_spec, file = self._remove_all_but(spec=spec, ifile=ifile, main=main)
+            config_path            = self._get_tmp_path(identifier='rdframe_config', data=single_file_spec)
 
             log.debug(f'Saving per-file config path to {config_path}')
             config_path.write_text(single_file_spec.model_dump_json(indent=2))
-            d_config[fpath] = config_path 
+            d_config[file.path] = config_path 
 
         return d_config
     # ---------------------------------------------------
@@ -342,7 +347,7 @@ class SpecMaker:
         self, 
         spec  : Specification, 
         ifile : int, 
-        main  : str) -> tuple[Specification, Path]:
+        main  : str) -> tuple[Specification, File]:
         '''
         Will:
 
@@ -355,7 +360,7 @@ class SpecMaker:
         Tuple with: 
 
         - Copy of specification after removal of all but the ifile
-        - The path to the ROOT file associated to the main samples
+        - Object symbolizing ROOT file 
         '''
 
         data       = spec.model_dump()
