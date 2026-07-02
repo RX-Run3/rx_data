@@ -60,21 +60,27 @@ class Block(BaseModel):
     @model_validator(mode='before')
     @classmethod
     def coerce_from_primitive(cls, data):
-        if isinstance(data, int):
-            data = {'value' : str(data)}
+        if isinstance(data, dict):
+            value = data['value']
+        else:
+            value = data
 
-        if isinstance(data, str):
-            data = {'value' : data}
+        if isinstance(value, float):
+            value = int(value)
 
-        vals = data['value']
-        if vals == 'all':
+        if isinstance(value, int):
+            value = str(value)
+
+        if isinstance(value, str):
+            data = {'value' : value}
+        else:
+            raise ValueError(f'Invalid block: {value}')
+
+        if value == 'all':
             return data
 
-        if len(vals) != len(set(vals)):
-            raise ValueError(f'Invalid value: {vals}')
-
-        if any(val not in ALL_BLOCKS for val in vals):
-            raise ValueError(f'Invalid value: {vals}')
+        if value not in ALL_BLOCKS:
+            raise ValueError(f'Invalid value: {value}')
 
         return data 
     # ----------------
