@@ -1,7 +1,6 @@
 '''
 Module containing utility functions to be used with ROOT dataframes
 '''
-# pylint: disable=no-name-in-module
 
 import re
 import ROOT
@@ -10,6 +9,7 @@ import awkward as ak
 import numpy
 
 from dataclasses import dataclass
+from functools   import lru_cache
 from typing      import Union
 from ROOT        import RDataFrame, RDF, Numba # type: ignore
 from dmu         import LogStore
@@ -187,13 +187,11 @@ def rdf_to_df(
 
     return df
 # ---------------------------------------------------------------------
-def get_sample_definer_expression(samples : list[tuple[int,int,int]]) -> str:
+def get_sample_definer_expression(samples : dict[str,int]) -> str:
     '''
     Parameters
     ---------------
-    samples: List of tuples, each associated to a given sample, where
-             first/second element: Is the lower/upper index associated to file making dataframe 
-             third element: Value associated to this sample, e.g. year, block, etc
+    samples: Dictionary mapping file path to quantity associated
 
     Returns
     ---------------
@@ -201,45 +199,43 @@ def get_sample_definer_expression(samples : list[tuple[int,int,int]]) -> str:
     sample-wise columns as: 
 
     ```python
-    expr = declare_indexer
+    expr = get_sample_definer_expression(samples = samples) 
     rdf  = rdf.DefinePerSample('year', expr)
     ```
     '''
-    string = 'std::vector<std::tuple<int,int,int>> entries;\n'
-    for lower, upper, value in samples:
-        string += f'entries.emplace_back({lower}, {upper}, {value});\n'
+    data = tuple(sorted(samples.items()))
+
+    return _get_sample_definer_expression_cached(samples = data)
+# ---------------------------------------------------------------------
+@lru_cache
+def _get_sample_definer_expression_cached(samples : tuple[tuple[str,int],...]):
+    string = 'std::map<std::string,int> entries;\n'
+    for file_name, value in samples:
+        string += f'entries["{file_name}"] = {value};\n'
 
     text = rf'''
     {string}
 
-    int GetValue(const std::tuple<int,int> &range)
+    int GetValue(const std::string &name)
     {{
-        auto start = std::get<0>(range);
-        auto end   = std::get<1>(range);
+        std::cout << "Looking for: " << name << "\n";
 
-        // std::cout << "Looking for: " << start << "  " << end << "\n";
-
-        for (auto &entry : entries)
+        try
         {{
-            auto _start = std::get<0>(entry);
-            auto _end   = std::get<1>(entry);
-            auto _value = std::get<2>(entry);
-
-            if (_start <= start && end <= _end)
-                return _value;
-
-            // std::cout << _start << "  " << _end << "\n";
+            return entries.at(name);
         }}
-
-        throw std::runtime_error("No matching range for entry " + std::to_string(start) + "  " + std::to_string(end));
+        catch (const std::out_of_range &e)
+        {{
+            throw std::runtime_error("No matching range for file: " + name);
+        }}
     }}
     '''
 
     ROOT.gInterpreter.Declare(text)
 
     return '''
-    auto range = rdfsampleinfo_.EntryRange();
+    auto name  = rdfsampleinfo_.AsString();
 
-    return GetValue(range);
+    return GetValue(name);
     '''
 # ---------------------------------------------------------------------
