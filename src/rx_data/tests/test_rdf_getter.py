@@ -22,7 +22,6 @@ from dmu.rdataframe import utilities as ut
 from rx_common      import Component, Cuts, Project, Qsq
 from rx_selection   import selection as sel
 from rx_data        import collector as col
-from rx_data        import SpecMaker
 from rx_data        import RDFGetter
 from rx_common      import Trigger
 
@@ -124,6 +123,7 @@ def initialize():
     LogStore.set_level('rx_data:rdf_getter'     , 10)
     LogStore.set_level('rx_data:spec_maker'     , 10)
     LogStore.set_level('rx_data:sample_emulator', 10)
+    LogStore.set_level('rx_data:sample_patcher' , 10)
 
     plt.style.use(mplhep.style.LHCb2) # type: ignore
 
