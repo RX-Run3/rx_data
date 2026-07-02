@@ -62,15 +62,26 @@ class File(BaseModel):
         path_str = str(path)
         rdf      = RDataFrame(tree, path_str)
         entries  = rdf.Count().GetValue()
-        if block:
-            return cls(
-                path    = path,
-                entries = entries,
-                blocks  = {block})
 
-        arr_blk  = rdf.AsNumpy([_BLOCK])[_BLOCK]
-        values   = arr_blk.tolist()
-        blocks   = { Block(value = value) for value in values }
+        # Here we do not patch
+        if   block is None:
+            arr_blk  = rdf.AsNumpy([_BLOCK])[_BLOCK]
+            values   = arr_blk.tolist()
+            blocks   = { Block(value = value) for value in values }
+        # Main tree that needs patching
+        elif patch:
+            dir_path = _SYMLINK_DIR / tree / ftree / block.value
+            dir_path.mkdir(parents = True, exist_ok = True)
+
+            link = dir_path / path.name
+            if link.exists():
+                link.unlink()
+            log.debug(f'Creating link to patching file: {link}')
+            link.symlink_to(target = path)
+            path   = link
+            blocks = {block}
+        else:
+            blocks = {block}
 
         return cls(
             path    = path,
