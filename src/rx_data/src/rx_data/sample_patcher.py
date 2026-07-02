@@ -2,36 +2,16 @@
 Module containing SamplePatcher
 '''
 from typing           import Final
-from ROOT             import RDataFrame # type: ignore
 from pathlib          import Path
 from dmu              import LogStore
 from dmu.generic      import utilities as gut
-from pydantic         import RootModel, model_validator
 from rx_common        import Component, Block
 
 from .specification   import Specification, Sample
 from .sample_emulator import EmulatorConf
 
-log                 = LogStore.add_logger('rx_data:sample_patcher')
-_BLOCK : Final[str] = 'block' # name of branch with block number
-# ------------------------------------
-class PatchRanges(RootModel[list[tuple[int,int,int]]]):
-    root : list[tuple[int,int,int]]
-    # ---------------------
-    @model_validator(mode = 'after')
-    def _validate(self) -> 'PatchRanges':
-        fail = False 
-        for lower, upper, _ in self.root:
-            if lower < upper:
-                continue
-
-            fail = True
-            log.error(f'{lower} >= {upper}')
-
-        if fail:
-            raise ValueError('Range validation failed')
-
-        return self
+log                     = LogStore.add_logger('rx_data:sample_patcher')
+_MAIN_TREE : Final[str] = 'main'
 # ------------------------------------
 class SamplePatcher:
     '''
@@ -41,19 +21,17 @@ class SamplePatcher:
     # ----------------------
     def __init__(
         self, 
-        sample   : Component, 
-        spec     : Specification) -> None:
+        sample : Component, 
+        spec   : Specification) -> None:
         '''
         Parameters
         -------------
-        sample   : E.g. bpkpee 
-        spec     : Object specifying how to build dataframe withf riends
+        sample : E.g. bpkpee 
+        spec   : Object specifying how to build dataframe withf riends
         '''
-        self._sample                                  = sample
-        self._spec                                    = spec.model_copy(deep=True)
-        self._associations   : dict[Block,Block]      = self._get_patching_dictionary()
-        self._patching_ranges                         = PatchRanges(root = [])           
-        self._patching_files : dict[Block,list[Path]] = dict()
+        self._sample                           = sample
+        self._spec                             = spec.model_copy(deep=True)
+        self._associations : dict[Block,Block] = self._get_patching_dictionary()
     # ----------------------
     def _get_patching_dictionary(self) -> dict[Block,Block]:
         '''
@@ -93,55 +71,6 @@ class SamplePatcher:
 
         return associations 
     # ----------------------
-    def _get_patching_files(
-        self, 
-        block       : Block, 
-        main_sample : Sample) -> list[Path]:
-        '''
-        Parameters
-        -------------
-        block      : Block that will be used for patching
-        main_sample: Object containing list of paths to files in the main sample 
-
-        Returns
-        -------------
-        List of paths to files containing block
-        '''
-        if block in self._patching_files:
-            return self._patching_files[block]
-
-        paths  = main_sample.files
-        [tree] = main_sample.trees
-
-        log.info(f'Finding patching files for block {block}')
-        patching_paths : list[Path] = []
-        for path in paths:
-            rdf = RDataFrame(tree, str(path))
-            if rdf.Count().GetValue() == 0:
-                log.debug(f'Found empty file: {path}:{tree}, skipping')
-                continue
-
-            try:
-                arr_block = rdf.AsNumpy([_BLOCK])[_BLOCK]
-            except Exception as exc:
-                raise ValueError(f'Cannot access block from: {path}:{tree}') from exc
-
-            if block.to_int() not in arr_block:
-                continue
-
-            patching_paths.append(path)
-
-        npatch = len(patching_paths)
-        ntotal = len(paths)
-        if not patching_paths:
-            raise ValueError(f'Found {npatch}/{ntotal} patching files for: {block}')
-        else:
-            log.debug(f'Found {npatch}/{ntotal} patching paths for: {block}')
-
-        self._patching_files[block] = patching_paths
-
-        return patching_paths
-    # ----------------------
     def _patch_sample(
         self, 
         ftree          : str,
@@ -180,19 +109,21 @@ class SamplePatcher:
         self, 
         ftree        : str,
         sample       : Sample,
-        block_needed : Block, 
-        file_names   : list[str]) -> Sample:
+        file_names   : list[str],
+        block_needed : Block) -> Sample:
         '''
         Parameters
         -------------
+        ftree       : Name of friend tree
+        sample      : Object represenging set of files
         block_needed: Block that needs to be patched
-        file_names  : Names (not paths) of files that will be used to patch `block_needed`
+        file_names  : List of ROOT file names for files meant to patch `block_needed`
 
         Returns
         -------------
         Patched sample
         '''
-        patching_paths : set[Path] = { path for path in sample.files if path.name in file_names }
+        patching_paths : set[Path] = { file.path for file in sample.files if file.path.name in file_names }
         nfound    = len(patching_paths)
         nexpected = len(file_names)
 
@@ -207,15 +138,13 @@ class SamplePatcher:
 
             raise ValueError(f'Size of patching paths is different from expected number of files for block {block_needed}')
 
-        isize  = sample.size - 1
-        sample.files = sample.files + sorted(list(patching_paths))
-        fsize  = sample.size - 1
-        iblock = block_needed.to_int()
-        self._patching_ranges.root.append((isize, fsize, iblock))
+        patched_sample = sample.patch(
+            paths = list(patching_paths), 
+            block = block_needed)
 
-        return sample
+        return patched_sample
     # ----------------------
-    def get_patched_specification(self) -> tuple[Specification, PatchRanges]:
+    def get_patched_specification(self) -> Specification:
         '''
         Parameters
         -------------
@@ -223,39 +152,30 @@ class SamplePatcher:
 
         Returns
         -------------
-        Tuple with:
-
         Patched version of specification, which takes into account block patching
-        Patching tuples, holding the event range for each file and the block number
         '''
         # We expect to always have the full dataset
         # Only MC can be missing
         if not self._sample.is_mc:
             log.info(f'Not patching real data: {self._sample}')
-            return self._spec, PatchRanges(root = [])
+            return self._spec
 
         if not self._associations:
             log.debug('Returning unpatched specification')
-            return self._spec, PatchRanges(root = [])
+            return self._spec
 
         main_sample : Sample = self._spec.samples['main']
 
         d_patching_files : dict[Block, list[Path]] = dict()
         for needed_block, patching_block in self._associations.items():
-            d_patching_files[needed_block] = self._get_patching_files(block=patching_block, main_sample=main_sample)
+            d_patching_files[needed_block] = main_sample.get_file_paths(block = patching_block)
             log.debug(f'Patching block: {needed_block}')
 
         log.debug('Patching main tree')
         patched_main = self._patch_sample(
-            ftree          = 'main',
+            ftree          = _MAIN_TREE,
             sample         = main_sample, 
             patching_files = d_patching_files)
-
-        log.debug(20 * '-')
-        log.debug('Patching ranges:')
-        for ientry, fentry, iblock in self._patching_ranges.root:
-            log.debug(f'{ientry:<10}{fentry:<10}{iblock:<10}')
-        log.debug(20 * '-')
 
         patched_friends : dict[str, Sample] = dict()
         for friend_name, friend_sample in self._spec.friends.items():
@@ -267,5 +187,8 @@ class SamplePatcher:
 
         data = {'friends' : patched_friends, 'samples' : {'main' : patched_main }}
 
-        return Specification(**data), self._patching_ranges
+        spec = Specification(**data)
+        spec.print_ranges()
+
+        return spec
 # ------------------------------------
