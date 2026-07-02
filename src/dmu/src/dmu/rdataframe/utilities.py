@@ -1,7 +1,7 @@
 '''
 Module containing utility functions to be used with ROOT dataframes
 '''
-
+import os
 import re
 import ROOT
 import pandas  as pnd
@@ -13,6 +13,7 @@ from functools   import lru_cache
 from typing      import Union
 from ROOT        import RDataFrame, RDF, Numba # type: ignore
 from dmu         import LogStore
+from dmu.generic import hashing 
 
 log = LogStore.add_logger('dmu:rdataframe:utilities')
 # ---------------------------------------------------------------------
@@ -208,22 +209,25 @@ def get_sample_definer_expression(samples : dict[str,int]) -> str:
     return _get_sample_definer_expression_cached(samples = data)
 # ---------------------------------------------------------------------
 @lru_cache
-def _get_sample_definer_expression_cached(samples : tuple[tuple[str,int],...]):
-    string = 'std::map<std::string,int> entries;\n'
+def _get_sample_definer_expression_cached(samples : tuple[tuple[str,int],...]) -> str:
+    pid  = os.getpid()
+    hash = hashing.hash_object(obj = [samples, pid])
+
+    string = f'std::map<std::string,int> entries_{hash};\n'
     for file_name, value in samples:
-        string += f'entries["{file_name}"] = {value};\n'
+        string += f'entries_{hash}["{file_name}"] = {value};\n'
 
     text = rf'''
     {string}
 
-    int GetValue(const std::string &name)
+    int GetValue_{hash}(const std::string &name)
     {{
         std::cout << "Looking for: " << name << "\n";
         int val;
 
         try
         {{
-            val = entries.at(name);
+            val = entries_{hash}.at(name);
             // std::cout << "Found block: " << val << "\n";
         }}
         catch (const std::out_of_range &e)
@@ -238,9 +242,9 @@ def _get_sample_definer_expression_cached(samples : tuple[tuple[str,int],...]):
 
     ROOT.gInterpreter.Declare(text)
 
-    return '''
+    return f'''
     auto name  = rdfsampleinfo_.AsString();
 
-    return GetValue(name);
+    return GetValue_{hash}(name);
     '''
 # ---------------------------------------------------------------------
