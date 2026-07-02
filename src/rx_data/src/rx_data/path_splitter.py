@@ -1,6 +1,7 @@
 '''
 Module containing PathSplitter class
 '''
+from itertools    import chain
 from pathlib      import Path
 from typing       import Literal, overload
 from dmu          import LogLevels, LogStore
@@ -38,19 +39,14 @@ class NestedSamples(RootModel):
         -----------------
         List of sorted paths to corresponding ROOT files
         '''
-        if sample not in self.root:
-            raise ValueError(f'Missing sample {sample}')
+        nested_paths = [ self.root[sub_sample][trigger] for sub_sample in sample.subsamples ]
+        flat_paths   = list(chain.from_iterable(nested_paths))
+        friend_paths = [ path for path in flat_paths if f'/{ftree}/' in str(path) ]
 
-        if trigger not in self.root[sample]:
-            raise ValueError(f'Missing trigger {trigger} for sample {sample}')
-
-        all_paths    = self.root[sample][trigger]
-        friend_paths = [ path for path in all_paths if f'/{ftree}/' in str(path) ]
-
-        npath = len(all_paths)
+        npath = len(flat_paths)
         log.info(20 * '-')
         log.info(f'Found {npath} paths for {ftree}|{sample}|{trigger}')
-        for path in all_paths:
+        for path in flat_paths:
             log.info(f'   {path}')
         log.info(20 * '-')
 
