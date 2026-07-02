@@ -42,18 +42,45 @@ class File(BaseModel):
     def __lt__(self, other) -> bool:
         return self.path < other.path
     # ----------------------
+    @overload
+    @classmethod
+    def from_path(
+        cls,
+        path : Path,
+        tree : str,
+        ftree: str,
+        patch: Literal[True],
+        block: Block,
+    ) -> 'File': ...
+    @overload
+    @classmethod
+    def from_path(
+        cls,
+        path : Path,
+        tree : str,
+        ftree: str,
+        patch: Literal[False],
+        block: Block | None,
+    ) -> 'File': ...
     @classmethod
     def from_path(
         cls, 
         path : Path, 
         tree : str,
-        block: Block | None = None) -> 'File':
+        ftree: str,
+        patch: bool,
+        block: Block | None) -> 'File':
         '''
         Parameters
         -----------------
         path : Path to ROOT file
         tree : Tree associated to the eventual dataframe 
-        block: If passed, will override block in actual file. Used when patching
+        patch: If true, will patch with block and with this file
+        ftree: Friend tree name, e.g. mva
+        block: If passed, will 
+               - Override block in actual file. 
+               - Symlink original file using new-block based naming
+               Used when patching
 
         Returns
         -----------------
