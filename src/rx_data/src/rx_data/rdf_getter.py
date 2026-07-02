@@ -7,7 +7,7 @@ import numpy
 from contextlib     import contextmanager
 from pathlib        import Path
 from typing         import Any, overload, Literal
-from ROOT           import RDF, TFile # type: ignore
+from ROOT           import RDF, TFile, EnableImplicitMT # type: ignore
 from dmu            import LogStore
 from dmu.generic    import hashing
 from dmu.generic    import utilities as gut
@@ -57,6 +57,7 @@ class RDFGetter(SpecMaker):
         trigger: HLT2 trigger, e.g. Hlt2RD_BuToKpEE_MVA
         tree   : E.g. DecayTree or MCDecayTree, default DecayTree
         '''
+        EnableImplicitMT(1)
         super().__init__(component=sample, trigger=trigger, tree=tree)
 
         log.debug(f'Process identifier: {RDFGetter._identifier}')
