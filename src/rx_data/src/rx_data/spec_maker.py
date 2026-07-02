@@ -12,7 +12,7 @@ from contextvars      import ContextVar
 from contextlib       import contextmanager
 from pathlib          import Path
 from typing           import overload, Literal, Final
-from rx_common        import Project, Trigger
+from rx_common        import Block, Project, Trigger
 from rx_common        import Component
 from dmu              import LogStore
 from dmu.generic      import hashing
@@ -205,7 +205,12 @@ class SpecMaker:
 
         self._l_path += paths 
 
-        files = [ File.from_path(path = path, tree = self._tree_name) for path in paths ]
+        if ftree == _MAIN_TREE:
+            block = None
+        else:
+            block = Block(value = '1')
+
+        files = [ File.from_path(path = path, tree = self._tree_name, block = block) for path in paths ]
         sam   = Sample(
             trees    = [self._tree_name], 
             files    = files, 
