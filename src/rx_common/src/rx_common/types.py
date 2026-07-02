@@ -11,7 +11,7 @@ from .component  import Component
 from .qsq        import Qsq
 from .region     import Region
 
-ALL_BLOCKS : set[str] = {'1', '2', '3', '4', '5', '6', '7', '8'}
+ALL_BLOCKS : set[str] = {'-1', '1', '2', '3', '4', '5', '6', '7', '8'}
 # ------------------------------
 class DataSet(StrEnum):
     dat = auto()
