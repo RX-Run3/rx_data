@@ -132,6 +132,7 @@ class Sample(BaseModel):
     files    : list[File]
     trees    : list[str]
     metadata : dict[str,str]
+    ranges   : PatchRanges = PatchRanges(root = {})
     # --------------------
     @model_validator(mode = 'after')
     def _validate(self) -> 'Sample':
@@ -171,27 +172,17 @@ class Sample(BaseModel):
         '''
         return [ file.path for file in self.files if block in file.blocks ]
     # --------------------
-    @property
-    def ranges(self) -> PatchRanges:
+    def _update_ranges(self, files : list[File], block : Block) -> None:
         '''
-        Returns
-        ---------------
-        Object storing ranges and blocks needed for patching
+        Parameters
+        -------------
+        paths: Patching files, i.e. the ones contained symlinks to patching ROOT files 
+        block: Block been patched
         '''
-        last = 0
-        data : list[tuple[int,int,int]] = []
-        for file in self.files:
-            blocks = list(file.blocks)
-            if len(blocks) > 1:
-                block = _INVALID_BLOCK
-            else:
-                block = blocks[0].to_int()
-
-            entry = last, last + file.entries, block 
-            data.append(entry)
-            last += file.entries
-
-        return PatchRanges(root = data)
+        tree = self.trees[0]
+        for file in files:
+            key = f'{file.path}/{tree}'
+            self.ranges.root[key] = block.to_int()
     # --------------------
     def patch(self, paths : list[Path], block : Block) -> 'Sample':
         '''
@@ -200,12 +191,20 @@ class Sample(BaseModel):
         paths: List of paths meant to extend sample
         block: Block number associated
         '''
-        tree        = self.trees[0]
-        paths       = sorted(paths)
+        tree         = self.trees[0]
+        ftree        = self.metadata['kind']
+        paths        = sorted(paths)
+        linked_files = [ 
+            File.from_path(
+                path = path, 
+                tree = tree, 
+                patch= True,
+                block= block, 
+                ftree= ftree) for path in paths ]
 
-        extra_files = [ File.from_path(path, tree, block) for path in paths ]
+        self._update_ranges(files = linked_files, block = block)
 
-        return self.model_copy(update = {'files' : self.files + extra_files})
+        return self.model_copy(update = {'files' : self.files + linked_files})
 # --------------------------
 class Specification(BaseModel):
     '''
@@ -222,11 +221,4 @@ class Specification(BaseModel):
         main_sample = self.samples[_MAIN_TREE]
 
         return main_sample.ranges
-    # --------------------------
-    def print_ranges(self) -> None:
-        log.debug(20 * '-')
-        log.debug('Patching ranges:')
-        for ientry, fentry, iblock in self.ranges.root:
-            log.debug(f'{"":<10}{ientry:<10}{fentry:<10}{iblock:<10}')
-        log.debug(20 * '-')
 # --------------------------
