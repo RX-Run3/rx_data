@@ -205,24 +205,29 @@ def get_sample_definer_expression(samples : list[tuple[int,int,int]]) -> str:
     rdf  = rdf.DefinePerSample('year', expr)
     ```
     '''
-    string = 'std::vector<std::tuple<int,int>> bounds;\n'
-    string+= 'std::vector<int>                 values;\n'
-    for lower, upper, _ in samples:
-        string += f'bounds.emplace_back({lower}, {upper});\n'
-
-    for _, _, value in samples:
-        string += f'values.emplace_back({value});\n'
+    string = 'std::vector<std::tuple<int,int,int>> entries;\n'
+    for lower, upper, value in samples:
+        string += f'entries.emplace_back({lower}, {upper}, {value});\n'
 
     text = rf'''
     {string}
 
     int GetValue(const std::tuple<int,int> &range)
     {{
-        auto it    = std::find(bounds.begin(), bounds.end(), range);
-        auto index = std::distance(bounds.begin(), it);
-        auto value = values.at(index);
+        auto start = std::get<0>(range);
+        auto end   = std::get<1>(range);
 
-        return value;
+        for (auto &entry : entries)
+        {{
+            auto _start = std::get<0>(entry);
+            auto _end   = std::get<1>(entry);
+            auto _value = std::get<2>(entry);
+
+            if (_start <= start && end <= _end)
+                return _value;
+        }}
+
+        throw std::runtime_error("No matching range for entry " + std::to_string(start) + "  " + std::to_string(end));
     }}
     '''
 
