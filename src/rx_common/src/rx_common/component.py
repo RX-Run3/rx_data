@@ -145,6 +145,36 @@ class Component(StrEnum):
                 return False
     # --------------------------------------------
     @property
+    def is_composed(self) -> bool:
+        '''
+        If true, this sample is made of subsamples, e.g. ccbar or data_24
+        '''
+        if self in { Component.data_24, Component.bpkxkpipiee }:
+            return True
+
+        return False
+    @property
+    # --------------------------------------------
+    def subsamples(self) -> list['Component']:
+        '''
+        If not a composite sample, list with itself
+        If it is composite, list with components
+        '''
+        if not self.is_composed:
+            return [self]
+
+        if self == Component.data_24:
+            return [
+                Component.data_24_md_c2, Component.data_24_mu_c2,
+                Component.data_24_md_c3, Component.data_24_mu_c3,
+                Component.data_24_md_c4, Component.data_24_mu_c4]
+
+        if self == Component.bpkxkpipiee:
+            return [Component.bpk1kpipiee, Component.bpk2kpipiee]
+
+        raise ValueError(f'The code should not reach this place: {self}')
+    # --------------------------------------------
+    @property
     def scale(self) -> str:
         '''
         Name of scale parameter for this component's yield
