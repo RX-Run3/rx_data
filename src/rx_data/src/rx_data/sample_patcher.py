@@ -56,7 +56,7 @@ class SamplePatcher:
             associations.update(cfg_sample.patching)
 
         if self._sample not in cfg.root:
-            log.error(f'No sample specific patching needed for {self._sample}')
+            log.debug(f'No sample specific patching needed for {self._sample}')
             return associations 
 
         log.info(f'Using sample specific patching for {self._sample}')
@@ -123,7 +123,7 @@ class SamplePatcher:
         -------------
         Patched sample
         '''
-        patching_paths : set[Path] = { file.path for file in sample.files if file.path.name in file_names }
+        patching_paths : list[Path] = [ file.path for file in sample.files if file.path.name in file_names and not file.path.is_symlink() ]
         nfound    = len(patching_paths)
         nexpected = len(file_names)
 
@@ -132,6 +132,13 @@ class SamplePatcher:
             for expected in file_names:
                 log.info(expected)
 
+            log.error(f'Paths from {ftree} category')
+            for file in sample.files:
+                if file.path.is_symlink():
+                    continue
+
+                log.info(file.path)
+
             log.error(f'Files from {ftree} category')
             for found in patching_paths:
                 log.info(found.name)
@@ -139,7 +146,7 @@ class SamplePatcher:
             raise ValueError(f'Size of patching paths is different from expected number of files for block {block_needed}')
 
         patched_sample = sample.patch(
-            paths = list(patching_paths), 
+            paths = patching_paths, 
             block = block_needed)
 
         return patched_sample
@@ -188,7 +195,7 @@ class SamplePatcher:
         data = {'friends' : patched_friends, 'samples' : {'main' : patched_main }}
 
         spec = Specification(**data)
-        spec.print_ranges()
+        log.info(spec.ranges)
 
         return spec
 # ------------------------------------
