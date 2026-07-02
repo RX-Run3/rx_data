@@ -217,6 +217,8 @@ def get_sample_definer_expression(samples : list[tuple[int,int,int]]) -> str:
         auto start = std::get<0>(range);
         auto end   = std::get<1>(range);
 
+        // std::cout << "Looking for: " << start << "  " << end << "\n";
+
         for (auto &entry : entries)
         {{
             auto _start = std::get<0>(entry);
@@ -225,6 +227,8 @@ def get_sample_definer_expression(samples : list[tuple[int,int,int]]) -> str:
 
             if (_start <= start && end <= _end)
                 return _value;
+
+            // std::cout << _start << "  " << _end << "\n";
         }}
 
         throw std::runtime_error("No matching range for entry " + std::to_string(start) + "  " + std::to_string(end));
