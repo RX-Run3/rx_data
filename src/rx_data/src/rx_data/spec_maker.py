@@ -77,11 +77,11 @@ class SpecMaker:
 
         if _SKIP_PATCH.get():
             log.warning(f'Skipping patching of {component}')
-            self._spec    = self._get_specification()
+            self._spec = self._get_specification()
         else:
-            spec          = self._get_specification()
-            patcher       = SamplePatcher(sample = component, spec = spec)
-            self._spec    = patcher.get_patched_specification()
+            spec       = self._get_specification()
+            patcher    = SamplePatcher(sample = component, spec = spec)
+            self._spec = patcher.get_patched_specification()
     # ----------------------
     def _set_project(self, trigger : Trigger) -> Project:
         '''
@@ -210,7 +210,14 @@ class SpecMaker:
         else:
             block = Block(value = '1')
 
-        files = [ File.from_path(path = path, tree = self._tree_name, block = block) for path in paths ]
+        files = [ 
+            File.from_path(
+                path  = path, 
+                tree  = self._tree_name, 
+                ftree = ftree,
+                patch = False,
+                block = block) for path in paths ]
+
         sam   = Sample(
             trees    = [self._tree_name], 
             files    = files, 
