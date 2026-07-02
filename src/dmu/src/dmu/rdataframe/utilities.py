@@ -219,15 +219,20 @@ def _get_sample_definer_expression_cached(samples : tuple[tuple[str,int],...]):
     int GetValue(const std::string &name)
     {{
         std::cout << "Looking for: " << name << "\n";
+        int val;
 
         try
         {{
-            return entries.at(name);
+            val = entries.at(name);
+            // std::cout << "Found block: " << val << "\n";
         }}
         catch (const std::out_of_range &e)
         {{
-            throw std::runtime_error("No matching range for file: " + name);
+            val = -999;
+            // std::cout << "Block not found for: " << name << "\n";
         }}
+
+        return val;
     }}
     '''
 
