@@ -595,7 +595,8 @@ class RDFGetter(SpecMaker):
         log.debug('Calculating GUUIDs')
         all_guuid = ''
         for path in self._l_path:
-            ifile = TFile(path)
+            path_str   = str(path)
+            ifile      = TFile(path_str)
             all_guuid += ifile.GetUUID().AsString()
             ifile.Close()
 
