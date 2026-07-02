@@ -3,7 +3,7 @@ Module holding Specification and Sample classes
 '''
 from ROOT      import RDataFrame # type: ignore
 from pathlib   import Path
-from typing    import Final
+from typing    import Final, Literal, overload
 from pydantic  import BaseModel, ConfigDict, model_serializer
 from pydantic  import RootModel, model_validator
 from rx_common import Block
@@ -11,33 +11,25 @@ from dmu       import LogStore
 
 _BLOCK         : Final[str] = 'block' # name of branch with block number
 _MAIN_TREE     : Final[str] = 'main'  # name of main trees
-_INVALID_BLOCK : Final[int] = -999    # If file has invalid block (e.g. multiple blocks in sim10g)
+_SYMLINK_DIR   : Final[Path]= Path('/tmp/rdf_getter/patching') # Links to patching files will be here
 
 log = LogStore.add_logger('rx_data:specification')
 # ------------------------------------
-class PatchRanges(RootModel[list[tuple[int,int,int]]]):
+class PatchRanges(RootModel[dict[str,int]]):
     '''
-    Class representing patching files. Each entry is a tuple of
-
-    - Initial and final index for file
-    - Block number meant to be used in patching
+    Class representing association between a file and the values a quantity that needs to be patched
     '''
-    root : list[tuple[int,int,int]]
-    # ---------------------
-    @model_validator(mode = 'after')
-    def _validate(self) -> 'PatchRanges':
-        fail = False 
-        for lower, upper, _ in self.root:
-            if 0 <= lower < upper:
-                continue
+    root : dict[str,int] 
+    # ------------------------
+    def __str__(self):
+        msg = '\n'
+        msg+= 20 * '-' + '\n'
+        msg+= 'File patching associations\n'
+        for name, value in self.root.items():
+            msg += f'{"":<10}{value:<10}{name}\n'
+        msg+= 20 * '-'
 
-            fail = True
-            log.error(f'{lower} >= {upper}')
-
-        if fail:
-            raise ValueError('Range validation failed')
-
-        return self
+        return msg
 # --------------------------
 class File(BaseModel):
     '''
