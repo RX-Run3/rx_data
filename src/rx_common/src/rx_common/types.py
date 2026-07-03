@@ -579,6 +579,22 @@ class Trigger(StrEnum):
         raise ValueError(f'Cannot get signal component for: {qsq}/{self}')
     # -----------
     @property
+    def subtriggers(self) -> list['Trigger']:
+        '''
+        List of triggers into which this trigger can be
+        decomposed, e.g. nopid = misID + signal region
+
+        If not decomposable, return list with only this trigger 
+        '''
+        match self:
+            case Trigger.rk_ee_nopid:
+                return [Trigger.rk_ee_os  , Trigger.rk_ee_misid  ]
+            case Trigger.rkst_ee_nopid:
+                return [Trigger.rkst_ee_os, Trigger.rkst_ee_misid]
+            case _:
+                return [self]
+    # -----------
+    @property
     def has_pid(self) -> bool:
         '''
         False for triggers associated to PID removed samples
