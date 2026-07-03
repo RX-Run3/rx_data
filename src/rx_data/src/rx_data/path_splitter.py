@@ -38,11 +38,15 @@ class NestedSamples(RootModel):
             log.error(self)
             raise ValueError(f'Cannot find sample {sample}')
 
-        if trigger not in self.root[sample]:
-            log.error(self)
-            raise ValueError(f'For sample {sample}, cannot find trigger: {trigger.value}')
+        paths : list[Path] = []
+        for sub_trigger in trigger.subtriggers:
+            if sub_trigger not in self.root[sample]:
+                log.error(self)
+                raise ValueError(f'For sample {sample}, cannot find trigger: {trigger.value}')
 
-        return self.root[sample][trigger]
+            paths += self.root[sample][sub_trigger]
+
+        return paths
     # ------------------------------------------
     def __str__(self) -> str:
         return self.model_dump_json(indent = 2)
