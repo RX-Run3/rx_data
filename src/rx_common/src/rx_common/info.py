@@ -99,7 +99,7 @@ def project_from_trigger(trigger : str, lower_case : bool) -> str:
                 continue
 
             if lower_case:
-                project = project.lower()
+                return project.lower()
 
             return project
 
