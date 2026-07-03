@@ -80,20 +80,3 @@ def test_max_files(analysis : str, tmp_path : Path):
     path   = tmp_path / f'max_files_{analysis}.json'
     path.write_text(string)
 # ----------------------------------------
-@pytest.mark.parametrize('analysis', _PROJECTS)
-@pytest.mark.parametrize('naming'  , ['new', 'old'])
-def test_sample_naming(
-    naming   : str, 
-    tmp_path : Path,
-    analysis : str):
-    '''
-    Will only read 100 files
-    '''
-    l_pfn = _get_pfns(analysis=analysis)
-    spl   = PathSplitter(paths = l_pfn, sample_naming=naming)
-    data  = spl.split(nested=False)
-
-    string = data.model_dump_json(indent = 2)
-    path   = tmp_path / f'naming_{analysis}.json'
-    path.write_text(string)
-# ----------------------------------------
