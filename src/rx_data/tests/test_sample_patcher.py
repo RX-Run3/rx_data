@@ -40,26 +40,28 @@ def test_unpatched(component : Component, trigger : Trigger) -> None:
     Tests that patching does not affect samples that are not
     meant to be patched
     '''
-    spk  = SpecMaker(component=component, trigger=trigger, skip_patch=True)
-    spec_old = spk.spec
+    with SpecMaker.skip_patching(val = True):
+        spk  = SpecMaker(component=component, trigger=trigger)
+        spec_old = spk.spec
 
     ptr  = SamplePatcher(sample = component, spec = spec_old)
     spec_new = ptr.get_patched_specification()
 
     assert spec_old == spec_new
-    assert len(ptr.redefinitions) == 0
+    assert len(spec_new.ranges.root) == 0
 # ----------------------
 @pytest.mark.parametrize('component, trigger', _PATCHED_SAMPLES)
 def test_patched(component : Component, trigger : Trigger) -> None:
     '''
     Tests that patching
     '''
-    spk = SpecMaker(component=component, trigger=trigger, skip_patch=True)
-    spec_old = spk.spec
+    with SpecMaker.skip_patching(val = True):
+        spk = SpecMaker(component=component, trigger=trigger)
+        spec_old = spk.spec
 
     ptr = SamplePatcher(sample = component, spec = spec_old)
     spec_new = ptr.get_patched_specification()
 
     assert spec_old != spec_new
-    assert len(ptr.redefinitions) != 0
+    assert len(spec_new.ranges.root) != 0
 # ----------------------
