@@ -39,10 +39,14 @@ class NestedSamples(RootModel):
             raise ValueError(f'Cannot find sample {sample}')
 
         paths : list[Path] = []
-        for sub_trigger in trigger.subtriggers:
+
+        # NOTE: For data, noPID trigger is made of misID + signal region triggers
+        # while for MC, there is a dummy noPID trigger, made by running noPID AP
+        subtriggers = [trigger] if sample.is_mc else trigger.subtriggers
+        for sub_trigger in subtriggers:
             if sub_trigger not in self.root[sample]:
                 log.error(self)
-                raise ValueError(f'For sample {sample}, cannot find trigger: {trigger.value}')
+                raise ValueError(f'For sample {sample}, cannot find trigger: {sub_trigger.value}')
 
             paths += self.root[sample][sub_trigger]
 
