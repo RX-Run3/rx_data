@@ -260,9 +260,7 @@ class RDFGetter(SpecMaker):
         
         # If doing data with noPID trigger, undo prescale
         # of misID trigger candidates
-        is_no_pid = self._trigger in [Trigger.rk_ee_nopid, Trigger.rkst_ee_nopid]
-
-        if not self._component.is_mc and is_no_pid:
+        if not self._component.is_mc and not self._trigger.has_pid:
             log.info('Adding weight of 10 to MisID sample')
             rdf = rdf.Define('weight', self._ext_weight)
         else:
