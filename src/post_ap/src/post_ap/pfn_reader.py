@@ -261,6 +261,9 @@ class Sample(BaseModel):
 
         return value
     # ------------------------------
+    def __lt__(self, other) -> bool:
+        return self.name < other.name
+    # ------------------------------
     def sample_string(self) -> str:
         '''
         String describing sample. Meant to be called by
@@ -557,6 +560,9 @@ class Samples(RootModel[list[Sample]]):
     def __len__(self) -> int:
         return self.size 
     # -------------------------
+    def __lt__(self, other : Sample) -> bool:
+        return self < other
+    # -------------------------
     @overload
     def __getitem__(self, item: int) -> Sample: ...
     @overload
@@ -799,5 +805,5 @@ class PFNReader:
             log.info(f'    {sample.name}')
         log.info('...')
 
-        return samples
+        return Samples(root = sorted(samples))
 # ---------------------------------------
