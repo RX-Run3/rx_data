@@ -15,7 +15,7 @@ from jinja2                import Template
 from importlib.resources   import files
 from importlib.util        import find_spec
 from typing                import Callable, Any
-from functools             import wraps
+from functools             import cache, wraps
 from contextlib            import contextmanager
 from yaml.constructor      import ConstructorError
 from omegaconf.errors      import ConfigKeyError
@@ -118,6 +118,7 @@ def enforce_schema_validation(value : bool):
     finally:
         ConfigValidation.enforce =old_val
 # ---------------------------------
+@cache
 def load_data(package : str, fpath : str) -> Any:
     '''
     This function will load a YAML or JSON file from a data package
@@ -131,9 +132,10 @@ def load_data(package : str, fpath : str) -> Any:
     ---------------------
     Dictionary or whatever structure the file is holding
     '''
-
     cpath = files(package).joinpath(fpath)
     cpath = str(cpath)
+
+    log.debug(f'Loading config from: {cpath}')
     data  = load_json(cpath)
 
     return data
