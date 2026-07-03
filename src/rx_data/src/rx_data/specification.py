@@ -4,7 +4,7 @@ Module holding Specification and Sample classes
 from ROOT      import RDataFrame # type: ignore
 from pathlib   import Path
 from typing    import Final, Literal, overload
-from pydantic  import BaseModel, ConfigDict, model_serializer
+from pydantic  import BaseModel, ConfigDict, Field, model_serializer
 from pydantic  import RootModel, model_validator
 from rx_common import Block
 from dmu       import LogStore
@@ -132,7 +132,7 @@ class Sample(BaseModel):
     files    : list[File]
     trees    : list[str]
     metadata : dict[str,str]
-    ranges   : PatchRanges = PatchRanges(root = {})
+    ranges   : PatchRanges = Field(default = PatchRanges(root = {}), exclude = True)
     # --------------------
     @model_validator(mode = 'after')
     def _validate(self) -> 'Sample':
