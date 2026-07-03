@@ -631,7 +631,7 @@ class ProductionConf(BaseModel):
     versions : dict[str,str]
     samples  : dict[str,list[str] | None]
     fractions: dict[str,float | None]
-
+    # -----------------------
     @model_validator(mode = 'after')
     def _validate(self) -> Self:
         fail = False
@@ -648,6 +648,9 @@ class ProductionConf(BaseModel):
             return self
 
         raise ValueError('At least one fraction has the wrong value')
+    # -----------------------
+    def __str__(self) -> str:
+        return self.model_dump_json(indent = 2)
 # ---------------------------------------
 class PFNReaderConf(BaseModel):
     '''
@@ -655,6 +658,38 @@ class PFNReaderConf(BaseModel):
     '''
     working_group : Literal['RD']
     productions   : dict[Production,ProductionConf]
+    # ----------------
+    def get_data(
+        self, 
+        kind       : str, 
+        production : Production, 
+        group      : str):
+        '''
+        Parameters
+        ---------------
+        kind      : Type of field e.g. samples, version
+        production: E.g. rx_2024, rx_filter 
+        group     : Group of samples e.g. mc-rkst
+        '''
+        if production not in self.productions:
+            log.error(self)
+            raise ValueError(f'Production {production} not found')
+
+        cfg_prod = self.productions[production]
+
+        if not hasattr(cfg_prod, kind):
+            log.error(self)
+            raise ValueError(f'Production configuration has no field named {kind}')
+
+        field = getattr(cfg_prod, kind)
+        if group not in field:
+            log.error(self)
+            raise ValueError(f'Cannot find {group}')
+
+        return field[group]
+    # ----------------
+    def __str__(self) -> str:
+        return self.model_dump_json(indent = 3)
 # ---------------------------------------
 class PFNReader:
     '''
@@ -742,8 +777,8 @@ class PFNReader:
         if not isinstance(collection, SampleCollection):
             raise ValueError('Cannot retrieve a collection of samples for {production}:{nickname}')
 
-        l_sample   = self._cfg.productions[production].samples[nickname]
-        version    = self._cfg.productions[production].versions[nickname]
+        l_sample   = self._cfg.get_data('samples' , production, nickname)
+        version    = self._cfg.get_data('versions', production, nickname)
 
         if l_sample is None:
             log.info(f'Using all samples for version: {version}')
