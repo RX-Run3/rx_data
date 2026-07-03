@@ -23,6 +23,30 @@ class NestedSamples(RootModel):
     '''
     root : dict[Component, dict[Trigger, list[Path]]]
     # ------------------------------------------
+    def _get_paths(self, sample : Component, trigger : Trigger) -> list[Path]:
+        '''
+        Parameters
+        -------------
+        sample : E.g. bpkpee
+        trigger: E.g. rk_ee_os
+
+        Returns
+        -------------
+        List of paths to ROOT files associated to sample and trigger
+        '''
+        if sample not in self.root:
+            log.error(self)
+            raise ValueError(f'Cannot find sample {sample}')
+
+        if trigger not in self.root[sample]:
+            log.error(self)
+            raise ValueError(f'For sample {sample}, cannot find trigger: {trigger.value}')
+
+        return self.root[sample][trigger]
+    # ------------------------------------------
+    def __str__(self) -> str:
+        return self.model_dump_json(indent = 2)
+    # ------------------------------------------
     def get_paths(
         self, 
         ftree  : str, 
@@ -39,7 +63,7 @@ class NestedSamples(RootModel):
         -----------------
         List of sorted paths to corresponding ROOT files
         '''
-        nested_paths = [ self.root[sub_sample][trigger] for sub_sample in sample.subsamples ]
+        nested_paths = [ self._get_paths(sample = sub_sample, trigger = trigger) for sub_sample in sample.subsamples ]
         flat_paths   = list(chain.from_iterable(nested_paths))
         friend_paths = [ path for path in flat_paths if f'/{ftree}/' in str(path) ]
 
