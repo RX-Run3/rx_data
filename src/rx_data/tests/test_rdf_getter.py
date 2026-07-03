@@ -11,6 +11,7 @@ import pytest
 import mplhep
 import numpy
 
+from contextlib     import ExitStack
 from typing         import cast, Final
 from pathlib        import Path
 from ROOT           import RDataFrame, RDF, EnableImplicitMT # type: ignore
@@ -948,15 +949,20 @@ def test_check_vars(sample : Component, trigger : Trigger):
 
     _print_dotted_branches(rdf)
 # ------------------------------------------------
-@pytest.mark.parametrize('period'  ,['c2','c3','c4'])
-@pytest.mark.parametrize('polarity',['mu', 'md'])
+@pytest.mark.parametrize('sample' , Component.data_24.subsamples)
 @pytest.mark.parametrize('trigger', [Trigger.rk_ee_nopid, Trigger.rkst_ee_nopid])
-def test_ext_trigger(period : str, polarity : str, trigger : Trigger, tmp_path : Path):
+def test_ext_trigger(
+    sample   : Component, 
+    trigger  : Trigger, 
+    tmp_path : Path):
     '''
     Test of getter class for combination of analysis and misID trigger
     '''
-    sample  = Component(f'data_24_{polarity}_{period}')
-    with RDFGetter.max_entries(-1):
+    ctx_1   = RDFGetter.max_entries(-1)
+
+    with ExitStack() as stack:
+        stack.enter_context(ctx_1)
+
         gtr = RDFGetter(sample=sample, trigger=trigger)
         rdf = gtr.get_rdf(per_file=False)
 
