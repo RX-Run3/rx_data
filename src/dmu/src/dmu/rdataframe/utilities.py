@@ -222,7 +222,7 @@ def _get_sample_definer_expression_cached(samples : tuple[tuple[str,int],...]) -
 
     int GetValue_{hash}(const std::string &name)
     {{
-        std::cout << "Looking for: " << name << "\n";
+        // std::cout << "Looking for: " << name << "\n";
         int val;
 
         try
