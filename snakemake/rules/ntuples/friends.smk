@@ -194,8 +194,8 @@ use rule _calculate as calculate_mva with:
     output:
         done   = _CALC
     input :
-        sentinels(friend =        'smear')
-        sentinels(friend =          'hop')
+        sentinels(friend =        'smear') +
+        sentinels(friend =          'hop') +
         sentinels(friend = 'brem_track_2')
     wildcard_constraints:
         friend =   'mva',
