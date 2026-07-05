@@ -2,11 +2,8 @@ plots_settings: &plots_settings
   nbins    : 50
   stacked  : True
   d_leg :
-    comb       : Combinatorial
-    bppijpsiee : $B^+\to J/\psi(\to e^+e^-)\pi^+$
-    ccbar      : $B_{s,d,u}\to c\bar{c} X$
-    bpkpjpsiee : $B^+\to J/\psi(\to e^+e^-) K^+$
-    bpkppsi2ee : $B^+\to \psi(2S)(\to e^+e^-) K^+$
+    bpkpjpsiee_brem_xx1 : $B^+\to K^+J/\psi(\to e^+e^-); 1\gamma$
+    bpkpjpsiee_brem_xx2 : $B^+\to K^+J/\psi(\to e^+e^-); 2\gamma$
   plot_components : []
   plot_range:
     - 4500
