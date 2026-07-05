@@ -17,11 +17,11 @@ _MERGE = f'{ANADIR}/tmp/sentinels/friends/{{project}}/{{friend}}/{{vers}}.merge'
 _CALC  = f'{ANADIR}/tmp/sentinels/friends/{{project}}/{{friend}}/{{vers}}_{{index}}.calc'
 
 CACHED = {
-    'rk_10000'    : 178, 
-    'rkst_10000'  :  59,
+    'rk_10000'    :  178, 
+    'rkst_10000'  :   59,
     # -----------
     'rk_100000'   : 1824, 
-    'rkst_100000' : 614,
+    'rkst_100000' :  614,
     }
 
 from rx_common import Project
@@ -51,7 +51,7 @@ def _get_calc_list(wc):
     entries  = _get_setting(wc, 'entries')
     nparts   = _get_parts(wc.project, entries)
 
-    return [f'{dir_name}/{wc.friend}/{wc.vers}_{index}.calc' for index in range(nparts) ]
+    return [ f'{dir_name}/{wc.friend}/{wc.vers}_{index}.calc' for index in range(nparts) ]
 def _get_setting(wc, name):
     friend = getattr(wc,  'friend')
     project= getattr(wc, 'project')
@@ -77,7 +77,13 @@ def sentinels(friend):
 rule all:
     '''Request all sentinel files for every combination.'''
     input:
-        sentinels(friend = 'brem_track_2'            )
+        sentinels(friend = 'mass'                    ) +
+        sentinels(friend = 'swp_jpsi_misid'          ) +
+        sentinels(friend = 'swp_cascade'             ) +
+        sentinels(friend = 'brem_track_2'            ) +
+        sentinels(friend = 'hop'                     ) +
+        sentinels(friend = 'mva'                     ) +
+        sentinels(friend = 'smear'                   )
 # ───────────────────────────────────────────────────────────────────
 rule merge:
     output:
@@ -166,11 +172,32 @@ rule _calculate:
         touch {output.done}
         '''
 # ───────────────────────────────────────────────────────────────────
-use rule _calculate as calculate_brem_track_2 with:
-    '''Request brem_track_2 trees'''
+# ───────────────────────────────────────────────────────────────────
+use rule _calculate as calculate_independent with:
+    '''Request trees that do not depend on any other trees'''
     output:
         done   = _CALC
     wildcard_constraints:
-        friend = 'brem_track_2',
+        friend = 'mass|swp_jpsi_misid|swp_cascade|brem_track_2|hop',
+        vers   = r'v\d+',
+use rule _calculate as calculate_smear with:
+    '''Request trees with smeared masses'''
+    output:
+        done   = _CALC
+    input :
+        sentinels(friend = 'brem_track_2')
+    wildcard_constraints:
+        friend = 'smear',
+        vers   = r'v\d+',
+use rule _calculate as calculate_mva with:
+    '''Request trees with mva scores'''
+    output:
+        done   = _CALC
+    input :
+        sentinels(friend =        'smear')
+        sentinels(friend =          'hop')
+        sentinels(friend = 'brem_track_2')
+    wildcard_constraints:
+        friend =   'mva',
         vers   = r'v\d+',
 # ───────────────────────────────────────────────────────────────────
