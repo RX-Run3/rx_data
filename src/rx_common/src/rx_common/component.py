@@ -327,14 +327,14 @@ class Component(StrEnum):
           case Component.bdkstkpiee:
             return 'Bd_Kstee_eq_btosllball05_DPC'
           case Component.bdkstkpijpsiee:
-            return 'Bd_JpsiKst_update2012_ee_eq_DPC'
+            return 'Bd_JpsiKst_ee_eq_DPC'
           case Component.bdkstkpipsi2ee:
             return 'Bd_psi2SKst_ee_eq_DPC'
           # -----
           case Component.bdkstkpimm:
             return 'Bd_Kstmumu_eq_btosllball05_DPC'
           case Component.bdkstkpijpsimm:
-            return 'Bd_JpsiKst_update2012_mm_eq_DPC'
+            return 'Bd_JpsiKst_mm_eq_DPC'
           case Component.bdkstkpipsi2mm:
             return 'Bd_psi2SKst_mm_eq_DPC'
           # -----
