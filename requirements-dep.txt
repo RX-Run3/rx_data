@@ -241,6 +241,8 @@ lark==1.3.1
     # via formulate
 law==0.1.20
     # via -r requirements-dep.in
+lazy-loader==0.5
+    # via -r requirements-dep.in
 libclang==18.1.1
     # via tensorflow
 llvmlite==0.46.0
@@ -375,6 +377,7 @@ packaging==25.0
     #   dask
     #   distributed
     #   keras
+    #   lazy-loader
     #   matplotlib
     #   mplhep
     #   optuna

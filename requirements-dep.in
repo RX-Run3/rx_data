@@ -1,4 +1,5 @@
 uv
+lazy-loader
 sigal
 hepstats
 pydantic-settings
