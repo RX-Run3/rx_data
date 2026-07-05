@@ -2,6 +2,7 @@
 This module contains classes derived from Enum
 '''
 from enum        import StrEnum, Enum, auto
+from typing      import Final
 from dmu.stats   import CorrectionImplementation
 from pydantic    import BaseModel, ConfigDict, model_validator
 from .mass       import Mass
@@ -11,7 +12,7 @@ from .component  import Component
 from .qsq        import Qsq
 from .region     import Region
 
-ALL_BLOCKS : set[str] = {'-1', '1', '2', '3', '4', '5', '6', '7', '8'}
+_ALL_BLOCKS : Final[set[str]] = {'-1', '1', '2', '3', '4', '5', '6', '7', '8'}
 # ------------------------------
 class DataSet(StrEnum):
     dat = auto()
@@ -79,7 +80,7 @@ class Block(BaseModel):
         if value == 'all':
             return data
 
-        if value not in ALL_BLOCKS:
+        if value not in _ALL_BLOCKS:
             raise ValueError(f'Invalid value: {value}')
 
         return data 
@@ -100,7 +101,7 @@ class Block(BaseModel):
         --------------
         List of elementary blocks
         '''
-        return [ cls(value = block) for block in ALL_BLOCKS ]
+        return [ cls(value = block) for block in _ALL_BLOCKS if block != '-1' ]
     # ----------------
     @classmethod
     def from_str(cls, value : str) -> 'Block':
