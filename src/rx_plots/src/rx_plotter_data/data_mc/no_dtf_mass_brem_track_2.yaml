@@ -6,8 +6,6 @@ general:
 definitions :
   Jpsi_DTF_HEAD_MASS : TMath::Sqrt(TMath::Power(Jpsi_DTF_HEAD_PE,2) - TMath::Power(Jpsi_DTF_HEAD_PX, 2) - TMath::Power(Jpsi_DTF_HEAD_PY, 2) - TMath::Power(Jpsi_DTF_HEAD_PZ, 2))
   nbrem      : int(L1_HASBREMADDED_brem_track_2) + int(L2_HASBREMADDED_brem_track_2)
-  B_M_corr   : B_Mass
-  Jpsi_M_corr: Jpsi_Mass
 selection:
   q2     : (1)
   mass   : B_const_mass_M > 5160
@@ -20,7 +18,7 @@ plots:
       normalize : True
       styling :
         linestyle: '-'
-    B_M_corr:
+    B_Mass:
       normalized : true
       binning : [4200, 6000, 40]
       yscale  : linear
@@ -28,7 +26,7 @@ plots:
       normalize : True
       styling :
         linestyle: '-'
-    Jpsi_M_corr:
+    Jpsi_Mass:
       normalized : true
       binning : [2100, 3500, 40]
       yscale  : linear
