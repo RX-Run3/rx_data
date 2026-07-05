@@ -183,6 +183,7 @@ def _set_config(args : dict[str,str]) -> None:
     Data.component= Component(args['sample'])
     Data.trigger  = Trigger(args['trigger'])
     Data.config   = f'{config}_{Data.trigger.project}'
+    Data.ncores   = 1
 # ---------------------------------
 def main(args : dict[str,str] | None = None):
     '''
