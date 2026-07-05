@@ -54,7 +54,7 @@ class BaseFitter:
 
         return res
     # ------------------------
-    def _get_sensitivity(self, res : FitResult | None) -> float:
+    def _get_sensitivity(self, res : FitResult | None) -> float | None:
         '''
         Parameters
         --------------
@@ -72,7 +72,8 @@ class BaseFitter:
         if sig_name not in res:
             log.debug(f'Missing {sig_name} entry, cannot get sensitivity')
             log.debug(res)
-            return -1
+
+            return None
 
         value, error = res[sig_name]
 
@@ -221,7 +222,13 @@ class BaseFitter:
         sel_fit, sel_dif, brem_txt = self._get_selection_text(selection=selection)
 
         sensitivity = self._get_sensitivity(res=res)
-        title       = f'$\\delta={sensitivity:.2f}$%; Entries={nentries:.0f}; Brem:{brem_txt}'
+        title       = f'Entries={nentries:.0f}'
+
+        if sensitivity:
+            title = f'{title}; $\\delta={sensitivity:.2f}$%'
+
+        if brem_txt:
+            title = f'{title}; Brem: {brem_txt}'
 
         return title, sel_fit, sel_dif
     # ------------------------
@@ -251,9 +258,10 @@ class BaseFitter:
         # If no entries were present
         # There will not be PDF
         title, sel_fit, sel_dif = self._get_text(data=data, res=res, selection=cut_cfg)
+        if plt_cfg.title:
+            title = f'{plt_cfg.title}; {title}' 
 
         text       = '\n'.join(textwrap.wrap(sel_dif, width=40))
-        title      = f'{plt_cfg.title}; {title}' 
         new_fields = {'title' : title, 'ext_text' : text}
         plt_cfg    = plt_cfg.model_copy(update = new_fields)
 
