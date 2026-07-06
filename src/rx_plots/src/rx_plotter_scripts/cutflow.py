@@ -166,7 +166,10 @@ def _plot(d_rdf : dict[str,tuple[RDF.RNode, dict[Cuts,str]]]) -> None:
     rdfs = { key : rdf for key, (rdf,   _) in d_rdf.items() }
     sels = { key : sel for key, (_  , sel) in d_rdf.items() }
 
-    gut.dump_json(data = sels, path = f'{cfg.saving.plt_dir}/selection.json')
+    gut.dump_json(
+        exists_ok= True,
+        data     = sels, 
+        path     = f'{cfg.saving.plt_dir}/selection.json')
 
     ptr=Plotter1D(d_rdf=rdfs, cfg=cfg)
     ptr.run()
