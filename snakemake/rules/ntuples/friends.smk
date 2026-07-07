@@ -16,30 +16,16 @@ LOGDIR = config['defaults']['smklog']
 _MERGE = f'{ANADIR}/tmp/sentinels/friends/{{project}}/{{friend}}/{{vers}}.merge'
 _CALC  = f'{ANADIR}/tmp/sentinels/friends/{{project}}/{{friend}}/{{vers}}_{{index}}.calc'
 
-CACHED = {
-    'rk_10000'    :  178, 
-    'rkst_10000'  :   59,
-    # -----------
-    'rk_100000'   : 1824, 
-    'rkst_100000' :  614,
-    }
-
 from rx_common import Project
 from rx_data   import SampleSplitter
 # ──────────────────────────────────────────────────────────────────────
 @cache
 def _get_parts(project, entries):
-    key = f'{project}_{entries}'
-    if key in CACHED:
-        nbatch = CACHED[key]
-        print(f'Found {nbatch} batches from cache for {project} with {entries} entries')
-        return nbatch 
-
-    spt = SampleSplitter(
+    spt   = SampleSplitter(
         version = MAIN_VERSION,
         project = project)
 
-    fpath   = Path(f'/tmp/stats_{project}_{MAIN_VERSION}.json')
+    fpath   = f'{ANADIR}/DB/statistics/v1/{project}.json'
     files   = spt.run(out_path = fpath)
     batches = files.split(entries = entries)
     nbatch  = batches.size
