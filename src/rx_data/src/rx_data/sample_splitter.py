@@ -334,6 +334,9 @@ class SampleSplitter:
         -----------------
         Container with object representing ntuples 
         '''
+        if out_path is not None and not out_path.exists():
+            raise ValueError(f'Missing {out_path}')
+
         if not out_path:
             out_path = self._out_path 
 
