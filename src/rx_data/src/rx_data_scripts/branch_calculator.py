@@ -233,7 +233,7 @@ def _skip_file(input : Path, output : Path) -> bool:
     Parameters
     ----------------
     input : Path to input ROOT file from main category
-    output: Path to outut friend tree file
+    output: Path to output friend tree file
 
     Returns
     ----------------
