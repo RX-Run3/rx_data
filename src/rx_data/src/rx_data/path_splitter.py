@@ -76,11 +76,11 @@ class NestedSamples(RootModel):
         friend_paths = [ path for path in flat_paths if f'/{ftree}/' in str(path) ]
 
         npath = len(flat_paths)
-        log.info(20 * '-')
-        log.info(f'Found {npath} paths for {ftree}|{sample}|{trigger}')
+        log.debug(20 * '-')
+        log.debug(f'Found {npath} paths for {ftree}|{sample}|{trigger}')
         for path in flat_paths:
-            log.info(f'   {path}')
-        log.info(20 * '-')
+            log.debug(f'   {path}')
+        log.debug(20 * '-')
 
         return sorted(friend_paths)
 # ------------------------------------------
@@ -172,7 +172,7 @@ class PathSplitter:
                 - path 3
         '''
         npath = len(self._l_path)
-        log.info(f'Splitting {npath} paths into categories')
+        log.debug(f'Splitting {npath} paths into categories')
 
         samples = Samples(root = {})
         for path in self._l_path:
