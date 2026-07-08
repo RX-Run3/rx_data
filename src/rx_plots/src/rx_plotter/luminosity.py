@@ -1,6 +1,7 @@
 '''
 Script used to plot luminosity
 '''
+import numpy
 import mplhep
 import pandas            as pnd
 import matplotlib.pyplot as plt
@@ -54,14 +55,14 @@ def plot():
     df_rx_all['int_lumi_dn'] = df_rx_all.lumi_dn.cumsum() / 1_000_000_000
     rx_lumi                  = df_rx_all.lumi.sum()    / 1_000_000_000
 
-    xval    = df_rx_all['runNumber'  ].to_numpy()
-    lumi_dn = df_rx_all['int_lumi_dn'].to_numpy()
-    lumi_up = df_rx_all['int_lumi_up'].to_numpy()
+    xval    : numpy.ndarray = df_rx_all['runNumber'  ].to_numpy()
+    lumi_dn : numpy.ndarray = df_rx_all['int_lumi_dn'].to_numpy()
+    lumi_up : numpy.ndarray = df_rx_all['int_lumi_up'].to_numpy()
 
     plt.fill_between(
         x     = xval, 
-        y1    = lumi_dn, 
-        y2    = lumi_up, 
+        y1    = lumi_dn, # type: ignore
+        y2    = lumi_up, # type: ignore 
         color = 'gray', 
         alpha = 0.5,
         label = fr'Total: {rx_lumi:>4.2f} fb${{}}^{{-1}}$')
@@ -69,4 +70,4 @@ def plot():
     _add_lines()
     _style_plot()
     plt.legend()
-    plt.show()
+# ---------------------------------

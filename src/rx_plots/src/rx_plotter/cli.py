@@ -177,6 +177,11 @@ def luminosity():
     Will make plots of distributions from rebuilt candidates
     '''
     plot_luminosity()
+    out_path = _ANADIR / 'plots/luminosity/luminosity_vs_run.png'
+    out_path.parent.mkdir(exist_ok = True, parents = True)
+
+    log.info(f'Saving to: {out_path}')
+    plt.savefig(out_path)
 # ----------------------
 def _plot_block_fraction_vs_q2(df : pnd.DataFrame) -> None:
     '''
