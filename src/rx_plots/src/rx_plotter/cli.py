@@ -186,8 +186,8 @@ def luminosity():
 # ----------------------
 @app.command()
 def copy_plots(
-    dry_run : bool= typer.Option(... , '--dry_run', '-d', help='If true will skip copying'),
-    conf    : str = typer.Option(... , '--conf'   , '-c', help='Name of config file, e.g. paths')):
+    dry_run : bool= typer.Option(False, '--dry_run', '-d', help='If true will skip copying'),
+    conf    : str = typer.Option(...  , '--conf'   , '-c', help='Name of config file, e.g. paths')):
     '''
     Will copy plots following the configuration in `rx_plots_data/{conf}.yaml`
     '''
