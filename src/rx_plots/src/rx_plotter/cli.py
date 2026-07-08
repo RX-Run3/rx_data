@@ -23,6 +23,7 @@ from rx_plotter   import refitting_plot
 from rx_selection import selection as sel
 from rx_plotter   import BremRecovery
 from rx_plotter   import plot_luminosity
+from rx_plotter   import CopyPlots
 
 plt.style.use(mplhep.style.LHCb2) # type: ignore
 _ANADIR = Path(os.environ['ANADIR'])
@@ -182,6 +183,17 @@ def luminosity():
 
     log.info(f'Saving to: {out_path}')
     plt.savefig(out_path)
+# ----------------------
+@app.command()
+def copy_plots(
+    dry_run : bool= typer.Option(... , '--dry_run', '-d', help='If true will skip copying'),
+    conf    : str = typer.Option(... , '--conf'   , '-c', help='Name of config file, e.g. paths')):
+    '''
+    Will copy plots following the configuration in `rx_plots_data/{conf}.yaml`
+    '''
+    log.info(f'Copying plots with config: {conf}')
+    cpr = CopyPlots.from_config_name(name = conf)
+    cpr.run(dry_run = dry_run)
 # ----------------------
 def _plot_block_fraction_vs_q2(df : pnd.DataFrame) -> None:
     '''

@@ -5,8 +5,10 @@ from .brem_recovery       import BremRecovery
 from .candidate_rebuild   import CandidateRebuild
 from .candidate_rebuild   import CandidateRebuildConf
 from .luminosity          import plot as plot_luminosity
+from .copy_plots          import CopyPlots
 
 __all__ = [
+    'CopyPlots',
     'plot_luminosity',
     'CandidateRebuild',
     'CandidateRebuildConf',
