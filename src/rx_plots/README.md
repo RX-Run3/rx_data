@@ -231,3 +231,26 @@ To check the fraction of efficiency for each block and in different $q^2$ bins d
 ```bash
 rxplt block-fraction-vs-q2 --sample Bu_Kee_eq_btosllball05_DPC --trigger Hlt2RD_BuToKpEE_MVA
 ```
+
+## Note plots
+
+In order to copy plots to the note one can do:
+
+```bash
+rxplt copy-plots -c ana-note
+```
+
+where `ana-note` corresponds to `src/rx_plots/src/rx_plotter_data/copy/ana-note.yaml` 
+which configures what gets copied and to where
+
+```yaml
+extensions: # Extensions of files to copy
+  - png
+# These are the environment variables
+# pointing to directory paths, need to be exported
+source_dir: ANADIR   # Place where files originaly live
+target_dir: NOTEDIR  # Place wher where note is
+paths:
+  plots/luminosity : figs/datasets # Maps relative paths of source with target, e.g. {source_dir}/plots/luminosity -> {target_dir}/figs/datasets
+  ...
+```
