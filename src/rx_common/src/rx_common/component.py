@@ -547,9 +547,9 @@ class Component(StrEnum):
             case Component.bdkstkpijpsimm:
                 return r'$B^0\to K^*(\to K^+\pi^-) J/\psi(\to \mu^+\mu^-)$'
             case Component.lbpkjpsiee:
-                return r'$\Lambda_{b}\to K^+p^- J/\psi(\to e^+e^-)$'
+                return r'$\Lambda_{b}\to K^+\bar{p} J/\psi(\to e^+e^-)$'
             case Component.lbpkjpsimm:
-                return r'$\Lambda_{b}\to K^+p^- J/\psi(\to \mu^+\mu^-)$'
+                return r'$\Lambda_{b}\to K^+\bar{p} J/\psi(\to \mu^+\mu^-)$'
             case Component.bsphijpsiee:
                 return r'$B_s\to \phi(\to K^+K^-) J/\psi(\to e^+e^-)$'
             case Component.bsphijpsimm:
@@ -559,7 +559,7 @@ class Component(StrEnum):
             case Component.bpk2kpipiee:
                 return r'$B^+\to K_2(\to K^+\pi^+\pi^-) e^+e^-$'
             case Component.bpkppsi2mm:
-                return r'$B^+\to K^+ \psi(2S)(\to \mu+\mu^-)$'
+                return r'$B^+\to K^+ \psi(2S)(\to \mu^+\mu^-)$'
             case Component.bpkppsi2ee:
                 return r'$B^+\to K^+ \psi(2S)(\to e^+e^-)$'
             case Component.bpkstkpiee:
