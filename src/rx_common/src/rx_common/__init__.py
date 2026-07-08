@@ -11,6 +11,7 @@ from .types import MVA
 from .component import MissingComponent
 from .component import CCbarComponent
 from .component import Component
+from .campaign  import Campaign
 from .process   import set_nproc, get_nproc 
 from .project   import Project, AlternativeProject
 from .channel   import Channel 
@@ -27,6 +28,7 @@ __all__ = [
     'Correction',
     'Component', 
     'Parameter',
+    'Campaign',
     'Particle',
     'Trigger', 
     'Channel', 
