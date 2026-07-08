@@ -22,6 +22,7 @@ from rx_plotter   import CandidateRebuildConf
 from rx_plotter   import refitting_plot
 from rx_selection import selection as sel
 from rx_plotter   import BremRecovery
+from rx_plotter   import plot_luminosity
 
 plt.style.use(mplhep.style.LHCb2) # type: ignore
 _ANADIR = Path(os.environ['ANADIR'])
@@ -169,6 +170,13 @@ def rebuild_candidates(
     cfg = CandidateRebuildConf(**data)
     ptr = CandidateRebuild(cfg = cfg)
     ptr.run()
+# ----------------------
+@app.command()
+def luminosity():
+    '''
+    Will make plots of distributions from rebuilt candidates
+    '''
+    plot_luminosity()
 # ----------------------
 def _plot_block_fraction_vs_q2(df : pnd.DataFrame) -> None:
     '''

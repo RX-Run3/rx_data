@@ -4,8 +4,10 @@ from .refitting           import plot as refitting_plot
 from .brem_recovery       import BremRecovery
 from .candidate_rebuild   import CandidateRebuild
 from .candidate_rebuild   import CandidateRebuildConf
+from .luminosity          import plot as plot_luminosity
 
 __all__ = [
+    'plot_luminosity',
     'CandidateRebuild',
     'CandidateRebuildConf',
     'BremRecovery',
