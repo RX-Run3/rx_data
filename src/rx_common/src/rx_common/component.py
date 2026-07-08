@@ -531,29 +531,29 @@ class Component(StrEnum):
             case Component.bdkstkpiee:
                 return r'$B^0\to K^*(\to K^+\pi^-)e^+e^-$'
             case Component.bpjpsixee:
-                return r'$B^+\to J/\psi(2S)(\to e^+e^-)X$'
+                return r'$B^+\to J/\psi(\to e^+e^-)X$'
             case Component.bdjpsixee:
-                return r'$B^0\to J/\psi(2S)(\to e^+e^-)X$'
+                return r'$B^0\to J/\psi(\to e^+e^-)X$'
             case Component.bsjpsixee:
-                return r'$B_s\to J/\psi(2S)(\to e^+e^-)X$'
+                return r'$B_s\to J/\psi(\to e^+e^-)X$'
             case Component.bpjpsixmm:
-                return r'$B^+\to J/\psi(2S)(\to \mu^+\mu^-)X$'
+                return r'$B^+\to J/\psi(\to \mu^+\mu^-)X$'
             case Component.bdjpsixmm:
-                return r'$B^0\to J/\psi(2S)(\to \mu^+\mu^-)X$'
+                return r'$B^0\to J/\psi(\to \mu^+\mu^-)X$'
             case Component.bsjpsixmm:
-                return r'$B_s\to J/\psi(2S)(\to \mu^+\mu^-)X$'
+                return r'$B_s\to J/\psi(\to \mu^+\mu^-)X$'
             case Component.bdkstkpijpsiee:
-                return r'$B^0\to K^*(\to K^+\pi^-) J/\psi(2S)(\to e^+e^-)$'
+                return r'$B^0\to K^*(\to K^+\pi^-) J/\psi(\to e^+e^-)$'
             case Component.bdkstkpijpsimm:
-                return r'$B^0\to K^*(\to K^+\pi^-) J/\psi(2S)(\to \mu^+\mu^-)$'
+                return r'$B^0\to K^*(\to K^+\pi^-) J/\psi(\to \mu^+\mu^-)$'
             case Component.lbpkjpsiee:
-                return r'$\Lambda_{b}\to K^+p^- J/\psi(2S)(\to e^+e^-)$'
+                return r'$\Lambda_{b}\to K^+p^- J/\psi(\to e^+e^-)$'
             case Component.lbpkjpsimm:
-                return r'$\Lambda_{b}\to K^+p^- J/\psi(2S)(\to \mu^+\mu^-)$'
+                return r'$\Lambda_{b}\to K^+p^- J/\psi(\to \mu^+\mu^-)$'
             case Component.bsphijpsiee:
-                return r'$B_s\to \phi(\to K^+K^-) J/\psi(2S)(\to e^+e^-)$'
+                return r'$B_s\to \phi(\to K^+K^-) J/\psi(\to e^+e^-)$'
             case Component.bsphijpsimm:
-                return r'$B_s\to \phi(\to K^+K^-) J/\psi(2S)(\to \mu^+\mu^-)$'
+                return r'$B_s\to \phi(\to K^+K^-) J/\psi(\to \mu^+\mu^-)$'
             case Component.bpk1kpipiee:
                 return r'$B^+\to K_1(\to K^+\pi^+\pi^-) e^+e^-$'
             case Component.bpk2kpipiee:
