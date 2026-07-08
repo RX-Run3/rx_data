@@ -1,6 +1,8 @@
 '''
 Module holding CopyPlots class
 '''
+import os
+
 from pathlib     import Path
 from pydantic    import BaseModel, Field
 from dmu.generic import utilities as gut
@@ -19,12 +21,50 @@ class Section(BaseModel):
     source     : str       = Field(description = 'Environment variable with source directory WRT root')
     target     : str       = Field(description = 'Environment variable with target directory WRT root')
     # -------------------------------------------------
+    def _switch_root(
+        self, 
+        source      : Path, 
+        source_root : Path, 
+        target_root : Path) -> Path:
+        '''
+        Parameters
+        ---------------
+        source     : Absolute path to image file
+        source_root: Root of the source path, e.g. {/A/B/C}/D/file.pdf
+        target_root: Root of the target path, e.g. {/a/b/c}/D/file.pdf
+        '''
+        source_str      = str(source)
+        source_root_str = str(source_root)
+
+        if not source_str.startswith(source_root_str):
+            raise ValueError(f'{source} does not start with {source_root}')
+
+        target_root_str = str(target_root)
+        target_str      = source_str.replace(source_root_str, target_root_str)
+
+        return Path(target_str)
+    # -------------------------------------------------
     @property
     def paths(self) -> dict[Path, Path]:
         '''
         Dictionary mapping existing path to desired location
         '''
-        return {} 
+        source_dir = Path(os.environ[self.source_dir])
+        target_dir = Path(os.environ[self.target_dir])
+
+        source_dir = source_dir / self.source
+        target_dir = target_dir / self.target
+
+        sources : list[Path] = []
+        for extension in self.extensions:
+            sources += list(source_dir.rglob(f'**/*.{extension}'))
+
+        if not sources:
+            raise ValueError(f'Cannot find any plot starting at: {source_dir}')
+
+        paths = { source : self._switch_root(source, source_dir, target_dir) for source in sources }
+
+        return paths 
 # -------------------------------------------------
 class CopyPlotsConf(BaseModel):
     '''
@@ -102,7 +142,9 @@ class CopyPlots:
                     log.info('')
                     continue
 
-                target.hardlink_to(source)
+                target.parent.mkdir(exist_ok = True, parents = True)
+
+                target.write_bytes(source.read_bytes())
     # -------------------------------------------------
     @classmethod
     def from_config_name(cls, name : str) -> 'CopyPlots':
