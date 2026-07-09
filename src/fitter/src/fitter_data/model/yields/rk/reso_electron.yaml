@@ -46,7 +46,7 @@ yld_bpkppsi2ee_brem_xx1:
   kind : mul
   pars : 
     - yld_bpkppsi2ee_brem_x12
-    - psi2_fraction
+    - bpkppsi2ee_fraction
 yld_bpkppsi2ee_brem_xx2:
   kind : dif 
   pars :
