@@ -77,7 +77,7 @@ rule merge:
     input :
         _get_calc_list
     resources:
-        htcondor_request_mem_mb  = 5000,
+        htcondor_request_mem_mb  = 4000,
         htcondor_request_disk_mb = 2000,
     wildcard_constraints:
         vers   = r'v\d+',
