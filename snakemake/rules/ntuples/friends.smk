@@ -25,7 +25,7 @@ def _get_parts(project, entries):
         version = MAIN_VERSION,
         project = project)
 
-    fpath   = f'{ANADIR}/DB/statistics/v1/{project}.json'
+    fpath   = Path(f'{ANADIR}/DB/statistics/v1/{project}.json')
     files   = spt.run(out_path = fpath)
     batches = files.split(entries = entries)
     nbatch  = batches.size
