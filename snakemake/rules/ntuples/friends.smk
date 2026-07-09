@@ -48,7 +48,7 @@ def _get_setting(wc, name):
 
     return cfg[name]
 # ──────────────────────────────────────────────────────────────────────
-def sentinels(friend):
+def merge_sentinels(friend):
     paths = []
     for project in config['projects']:
         for val, settings in config['projects'][project].items():
@@ -63,13 +63,13 @@ def sentinels(friend):
 rule all:
     '''Request all sentinel files for every combination.'''
     input:
-        sentinels(friend = 'mass'                    ) +
-        sentinels(friend = 'swp_jpsi_misid'          ) +
-        sentinels(friend = 'swp_cascade'             ) +
-        sentinels(friend = 'brem_track_2'            ) +
-        sentinels(friend = 'hop'                     ) +
-        sentinels(friend = 'mva'                     ) +
-        sentinels(friend = 'smear'                   )
+        merge_sentinels(friend = 'mass'                    ) +
+        merge_sentinels(friend = 'swp_jpsi_misid'          ) +
+        merge_sentinels(friend = 'swp_cascade'             ) +
+        merge_sentinels(friend = 'brem_track_2'            ) +
+        merge_sentinels(friend = 'hop'                     ) +
+        merge_sentinels(friend = 'mva'                     ) +
+        merge_sentinels(friend = 'smear'                   )
 # ───────────────────────────────────────────────────────────────────
 rule merge:
     output:
@@ -171,7 +171,7 @@ use rule _calculate as calculate_smear with:
     output:
         done   = _CALC
     input :
-        sentinels(friend = 'brem_track_2')
+        merge_sentinels(friend = 'brem_track_2')
     wildcard_constraints:
         friend = 'smear',
         vers   = r'v\d+',
@@ -180,9 +180,9 @@ use rule _calculate as calculate_mva with:
     output:
         done   = _CALC
     input :
-        sentinels(friend =        'smear') +
-        sentinels(friend =          'hop') +
-        sentinels(friend = 'brem_track_2')
+        merge_sentinels(friend =        'smear') +
+        merge_sentinels(friend =          'hop') +
+        merge_sentinels(friend = 'brem_track_2')
     wildcard_constraints:
         friend =   'mva',
         vers   = r'v\d+',
