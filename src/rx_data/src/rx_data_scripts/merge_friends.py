@@ -140,12 +140,14 @@ def main():
             _merge(
                 sources = sources,
                 target  = target)
+            continue
 
         if sources.newer_than(path = target):
             target.unlink()
             _merge(
                 sources = sources,
                 target  = target)
+            continue
 
         raise ValueError(f'Sources are older than target: {target}')
 # ----------------------
