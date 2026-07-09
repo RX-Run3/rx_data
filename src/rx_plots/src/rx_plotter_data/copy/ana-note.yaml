@@ -3,4 +3,6 @@ extensions:
 source_dir: ANADIR
 target_dir: NOTEDIR
 paths:
-  plots/luminosity : figs/datasets
+  plots/luminosity                                           : figs/datasets
+  plots/comparison/resolution/data_24/rk_ee_os/jpsi/all_1    : figs/datasets/resolution/data
+  plots/comparison/resolution/bpkpjpsiee/rk_ee_os/jpsi/all_1 : figs/datasets/resolution/bpkpjpsiee
