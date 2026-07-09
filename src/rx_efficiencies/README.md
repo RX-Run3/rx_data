@@ -65,7 +65,7 @@ $B^+\to K^+ee$, the decay counts as in acceptance, even if $K^-$ is not in accep
 These acceptances can be calculated all at once with:
 
 ```bash
-calculate_acceptances -v v1
+calculate_acceptances -v v1 -p rk # or rkst
 ```
 
 which will make the `JSON`, `TEX` and `PNG` files with the acceptances, the tables for the note/paper and the plots.
