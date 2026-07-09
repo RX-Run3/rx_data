@@ -7,13 +7,42 @@ import argparse
 from typing    import Final
 from ROOT      import TFileMerger # type: ignore
 from pathlib   import Path
-from pydantic  import BaseModel
+from pydantic  import BaseModel, RootModel
 from rx_common import Project
 from rx_data   import SampleSplitter # type: ignore
 from dmu       import LogStore
 
 log=LogStore.add_logger('rx_data:merge_friends')
 _ANADIR : Final[Path] = Path(os.environ['ANADIR'])
+# ----------------------
+class Paths(RootModel[list[Path]]):
+    '''
+    Interface to collection of paths
+    '''
+    root : list[Path]
+    # ----------------------
+    def unlink(self) -> None:
+        '''
+        Will remove all files that exist
+        '''
+        for source in self.root:
+            if not source.exists():
+                continue
+
+            source.unlink()
+    # ----------------------
+    def newer_than(self, path : Path) -> bool:
+        '''
+        True if ALL paths are newer than `path`
+        '''
+        return all( source.stat().st_mtime > path.stat().st_mtime for source in self.root )
+    # ----------------------
+    @property
+    def exist(self) -> bool:
+        '''
+        True if all paths exist
+        '''
+        return all( path.exists() for path in self.root )
 # ----------------------
 class Conf(BaseModel):
     '''
@@ -50,32 +79,18 @@ def _parse_args() -> Conf:
 
     return cfg
 # ----------------------
-def _merge(target : Path, sources : list[Path]) -> None:
+def _merge(target : Path, sources : Paths) -> None:
     '''
     Parameters
     ---------------
     target : File into which to merge
     sources: List of files to be merged
     '''
-    if target.exists():
-        return
-
     if not os.access(target.parent, os.W_OK):
         raise ValueError(f'Target is not writable: {target}')
 
-    fail = False
-    for source in sources:
-        if source.exists():
-            continue
-
-        fail = True
-        log.error(f'Cannot find source: {source}')
-
-    if fail:
-        raise ValueError('At least one source is missing')
-
     fmrg = TFileMerger()
-    for source in sorted(sources):
+    for source in sorted(sources.root):
         fmrg.AddFile(str(source), cpProgress=False)
 
     fmrg.OutputFile(str(target))
@@ -84,8 +99,7 @@ def _merge(target : Path, sources : list[Path]) -> None:
         raise ValueError(f'Merge for {target} failed')
 
     log.info('Merge finished, removing pre-merge files')
-    #for source in sources:
-    #    source.unlink()
+    sources.unlink()
 # ----------------------
 def main():
     '''
@@ -100,7 +114,7 @@ def main():
     files    = spt.run(out_path = out_path)
     batches  = files.split(entries = cfg.entries)
 
-    to_merge : dict[Path,list[Path]] = {}
+    to_merge : dict[Path,Paths] = {}
     for part in batches.parts:
         if not part.split:
             log.debug(f'Not merging non-split part: {part.path}')
@@ -110,15 +124,30 @@ def main():
         val = part.friend_part_path(friend = cfg.friend, version = cfg.vfrnd)
 
         if key not in to_merge:
-            to_merge[key] = [val]
+            to_merge[key] = Paths(root = [val])
         else:
-            to_merge[key].append(val)
+            to_merge[key].root.append(val)
 
     for target, sources in to_merge.items():
         log.info(f'Creating: {target}')
-        _merge(
-            sources = sources,
-            target  = target)
+        if     target.exists() and not sources.exist:
+            continue
+
+        if not target.exists() and not sources.exist:
+            raise ValueError(f'Cannot find {target} or sources')
+
+        if not target.exists():
+            _merge(
+                sources = sources,
+                target  = target)
+
+        if sources.newer_than(path = target):
+            target.unlink()
+            _merge(
+                sources = sources,
+                target  = target)
+
+        raise ValueError(f'Sources are older than target: {target}')
 # ----------------------
 if __name__ == '__main__':
     main()
