@@ -30,11 +30,11 @@ def test_simple(update : bool):
         name = 'test', 
         dry  = True,
         cfg  = cfg)
-    df = obj.save(update = update)
+    dsi= obj.save(update = update)
 
-    assert len(df) > 0
+    assert len(dsi.df) > 0
 
-    log.info('\n' + str(df))
+    log.info('\n' + str(dsi.df))
 # ----------------------------------------
 @pytest.mark.parametrize('update', [True, False])
 def test_with_hash(update : bool):
@@ -50,10 +50,9 @@ def test_with_hash(update : bool):
         name = 'test', 
         dry  = True,
         cfg  = cfg)
-    df = obj.save(update = update)
+    dsi= obj.save(update = update)
 
-    assert len(df) > 0
+    assert len(dsi.df) > 0
 
-    log.info('\n' + str(df))
+    log.info('\n' + str(dsi.df))
 # ----------------------------------------
-
