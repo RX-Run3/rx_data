@@ -45,17 +45,14 @@ class BkkInfo(BaseModel):
     generator  : str
     stdout     : str  | None
     # -----------------------------
-    nevents    : int  | None = None
-    size       : str  | None = None
+    nevents    : int = -1 
+    size       : int = -1
     # --------------------------------
     @property
     def exists(self) -> bool:
         '''
         True if sample exists
         '''
-        if self.nevents is None:
-            return False
-
         return self.nevents > 0
     # --------------------------------
     def model_post_init(self, _) -> None:
@@ -70,17 +67,17 @@ class BkkInfo(BaseModel):
 
         return match.group(1) 
     # --------------------------------
-    def _get_size(self) -> str:
+    def _get_size(self) -> int:
         if self.stdout is None:
-            return '0 GB'
+            return 0 
 
-        regex = r'Total size\s+:\s+([\d\.]+ GB)'
+        regex = r'Total size\s+:\s+([\d\.]+) GB'
         value = self._extract_with_regex(regex = regex, string = self.stdout)
 
         if value is None:
-            return '0 GB'
+            return 0
 
-        return value
+        return int(value)
     # --------------------------------
     def _get_nevents(self) -> int:
         if self.stdout is None:
