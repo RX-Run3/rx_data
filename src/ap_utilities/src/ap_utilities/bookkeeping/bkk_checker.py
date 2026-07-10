@@ -76,7 +76,7 @@ class BkkInfo(BaseModel):
         if value is None:
             return 0
 
-        return int(value)
+        return int(float(value))
     # --------------------------------
     def _get_nevents(self) -> int:
         if self.stdout is None:
