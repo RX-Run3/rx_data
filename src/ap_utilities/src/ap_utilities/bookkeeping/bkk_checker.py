@@ -172,7 +172,8 @@ class DatasetInfo(RootModel[list[BkkInfo]]):
         log.info(f'Saving to: {path}')
         path.write_text(text)
     # -----------------------------
-    def to_df(self) -> pnd.DataFrame:
+    @property
+    def df(self) -> pnd.DataFrame:
         '''
         Returns pandas dataframe with each row
         representing a sample
