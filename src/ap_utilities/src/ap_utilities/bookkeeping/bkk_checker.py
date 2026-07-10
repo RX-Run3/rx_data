@@ -126,6 +126,12 @@ class DatasetInfo(RootModel[list[BkkInfo]]):
     and provide extra functionality
     '''
     # -----------------------------
+    def extend(self, dsi : 'DatasetInfo') -> None:
+        '''
+        Extends current object with passed one
+        '''
+        self.root.extend(dsi.root)
+    # -----------------------------
     @classmethod
     def from_cache(cls, path : Path) -> Self | None:
         '''
