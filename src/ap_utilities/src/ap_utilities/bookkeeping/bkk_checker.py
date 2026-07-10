@@ -16,8 +16,8 @@ from ap_utilities                    import SettingsConf, Block
 from ap_utilities.decays             import utilities as aput
 from ap_utilities.logging.log_store  import LogStore
 
-FALLBACK    : Final[str] = '/tmp/ap_utilities/output'
-SAMPLE_INFO : Final[str] = ''' 
+FALLBACK     : Final[str] = '/tmp/ap_utilities/output'
+_SAMPLE_INFO : Final[str] = ''' 
 For BK query: {'ConfigName': 'MC', 'ConfigVersion': '2024', 'ConditionDescription': 'Beam6800GeV-2024.W41.42-MagUp-Nu7.6-25ns-Pythia8', 'ProcessingPass': '/Sim10g/HLT2-2024.W40.42', 'EventType': '12113002', 'FileType': 'HLT2.DST', 'Visible': 'Yes', 'SimulationConditions': 'Beam6800GeV-2024.W41.42-MagUp-Nu7.6-25ns-Pythia8'}
 Nb of Files      :  51
 Nb of Events     :  413'644
@@ -26,8 +26,6 @@ Total size (1024):  267.164 GiB (677.3 kiB per evt)
 Luminosity       :  0.000 
 Size per /pb     :  0.0 GB
 '''
-_CACHE_DIR : Final[Path] = Path('/tmp/bkk_checker')
-
 log = LogStore.add_logger('ap_utilities:bkk_checker')
 # ---------------------------------
 class BkkInfo(BaseModel):
@@ -133,34 +131,36 @@ class DatasetInfo(RootModel[list[BkkInfo]]):
     '''
     # -----------------------------
     @classmethod
-    def from_cache(cls, name : str) -> Self | None:
+    def from_cache(cls, path : Path) -> Self | None:
         '''
         Return instance or None if not found
         in cache
         '''
-        cache_path = _CACHE_DIR / f'{name}.yaml' 
-
-        if not cache_path.exists():
+        if not path.exists():
             log.debug('Data not found cached')
             return None
 
-        log.info(f'Loading cached data from: {cache_path}')
-        string     = cache_path.read_text()
+        log.info(f'Loading cached data from: {path}')
+        string     = path.read_text()
         data       = json.loads(string)
 
         return cls(root = data)
     # -----------------------------
-    def to_cache(self, name : str) -> None:
+    def save(
+        self, 
+        path : Path) -> None:
         '''
-        Save current instance to JSON
+        Saves current instance to JSON
+
+        Parameters
+        ---------------
+        path : Path to JSON file 
         '''
-        cache_path = _CACHE_DIR / f'{name}.yaml' 
+        log.info(f'Saving to: {path}')
+        path.parent.mkdir(exist_ok=True, parents=True)
 
-        log.info(f'Saving to: {cache_path}')
-        cache_path.parent.mkdir(exist_ok=True, parents=True)
-
-        data = self.model_dump_json(indent = 2)
-        cache_path.write_text(data = data)
+        string = self.model_dump_json(indent = 2)
+        path.write_text(data = string)
     # -----------------------------
     def save_info_yaml(self, path : Path) -> None:
         '''
@@ -208,7 +208,7 @@ class BkkChecker:
     # -------------------------
     def __get_out_dir(self) -> Path:
         ana_dir = os.environ.get('ANADIR', FALLBACK)
-        out_dir = Path(ana_dir) / f'bkk_checker/{self._name}'
+        out_dir = Path(ana_dir) / 'DB/samples' / self._name
         out_dir.mkdir(parents = True, exist_ok = True)
 
         return out_dir
@@ -268,7 +268,7 @@ class BkkChecker:
             stdout  = result.stdout
         else:
             log.warning('Running dry run')
-            stdout  = SAMPLE_INFO 
+            stdout  = _SAMPLE_INFO 
 
         out_path = self._out_dir / f'{evt}_{block}.txt'
         out_path.write_text(stdout)
@@ -341,14 +341,16 @@ class BkkChecker:
         DatasetInfo instance holding samples information
         '''
         log.info('Filtering input')
-        dsinfo = DatasetInfo.from_cache(name = self._name)
+        out_path = self._out_dir / f'{self._name}.json'
+
+        dsinfo = DatasetInfo.from_cache(path = out_path)
         if dsinfo is not None and not update:
             return dsinfo
 
         l_info = self.__get_info(nthreads = nthreads)
         dsinfo = DatasetInfo(root = l_info)
         dsinfo.save_info_yaml(path = self._out_dir / 'info.yaml')
-        dsinfo.to_cache(name = self._name)
+        dsinfo.save(path = out_path)
 
         return dsinfo 
 # ---------------------------------
