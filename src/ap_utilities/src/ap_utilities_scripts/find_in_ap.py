@@ -11,14 +11,12 @@ $ANADIR/bkk_checker/block_*/info.yaml
 import os
 import glob
 import argparse
-
 import apd
 import pandas as pnd
 
-from tqdm                     import tqdm
-from apd                      import SampleCollection
-from ap_utilities.bookkeeping import bkk_checker 
-from dmu.logging.log_store    import LogStore
+from tqdm import tqdm
+from apd  import SampleCollection
+from dmu  import LogStore
 
 log=LogStore.add_logger('ap_utilities:find_in_ap')
 # ----------------------
