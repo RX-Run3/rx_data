@@ -325,7 +325,7 @@ class BkkChecker:
     def save(
         self, 
         update   : bool = False,
-        nthreads : int  = 1) -> pnd.DataFrame:
+        nthreads : int  = 1) -> DatasetInfo:
         '''
         Will check if samples exist in grid
         Will save list of found samples to text file with same name as input YAML, but with txt extension
@@ -337,17 +337,17 @@ class BkkChecker:
 
         Returns
         ----------------
-        Dataframe where each row represents a sample
+        DatasetInfo instance holding samples information
         '''
         log.info('Filtering input')
         dsinfo = DatasetInfo.from_cache(name = self._name)
         if dsinfo is not None and not update:
-            return dsinfo.to_df()
+            return dsinfo
 
         l_info = self.__get_info(nthreads = nthreads)
         dsinfo = DatasetInfo(root = l_info)
         dsinfo.save_info_yaml(path = self._out_dir / 'info.yaml')
         dsinfo.to_cache(name = self._name)
 
-        return dsinfo.to_df()
+        return dsinfo 
 # ---------------------------------

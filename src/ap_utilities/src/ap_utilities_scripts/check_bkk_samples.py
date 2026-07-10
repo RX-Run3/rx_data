@@ -112,11 +112,11 @@ def main():
         name= cfg.priority, 
         dry = False,
         cfg = cfg_sam)
-    df = obj.save(
+    dsi = obj.save(
         update  = cfg.update,
         nthreads= cfg.nthread)
     # Dirac does not show size for some samples
-    df = df.drop(columns = ['Size [GB]'])
+    df = dsi.df.drop(columns = ['Size [GB]'])
 
     if   cfg.kind == 'block':
         _print_by_block(df = df)
