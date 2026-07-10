@@ -53,7 +53,7 @@ def _get_info() -> list[tuple[str, str, str]]:
     Key  : EventType
     Value: Line that would go in info.yaml
     '''
-    ana_dir = os.environ.get('ANADIR', bkk_checker.FALLBACK)
+    ana_dir = os.environ['ANADIR']
     path_wc = f'{ana_dir}/bkk_checker/block_*/info.yaml'
     l_path  = glob.glob(path_wc)
     l_path  = sorted(l_path)

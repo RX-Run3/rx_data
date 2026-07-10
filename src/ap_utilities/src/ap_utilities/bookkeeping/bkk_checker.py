@@ -16,7 +16,6 @@ from ap_utilities                    import SettingsConf, Block
 from ap_utilities.decays             import utilities as aput
 from ap_utilities.logging.log_store  import LogStore
 
-FALLBACK     : Final[str] = '/tmp/ap_utilities/output'
 _SAMPLE_INFO : Final[str] = ''' 
 For BK query: {'ConfigName': 'MC', 'ConfigVersion': '2024', 'ConditionDescription': 'Beam6800GeV-2024.W41.42-MagUp-Nu7.6-25ns-Pythia8', 'ProcessingPass': '/Sim10g/HLT2-2024.W40.42', 'EventType': '12113002', 'FileType': 'HLT2.DST', 'Visible': 'Yes', 'SimulationConditions': 'Beam6800GeV-2024.W41.42-MagUp-Nu7.6-25ns-Pythia8'}
 Nb of Files      :  51
@@ -204,7 +203,7 @@ class BkkChecker:
         self._out_dir= self.__get_out_dir()
     # -------------------------
     def __get_out_dir(self) -> Path:
-        ana_dir = os.environ.get('ANADIR', FALLBACK)
+        ana_dir = os.environ['ANADIR']
         out_dir = Path(ana_dir) / 'DB/samples' / self._name
         out_dir.mkdir(parents = True, exist_ok = True)
 
