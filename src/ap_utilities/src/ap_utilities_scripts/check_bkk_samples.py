@@ -112,7 +112,7 @@ def main():
         name= cfg.priority, 
         dry = False,
         cfg = cfg_sam)
-    dsi = obj.save(
+    dsi= obj.save(
         update  = cfg.update,
         nthreads= cfg.nthread)
     # Dirac does not show size for some samples
