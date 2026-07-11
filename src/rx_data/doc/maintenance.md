@@ -180,7 +180,8 @@ where:
 `-s` Optional, name of friend tree to skip, e.g. `mva`
 `-v` Version of files to download. By default it should get the latest. This should be used only if `k` is not `all`
      given that different types of friend trees will have different versions.
-`-S` Server name. This is where the files will be copied to
+`-S` Server name. This is where the files will be copied to, can be `local`, `lxplus` or `lxlogin`. I.e. transfer files from
+cluster to laptop, to EOS or to IHEP cluster.
 
 ### Servers
 
