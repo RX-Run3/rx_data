@@ -152,10 +152,10 @@ to print a table to markdown with the sizes of each sample in Megabytes. e.g.:
 ```markdown
 | Sample                                      | Trigger                        |   Size |
 |:--------------------------------------------|:-------------------------------|-------:|
-| Bu_JpsiK_mm_eq_DPC                          | Hlt2RD_BuToKpMuMu_MVA          |  15829 |     ■■■■ 'BuToKpMuMu': Possible spelling mistake found.
-| Bs_Jpsiphi_mm_eq_CPV_update2016_DPC         | Hlt2RD_BuToKpMuMu_MVA          |  11164 |     ■■■■ 'BuToKpMuMu': Possible spelling mistake found.
-| Bd_JpsiKst_mm_eq_DPC                        | Hlt2RD_BuToKpMuMu_MVA          |   9945 |     ■■■■ 'BuToKpMuMu': Possible spelling mistake found.
-| Bu_JpsiK_ee_eq_DPC                          | Hlt2RD_BuToKpEE_MVA_cal        |   8873 |     ■■■■■ 'BuToKpEE': Possible spelling mistake found.
+| Bu_JpsiK_mm_eq_DPC                          | Hlt2RD_BuToKpMuMu_MVA          |  15829 |
+| Bs_Jpsiphi_mm_eq_CPV_update2016_DPC         | Hlt2RD_BuToKpMuMu_MVA          |  11164 |
+| Bd_JpsiKst_mm_eq_DPC                        | Hlt2RD_BuToKpMuMu_MVA          |   9945 |
+| Bu_JpsiK_ee_eq_DPC                          | Hlt2RD_BuToKpEE_MVA_cal        |   8873 |
 | Bu_JpsiK_ee_eq_DPC                          | Hlt2RD_BuToKpEE_MVA            |   8488 |
 ...
 ```
@@ -205,7 +205,20 @@ ssh -R 2223:localhost:2223 $USER@lxlogin004.ihep.ac.cn
 ```
 
 which will listen in port 2223 in both the laptop and the cluster. 
-Additionally the public key in the laptop needs to be authorized in the cluster.
+Additionally:
+
+- The public key in the laptop needs to be authorized in the cluster.
+- One nees to make sure the laptop is running the SSH daemon and the config specifies port `2223`, i.e.
+
+```bash
+# Open and
+# add Port 2223
+sudo vim /etc/ssh/sshd_config
+
+# Needed in SELinux
+sudo semanage port -a -t ssh_port_t -p tcp 2223
+sudo systemctl restart sshd
+```
 
 Then in the cluster the code will try to transfer the files through `localhost` port 2223.
 
