@@ -109,7 +109,7 @@ class Q2SmearCorrector:
         '''
         block = tut.numeric_from_series(row=row, name='block', numeric=int)
         nbrem = tut.numeric_from_series(row=row, name='nbrem', numeric=int)
-        recom = tut.numeric_from_series(row=row, name=f'{particle}_M_brem_track_2', numeric=float)
+        recom = tut.numeric_from_series(row=row, name=f'{particle}_Mass', numeric=float)
         truem = tut.numeric_from_series(row=row, name=f'{particle}_TRUEM'         , numeric=float)
 
         mu_mc = self._read_quantity(nbrem=nbrem, block=block, kind='mu_mc')
