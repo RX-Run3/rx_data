@@ -38,8 +38,8 @@ samples :
     - 11574030 # B -> D(K*(Kpi) munu) munu
     #- 11574090 # B -> D*(D(Kpi)   pi) munu
   resonant:
-    - 11144001 # Bd -> Jpsi(mm) Kst
-    - 11154001 # Bd -> Jpsi(ee) Kst
+    - 11144002 # Bd -> Jpsi(mm) Kst
+    - 11154002 # Bd -> Jpsi(ee) Kst
     - 11144011 # Bd -> Psi2(mm) Kst
     - 11154011 # Bd -> Psi2(ee) Kst
   reso_bkg:
