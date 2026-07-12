@@ -32,6 +32,7 @@ samples_to_filter  ='ap_utilities_scripts.samples_to_filter:main'
 update_decinfo     ='ap_utilities_scripts.update_decinfo:main'
 update_formatting  ='ap_utilities_scripts.update_formatting:main'
 validate_ap_tuples ='ap_utilities_scripts.validate_ap_tuples:main'
+tabulate_samples   ='ap_utilities_scripts.tabulate_samples:main'
 
 [tool.setuptools.package-data]
 'ap_utilities_data' = ['*/**.json', '*/**.toml', '*/**.yaml']
