@@ -119,6 +119,15 @@ class Component(StrEnum):
     bdkstpi0       = auto()
     bsphigamma     = auto()
     # --------------------------------------------
+    @property
+    def metadata(self) -> dict[str,str]:
+        '''
+        Dictionary with basic information on component:
+
+        Event Type, Decay
+        '''
+        return { 'Event Type' : self.event_type, 'Decay' : self.latex }
+    # --------------------------------------------
     @classmethod
     def is_valid(cls, arg : int | str) -> bool:
         '''
@@ -527,25 +536,25 @@ class Component(StrEnum):
             case Component.bpkpmm:
                 return r'$B^+\to K^+\mu^+\mu^-$'
             case Component.bdkstkpimm:
-                return r'$B^0\to K^*(\to K^+\pi^-)\mu^+\mu^-$'
+                return r'$B_d\to K^*(\to K^+\pi^-)\mu^+\mu^-$'
             case Component.bdkstkpiee:
-                return r'$B^0\to K^*(\to K^+\pi^-)e^+e^-$'
+                return r'$B_d\to K^*(\to K^+\pi^-)e^+e^-$'
             case Component.bpjpsixee:
                 return r'$B^+\to J/\psi(\to e^+e^-)X$'
             case Component.bdjpsixee:
-                return r'$B^0\to J/\psi(\to e^+e^-)X$'
+                return r'$B_d\to J/\psi(\to e^+e^-)X$'
             case Component.bsjpsixee:
                 return r'$B_s\to J/\psi(\to e^+e^-)X$'
             case Component.bpjpsixmm:
                 return r'$B^+\to J/\psi(\to \mu^+\mu^-)X$'
             case Component.bdjpsixmm:
-                return r'$B^0\to J/\psi(\to \mu^+\mu^-)X$'
+                return r'$B_d\to J/\psi(\to \mu^+\mu^-)X$'
             case Component.bsjpsixmm:
                 return r'$B_s\to J/\psi(\to \mu^+\mu^-)X$'
             case Component.bdkstkpijpsiee:
-                return r'$B^0\to K^*(\to K^+\pi^-) J/\psi(\to e^+e^-)$'
+                return r'$B_d\to K^*(\to K^+\pi^-) J/\psi(\to e^+e^-)$'
             case Component.bdkstkpijpsimm:
-                return r'$B^0\to K^*(\to K^+\pi^-) J/\psi(\to \mu^+\mu^-)$'
+                return r'$B_d\to K^*(\to K^+\pi^-) J/\psi(\to \mu^+\mu^-)$'
             case Component.lbpkjpsiee:
                 return r'$\Lambda_{b}\to K^+\bar{p} J/\psi(\to e^+e^-)$'
             case Component.lbpkjpsimm:
@@ -565,13 +574,41 @@ class Component(StrEnum):
             case Component.bpkstkpiee:
                 return r'$B^+\to K^{*+}(\to K^+\pi^0) e^+e^-$'
             case Component.bdkstkpipsi2ee:
-                return r'$B^0 \to K^*(\to K^+\pi^-)\psi(2S)(\to e^+e^-)$'
+                return r'$B_d \to K^*(\to K^+\pi^-)\psi(2S)(\to e^+e^-)$'
             case Component.bdkstkpipsi2mm:
-                return r'$B^0 \to K^*(\to K^+\pi^-)\psi(2S)(\to \mu^+\mu^-)$'
+                return r'$B_d \to K^*(\to K^+\pi^-)\psi(2S)(\to \mu^+\mu^-)$'
             case Component.bskstjpsiee:
                 return r'$B_s \to K^*(\to K^+\pi^-)J/\psi(\to e^+e^-)$'
             case Component.bskstjpsimm:
                 return r'$B_s \to K^*(\to K^+\pi^-)J/\psi(\to \mu^+\mu^-)$'
+            case Component.bsphigamma:
+                return r'$B_s \to \phi(\to K^+K^-)\gamma$'
+            case Component.bdkstpi0:
+                return r'$B_d \to K^*(\to K^+ \pi^-)\pi^0(\to \gamma\gamma)$'
+            case Component.bpkpipiee:
+                return r'$B^+ \to K^+ \pi^+ \pi^- e^+e^-$'
+            case Component.bdkpipi:
+                return r'$B_d \to K^*(\to K^+\pi^-)\pi^+\pi^-$'
+            case Component.bpkkk:
+                return r'$B^+ \to K^+K^-K^+$'
+            case Component.bpkpipi:
+                return r'$B^+ \to K^+\pi^-\pi^+$'
+            case Component.bpkpik:
+                return r'$B^+ \to K^+\pi^-K^+$'
+            case Component.bpdpiknumm:
+                return r'$B^+ \to (\overline{D}{}^0 \to K^+ \mu^- \overline{\nu}_\mu) \pi^+$'
+            case Component.bdkpipienu:
+                return r'$B_d \to (D^{*-} \to (\overline{D}{}^0 \to K^+ \pi^-) \pi^-) \, e^+ \nu_e$'
+            case Component.bpdnukpiee:
+                return r'$B^+ \to \overline{D}{}^0 e^+ \nu_e, \quad \overline{D}{}^0 \to K^+ \pi^-$'
+            case Component.bpdnuknumm:
+                return r'$B^- \to (D^0 \to K^- \mu^+ \nu_\mu) \, \mu^- \overline{\nu}_\mu$'
+            case Component.bpdpiknuee:
+                return r'$B^+ \to (\overline{D}{}^0 \to K^+ e^- \overline{\nu}_e) \, \pi^+$'
+            case Component.bdkpienuenu:
+                return r'$B_d \to (D^- \to (K^{*0} \to K^+ \pi^-) \, e^- \overline{\nu}_e) \, e^+ \nu_e$'
+            case Component.bdkpimunumunu:
+                return r'$B_d \to (D^- \to (K^{*0} \to K^+ \pi^-) \, \mu^- \overline{\nu}_\mu) \, \mu^+ \nu_\mu$'
             case Component.data_24:
                 return 'Data'
             case _:
