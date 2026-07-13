@@ -2,12 +2,13 @@
 Module containing classes representing configurations used for fitting
 '''
 import os
+import copy
 import yaml
 
 from functools   import cached_property
 from pydantic    import BaseModel, ConfigDict, field_validator, model_validator
 from pathlib     import Path
-from typing      import TYPE_CHECKING, Annotated, Any, Callable, Literal, Self, Sequence
+from typing      import TYPE_CHECKING, Any, Callable, Literal, Self, Sequence
 from rx_common   import Channel, Mass, Project, Qsq, MisID, Region
 from rx_common   import Component, Trigger, CCbarComponent, Cuts
 from rx_misid    import MisIDSampleWeights
@@ -810,12 +811,12 @@ class RXFitConfig(BaseModel):
         -----------------
         Copy of config with that category
         '''
-        new_components : dict[Component, AnyModelConf] = {}
-        qsq_components = self.mod_cfg.components[q2bin]
+        new_qsq_components : dict[Component, AnyModelConf] = {}
+        old_qsq_components = self.mod_cfg.components[q2bin]
 
-        for comp, conf in qsq_components.items():
+        for comp, conf in old_qsq_components.items():
             if not isinstance(conf, ParametricConf):
-                new_components[comp] = conf.model_copy()
+                new_qsq_components[comp] = conf.model_copy()
                 continue
 
             try:
@@ -823,7 +824,10 @@ class RXFitConfig(BaseModel):
             except ValueError as exc:
                 raise ValueError(f'Cannot find category {name} for component {comp}') from exc
 
-            new_components[comp] = new_conf
+            new_qsq_components[comp] = new_conf
+
+        new_components = copy.deepcopy(self.mod_cfg.components)
+        new_components[q2bin] = new_qsq_components
 
         new_mod_cfg = self.mod_cfg.model_copy(update = {'components' : new_components})
 
