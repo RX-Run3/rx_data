@@ -43,6 +43,13 @@ plots_settings: &plots_settings
     bdkstkpiee_brem_x12     : $B^0\to K^*(\to K^+\pi^-)e^+e^-$
     bdkstkpiee_brem_xx1     : $B^0\to K^*(\to K^+\pi^-)e^+e^-$
     bdkstkpiee_brem_xx2     : $B^0\to K^*(\to K^+\pi^-)e^+e^-$
+default_components: &comp
+  comb           : rare/rkst/ee/comb.yaml
+  ccbar          : rare/rkst/ee/ccbar.yaml
+  bpkxkpipiee    : rare/rkst/ee/bpkxkpipiee_np.yaml
+  bdkstkpijpsiee : rare/rkst/ee/bdkstkpijpsiee_np.yaml
+  bdkstkpipsi2ee : rare/rkst/ee/bdkstkpipsi2ee_np.yaml
+  bdkstkpiee     : rare/rkst/ee/bdkstkpiee.yaml.j2
 # ----------------------------------------------------
 trigger          : rkst_ee_os
 yields           : model/yields/rkst/rare_electron.yaml
@@ -68,15 +75,12 @@ observable:
       - 4500
       - 6996
 components:
-  comb           : rare/rkst/ee/comb.yaml
-  ccbar          : rare/rkst/ee/ccbar.yaml
-  #bpkpipiee      : rare/rkst/ee/bpkpipiee_np.yaml
-  #bpk1kpipiee    : rare/rkst/ee/bpk1kpipiee_np.yaml
-  #bpk2kpipiee    : rare/rkst/ee/bpk2kpipiee_np.yaml
-  bpkxkpipiee    : rare/rkst/ee/bpkxkpipiee_np.yaml
-  bdkstkpijpsiee : rare/rkst/ee/bdkstkpijpsiee_np.yaml
-  bdkstkpipsi2ee : rare/rkst/ee/bdkstkpipsi2ee_np.yaml
-  bdkstkpiee     : rare/rkst/ee/bdkstkpiee.yaml.j2
+  low:
+    <<: *comp
+  central:
+    <<: *comp
+  high:
+    <<: *comp
 constraints :
   signal_fraction      : []
   combinatorial : true 

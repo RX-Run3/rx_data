@@ -17,10 +17,12 @@ observable:
       - 5180 
       - 5700
 components:
-  comb       : reso/rk/mm/comb.yaml
-  bppijpsimm : reso/rk/mm/bppijpsimm.yaml
-  bpkppsi2mm : reso/rk/mm/bpkppsi2mm.yaml
-  bpkpjpsimm : reso/rk/mm/bpkpjpsimm.yaml
+  jpsi:
+    comb       : reso/rk/mm/comb.yaml
+    bppijpsimm : reso/rk/mm/bppijpsimm.yaml
+  psi2:
+    comb       : reso/rk/mm/comb.yaml
+    bpkppsi2mm : reso/rk/mm/bpkppsi2mm.yaml
 constraints:
   signal_fraction:
     - bppijpsimm

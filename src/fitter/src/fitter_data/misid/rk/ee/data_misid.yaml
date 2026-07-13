@@ -1,6 +1,10 @@
 no_pid: &no_pid
   bpkk  : (LEP_PID_E < 3.0 || LEP_PROBNN_E < 0.2) && LEP_PROBNN_K > 0.1
   bppipi: (LEP_PID_E < 3.0 || LEP_PROBNN_E < 0.2) && LEP_PROBNN_K < 0.1
+default_components: &comp
+  comb   : misid/rk/ee/comb.yaml
+  bpkpipi: misid/rk/ee/bpkpipi.yaml
+  bpkkk  : misid/rk/ee/bpkkk.yaml
 # --------------------------------------------------
 # Aliases
 # --------------------------------------------------
@@ -20,9 +24,12 @@ selection:
   high   : *no_pid
 observable: {}
 components:
-  comb   : misid/rk/ee/comb.yaml
-  bpkpipi: misid/rk/ee/bpkpipi.yaml
-  bpkkk  : misid/rk/ee/bpkkk.yaml
+  low:
+    <<: *comp
+  central:
+    <<: *comp
+  high:
+    <<: *comp
 constraints:
   signal_fraction      : []
   combinatorial : false

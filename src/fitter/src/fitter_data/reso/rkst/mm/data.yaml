@@ -15,14 +15,24 @@ observable:
       - 4700
       - 7000
 components:
-  comb            : reso/rkst/mm/comb.yaml
-  ccbar           : reso/rkst/mm/ccbar.yaml
-  lbpkjpsimm      : reso/rkst/mm/lbpkjpsimm_np.yaml
-  bsphijpsimm     : reso/rkst/mm/bsphijpsimm_np.yaml
-  bskstjpsimm     : reso/rkst/mm/bskstjpsimm.yaml
-  bdkstkpijpsimm  : reso/rkst/mm/bdkstkpijpsimm.yaml
-  bdkstjpsimm_swp : reso/rkst/mm/bdkstjpsimm_swp_np.yaml
-  bdkstkpipsi2mm  : reso/rkst/mm/bdkstkpipsi2mm.yaml
+  jpsi:
+    comb            : reso/rkst/mm/comb.yaml
+    ccbar           : reso/rkst/mm/ccbar.yaml
+    lbpkjpsimm      : reso/rkst/mm/lbpkjpsimm_np.yaml
+    bsphijpsimm     : reso/rkst/mm/bsphijpsimm_np.yaml
+    bskstjpsimm     : reso/rkst/mm/bskstjpsimm.yaml
+    bdkstkpijpsimm  : reso/rkst/mm/bdkstkpijpsimm.yaml
+    bdkstjpsimm_swp : reso/rkst/mm/bdkstjpsimm_swp_np.yaml
+    bdkstkpipsi2mm  : reso/rkst/mm/bdkstkpipsi2mm.yaml
+  psi2:
+    comb            : reso/rkst/mm/comb.yaml
+    ccbar           : reso/rkst/mm/ccbar.yaml
+    lbpkjpsimm      : reso/rkst/mm/lbpkjpsimm_np.yaml
+    bsphijpsimm     : reso/rkst/mm/bsphijpsimm_np.yaml
+    bskstjpsimm     : reso/rkst/mm/bskstjpsimm.yaml
+    bdkstkpijpsimm  : reso/rkst/mm/bdkstkpijpsimm.yaml
+    bdkstjpsimm_swp : reso/rkst/mm/bdkstjpsimm_swp_np.yaml
+    bdkstkpipsi2mm  : reso/rkst/mm/bdkstkpipsi2mm.yaml
 constraints:
   signal_fraction:
     - bskstjpsimm

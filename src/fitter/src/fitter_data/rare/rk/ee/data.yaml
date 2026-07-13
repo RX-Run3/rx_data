@@ -47,6 +47,18 @@ plots_settings: &plots_settings
     bpkpipi_brem_x12    : $B^+\to K^+\pi^+\pi^-$
     bpkpipi_brem_xx1    : $B^+\to K^+\pi^+\pi^-$
     bpkpipi_brem_xx2    : $B^+\to K^+\pi^+\pi^-$
+default_components: &comp
+  ccbar      : rare/rk/ee/ccbar.yaml
+  comb       : rare/rk/ee/comb.yaml
+  bdkstkpiee : rare/rk/ee/bdkstkpiee_np.yaml
+  bpkstkpiee : rare/rk/ee/bpkstkpiee_np.yaml
+  bsphiee    : rare/rk/ee/bsphiee_np.yaml
+  bpkpjpsiee : rare/rk/ee/bpkpjpsiee_np.yaml
+  bpkppsi2ee : rare/rk/ee/bpkppsi2ee_np.yaml
+  bpkpee     : rare/rk/ee/bpkpee.yaml.j2
+  #bpkkk      : rare/rk/ee/bpkkk_np.yaml
+  #bpkpipi    : rare/rk/ee/bpkpipi_np.yaml
+  #bpkpee     : rare/rk/ee/bpkpee_np.yaml
 # ----------------------------------------------------
 trigger          : rk_ee_os 
 yields           : model/yields/rk/rare_electron.yaml
@@ -72,17 +84,12 @@ observable:
       - 4600 
       - 6996
 components:
-  ccbar      : rare/rk/ee/ccbar.yaml
-  comb       : rare/rk/ee/comb.yaml
-  bdkstkpiee : rare/rk/ee/bdkstkpiee_np.yaml
-  bpkstkpiee : rare/rk/ee/bpkstkpiee_np.yaml
-  bsphiee    : rare/rk/ee/bsphiee_np.yaml
-  bpkpjpsiee : rare/rk/ee/bpkpjpsiee_np.yaml
-  bpkppsi2ee : rare/rk/ee/bpkppsi2ee_np.yaml
-  bpkpee     : rare/rk/ee/bpkpee.yaml.j2
-  #bpkkk      : rare/rk/ee/bpkkk_np.yaml
-  #bpkpipi    : rare/rk/ee/bpkpipi_np.yaml
-  #bpkpee     : rare/rk/ee/bpkpee_np.yaml
+  low:
+    <<: *comp
+  central:
+    <<: *comp
+  high:
+    <<: *comp
 constraints:
   misid    : misid/rk/ee/data_misid.yaml
   signal_fraction :

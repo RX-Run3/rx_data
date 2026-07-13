@@ -34,11 +34,17 @@ observable:
       - 4800 
       - 7000
 components:
-  comb       : reso/rk/ee/comb.yaml
-  bppijpsiee : reso/rk/ee/bppijpsiee.yaml
-  ccbar      : reso/rk/ee/ccbar.yaml
-  bpkpjpsiee : reso/rk/ee/bpkpjpsiee.yaml
-  bpkppsi2ee : reso/rk/ee/bpkppsi2ee.yaml
+  jpsi:
+    comb       : reso/rk/ee/comb.yaml
+    bppijpsiee : reso/rk/ee/bppijpsiee.yaml
+    ccbar      : reso/rk/ee/ccbar.yaml
+    bpkpjpsiee : reso/rk/ee/bpkpjpsiee.yaml
+  psi2:
+    comb       : reso/rk/ee/comb.yaml
+    bppijpsiee : reso/rk/ee/bppijpsiee.yaml
+    ccbar      : reso/rk/ee/ccbar.yaml
+    bpkpjpsiee : reso/rk/ee/bpkpjpsiee.yaml
+    bpkppsi2ee : reso/rk/ee/bpkppsi2ee.yaml
 constraints:
   signal_fraction:
     - bppijpsiee

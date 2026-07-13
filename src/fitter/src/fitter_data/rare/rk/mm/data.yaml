@@ -2,7 +2,6 @@
 # It illustrates how a fit would run for data
 
 trigger          : rk_mm_os
-
 yields           : model/yields/rk/rare_muon.yaml
 selection        : {}
 observable:
@@ -22,8 +21,15 @@ observable:
       - 5150
       - 5850
 components:
-  comb   : rare/rk/mm/comb.yaml
-  bpkpmm : rare/rk/mm/bpkpmm.yaml
+  low:
+    comb   : rare/rk/mm/comb.yaml
+    bpkpmm : rare/rk/mm/bpkpmm.yaml
+  central:
+    comb   : rare/rk/mm/comb.yaml
+    bpkpmm : rare/rk/mm/bpkpmm.yaml
+  high:
+    comb   : rare/rk/mm/comb.yaml
+    bpkpmm : rare/rk/mm/bpkpmm.yaml
 constraints:
   signal_fraction      : []
   combinatorial : false

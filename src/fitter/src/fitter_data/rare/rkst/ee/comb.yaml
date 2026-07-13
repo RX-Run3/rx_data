@@ -72,7 +72,12 @@ mod_cfg: &mod_cfg
         - 4600 
         - 6996
   components:
-    comb       : rare/rkst/ee/comb_ss.yaml
+    low:
+      comb : rare/rkst/ee/comb_ss.yaml
+    central:
+      comb : rare/rkst/ee/comb_ss.yaml
+    high:
+      comb : rare/rkst/ee/comb_ss.yaml
   constraints:
     misid        : null 
     signal_fraction     : []
