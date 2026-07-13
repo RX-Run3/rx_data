@@ -123,7 +123,7 @@ def _parse_args() -> RXFitConfig:
 
     return cfg
 # ----------------------
-def _get_nll(
+def _get_brem_nll(
     brem : Brem,
     cfg  : RXFitConfig) -> NLLConf:
     '''
@@ -134,9 +134,7 @@ def _get_nll(
 
     Returns
     -------------
-    Tuple with:
-        - Negative log likelihood
-        - Config related to model
+    Object holding NLL
     '''
     project = cfg.mod_cfg.trigger.project.alternative(key = _ALT_PROJECT)
 
@@ -164,16 +162,20 @@ def _get_region_nll(brem : Brem, cfg : RXFitConfig) -> NLLConf:
 
     Returns
     -------------
-    NLL for fitting region
+    NLL for fitting brem category for a specific block
     '''
-    cfg = cfg.pick_category(name = brem.region)
+    cfg = cfg.pick_category(
+        q2bin= cfg.q2bin,
+        name = brem.region)
 
     with sel.update_selection(d_sel = brem.region.selection):
         replacements = {'BLOCK' : f'b{cfg.block}'}
         cfg.name     = brem.region
-        cfg          = cfg.cfg_copy(replacements = replacements)
+        cfg          = cfg.cfg_copy(
+            q2bin        = cfg.q2bin,
+            replacements = replacements)
 
-        return _get_nll(cfg=cfg, brem = brem)
+        return _get_brem_nll(cfg=cfg, brem = brem)
 # ----------------------
 def _fit_electron(cfg : RXFitConfig) -> dict[Region, NLLConf]:
     '''
@@ -213,7 +215,7 @@ def _fit_muon(cfg : RXFitConfig) -> dict[Region,NLLConf]:
     '''
     d_nll : dict[Region,NLLConf] = {}
     cfg.name = Region.brem_xx0
-    d_nll[cfg.name] = _get_nll(cfg=cfg, brem = Brem.zero)
+    d_nll[cfg.name] = _get_brem_nll(cfg=cfg, brem = Brem.zero)
 
     with GofCalculator.disabled(value=True):
         ftr = DataFitter(

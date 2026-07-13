@@ -144,10 +144,15 @@ def _get_nll(
     for brem in brems:
         if brem.is_composite:
             # Put all the elementary regions in same config
-            cfg_brem = cfg.cfg_clone(prefix = 'BREM', regions = [ elm.region for elm in brem.components ])
+            cfg_brem         = cfg.cfg_clone(
+                prefix       = 'BREM', 
+                q2bin        = cfg.q2bin,
+                regions      = [ elm.region for elm in brem.components ])
         else:
             # Pick only elementary region 
-            cfg_brem = cfg.cfg_copy(replacements = {'BREM' : brem.region})
+            cfg_brem         = cfg.cfg_copy(
+                q2bin        = cfg.q2bin,
+                replacements = {'BREM' : brem.region})
 
         with sel.update_selection(d_sel = brem.region.selection):
             d_nll[brem.region] = _get_region_nll(brem = brem, cfg = cfg_brem)
