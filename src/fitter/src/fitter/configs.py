@@ -5,10 +5,9 @@ import os
 import yaml
 
 from functools   import cached_property
-from pydantic    import BaseModel, ConfigDict, model_validator
+from pydantic    import BaseModel, ConfigDict, field_validator, model_validator
 from pathlib     import Path
-from typing      import Callable, Literal, Self, Sequence
-
+from typing      import TYPE_CHECKING, Annotated, Any, Callable, Literal, Self, Sequence
 from rx_common   import Channel, Mass, Project, Qsq, MisID, Region
 from rx_common   import Component, Trigger, CCbarComponent, Cuts
 from rx_misid    import MisIDSampleWeights
@@ -28,6 +27,23 @@ from .toy_maker  import ToyConf
 
 log     = LogStore.add_logger('fitter:configs')
 _ANADIR = Path(os.environ['ANADIR'])
+# ------------------------------
+def _validate_mod_cfg(value) -> 'FitModelConf | None':
+    '''
+    Validates that `value` is a FitModelConf or None, needed because of:
+
+    https://github.com/pydantic/pydantic/issues/7713
+    '''
+    if value is None:
+        return None
+
+    if isinstance(value, FitModelConf):
+        return value
+
+    if isinstance(value, dict):
+        return FitModelConf(**value)
+
+    raise ValueError('Invalid value for mod_cfg field')
 # ------------------------------
 class ObservableConf(BaseModel):
     '''
@@ -79,7 +95,15 @@ class ConstraintsCfg(UnpackerModel):
     signal_fraction : list[Component]
     combinatorial   : bool
     signal_shape    : bool
-    misid           : 'FitModelConf | None' = None
+    if TYPE_CHECKING:
+        misid : 'FitModelConf | None' = None
+    else:
+        misid : Any = None
+    # --------------------------------------
+    @field_validator('misid')
+    @classmethod
+    def _validate(cls, value) -> 'FitModelConf | None':
+        return _validate_mod_cfg(value = value)
     # ---------------------
     @classmethod
     def default(cls) -> 'ConstraintsCfg':
@@ -390,7 +414,19 @@ class CmbConstraintConf(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     parameters : dict[Qsq,list[str]]
-    mod_cfg    : 'FitModelConf'
+    if TYPE_CHECKING:
+        mod_cfg : 'FitModelConf'
+    else:
+        mod_cfg : Any
+    # --------------------------------------
+    @field_validator('mod_cfg')
+    @classmethod
+    def _validate(cls, value) -> 'FitModelConf':
+        value = _validate_mod_cfg(value = value)
+        if value is None:
+            raise ValueError('mod_cfg field is None')
+
+        return value
     # --------------------------------------
     def specialize(self, q2bin : Qsq) -> Self:
         '''
