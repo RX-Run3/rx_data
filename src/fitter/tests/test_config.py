@@ -29,30 +29,28 @@ def initialize():
 # ----------------------
 @pytest.mark.parametrize('channel', [Channel.ee, Channel.mm  ])
 @pytest.mark.parametrize('project', [Project.rk, Project.rkst])
-@pytest.mark.parametrize('kind'   , ['reso'    , 'rare'      ])
+@pytest.mark.parametrize('q2bin'  , Qsq.for_physics())
 def test_full_config(
     tmp_path: Path,
-    kind    : str,
+    q2bin   : Qsq,
     channel : Channel, 
     project : Project):
     '''
     Test fitting model for data
     '''
-    path = f'{kind}/{project}/{channel}/data.yaml'
+    path = f'{q2bin.kind}/{project}/{channel}/data.yaml'
     cfg  = FitModelConf.from_yaml(path = path, package = 'fitter_data')
     cfg.to_yaml(path = tmp_path / 'config.yaml')
-
-    qsq = Qsq.central if kind == 'rare' else Qsq.jpsi
 
     cfg = RXFitConfig(
         name    = 'test',
         group   = 'test',
         mva_cmb = MVAWp(0.5),
         mva_prc = MVAWp(0.5),
-        q2bin   = qsq,
+        q2bin   = q2bin,
         mod_cfg = cfg)
 
-    for cfg_cmp in cfg.mod_cfg.components.values():
+    for cfg_cmp in cfg.mod_cfg.components[q2bin].values():
         assert isinstance(cfg_cmp.cfg_obs, ObservableConf)
 # ----------------------
 @pytest.mark.parametrize('mass', Mass)
@@ -214,21 +212,22 @@ def test_misid_constraint():
 # ----------------------
 @pytest.mark.parametrize('channel', [Channel.ee, Channel.mm  ])
 @pytest.mark.parametrize('project', [Project.rk, Project.rkst])
-@pytest.mark.parametrize('kind'   , ['reso'    , 'rare'      ])
+@pytest.mark.parametrize('q2bin'  , Qsq.for_physics())
 def test_full_model(
     tmp_path: Path,
-    kind    : str,
+    q2bin   : Qsq,
     channel : Channel, 
     project : Project):
     '''
     Test fitting model for data
     '''
-
-    path = f'{kind}/{project}/{channel}/data.yaml'
-
-    cfg = FitModelConf.from_yaml(path = path, package = 'fitter_data')
-    if channel == Channel.ee and kind == 'rare':
-        cfg = cfg.cfg_clone(prefix = 'BREM', regions = [Region.brem_xx1, Region.brem_xx2])
+    path = f'{q2bin.kind}/{project}/{channel}/data.yaml'
+    cfg  = FitModelConf.from_yaml(path = path, package = 'fitter_data')
+    if channel == Channel.ee and q2bin.is_rare:
+        cfg = cfg.cfg_clone(
+            q2bin   = q2bin,
+            prefix  = 'BREM', 
+            regions = [Region.brem_xx1, Region.brem_xx2])
 
     cfg.to_yaml(path = tmp_path / 'config.yaml')
 # ----------------------
