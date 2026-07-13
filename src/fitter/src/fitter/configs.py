@@ -522,7 +522,7 @@ class FitModelConf(UnpackerModel):
     yields     : YieldsConf
     selection  : dict[Qsq, dict[Cuts,str]]
     observable : dict[Qsq | MisID, ObservableConf]
-    components : dict[Component, AnyModelConf]
+    components : dict[Qsq, dict[Component, AnyModelConf]]
     plots      : PlotConf 
     constraints: ConstraintsCfg
     fit        : FitConf
@@ -554,10 +554,12 @@ class FitModelConf(UnpackerModel):
         ------------
         Config needed for actual fit
         '''
-        cfg = self.observable[q2bin]
+        cfg_obs        = self.observable[q2bin]
+        qsq_components = self.components[q2bin]
+
         new_components : dict[Component, AnyModelConf] = {}
-        for component, cfg_cmp in self.components.items():
-            new_cfg = self._update_cfg_obs(cfg_obs = cfg, cfg_cmp = cfg_cmp)
+        for component, cfg_cmp in qsq_components.items():
+            new_cfg = self._update_cfg_obs(cfg_obs = cfg_obs, cfg_cmp = cfg_cmp)
             new_val = cfg_cmp.model_copy(update = {'cfg_obs' : new_cfg })
 
             if isinstance(new_val, CombinatorialConf):
@@ -565,7 +567,9 @@ class FitModelConf(UnpackerModel):
 
             new_components[component] = new_val
 
-        return self.model_copy(update = {'components' : new_components, 'q2bin' : q2bin})
+        self.components[q2bin] = new_components
+
+        return self.model_copy(update = {'components' : self.components, 'q2bin' : q2bin})
     # ----------------------
     def _update_cfg_obs(
         self,
@@ -613,8 +617,9 @@ class FitModelConf(UnpackerModel):
     # ----------------------
     def cfg_clone(
         self, 
-        prefix : str, 
-        regions: list[Region]) -> Self:
+        prefix  : str, 
+        q2bin   : Qsq,
+        regions : list[Region]) -> Self:
         '''
         Parameters
         ---------------
@@ -626,8 +631,10 @@ class FitModelConf(UnpackerModel):
         Configuration with _cloned_ sections one for each
         signal region, with selections updated
         '''
+        qsq_components = self.components[q2bin]
+
         new_components : dict[Component, AnyModelConf] = {}
-        for comp, conf in self.components.items():
+        for comp, conf in qsq_components.items():
             if not isinstance(conf, ParametricConf):
                 new_conf = conf.model_copy()
             else:
@@ -734,22 +741,27 @@ class RXFitConfig(BaseModel):
 
         path.write_text(string)
     # ----------------------
-    def cfg_copy(self, replacements : dict[str,str]) -> Self:
+    def cfg_copy(
+        self, 
+        q2bin        : Qsq,
+        replacements : dict[str,str]) -> Self:
         '''
         This method provides a copy of the configuration with the
         categories associated to parametric components, renamed
 
         Parameters
         -----------------
+        q2bin       : Value of q2bin for which this config is needed
         replacements: Dictionary where key is the the substring to be replaced
-        and value is the replacement
+                      and value is the replacement
 
         Returns
         -----------------
         Copy of config with renaming
         '''
         new_components : dict[Component, AnyModelConf] = {}
-        for comp, conf in self.mod_cfg.components.items():
+        qsq_components = self.mod_cfg.components[q2bin]
+        for comp, conf in qsq_components.items():
             if not isinstance(conf, ParametricConf):
                 new_conf = conf.model_copy()
             else:
@@ -764,10 +776,12 @@ class RXFitConfig(BaseModel):
     def cfg_clone(
         self, 
         prefix  : str, 
+        q2bin   : Qsq,
         regions : list[Region]) -> Self:
         '''
         Parameters
         ---------------
+        q2bin   : Value of q2bin for which this config is needed
         prefix  : Initial part of category's original name
         regions : List of signal regions for which prefixed section will be cloned 
 
@@ -776,12 +790,17 @@ class RXFitConfig(BaseModel):
         Configuration with _cloned_ sections one for each
         signal region, with selections updated
         '''
-
-        new_mod_cfg = self.mod_cfg.cfg_clone(prefix = prefix, regions = regions)
+        new_mod_cfg = self.mod_cfg.cfg_clone(
+            prefix  = prefix, 
+            q2bin   = q2bin,
+            regions = regions)
 
         return self.model_copy(update = {'mod_cfg' : new_mod_cfg})
     # ----------------------
-    def pick_category(self, name : str) -> Self:
+    def pick_category(
+        self, 
+        q2bin: Qsq,
+        name : str) -> Self:
         '''
         Parameters
         -----------------
@@ -792,7 +811,9 @@ class RXFitConfig(BaseModel):
         Copy of config with that category
         '''
         new_components : dict[Component, AnyModelConf] = {}
-        for comp, conf in self.mod_cfg.components.items():
+        qsq_components = self.mod_cfg.components[q2bin]
+
+        for comp, conf in qsq_components.items():
             if not isinstance(conf, ParametricConf):
                 new_components[comp] = conf.model_copy()
                 continue
