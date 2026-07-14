@@ -1,0 +1,20 @@
+# Config used to make 2D plots PIDe between two electrons 
+#
+# Can be used to show that signal and misID samples live far
+# in the PID plane.
+
+saving:
+    plt_dir : plots/2d/ep_em_pide
+selection:
+  pid_l : (1) 
+general:
+    size : [20, 10]
+plots_2d:
+  - [L1_PIDe, L2_PIDe, null, ep_em_pide, true]
+axes:
+  L1_PIDe:
+      binning : [-5, 13, 60]
+      label   : '$\Delta LL(e^+)$'
+  L2_PIDe:
+      binning : [-5, 13, 60]
+      label   : '$\Delta LL(e^-)$'
