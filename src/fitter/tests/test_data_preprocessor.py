@@ -4,6 +4,7 @@ Module meant to hold tests for the DataPreprocessor class
 import pytest
 import matplotlib.pyplot as plt
 
+from contextlib    import ExitStack
 from pathlib       import Path
 from dmu.stats     import zfit
 from dmu.generic   import utilities as gut
@@ -53,10 +54,73 @@ def _validate_data(
     plt.savefig(plt_path)
     plt.close()
 # -------------------------------------------------
+@pytest.mark.parametrize('component', [Component.bpkpjpsimm])
+def test_mc(
+    tmp_path : Path, 
+    component: Component):
+    '''
+    Test MC over few entries
+    '''
+    obs = zfit.Space('B_Mass', limits=(5180, 6000))
+
+    ctx_1 = Cache.cache_root(path = tmp_path)
+    ctx_2 = RDFGetter.max_entries(value = 1000)
+
+    with ExitStack() as stack:
+        stack.enter_context(ctx_1)
+        stack.enter_context(ctx_2)
+
+        prp = DataPreprocessor(
+            name   = 'main',
+            obs    = obs,
+            sample = component,
+            trigger= Trigger.rk_mm_os,
+            wgt_cfg= None,
+            q2bin  = Qsq.jpsi)
+        dat = prp.get_data()
+
+    _validate_data(data=dat, tmp_path = tmp_path)
+# -------------------------------------------------
+@pytest.mark.parametrize('component', [Component.bpkpjpsimm])
+def test_cache(
+    tmp_path : Path, 
+    component: Component):
+    '''
+    Tests caching of dataset
+    '''
+    obs = zfit.Space('B_Mass', limits=(5180, 6000))
+
+    ctx_1 = Cache.cache_root(path = tmp_path)
+    ctx_2 = RDFGetter.max_entries(value = 1000)
+
+    with ExitStack() as stack:
+        stack.enter_context(ctx_1)
+        stack.enter_context(ctx_2)
+
+        prp_1 = DataPreprocessor(
+            name   = 'main',
+            obs    = obs,
+            sample = component,
+            trigger= Trigger.rk_mm_os,
+            wgt_cfg= None,
+            q2bin  = Qsq.jpsi)
+        prp_1.get_data()
+
+        prp_2 = DataPreprocessor(
+            name   = 'main',
+            obs    = obs,
+            sample = component,
+            trigger= Trigger.rk_mm_os,
+            wgt_cfg= None,
+            q2bin  = Qsq.jpsi)
+        prp_1.get_data()
+
+        assert prp_1.hash == prp_2.hash
+# -------------------------------------------------
 @pytest.mark.parametrize('component', [
     Component.data_24_md_c2,
     Component.bpkpjpsimm])
-def test_muon_data(
+def test_muon(
     tmp_path : Path, 
     component: Component):
     '''
