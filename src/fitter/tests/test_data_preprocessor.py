@@ -10,7 +10,7 @@ from dmu.generic   import utilities as gut
 from dmu.stats     import utilities as sut
 from dmu           import LogStore
 from dmu.workflow  import Cache
-from rx_common     import Correction, Qsq, Region, Trigger, Component
+from rx_common     import Correction, Cuts, Qsq, Region, Trigger, Component
 from rx_data       import RDFGetter
 from rx_misid      import MisIDSampleWeights
 from zfit.data     import Data      as zdata
@@ -88,7 +88,7 @@ def test_brem_cat_data(
     Tests class with toys
     '''
     obs = zfit.Space('B_Mass', limits=(4500, 6000))
-    cut = {'brem' : f'nbrem == {brem_cat}'}
+    cut = {Cuts.brem : f'nbrem == {brem_cat}'}
 
     with Cache.cache_root(path = tmp_path):
         prp = DataPreprocessor(
@@ -103,7 +103,6 @@ def test_brem_cat_data(
 
     _validate_data(data=dat, tmp_path = tmp_path)
 # -------------------------------------------------
-#@pytest.mark.skip(reason='These tests require smear friend trees for noPID samples')
 @pytest.mark.parametrize('component', [
     Component.bpkkk,
     Component.bpkpipi])
@@ -131,7 +130,7 @@ def test_with_pid_weights(
             sample    = component,
             trigger   = Trigger.rk_ee_nopid,
             wgt_cfg   = {Correction.pid : cfg},
-            selection = {'pid_l' : '(1)'}, 
+            selection = {Cuts.pid_l : '(1)'}, 
             is_sig    = kind == 'signal',
             q2bin     = Qsq.jpsi)
         dat  = prp.get_data()
