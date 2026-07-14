@@ -1,10 +1,12 @@
 '''
 Script used to orchestrate plots made by the `plot_2d` script
 '''
+import argparse
 import os
 import json
 import law
 
+from dataclasses   import dataclass
 from pathlib       import Path
 from functools     import cache
 from typing        import Final
@@ -16,6 +18,14 @@ from dmu           import LogStore
 log=LogStore.add_logger('rx_orchestration:plot_2d_law')
 _ANADIR : Final[Path]      = Path(os.environ['ANADIR'])
 _KINDS  : Final[list[str]] = ['mass_q2', 'cmb_prc']
+# -------------------------------------
+@dataclass(frozen = True)
+class Conf:
+    '''
+    Class used to configure current script
+    '''
+    dry_run : bool
+    nproc   : int
 # -------------------------------------
 class Plot2DTask(law.Task):
     config_string : str = Parameter() # type: ignore
@@ -50,8 +60,9 @@ class Plot2DTask(law.Task):
         cfg      = self._get_config()
         PLTDIR   = _ANADIR / f'plots/2d/{cfg.args.config}'
         dir_path = PLTDIR / cfg.args.sample / cfg.args.trigger
+        paths    = [ dir_path / name for name in cfg.output ]
 
-        return [ law.LocalFileTarget(dir_path / name) for name in cfg.output ]
+        return [ law.LocalFileTarget(path) for path in paths ]
     # -------------------------------------
     def run(self):
         '''
@@ -127,11 +138,32 @@ class WrapPlot2D(law.WrapperTask):
         for settings in l_settings:
             yield Plot2DTask(config_string = settings)
 # ----------------------
-def main():
-    l_settings  = WrapPlot2D.get_settings()
-    nworkers    = min(8, len(l_settings))
+def _parse_args() -> Conf:
+    '''
+    Parses arguments passed by user
 
-    law.run(argv=['WrapPlot2D', '--workers', str(nworkers), '--log-level', 'INFO'])
+    Returns
+    --------------
+    Instance of configuration data class, built from arguments
+    '''
+    parser = argparse.ArgumentParser(description='Script used to steer workflow for 2D plots with LAW')
+    parser.add_argument('-d', '--dry_run' , action = 'store_true', help='If used will do dry run')
+    parser.add_argument('-n', '--nproc'   , type   = int         , help='Number of workers', required = True)
+    args = parser.parse_args()
+
+    return Conf(
+        nproc   = args.nproc,
+        dry_run = args.dry_run)
+# ----------------------
+def main():
+    l_settings = WrapPlot2D.get_settings()
+    cfg        = _parse_args()
+    nworkers   = min(cfg.nproc, len(l_settings))
+
+    if cfg.dry_run:
+        law.run(argv=['WrapPlot2D', '--workers', str(nworkers), '--log-level', 'INFO', '--print-status', '-1'])
+    else:
+        law.run(argv=['WrapPlot2D', '--workers', str(nworkers), '--log-level', 'INFO'])
 # ----------------------
 if __name__ == "__main__":
     main()
