@@ -7,8 +7,11 @@ saving:
     plt_dir : plots/2d/ep_em_pide
 selection:
   pid_l : (1) 
+  cmb   : (1)
+  prc   : (1)
+  q2    : (1)
 general:
-    size : [20, 10]
+    size : [15, 10]
 plots_2d:
   - [L1_PIDe, L2_PIDe, null, ep_em_pide, true]
 axes:
