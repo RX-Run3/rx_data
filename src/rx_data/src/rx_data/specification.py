@@ -100,12 +100,8 @@ class File(BaseModel):
             dir_path = _SYMLINK_DIR / tree / ftree / block.value
             dir_path.mkdir(parents = True, exist_ok = True)
 
-            link = dir_path / path.name
-            if link.exists():
-                link.unlink()
-            log.debug(f'Creating link to patching file: {link}')
-            link.symlink_to(target = path)
-            path   = link
+            link   = dir_path / path.name
+            path   = cls._create_link(link = link, path = path)
             blocks = {block}
         else:
             blocks = {block}
@@ -114,6 +110,30 @@ class File(BaseModel):
             path    = path,
             entries = entries, 
             blocks  = blocks)
+    # ----------------------
+    @classmethod
+    def _create_link(cls, link : Path, path : Path) -> Path:
+        '''
+        Parameters
+        -----------------
+        link: Path to link to be created
+        path: Path to target file
+
+        Returns
+        -----------------
+        Path to created link
+        '''
+        if not link.exists(follow_symlinks=False):
+            link.symlink_to(target = path)
+            return link
+
+        if link.is_symlink() and link.resolve() == path.resolve():
+            return link 
+
+        link.unlink()
+        link.symlink_to(target = path)
+
+        return link
     # ----------------------
     @model_serializer
     def serialize_model(self) -> str:
