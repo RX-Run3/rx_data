@@ -17,7 +17,7 @@ from dmu           import LogStore
 
 log=LogStore.add_logger('rx_orchestration:plot_2d_law')
 _ANADIR : Final[Path]      = Path(os.environ['ANADIR'])
-_KINDS  : Final[list[str]] = ['mass_q2', 'cmb_prc']
+_KINDS  : Final[list[str]] = ['mass_q2', 'cmb_prc', 'ep_em_pide']
 # -------------------------------------
 @dataclass(frozen = True)
 class Conf:
