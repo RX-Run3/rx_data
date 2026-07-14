@@ -1,5 +1,5 @@
 plots_settings: &plots_settings
-  nbins           : 100
+  nbins           : 400
   stacked         : True
   d_leg :
     ccbar               : $B_{s,d,u}\to c\bar{c} X$
@@ -15,7 +15,7 @@ plots_settings: &plots_settings
     - ccbar
   plot_range:
     - 4800
-    - 6000
+    - 6100
 # ------------------------------
 trigger   : rk_ee_os
 yields    : model/yields/rk/reso_electron.yaml

@@ -33,7 +33,7 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
   merging : {}
   regions :
     brem_xx0:
-      nbins           : 100
+      nbins           : 400
       stacked         : True
       d_leg :
         bpkpjpsimm    : $B^+\to J/\psi(\to \mu^+\mu^-) K^+$ 
@@ -41,7 +41,7 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
         bpkppsi2mm    : $B^+\to \psi(2S)(\to \mu^+\mu^-) K^+$ 
         comb          : Combinatorial
       plot_range:
-        - 5000
-        - 5600
+        - 5100
+        - 6100
       plot_components:
         - ccbar
