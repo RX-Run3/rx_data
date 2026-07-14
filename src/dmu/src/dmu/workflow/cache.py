@@ -229,6 +229,13 @@ class Cache:
 
         return True
     # ---------------------------
+    @property
+    def hash(self):
+        '''
+        String with hash associated to dataset
+        '''
+        return self._hsh
+    # ---------------------------
     @classmethod
     def turn_off_cache(cls, val : list[str] | None):
         '''
