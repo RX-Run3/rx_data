@@ -1,0 +1,5 @@
+args:
+  - { sample : data_24, trigger :   rk_ee_misid, q2bin : jpsi }
+  - { sample : data_24, trigger : rkst_ee_misid, q2bin : jpsi }
+output:
+  - ep_em_pide.png
