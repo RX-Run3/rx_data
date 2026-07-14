@@ -68,6 +68,8 @@ class DataPreprocessor(Cache):
             key: Representing kind of weight, e.g. pid
             value: Actual configuration for kind of weight, in a pydantic model
         '''
+        selection = dict() if selection is None else selection
+
         self._name   = name
         self._obs    = obs
         self._sample = sample
@@ -78,24 +80,24 @@ class DataPreprocessor(Cache):
         # Caching will remove all files
         # Need to keep around selection
         # To save it at the end
-        selection            = dict() if selection is None else selection
-        rdf , d_sel, df_ctf  = self._get_rdf(selection = selection)
+        rdf, cuts = self._get_rdf(selection = selection)
 
-        self._rdf    = rdf 
-        self._d_sel  = d_sel
-        self._df_ctf = df_ctf
         self._is_sig = is_sig
+        self._rdf    = rdf 
+        self._cuts   = cuts
 
         super().__init__(
             out_path = Path(self._sample) / 'dataset' / self._name,
             obs_name = sut.name_from_obs(obs=obs),
             obs_range= sut.range_from_obs(obs=obs),
-            d_sel    = d_sel,
+            d_sel    = cuts,
             is_sig   = is_sig,
             wgt_cfg  = '' if self._wgt_cfg is None else {key : val.model_dump() for key, val in self._wgt_cfg.items()}, 
-            rdf_uid  = self._rdf.uid)
+            rdf_uid  = rdf.uid)
     # ------------------------
-    def _get_rdf(self, selection : dict[Cuts,str]) -> tuple[RDF.RNode, dict[Cuts,str], pnd.DataFrame]:
+    def _get_rdf(
+        self, 
+        selection : dict[Cuts,str]) -> tuple[RDF.RNode, dict[Cuts,str]]:
         '''
         Parameters
         -------------------
@@ -106,7 +108,6 @@ class DataPreprocessor(Cache):
         Tuple with:
            - ROOT dataframe after selection and with Unique identifier attached as uid
            - Dictionary storing selection
-           - Pandas dataframe with cutflow
         '''
         log.debug(f'Retrieving dataframe for {self._sample}/{self._trigger}')
         gtr = RDFGetter(
@@ -123,8 +124,8 @@ class DataPreprocessor(Cache):
 
         # NOTE: Update selection such that category selection
         # is applied on top of potentially non-default selection
-        # Current selection might contain different cuts, e.g. 
-        # special BDT cut or special brem choice
+        # Current selection might contain different cuts,
+        # e.g. special BDT cut or special brem choice
         with tempfile.TemporaryDirectory() as tmp_dir,\
             sel.update_selection(d_sel=selection):
             rdf_sel = sel.apply_full_selection(
@@ -135,20 +136,29 @@ class DataPreprocessor(Cache):
                 process = self._sample,
                 out_path= Path(tmp_dir))
 
-            cfg_sel = sel.selection(
+            cuts = sel.selection(
                 process = self._sample, 
                 trigger = self._trigger, 
                 q2bin   = self._q2bin)
 
-            rep = rdf_sel.Report()
-            df  = rut.rdf_report_to_df(rep=rep)
+        return rdf_sel, cuts
+    # ------------------------
+    def _get_report(self) -> pnd.DataFrame:
+        '''
+        This will trigger graph execution
 
-        if log.getEffectiveLevel() < LogLevels.info:
-            rep.Print()
-            for name, val in cfg_sel.items():
-                log.info(f'{name:<15}{val}')
+        Returns
+        --------------
+        Pandas dataframe with cutflow
+        '''
+        rep = self._rdf.Report()
+        df  = rut.rdf_report_to_df(rep=rep)
 
-        return rdf_sel, cfg_sel, df
+        rep.Print()
+        for name, val in self._cuts.items():
+            log.info(f'{name:<15}{val}')
+
+        return df
     # ------------------------
     def _add_extra_weights(self, wgt : numpy.ndarray) -> numpy.ndarray:
         '''
@@ -304,14 +314,16 @@ class DataPreprocessor(Cache):
             data    = self._data_from_numpy(arr_value=arr, arr_weight=wgt)
             return data
 
-        arr, wgt = self._get_array()
-        data     = self._data_from_numpy(arr_value=arr, arr_weight=wgt)
-
+        log.info('Data not found cached, rebuilding dataset')
+        arr, wgt  = self._get_array()
+        data      = self._data_from_numpy(arr_value=arr, arr_weight=wgt)
         cuts_path = data_path.with_suffix('.yaml')
-        gut.dump_json(data=self._d_sel , path=cuts_path)
+        gut.dump_json(data=self._cuts , path=cuts_path)
 
         ctfl_path = cuts_path.with_suffix('.md')
-        put.to_markdown(df=self._df_ctf, path=ctfl_path)
+        df_ctf    = self._get_report()
+
+        put.to_markdown(df=df_ctf, path=ctfl_path)
 
         numpy.savez_compressed(data_path, values=arr, weights=wgt)
         self._cache()
