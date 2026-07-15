@@ -17,9 +17,10 @@ _UNPATCHED_SAMPLES = [
     (Component.data_24_md_c2, Trigger.rkst_mm_os),
 ]
 _PATCHED_SAMPLES = [
-    (Component.bsjpsixmm, Trigger.rk_mm_os),
-    (Component.bpjpsixmm, Trigger.rk_mm_os),
-    (Component.bpkpmm   , Trigger.rk_mm_os),
+    (Component.bsjpsixmm , Trigger.rk_mm_os),
+    (Component.bpjpsixmm , Trigger.rk_mm_os),
+    (Component.bpkpmm    , Trigger.rk_mm_os),
+    (Component.bpkpjpsiee, Trigger.rk_ee_os),
 ]
 
 log=LogStore.add_logger('rx_data:test_sample_patching')
@@ -30,7 +31,7 @@ def initialize():
     This will run before any test
     '''
     LogStore.set_level('rx_data:sample_patcher', 10)
-    LogStore.set_level('rx_data:spec_maker'    , 30)
+    LogStore.set_level('rx_data:spec_maker'    , 10)
     LogStore.set_level('rx_data:path_splitter' , 30)
     LogStore.set_level('rx_data:rdf_getter'    , 30)
 # ----------------------
