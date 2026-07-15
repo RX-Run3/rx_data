@@ -14,8 +14,9 @@ NAME       = config['name']
 CHANNEL    = Trigger(TRIGGER).channel
 PROJECT    = Trigger(TRIGGER).project
 
-INPUT_DIR  = Path(f'/home/acampove/external_02/fits/data/{NAME}')
-OUTPUTDIR  = ANADIR / f'plots/web/scan/components/{PROJECT}'
+INPUT_DIR  = ANADIR / f'fits/data/{NAME}'
+OUTPUTDIR  = ANADIR / f'plots/web/{NAME}/components/{PROJECT}'
+REGEX      = r'\d{3}_\d{3}'
 
 OUTPUTDIR.mkdir(parents=True, exist_ok=True)
 # ----------------------------
@@ -26,6 +27,7 @@ def _get_wc() -> tuple[list[str], list[str]]:
     Working points for BDT
     '''
     paths = list(INPUT_DIR.glob('*'))
+    paths = [ path for path in paths if re.match(REGEX, path.name) ]
 
     cmb   = [ path.name.split('_')[0] for path in paths ]
     prc   = [ path.name.split('_')[1] for path in paths ]
