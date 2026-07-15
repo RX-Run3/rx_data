@@ -96,7 +96,7 @@ rule metadata:
         data = DATA
     shell :
         '''
-        echo "Title: {wildcards.prc}-{wildcards.cmb}"  > {output}
+        echo "Title: {wildcards.block}"                 > {output}
         echo "Thumbnail: {params.data}_combined.png"   >> {output}
         '''
 rule copy_signal:
