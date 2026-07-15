@@ -3,18 +3,22 @@ import tempfile
 from pathlib import Path
 
 # ------------------------------------------------------
-def get_tmp_path(prefix : str, extension : str) -> Path:
+def get_tmp_path(
+    dir       : str,
+    extension : str,
+    prefix    : str | None = None) -> Path:
     '''
     Parameters
     ----------------
-    prefix    : Purpose of path, e.g. specification
+    dir       : directory name
     extension : E.g. `json` 
+    prefix    : Purpose of path, e.g. specification, optional
 
     Returns
     ----------------
     Path of the form:
 
-    {tmp_dir}/prefix/xxxx.{extension}
+    {tmp_dir}/dir/prefix_xxxx.{extension}
 
     where:
     - tmp_dir is chosen by the `tmpfile` module
@@ -22,12 +26,13 @@ def get_tmp_path(prefix : str, extension : str) -> Path:
     - xxx.{extension} does not exist
     '''
     tmp_dir  = tempfile.gettempdir()
-    dir_path = Path(f'{tmp_dir}/{prefix}/')
+    dir_path = Path(f'{tmp_dir}/{dir}/')
     dir_path.mkdir(parents = True, exist_ok = True)
 
     ctx = tempfile.NamedTemporaryFile(
         delete = False,
         dir    = dir_path, 
+        prefix = prefix,
         suffix = f'.{extension}')
 
     with ctx as tmp:
