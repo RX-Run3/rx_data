@@ -1,8 +1,6 @@
 # This is a config file used for tests
 # It illustrates how a fit would run for data
-
 trigger          : rk_mm_os
-
 yields           : model/yields/rk/reso_muon.yaml
 selection        : {}
 observable:
