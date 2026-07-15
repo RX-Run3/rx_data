@@ -8,6 +8,7 @@ junit2html
 junitparser
 ihep-utilities>=0.0.3
 htcondor
+snakemake-logger-plugin-snkmt
 snakemake-executor-plugin-ihep
 snakemake-executor-plugin-htcondor
 snakemake>9

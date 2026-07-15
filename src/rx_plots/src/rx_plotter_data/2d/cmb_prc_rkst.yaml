@@ -4,7 +4,7 @@ selection:
   cmb : (1)
   prc : (1)
 saving:
-  plt_dir : plots/2d/bdt_q2
+  plt_dir : plots/2d/cmb_prc
 general:
   size : [20, 15]
 plots_2d:

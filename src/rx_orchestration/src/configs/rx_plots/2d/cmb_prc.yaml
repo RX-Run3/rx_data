@@ -4,4 +4,4 @@ args:
   - {sample : data_24, trigger : rkst_ee_os, q2bin : jpsi }
   - {sample : data_24, trigger : rkst_mm_os, q2bin : jpsi }
 output:
-  - mva_cmb_mva_prc.png
+  - cmb_prc_jpsi.png

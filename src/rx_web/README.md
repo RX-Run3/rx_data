@@ -33,12 +33,25 @@ where `rare` is the name of the directory inside `$ANADIR/fits/data/`
 Here all the components of the fit appear in the same page. To do this run:
 
 ```bash
-snakemake -s snakemake/rules/web_rk.smk   --cores 5 --logger rich
-snakemake -s snakemake/rules/web_rkst.smk --cores 5 --logger rich
+snakemake -s snakemake/rules/web/web.smk \
+          -c 5\
+          --configfile snakemake/configs/web/rk_reso_ee.yaml\
+          --config name='reso_dtf_v2'\
+          --logger=snkmt
 ```
 
-which will create `$ANADIR/plots_for_web/scan/components/`
+which will:
 
+- Run the workflow in `web.smk` with 5 processes
+- Use the configuration in `rk_reso_ee.yaml`
+- Pick up plots from fits in the `reso_dtf_v2` directory
+- Use the `snakemake-logger-plugin-snkmt` plugin to monitor the progress
+
+To visualize the workflow do in a terminal:
+
+```bash
+snkmt console
+```
 ## Create site and open it
 
 For this run:

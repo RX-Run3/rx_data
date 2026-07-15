@@ -121,10 +121,11 @@ def main(cfg : DictConfig|None = None):
         rdf = gtr.get_rdf(per_file=False)
 
         rdf = sel.apply_full_selection(
-            process= Data.sample,
-            trigger= Data.trigger,
-            q2bin  = Data.q2bin,
-            rdf    = rdf)
+            process  = Data.sample,
+            trigger  = Data.trigger,
+            q2bin    = Data.q2bin,
+            out_path = Path(cfg_plt.saving.plt_dir),
+            rdf      = rdf)
 
         ptr=Plotter2D(rdf=rdf, cfg=cfg_plt)
         ptr.run()
