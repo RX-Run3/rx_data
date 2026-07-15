@@ -52,7 +52,11 @@ constraints:
   signal_shape    : false
 fit: {}
 plots:
-  merging : {}
-  regions :
+  merging:
+    brem_x12:
+      - brem_xx1
+      - brem_xx2
+  regions:
+    brem_x12 : *plots_settings
     brem_xx1 : *plots_settings
     brem_xx2 : *plots_settings
