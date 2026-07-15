@@ -57,9 +57,8 @@ def test_patching(
     Return path to specification of combined sample
     '''
     mkr  = SpecMaker(
-        component =component, 
-        trigger=trigger)
-
+        component = component, 
+        trigger   = trigger)
     path = mkr.get_spec_path(per_file=False)
 
     assert path.exists()
