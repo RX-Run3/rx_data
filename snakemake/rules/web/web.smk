@@ -49,8 +49,8 @@ rule all:
         q2bin     = Q2BINS,
         prc       = PRC, 
         cmb       = CMB, 
-        brem      = BREMS,
         block     = BLOCKS,
+        brem      = BREMS,
         ),
         # ----------
         expand(
@@ -58,9 +58,9 @@ rule all:
         q2bin     = Q2BINS,
         prc       = PRC, 
         cmb       = CMB, 
+        block     = BLOCKS,
         component = COMPONENTS,
         brem      = BREMS,
-        block     = BLOCKS,
         ),
         # ----------
         expand(
@@ -93,12 +93,12 @@ rule copy_signal:
         block     = '|'.join(BLOCKS),
         brem      = '|'.join(BREMS),
     params:
-        root_dir = INPUT_DIR,
-        trigger  = TRIGGER,
-        project  = PROJECT,
-        channel  = CHANNEL,
-        signal   = SIGNAL,
-        name     = NAME,
+        root_dir  = INPUT_DIR,
+        trigger   = TRIGGER,
+        project   = PROJECT,
+        channel   = CHANNEL,
+        signal    = SIGNAL,
+        name      = NAME,
     shell:
         '''
         mkdir -p $(dirname {output})
