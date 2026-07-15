@@ -4,36 +4,28 @@ Module with functions needed to provide hashes
 
 import os
 import hashlib
-from typing  import Any
-from pathlib import Path
-
 import pandas as pnd
+
+from typing                import Any
+from pathlib               import Path
 from dmu.logging.log_store import LogStore
 from dmu.generic           import utilities as gut
 
 log=LogStore.add_logger('dmu:generic.hashing')
-# ------------------------------------
-def _dataframe_to_hash(df : pnd.DataFrame) -> str:
-    sr_hash = pnd.util.hash_pandas_object(df, index=True)
-    values  = sr_hash.values
-    hsh     = hashlib.sha256(values)
-    hsh     = hsh.hexdigest()
-
-    return hsh
 # ------------------------------------
 def hash_object(obj : Any) -> str:
     '''
     Function taking a python object and returning
     a string representing the hash
     '''
-
     if isinstance(obj, pnd.DataFrame):
-        value = _dataframe_to_hash(df=obj)
-        value = value[:10]
+        obj = obj.to_dict()
 
-        return value
+    if isinstance(obj, str):
+        string = obj
+    else:
+        string = gut.object_to_string(obj=obj)
 
-    string     = gut.object_to_string(obj=obj)
     string_bin = string.encode('utf-8')
     hsh        = hashlib.sha256(string_bin)
     value      = hsh.hexdigest()
