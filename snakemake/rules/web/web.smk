@@ -2,6 +2,17 @@ import os
 from pathlib   import Path
 from rx_common import Trigger
 
+_KINDS = {'reso', 'rare'}
+# --------------------------------------------
+def _kind_from_name(name : str) -> str:
+    parts = name.split('_')
+    kind  = parts[0]
+
+    if kind not in _KINDS:
+        raise ValueError(f'Invalid kind: {kind}')
+
+    return kind
+# --------------------------------------------
 ANADIR     = Path(os.environ['ANADIR'])
 TRIGGER    = config['trigger'] 
 SIGNAL     = config['signal' ] 
@@ -11,6 +22,7 @@ BREMS      = config['brems'  ]
 COMPONENTS = config['components']
 Q2BINS     = config['q2bins'] 
 NAME       = config['name']
+KIND       = _kind_from_name(name = NAME)
 CHANNEL    = Trigger(TRIGGER).channel
 PROJECT    = Trigger(TRIGGER).project
 INPUT_DIR  = ANADIR / f'fits/data/{NAME}'
@@ -102,14 +114,14 @@ rule copy_signal:
         channel   = CHANNEL,
         signal    = SIGNAL,
         name      = NAME,
+        kind      = KIND,
     shell:
         '''
         mkdir -p $(dirname {output})
 
-        WP="{wildcards.cmb}_{wildcards.prc}_all"
-        CAT={wildcards.brem}_{wildcards.block}
+        WP="{wildcards.cmb}_{wildcards.prc}_{wildcards.block}"
 
-        OUTDIR="{params.root_dir}/$WP/{params.name}/{params.project}/{params.channel}/{wildcards.q2bin}/{params.signal}/fit/{wildcards.brem}/$CAT"
+        OUTDIR="{params.root_dir}/$WP/{params.kind}/{params.project}/{params.channel}/{wildcards.q2bin}/{params.signal}/fit/{wildcards.brem}/{wildcards.brem}"
         SOURCE=$OUTDIR/fit_linear.png
 
         if [[ -f $SOURCE ]] && ! identify "$SOURCE" >/dev/null 2>&1; then
@@ -132,29 +144,30 @@ rule copy_non_signal:
         component = '|'.join(COMPONENTS),
         brem      = '|'.join(BREMS),
     params:
-        root_dir = INPUT_DIR,
-        trigger  = TRIGGER,
-        name     = NAME,
-        project  = PROJECT,
-        channel  = CHANNEL,
+        root_dir  = INPUT_DIR,
+        trigger   = TRIGGER,
+        name      = NAME,
+        project   = PROJECT,
+        channel   = CHANNEL,
+        kind      = KIND,
     shell:
         '''
         mkdir -p $(dirname {output})
 
         COMP={wildcards.component}
-        WP="{wildcards.cmb}_{wildcards.prc}_all"
+        WP="{wildcards.cmb}_{wildcards.prc}_{wildcards.block}"
 
         if   [[ $COMP == "data_24" ]]; then
-            OUTDIR="{params.root_dir}/$WP/{params.name}/{params.project}/{params.channel}/{wildcards.q2bin}/{wildcards.component}/fit/brem_xx1_brem_xx2/{wildcards.brem}"
+            OUTDIR="{params.root_dir}/$WP/{params.kind}/{params.project}/{params.channel}/{wildcards.q2bin}/{wildcards.component}/fit/brem_xx1_brem_xx2/{wildcards.brem}"
             SOURCE=$OUTDIR/fit_linear.png
         elif [[ $COMP == "comb"    ]]; then
-            OUTDIR="{params.root_dir}/$WP/{params.name}/{params.project}/{params.channel}/{wildcards.q2bin}/{wildcards.component}/fit/{wildcards.brem}"
+            OUTDIR="{params.root_dir}/$WP/{params.kind}/{params.project}/{params.channel}/{wildcards.q2bin}/{wildcards.component}/fit/{wildcards.brem}"
             SOURCE=$OUTDIR/fit_linear.png
         elif [[ $COMP == "ccbar"   ]]; then
-            OUTDIR="{params.root_dir}/$WP/{params.name}/{params.project}/{params.channel}/{wildcards.q2bin}/{wildcards.component}/fit/{wildcards.brem}"
+            OUTDIR="{params.root_dir}/$WP/{params.kind}/{params.project}/{params.channel}/{wildcards.q2bin}/{wildcards.component}/fit/{wildcards.brem}"
             SOURCE=$OUTDIR/c-bar-c-X.png
         else
-            OUTDIR="{params.root_dir}/$WP/{params.name}/{params.project}/{params.channel}/{wildcards.q2bin}/{wildcards.component}/fit/{wildcards.brem}"
+            OUTDIR="{params.root_dir}/$WP/{params.kind}/{params.project}/{params.channel}/{wildcards.q2bin}/{wildcards.component}/fit/{wildcards.brem}/{wildcards.brem}"
             SOURCE=$OUTDIR/fit_linear.png
         fi
 
@@ -182,13 +195,13 @@ rule copy_combined:
         name     = NAME,
         project  = PROJECT,
         channel  = CHANNEL,
+        kind     = KIND
     shell:
         '''
         mkdir -p $(dirname {output})
 
-        WP="{wildcards.cmb}_{wildcards.prc}_all"
-
-        OUTDIR="{params.root_dir}/$WP/{params.name}/{params.project}/{params.channel}/{wildcards.q2bin}/{params.data}/fit/brem_xx1_brem_xx2/both_brem"
+        WP="{wildcards.cmb}_{wildcards.prc}_{wildcards.block}"
+        OUTDIR="{params.root_dir}/$WP/{params.kind}/{params.project}/{params.channel}/{wildcards.q2bin}/{params.data}/fit/brem_xx1_brem_xx2/both_brem"
         SOURCE=$OUTDIR/fit_linear.png
 
         if [[ -f $SOURCE ]] && ! identify "$SOURCE" >/dev/null 2>&1; then
