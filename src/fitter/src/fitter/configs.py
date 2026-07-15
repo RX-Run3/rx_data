@@ -605,6 +605,15 @@ class FitModelConf(UnpackerModel):
         return cfg_obs.model_copy(update = {'name' : cfg_obs.name.smeared_version })
     # ----------------------
     @property
+    def hash(self) -> str:
+        '''
+        Hash for current config
+        '''
+        string = self.model_dump_json()
+
+        return str(hash(string))
+    # ----------------------
+    @property
     def obs(self) -> zobs:
         '''
         Observable needed for specialized model config fit
