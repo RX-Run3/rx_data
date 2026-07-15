@@ -115,7 +115,7 @@ class SamplePatcher:
         Parameters
         -------------
         ftree       : Name of friend tree
-        sample      : Object represenging set of files
+        sample      : Object representing set of files
         block_needed: Block that needs to be patched
         file_names  : List of ROOT file names for files meant to patch `block_needed`
 
@@ -161,7 +161,7 @@ class SamplePatcher:
         -------------
         Patched version of specification, which takes into account block patching
         '''
-        # We expect to always have the full dataset
+        # We expect to always have the full dataset for real data
         # Only MC can be missing
         if not self._sample.is_mc:
             log.info(f'Not patching real data: {self._sample}')
