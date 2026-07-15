@@ -9,7 +9,7 @@ from pathlib         import Path
 from ROOT            import RDF # type: ignore
 from typing          import Final
 
-from dmu             import LogLevels, LogStore
+from dmu             import LogStore
 from dmu.workflow    import Cache
 from dmu.stats       import utilities  as sut
 from dmu.generic     import utilities  as gut
