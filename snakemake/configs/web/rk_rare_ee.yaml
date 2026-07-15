@@ -1,4 +1,4 @@
-trigger : Hlt2RD_BuToKpEE_MVA
+trigger : rk_ee_os 
 signal  : bpkpee
 data    : data_24
 brems   :
