@@ -13,10 +13,9 @@ Q2BINS     = config['q2bins']
 NAME       = config['name']
 CHANNEL    = Trigger(TRIGGER).channel
 PROJECT    = Trigger(TRIGGER).project
-
 INPUT_DIR  = ANADIR / f'fits/data/{NAME}'
 OUTPUTDIR  = ANADIR / f'plots/web/{NAME}/components/{PROJECT}'
-REGEX      = r'\d{3}_\d{3}'
+REGEX      = r'\d{3}_\d{3}_(b\d|all)'
 
 OUTPUTDIR.mkdir(parents=True, exist_ok=True)
 # ----------------------------
@@ -34,42 +33,50 @@ def _get_wc() -> tuple[list[str], list[str]]:
 
     return cmb, prc
 # ----------------------------
-cmb, prc = _get_wc()
+CMB, PRC = _get_wc()
 rule all:
     input: 
         expand(
-        OUTPUTDIR / f'{{q2bin}}/{{prc}}_{{cmb}}/{DATA}_combined.png',
+        OUTPUTDIR / f'{{q2bin}}/{{prc}}_{{cmb}}/{{block}}/{DATA}_combined.png',
         q2bin     = Q2BINS,
-        prc       = prc, 
-        cmb       = cmb, 
+        prc       = PRC, 
+        cmb       = CMB, 
+        block     = BLOCKS,
         ),
         # ----------
         expand(
-        OUTPUTDIR / f'{{q2bin}}/{{prc}}_{{cmb}}/{SIGNAL}_{{brem}}_{{block}}.png',
+        OUTPUTDIR / f'{{q2bin}}/{{prc}}_{{cmb}}/{{block}}/{SIGNAL}_{{brem}}.png',
         q2bin     = Q2BINS,
-        prc       = prc, 
-        cmb       = cmb, 
+        prc       = PRC, 
+        cmb       = CMB, 
         brem      = BREMS,
         block     = BLOCKS,
         ),
         # ----------
         expand(
-        OUTPUTDIR / '{q2bin}/{prc}_{cmb}/{component}_{brem}.png',
+        OUTPUTDIR / '{q2bin}/{prc}_{cmb}/{block}/{component}_{brem}.png',
         q2bin     = Q2BINS,
-        prc       = prc, 
-        cmb       = cmb, 
+        prc       = PRC, 
+        cmb       = CMB, 
         component = COMPONENTS,
         brem      = BREMS,
+        block     = BLOCKS,
         ),
         # ----------
         expand(
-        OUTPUTDIR / '{q2bin}/{prc}_{cmb}/index.md',
+        OUTPUTDIR / '{q2bin}/{prc}_{cmb}/{block}/index.md',
         q2bin     = Q2BINS,
-        prc       = prc, 
-        cmb       = cmb, 
+        prc       = PRC, 
+        cmb       = CMB, 
+        block     = BLOCKS,
         )
 rule metadata:
-    output: OUTPUTDIR / '{q2bin}/{prc}_{cmb}/index.md'
+    output              : OUTPUTDIR / '{q2bin}/{prc}_{cmb}/{block}/index.md'
+    wildcard_constraints:
+        q2bin= '|'.join(Q2BINS),
+        prc  = '|'.join(PRC),
+        cmb  = '|'.join(CMB),
+        block= '|'.join(BLOCKS),
     params:
         data = DATA
     shell :
@@ -78,7 +85,13 @@ rule metadata:
         echo "Thumbnail: {params.data}_combined.png"   >> {output}
         '''
 rule copy_signal:
-    output: OUTPUTDIR / f'{{q2bin}}/{{prc}}_{{cmb}}/{SIGNAL}_{{brem}}_{{block}}.png'
+    output              : OUTPUTDIR / f'{{q2bin}}/{{prc}}_{{cmb}}/{{block}}/{SIGNAL}_{{brem}}.png'
+    wildcard_constraints:
+        q2bin     = '|'.join(Q2BINS),
+        prc       = '|'.join(PRC),
+        cmb       = '|'.join(CMB),
+        block     = '|'.join(BLOCKS),
+        brem      = '|'.join(BREMS),
     params:
         root_dir = INPUT_DIR,
         trigger  = TRIGGER,
@@ -107,8 +120,12 @@ rule copy_signal:
         fi
         '''
 rule copy_non_signal:
-    output: OUTPUTDIR / '{q2bin}/{prc}_{cmb}/{component}_{brem}.png'
+    output              : OUTPUTDIR / '{q2bin}/{prc}_{cmb}/{block}/{component}_{brem}.png'
     wildcard_constraints:
+        q2bin     = '|'.join(Q2BINS),
+        prc       = '|'.join(PRC),
+        cmb       = '|'.join(CMB),
+        block     = '|'.join(BLOCKS),
         component = '|'.join(COMPONENTS),
         brem      = '|'.join(BREMS),
     params:
@@ -149,7 +166,12 @@ rule copy_non_signal:
         fi
         '''
 rule copy_combined:
-    output: OUTPUTDIR / f'{{q2bin}}/{{prc}}_{{cmb}}/{DATA}_combined.png'
+    output: OUTPUTDIR / f'{{q2bin}}/{{prc}}_{{cmb}}/{{block}}/{DATA}_combined.png'
+    wildcard_constraints:
+        q2bin     = '|'.join(Q2BINS),
+        prc       = '|'.join(PRC),
+        cmb       = '|'.join(CMB),
+        block     = '|'.join(BLOCKS),
     params:
         root_dir = INPUT_DIR,
         trigger  = TRIGGER,
