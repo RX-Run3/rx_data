@@ -768,19 +768,20 @@ class RXFitConfig(BaseModel):
 
         Returns
         -----------------
-        Copy of config with renaming
+        Copy of config with renaming and with all components sections dropped
+        but the one for the q2bin requested
         '''
-        new_components : dict[Component, AnyModelConf] = {}
-        qsq_components = self.mod_cfg.components[q2bin]
-        for comp, conf in qsq_components.items():
+        new_qsq_components : dict[Component, AnyModelConf] = {}
+        old_qsq_components = self.mod_cfg.components[q2bin]
+        for comp, conf in old_qsq_components.items():
             if not isinstance(conf, ParametricConf):
                 new_conf = conf.model_copy()
             else:
                 new_conf = conf.cfg_copy(replacements = replacements )
 
-            new_components[comp] = new_conf
+            new_qsq_components[comp] = new_conf
 
-        new_mod_cfg = self.mod_cfg.model_copy(update = {'components' : new_components})
+        new_mod_cfg = self.mod_cfg.model_copy(update = {'components' : {q2bin : new_qsq_components}})
 
         return self.model_copy(update = {'mod_cfg' : new_mod_cfg})
     # ----------------------

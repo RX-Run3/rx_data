@@ -107,14 +107,15 @@ class DataModel:
         ----------------
         Fitting model for data fit
         '''
-        npdf  = len(self._cfg.components)
+        components = self._cfg.components[self._q2bin]
+        npdf       = len(components)
         if npdf == 0:
             raise ValueError('Found zero components in model')
 
         log.debug(f'Found {npdf} components')
 
         l_pdf : list[zpdf] = []
-        for component, cfg in self._cfg.components.items():
+        for component, cfg in components.items():
             pdf           = self._get_component_pdf(
                 component = component,
                 cfg       = cfg)
