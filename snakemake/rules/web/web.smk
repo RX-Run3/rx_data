@@ -17,6 +17,9 @@ INPUT_DIR  = ANADIR / f'fits/data/{NAME}'
 OUTPUTDIR  = ANADIR / f'plots/web/{NAME}/components/{PROJECT}'
 REGEX      = r'\d{3}_\d{3}_(b\d|all)'
 
+if SIGNAL in COMPONENTS:
+    raise ValueError(f'Found signal {SIGNAL} among components')
+
 OUTPUTDIR.mkdir(parents=True, exist_ok=True)
 # ----------------------------
 def _get_wc() -> tuple[list[str], list[str]]:
