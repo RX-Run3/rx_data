@@ -10,15 +10,11 @@ import subprocess
 from pathlib               import Path
 from dmu.logging.log_store import LogStore
 
-app    = typer.Typer(
+app     = typer.Typer(
     help            = __doc__,
     context_settings= {"help_option_names": ["-h", "--help"]})
-log    = LogStore.add_logger('rx_web:cli')
-ANADIR = Path(os.environ['ANADIR'])
-# ----------------------
-@app.command()
-def dummy():
-    pass
+log     = LogStore.add_logger('rx_web:cli')
+_ANADIR = Path(os.environ['ANADIR'])
 # ----------------------
 @app.command()
 def collect_plots(
@@ -26,7 +22,7 @@ def collect_plots(
     '''
     This will collect in a tarball the directory structure with plots of fits
     '''
-    fit_dir  = ANADIR / 'fits/data' / name
+    fit_dir  = _ANADIR / 'fits/data' / name
 
     log.info(f'Picking files from: {fit_dir}')
 
@@ -51,9 +47,9 @@ def make_html(
     '''
     Creates website from path to plots and opens site
     '''
-    www_dir    = ANADIR / 'www'
+    www_dir    = _ANADIR / 'www'
     index_path = www_dir / 'index.html'
-    create_cmd = ['sigal', 'build', '-n', ncpu, '-c', 'src/rx_web/sigal.conf.py', f'{ANADIR}/plots/web', f'{ANADIR}/www']
+    create_cmd = ['sigal', 'build', '-n', ncpu, '-c', 'src/rx_web/sigal.conf.py', f'{_ANADIR}/plots/web', f'{_ANADIR}/www']
     server_cmd = ['sigal', 'serve', www_dir]
 
     if not index_path.exists() or update:
