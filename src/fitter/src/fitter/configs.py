@@ -19,6 +19,7 @@ from dmu.stats   import FitConf
 from dmu.stats   import ZFitPlotterConf
 from dmu.stats   import YieldsConf
 from dmu.stats   import zfit
+from dmu.generic import hashing
 from dmu.generic import UnpackerModel
 from zfit        import Space      as zobs
 
@@ -611,7 +612,7 @@ class FitModelConf(UnpackerModel):
         '''
         string = self.model_dump_json()
 
-        return str(hash(string))
+        return hashing.hash_object(obj = string)
     # ----------------------
     @property
     def obs(self) -> zobs:
