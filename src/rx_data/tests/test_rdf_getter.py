@@ -531,6 +531,62 @@ def _run_default_checks(
 # ------------------------------------------------
 # Basic tests
 # ------------------------------------------------
+def test_consistent_loop():
+    '''
+    Test that we get the same number of entries if triggering
+    loop multiple times
+    '''
+    component = Component.bppijpsiee
+    trigger   = Trigger.rk_ee_os
+    q2bin     = Qsq.jpsi
+
+    with RDFGetter.max_entries(value=1000):
+        gtr = RDFGetter(sample=component, trigger=trigger)
+        rdf = gtr.get_rdf(per_file=False)
+
+    rdf     = sel.apply_full_selection(
+        rdf    = rdf, 
+        trigger=trigger, 
+        q2bin  =q2bin, 
+        process=component)
+
+    values    = []
+    for _ in range(10):
+        nentries = rdf.Count().GetValue()
+        values.append(nentries) 
+
+    log.info(f'Found entries: {values}')
+
+    assert len(set(values)) == 1
+# ------------------------------------------------
+def test_consistent_build():
+    '''
+    Test that we get the same number of entries if 
+    building dataframe multiple times
+    '''
+    component = Component.bppijpsiee
+    trigger   = Trigger.rk_ee_os
+    q2bin     = Qsq.jpsi
+
+    values    = []
+    for _ in range(10):
+        with RDFGetter.max_entries(value=1000):
+            gtr = RDFGetter(sample=component, trigger=trigger)
+            rdf = gtr.get_rdf(per_file=False)
+
+        rdf     = sel.apply_full_selection(
+            rdf    = rdf, 
+            trigger=trigger, 
+            q2bin  =q2bin, 
+            process=component)
+
+        nentries = rdf.Count().GetValue()
+        values.append(nentries) 
+
+    log.info(f'Found entries: {values}')
+
+    assert len(set(values)) == 1
+# ------------------------------------------------
 @pytest.mark.basic
 @pytest.mark.parametrize('sample, trigger',
     [(Component.bpkpee    , Trigger.rk_ee_os),
