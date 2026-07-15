@@ -2,20 +2,12 @@
 This script is meant to be the entry point for all the functionalities
 provided by this project
 '''
+# ruff: noqa: PLC0415
 
 import typer
-import mplhep
-import matplotlib.pyplot as plt
 
-from ROOT      import EnableImplicitMT # type: ignore
-from hepstats  import splot
 from dmu       import LogLevels, LogStore
 from pathlib   import Path
-from fitter    import ScalesTabulator
-from fitter    import ScalesTabulatorConf
-from rx_common import Component
-from dmu.stats import utilities as sut
-from dmu.stats import Function
 
 app = typer.Typer(
     help            = __doc__,
@@ -28,6 +20,10 @@ def tabulate_scales(
     '''
     Makes table of signal over background scale factors
     '''
+    from ROOT      import EnableImplicitMT # type: ignore
+    from fitter    import ScalesTabulator
+    from fitter    import ScalesTabulatorConf
+
     if ncores > 1:
         log.info(f'Using {ncores} cores')
         EnableImplicitMT(ncores)
@@ -38,15 +34,17 @@ def tabulate_scales(
 # ----------------------
 @app.command()
 def fit_summary(
-    name    : str       = typer.Option(...           , '--name'   , '-n', help='Name of fits, e.g. mid_window'),
-    signal  : Component = typer.Option(...           , '--signal' , '-s', help='Name of signal, e.g. bpkpee'), # noqa: B008
-    log_lvl : int       = typer.Option(LogLevels.info, '--log_lvl', '-l', help='Logging level'))-> None:
+    name    : str = typer.Option(...           , '--name'   , '-n', help='Name of fits, e.g. mid_window'),
+    signal  : str = typer.Option(...           , '--signal' , '-s', help='Name of signal, e.g. bpkpee'), # noqa: B008
+    log_lvl : int = typer.Option(LogLevels.info, '--log_lvl', '-l', help='Logging level'))-> None:
     '''
     This will create a fit summary for a given fit
     '''
     from fitter    import FitSummary # noqa: PLC0415 
+    from rx_common import Component
 
-    smr = FitSummary(
+    signal = Component(signal)
+    smr    = FitSummary(
         data   = Component.data_24,
         signal = signal,
         name   = name)
@@ -62,6 +60,8 @@ def make_dummy_plot(
     '''
     This will check if a plot exists and if not, will create a placeholder
     '''
+    import matplotlib.pyplot as plt
+
     if path.exists():
         log.debug(f'Path found: {path}')
         return
@@ -114,6 +114,13 @@ def calculate_sweights(
     '''
     Makes prefit and postfit plots of fit parameters
     '''
+    import matplotlib.pyplot as plt
+    import mplhep
+
+    from dmu.stats import utilities as sut
+    from hepstats  import splot
+    from dmu.stats import Function
+
     nll    = sut.load_nll(path = nll_path)
     pdf    = nll.model[0]
     dat    = nll.data[0]
