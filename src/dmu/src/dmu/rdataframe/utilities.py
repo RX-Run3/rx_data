@@ -233,8 +233,6 @@ def _get_sample_definer_expression_cached(samples : tuple[tuple[str,int],...]) -
     }}
     '''
 
-    log.error(text)
-
     ROOT.gInterpreter.Declare(text)
 
     return f'''
