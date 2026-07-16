@@ -41,6 +41,7 @@ _SIGNALS : Final[list[tuple[Component,Trigger]]] = [
 ]
 
 _RESONANT_SAMPLES : Final[list[tuple[Component,Trigger]]] = [
+    (Component.bppijpsiee    , Trigger.rk_ee_os  ),
     (Component.bpkpjpsiee    , Trigger.rk_ee_os  ),
     (Component.bdkstkpijpsiee, Trigger.rkst_ee_os),
     (Component.bpkpjpsimm    , Trigger.rk_mm_os  ),
@@ -552,8 +553,12 @@ def test_consistent_loop():
 
     values    = []
     for _ in range(10):
-        nentries = rdf.Count().GetValue()
-        values.append(nentries) 
+        nentries = rdf.Count()
+        rep      = rdf.Report()
+
+        rep.Print()
+        values.append(nentries.GetValue()) 
+        log.info('')
 
     log.info(f'Found entries: {values}')
 
@@ -1051,13 +1056,44 @@ def test_no_friends_mc(
         gtr = RDFGetter(sample=sample, trigger=trigger)
         rdf = gtr.get_rdf(per_file=False)
 
-    assert rdf.Count().GetValue() > 0
+    nentries = rdf.Count()
 
-    _check_block(rdf)
+    _check_block(rdf = rdf)
+
+    name = f'no_friends/{sample}_{trigger}'
+
+    _plot_block(rdf=rdf, name=name, out_dir = tmp_path)
+
+    assert nentries.GetValue() > 0
+# ------------------------------------------------
+@pytest.mark.parametrize('sample, trigger', _RESONANT_SAMPLES)
+def test_blocks(
+    sample  : Component,
+    trigger : Trigger,
+    tmp_path: Path):
+    '''
+    Test loading files with out any friend
+    '''
+    with RDFGetter.exclude_friends(names = []):
+        gtr = RDFGetter(sample=sample, trigger=trigger)
+        rdf = gtr.get_rdf(per_file=False)
+
+        rdf = sel.apply_full_selection(
+            rdf     = rdf,
+            process = sample,
+            trigger = trigger,
+            q2bin   = Qsq.jpsi)
+
+    nentries = rdf.Count()
+
+    _check_block(rdf = rdf)
 
     name   = f'no_friends/{sample}_{trigger}'
 
     _plot_block(rdf=rdf, name=name, out_dir = tmp_path)
+
+    assert nentries.GetValue() > 0
+# ------------------------------------------------
 @pytest.mark.parametrize('sample, trigger', _DATA_SAMPLES)
 def test_no_friends_dt(
     sample  : Component,
