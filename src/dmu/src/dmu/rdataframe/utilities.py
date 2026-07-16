@@ -208,43 +208,38 @@ def get_sample_definer_expression(samples : dict[str,int]) -> str:
 
     return _get_sample_definer_expression_cached(samples = data)
 # ---------------------------------------------------------------------
-@lru_cache
+@lru_cache()
 def _get_sample_definer_expression_cached(samples : tuple[tuple[str,int],...]) -> str:
-    pid  = os.getpid()
-    hash = hashing.hash_object(obj = [samples, pid])
+    if len(samples) == 0:
+        raise ValueError('Found no entries for patching')
 
-    string = f'std::map<std::string,int> entries_{hash};\n'
+    hash = hashing.hash_object(obj = [samples])
+
+    inserts = ''
     for file_name, value in samples:
-        string += f'entries_{hash}["{file_name}"] = {value};\n'
+        inserts += f'tmp["{file_name}"] = {value};' + '\n'
 
     text = rf'''
-    {string}
-
     int GetValue_{hash}(const std::string &name)
     {{
-        // std::cout << "Looking for: " << name << "\n";
-        int val;
+        static const std::map<std::string,int> entries_{hash} = []{{
+            std::map<std::string,int> tmp;
+            {inserts}
+            return tmp;
+        }}();
 
-        try
-        {{
-            val = entries_{hash}.at(name);
-            // std::cout << "Found block: " << val << "\n";
-        }}
-        catch (const std::out_of_range &e)
-        {{
-            val = -999;
-            // std::cout << "Block not found for: " << name << "\n";
-        }}
-
-        return val;
+        auto it = entries_{hash}.find(name);
+        return it == entries_{hash}.end() ? -999 : it->second;
     }}
     '''
+
+    log.error(text)
 
     ROOT.gInterpreter.Declare(text)
 
     return f'''
-    auto name  = rdfsampleinfo_.AsString();
+    auto name_{hash}  = rdfsampleinfo_.AsString();
 
-    return GetValue_{hash}(name);
+    return GetValue_{hash}(name_{hash});
     '''
 # ---------------------------------------------------------------------
