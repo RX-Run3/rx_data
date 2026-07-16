@@ -1,17 +1,17 @@
 '''
 Module holding Specification and Sample classes
 '''
-from ROOT      import RDataFrame # type: ignore
-from pathlib   import Path
-from typing    import Final, Literal, overload
-from pydantic  import BaseModel, ConfigDict, Field, model_serializer
-from pydantic  import RootModel, model_validator
-from rx_common import Block
-from dmu       import LogStore
+from ROOT        import RDataFrame # type: ignore
+from pathlib     import Path
+from typing      import Final, Literal, overload
+from pydantic    import BaseModel, ConfigDict, Field, model_serializer
+from pydantic    import RootModel, model_validator
+from rx_common   import Block
+from dmu         import LogStore
+from dmu.fsystem import get_tmp_path
 
-_BLOCK         : Final[str] = 'block' # name of branch with block number
-_MAIN_TREE     : Final[str] = 'main'  # name of main trees
-_SYMLINK_DIR   : Final[Path]= Path('/tmp/rdf_getter/patching') # Links to patching files will be here
+_BLOCK     : Final[str] = 'block' # name of branch with block number
+_MAIN_TREE : Final[str] = 'main'  # name of main trees
 
 log = LogStore.add_logger('rx_data:specification')
 # ------------------------------------
@@ -97,11 +97,14 @@ class File(BaseModel):
             blocks   = { Block(value = value) for value in values }
         # Main tree that needs patching
         elif patch:
-            dir_path = _SYMLINK_DIR / tree / ftree / block.value
-            dir_path.mkdir(parents = True, exist_ok = True)
+            fname  = path.name.replace('.root', '_')
+            link   = get_tmp_path(
+                dir       = f'rx_data/specification/{ftree}', 
+                prefix    = fname,
+                extension = 'root')
 
-            link   = dir_path / path.name
-            path   = cls._create_link(link = link, path = path)
+            link.symlink_to(target = path)
+            path   = link
             blocks = {block}
         else:
             blocks = {block}
@@ -110,30 +113,6 @@ class File(BaseModel):
             path    = path,
             entries = entries, 
             blocks  = blocks)
-    # ----------------------
-    @classmethod
-    def _create_link(cls, link : Path, path : Path) -> Path:
-        '''
-        Parameters
-        -----------------
-        link: Path to link to be created
-        path: Path to target file
-
-        Returns
-        -----------------
-        Path to created link
-        '''
-        if not link.exists(follow_symlinks=False):
-            link.symlink_to(target = path)
-            return link
-
-        if link.is_symlink() and link.resolve() == path.resolve():
-            return link 
-
-        link.unlink()
-        link.symlink_to(target = path)
-
-        return link
     # ----------------------
     @model_serializer
     def serialize_model(self) -> str:
