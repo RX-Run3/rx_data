@@ -4,9 +4,7 @@ Module with SpecMaker class
 import os
 import yaml
 import copy
-import secrets
 import pprint
-import tempfile
 
 from contextvars      import ContextVar
 from contextlib       import contextmanager
@@ -15,7 +13,7 @@ from typing           import overload, Literal, Final
 from rx_common        import Block, Project, Trigger
 from rx_common        import Component
 from dmu              import LogStore
-from dmu.generic      import hashing
+from dmu.fsystem      import get_tmp_path, get_tmp_dir
 from dmu.generic      import version_management as vmn
 
 from .path_splitter   import PathSplitter, NestedSamples
@@ -65,8 +63,8 @@ class SpecMaker:
         self._emulator  = SampleEmulator(sample=component)
         self._cfg_samp  = self._emulator.get_samples()
 
-        cache_dir       = tempfile.mkdtemp(prefix=f'{component}_{trigger}_{tree}_')
-        self._cache_dir = Path(cache_dir)
+        prefix          = f'rx_data/spec_maker/cache/{component}_{trigger}_{tree}'
+        self._cache_dir = get_tmp_dir(prefix = prefix) 
 
         self._trigger   = trigger
         self._tree_name = tree
@@ -313,7 +311,7 @@ class SpecMaker:
         spl  = PathSplitter(paths=l_root_path)
         data = spl.split(nested=True)
 
-        out_path = self._get_tmp_path(identifier='tree_structure', data=data)
+        out_path = get_tmp_path(dir = 'rx_data/ftree_struc', extension = 'json')
         log.debug(f'Saving friend tree structure to {out_path}')
         string = data.model_dump_json(indent = 2)
         out_path.write_text(string)
@@ -347,7 +345,7 @@ class SpecMaker:
         for ifile in range(nfiles):
             log.debug(f'Removing {ifile}-th file')
             single_file_spec, file = self._remove_all_but(spec=spec, ifile=ifile, main=main)
-            config_path            = self._get_tmp_path(identifier='rdframe_config', data=single_file_spec)
+            config_path            = get_tmp_path(dir = 'rx_data/per_file_spec', extension = 'json')
 
             log.debug(f'Saving per-file config path to {config_path}')
             config_path.write_text(single_file_spec.model_dump_json(indent=2))
@@ -399,38 +397,6 @@ class SpecMaker:
 
         return Specification(**data), fpath_main
     # ---------------------------------------------------
-    def _get_tmp_path(
-        self, 
-        identifier : str, 
-        data       : NestedSamples | Specification) -> Path:
-        '''
-        This method creates paths to temporary config files in /tmp.
-        Needed to configure creation of dataframes
-
-        Parameters
-        ----------------
-        identifier : String identifying sample/file whose configuration will be stored
-        data       : Dictionary with structure as needed by ROOT to make dataframe with friend trees
-
-        Returns
-        ----------------
-        Path to JSON file that will be used to dump configuration
-        '''
-        if not isinstance(self._cache_dir, Path):
-            raise ValueError(f'Caching directory not a path but: {type(self._cache_dir)}')
-
-        string = data.model_dump_json()
-        val    = hashing.hash_object(obj=[string])
-        val    = val[:10]
-
-        # Id of process plus random number 
-        rand_id  = secrets.randbelow(1000_000_000)
-        proc_id  = f'{self._identifier}_{rand_id}'
-        tmp_path = self._cache_dir / f'{identifier}_{proc_id}_{val}.json'
-
-        log.debug(f'Using config JSON: {tmp_path}')
-
-        return tmp_path
     # ----------------------
     @property
     def spec(self) -> Specification:
@@ -467,7 +433,7 @@ class SpecMaker:
         log.debug(f'This instance/process ID is: {self._identifier}')
         if not per_file:
             log.debug('Not splitting per file')
-            cfg_path = self._get_tmp_path(identifier='rdframe_config', data=self._spec)
+            cfg_path = get_tmp_path(dir = f'rx_data/full_dataset_spec/{self._component}', extension = 'json')
 
             log.debug(f'Saving config path to {cfg_path}')
             string = self._spec.model_dump_json(indent=2)
