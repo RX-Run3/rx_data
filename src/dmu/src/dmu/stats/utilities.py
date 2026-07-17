@@ -827,14 +827,18 @@ def merge_sum_models(
     '''
     Parameters
     --------------
-    obs   : Observable needed for full PDF, to specify normalization
-    models: List of models, each representing a full fit model, made of multiple components
-    pair  : Criterion used to merge PDFs
+    obs     : Observable needed for full PDF, to specify normalization
+    models  : List of models, each representing a full fit model, made of multiple components
+    pair    : Criterion used to merge PDFs
+    prefixes: List of string
 
     Returns
     --------------
     Single SumPDF made of components that are the sum of models
     '''
+    if prefixes is not None and len(prefixes) == 0:
+        raise ValueError('Empty list of prefixes passed')
+
     nmodel = len(models)
     if nmodel < _MIN_MERGE_MODELS:
         raise ValueError(f'Need at least two models to merge, found: {nmodel}')
