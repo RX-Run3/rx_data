@@ -2,7 +2,6 @@
 Module holding DataPreprocessor class
 '''
 import numpy
-import tempfile
 import pandas   as pnd
 
 from pathlib         import Path
@@ -80,8 +79,7 @@ class DataPreprocessor(Cache):
         # Caching will remove all files
         # Need to keep around selection
         # To save it at the end
-        rdf, cuts = self._get_rdf(selection = selection)
-
+        rdf, cuts    = self._get_rdf(selection = selection)
         self._is_sig = is_sig
         self._rdf    = rdf 
         self._cuts   = cuts
@@ -126,20 +124,21 @@ class DataPreprocessor(Cache):
         # is applied on top of potentially non-default selection
         # Current selection might contain different cuts,
         # e.g. special BDT cut or special brem choice
-        with tempfile.TemporaryDirectory() as tmp_dir,\
-            sel.update_selection(d_sel=selection):
+        with sel.update_selection(d_sel=selection):
             rdf_sel = sel.apply_full_selection(
                 rdf     = rdf_raw,
                 uid     = uid,
                 q2bin   = self._q2bin,
                 trigger = self._trigger,
                 process = self._sample,
-                out_path= Path(tmp_dir))
+                out_path= 0) # keep this lazy, do not execute and save selection
 
             cuts = sel.selection(
                 process = self._sample, 
                 trigger = self._trigger, 
                 q2bin   = self._q2bin)
+
+        log.debug('Applied selection')
 
         return rdf_sel, cuts
     # ------------------------
@@ -304,6 +303,8 @@ class DataPreprocessor(Cache):
         ---------------------
         zfit data, should be ready to be used in fit
         '''
+        hash_dir = self._get_dir(kind = 'hash', make = False)
+        log.debug(f'Looking for: {hash_dir}/data.npz')
         data_path = self._out_path / 'data.npz'
         if self._copy_from_cache():
             log.info(f'Data found cached, loading: {data_path}')
