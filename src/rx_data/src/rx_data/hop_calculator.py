@@ -4,12 +4,16 @@ Module containing HOPVarCalculator class
 import math
 import numpy
 
+from typing     import Final
 from ROOT       import RDF  # type: ignore
 from ROOT.Math  import LorentzVector, XYZVector # type: ignore
 from dmu        import LogStore
 from rx_common  import Project, Trigger
 
 log = LogStore.add_logger('rx_data:hop_calculator')
+
+_LORENTZ_DIM : Final[int] = 4
+_EUCLID_DIM  : Final[int] = 3
 # -------------------------------
 class HOPCalculator:
     '''
@@ -34,10 +38,10 @@ class HOPCalculator:
         self._extra_branches= ['EVENTNUMBER', 'RUNNUMBER']
     # -------------------------------
     def _val_to_vector(self, arr_val : numpy.ndarray, ndim : int):
-        if   ndim == 4:
+        if   ndim == _LORENTZ_DIM:
             [px, py, pz, pe] = arr_val.tolist()
             vector = LorentzVector('ROOT::Math::PxPyPzE4D<double>')(px, py, pz, pe)
-        elif ndim == 3:
+        elif ndim == _EUCLID_DIM:
             [px, py, pz    ] = arr_val.tolist()
             vector = XYZVector(px, py, pz)
         else:
@@ -61,7 +65,7 @@ class HOPCalculator:
         if   name == 'Hadrons' and project in [Project.rkst, Project.rkst_no_pid]:
             l_h1 = self._get_xvector(name='H1_P', ndim=ndim)
             l_h2 = self._get_xvector(name='H2_P', ndim=ndim)
-            l_hh = [ h1 + h2 for h1, h2 in zip(l_h1, l_h2) ]
+            l_hh = [ h1 + h2 for h1, h2 in zip(l_h1, l_h2, strict = True) ]
 
             return l_hh
         elif name == 'Hadrons' and project in [Project.rk, Project.rk_no_pid]:
@@ -71,9 +75,9 @@ class HOPCalculator:
         else:
             raise ValueError(f'Invalid project/name: {project}/{name}')
 
-        if   ndim == 4:
+        if   ndim == _LORENTZ_DIM:
             l_branch = [f'{name}X', f'{name}Y', f'{name}Z', f'{name}E']
-        elif ndim == 3:
+        elif ndim == _EUCLID_DIM:
             l_branch = [f'{name}X', f'{name}Y', f'{name}Z']
         else:
             raise NotImplementedError(f'Invalid ndim={ndim}')
@@ -139,7 +143,7 @@ class HOPCalculator:
 
         l_alpha = []
         l_mass  = []
-        for pv, sv, l1, l2, hd in zip(l_pv, l_sv, l_l1, l_l2, l_hd):
+        for pv, sv, l1, l2, hd in zip(l_pv, l_sv, l_l1, l_l2, l_hd, strict=True):
             alpha   = self._get_alpha(pv, sv, l1, l2, hd)
             l1_corr = self._correct_kinematics(alpha, l1)
             l2_corr = self._correct_kinematics(alpha, l2)
