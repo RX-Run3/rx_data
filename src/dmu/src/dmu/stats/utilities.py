@@ -11,12 +11,11 @@ import pandas            as pnd
 import matplotlib.pyplot as plt
 import tensorflow        as tf
 
-import dmu.pdataframe.utilities  as put
-
+from dmu.pdataframe   import utilities  as put
 from zfit             import dill
 from dmu              import LogStore, LogLevels
 from .imports         import zfit
-from typing           import Any, Literal, overload, Final
+from typing           import Any, Literal, overload, Final, Sequence
 from pathlib          import Path
 from contextlib       import contextmanager
 
@@ -811,7 +810,7 @@ def merge_sum_models(
     obs     : zobs,
     models  : list[zfit.pdf.SumPDF],
     pair    : Literal['by_prefix'],
-    prefixes: set[str]) -> zfit.pdf.SumPDF: ...
+    prefixes: Sequence[str]) -> zfit.pdf.SumPDF: ...
 @overload
 def merge_sum_models(
     *,
@@ -824,7 +823,7 @@ def merge_sum_models(
     obs     : zobs,
     models  : list[zfit.pdf.SumPDF],
     pair    : Literal['by_name', 'by_order', 'by_prefix'],
-    prefixes: set[str] | None = None) -> zfit.pdf.SumPDF:
+    prefixes: Sequence[str] | None = None) -> zfit.pdf.SumPDF:
     '''
     Parameters
     --------------
@@ -862,7 +861,7 @@ def merge_sum_models(
 #---------------------------------------------
 def _merge_by_prefix(
     obs      : zobs, 
-    prefixes : set[str],
+    prefixes : Sequence[str],
     models   : list[zfit.pdf.SumPDF]) -> zfit.pdf.SumPDF:
     '''
     Parameters
@@ -891,7 +890,7 @@ def _merge_by_prefix(
 #---------------------------------------------
 def _group_components(
     models   : list[zfit.pdf.SumPDF], 
-    prefixes : set[str]) -> dict[str,list[zpdf]]:
+    prefixes : Sequence[str]) -> dict[str,list[zpdf]]:
     '''
     Group components by prefix, i.e. all components with a given prefix
     would be in same list of PDFs
@@ -921,6 +920,9 @@ def _group_components(
             fail = True
 
     if fail:
+        for prefix in prefixes:
+            log.error(prefix)
+
         raise ValueError('Model names found that do not match any prefix')
 
     return groups
