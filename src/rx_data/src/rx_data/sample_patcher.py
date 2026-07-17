@@ -91,17 +91,20 @@ class SamplePatcher:
         -------------
         Input object, but with patching paths added
         '''
+        if not patching_files:
+            raise ValueError('No patching files passed')
+
         for block_needed, file_paths in patching_files.items():
+            nfile = len(file_paths)
+            log.debug(f'Patching block {block_needed} with {nfile} files')
+
             file_names = [ file_path.name for file_path in file_paths ] 
-            start      = sample.size
             sample     = self._patch_sample_for_block(
                 ftree        = ftree,
                 block_needed = block_needed, 
                 file_names   = file_names, 
                 sample       = sample)
-            end = sample.size
 
-            log.debug(f'Patched block {block_needed} appended extra files: {start} -> {end}')
 
         return sample
     # ----------------------

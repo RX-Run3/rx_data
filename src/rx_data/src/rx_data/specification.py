@@ -163,13 +163,21 @@ class Sample(BaseModel):
         '''
         Parameters
         ----------------
-        block: I.e. part of dataset
+        block: Block representing part of data 
 
         Returns
         ----------------
         Files containing data from that block
         '''
-        return [ file.path for file in self.files if block in file.blocks ]
+        files = [ file.path for file in self.files if block in file.blocks ]
+
+        if not files:
+            for file in self.files:
+                log.error(file.blocks)
+
+            raise ValueError(f'No files found from block {block}')
+
+        return files
     # --------------------
     def _update_ranges(self, files : list[File], block : Block) -> None:
         '''
@@ -190,6 +198,9 @@ class Sample(BaseModel):
         paths: List of paths meant to extend sample
         block: Block number associated
         '''
+        if not paths:
+            raise ValueError('No patching paths found')
+
         tree         = self.trees[0]
         ftree        = self.metadata['kind']
         paths        = sorted(paths)
