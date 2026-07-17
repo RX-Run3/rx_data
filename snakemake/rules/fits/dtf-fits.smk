@@ -40,16 +40,30 @@ rule sweights:
             prc   = PRC,
             brem  = BREM,
             block = BLOCK)
-    log    : f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_{{block}}_{{brem}}/rk_ee/plots/sweights.log'
+    log    : 
+        prc = f'{LOGDIR}/{{cmb}}_{{prc}}_{{block}}_{{brem}}_sweights.prc',
+        err = f'{LOGDIR}/{{cmb}}_{{prc}}_{{block}}_{{brem}}_sweights.err',
+        out = f'{LOGDIR}/{{cmb}}_{{prc}}_{{block}}_{{brem}}_sweights.out',
+        LOG = f'{LOGDIR}/{{cmb}}_{{prc}}_{{block}}_{{brem}}_sweights.log',
     params :
+        LOGD    = LOGDIR,
         home    = HOME,
         env     = ENV,
         ana_dir = ANADIR,
         nll_path= lambda wc : f'{ANADIR}/fits/data/{NAME}/{wc.cmb}_{wc.prc}_b{wc.block}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/{wc.brem}/nll.bytes',
     shell  :
         '''
+        (
         source setup.sh {params.env} {params.home}
+
         rxfitter calculate-sweights -f {params.nll_path}
+        echo "sWeights calculated with status: $?"
+        ) > {log.prc} 2>&1
+
+        JOBID=$(grep -m1 '^ClusterId' $_CONDOR_JOB_AD | awk '{{print $3}}')
+        ln -s {params.LOGD}/$JOBID.err {log.err} || true
+        ln -s {params.LOGD}/$JOBID.out {log.out} || true
+        ln -s {params.LOGD}/$JOBID.log {log.LOG} || true
         '''
 # ---------------------
 rule fits:
