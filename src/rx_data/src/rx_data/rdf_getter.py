@@ -376,7 +376,9 @@ class RDFGetter(SpecMaker):
         '''
         Adds and redefines columns (e.g. block patching) to dataframe
         '''
-        rdf = self._add_patching_redefinitions(rdf = rdf)
+        if self._component.is_mc:
+            # NOTE:Do not patch data
+            rdf = self._add_patching_redefinitions(rdf = rdf)
 
         if self._tree_name == 'MCDecayTree':
             rdf = self._add_mcdt_columns(rdf=rdf)
