@@ -69,7 +69,6 @@ class Cache:
 
         self._hsh       = hashing.hash_object(kwargs)
         self._cache_dir = self._get_dir(kind='cache')
-        self._hash_dir  : Path
     # ---------------------------
     def _get_code_hash(self) -> str:
         '''
@@ -121,8 +120,8 @@ class Cache:
         It will copy all the outputs of the processing
         to a hashed directory
         '''
-        self._hash_dir  = self._get_dir(kind= 'hash')
-        log.info(f'Caching outputs to: {self._hash_dir}')
+        hash_dir  = self._get_dir(kind= 'hash')
+        log.info(f'Caching outputs to: {hash_dir}')
 
         for source in self._out_path.glob('*'):
             if source == self._cache_dir:
@@ -130,16 +129,16 @@ class Cache:
 
             log.debug(str(source))
             log.debug('-->')
-            log.debug(self._hash_dir)
+            log.debug(hash_dir)
             log.debug('')
 
             if source.is_dir():
-                shutil.copytree(source, self._hash_dir / source.name, dirs_exist_ok=True)
+                shutil.copytree(source, hash_dir / source.name, dirs_exist_ok=True)
             else:
-                shutil.copy2(source, self._hash_dir)
+                shutil.copy2(source, hash_dir)
 
         self._delete_from_output()
-        self._copy_from_hashdir()
+        self._copy_from_hashdir(hash_dir = hash_dir)
     # ---------------------------
     def _delete_from_output(self) -> None:
         '''
@@ -156,11 +155,11 @@ class Cache:
             else:
                 path.unlink()
     # ---------------------------
-    def _copy_from_hashdir(self) -> None:
+    def _copy_from_hashdir(self, hash_dir : Path) -> None:
         '''
-        Copies all the objects from _hash_dir to _out_path
+        Copies all the objects from hash_dir to _out_path
         '''
-        for source in self._hash_dir.iterdir():
+        for source in hash_dir.iterdir():
             target = self._out_path / source.name
             log.debug(f'{str(source):<50}{"-->"}{target}')
 
@@ -221,11 +220,10 @@ class Cache:
             self._delete_from_output()
             return False
 
-        self._hash_dir = hash_dir
-        log.debug(f'Data found in hash directory: {self._hash_dir}')
+        log.debug(f'Data found in hash directory: {hash_dir}')
 
         self._delete_from_output()
-        self._copy_from_hashdir()
+        self._copy_from_hashdir(hash_dir = hash_dir)
 
         return True
     # ---------------------------
