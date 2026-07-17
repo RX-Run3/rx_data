@@ -1,22 +1,23 @@
-# Config meant to check effect of cuts on combinatorial through SS samples 
+# Config meant to check effect of cuts on combinatorial through SS samples
 style: &style
   None:
-    histtype : fill 
-    color    : gray 
+    histtype : fill
+    color    : gray
     alpha    : 0.5
   $M_{DTF}^{J/\psi}$ veto:
-    histtype : step 
-    color    : black 
+    histtype : step
+    color    : black
     linestyle: '-'
   $M_{DTF}^{\psi(2S)}$ veto:
-    histtype : step 
-    color    : blue 
+    histtype : step
+    color    : blue
     linestyle: '-'
 general:
   size : [15, 10]
 selection :
-  bdt        : mva_cmb > 0.8 && mva_prc > 0.8
-  mass       : (1)
+  cmb     : mva_cmb > 0.8
+  prc     : mva_prc > 0.8
+  mass    : (1)
 veto : &cuts
 cutflow:
   low :
@@ -40,7 +41,7 @@ plots:
       labels     : ['$M_{corr}(K^+\ell^{\pm}\ell^{\pm})$ MeV', 'Entries/50 MeV']
       title      : ''
       name       : bmass_corr
-      normalized : False 
+      normalized : False
       styling:
         <<: *style
     Jpsi_Mass:
@@ -49,7 +50,7 @@ plots:
       labels     : ['$M_{corr}(\ell^{\pm}\ell^{\pm})$ MeV', 'Entries/50 MeV']
       title      : ''
       name       : jmass_corr
-      normalized : False 
+      normalized : False
       styling:
         <<: *style
 plugin:

@@ -8,40 +8,46 @@ selection :
   jpsi_misid : (1)
   hop        : (1)
   cascade    : (1)
-  bdt        : (1) 
+  cmb        : (1)
+  prc        : (1)
   mass       : (1)
 veto : &cuts
 cutflow:
   low :
     None           : (1)
-    HOP            : hop_mass > 4500 
+    HOP            : hop_mass > 4500
     Cascade        : swp_cascade_mass_swp    > 1900
     $J/\psi$ MisID : swp_jpsi_misid_mass_swp < 3050 || swp_jpsi_misid_mass_swp > 3150
-    MVA            : (mva_prc > 0.7) && (mva_cmb > 0.8)
+    cmb            : mva_cmb > 0.8
+    prc            : mva_prc > 0.7
   central:
     None           : (1)
-    HOP            : hop_mass > 4500 
+    HOP            : hop_mass > 4500
     Cascade        : swp_cascade_mass_swp    > 1900
     $J/\psi$ MisID : swp_jpsi_misid_mass_swp < 3050 || swp_jpsi_misid_mass_swp > 3150
-    MVA            : (mva_prc > 0.7) && (mva_cmb > 0.8)
+    cmb            : mva_cmb > 0.8
+    prc            : mva_prc > 0.7
   jpsi:
     None           : (1)
-    HOP            : hop_mass > 4500 
+    HOP            : hop_mass > 4500
     Cascade        : swp_cascade_mass_swp    > 1900
     $J/\psi$ MisID : swp_jpsi_misid_mass_swp < 3050 || swp_jpsi_misid_mass_swp > 3150
-    MVA            : (mva_prc > 0.7) && (mva_cmb > 0.8)
+    cmb            : mva_cmb > 0.8
+    prc            : mva_prc > 0.7
   psi2:
     None           : (1)
-    HOP            : hop_mass > 4500 
+    HOP            : hop_mass > 4500
     Cascade        : swp_cascade_mass_swp    > 1900
     $J/\psi$ MisID : swp_jpsi_misid_mass_swp < 3050 || swp_jpsi_misid_mass_swp > 3150
-    MVA            : (mva_prc > 0.7) && (mva_cmb > 0.8)
+    cmb            : mva_cmb > 0.8
+    prc            : mva_prc > 0.7
   high:
     None           : (1)
-    HOP            : hop_mass > 3000 
+    HOP            : hop_mass > 3000
     Cascade        : swp_cascade_mass_swp    > 1900 || swp_cascade_mass_swp < 1800
     $J/\psi$ MisID : swp_jpsi_misid_mass_swp < 3050 || swp_jpsi_misid_mass_swp > 3150
-    MVA            : (mva_prc > 0.7) && (mva_cmb > 0.8)
+    cmb            : mva_cmb > 0.8
+    prc            : mva_prc > 0.7
 saving:
   plt_dir : plots/cutflow/vetoes
 plots:

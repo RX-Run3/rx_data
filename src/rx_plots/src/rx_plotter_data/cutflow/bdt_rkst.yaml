@@ -3,7 +3,7 @@
 
 styling: &style
   None:
-    histtype : fill 
+    histtype : fill
     linestyle: '-'
     alpha    : 0.3
     color    : gray
@@ -46,7 +46,8 @@ styling: &style
 general:
   size : [15, 10]
 selection :
-  bdt     : (1) 
+  cmb     : (1)
+  prc     : (1)
   mass    : (1)
 cutflow:
   low :

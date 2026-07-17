@@ -2,12 +2,12 @@
 # BDT is progressively tightened
 
 styling: &style
-  M(B) > 4500 : 
-    histtype  : fill 
+  M(B) > 4500 :
+    histtype  : fill
     linestyle : '-'
     alpha     : 0.3
     color     : gray
-  M(B) > 4600 : 
+  M(B) > 4600 :
     histtype  : step
     linestyle : '-'
   M(B) > 4700 :
@@ -22,7 +22,8 @@ styling: &style
 general:
   size : [15, 10]
 selection :
-  bdt     : (1) 
+  cmb     : (1)
+  prc     : (1)
   mass    : (1)
 cmb : &cuts
   M(B) > 4500 : B_M > 4500
@@ -50,7 +51,7 @@ plots:
     labels     : ['$\text{M}(J/\psi)$', 'Normalized']
     title      : ''
     name       : 'jmass'
-    normalized : false 
+    normalized : false
     styling:
       <<: *style
   B_M :
@@ -59,6 +60,6 @@ plots:
     labels     : ['M$(B^+)$', 'Normalized']
     title      : ''
     name       : 'bmass'
-    normalized : false 
+    normalized : false
     styling:
       <<: *style
