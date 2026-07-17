@@ -208,7 +208,7 @@ class DataFitter(BaseFitter, Cache):
         # Model names start with component, i.e. bpkpee_bremxx1...
         # Extract component names and use them as preffix to merge pdfs
         # In order to plot combined model
-        prefixes : set[str] = { component for component in self._cfg.components }
+        prefixes : list[Component] = [ component for component in self._cfg.components[self._q2bin] ]
         model = sut.merge_sum_models(
             obs      = self._cfg.obs, 
             models   = models, 
