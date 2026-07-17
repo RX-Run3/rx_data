@@ -366,9 +366,9 @@ def apply_full_selection(
     q2bin    : Qsq,
     process  : Component,
     trigger  : Trigger,
-    ext_cut  : str |None = None,
-    uid      : str |None = None,
-    out_path : Path|None = None) -> RDF.RNode:
+    ext_cut  : str |None     = None,
+    uid      : str |None     = None,
+    out_path : Path|None|int = None) -> RDF.RNode:
     '''
     Will apply full selection on dataframe.
     IMPORTANT: This HAS to be done lazily or else the rest of the code will be slowed down.
@@ -377,7 +377,10 @@ def apply_full_selection(
     --------------------
     uid     : Unique identifier, used for hashing. If not passed no hashing will be done
     ext_cut : Extra cut, optional
-    out_path: Directory path where selection and cutflow will be stored, optional
+    out_path: Either:
+        - Directory path where selection and cutflow will be stored, optional
+        - None if no argument was passed, default. Will show warning about missing path
+        - Integer, e.g. 0, if one does not want to save cutflow. For example, to keep this as lazy execution
 
     Returns
     --------------------
@@ -403,10 +406,13 @@ def apply_full_selection(
         except Exception as exc:
             raise ValueError(f'Cannot apply cut \"{cut_name}\" -> \"{cut_value}\"') from exc
 
-    if out_path:
+    if isinstance(out_path, Path):
         _save_cutflow(path=out_path, rdf=rdf, cuts=d_sel)
-    else:
+    elif out_path is None:
         log.warning('Not saving cutflow')
+    else:
+        log.debug('Not saving cutflow, as explicitly requested')
+        pass
 
     if uid is None:
         log.debug('No UID found, not updating it')
