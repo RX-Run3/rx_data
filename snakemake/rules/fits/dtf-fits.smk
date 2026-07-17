@@ -20,11 +20,12 @@ BLOCK  = list(range(1, 9))
 BREM   = ['brem_xx1', 'brem_xx2']
 NAME   = 'reso_dtf'
 YEAR   = '2024'
+SIGNAL = 'bpkpjpsiee'
 # ---------------------
 rule all:
     input:
         expand(
-             f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/{{brem}}/sweights.json',
+             f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/{{brem}}/swt_yld_{SIGNAL}_{{brem}}.json',
             cmb   = CMB,
             prc   = PRC,
             brem  = BREM,
@@ -32,7 +33,7 @@ rule all:
 # ---------------------
 rule sweights:
     output :
-        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/{{brem}}/sweights.json',
+        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/{{brem}}/swt_yld_{SIGNAL}_{{brem}}.json',
     input  :
         expand(f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/{{brem}}/nll.bytes',
             cmb   = CMB,
@@ -57,8 +58,8 @@ rule fits:
         f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx2/nll.bytes',
         f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx1/parameters.json',
         f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx2/parameters.json',
-        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx1/brem_xx1/parameters.json',
-        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx2/brem_xx2/parameters.json',
+        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/{SIGNAL}/fit/brem_xx1/brem_xx1/parameters.json',
+        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/{SIGNAL}/fit/brem_xx2/brem_xx2/parameters.json',
     log   :
         prc = f'{LOGDIR}/{{cmb}}_{{prc}}_b{{block}}.prc',
         err = f'{LOGDIR}/{{cmb}}_{{prc}}_b{{block}}.err',
