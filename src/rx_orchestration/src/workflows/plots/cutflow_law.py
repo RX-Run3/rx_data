@@ -4,7 +4,9 @@ Script used to orchestrate plots made by the `cutflow` script
 import os
 import law
 import json
+import argparse
 
+from dataclasses   import dataclass
 from typing        import Final, cast
 from pathlib       import Path
 from functools     import cache
@@ -21,6 +23,14 @@ _CONFIGS : Final[dict[str,str]] = {
     'ss_shape'    : 'cutflow_ss.yaml',
     'bdt'         : 'bdt.yaml',
     'mass_shaping': 'mass_shaping.yaml'}
+# -------------------------------------
+@dataclass(frozen = True)
+class Conf:
+    '''
+    Class used to configure current script
+    '''
+    dry_run : bool
+    nproc   : int
 # -------------------------------------
 class CutflowTask(law.Task):
     config_string : str = Parameter() # type: ignore
@@ -135,11 +145,32 @@ class WrapCutflow(law.WrapperTask):
         for settings in l_settings:
             yield CutflowTask(config_string = settings)
 # ----------------------
-def main():
-    l_settings  = WrapCutflow.get_settings()
-    nworkers    = min(8, len(l_settings))
+def _parse_args() -> Conf:
+    '''
+    Parses arguments passed by user
 
-    law.run(argv=['WrapCutflow', '--workers', str(nworkers), '--log-level', 'INFO'])
+    Returns
+    --------------
+    Instance of configuration data class, built from arguments
+    '''
+    parser = argparse.ArgumentParser(description='Script used to steer workflow for cutflows with LAW')
+    parser.add_argument('-d', '--dry_run' , action = 'store_true', help='If used will do dry run')
+    parser.add_argument('-n', '--nproc'   , type   = int         , help='Number of workers', required = True)
+    args = parser.parse_args()
+
+    return Conf(
+        nproc   = args.nproc,
+        dry_run = args.dry_run)
+# ----------------------
+def main():
+    l_settings = WrapCutflow.get_settings()
+    cfg        = _parse_args()
+    nworkers   = min(cfg.nproc, len(l_settings))
+
+    if cfg.dry_run:
+        law.run(argv=['WrapCutflow', '--workers', str(nworkers), '--log-level', 'INFO', '--print-status', '-1'])
+    else:
+        law.run(argv=['WrapCutflow', '--workers', str(nworkers), '--log-level', 'INFO'])
 # ----------------------
 if __name__ == "__main__":
     main()
