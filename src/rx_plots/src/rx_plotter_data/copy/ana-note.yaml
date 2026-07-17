@@ -8,5 +8,6 @@ paths:
   plots/comparison/resolution/data_24/rk_ee_os/jpsi/all_1    : figs/datasets/resolution/data
   plots/comparison/resolution/bpkpjpsiee/rk_ee_os/jpsi/all_1 : figs/datasets/resolution/bpkpjpsiee
   plots/2d/ep_em_pide                                        : figs/datasets/2d/ep_em_pide
+  plots/cutflow/cleanup                                      : figs/datasets/cleanup
 # ------------
   tables                                                     : tables/datasets
