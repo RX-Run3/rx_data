@@ -21,6 +21,7 @@ _PATCHED_SAMPLES = [
     (Component.bpjpsixmm , Trigger.rk_mm_os),
     (Component.bpkpmm    , Trigger.rk_mm_os),
     (Component.bpkpjpsiee, Trigger.rk_ee_os),
+    (Component.bpkpee    , Trigger.rk_ee_nopid),
 ]
 
 log=LogStore.add_logger('rx_data:test_sample_patching')
