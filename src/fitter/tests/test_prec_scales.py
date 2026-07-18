@@ -1,16 +1,15 @@
 '''
 Module used to test PrecScales class
 '''
-
 import numpy
 import pytest
 
+from contextlib    import ExitStack
 from typing        import Any, Final
 from pathlib       import Path
 from rx_common     import Brem, Component, Qsq, Cuts, Trigger
 from rx_selection  import selection  as sel
 from fitter        import PrecScales
-
 from dmu           import LogStore
 from dmu.workflow  import Cache
 
@@ -53,6 +52,7 @@ def _validate_scales(scales : Any) -> None:
     '''
     assert len(scales) == _NSCALES
     val, err = scales
+    log.info(f'Scale: {val:.3g}+/-{err:.3g}')
 
     assert isinstance(val, float)
     assert isinstance(err, float)
@@ -72,7 +72,7 @@ def _validate_scales(scales : Any) -> None:
     Brem.one, 
     Brem.two, 
     Brem.brx12])
-def test_rk_datasets(
+def test_rk_ee(
     q2bin    : Qsq,
     brem     : Brem,
     component: Component,
