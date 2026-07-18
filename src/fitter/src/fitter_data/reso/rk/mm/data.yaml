@@ -10,7 +10,7 @@ observable:
     name : B_const_mass_M
     range:
       - 5180 
-      - 6000
+      - 6500
   psi2:
     name : B_const_mass_psi2S_M
     range:
@@ -43,6 +43,6 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
         comb_brem_xx0       : Combinatorial
       plot_range:
         - 5180
-        - 6100
+        - 6000
       plot_components:
         - ccbar
