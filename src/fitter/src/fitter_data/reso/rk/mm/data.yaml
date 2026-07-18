@@ -20,6 +20,7 @@ components:
   jpsi:
     comb       : reso/rk/mm/comb.yaml
     bppijpsimm : reso/rk/mm/bppijpsimm.yaml
+    bpkpjpsimm : reso/rk/mm/bpkpjpsimm.yaml
   psi2:
     comb       : reso/rk/mm/comb.yaml
     bpkppsi2mm : reso/rk/mm/bpkppsi2mm.yaml
@@ -36,12 +37,12 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
       nbins           : 400
       stacked         : True
       d_leg :
-        bpkpjpsimm    : $B^+\to J/\psi(\to \mu^+\mu^-) K^+$ 
-        bppijpsimm    : $B^+\to J/\psi(\to \mu^+\mu^-) \pi^+$ 
-        bpkppsi2mm    : $B^+\to \psi(2S)(\to \mu^+\mu^-) K^+$ 
-        comb          : Combinatorial
+        bpkpjpsimm_brem_xx0 : $B^+\to J/\psi(\to \mu^+\mu^-) K^+$ 
+        bppijpsimm_brem_xx0 : $B^+\to J/\psi(\to \mu^+\mu^-) \pi^+$ 
+        bpkppsi2mm_brem_xx0 : $B^+\to \psi(2S)(\to \mu^+\mu^-) K^+$ 
+        comb_brem_xx0       : Combinatorial
       plot_range:
-        - 5100
+        - 5180
         - 6100
       plot_components:
         - ccbar

@@ -20,6 +20,9 @@ fit:
 plots:
   nbins     : 50
   stacked   : True
+  plot_range:
+    - 5100
+    - 5700
   d_leg :
-    cbl_1   : Crystal Ball 
-    dscb_1  : DSCB
+    cbl_bppijpsimm_brem_xx0_1  : Crystal Ball 
+    dscb_bppijpsimm_brem_xx0_1 : DSCB 
