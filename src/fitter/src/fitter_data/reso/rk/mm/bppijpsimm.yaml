@@ -9,8 +9,7 @@ categories:
       shared        :
         - mu
         - sg
-      floating      :
-        - sg
+      floating      : []
       reparametrize : {}
       fix           : {}
 fit:
