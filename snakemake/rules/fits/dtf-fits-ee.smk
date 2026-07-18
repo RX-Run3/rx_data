@@ -38,11 +38,11 @@ rule sweights:
             prc   = PRC,
             brem  = BREM,
             block = BLOCK)
-    log    : 
-        prc = f'{LOGDIR}/{{cmb}}_{{prc}}_{{block}}_{{brem}}_sweights.prc',
-        err = f'{LOGDIR}/{{cmb}}_{{prc}}_{{block}}_{{brem}}_sweights.err',
-        out = f'{LOGDIR}/{{cmb}}_{{prc}}_{{block}}_{{brem}}_sweights.out',
-        LOG = f'{LOGDIR}/{{cmb}}_{{prc}}_{{block}}_{{brem}}_sweights.log',
+    log   :
+        prc = f'{LOGDIR}/{{cmb}}_{{prc}}_b{{block}}_{{brem}}_swt.prc',
+        err = f'{LOGDIR}/{{cmb}}_{{prc}}_b{{block}}_{{brem}}_swt.err',
+        out = f'{LOGDIR}/{{cmb}}_{{prc}}_b{{block}}_{{brem}}_swt.out',
+        LOG = f'{LOGDIR}/{{cmb}}_{{prc}}_b{{block}}_{{brem}}_swt.log',
     params :
         LOGD    = LOGDIR,
         home    = HOME,
@@ -55,6 +55,7 @@ rule sweights:
         source setup.sh {params.env} {params.home}
 
         rxfitter calculate-sweights -f {params.nll_path}
+
         echo "sWeights calculated with status: $?"
         ) > {log.prc} 2>&1
 
