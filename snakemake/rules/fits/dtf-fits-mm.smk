@@ -20,11 +20,12 @@ BLOCK  = list(range(1, 9))
 BREM   = ['brem_xx0']
 NAME   = 'reso_dtf'
 YEAR   = '2024'
+SIGNAL = 'bpkpjpsimm'
 # ---------------------
 rule all:
     input:
         expand(
-             f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/mm/jpsi/data_24/fit/brem_xx0/{{brem}}/sweights.json',
+             f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/mm/jpsi/data_24/fit/brem_xx1_brem_xx2/{{brem}}/swt_yld_{SIGNAL}_{{brem}}.json',
             cmb   = CMB,
             prc   = PRC,
             brem  = BREM,
@@ -32,7 +33,7 @@ rule all:
 # ---------------------
 rule sweights:
     output :
-        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/mm/jpsi/data_24/fit/brem_xx0/{{brem}}/sweights.json',
+        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/mm/jpsi/data_24/fit/brem_xx1_brem_xx2/{{brem}}/swt_yld_{SIGNAL}_{{brem}}.json',
     input  :
         expand(f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/mm/jpsi/data_24/fit/brem_xx0/{{brem}}/nll.bytes',
             cmb   = CMB,
