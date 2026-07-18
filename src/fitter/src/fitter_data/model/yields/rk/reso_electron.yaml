@@ -1,30 +1,46 @@
 # This config file defines the yields and the relationships between them
 # For the fit of the resonant electron channel 
-yields: &yields
-  val : 10
-  min : 0
-  max : 1000000
-bpkpjpsiee_fraction:
-  val : 0.5
-  min : 0.0
-  max : 1.0 
-bpkppsi2ee_fraction:
+# -------------------------
+fractions: &frac
   val : 0.5
   min : 0.0
   max : 1.0 
 # -------------------------
+yields: &yields
+  val : 10
+  min : 0
+  max : 1000000
+# -------------------------
+bpkpjpsiee_fraction:
+  <<: *frac
+bpkppsi2ee_fraction:
+  <<: *frac
+# -------------------------
+s_bppijpsiee_brem_xx1:
+  <<: *frac
+s_bppijpsiee_brem_xx2:
+  <<: *frac
+# -------------------------
+yld_bppijpsiee_brem_xx1:
+  kind : mul
+  pars :
+    - s_bppijpsiee_brem_xx1
+    - yld_bpkpjpsiee_brem_xx1
+# -------------------------
+yld_bppijpsiee_brem_xx2:
+  kind : mul
+  pars :
+    - s_bppijpsiee_brem_xx2
+    - yld_bpkpjpsiee_brem_xx2
+# -------------------------
 yld_ccbar_brem_xx1:
   <<: *yields
-yld_comb_brem_xx1:
-  <<: *yields
-yld_bppijpsiee_brem_xx1:
-  <<: *yields
-
 yld_ccbar_brem_xx2:
   <<: *yields
-yld_comb_brem_xx2:
+# -------------------------
+yld_comb_brem_xx1:
   <<: *yields
-yld_bppijpsiee_brem_xx2:
+yld_comb_brem_xx2:
   <<: *yields
 # -------------------------
 yld_bpkpjpsiee_brem_x12:

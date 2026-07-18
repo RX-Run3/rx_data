@@ -201,7 +201,7 @@ rule copy_combined:
         mkdir -p $(dirname {output})
 
         WP="{wildcards.cmb}_{wildcards.prc}_{wildcards.block}"
-        OUTDIR="{params.root_dir}/$WP/{params.kind}/{params.project}/{params.channel}/{wildcards.q2bin}/{params.data}/fit/brem_xx1_brem_xx2/both_brem"
+        OUTDIR="{params.root_dir}/$WP/{params.kind}/{params.project}/{params.channel}/{wildcards.q2bin}/{params.data}/fit/brem_xx1_brem_xx2/brem_x12"
         SOURCE=$OUTDIR/fit_linear.png
 
         if [[ -f $SOURCE ]] && ! identify "$SOURCE" >/dev/null 2>&1; then

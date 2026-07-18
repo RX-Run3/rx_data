@@ -1,16 +1,15 @@
 '''
 Module used to test PrecScales class
 '''
-
 import numpy
 import pytest
 
+from contextlib    import ExitStack
 from typing        import Any, Final
 from pathlib       import Path
 from rx_common     import Brem, Component, Qsq, Cuts, Trigger
 from rx_selection  import selection  as sel
 from fitter        import PrecScales
-
 from dmu           import LogStore
 from dmu.workflow  import Cache
 
@@ -53,6 +52,7 @@ def _validate_scales(scales : Any) -> None:
     '''
     assert len(scales) == _NSCALES
     val, err = scales
+    log.info(f'Scale: {val:.3g}+/-{err:.3g}')
 
     assert isinstance(val, float)
     assert isinstance(err, float)
@@ -72,7 +72,7 @@ def _validate_scales(scales : Any) -> None:
     Brem.one, 
     Brem.two, 
     Brem.brx12])
-def test_rk_datasets(
+def test_rk_ee(
     q2bin    : Qsq,
     brem     : Brem,
     component: Component,
@@ -85,6 +85,37 @@ def test_rk_datasets(
         obj    = PrecScales(
             output_directory= tmp_path,
             trigger         = Trigger.rk_ee_os,
+            brem            = brem,
+            q2bin           = q2bin)
+
+        scales = obj.get_scale(
+            background = component,
+            signal     = signal)
+
+    _validate_scales(scales = scales)
+#-------------------------------
+@pytest.mark.parametrize('component', [Component.bppijpsimm])
+@pytest.mark.parametrize('brem'     , [Brem.zero])
+@pytest.mark.parametrize('q2bin'    , [Qsq.jpsi])
+def test_rk_mm(
+    component: Component,
+    q2bin    : Qsq,
+    brem     : Brem,
+    tmp_path : Path):
+    '''
+    Tests retrieval of scales between signal and PRec yields
+    '''
+    signal = Component.bpkpjpsimm
+    ctx_1  = Cache.cache_root(path = tmp_path)
+    ctx_2  = sel.custom_selection(d_sel = {Cuts.block : 'block == 1'}) 
+
+    with ExitStack() as stack:
+        stack.enter_context(ctx_1)
+        stack.enter_context(ctx_2)
+
+        obj    = PrecScales(
+            output_directory= tmp_path,
+            trigger         = Trigger.rk_mm_os,
             brem            = brem,
             q2bin           = q2bin)
 

@@ -57,6 +57,9 @@ snkmt console
 For this run:
 
 ```bash
-rxweb make-html
+rxweb make-html -u -n 4
 ```
 
+to run the rebuilding of the site from zero with 4 cores.
+If the site is stale and you use Firefox, refresh with CTRL+Shift+R for the latest
+version.

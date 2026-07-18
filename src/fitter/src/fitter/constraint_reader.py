@@ -113,7 +113,7 @@ class ConstraintReader:
             log.warning(f'Combinatorial {Component.comb} component not found, not calculating constraints')
             return
 
-        cmb_cfg = self._cfg.mod_cfg.components[Component.comb]
+        cmb_cfg = self._cfg.mod_cfg.components[self._cfg.q2bin][Component.comb]
         if not isinstance(cmb_cfg, CombinatorialConf):
             raise ValueError(f'Expected combinatorial config, got: {cmb_cfg}')
 

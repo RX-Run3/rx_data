@@ -9,17 +9,19 @@ categories:
       shared        :
         - mu
         - sg
-      floating      :
-        - sg
+      floating      : []
       reparametrize : {}
       fix           : {}
 fit:
   strategy  :
-    ntries : 15
+    ntries : 5
     pvalue : 0.05
 plots:
   nbins     : 50
   stacked   : True
+  plot_range:
+    - 5100
+    - 5700
   d_leg :
-    cbl_1   : Crystal Ball 
-    dscb_1  : DSCB
+    cbl_bppijpsimm_brem_xx0_1  : Crystal Ball 
+    dscb_bppijpsimm_brem_xx0_1 : DSCB 

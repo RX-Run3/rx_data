@@ -135,7 +135,7 @@ class BaseFitter:
 
             diff.append(fit[key])
 
-        return '; '.join(diff)
+        return '\n'.join(diff)
     # --------------------------
     def _get_selection_text(self, selection : dict[str,dict[Cuts,str]]) -> tuple[str,str,str]:
         '''

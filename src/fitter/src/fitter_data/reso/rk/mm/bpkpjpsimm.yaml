@@ -16,11 +16,14 @@ categories:
       fix           : {}
 fit:
   strategy  :
-    ntries : 15
+    ntries : 5
     pvalue : 0.05
 plots:
   nbins     : 50
   stacked   : True
+  plot_range:
+    - 5200
+    - 5400
   d_leg :
-    cbl_1   : Crystal Ball 
-    dscb_1  : DSCB
+    cbl_bpkpjpsimm_brem_xx0_1  : Crystal Ball 
+    dscb_bpkpjpsimm_brem_xx0_1 : DSCB 
