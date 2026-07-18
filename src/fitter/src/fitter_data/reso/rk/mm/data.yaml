@@ -2,7 +2,9 @@
 # It illustrates how a fit would run for data
 trigger          : rk_mm_os
 yields           : model/yields/rk/reso_muon.yaml
-selection        : {}
+selection        :
+  jpsi : {}
+  psi2 : {}
 observable:
   jpsi:
     name : B_const_mass_M
