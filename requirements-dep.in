@@ -2,6 +2,7 @@ uv
 lazy-loader
 sigal
 hepstats
+send2trash
 pydantic-settings
 snakemake-logger-plugin-rich
 junit2html

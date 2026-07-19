@@ -541,6 +541,8 @@ seaborn==0.13.2
     # via -r requirements-dep.in
 semantic-version==2.10.0
     # via asdf
+send2trash==2.1.0
+    # via -r requirements-dep.in
 setuptools==80.9.0
     # via
     #   jsonschema
