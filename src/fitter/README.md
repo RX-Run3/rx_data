@@ -186,7 +186,7 @@ from rx_common import Trigger
 from rx_common import Qsq 
 
 with ParameterReader.inputs_from(pars_path = '/path/to/parameters.parquet'):
-    rdr = ParameterReader(name = 'mid_window')
+    rdr = ParameterReader()
     ms  = rdr(
         brem     = 1, 
         block    = 3, 
