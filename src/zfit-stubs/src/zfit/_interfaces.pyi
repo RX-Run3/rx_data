@@ -5,7 +5,8 @@ import zfit
 from abc import ABCMeta, abstractmethod
 from collections.abc import Callable as Callable
 from uhi.typing.plottable import PlottableHistogram
-from zfit.util import ztyping as ztyping
+from zfit.util  import ztyping as ztyping
+from zfit.param import Parameter
 
 class ZfitObject: ...
 
@@ -227,6 +228,8 @@ class ZfitModel(ZfitNumericParametrized, ZfitDimensional, metaclass=abc.ABCMeta)
     def register_inverse_analytic_integral(cls, func: Callable): ...
     @abstractmethod
     def sample(self, n: int, limits: ztyping.LimitsType = None) -> ztyping.XType: ...
+    @abstractmethod
+    def get_yield(self) -> Parameter | None: ...
 
 class ZfitFunc(ZfitModel, metaclass=abc.ABCMeta):
     @abstractmethod
