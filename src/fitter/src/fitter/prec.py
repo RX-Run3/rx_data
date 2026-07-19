@@ -41,6 +41,7 @@ _KDEPDF                         = KDE1DimFFT
 _MIN_ENTRIES : Final[int]       =  40 # Will not build KDE if fewer entries than this are found
 _MODEL_ATTRS : Final[list[str]] = ['mass', 'wgt', 'dec', 'sam']
 _MASSES      : Final[list[str]] = ['B_M', 'B_Mass', 'B_Mass_smr', 'B_const_mass_M', 'B_const_mass_psi2S_M']
+_PDFNAME     : Final[str]       = 'ccbar'
 #-----------------------------------------------------------
 class CharmoniumComponent(BaseModel):
     '''
@@ -724,7 +725,7 @@ class PRec(Cache):
         df    = pnd.concat(objs = dfs, axis = 0)
         model = self.__get_model(
             mass           = Mass(self._obs.label), 
-            component_name = r'$c\bar{c}$', 
+            component_name = _PDFNAME, 
             df             = df, 
             cfg            = self._cfg.fit)
 

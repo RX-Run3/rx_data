@@ -45,6 +45,7 @@ rule sweights:
         out = f'{LOGDIR}/{{cmb}}_{{prc}}_b{{block}}_{{brem}}_swt.out',
         LOG = f'{LOGDIR}/{{cmb}}_{{prc}}_b{{block}}_{{brem}}_swt.log',
     params :
+        LOGD    = LOGDIR,
         home    = HOME,
         env     = ENV,
         ana_dir = ANADIR,
