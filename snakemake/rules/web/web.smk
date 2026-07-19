@@ -26,7 +26,7 @@ KIND       = _kind_from_name(name = NAME)
 CHANNEL    = Trigger(TRIGGER).channel
 PROJECT    = Trigger(TRIGGER).project
 INPUT_DIR  = ANADIR / f'fits/data/{NAME}'
-OUTPUTDIR  = ANADIR / f'plots/web/{NAME}/components/{PROJECT}'
+OUTPUTDIR  = ANADIR / f'plots/web/{NAME}/components/{PROJECT}/{CHANNEL}'
 REGEX      = r'\d{3}_\d{3}_(b\d|all)'
 
 if SIGNAL in COMPONENTS:
