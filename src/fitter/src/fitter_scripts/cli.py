@@ -118,8 +118,7 @@ def calculate_sweights(
     import mplhep
 
     from dmu.stats import utilities as sut
-    from hepstats  import splot
-    from dmu.stats import Function
+    from dmu.stats import Function, splot
 
     nll    = sut.load_nll(path = nll_path)
     pdf    = nll.model[0]
@@ -142,4 +141,3 @@ def calculate_sweights(
 # ----------------------
 if __name__ == '__main__':
     app()
-
