@@ -7,6 +7,7 @@ import os
 import typer
 import subprocess
 
+from send2trash            import send2trash
 from pathlib               import Path
 from dmu.logging.log_store import LogStore
 
@@ -48,11 +49,14 @@ def make_html(
     Creates website from path to plots and opens site
     '''
     www_dir    = _ANADIR / 'www'
-    index_path = www_dir / 'index.html'
     create_cmd = ['sigal', 'build', '-n', ncpu, '-c', 'src/rx_web/sigal.conf.py', f'{_ANADIR}/plots/web', f'{_ANADIR}/www']
     server_cmd = ['sigal', 'serve', www_dir]
 
-    if not index_path.exists() or update:
+    if update:
+        if www_dir.exists():
+            send2trash(paths = www_dir)
+
+        www_dir.mkdir(parents = True)
         result = subprocess.run(create_cmd)
         if result.returncode != 0:
             raise RuntimeError(f'sigal build failed with code {result.returncode}')
