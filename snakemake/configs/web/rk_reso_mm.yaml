@@ -1,0 +1,19 @@
+trigger : rk_mm_os 
+signal  : bpkpjpsimm
+data    : data_24
+brems   :
+  - brem_xx0
+components :
+  - data_24
+  - bppijpsimm
+q2bins :
+  - jpsi 
+blocks :
+  - b4
+  - b3
+  - b2
+  - b1
+  - b5
+  - b6
+  - b7
+  - b8
