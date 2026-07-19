@@ -10,14 +10,18 @@ from __future__ import annotations
 
 import warnings
 import numpy as np
+from zfit import Parameter
 
-from typing                       import Any, Final
+from dmu.stats                    import zfit
+from typing                       import Any, Final, cast
 from hepstats.utils               import eval_pdf
 from hepstats.utils.fit.api_check import is_valid_pdf
 from hepstats.splot.exceptions    import ModelNotFittedToData
 from hepstats.splot.warnings      import AboveToleranceWarning
 
-_ATOL_WARNING : Final[float] = 5e-3
+_ATOL_WARNING       : Final[float] = 5e-3 # If the 'mlsr' is below this value, it will show a warning
+_MIN_YIELD_FRACTION : Final[float] = 1e-2 # Components with less than this fraction 
+                                          # of the data will be considered small
 # --------------------------------------------------------------------------------
 def is_sum_of_extended_pdfs(model) -> bool:
     """Checks if the input model is a sum of extended models.
@@ -34,7 +38,7 @@ def is_sum_of_extended_pdfs(model) -> bool:
     return all(m.is_extended for m in model.get_models()) and model.is_extended
 # --------------------------------------------------------------------------------
 def compute_sweights(
-    model, 
+    model : zfit.pdf.SumPDF, 
     x: np.ndarray, 
     *, 
     atol_exceptions: float = 5e-2) -> dict[Any, np.ndarray]:
@@ -109,34 +113,52 @@ def compute_sweights(
     if not is_valid_pdf(model):
         msg = f"{model} is not a valid pdf!"
         raise ValueError(msg)
+
     if not is_sum_of_extended_pdfs(model):
         msg = f"Input model, {model}, should be a sum of extended pdfs!"
         raise ValueError(msg)
 
-    models = model.get_models()
-    yields = [m.get_yield() for m in models]
+    full_yield = model.get_yield()
+    if full_yield == 0:
+        raise ValueError('Full model yield is zero')
 
-    p = np.vstack([eval_pdf(m, x) for m in models]).T
+    if full_yield is None:
+        raise ValueError('Cannot find full model yield')
+
+    models     = model.get_models()
+    yields     = [ m.get_yield()                                               for               m in models ]
+    if any(component_yield is None for component_yield in yields):
+        raise ValueError('At least one component yield was not found')
+    else:
+        yields = cast(list[Parameter], yields)
+
+    not_small  = np.array([ component_yield / full_yield > _MIN_YIELD_FRACTION for component_yield in yields ])
+
+    p  = np.vstack([eval_pdf(m, x) for m in models]).T
     Nx = eval_pdf(model, x, allow_extended=True)
     pN = p / Nx[:, None]
 
-    MLSR = pN.sum(axis=0)
+    mlsr = pN.sum(axis=0)
     def msg_fn(tolerance):
         msg = (
             "The Maximum Likelihood Sum Rule sanity check, described in equation 17 of"
             + " arXiv:physics/0402083, failed. According to this check the following quantities\n"
         )
-        for y, mlsr in zip(yields, MLSR, strict=True):
-            msg += f"\t* {y.name}: {mlsr},\n"
+        for yield_var, component_mlsr in zip(yields, mlsr, strict=True):
+            msg += f"\t* {yield_var.name}: {component_mlsr},\n"
         msg += f"should be equal to 1.0 with an absolute tolerance of {tolerance}."
         return msg
 
-    if not np.allclose(MLSR, 1, atol=atol_exceptions):
+    # Do not apply check to small components
+    # These tend to fail check and make code fragile
+    mlsr_not_small = mlsr[not_small]
+
+    if not np.allclose(mlsr_not_small, 1, atol=atol_exceptions):
         msg = msg_fn(atol_exceptions)
         msg += " The numbers suggest that the model is not fitted to the data. Please check your fit."
         raise ModelNotFittedToData(msg)
 
-    if not np.allclose(MLSR, 1, atol=_ATOL_WARNING):
+    if not np.allclose(mlsr_not_small, 1, atol=_ATOL_WARNING):
         msg = msg_fn(_ATOL_WARNING)
         msg += " If the fit to the data is good please ignore this warning."
         warnings.warn(msg, AboveToleranceWarning, stacklevel=2)
