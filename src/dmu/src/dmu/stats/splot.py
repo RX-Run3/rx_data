@@ -1,16 +1,24 @@
+'''
+DMU implementation of splot.py module from hepstats.
+
+This is meant to deal locally with:
+
+https://github.com/scikit-hep/hepstats/issues/213
+'''
+
 from __future__ import annotations
 
 import warnings
-from typing import Any
-
 import numpy as np
 
-from ..utils import eval_pdf
-from ..utils.fit.api_check import is_valid_pdf
-from .exceptions import ModelNotFittedToData
-from .warnings import AboveToleranceWarning
+from typing                       import Any, Final
+from hepstats.utils               import eval_pdf
+from hepstats.utils.fit.api_check import is_valid_pdf
+from hepstats.splot.exceptions    import ModelNotFittedToData
+from hepstats.splot.warnings      import AboveToleranceWarning
 
-
+_ATOL_WARNING : Final[float] = 5e-3
+# --------------------------------------------------------------------------------
 def is_sum_of_extended_pdfs(model) -> bool:
     """Checks if the input model is a sum of extended models.
 
@@ -24,9 +32,12 @@ def is_sum_of_extended_pdfs(model) -> bool:
         return False
 
     return all(m.is_extended for m in model.get_models()) and model.is_extended
-
-
-def compute_sweights(model, x: np.ndarray, *, atol_exceptions: float | None = None) -> dict[Any, np.ndarray]:
+# --------------------------------------------------------------------------------
+def compute_sweights(
+    model, 
+    x: np.ndarray, 
+    *, 
+    atol_exceptions: float = 5e-2) -> dict[Any, np.ndarray]:
     """Computes sWeights from probability density functions for different components/species in a fit model
     (for instance signal and background) fitted on some data `x`.
 
@@ -110,16 +121,12 @@ def compute_sweights(model, x: np.ndarray, *, atol_exceptions: float | None = No
     pN = p / Nx[:, None]
 
     MLSR = pN.sum(axis=0)
-    atol_warning = 5e-3
-    if atol_exceptions is None:
-        atol_exceptions = 5e-2
-
     def msg_fn(tolerance):
         msg = (
             "The Maximum Likelihood Sum Rule sanity check, described in equation 17 of"
             + " arXiv:physics/0402083, failed. According to this check the following quantities\n"
         )
-        for y, mlsr in zip(yields, MLSR, strict=False):
+        for y, mlsr in zip(yields, MLSR, strict=True):
             msg += f"\t* {y.name}: {mlsr},\n"
         msg += f"should be equal to 1.0 with an absolute tolerance of {tolerance}."
         return msg
@@ -129,8 +136,8 @@ def compute_sweights(model, x: np.ndarray, *, atol_exceptions: float | None = No
         msg += " The numbers suggest that the model is not fitted to the data. Please check your fit."
         raise ModelNotFittedToData(msg)
 
-    if not np.allclose(MLSR, 1, atol=atol_warning):
-        msg = msg_fn(atol_warning)
+    if not np.allclose(MLSR, 1, atol=_ATOL_WARNING):
+        msg = msg_fn(_ATOL_WARNING)
         msg += " If the fit to the data is good please ignore this warning."
         warnings.warn(msg, AboveToleranceWarning, stacklevel=2)
 
