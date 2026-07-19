@@ -33,6 +33,15 @@ if SIGNAL in COMPONENTS:
     raise ValueError(f'Found signal {SIGNAL} among components')
 
 OUTPUTDIR.mkdir(parents=True, exist_ok=True)
+# --------------------------------------------
+def _get_end_path(wc, is_combined) -> str:
+    if CHANNEL == 'mm':
+        return 'brem_xx0/brem_xx0'
+
+    if is_combined:
+        return 'brem_xx1_brem_xx2/brem_x12'
+
+    return f'brem_xx1_brem_xx2/{wc.brem}'
 # ----------------------------
 def _get_wc() -> tuple[list[str], list[str]]:
     '''
@@ -150,6 +159,7 @@ rule copy_non_signal:
         project   = PROJECT,
         channel   = CHANNEL,
         kind      = KIND,
+        end_path  = lambda wc : _get_end_path(wc, is_combined = False)
     shell:
         '''
         mkdir -p $(dirname {output})
@@ -158,7 +168,7 @@ rule copy_non_signal:
         WP="{wildcards.cmb}_{wildcards.prc}_{wildcards.block}"
 
         if   [[ $COMP == "data_24" ]]; then
-            OUTDIR="{params.root_dir}/$WP/{params.kind}/{params.project}/{params.channel}/{wildcards.q2bin}/{wildcards.component}/fit/brem_xx1_brem_xx2/{wildcards.brem}"
+            OUTDIR="{params.root_dir}/$WP/{params.kind}/{params.project}/{params.channel}/{wildcards.q2bin}/{wildcards.component}/fit/{params.end_path}"
             SOURCE=$OUTDIR/fit_linear.png
         elif [[ $COMP == "comb"    ]]; then
             OUTDIR="{params.root_dir}/$WP/{params.kind}/{params.project}/{params.channel}/{wildcards.q2bin}/{wildcards.component}/fit/{wildcards.brem}"
@@ -184,10 +194,10 @@ rule copy_non_signal:
 rule copy_combined:
     output: OUTPUTDIR / f'{{q2bin}}/{{prc}}_{{cmb}}/{{block}}/{DATA}_combined.png'
     wildcard_constraints:
-        q2bin     = '|'.join(Q2BINS),
-        prc       = '|'.join(PRC),
-        cmb       = '|'.join(CMB),
-        block     = '|'.join(BLOCKS),
+        q2bin    = '|'.join(Q2BINS),
+        prc      = '|'.join(PRC),
+        cmb      = '|'.join(CMB),
+        block    = '|'.join(BLOCKS),
     params:
         root_dir = INPUT_DIR,
         trigger  = TRIGGER,
@@ -195,13 +205,14 @@ rule copy_combined:
         name     = NAME,
         project  = PROJECT,
         channel  = CHANNEL,
-        kind     = KIND
+        kind     = KIND,
+        end_path = lambda wc : _get_end_path(wc, is_combined = True)
     shell:
         '''
         mkdir -p $(dirname {output})
 
         WP="{wildcards.cmb}_{wildcards.prc}_{wildcards.block}"
-        OUTDIR="{params.root_dir}/$WP/{params.kind}/{params.project}/{params.channel}/{wildcards.q2bin}/{params.data}/fit/brem_xx1_brem_xx2/brem_x12"
+        OUTDIR="{params.root_dir}/$WP/{params.kind}/{params.project}/{params.channel}/{wildcards.q2bin}/{params.data}/fit/{params.end_path}"
         SOURCE=$OUTDIR/fit_linear.png
 
         if [[ -f $SOURCE ]] && ! identify "$SOURCE" >/dev/null 2>&1; then
