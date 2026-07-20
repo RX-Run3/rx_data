@@ -22,7 +22,7 @@ plots:
   nbins     : 50
   stacked   : True
   plot_range:
-    - 5100
+    - 5200
     - 5400
   d_leg :
     cbl_bpkppsi2mm_brem_xx0_1  : Crystal Ball 
