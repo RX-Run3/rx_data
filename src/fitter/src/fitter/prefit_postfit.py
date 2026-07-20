@@ -8,7 +8,7 @@ import mplhep
 import pandas            as pnd
 import matplotlib.pyplot as plt
 
-from typing    import Any
+from typing    import Any, Final
 from pathlib   import Path
 from pydantic  import TypeAdapter
 from rx_common import Component
@@ -18,8 +18,9 @@ from dmu.stats import Constraint1D, ConstraintND
 from dmu.stats import FitResult
 from dmu.stats import ConstraintType
 
-plt.style.use(mplhep.style.LHCb2)
-_LABELS = {
+plt.style.use(mplhep.style.LHCb2) # type: ignore
+_NLINES : Final[int]           = 4
+_LABELS : Final[dict[str,str]] = {
     'nd_mu_suj_comb_main_1'          : r'$\mu_{comb}$',
     'nd_sg_suj_comb_main_1'          : r'$\sigma_{comb}$',
     # -------------    
@@ -178,16 +179,16 @@ def _plot_var(
     try:
         plt.fill_betweenx(
             y     = df['par_nam'], 
-            x1    = df['pre_val'] - df['pre_err'],
-            x2    = df['pre_val'] + df['pre_err'],
+            x1    = df['pre_val'] - df['pre_err'], # type: ignore
+            x2    = df['pre_val'] + df['pre_err'], # type: ignore
             label = 'Pre fit',
             alpha = 0.5,
             color = 'gray',
         )
-    except Exception:
+    except Exception as exc:
         log.error(df_org)
         log.error(df)
-        raise ValueError(f'Cannot plot with parameters {regex}')
+        raise ValueError(f'Cannot plot with parameters {regex}') from exc
     
     plt.errorbar(
         y     = df['par_nam'], 
@@ -205,14 +206,14 @@ def _plot_var(
     plt.axvline(x = +2, color = 'red', linestyle = ':', linewidth = 1)
 
     ymin, ymax = plt.ylim()
-    if len(df) > 4:
+    if len(df) > _NLINES:
         plt.ylim(ymin - 1, ymax + 2)
     else:
         plt.ylim(ymin - 1, ymax + 1)
 
     plt.xlabel(r'$\frac{\hat{\theta}-\theta_0}{\Delta\theta}$')
     plt.xlim(limits)
-    plt.legend(loc='upper left')
+    plt.legend(loc='upper left') # type: ignore
     plt.savefig(out_path)
     plt.close()
 # ---------------------------------------
