@@ -7,6 +7,7 @@ provided by this project
 import typer
 
 from dmu       import LogLevels, LogStore
+from dmu.stats import zfit
 from pathlib   import Path
 
 app = typer.Typer(
@@ -124,6 +125,9 @@ def calculate_sweights(
     pdf    = nll.model[0]
     dat    = nll.data[0]
     masses = dat.to_numpy().flatten()
+
+    if not isinstance(pdf, zfit.pdf.SumPDF):
+        raise ValueError('Fit model is not a SumPDF')
 
     sweights  = splot.compute_sweights(
         model = pdf, 
