@@ -32,9 +32,9 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
   nbins     : 50
   stacked   : True
   d_leg :
-    dscb_1 : DSCB 
-    cbl_1  : Crystal Ball 
+    dscb_bpkppsi2ee_brem_xx1_1 : DSCB 
+    dscb_bpkppsi2ee_brem_xx2_1 : DSCB 
   plot_components : []
   plot_range:
-    - 4800
-    - 6000
+    - 5000
+    - 5600
