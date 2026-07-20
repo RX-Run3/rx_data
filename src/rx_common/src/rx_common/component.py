@@ -587,28 +587,35 @@ class Component(StrEnum):
                 return r'$B_d \to K^*(\to K^+ \pi^-)\pi^0(\to \gamma\gamma)$'
             case Component.bpkpipiee:
                 return r'$B^+ \to K^+ \pi^+ \pi^- e^+e^-$'
-            case Component.bdkpipi:
-                return r'$B_d \to K^*(\to K^+\pi^-)\pi^+\pi^-$'
+            # -------------------------------------------------
+            # Hadronic mis-ID
+            # -------------------------------------------------
             case Component.bpkkk:
                 return r'$B^+ \to K^+K^-K^+$'
             case Component.bpkpipi:
                 return r'$B^+ \to K^+\pi^-\pi^+$'
             case Component.bpkpik:
                 return r'$B^+ \to K^+\pi^-K^+$'
+            case Component.bdkpipi:
+                return r'$B_d \to K^*(\to K^+\pi^-)\pi^+\pi^-$'
+            # -------------------------------------------------
+            # Semileptonic
+            # -------------------------------------------------
             case Component.bpdpiknumm:
                 return r'$B^+ \to (\overline{D}{}^0 \to K^+ \mu^- \overline{\nu}_\mu) \pi^+$'
+            case Component.bpdnuknumm:
+                return r'$B^- \to (D^0 \to K^- \mu^+ \nu_\mu) \, \mu^- \overline{\nu}_\mu$'
+            case Component.bdkpimunumunu:
+                return r'$B_d \to (D^- \to (K^{*0} \to K^+ \pi^-) \, \mu^- \overline{\nu}_\mu) \, \mu^+ \nu_\mu$'
+            # ---------------------------
             case Component.bdkpipienu:
                 return r'$B_d \to (D^{*-} \to (\overline{D}{}^0 \to K^+ \pi^-) \pi^-) \, e^+ \nu_e$'
             case Component.bpdnukpiee:
                 return r'$B^+ \to \overline{D}{}^0 e^+ \nu_e, \quad \overline{D}{}^0 \to K^+ \pi^-$'
-            case Component.bpdnuknumm:
-                return r'$B^- \to (D^0 \to K^- \mu^+ \nu_\mu) \, \mu^- \overline{\nu}_\mu$'
             case Component.bpdpiknuee:
                 return r'$B^+ \to (\overline{D}{}^0 \to K^+ e^- \overline{\nu}_e) \, \pi^+$'
             case Component.bdkpienuenu:
                 return r'$B_d \to (D^- \to (K^{*0} \to K^+ \pi^-) \, e^- \overline{\nu}_e) \, e^+ \nu_e$'
-            case Component.bdkpimunumunu:
-                return r'$B_d \to (D^- \to (K^{*0} \to K^+ \pi^-) \, \mu^- \overline{\nu}_\mu) \, \mu^+ \nu_\mu$'
             case Component.data_24:
                 return 'Data'
             case _:
