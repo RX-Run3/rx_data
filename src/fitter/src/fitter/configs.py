@@ -525,7 +525,7 @@ class FitModelConf(UnpackerModel):
     selection  : dict[Qsq, dict[Cuts,str]]
     observable : dict[Qsq | MisID, ObservableConf]
     components : dict[Qsq, dict[Component, AnyModelConf]]
-    plots      : PlotConf 
+    plots      : dict[Qsq, PlotConf]
     constraints: ConstraintsCfg
     fit        : FitConf
     q2bin      : Qsq | None = None
@@ -541,9 +541,9 @@ class FitModelConf(UnpackerModel):
             selection   = {},
             yields      = YieldsConf(root = {}),
             observable  = {Qsq.central : ObservableConf.default()},
+            plots       = {Qsq.central : PlotConf.default()},
             components  = {},
             constraints = ConstraintsCfg.default(),
-            plots       = PlotConf.default(),
             fit         = FitConf.default())
     # ------------------------
     def specialize(self, q2bin : Qsq) -> Self:
