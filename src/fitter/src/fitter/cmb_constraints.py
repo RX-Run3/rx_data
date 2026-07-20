@@ -48,18 +48,22 @@ class CmbConstraints(BaseFitter, Cache):
         BaseFitter.__init__(self)
 
         self._cfg_fit   = cfg_fit
-        cfg_cmb         = cfg_fit.mod_cfg.components[_COMPONENT]
+        self._q2bin     = self._cfg_fit.q2bin
+
+        cfg_cmb         = cfg_fit.mod_cfg.components[self._q2bin][_COMPONENT]
         if not isinstance(cfg_cmb, CombinatorialConf):
             ctype = type(cfg_cmb)
             raise ValueError(f'Config for {_COMPONENT} is of type {ctype}')
 
         self._cfg_cmb   = cfg_cmb
-        self._mod_cfg   = self._cfg_cmb.constraints.mod_cfg.cfg_clone(prefix = _SIG_PREFIX, regions = [brem.region])
         self._signal    = signal 
+        self._mod_cfg   = self._cfg_cmb.constraints.mod_cfg.cfg_clone(
+            prefix  = _SIG_PREFIX, 
+            q2bin   = self._q2bin,
+            regions = [brem.region])
 
         self._brem      = brem
         self._reg       = brem.region 
-        self._q2bin     = self._cfg_fit.q2bin
         self._component = _COMPONENT
         self._base_path = Path(Component.comb) / 'fit' / self._reg
         self._trigger   = Trigger(self._mod_cfg.trigger)
@@ -221,7 +225,7 @@ class CmbConstraints(BaseFitter, Cache):
             cut_cfg = cfg_nll.selection,
             res     = res, 
             out_path= self._out_path,
-            plt_cfg = self._mod_cfg.plots.regions[self._reg],
+            plt_cfg = self._mod_cfg.plots[self._q2bin].regions[self._reg],
         )
 
         return res
