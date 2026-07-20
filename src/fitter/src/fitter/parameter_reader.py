@@ -259,7 +259,7 @@ class ParameterReader:
         brem     : Brem category, e.g. 0, 1, 2
         block    : Block number in 2024, e.g. 1, 2, 3...8
         cmb/prc  : MVA working point 
-        comp     : Component, e.g. MC or data 
+        comp     : Component, e.g. bpkpee 
         project  : E.g. rk, rkst 
         q2bin    : E.g. jpsi
         trigger  : HLT2 trigger, used to pick channel, etc
