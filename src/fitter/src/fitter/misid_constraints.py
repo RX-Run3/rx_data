@@ -119,7 +119,7 @@ class MisIDConstraints(Cache):
         Needed to translate MisID yields in control region to expectation
         in signal region
         '''
-        cfg = self._cfg.components[region.signal]
+        cfg = self._cfg.components[self._q2bin][region.signal]
         if not isinstance(cfg, MisIDConf):
             cfg_type = type(cfg)
             raise ValueError(f'Config for hadronic misID components of type: {cfg_type}')
@@ -231,7 +231,7 @@ class MisIDConstraints(Cache):
                     d_nll= { region : nll }, 
                     cfg  = self._cfg)
 
-                cfg = self._cfg.components[region.signal]
+                cfg = self._cfg.components[self._q2bin][region.signal]
 
                 if not isinstance(cfg, MisIDConf):
                     tconf = type(cfg)

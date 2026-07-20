@@ -145,7 +145,7 @@ class DataFitter(BaseFitter, Cache):
             self._cache()
             return fres
 
-        for cat, regions in self._cfg.plots.merging.items():
+        for cat, regions in self._cfg.plots[self._q2bin].merging.items():
             self._save_merged_regions(
                 region  = cat, 
                 fres    = fres,
@@ -217,7 +217,7 @@ class DataFitter(BaseFitter, Cache):
 
         self._save_fit(
             cut_cfg  = dict(),
-            plt_cfg  = self._cfg.plots.regions[region],
+            plt_cfg  = self._cfg.plots[self._q2bin].regions[region],
             data     = zfit.data.concat(datasets),
             model    = model,
             res      = fres,
@@ -243,7 +243,7 @@ class DataFitter(BaseFitter, Cache):
 
             self._save_fit(
                 cut_cfg  = sel,
-                plt_cfg  = self._cfg.plots.regions[region],
+                plt_cfg  = self._cfg.plots[self._q2bin].regions[region],
                 data     = data,
                 model    = model,
                 res      = fres,
