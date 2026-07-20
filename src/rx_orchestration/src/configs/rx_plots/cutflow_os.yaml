@@ -3,13 +3,21 @@ args:
   - {sample : bdkstkpiee     , trigger : rkst_ee_os , q2bin : central}
   - {sample : bdkstkpiee     , trigger : rkst_ee_os , q2bin : high   }
   # ------------
+  - {sample : bdkstkpimm     , trigger : rkst_mm_os , q2bin : low    }
+  - {sample : bdkstkpimm     , trigger : rkst_mm_os , q2bin : central}
+  - {sample : bdkstkpimm     , trigger : rkst_mm_os , q2bin : high   }
+  # ------------
   - {sample : bpkpee         , trigger : rk_ee_os   , q2bin : low    }
   - {sample : bpkpee         , trigger : rk_ee_os   , q2bin : central}
   - {sample : bpkpee         , trigger : rk_ee_os   , q2bin : high   }
   # ------------
-  - {sample : bdkstkpimm     , trigger : rkst_mm_os , q2bin : low    }
-  - {sample : bdkstkpimm     , trigger : rkst_mm_os , q2bin : central}
-  - {sample : bdkstkpimm     , trigger : rkst_mm_os , q2bin : high   }
+  - {sample : bpdnukpiee     , trigger : rk_ee_os   , q2bin : low    }
+  - {sample : bpdnukpiee     , trigger : rk_ee_os   , q2bin : central}
+  - {sample : bpdnukpiee     , trigger : rk_ee_os   , q2bin : high   }
+  # ------------
+  - {sample : bpdpiknuee     , trigger : rk_ee_os   , q2bin : low    }
+  - {sample : bpdpiknuee     , trigger : rk_ee_os   , q2bin : central}
+  - {sample : bpdpiknuee     , trigger : rk_ee_os   , q2bin : high   }
   # ------------
   - {sample : bpkpmm         , trigger : rk_mm_os   , q2bin : low    }
   - {sample : bpkpmm         , trigger : rk_mm_os   , q2bin : central}
