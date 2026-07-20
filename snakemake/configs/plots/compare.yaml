@@ -1,0 +1,23 @@
+args:
+  - {sample : bdkstkpiee    , trigger : rkst_ee_os, q2_bin : low    }
+  - {sample : bdkstkpiee    , trigger : rkst_ee_os, q2_bin : central}
+  - {sample : bdkstkpiee    , trigger : rkst_ee_os, q2_bin : high   }
+  # ------------
+  - {sample : bpkpee        , trigger : rk_ee_os  , q2_bin : low    }
+  - {sample : bpkpee        , trigger : rk_ee_os  , q2_bin : central}
+  - {sample : bpkpee        , trigger : rk_ee_os  , q2_bin : high   }
+  # ------------
+  - {sample : bdkstkpijpsiee, trigger : rkst_ee_os, q2_bin : jpsi   }
+  - {sample : bpkpjpsiee    , trigger :   rk_ee_os, q2_bin : jpsi   }
+  # ------------
+  - {sample : data_24       , trigger : rkst_ee_os, q2_bin : jpsi   }
+  - {sample : data_24       , trigger :   rk_ee_os, q2_bin : jpsi   }
+output:
+  resolution:
+    - bmass_correction.png
+    - brem_fraction.png
+    - long_tracks.png
+    - npv.png
+  smear:
+    - bmass.png
+    - jmass.png

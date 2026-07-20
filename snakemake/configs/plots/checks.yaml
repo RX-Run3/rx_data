@@ -1,0 +1,70 @@
+efficiency_vs_q2:
+  args:
+    - {component : bpkpee    , trigger :   rk_ee_os}
+    - {component : bpkpmm    , trigger :   rk_mm_os}
+    - {component : bdkstkpiee, trigger : rkst_ee_os}
+    - {component : bdkstkpimm, trigger : rkst_mm_os}
+  outputs:
+    - low/true.png
+    - central/true.png
+    - jpsi/true.png
+    - psi2/true.png
+    - high/true.png
+validate_nopid:
+  args:
+    - {'dummy_setting' : 1}
+  outputs:
+    - ee/k_pidk_bppijpsiee.png
+    - ee/k_pidk_bpkpee.png
+    - ee/k_pidk_bpkkk.png
+    - ee/k_pidk_bpkpik.png
+    - ee/k_pidk_bpkpipi.png
+    # ------
+    - ee/l1_pide_bppijpsiee.png
+    - ee/l1_pide_bpkpee.png
+    - ee/l1_pide_bpkkk.png
+    - ee/l1_pide_bpkpik.png
+    - ee/l1_pide_bpkpipi.png
+    # ------
+    - ee/l2_pide_bppijpsiee.png
+    - ee/l2_pide_bpkpee.png
+    - ee/l2_pide_bpkkk.png
+    - ee/l2_pide_bpkpik.png
+    - ee/l2_pide_bpkpipi.png
+    # ------
+    - mm/k_pidk_bppijpsimm.png
+    - mm/k_pidk_bpkpmm.png
+    # ------
+    - mm/l1_pidmu_bppijpsimm.png
+    - mm/l1_pidmu_bpkpmm.png
+    # ------
+    - mm/l2_pidmu_bppijpsimm.png
+    - mm/l2_pidmu_bpkpmm.png
+leakage:
+  args:
+    - {component : bpkpjpsiee    , trigger :   rk_ee_os}
+    - {component : bpkppsi2ee    , trigger :   rk_ee_os}
+    - {component : bdkstkpiee    , trigger : rkst_ee_os}
+    - {component : bdkstkpipsi2ee, trigger : rkst_ee_os}
+  outputs:
+    - 0.png
+    - 1.png
+    - 2.png
+    - all.png
+high_q2cut:
+  args:
+    - {run : run3, component : bpjpsixee }
+    - {run : run3, component : bdjpsixee }
+    - {run : run3, component : bsjpsixee }
+    - {run : run3, component : bpkpee    }
+    - {run : run3, component : bpkpjpsiee}
+    - {run : run3, component : bpkppsi2ee}
+  outputs:
+    - reco_q2_0.png
+    - reco_q2_1.png
+    - reco_q2_2.png
+    - reco_q2_all.png
+    - true_q2_0.png
+    - true_q2_1.png
+    - true_q2_2.png
+    - true_q2_all.png

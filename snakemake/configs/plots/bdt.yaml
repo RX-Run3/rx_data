@@ -1,0 +1,44 @@
+# This config will steer the plots checking the effect of several MVA working points
+# on different samples, which have otherwise gone through the full selection
+
+args:
+  - {sample : data_24       , trigger : rk_mm_os   , q2bin : low    }
+  - {sample : data_24       , trigger : rk_mm_os   , q2bin : central}
+  - {sample : data_24       , trigger : rk_mm_os   , q2bin : high   }
+
+  - {sample : data_24       , trigger : rk_ee_os   , q2bin : low    }
+  - {sample : data_24       , trigger : rk_ee_os   , q2bin : central}
+  - {sample : data_24       , trigger : rk_ee_os   , q2bin : high   }
+  # ----------
+  - {sample : data_24       , trigger : rkst_mm_os , q2bin : low    }
+  - {sample : data_24       , trigger : rkst_mm_os , q2bin : central}
+  - {sample : data_24       , trigger : rkst_mm_os , q2bin : high   }
+
+  - {sample : data_24       , trigger : rkst_ee_os , q2bin : low    }
+  - {sample : data_24       , trigger : rkst_ee_os , q2bin : central}
+  - {sample : data_24       , trigger : rkst_ee_os , q2bin : high   }
+  # ----------
+  - {sample : bdkstkpimm    , trigger : rkst_mm_os , q2bin : low    }
+  - {sample : bdkstkpimm    , trigger : rkst_mm_os , q2bin : central}
+  - {sample : bdkstkpimm    , trigger : rkst_mm_os , q2bin : high   }
+
+  - {sample : bdkstkpiee    , trigger : rkst_ee_os , q2bin : low    }
+  - {sample : bdkstkpiee    , trigger : rkst_ee_os , q2bin : central}
+  - {sample : bdkstkpiee    , trigger : rkst_ee_os , q2bin : high   }
+  # ------------
+  - {sample : bpkpmm        , trigger : rk_mm_os   , q2bin : low    }
+  - {sample : bpkpmm        , trigger : rk_mm_os   , q2bin : central}
+  - {sample : bpkpmm        , trigger : rk_mm_os   , q2bin : high   }
+
+  - {sample : bpkpee        , trigger : rk_ee_os   , q2bin : low    }
+  - {sample : bpkpee        , trigger : rk_ee_os   , q2bin : central}
+  - {sample : bpkpee        , trigger : rk_ee_os   , q2bin : high   }
+  # ------------
+  - {sample : bpkpjpsimm    , trigger : rk_mm_os   , q2bin : jpsi   }
+  - {sample : bpkpjpsiee    , trigger : rk_ee_os   , q2bin : jpsi   }
+  # ------------
+  - {sample : bdkstkpijpsimm, trigger : rkst_mm_os , q2bin : jpsi   }
+  - {sample : bdkstkpijpsiee, trigger : rkst_ee_os , q2bin : jpsi   }
+output:
+  - bmass.png
+  - bmass_brem_track_2.png

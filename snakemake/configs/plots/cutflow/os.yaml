@@ -1,0 +1,79 @@
+args:
+  - {sample : bdkstkpiee     , trigger : rkst_ee_os , q2bin : low    }
+  - {sample : bdkstkpiee     , trigger : rkst_ee_os , q2bin : central}
+  - {sample : bdkstkpiee     , trigger : rkst_ee_os , q2bin : high   }
+  # ------------
+  - {sample : bdkstkpimm     , trigger : rkst_mm_os , q2bin : low    }
+  - {sample : bdkstkpimm     , trigger : rkst_mm_os , q2bin : central}
+  - {sample : bdkstkpimm     , trigger : rkst_mm_os , q2bin : high   }
+  # ------------
+  - {sample : bpkpee         , trigger : rk_ee_os   , q2bin : low    }
+  - {sample : bpkpee         , trigger : rk_ee_os   , q2bin : central}
+  - {sample : bpkpee         , trigger : rk_ee_os   , q2bin : high   }
+  # ------------
+  - {sample : bpdnukpiee     , trigger : rk_ee_os   , q2bin : low    }
+  - {sample : bpdnukpiee     , trigger : rk_ee_os   , q2bin : central}
+  - {sample : bpdnukpiee     , trigger : rk_ee_os   , q2bin : high   }
+  # ------------
+  - {sample : bpdpiknuee     , trigger : rk_ee_os   , q2bin : low    }
+  - {sample : bpdpiknuee     , trigger : rk_ee_os   , q2bin : central}
+  - {sample : bpdpiknuee     , trigger : rk_ee_os   , q2bin : high   }
+  # ------------
+  - {sample : bpkpmm         , trigger : rk_mm_os   , q2bin : low    }
+  - {sample : bpkpmm         , trigger : rk_mm_os   , q2bin : central}
+  - {sample : bpkpmm         , trigger : rk_mm_os   , q2bin : high   }
+  # ------------
+  - {sample : bdkstkpijpsiee , trigger : rkst_ee_os , q2bin : jpsi   }
+  - {sample : bpkpjpsiee     , trigger :   rk_ee_os , q2bin : jpsi   }
+  # ------------
+  # ------------
+  - {sample : data_24        , trigger : rkst_mm_os , q2bin : low    }
+  - {sample : data_24        , trigger : rkst_mm_ss , q2bin : low    }
+  - {sample : data_24        , trigger : rkst_ee_os , q2bin : low    }
+  - {sample : data_24        , trigger : rkst_ee_ss , q2bin : low    }
+  # ------------
+  - {sample : data_24        , trigger : rkst_mm_os , q2bin : central}
+  - {sample : data_24        , trigger : rkst_mm_ss , q2bin : central}
+  - {sample : data_24        , trigger : rkst_ee_os , q2bin : central}
+  - {sample : data_24        , trigger : rkst_ee_ss , q2bin : central}
+  # ------------                                    
+  - {sample : data_24        , trigger : rkst_mm_os , q2bin : jpsi   }
+  - {sample : data_24        , trigger : rkst_mm_ss , q2bin : jpsi   }
+  - {sample : data_24        , trigger : rkst_ee_os , q2bin : jpsi   }
+  - {sample : data_24        , trigger : rkst_ee_ss , q2bin : jpsi   }
+  # ------------
+  - {sample : data_24        , trigger : rkst_mm_os , q2bin : high   }
+  - {sample : data_24        , trigger : rkst_mm_ss , q2bin : high   }
+  - {sample : data_24        , trigger : rkst_ee_os , q2bin : high   }
+  - {sample : data_24        , trigger : rkst_ee_ss , q2bin : high   }
+  # ------------                                    
+  # ------------                                    
+  - {sample : data_24        , trigger :   rk_mm_os , q2bin : low    }
+  - {sample : data_24        , trigger :   rk_mm_ss , q2bin : low    }
+  - {sample : data_24        , trigger :   rk_ee_os , q2bin : low    }
+  - {sample : data_24        , trigger :   rk_ee_ss , q2bin : low    }
+  # ------------                                    
+  - {sample : data_24        , trigger :   rk_mm_os , q2bin : central}
+  - {sample : data_24        , trigger :   rk_mm_ss , q2bin : central}
+  - {sample : data_24        , trigger :   rk_ee_os , q2bin : central}
+  - {sample : data_24        , trigger :   rk_ee_ss , q2bin : central}
+  # ------------
+  - {sample : data_24        , trigger :   rk_mm_os , q2bin : jpsi   }
+  - {sample : data_24        , trigger :   rk_mm_ss , q2bin : jpsi   }
+  - {sample : data_24        , trigger :   rk_ee_os , q2bin : jpsi   }
+  - {sample : data_24        , trigger :   rk_ee_ss , q2bin : jpsi   }
+  # ------------                                    
+  - {sample : data_24        , trigger :   rk_mm_os , q2bin : high   }
+  - {sample : data_24        , trigger :   rk_mm_ss , q2bin : high   }
+  - {sample : data_24        , trigger :   rk_ee_os , q2bin : high   }
+  - {sample : data_24        , trigger :   rk_ee_ss , q2bin : high   }
+output:
+  - 1Trk_mas.png
+  - 2Trk_mas.png
+  - bmass_brem_corr.png
+  - bmass_hop.png
+  - bmass.png
+  - mass_cascade.png
+  - mass_jpsi_misid.png
+  - mva_cmb.png
+  - q2.png

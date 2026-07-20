@@ -1,0 +1,9 @@
+args:
+  - {sample : data_24, trigger : rkst_ee_ss, q2bin : central }
+  - {sample : data_24, trigger : rkst_mm_ss, q2bin : central }
+  # --------
+  - {sample : data_24, trigger :   rk_ee_ss, q2bin : central }
+  - {sample : data_24, trigger :   rk_mm_ss, q2bin : central }
+output:
+  - bmass_corr.png
+  - jmass_corr.png
