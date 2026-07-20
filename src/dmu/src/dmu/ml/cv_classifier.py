@@ -2,12 +2,12 @@
 Module holding cv_classifier class
 '''
 import os
-from typing                  import Union
-from sklearn.ensemble        import GradientBoostingClassifier
-
 import yaml
-from dmu.logging.log_store import LogStore
 import dmu.ml.utilities    as ut
+
+from typing            import Union
+from sklearn.ensemble  import GradientBoostingClassifier
+from dmu               import LogStore
 
 log = LogStore.add_logger('dmu:ml:CVClassifier')
 # ---------------------------------------
