@@ -610,12 +610,12 @@ class Component(StrEnum):
             # ---------------------------
             case Component.bdkpipienu:
                 return r'$B_d \to (D^{*-} \to (\overline{D}{}^0 \to K^+ \pi^-) \pi^-) \, e^+ \nu_e$'
+            case Component.bdkpienuenu:
+                return r'$B_d \to (D^- \to (K^{*0} \to K^+ \pi^-) \, e^- \overline{\nu}_e) \, e^+ \nu_e$'
             case Component.bpdnukpiee:
                 return r'$B^+ \to \overline{D}{}^0 e^+ \nu_e, \quad \overline{D}{}^0 \to K^+ \pi^-$'
             case Component.bpdpiknuee:
                 return r'$B^+ \to (\overline{D}{}^0 \to K^+ e^- \overline{\nu}_e) \, \pi^+$'
-            case Component.bdkpienuenu:
-                return r'$B_d \to (D^- \to (K^{*0} \to K^+ \pi^-) \, e^- \overline{\nu}_e) \, e^+ \nu_e$'
             case Component.data_24:
                 return 'Data'
             case _:
