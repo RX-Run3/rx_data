@@ -46,7 +46,10 @@ def initialize():
     with RDFGetter.max_entries(value = 100_000):
         yield
 # ----------------------
-def _update_block(cfg : FitModelConf, component : Component) -> FitModelConf:
+def _update_block(
+    cfg       : FitModelConf, 
+    q2bin     : Qsq,
+    component : Component) -> FitModelConf:
     '''
     Parameters
     -------------
@@ -57,7 +60,7 @@ def _update_block(cfg : FitModelConf, component : Component) -> FitModelConf:
     -------------
     config with updated category name 
     '''
-    conf = cfg.components[component]
+    conf = cfg.components[q2bin][component]
     if not isinstance(conf, ParametricConf):
         raise ValueError('Invalid config')
 
@@ -179,9 +182,9 @@ def test_reso_electron(tmp_path : Path):
     with UnpackerModel.package(name = 'fitter_data'):
         cfg = FitModelConf(**data)
         
-    cfg = _update_block(cfg = cfg, component = Component.bppijpsiee)
-    cfg = _update_block(cfg = cfg, component = Component.bpkpjpsiee)
-    cfg = _update_block(cfg = cfg, component = Component.bpkppsi2ee)
+    cfg = _update_block(cfg = cfg, q2bin = Qsq.jpsi, component = Component.bppijpsiee)
+    cfg = _update_block(cfg = cfg, q2bin = Qsq.jpsi, component = Component.bpkpjpsiee)
+    cfg = _update_block(cfg = cfg, q2bin = Qsq.jpsi, component = Component.bpkppsi2ee)
 
     obs = zfit.Space(Mass.bp_dtf_jpsi, limits=(5100, 5800))
     with PL.parameter_schema(cfg=cfg.yields),\

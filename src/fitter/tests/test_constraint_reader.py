@@ -276,12 +276,12 @@ def test_all_but_cmb(
         channel = Channel.ee,
         q2bin   = q2bin)
 
-    del cfg.mod_cfg.components[Component.comb]
+    del cfg.mod_cfg.components[q2bin][Component.comb]
 
     if not slow_mode:
         log.info('Skipping misid constraints')
-        del cfg.mod_cfg.components[Component.bpkkk  ]
-        del cfg.mod_cfg.components[Component.bpkpipi]
+        del cfg.mod_cfg.components[q2bin][Component.bpkkk  ]
+        del cfg.mod_cfg.components[q2bin][Component.bpkpipi]
     else:
         log.info('Running full test')
 
@@ -368,7 +368,7 @@ def test_rare_hadronic_misid(
         project = Project.rk,
         channel = Channel.ee)
 
-    del cfg.mod_cfg.components[Component.comb]
+    del cfg.mod_cfg.components[q2bin][Component.comb]
 
     with Cache.cache_root(path = tmp_path):
         obj         = ConstraintReader(
@@ -430,7 +430,7 @@ def test_reso_misid(
         project = project,
         channel = channel)
 
-    del cfg.mod_cfg.components[Component.comb]
+    del cfg.mod_cfg.components[q2bin][Component.comb]
 
     if   is_rkst     and channel == Channel.ee:
         signal = Component.bdkstkpijpsiee

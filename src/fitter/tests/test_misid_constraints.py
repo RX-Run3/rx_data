@@ -4,7 +4,7 @@ Module containing tests for MisIDConstraints class
 import pytest
 
 from pathlib       import Path
-from rx_common     import Qsq
+from rx_common     import Cuts, Qsq
 from rx_selection  import selection as sel
 from rx_data       import RDFGetter
 from dmu           import LogStore
@@ -38,7 +38,7 @@ def test_simple(q2bin : Qsq, tmp_path : Path) -> None:
     with UnpackerModel.package(name = 'fitter_data'):
         cfg = FitModelConf(**data)
 
-    with sel.custom_selection(d_sel={'nobrm0' : 'nbrem != 0'}),\
+    with sel.custom_selection(d_sel={Cuts.brem : 'nbrem != 0'}),\
          RDFGetter.max_entries(value = -1),\
          Cache.cache_root(path = tmp_path):
             obj = MisIDConstraints(

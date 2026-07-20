@@ -20,15 +20,13 @@ from dmu.generic import rxran
 from dmu         import LogStore
 
 log=LogStore.add_logger('fitter:test_toymaker')
+plt.style.use(mplhep.style.LHCb2) # type: ignore
 # ----------------------
 @pytest.fixture(scope='module', autouse=True)
 def initialize():
     '''
     This will run before any test
     '''
-
-    plt.style.use(mplhep.style.LHCb2)
-
     LogStore.set_level('dmu:stats:gofcalculator', 30)
     LogStore.set_level('dmu:stats:fitter'       , 20)
     LogStore.set_level('fitter:toy_maker'       , 10)
@@ -56,8 +54,8 @@ def test_simple(tmp_path: Path) -> None:
     adr = ConstraintAdder(nll = nll, constraints = cns)
     nll = adr.get_nll()
 
-    min = zfit.minimize.Minuit()
-    res = min.minimize(loss = nll)
+    minimizer = zfit.minimize.Minuit()
+    res = minimizer.minimize(loss = nll)
     res.hesse(name = 'minuit_hesse')
 
     with gut.environment(mapping = {'ANADIR' : str(tmp_path)}):
@@ -100,8 +98,8 @@ def test_integration(
     adr  = ConstraintAdder(nll = nll, constraints = cns)
     nll  = adr.get_nll()
 
-    min = zfit.minimize.Minuit()
-    res = min.minimize(loss = nll)
+    minimizer = zfit.minimize.Minuit()
+    res = minimizer.minimize(loss = nll)
     res.hesse(name = 'minuit_hesse')
 
     with gut.environment(mapping = {'ANADIR' : str(tmp_path)}):

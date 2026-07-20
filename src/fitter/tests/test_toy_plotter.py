@@ -17,13 +17,13 @@ from dmu.logging.log_store import LogStore
 from fitter.toy_plotter    import ToyPlotter, MissingVariableConfiguration
 
 log=LogStore.add_logger('fitter:test_toy_plotter')
+plt.style.use(mplhep.style.LHCb2) # type: ignore
 # ----------------------
 @pytest.fixture(scope='session', autouse=True)
 def initialize():
     '''
     This will run before any test
     '''
-    plt.style.use(mplhep.style.LHCb2)
     LogStore.set_level('dmu:plotting:Plotter1D', 10)
 # ----------------------
 @lru_cache(maxsize=3)
@@ -58,8 +58,8 @@ def _get_df(ntoys : int, l_var : tuple[str]) -> pnd.DataFrame:
         gof = numpy.random.uniform(low=0, high=1, size=1)
         cnv = numpy.random.choice(a=[True, False], p=[0.95, 0.05], size=1)
 
-        df.loc[df.Toy == itoy,   'GOF'] = npar * [gof]
-        df.loc[df.Toy == itoy, 'Valid'] = npar * [cnv]
+        df.loc[df.Toy == itoy,   'GOF'] = npar * [gof] # type: ignore
+        df.loc[df.Toy == itoy, 'Valid'] = npar * [cnv] # type: ignore
 
     df['GOF']   = df['GOF'  ].astype(float)
     df['Valid'] = df['Valid'].astype(bool )
