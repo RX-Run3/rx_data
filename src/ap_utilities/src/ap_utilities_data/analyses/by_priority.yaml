@@ -221,6 +221,7 @@ sim10g:
     # ----------
     12143031 : $B^+\to \psi(2S)(\to \mu^+ \mu^-) \pi^+$
     # ----------
+    12163001 : B+ -> (D~0 -> K+ pi-) pi+
     11102202 : bd_kstgamma_eq_highptgamma_dpc_ss_tuple
     11102441 : bd_ksteta_gg_eq_dpc_ss_tuple
     11102453 : bd_kstpi0_eq_tc_kst982width100_highptpi0_ss_tuple
@@ -296,6 +297,7 @@ medium_priority:
     13442001  : $B_s \to J/\psi(\to \mu^+ \mu^-) X$
     # -----------
     11264001  : $B^0 \to D^- \pi^+ \pi^-$
+    12163001  : B+ -> (D~0 -> K+ pi-) pi+
     12183004  : $B^+ \to D^0(\to K^- e^+ \nu_e)\, \pi^0$
     12583013  : $B^+ \to D^0(\to K^- \pi^+)\, e^+ \nu_e$
     12583022  : $B^+ \to D^0(\to K^- e^+ \nu_e)\, e^+ \nu_e$
