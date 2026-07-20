@@ -6,12 +6,12 @@ import os
 import law
 import json
 
-from typing                import Final
-from pathlib               import Path
-from law.parameter         import Parameter
-from omegaconf             import DictConfig, OmegaConf
-from dmu.generic           import utilities as gut
-from dmu.logging.log_store import LogStore
+from typing        import Final
+from pathlib       import Path
+from law.parameter import Parameter
+from omegaconf     import DictConfig, OmegaConf
+from dmu.generic   import utilities as gut
+from dmu           import LogStore
 
 log=LogStore.add_logger('rx_orchestration:compare_law')
 _ANADIR : Final[Path]      = Path(os.environ['ANADIR'])
