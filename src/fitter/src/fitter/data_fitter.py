@@ -100,8 +100,8 @@ class DataFitter(BaseFitter, Cache):
         -------------
         Fit result
         '''
-        min = zfit.minimize.Minuit()
-        res = min.minimize(loss = nll)                            # type: ignore[reportUnknownMemberType]
+        minimizer = zfit.minimize.Minuit()
+        res = minimizer.minimize(loss = nll)                            # type: ignore[reportUnknownMemberType]
         res.hesse(name='minuit_hesse', method = 'minuit_hesse')   # type: ignore[reportUnknownMemberType]
 
         try:
@@ -168,8 +168,8 @@ class DataFitter(BaseFitter, Cache):
         if   self._cfg.fit.strategy is None:
             fres = self._simple_fit(nll = nll)
         elif isinstance(self._cfg.fit.strategy, Retries):
-            min  = AnealingMinimizer(cfg = self._cfg.fit)
-            fres = min.get_result(loss = nll)
+            minimizer  = AnealingMinimizer(cfg = self._cfg.fit)
+            fres = minimizer.get_result(loss = nll)
         else:
             raise NotImplementedError(f'Invalid strategy: {self._cfg.fit.strategy}')
 
