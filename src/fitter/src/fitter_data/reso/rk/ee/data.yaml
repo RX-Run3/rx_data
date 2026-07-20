@@ -41,9 +41,8 @@ components:
     bpkpjpsiee : reso/rk/ee/bpkpjpsiee.yaml
   psi2:
     comb       : reso/rk/ee/comb.yaml
-    bppijpsiee : reso/rk/ee/bppijpsiee.yaml
     ccbar      : reso/rk/ee/ccbar.yaml
-    bpkpjpsiee : reso/rk/ee/bpkpjpsiee.yaml
+    bpkpjpsiee : reso/rk/ee/bpkpjpsiee_psi2.yaml
     bpkppsi2ee : reso/rk/ee/bpkppsi2ee.yaml
 constraints:
   signal_fraction:
