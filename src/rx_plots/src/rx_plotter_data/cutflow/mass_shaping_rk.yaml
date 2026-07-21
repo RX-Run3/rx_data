@@ -1,6 +1,3 @@
-# Config used to check effect of BDT cut on shape of unconstrained B mass
-# BDT is progressively tightened
-
 styling: &style
   M(B) > 4500 :
     histtype  : fill
