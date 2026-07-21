@@ -9,6 +9,7 @@ HOME    = '/afs/ihep.ac.cn/users/c/campoverde'
 ANADIR  = '/publicfs/ucas/user/campoverde/Data'
 LOGDIR  = '/publicfs/ucas/user/campoverde/Jobs/snakemake'
 KIND    = config['kind']
+Q2BINS  = ['low', 'central', 'jpsi', 'psi2', 'high']
 # ---------------------
 def _get_inputs() -> list[str]:
     paths = []
@@ -32,6 +33,9 @@ rule cutflow:
             f'{ANADIR}/plots/cutflow/{KIND}/{{sample}}_{{trigger}}_{{q2bin}}/{fname}'
             for fname in config['output'] 
         ]
+    wildcard_constraints:
+        trigger = '(rk|rkst)_(ee|mm)_(os|ss)'
+        q2bin   = '|'.Q2BINS
     log:
         prc = f'{LOGDIR}/cutflow_{KIND}_{{sample}}_{{trigger}}_{{q2bin}}.prc',
         err = f'{LOGDIR}/cutflow_{KIND}_{{sample}}_{{trigger}}_{{q2bin}}.err',
