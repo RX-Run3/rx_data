@@ -1,10 +1,13 @@
+merged :
+  jpsi : True
+  psi2 : True
 samples:
-  - bdjpsixmm 
-  - bpjpsixmm 
-  - bsjpsixmm 
+  - bdjpsixmm
+  - bpjpsixmm
+  - bsjpsixmm
 weights:
   dec : True
-  sam : True 
+  sam : True
 fit:
   jpsi:
     kind      : KDE1DimFFT

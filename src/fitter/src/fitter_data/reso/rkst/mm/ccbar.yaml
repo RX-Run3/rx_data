@@ -1,3 +1,6 @@
+merged :
+  jpsi : True
+  psi2 : False
 samples:
   - bdjpsixmm
   - bpjpsixmm
@@ -8,12 +11,12 @@ weights:
 fit:
   jpsi:
     kind      : KDE1DimFFT
-    bandwidth : 10 
+    bandwidth : 10
     padding   :
       flag : False
   psi2S:
     kind      : KDE1DimFFT
-    bandwidth : 10 
+    bandwidth : 10
     padding   :
       flag : False
 plots:
