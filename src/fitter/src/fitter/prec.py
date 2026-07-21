@@ -28,7 +28,7 @@ from zfit.pdf              import BasePDF       as zpdf
 from zfit.pdf              import KDE1DimFFT, SumPDF
 
 from rx_data               import RDFGetter
-from rx_common             import Component, Cuts, Project, Qsq, Trigger, Mass, CCbarComponent
+from rx_common             import Component, Cuts, Qsq, Trigger, Mass, CCbarComponent
 from rx_selection          import selection     as sel
 
 from .configs                  import CCbarConf, CCbarWeight
@@ -38,10 +38,10 @@ from .inclusive_sample_weights import Reader as SampleWeightReader
 log=LogStore.add_logger('fitter:prec')
 
 _KDEPDF                         = KDE1DimFFT
-_MIN_ENTRIES : Final[int]       =  40 # Will not build KDE if fewer entries than this are found
-_MODEL_ATTRS : Final[list[str]] = ['mass', 'wgt', 'dec', 'sam']
-_MASSES      : Final[list[str]] = ['B_M', 'B_Mass', 'B_Mass_smr', 'B_const_mass_M', 'B_const_mass_psi2S_M']
-_PDFNAME     : Final[str]       = 'ccbar'
+_MIN_ENTRIES    : Final[int]       =  40 # Will not build KDE if fewer entries than this are found
+_MODEL_ATTRS    : Final[list[str]] = ['mass', 'wgt', 'dec', 'sam']
+_MASSES         : Final[list[str]] = ['B_M', 'B_Mass', 'B_Mass_smr', 'B_const_mass_M', 'B_const_mass_psi2S_M']
+_MERGED_PDFNAME : Final[str]       = 'ccbar' # Name of KDE built from adding all candidates in a single dataset
 #-----------------------------------------------------------
 class CharmoniumComponent(BaseModel):
     '''
@@ -274,7 +274,7 @@ class PRec(Cache):
             d_match  = d_hash_match)
     #-----------------------------------------------------------
     def __get_df(self) -> dict[str,pnd.DataFrame]:
-        '''
+        r'''
         Returns
         -------------------
         Dictionary where:
@@ -499,6 +499,8 @@ class PRec(Cache):
     #-----------------------------------------------------------
     def __get_match_str_jpsi(self) -> dict[str,str]:
         '''
+        The Jpsi splitting splits by B kind, i.e. three components, Bd, Bu, Bs 
+
         Returns
         ------------
         Dictionary mapping 
@@ -526,6 +528,8 @@ class PRec(Cache):
     #-----------------------------------------------------------
     def __get_match_str_psi2(self) -> dict[str,str]:
         '''
+        The psi2S splitting splits by B meson type, BUT for Bu, it separates the component with a psi2S -> Jpsi
+
         Returns
         ------------
         Dictionary mapping 
@@ -533,24 +537,18 @@ class PRec(Cache):
         - Latex string describing process
         - Truth matching string isolating process
         '''
-
         bd = '(abs(B_TRUEID) == 511)'
+        bp = '(abs(B_TRUEID) == 521)'
         bs = '(abs(B_TRUEID) == 531)'
 
-        common_cut = '(abs(B_TRUEID) == 521) & (abs(Jpsi_TRUEID) == 443) & (abs(Jpsi_MC_MOTHER_ID) == 100443) & (abs(Jpsi_MC_GD_MOTHER_ID) == 521)' 
+        psjp     = '(abs(Jpsi_TRUEID) == 443) & (abs(Jpsi_MC_MOTHER_ID) == 100443) & (abs(Jpsi_MC_GD_MOTHER_ID) == 521)' 
+        bp_psjp  = f'{bp} & {psjp}'
 
-        if   self._trig.project == Project.rk:
-            bp_psjp = f'{common_cut} & (abs(H_MC_MOTHER_ID)  == 521)'
-        elif self._trig.project == Project.rkst:
-            bp_psjp = f'{common_cut} & (abs(H1_MC_MOTHER_ID) == 521)'
-        else:
-            raise ValueError(f'Invalid project: {self._trig.project}')
-
-        neg_bp_psjp = bp_psjp.replace('==', '!=').replace('&' , '|')
-        bp_ex       = f'(abs(B_TRUEID) == 521) & ({neg_bp_psjp})'
+        neg_psjp = psjp.replace('==', '!=').replace('&' , '|')
+        bp_ex    = f'{bp} & ({neg_psjp})'
 
         d_cut : dict[str,str] = {}
-        d_cut[r'$B^+\to \psi(2S)(\to J/\psi+X)H_{s}$'] = bp_psjp
+        d_cut[r'$B^+\to \psi(2S)(\to J/\psi+X)H_{s}$'] = bp_psjp 
         if   self._trig.is_electron: 
             d_cut[r'$B^+\to c\bar{c}(\to e^+ e^-)H_s$']    = bp_ex
             d_cut[r'$B_d\to c\bar{c}(\to e^+ e^-)H_s$']    = bd
@@ -696,14 +694,10 @@ class PRec(Cache):
 
         return sum(wgt)
     #-----------------------------------------------------------
-    def __get_full_model(
-        self, 
-        merged : bool,
-        d_df   : dict[str,pnd.DataFrame]) -> CCbarModel: 
+    def __get_full_model(self, d_df : dict[str,pnd.DataFrame]) -> CCbarModel: 
         '''
         Parameters
         -------------------
-        merged: If true, will provide a single PDF from the sum of the data
         d_df  : Dictionary with:
             Key  : Latex name of component, not necessarily Bu/Bd... This was re-split
             Value: Dataframe with data to fit
@@ -715,7 +709,7 @@ class PRec(Cache):
         if not d_df:
             raise ValueError('No dataframes with components data')
 
-        if merged:
+        if self._cfg.merged[self._q2bin]:
             return self.__get_full_merged_model(d_df = d_df)
         else:
             return self.__get_full_split_model(d_df = d_df)
@@ -725,9 +719,9 @@ class PRec(Cache):
         df    = pnd.concat(objs = dfs, axis = 0)
         model = self.__get_model(
             mass           = Mass(self._obs.label), 
-            component_name = _PDFNAME, 
+            component_name = _MERGED_PDFNAME, 
             df             = df, 
-            cfg            = self._cfg.fit)
+            cfg            = self._cfg.fit[self._q2bin])
 
         model = CCbarModel(
             obs       = self._obs,
@@ -744,7 +738,7 @@ class PRec(Cache):
                 mass           = Mass(self._obs.label), 
                 component_name = ltex, 
                 df             = df, 
-                cfg            = self._cfg.fit) for ltex, df in d_df.items() ]
+                cfg            = self._cfg.fit[self._q2bin]) for ltex, df in d_df.items() ]
 
         models    : list[CharmoniumComponent] = [ model for model in all_models if model.pdf is not None ]
         yields    : list[float   ] = [ self.__yield_in_range(model=model) for    model in models ]
@@ -853,7 +847,7 @@ class PRec(Cache):
 
         Parameters
         ----------------
-        name: Name of PDF, used for title and PNG name
+        name  : Name of PDF, used for title and PNG name
 
         Returns:
         ----------------
@@ -867,7 +861,7 @@ class PRec(Cache):
         if self._copy_from_cache():
             log.info(f'Data found cached, reloading from {self._out_path}')
             d_df = { ltex : pnd.read_parquet(path) for ltex , path in d_path.items() }
-            model= self.__get_full_model(d_df=d_df, merged = True)
+            model= self.__get_full_model(d_df=d_df)
 
             self._plot_weights(
                 model   = model, 
@@ -886,7 +880,7 @@ class PRec(Cache):
         log.info(f'Recalculating, cached data not found in: {self._out_path}')
 
         d_df = self.__get_df()
-        model= self.__get_full_model(d_df = d_df, merged = True)
+        model= self.__get_full_model(d_df = d_df)
 
         for sample in self._cut_info:
             rep, d_sel = self._cut_info[sample]
