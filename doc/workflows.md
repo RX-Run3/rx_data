@@ -58,6 +58,58 @@ graph TD
 The workflow will take care of everything. The user should only have to check the `yaml` config file
 and update it.
 
+## Plots
+
+### Cutflow plots
+
+For this run:
+
+```bash
+snakemake -s snakemake/rules/plots/cutflow.smk                 \
+          --configfile snakemake/configs/plots/cutflow/os.yaml \
+          --profile ihep                                       \
+          --logger=flowo                                       \
+          --logger-flowo-name=plots-cutflow                    \
+          --keep-going --quiet                                 \
+          --config  kind=cleanup
+```
+
+Where
+
+- The `configfile` controls the samples that will be processed.
+- `cleanup` refers to the type of cutflow, other kinds are:
+
+
+| Name | Description |
+|---|---|
+| `bdt` | Check effect of tightening MVA working point on mass |
+| `cleanup` | Check effect of vetos |
+| `mass` | Check effect on J/psi mass of tightening the mass cut on the B |
+| `ss_shape` | Check SS shape of B and Jpsi mass under charmonium veto |
+
+in `rx_plotter_data/cutflow`.
+
+### Comparison plots
+
+For this run:
+
+```bash
+snakemake -s snakemake/rules/plots/compare.smk              \
+          --configfile snakemake/configs/plots/compare.yaml \
+          --config kind=resolution                          \
+          -c 1                                              \
+          -n
+```
+
+which will make comparison plots between different variables.
+The kind can be:
+
+| Name | Description |
+|---|---|
+| `misid_regions` | Compares different kinds of masses in the PID control region |
+| `resolution` | Compares mass under brem correction and emulation |
+| `smear` | Compares effect of brem correcting and smearing masses |
+
 ## Ntuple transfers
 
 Run:
