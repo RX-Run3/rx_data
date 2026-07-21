@@ -274,7 +274,7 @@ class PRec(Cache):
             d_match  = d_hash_match)
     #-----------------------------------------------------------
     def __get_df(self) -> dict[str,pnd.DataFrame]:
-        '''
+        r'''
         Returns
         -------------------
         Dictionary where:
@@ -847,13 +847,18 @@ class PRec(Cache):
         text_path = f'{out_dir}/{name}.txt' 
         sut.print_pdf(model.pdf, txt_path=text_path)
     #-----------------------------------------------------------
-    def get_sum(self, name : str) -> zpdf | None:
+    def get_sum(
+        self, 
+        name  : str,
+        merged: bool) -> zpdf | None:
         '''
         Provides extended PDF that is the sum of multiple KDEs representing PRec background
 
         Parameters
         ----------------
-        name: Name of PDF, used for title and PNG name
+        name  : Name of PDF, used for title and PNG name
+        merged: If true, will put the cocktail samples together and then fit
+                If false, will fit separate samples and return sum
 
         Returns:
         ----------------
@@ -867,7 +872,7 @@ class PRec(Cache):
         if self._copy_from_cache():
             log.info(f'Data found cached, reloading from {self._out_path}')
             d_df = { ltex : pnd.read_parquet(path) for ltex , path in d_path.items() }
-            model= self.__get_full_model(d_df=d_df, merged = True)
+            model= self.__get_full_model(d_df=d_df, merged = merged)
 
             self._plot_weights(
                 model   = model, 
@@ -886,7 +891,7 @@ class PRec(Cache):
         log.info(f'Recalculating, cached data not found in: {self._out_path}')
 
         d_df = self.__get_df()
-        model= self.__get_full_model(d_df = d_df, merged = True)
+        model= self.__get_full_model(d_df = d_df, merged = merged)
 
         for sample in self._cut_info:
             rep, d_sel = self._cut_info[sample]
