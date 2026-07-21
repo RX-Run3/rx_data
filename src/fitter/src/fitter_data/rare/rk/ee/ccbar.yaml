@@ -2,15 +2,19 @@ fig_conf : &fit_cfg
   kind      : KDE1DimFFT
   bandwidth : 40
   padding   :
-    flag : False 
+    flag : False
 # --------------------
+merged :
+  low     : True
+  central : True
+  high    : True
 samples:
-  - bdjpsixee 
-  - bpjpsixee 
-  - bsjpsixee 
+  - bdjpsixee
+  - bpjpsixee
+  - bsjpsixee
 weights:
-  dec : True 
-  sam : True 
+  dec : True
+  sam : True
 fit:
   low     : *fit_cfg
   central : *fit_cfg

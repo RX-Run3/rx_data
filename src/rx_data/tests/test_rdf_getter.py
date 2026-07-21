@@ -48,6 +48,12 @@ _RESONANT_SAMPLES : Final[list[tuple[Component,Trigger]]] = [
     (Component.bdkstkpijpsimm, Trigger.rkst_mm_os),
 ]
 
+_SEMILEPTONIC_SAMPLES : Final[list[tuple[Component,Trigger]]] = [
+    (Component.bpdpiknuee,   Trigger.rk_ee_os),
+    (Component.bpdnuknuee,   Trigger.rk_ee_os),
+    (Component.bpdnukpiee,   Trigger.rk_ee_os),
+]
+
 _DATA_SAMPLES     : Final[list[tuple[Component,Trigger]]] = [
     (Component.data_24_md_c2, Trigger.rk_ee_os  ),
     (Component.data_24_md_c2, Trigger.rkst_ee_os),
@@ -1067,13 +1073,14 @@ def test_no_friends_mc(
     assert nentries.GetValue() > 0
 # ------------------------------------------------
 @pytest.mark.parametrize('sample, trigger', _RESONANT_SAMPLES)
-def test_blocks(
+def test_blocks_rs(
     sample  : Component,
     trigger : Trigger,
     tmp_path: Path):
     '''
-    Test loading files with out any friend
+    Check that files contain 'block' column
     '''
+    q2bin = Qsq.jpsi
     with RDFGetter.exclude_friends(names = []):
         gtr = RDFGetter(sample=sample, trigger=trigger)
         rdf = gtr.get_rdf(per_file=False)
@@ -1082,7 +1089,28 @@ def test_blocks(
             rdf     = rdf,
             process = sample,
             trigger = trigger,
-            q2bin   = Qsq.jpsi)
+            q2bin   = q2bin)
+
+    nentries = rdf.Count()
+
+    _check_block(rdf = rdf)
+
+    name   = f'no_friends/{sample}_{trigger}'
+
+    _plot_block(rdf=rdf, name=name, out_dir = tmp_path)
+
+    assert nentries.GetValue() > 0
+# ------------------------------------------------
+@pytest.mark.parametrize('sample, trigger', _SEMILEPTONIC_SAMPLES)
+def test_blocks_sl(
+    sample  : Component,
+    trigger : Trigger,
+    tmp_path: Path):
+    '''
+    Check that files contain 'block' column
+    '''
+    gtr = RDFGetter(sample=sample, trigger=trigger)
+    rdf = gtr.get_rdf(per_file=False)
 
     nentries = rdf.Count()
 

@@ -1,17 +1,20 @@
+merged :
+  jpsi : True
+  psi2 : True
 samples:
-  - bdjpsixmm 
-  - bpjpsixmm 
-  - bsjpsixmm 
+  - bdjpsixmm
+  - bpjpsixmm
+  - bsjpsixmm
 weights:
   dec : True
-  sam : True 
+  sam : True
 fit:
   jpsi:
     kind      : KDE1DimFFT
     bandwidth : 20
     padding   :
       flag : False
-  psi2S:
+  psi2:
     kind      : KDE1DimFFT
     bandwidth : 20
     padding   :

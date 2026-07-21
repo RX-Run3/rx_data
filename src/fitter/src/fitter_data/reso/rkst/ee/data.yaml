@@ -1,6 +1,6 @@
 # This is a config file used for tests
 # It illustrates how a fit would run for data
-plots_settings: &plots_settings 
+reg_cfg: &reg_cfg
   nbins           : 400 
   stacked         : True
   d_leg :
@@ -17,6 +17,11 @@ plots_settings: &plots_settings
   plot_range :
     - 4900
     - 6200
+plt_cfg: &plt_cfg
+  merging : {}
+  regions :
+    brem_xx1 : *reg_cfg
+    brem_xx2 : *reg_cfg
 # ----------------------------------
 trigger   : rkst_ee_os
 yields    : model/yields/rkst/reso_electron.yaml
@@ -63,7 +68,5 @@ constraints:
   signal_shape    : false
 fit: {}
 plots:
-  merging : {}
-  regions :
-    brem_xx1 : *plots_settings
-    brem_xx2 : *plots_settings
+  jpsi : *plt_cfg
+  psi2 : *plt_cfg

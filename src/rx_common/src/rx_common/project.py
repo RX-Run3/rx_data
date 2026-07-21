@@ -34,6 +34,19 @@ class Project(StrEnum):
     rkst_no_refit = auto() 
     rkst_sim10d   = auto() 
     rkst_bad_ecal = auto()
+    # --------------------------------------------
+    @property
+    def semileptonic(self) -> list[Component]:
+        '''
+        List of semileptonic components associated
+        '''
+        if self == Project.rk:
+            return [Component.bpdnukpiee, Component.bpdpiknuee, Component.bpdnuknuee]
+
+        if self == Project.rkst:
+            return [Component.bdkpipienu, Component.bdkpienuenu]
+
+        raise ValueError(f'No semileptonic components defined for project: {self}')
     # ----------------------
     @classmethod
     def rk_projects(cls) -> set['Project']:

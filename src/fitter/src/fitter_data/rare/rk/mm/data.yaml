@@ -1,6 +1,17 @@
 # This is a config file used for tests
 # It illustrates how a fit would run for data
 
+# These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#fit-plotting
+plots_cfg: &plt_cfg 
+  merging : {}
+  regions :
+    brem_xx0:
+      nbins   : 50
+      stacked : True
+      d_leg :
+        bpkpmm : $B^+\to K^+\mu^+\mu^-$ 
+        comb   : Combinatorial
+# -------------------------------
 trigger          : rk_mm_os
 yields           : model/yields/rk/rare_muon.yaml
 selection        : {}
@@ -35,12 +46,7 @@ constraints:
   combinatorial : false
   signal_shape  : false
 fit: {}
-plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#fit-plotting
-  merging : {}
-  regions :
-    brem_xx0:
-      nbins   : 50
-      stacked : True
-      d_leg :
-        bpkpmm : $B^+\to K^+\mu^+\mu^-$ 
-        comb   : Combinatorial
+plots:
+  low     : *plt_cfg
+  central : *plt_cfg
+  high    : *plt_cfg

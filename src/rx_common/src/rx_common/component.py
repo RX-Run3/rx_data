@@ -2,12 +2,12 @@
 Module holding Component and CCbarComponent
 '''
 
-from functools import cache
-from enum      import StrEnum, auto
-from typing    import Literal
+from functools           import cache
+from enum                import StrEnum, auto
+from typing              import Literal
+from ap_utilities.decays import utilities as aput
 
 from .channel            import Channel
-from ap_utilities.decays import utilities as aput
 
 # -------------------------------
 class MissingComponent(Exception):
@@ -107,9 +107,11 @@ class Component(StrEnum):
     # -----
     bpdnuknumm     = auto()
     bpdpiknumm     = auto()
+    # ------
     bpdnukpiee     = auto()
     bpdpiknuee     = auto()
     bpdnuknuee     = auto()
+    # ------
     bdkpipienu     = auto()
     bdkpienuenu    = auto()
     bdkpimunumunu  = auto()
@@ -386,6 +388,7 @@ class Component(StrEnum):
             return 'Bu_D0munu_Kmunu_eq_DPC'
           case Component.bpdpiknumm:
             return 'Bu_D0pi_Kmunu_eq_DPC'
+          # -----
           case Component.bpdnukpiee:
             return 'Bu_D0enu_Kpi_eq_DPC_TC'
           case Component.bpdpiknuee:
@@ -612,10 +615,14 @@ class Component(StrEnum):
                 return r'$B_d \to (D^{*-} \to (\overline{D}{}^0 \to K^+ \pi^-) \pi^-) \, e^+ \nu_e$'
             case Component.bdkpienuenu:
                 return r'$B_d \to (D^- \to (K^{*0} \to K^+ \pi^-) \, e^- \overline{\nu}_e) \, e^+ \nu_e$'
+            # ---------------------------
             case Component.bpdnukpiee:
                 return r'$B^+ \to \overline{D}{}^0 e^+ \nu_e, \quad \overline{D}{}^0 \to K^+ \pi^-$'
             case Component.bpdpiknuee:
                 return r'$B^+ \to (\overline{D}{}^0 \to K^+ e^- \overline{\nu}_e) \, \pi^+$'
+            case Component.bpdnuknuee:
+                return r'$B^+ \to (\overline{D}{}^0 \to K^+ e^- \overline{\nu}_e) \, e^+ \nu_e$'
+            # ---------------------------
             case Component.data_24:
                 return 'Data'
             case _:

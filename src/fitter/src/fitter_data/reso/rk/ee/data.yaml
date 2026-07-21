@@ -65,8 +65,8 @@ observable:
 components:
   jpsi:
     comb       : reso/rk/ee/comb.yaml
-    bppijpsiee : reso/rk/ee/bppijpsiee.yaml
     ccbar      : reso/rk/ee/ccbar.yaml
+    bppijpsiee : reso/rk/ee/bppijpsiee.yaml
     bpkpjpsiee : reso/rk/ee/bpkpjpsiee.yaml
   psi2:
     comb       : reso/rk/ee/comb.yaml

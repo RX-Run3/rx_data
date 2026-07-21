@@ -9,7 +9,7 @@ from dmu.stats   import YieldConf
 from dmu.generic import UnpackerModel, utilities as gut
 from rx_misid    import MisIDSampleWeights, MisIDSampleSplitting
 from rx_common   import Channel, Component, Project, Mass, Qsq, Region
-from fitter      import NonParametricConf 
+from fitter      import NonParametricConf
 from fitter      import CCbarConf, CombinatorialConf, MisIDConf, ObservableConf, RXFitConfig
 from fitter      import ParametricConf
 from fitter      import FitModelConf
@@ -33,7 +33,7 @@ def initialize():
 def test_full_config(
     tmp_path: Path,
     q2bin   : Qsq,
-    channel : Channel, 
+    channel : Channel,
     project : Project):
     '''
     Test fitting model for data
@@ -59,16 +59,16 @@ def test_observable_conf(mass : Mass):
     Test observable configuration
     '''
     cfg = ObservableConf(
-        name  = mass, 
+        name  = mass,
         range = (4000, 7000))
 
     log.info(cfg)
 # ----------------------
 @pytest.mark.parametrize('analysis', [Project.rk, Project.rkst])
 @pytest.mark.parametrize('fname'   , [
-    'reso_muon', 
+    'reso_muon',
     'reso_electron',
-    'rare_muon', 
+    'rare_muon',
     'rare_electron',
     'misid_electron',
 ])
@@ -79,7 +79,7 @@ def test_yield_conf(
     Test yield configuration class
     '''
     data = gut.load_data(
-        package = 'fitter_data', 
+        package = 'fitter_data',
         fpath   = f'model/yields/{analysis}/{fname}.yaml')
 
     for name, conf in data.items():
@@ -90,14 +90,14 @@ def test_yield_conf(
 @pytest.mark.parametrize('kind'    , ['reso', 'rare'])
 @pytest.mark.parametrize('channel' , ['ee'  ,   'mm'])
 def test_combinatorial_sr(
-    analysis : str, 
+    analysis : str,
     channel  : str,
     kind     : str):
     '''
     Test for combinatorial in signal region
     '''
     data = gut.load_data(
-        package = 'fitter_data', 
+        package = 'fitter_data',
         fpath   = f'{kind}/{analysis}/{channel}/comb.yaml')
 
     if   kind == 'rare' and channel == 'ee':
@@ -115,7 +115,7 @@ def test_combinatorial_cr():
     Test for combinatorial in misid control region
     '''
     data = gut.load_data(
-        package = 'fitter_data', 
+        package = 'fitter_data',
         fpath   = 'misid/rk/ee/comb.yaml')
 
     CombinatorialConfUnconstrained(**data)
@@ -124,32 +124,32 @@ def test_combinatorial_cr():
 @pytest.mark.parametrize('kind'    , ['reso', 'rare'])
 def test_ccbar(analysis : str, kind : str):
     data = gut.load_data(
-        package = 'fitter_data', 
+        package = 'fitter_data',
         fpath   = f'{kind}/{analysis}/ee/ccbar.yaml')
 
     obj = CCbarConf(**data)
     print(obj)
 # ----------------------
 @pytest.mark.parametrize('component', [
-    Component.bdkstkpiee, 
+    Component.bdkstkpiee,
     Component.bpkstkpiee,
     Component.bsphiee,
     Component.bpkpjpsiee,
     Component.bpkpee])
 def test_nonparametric_rare_rk(component : str):
     data = gut.load_data(
-        package = 'fitter_data', 
+        package = 'fitter_data',
         fpath   = f'rare/rk/ee/{component}_np.yaml')
 
     NonParametricConf(**data)
 # ----------------------
-@pytest.mark.parametrize('component', 
-        [Component.bdkstkpiee, 
+@pytest.mark.parametrize('component',
+        [Component.bdkstkpiee,
          Component.bdkstkpipsi2ee,
          Component.bdkstkpijpsiee])
 def test_nonparametric_rare_rkst(component : Component):
     data = gut.load_data(
-        package = 'fitter_data', 
+        package = 'fitter_data',
         fpath   = f'rare/rkst/ee/{component}_np.yaml')
 
     NonParametricConf(**data)
@@ -158,7 +158,7 @@ def test_nonparametric_rare_rkst(component : Component):
 def test_parametric_rk(component : Component):
     suffix = '.j2'if component == Component.bpkpee else ''
     data   = gut.load_data(
-        package = 'fitter_data', 
+        package = 'fitter_data',
         fpath   = f'rare/rk/{component.channel}/{component}.yaml{suffix}')
 
     cfg = ParametricConf(**data)
@@ -169,7 +169,7 @@ def test_parametric_rk(component : Component):
 def test_parametric_rkst(component : Component):
     suffix = '.j2'if component == Component.bdkstkpiee else ''
     data = gut.load_data(
-        package = 'fitter_data', 
+        package = 'fitter_data',
         fpath   = f'rare/rkst/{component.channel}/{component}.yaml{suffix}')
 
     cfg = ParametricConf(**data)
@@ -178,14 +178,14 @@ def test_parametric_rkst(component : Component):
 # ----------------------
 def test_misid_weights():
     data = gut.load_data(
-        package = 'fitter_data', 
+        package = 'fitter_data',
         fpath   = 'model/weights/weights.yaml')
 
     MisIDSampleWeights(**data)
 # ----------------------
 def test_misid_splitting():
     data = gut.load_data(
-        package = 'fitter_data', 
+        package = 'fitter_data',
         fpath   = 'model/weights/splitting.yaml')
 
     MisIDSampleSplitting(**data)
@@ -197,7 +197,7 @@ def test_misid(
     component : Component):
 
     data = gut.load_data(
-        package = 'fitter_data', 
+        package = 'fitter_data',
         fpath   = f'rare/{analysis}/ee/{component}_np.yaml')
 
     with MisIDConf.package(name = 'fitter_data'):
@@ -216,7 +216,7 @@ def test_misid_constraint():
 def test_full_model(
     tmp_path: Path,
     q2bin   : Qsq,
-    channel : Channel, 
+    channel : Channel,
     project : Project):
     '''
     Test fitting model for data
@@ -226,7 +226,7 @@ def test_full_model(
     if channel == Channel.ee and q2bin.is_rare:
         cfg = cfg.cfg_clone(
             q2bin   = q2bin,
-            prefix  = 'BREM', 
+            prefix  = 'BREM',
             regions = [Region.brem_xx1, Region.brem_xx2])
 
     cfg.to_yaml(path = tmp_path / 'config.yaml')

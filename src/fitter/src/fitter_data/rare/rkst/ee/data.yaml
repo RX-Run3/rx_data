@@ -1,7 +1,7 @@
 # ----------------------------------------------------
 # Aliases
 # ----------------------------------------------------
-plots_settings: &plots_settings 
+reg_cfg: &reg_cfg
   nbins   : 30
   stacked : True
   plot_range : 
@@ -43,6 +43,15 @@ plots_settings: &plots_settings
     bdkstkpiee_brem_x12     : $B^0\to K^*(\to K^+\pi^-)e^+e^-$
     bdkstkpiee_brem_xx1     : $B^0\to K^*(\to K^+\pi^-)e^+e^-$
     bdkstkpiee_brem_xx2     : $B^0\to K^*(\to K^+\pi^-)e^+e^-$
+plt_cfg: &plt_cfg
+  merging:
+    brem_x12:
+      - brem_xx1
+      - brem_xx2
+  regions:
+    brem_x12 : *reg_cfg
+    brem_xx1 : *reg_cfg
+    brem_xx2 : *reg_cfg
 default_components: &comp
   comb           : rare/rkst/ee/comb.yaml
   ccbar          : rare/rkst/ee/ccbar.yaml
@@ -87,11 +96,6 @@ constraints :
   signal_shape  : true 
 fit: {}
 plots:
-  merging:
-    brem_x12:
-      - brem_xx1
-      - brem_xx2
-  regions:
-    brem_x12 : *plots_settings
-    brem_xx1 : *plots_settings
-    brem_xx2 : *plots_settings
+  low     : *plt_cfg
+  central : *plt_cfg
+  high    : *plt_cfg

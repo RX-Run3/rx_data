@@ -1,7 +1,7 @@
 # ----------------------------------------------------
 # Aliases
 # ----------------------------------------------------
-plots_settings: &plots_settings
+reg_cfg: &reg_cfg
   nbins   : 30
   stacked : True
   plot_range : 
@@ -47,6 +47,16 @@ plots_settings: &plots_settings
     bpkpipi_brem_x12    : $B^+\to K^+\pi^+\pi^-$
     bpkpipi_brem_xx1    : $B^+\to K^+\pi^+\pi^-$
     bpkpipi_brem_xx2    : $B^+\to K^+\pi^+\pi^-$
+
+plt_cfg: &plt_cfg
+  merging:
+    brem_x12:
+      - brem_xx1
+      - brem_xx2
+  regions:
+    brem_x12 : *reg_cfg
+    brem_xx1 : *reg_cfg
+    brem_xx2 : *reg_cfg
 # ----------------------------------------------------
 mod_cfg: &mod_cfg
   trigger          : rk_ee_ss
@@ -88,14 +98,9 @@ mod_cfg: &mod_cfg
       ntries : 10
       pvalue :  0.05
   plots:
-    merging:
-      brem_x12:
-        - brem_xx1
-        - brem_xx2
-    regions:
-      brem_x12 : *plots_settings
-      brem_xx1 : *plots_settings
-      brem_xx2 : *plots_settings
+    low     : *plt_cfg
+    central : *plt_cfg
+    high    : *plt_cfg
 # ----------------------------------------------------
 models:
   low:

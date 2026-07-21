@@ -1,3 +1,6 @@
+# --------------------------------------------------
+# Aliases
+# --------------------------------------------------
 no_pid: &no_pid
   bpkk  : (LEP_PID_E < 3.0 || LEP_PROBNN_E < 0.2) && LEP_PROBNN_K > 0.1
   bppipi: (LEP_PID_E < 3.0 || LEP_PROBNN_E < 0.2) && LEP_PROBNN_K < 0.1
@@ -5,16 +8,18 @@ default_components: &comp
   comb   : misid/rk/ee/comb.yaml
   bpkpipi: misid/rk/ee/bpkpipi.yaml
   bpkkk  : misid/rk/ee/bpkkk.yaml
-# --------------------------------------------------
-# Aliases
-# --------------------------------------------------
-plots_settings: &plots_settings
+reg_cfg: &reg_cfg
   nbins   : 30
   stacked : True
   d_leg :
     comb    : Combinatorial
     bpkpipi : $B^+\to K^+\pi^-\pi^+$
     bpkkk   : $B^+\to K^+K^-K^+$
+plt_cfg: &plt_cfg
+  merging : {}
+  regions :
+    brem_xx1 : *reg_cfg
+    brem_xx2 : *reg_cfg
 # --------------------------------------------------
 trigger          : rk_ee_nopid
 yields           : model/yields/rk/misid_electron.yaml
@@ -40,7 +45,6 @@ fit:
     retry :
       ntries : 15
 plots:
-  merging : {}
-  regions :
-    brem_xx1 : *plots_settings
-    brem_xx2 : *plots_settings
+  low     : *plt_cfg
+  central : *plt_cfg
+  high    : *plt_cfg

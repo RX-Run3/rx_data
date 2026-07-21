@@ -89,6 +89,12 @@ class File(BaseModel):
         path_str = str(path)
         rdf      = RDataFrame(tree, path_str)
         entries  = rdf.Count().GetValue()
+        if entries == 0:
+            log.warning(f'Found empty file: {path}/{tree}')
+            return cls(
+                path    = path,
+                entries = entries,
+                blocks  = set()) 
 
         # Here we do not patch
         if   block is None:
@@ -113,6 +119,14 @@ class File(BaseModel):
             path    = path,
             entries = entries, 
             blocks  = blocks)
+    # ----------------------
+    # ----------------------
+    @property
+    def is_empty(self) -> bool:
+        '''
+        True if no entries found in file
+        '''
+        return self.entries == 0
     # ----------------------
     @model_serializer
     def serialize_model(self) -> str:
@@ -212,9 +226,15 @@ class Sample(BaseModel):
                 block= block, 
                 ftree= ftree) for path in paths ]
 
-        self._update_ranges(files = linked_files, block = block)
+        non_empty_files : list[File] = [ file for file in linked_files if not file.is_empty ]
+        if not non_empty_files:
+            for file in linked_files:
+                log.error(file.path)
+            raise ValueError('All patching files are empty')
 
-        return self.model_copy(update = {'files' : self.files + linked_files})
+        self._update_ranges(files = non_empty_files, block = block)
+
+        return self.model_copy(update = {'files' : self.files + non_empty_files})
 # --------------------------
 class Specification(BaseModel):
     '''
