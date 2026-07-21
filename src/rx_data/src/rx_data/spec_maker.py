@@ -216,9 +216,11 @@ class SpecMaker:
                 patch = False,
                 block = block) for path in paths ]
 
+        non_empty_files = [ file for file in files if not file.is_empty ]
+
         sam   = Sample(
             trees    = [self._tree_name], 
-            files    = files, 
+            files    = non_empty_files, 
             metadata = {'kind' : ftree})
 
         return sam

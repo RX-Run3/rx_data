@@ -226,9 +226,15 @@ class Sample(BaseModel):
                 block= block, 
                 ftree= ftree) for path in paths ]
 
-        self._update_ranges(files = linked_files, block = block)
+        non_empty_files : list[File] = [ file for file in linked_files if not file.is_empty ]
+        if not non_empty_files:
+            for file in linked_files:
+                log.error(file.path)
+            raise ValueError('All patching files are empty')
 
-        return self.model_copy(update = {'files' : self.files + linked_files})
+        self._update_ranges(files = non_empty_files, block = block)
+
+        return self.model_copy(update = {'files' : self.files + non_empty_files})
 # --------------------------
 class Specification(BaseModel):
     '''
