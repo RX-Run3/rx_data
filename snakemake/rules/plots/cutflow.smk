@@ -35,7 +35,7 @@ rule cutflow:
         ]
     wildcard_constraints:
         trigger = '(rk|rkst)_(ee|mm)_(os|ss)',
-        q2bin   = '|'.Q2BINS,
+        q2bin   = '|'.join(Q2BINS),
     log:
         prc = f'{LOGDIR}/cutflow_{KIND}_{{sample}}_{{trigger}}_{{q2bin}}.prc',
         err = f'{LOGDIR}/cutflow_{KIND}_{{sample}}_{{trigger}}_{{q2bin}}.err',
