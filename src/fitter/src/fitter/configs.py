@@ -182,6 +182,7 @@ class CCbarConf(ComponentConf):         # Tested
 
     samples : list[CCbarComponent]
     weights : dict[CCbarWeight,bool]
+    merged  : dict[Qsq,bool]
     fit     : dict[Qsq, KDEConf]
     plots   : ZFitPlotterConf
     # -----------------
@@ -226,11 +227,12 @@ Plot
         }
 
         return cls(
-            cfg_obs   = cfg_obs,
-            samples   = samples,
-            weights   = weights,
-            fit       = {Qsq.central : KDEConf.default()},
-            plots     = ZFitPlotterConf.default(),
+            cfg_obs = cfg_obs,
+            samples = samples,
+            weights = weights,
+            merged  = {Qsq.central : False},
+            fit     = {Qsq.central : KDEConf.default()},
+            plots   = ZFitPlotterConf.default(),
         )
 # ------------------------------
 class ParametricConf(ComponentConf):  # Tested
