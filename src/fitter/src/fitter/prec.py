@@ -537,24 +537,18 @@ class PRec(Cache):
         - Latex string describing process
         - Truth matching string isolating process
         '''
-
         bd = '(abs(B_TRUEID) == 511)'
+        bp = '(abs(B_TRUEID) == 521)'
         bs = '(abs(B_TRUEID) == 531)'
 
-        common_cut = '(abs(B_TRUEID) == 521) & (abs(Jpsi_TRUEID) == 443) & (abs(Jpsi_MC_MOTHER_ID) == 100443) & (abs(Jpsi_MC_GD_MOTHER_ID) == 521)' 
+        psjp     = '(abs(Jpsi_TRUEID) == 443) & (abs(Jpsi_MC_MOTHER_ID) == 100443) & (abs(Jpsi_MC_GD_MOTHER_ID) == 521)' 
+        bp_psjp  = f'{bp} & {psjp}'
 
-        if   self._trig.project == Project.rk:
-            bp_psjp = f'{common_cut} & (abs(H_MC_MOTHER_ID)  == 521)'
-        elif self._trig.project == Project.rkst:
-            bp_psjp = f'{common_cut} & (abs(H1_MC_MOTHER_ID) == 521)'
-        else:
-            raise ValueError(f'Invalid project: {self._trig.project}')
-
-        neg_bp_psjp = bp_psjp.replace('==', '!=').replace('&' , '|')
-        bp_ex       = f'(abs(B_TRUEID) == 521) & ({neg_bp_psjp})'
+        neg_psjp = psjp.replace('==', '!=').replace('&' , '|')
+        bp_ex    = f'{bp} & ({neg_psjp})'
 
         d_cut : dict[str,str] = {}
-        d_cut[r'$B^+\to \psi(2S)(\to J/\psi+X)H_{s}$'] = bp_psjp
+        d_cut[r'$B^+\to \psi(2S)(\to J/\psi+X)H_{s}$'] = bp_psjp 
         if   self._trig.is_electron: 
             d_cut[r'$B^+\to c\bar{c}(\to e^+ e^-)H_s$']    = bp_ex
             d_cut[r'$B_d\to c\bar{c}(\to e^+ e^-)H_s$']    = bd
