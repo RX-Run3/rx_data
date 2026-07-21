@@ -89,6 +89,12 @@ class File(BaseModel):
         path_str = str(path)
         rdf      = RDataFrame(tree, path_str)
         entries  = rdf.Count().GetValue()
+        if entries == 0:
+            log.warning(f'Found empty file: {path}/{tree}')
+            return cls(
+                path    = path,
+                entries = entries,
+                blocks  = set()) 
 
         # Here we do not patch
         if   block is None:
