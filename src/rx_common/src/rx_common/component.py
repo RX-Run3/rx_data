@@ -7,7 +7,6 @@ from enum                import StrEnum, auto
 from typing              import Literal
 from ap_utilities.decays import utilities as aput
 
-from .project            import Project
 from .channel            import Channel
 
 # -------------------------------
