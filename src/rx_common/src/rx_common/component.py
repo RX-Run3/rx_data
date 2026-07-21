@@ -629,24 +629,6 @@ class Component(StrEnum):
             case _:
                 return self.name
     # --------------------------------------------
-    def semileptonic(self, proj : Project) -> list['Component']:
-        '''
-        Parameters
-        -----------------
-        proj: Project, e.g. rk or rkst
-
-        Returns
-        -----------------
-        List of semileptonic components associated
-        '''
-        if proj == Project.rk:
-            return [Component.bpdnukpiee, Component.bpdpiknuee, Component.bpdnuknuee]
-
-        if proj == Project.rkst:
-            return [Component.bdkpipienu, Component.bdkpienuenu]
-
-        raise ValueError(f'No semileptonic components defined for project: {proj}')
-    # --------------------------------------------
     @property
     def channel(self) -> Channel:
         '''
