@@ -47,7 +47,7 @@ rule cutflow:
         env  = ENV,
         kind = KIND,
     resources:
-        htcondor_request_mem_mb = 4000,
+        htcondor_request_mem_mb = 5000,
         htcondor_request_disk_mb= 2000,
     shell:
         '''
