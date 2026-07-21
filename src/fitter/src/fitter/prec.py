@@ -499,6 +499,8 @@ class PRec(Cache):
     #-----------------------------------------------------------
     def __get_match_str_jpsi(self) -> dict[str,str]:
         '''
+        The Jpsi splitting splits by B kind, i.e. three components, Bd, Bu, Bs 
+
         Returns
         ------------
         Dictionary mapping 
@@ -526,6 +528,8 @@ class PRec(Cache):
     #-----------------------------------------------------------
     def __get_match_str_psi2(self) -> dict[str,str]:
         '''
+        The psi2S splitting splits by B meson type, BUT for Bu, it separates the component with a psi2S -> Jpsi
+
         Returns
         ------------
         Dictionary mapping 
