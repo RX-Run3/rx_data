@@ -114,6 +114,14 @@ class File(BaseModel):
             entries = entries, 
             blocks  = blocks)
     # ----------------------
+    # ----------------------
+    @property
+    def is_empty(self) -> bool:
+        '''
+        True if no entries found in file
+        '''
+        return self.entries == 0
+    # ----------------------
     @model_serializer
     def serialize_model(self) -> str:
         '''
