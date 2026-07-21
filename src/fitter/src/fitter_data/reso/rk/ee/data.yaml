@@ -41,7 +41,8 @@ plots_settings: &plots_settings_psi2
     bpkppsi2ee_brem_xx1 : $B^+\to \psi(2S)(\to e^+e^-) K^+$
     bpkppsi2ee_brem_xx2 : $B^+\to \psi(2S)(\to e^+e^-) K^+$
   plot_components : 
-    - ccbar
+    - ccbar_brem_xx1
+    - ccbar_brem_xx2
   plot_range:
     - 4800
     - 6100
