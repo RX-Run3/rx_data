@@ -1,3 +1,9 @@
+fig_conf : &fit_cfg
+  kind      : KDE1DimFFT
+  bandwidth : 40
+  padding   :
+    flag : False 
+# --------------------
 samples:
   - bdjpsixee 
   - bpjpsixee 
@@ -6,10 +12,9 @@ weights:
   dec : True 
   sam : True 
 fit:
-  kind      : KDE1DimFFT
-  bandwidth : 40
-  padding   :
-    flag : False 
+  low     : *fit_cfg
+  central : *fit_cfg
+  high    : *fit_cfg
 plots:
   nbins  : 40
   stacked: True
