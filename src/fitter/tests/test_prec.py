@@ -34,8 +34,10 @@ def initialize():
 
     plt.style.use(mplhep.style.LHCb2) # type: ignore
 #-----------------------------------------------
-@pytest.mark.parametrize('trig', [Trigger.rk_ee_os, Trigger.rkst_ee_os])
-def test_electron(tmp_path : Path, trig : Trigger):
+@pytest.mark.parametrize('trig'  , [Trigger.rk_ee_os, Trigger.rkst_ee_os])
+def test_electron(
+    tmp_path : Path,
+    trig     : Trigger):
     '''
     Simplest test in electron channel
     '''
@@ -59,8 +61,9 @@ def test_electron(tmp_path : Path, trig : Trigger):
             obs   = obs,
             trig  = trig, 
             q2bin = q2bin)
-
-        obp.get_sum(name = 'ccbar')
+        obp.get_sum(
+            name   = 'ccbar',
+            merged = False)
 #-----------------------------------------------
 @pytest.mark.parametrize('trig, q2bin, mass', [
     (Trigger.rk_mm_os  , 'jpsi', 'B_const_mass_M'), 
@@ -69,7 +72,11 @@ def test_electron(tmp_path : Path, trig : Trigger):
     (Trigger.rkst_mm_os, 'jpsi', 'B_const_mass_M'),
     (Trigger.rkst_mm_os, 'psi2', 'B_const_mass_psi2S_M'),
 ])
-def test_muon(tmp_path : Path, trig : Trigger, q2bin : str, mass : str):
+def test_muon(
+    tmp_path : Path, 
+    trig     : Trigger, 
+    q2bin    : str, 
+    mass     : str):
     '''
     Simplest test in muon channel
     '''
@@ -94,12 +101,16 @@ def test_muon(tmp_path : Path, trig : Trigger, q2bin : str, mass : str):
             obs   = obs,
             trig  = trig, 
             q2bin = q2bin)
-
-        obp.get_sum(name = 'ccbar')
+        obp.get_sum(
+            name   = 'ccbar',
+            merged = False)
 #-----------------------------------------------
-@pytest.mark.parametrize('trig' , [Trigger.rk_ee_os, Trigger.rkst_ee_os])
-@pytest.mark.parametrize('block', range(1, 9))
-def test_electron_by_block(tmp_path : Path, trig : Trigger, block : int):
+@pytest.mark.parametrize('trig'  , [Trigger.rk_ee_os, Trigger.rkst_ee_os])
+@pytest.mark.parametrize('block' , range(1, 9))
+def test_electron_by_block(
+    tmp_path : Path, 
+    trig     : Trigger,
+    block    : int):
     '''
     Test electron charmonium components per block
     '''
@@ -124,11 +135,12 @@ def test_electron_by_block(tmp_path : Path, trig : Trigger, block : int):
             obs   = obs,
             trig  = trig, 
             q2bin = q2bin)
-
-        obp.get_sum(name = 'ccbar')
+        obp.get_sum(
+            merged = False,
+            name   = 'ccbar')
 #-----------------------------------------------
-@pytest.mark.parametrize('dec'  , [True, False])
-@pytest.mark.parametrize('sam'  , [True, False])
+@pytest.mark.parametrize('dec'   , [True, False])
+@pytest.mark.parametrize('sam'   , [True, False])
 def test_reso_by_weights(
     dec      : bool,
     sam      : bool,
@@ -161,7 +173,9 @@ def test_reso_by_weights(
             trig  = trig, 
             q2bin = q2bin)
 
-        obp.get_sum(name = 'ccbar')
+        obp.get_sum(
+            merged = False,
+            name   = 'ccbar')
 #-----------------------------------------------
 def test_fit(tmp_path : Path):
     '''
@@ -190,7 +204,7 @@ def test_fit(tmp_path : Path):
             trig  = trig, 
             q2bin = q2bin)
 
-        pdf = obp.get_sum(name = 'ccbar')
+        pdf = obp.get_sum(name = 'ccbar', merged = False)
 
     if pdf is None:
         raise ValueError('No PDF found')
@@ -245,7 +259,7 @@ def test_bdt(q2bin : str, bdt_cut : str, tmp_path : Path):
             trig  = trig, 
             q2bin = q2bin)
 
-        obp.get_sum(name = 'ccbar')
+        obp.get_sum(name = 'ccbar', merged = False)
 #-----------------------------------------------
 @pytest.mark.parametrize('brem_cut', ['nbrem == 0', 'nbrem == 1', 'nbrem >= 2'])
 def test_brem(brem_cut : str, tmp_path : Path):
@@ -271,7 +285,7 @@ def test_brem(brem_cut : str, tmp_path : Path):
             trig  = Trigger.rk_ee_os, 
             q2bin = q2bin)
 
-        obp.get_sum(name = 'ccbar')
+        obp.get_sum(name = 'ccbar', merged=False)
 #-----------------------------------------------
 def test_cache(tmp_path : Path):
     '''
@@ -295,8 +309,7 @@ def test_cache(tmp_path : Path):
             obs   = obs,
             trig  = trig, 
             q2bin = q2bin)
-
-        obp.get_sum(name = 'ccbar')
+        obp.get_sum(name = 'ccbar', merged=False)
 
         obp = PRec(
             name  = 'main',
@@ -304,8 +317,7 @@ def test_cache(tmp_path : Path):
             obs   = obs,
             trig  = trig, 
             q2bin = q2bin)
-
-        obp.get_sum(name = 'ccbar')
+        obp.get_sum(name = 'ccbar', merged=False)
 #-----------------------------------------------
 def test_extended(tmp_path : Path):
     '''
@@ -329,8 +341,7 @@ def test_extended(tmp_path : Path):
             obs   = obs,
             trig  = trig, 
             q2bin = q2bin)
-
-        pdf = obp.get_sum(name = 'ccbar')
+        pdf = obp.get_sum(name = 'ccbar', merged=False)
 
     assert pdf is not None
     assert not pdf.is_extended
@@ -362,6 +373,5 @@ def test_low_stats(mass : str, tmp_path : Path):
             obs   = obs,
             trig  = trig, 
             q2bin = q2bin)
-
-        obp.get_sum(name = 'ccbar')
+        obp.get_sum(name = 'ccbar', merged=False)
 #-----------------------------------------------
