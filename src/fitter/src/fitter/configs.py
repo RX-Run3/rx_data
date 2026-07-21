@@ -182,7 +182,7 @@ class CCbarConf(ComponentConf):         # Tested
 
     samples : list[CCbarComponent]
     weights : dict[CCbarWeight,bool]
-    fit     : KDEConf
+    fit     : dict[Qsq, KDEConf]
     plots   : ZFitPlotterConf
     # -----------------
     def __str__(self):
@@ -229,7 +229,7 @@ Plot
             cfg_obs   = cfg_obs,
             samples   = samples,
             weights   = weights,
-            fit       = KDEConf.default(),
+            fit       = {Qsq.central : KDEConf.default()},
             plots     = ZFitPlotterConf.default(),
         )
 # ------------------------------
