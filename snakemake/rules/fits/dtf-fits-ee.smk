@@ -18,12 +18,13 @@ BLOCK  = list(range(1, 9))
 BREM   = ['brem_xx1', 'brem_xx2']
 NAME   = 'reso_dtf'
 YEAR   = '2024'
-SIGNAL = 'bpkpjpsiee'
+SIGNAL = config['signal'] 
+QSQ    = config['q2bin' ] 
 # ---------------------
 rule all:
     input:
         expand(
-             f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/{{brem}}/swt_yld_{SIGNAL}_{{brem}}.json',
+             f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/{QSQ}/data_24/fit/brem_xx1_brem_xx2/{{brem}}/swt_yld_{SIGNAL}_{{brem}}.json',
             cmb   = CMB,
             prc   = PRC,
             brem  = BREM,
@@ -31,9 +32,9 @@ rule all:
 # ---------------------
 rule sweights:
     output :
-        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/{{brem}}/swt_yld_{SIGNAL}_{{brem}}.json',
+        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/{QSQ}/data_24/fit/brem_xx1_brem_xx2/{{brem}}/swt_yld_{SIGNAL}_{{brem}}.json',
     input  :
-        expand(f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/{{brem}}/nll.bytes',
+        expand(f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/{QSQ}/data_24/fit/brem_xx1_brem_xx2/{{brem}}/nll.bytes',
             cmb   = CMB,
             prc   = PRC,
             brem  = BREM,
@@ -48,7 +49,7 @@ rule sweights:
         home    = HOME,
         env     = ENV,
         ana_dir = ANADIR,
-        nll_path= lambda wc : f'{ANADIR}/fits/data/{NAME}/{wc.cmb}_{wc.prc}_b{wc.block}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/{wc.brem}/nll.bytes',
+        nll_path= lambda wc : f'{ANADIR}/fits/data/{NAME}/{wc.cmb}_{wc.prc}_b{wc.block}/reso/rk/ee/{QSQ}/data_24/fit/brem_xx1_brem_xx2/{wc.brem}/nll.bytes',
     shell  :
         '''
         (
@@ -67,12 +68,12 @@ rule sweights:
 # ---------------------
 rule fits:
     output   :
-        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx1/nll.bytes',
-        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx2/nll.bytes',
-        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx1/parameters.json',
-        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx2/parameters.json',
-        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/{SIGNAL}/fit/brem_xx1/brem_xx1/parameters.json',
-        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/jpsi/{SIGNAL}/fit/brem_xx2/brem_xx2/parameters.json',
+        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/{QSQ}/data_24/fit/brem_xx1_brem_xx2/brem_xx1/nll.bytes',
+        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/{QSQ}/data_24/fit/brem_xx1_brem_xx2/brem_xx2/nll.bytes',
+        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/{QSQ}/data_24/fit/brem_xx1_brem_xx2/brem_xx1/parameters.json',
+        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/{QSQ}/data_24/fit/brem_xx1_brem_xx2/brem_xx2/parameters.json',
+        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/{QSQ}/{SIGNAL}/fit/brem_xx1/brem_xx1/parameters.json',
+        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/ee/{QSQ}/{SIGNAL}/fit/brem_xx2/brem_xx2/parameters.json',
     log   :
         prc = f'{LOGDIR}/{{cmb}}_{{prc}}_b{{block}}.prc',
         err = f'{LOGDIR}/{{cmb}}_{{prc}}_b{{block}}.err',
@@ -83,6 +84,7 @@ rule fits:
         name = NAME,
         home = HOME,
         env  = ENV,
+        qsq  = QSQ,
     resources:
         htcondor_request_mem_mb = 4000,
         htcondor_request_disk_mb= 2000,
@@ -97,7 +99,7 @@ rule fits:
         fit_rx_reso -b {wildcards.block}\
                     -g {params.name}\
                     -c reso/rk/ee \
-                    -q jpsi \
+                    -q {params.qsq}\
                     -C $CMB_WP\
                     -P $PRC_WP
 
