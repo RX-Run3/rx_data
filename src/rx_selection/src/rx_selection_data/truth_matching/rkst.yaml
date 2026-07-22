@@ -18,6 +18,9 @@ not_reso_mm_swap  : '({jpsi_mm_kstzero_swap}) == 0 && ({psi2_mm_kstzero_swap}) =
 
 ll_mother         : '(({ll_is_jpsi} && {lep_from_jpsi}) || ({ll_is_psi2} && {lep_from_psi2}))'
 # ----------
+either_lep_from_bzero: '((TMath::Abs(L1_MC_MOTHER_ID) == 511) || (TMath::Abs(L2_MC_MOTHER_ID) == 511))'
+either_lep_from_dplus: '((TMath::Abs(L1_MC_MOTHER_ID) == 411) || (TMath::Abs(L2_MC_MOTHER_ID) == 411))'
+# ----------
 h1_is_pion        : 'TMath::Abs(H1_TRUEID)       == 211' 
 h1_is_kaon        : 'TMath::Abs(H1_TRUEID)       == 321' 
 h1_is_proton      : 'TMath::Abs(H1_TRUEID)       == 2212'
@@ -64,9 +67,13 @@ had_from_lambd    : '{h1_from_lambd}   && {h2_from_lambd}'
 hh_is_k1plus      : 'TMath::Abs(Kst_TRUEID)       == 10323'
 hh_is_kstzero     : 'TMath::Abs(Kst_TRUEID)       == 313'
 hh_is_phi         : 'TMath::Abs(Kst_TRUEID)       == 333'
+hh_is_dzero       : 'TMath::Abs(Kst_TRUEID)       == 421'
 
 hh_from_bzero     : 'TMath::Abs(Kst_MC_MOTHER_ID) == 511'
 hh_from_bstrn     : 'TMath::Abs(Kst_MC_MOTHER_ID) == 531'
+hh_from_dplus     : 'TMath::Abs(Kst_MC_MOTHER_ID) == 411'
+hh_from_dzero     : 'TMath::Abs(Kst_MC_MOTHER_ID) == 421'
+hh_from_dplus_star: 'TMath::Abs(Kst_MC_MOTHER_ID) == 413'
 #-------------------------------------------------------------
 # Inclusive (should we require hadronic tracks to be K pi ?)
 #-------------------------------------------------------------
@@ -159,3 +166,12 @@ Bu_K2Kpipiee    : '{b_is_bplus} && {lep_are_electrons} && {lep_from_bplus} && {h
 
 # Cocktail sample
 Bu_KxKpipiee    : '({Bu_K1Kpipiee}) || ({Bu_K2Kpipiee})'
+#-------------------------------------------------------------
+# Semileptonic 
+#-------------------------------------------------------------
+# B0 -> (D- -> (K*0 -> K+ pi-) e- anti-nu_e) e+ nu_e
+11584022        : '{b_is_bzero} && {lep_are_electrons} && {had_are_kpi} && {hh_from_dplus} && {either_lep_from_bzero} && {either_lep_from_dplus}'
+
+# B0 ->  (D*- -> (anti-D0 -> K+ pi-) pi-)  e+ nu_e
+# # If dzero -> kpi requirement is added, we get zero candidates
+11584030        : '{b_is_bzero} && {had_are_kpi}' # && {hh_is_dzero}'
