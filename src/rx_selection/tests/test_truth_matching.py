@@ -5,12 +5,21 @@ import re
 import pytest
 
 from ROOT         import RDF     # type: ignore
-from rx_common    import Component, Trigger
+from rx_common    import Component, Trigger, Project
 from rx_selection import truth_matching as tm
 from rx_data      import RDFGetter
 from dmu          import LogStore
 
 # TODO: Add more samples
+_SEMILEPTONIC_SAMPLES = [
+    Component.bpdnukpiee,
+    Component.bpdnuknuee,
+    Component.bpdpiknuee,
+    # ------------------
+    Component.bdkpienuenu,
+    Component.bdkpimunumunu,
+]
+
 _RK_MISIDSAMPLES=[
     Component.bpkkk,
     Component.bpkpipi,
@@ -126,10 +135,11 @@ def test_nopid(sample : Component):
     '''
     Tests truth matching for noPID samples
     '''
-    cut = tm.get_truth(component=sample, kind='bukll')
+    trigger = Trigger.rk_ee_nopid
+    cut     = tm.get_truth(component = sample, project = trigger.project)
 
     with RDFGetter.max_entries(value = -1):
-        gtr   = RDFGetter(sample=sample, trigger=Trigger.rk_ee_nopid)
+        gtr   = RDFGetter(sample=sample, trigger=trigger)
         d_rdf = gtr.get_rdf(per_file=True)
 
     fail = False
@@ -160,9 +170,10 @@ def test_bukee(sample : Component):
     '''
     Tests truth matching
     '''
-    cut = tm.get_truth(component = sample, kind='bukll')
+    trigger = Trigger.rk_ee_os
+    cut     = tm.get_truth(component = sample, project = trigger.project)
 
-    gtr = RDFGetter(sample=sample, trigger=Trigger.rk_ee_os)
+    gtr = RDFGetter(sample=sample, trigger=trigger)
     rdf = gtr.get_rdf(per_file=False)
     ini = rdf.Count().GetValue()
     rdf = rdf.Filter(cut, 'truth match')
@@ -178,8 +189,10 @@ def test_bukmm(sample : Component):
     '''
     Tests truth matching
     '''
-    cut = tm.get_truth(component = sample, kind='bukll')
-    gtr = RDFGetter(sample=sample, trigger=Trigger.rk_mm_os)
+    trigger = Trigger.rk_mm_os
+    cut     = tm.get_truth(component = sample, project = trigger.project)
+
+    gtr = RDFGetter(sample=sample, trigger=trigger)
     rdf = gtr.get_rdf(per_file=False)
 
     ini = rdf.Count().GetValue()
@@ -193,8 +206,10 @@ def test_bdkstee(sample : Component):
     '''
     Tests truth matching
     '''
-    cut = tm.get_truth(component = sample, kind='bdkstll')
-    gtr = RDFGetter(sample=sample, trigger=Trigger.rkst_ee_os)
+    trigger = Trigger.rkst_ee_os
+    cut     = tm.get_truth(component = sample, project = trigger.project)
+
+    gtr = RDFGetter(sample=sample, trigger=trigger)
     org = gtr.get_rdf(per_file=False)
 
     ini = org.Count().GetValue()
@@ -213,9 +228,10 @@ def test_bdkstmm(sample : Component):
     '''
     Tests truth matching
     '''
-    cut = tm.get_truth(component = sample, kind='bdkstll')
+    trigger = Trigger.rkst_mm_os
+    cut     = tm.get_truth(component = sample, project = trigger.project)
 
-    gtr = RDFGetter(sample=sample, trigger=Trigger.rkst_mm_os)
+    gtr = RDFGetter(sample=sample, trigger=trigger)
     org = gtr.get_rdf(per_file=False)
 
     ini = org.Count().GetValue()
@@ -234,9 +250,32 @@ def test_custom(sample : Component):
     Test truth matching for custom samples, e.g. cocktails
     swapped tracks, etc
     '''
-    cut = tm.get_truth(component = sample, kind='bdkstll')
+    trigger = Trigger.rkst_ee_os
+    cut     = tm.get_truth(component = sample, project = trigger.project)
 
-    gtr = RDFGetter(sample=sample, trigger=Trigger.rkst_ee_os)
+    gtr = RDFGetter(sample=sample, trigger=trigger)
+    org = gtr.get_rdf(per_file=False)
+
+    ini = org.Count().GetValue()
+    rdf = org.Filter(cut, 'truth match')
+    fin = rdf.Count().GetValue()
+
+    if fin == 0:
+        _check_rdf(rdf=org, selection=cut)
+
+    assert 20 * fin > ini
+    log.info(f'eff={fin/ini=:.3f}')
+# --------------------------
+@pytest.mark.parametrize('sample', _SEMILEPTONIC_SAMPLES)
+def test_semileptonic(sample : Component):
+    '''
+    Test truth matching for custom samples, e.g. cocktails
+    swapped tracks, etc
+    '''
+    trigger = Trigger.rkst_ee_os
+    cut     = tm.get_truth(component = sample, project = trigger.project)
+
+    gtr = RDFGetter(sample=sample, trigger=trigger)
     org = gtr.get_rdf(per_file=False)
 
     ini = org.Count().GetValue()
