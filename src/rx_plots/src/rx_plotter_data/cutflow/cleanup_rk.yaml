@@ -79,7 +79,7 @@ plots:
         styling:
           <<: *style
     swp_cascade_mass_swp:
-        binning    : [1600, 2200, 60]
+        binning    : [1100, 2700, 60]
         yscale     : linear
         labels     : ['M$(K,\ell_{\to\pi})\;[\text{MeV}]$', 'Entries']
         title      : ''
