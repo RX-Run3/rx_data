@@ -18,12 +18,19 @@ BLOCK  = list(range(1, 9))
 BREM   = ['brem_xx0']
 NAME   = 'reso_dtf'
 YEAR   = '2024'
-SIGNAL = 'bpkpjpsimm'
+QSQ    = config['q2bin']
+
+if   QSQ == 'jpsi':
+    SIGNAL = 'bpkpjpsimm'
+elif QSQ == 'psi2':
+    SIGNAL = 'bpkppsi2mm'
+else:
+    raise ValueError(f'Invalid q2 bin: {QSQ}')
 # ---------------------
 rule all:
     input:
         expand(
-             f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/mm/jpsi/data_24/fit/brem_xx0/{{brem}}/swt_yld_{SIGNAL}_{{brem}}.json',
+             f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/mm/{QSQ}/data_24/fit/brem_xx0/{{brem}}/swt_yld_{SIGNAL}_{{brem}}.json',
             cmb   = CMB,
             prc   = PRC,
             brem  = BREM,
@@ -31,9 +38,9 @@ rule all:
 # ---------------------
 rule sweights:
     output :
-        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/mm/jpsi/data_24/fit/brem_xx0/{{brem}}/swt_yld_{SIGNAL}_{{brem}}.json',
+        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/mm/{QSQ}/data_24/fit/brem_xx0/{{brem}}/swt_yld_{SIGNAL}_{{brem}}.json',
     input  :
-        expand(f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/mm/jpsi/data_24/fit/brem_xx0/{{brem}}/nll.bytes',
+        expand(f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/mm/{QSQ}/data_24/fit/brem_xx0/{{brem}}/nll.bytes',
             cmb   = CMB,
             prc   = PRC,
             brem  = BREM,
@@ -48,7 +55,7 @@ rule sweights:
         home    = HOME,
         env     = ENV,
         ana_dir = ANADIR,
-        nll_path= lambda wc : f'{ANADIR}/fits/data/{NAME}/{wc.cmb}_{wc.prc}_b{wc.block}/reso/rk/mm/jpsi/data_24/fit/brem_xx0/{wc.brem}/nll.bytes',
+        nll_path= lambda wc : f'{ANADIR}/fits/data/{NAME}/{wc.cmb}_{wc.prc}_b{wc.block}/reso/rk/mm/{QSQ}/data_24/fit/brem_xx0/{wc.brem}/nll.bytes',
     shell  :
         '''
         (
@@ -67,11 +74,11 @@ rule sweights:
 # ---------------------
 rule fits:
     output   :
-        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/mm/jpsi/data_24/fit/brem_xx0/brem_xx0/nll.bytes',
-        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/mm/jpsi/data_24/fit/brem_xx0/brem_xx0/parameters.json',
-        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/mm/jpsi/bpkpjpsimm/fit/brem_xx0/brem_xx0/parameters.json',
-        directory(f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/mm/jpsi/data_24'),
-        directory(f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/mm/jpsi/bpkpjpsimm'),
+        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/mm/{QSQ}/data_24/fit/brem_xx0/brem_xx0/nll.bytes',
+        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/mm/{QSQ}/data_24/fit/brem_xx0/brem_xx0/parameters.json',
+        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/mm/{QSQ}/{SIGNAL}/fit/brem_xx0/brem_xx0/parameters.json',
+        directory(f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/mm/{QSQ}/data_24'),
+        directory(f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/mm/{QSQ}/{SIGNAL}'),
     log   :
         prc = f'{LOGDIR}/{{cmb}}_{{prc}}_b{{block}}.prc',
         err = f'{LOGDIR}/{{cmb}}_{{prc}}_b{{block}}.err',
@@ -94,10 +101,10 @@ rule fits:
         PRC_WP=$(rxfitter wp-translator -w {wildcards.prc})
 
         fit_rx_reso -b {wildcards.block}\
-                    -g {params.name}\
-                    -c reso/rk/mm \
-                    -q jpsi \
-                    -C $CMB_WP\
+                    -g {params.name}    \
+                    -c reso/rk/mm       \
+                    -q {QSQ}            \
+                    -C $CMB_WP          \
                     -P $PRC_WP
 
         echo "Fit done with status: $?"
