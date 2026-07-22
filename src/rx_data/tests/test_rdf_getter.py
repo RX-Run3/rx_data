@@ -1465,8 +1465,8 @@ def test_same_sign(trigger   : Trigger):
     (Component.bdkstkpijpsimm, Component.bskstjpsimm    , Trigger.rkst_mm_os),
     (Component.bdkstkpijpsiee, Component.bskstjpsiee    , Trigger.rkst_ee_os),
     # -------------
-    (Component.bdkstkpijpsimm, Component.bdkstjpsimm_swp, Trigger.rkst_mm_os),
-    (Component.bdkstkpijpsiee, Component.bdkstjpsiee_swp, Trigger.rkst_ee_os),
+    (Component.bdkstkpijpsimm, Component.bdkstjpsimm_had_swp, Trigger.rkst_mm_os),
+    (Component.bdkstkpijpsiee, Component.bdkstjpsiee_had_swp, Trigger.rkst_ee_os),
     ])
 def test_emulated_samples(
     source  : Component,

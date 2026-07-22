@@ -59,9 +59,9 @@ yld_comb_brem_xx1:
 yld_comb_brem_xx2:
   <<: *yields
 # -------------------------
-s_bdkstjpsiee_swp_brem_xx1:
+s_bdkstjpsiee_had_swp_brem_xx1:
   <<: *fractions
-s_bdkstjpsiee_swp_brem_xx2:
+s_bdkstjpsiee_had_swp_brem_xx2:
   <<: *fractions
 s_lbpkjpsiee_brem_xx1:
   <<: *fractions
@@ -76,15 +76,15 @@ s_bskstjpsiee_brem_xx1:
 s_bskstjpsiee_brem_xx2:
   <<: *fractions
 # -------------------------
-yld_bdkstjpsiee_swp_brem_xx1:
+yld_bdkstjpsiee_had_swp_brem_xx1:
   kind: mul
   pars:
-    -  s_bdkstjpsiee_swp_brem_xx1
+    -  s_bdkstjpsiee_had_swp_brem_xx1
     - yld_bdkstkpijpsiee_brem_xx1
-yld_bdkstjpsiee_swp_brem_xx2:
+yld_bdkstjpsiee_had_swp_brem_xx2:
   kind: mul
   pars:
-    -  s_bdkstjpsiee_swp_brem_xx2
+    -  s_bdkstjpsiee_had_swp_brem_xx2
     - yld_bdkstkpijpsiee_brem_xx2
 yld_lbpkjpsiee_brem_xx1:
   kind: mul

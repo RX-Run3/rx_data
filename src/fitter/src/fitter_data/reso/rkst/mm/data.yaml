@@ -12,7 +12,7 @@ plt_cfg: &plt_cfg
         bsphijpsimm    : $B_s \to J/\psi\phi(\to KK)$
         bskstjpsimm    : $B_s\to J/\psi K^{*0}(\to K^+\pi^-)$
         bdkstkpijpsimm : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$
-        bdkstjpsimm_swp: $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$
+        bdkstjpsimm_had_swp: $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$
         bdkstkpipsi2mm : $B^0\to \psi(2S) K^{*0}(\to K^+\pi^-)$
       plot_range:
         - 5100
@@ -44,7 +44,7 @@ components:
     bsphijpsimm     : reso/rkst/mm/bsphijpsimm_np.yaml
     bskstjpsimm     : reso/rkst/mm/bskstjpsimm.yaml
     bdkstkpijpsimm  : reso/rkst/mm/bdkstkpijpsimm.yaml
-    bdkstjpsimm_swp : reso/rkst/mm/bdkstjpsimm_swp_np.yaml
+    bdkstjpsimm_had_swp : reso/rkst/mm/bdkstjpsimm_had_swp_np.yaml
     bdkstkpipsi2mm  : reso/rkst/mm/bdkstkpipsi2mm.yaml
   psi2:
     comb            : reso/rkst/mm/comb.yaml
@@ -53,14 +53,14 @@ components:
     bsphijpsimm     : reso/rkst/mm/bsphijpsimm_np.yaml
     bskstjpsimm     : reso/rkst/mm/bskstjpsimm.yaml
     bdkstkpijpsimm  : reso/rkst/mm/bdkstkpijpsimm.yaml
-    bdkstjpsimm_swp : reso/rkst/mm/bdkstjpsimm_swp_np.yaml
+    bdkstjpsimm_had_swp : reso/rkst/mm/bdkstjpsimm_had_swp_np.yaml
     bdkstkpipsi2mm  : reso/rkst/mm/bdkstkpipsi2mm.yaml
 constraints:
   signal_fraction:
     - bskstjpsimm
     - bsphijpsimm
     - lbpkjpsimm
-    - bdkstjpsimm_swp
+    - bdkstjpsimm_had_swp
   combinatorial   : false
   signal_shape    : false
 fit: {}

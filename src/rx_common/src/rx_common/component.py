@@ -100,8 +100,8 @@ class Component(StrEnum):
     bskstjpsimm    = auto()
     bskstjpsiee    = auto()
 
-    bdkstjpsimm_swp= auto()
-    bdkstjpsiee_swp= auto()
+    bdkstjpsimm_had_swp= auto()
+    bdkstjpsiee_had_swp= auto()
     # -----
     # Semileptonic
     # -----
@@ -402,9 +402,9 @@ class Component(StrEnum):
             return 'Bs_JpsiKst_mm_eq_DPC'
           case Component.bskstjpsiee:
             return 'Bs_JpsiKst_ee_eq_DPC'
-          case Component.bdkstjpsimm_swp:
+          case Component.bdkstjpsimm_had_swp:
             return 'Bd_JpsiKst_mm_had_swp'
-          case Component.bdkstjpsiee_swp:
+          case Component.bdkstjpsiee_had_swp:
             return 'Bd_JpsiKst_ee_had_swp'
           case Component.bdkstpi0:
             return 'Bd_Kstpi0_eq_TC_Kst982width100_HighPtPi0'
@@ -447,11 +447,11 @@ class Component(StrEnum):
             # ------
             case 'bdkstkpijpsiee':
                 return ['bdjkst' , 'jpee', 'kokp']
-            case 'bdkstjpsiee_swp':
+            case 'bdkstjpsiee_had_swp':
                 return ['bdjkst' , 'jpee', 'kokp']
             case 'bdkstkpijpsimm':
                 return ['bdjkst' , 'jpmm', 'kokp']
-            case 'bdkstjpsimm_swp':
+            case 'bdkstjpsimm_had_swp':
                 return ['bdjkst' , 'jpmm', 'kokp']
             case 'bdkstkpipsi2ee':
                 return ['bdpskst', 'psee', 'kokp']
@@ -508,10 +508,10 @@ class Component(StrEnum):
         In case this is a derived sample (e.g. from double misID)
         this method will return the original version
         '''
-        if self == Component.bdkstjpsiee_swp:
+        if self == Component.bdkstjpsiee_had_swp:
             return Component.bdkstkpijpsiee
 
-        if self == Component.bdkstjpsimm_swp:
+        if self == Component.bdkstjpsimm_had_swp:
             return Component.bdkstkpijpsimm
 
         return self
