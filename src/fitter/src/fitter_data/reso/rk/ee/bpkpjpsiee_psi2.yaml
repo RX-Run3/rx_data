@@ -5,7 +5,6 @@ categories:
     model:
       pdfs :
         - dscb
-        - gauss
       fix           : {}
       reparametrize : {}
       shared        :
@@ -22,7 +21,6 @@ categories:
     model:
       pdfs :
         - dscb
-        - gauss
       fix           : {}
       reparametrize : {}
       shared        :
@@ -44,8 +42,6 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
   d_leg :
     dscb_bpkpjpsiee_brem_xx1_1  : DSCB 
     dscb_bpkpjpsiee_brem_xx2_1  : DSCB 
-    gauss_bpkpjpsiee_brem_xx1_1 : Gauss
-    gauss_bpkpjpsiee_brem_xx2_1 : Gauss
   plot_components : []
   plot_range:
     - 5400
