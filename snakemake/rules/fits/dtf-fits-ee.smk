@@ -18,8 +18,14 @@ BLOCK  = list(range(1, 9))
 BREM   = ['brem_xx1', 'brem_xx2']
 NAME   = 'reso_dtf'
 YEAR   = '2024'
-SIGNAL = config['signal'] 
-QSQ    = config['q2bin' ] 
+QSQ    = config['q2bin' ]
+
+if   QSQ == 'jpsi':
+    SIGNAL = 'bpkpjpsiee'
+elif QSQ == 'psi2':
+    SIGNAL = 'bpkppsi2ee'
+else:
+    raise ValueError(f'Invalid q2bin: {QSQ}')
 # ---------------------
 rule all:
     input:
