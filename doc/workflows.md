@@ -110,6 +110,28 @@ The kind can be:
 | `resolution` | Compares mass under brem correction and emulation |
 | `smear` | Compares effect of brem correcting and smearing masses |
 
+### Resonant fits
+
+For the resonant DTF fits run:
+
+```bash
+snakemake -s snakemake/rules/fits/dtf-fits-ee.smk \
+          --profile ihep                          \
+          --logger=flowo                          \
+          --logger-flowo-name=reso-dtf-fit        \
+          --keep-going                            \
+          --quiet                                 \
+          --config q2bin=psi2           
+```
+
+where the `q2bin` is either `jpsi` or `psi2`. The same workflow exists for the muon 
+channel with `dtf-fits-mm.smk` instead. This workflow will:
+
+- Fit MC and use shapes to fit data
+- Extract sweights from fits
+
+For the muon channel use `dtf-fits-mm.smk` instead
+
 ## Ntuple transfers
 
 Run:
