@@ -253,8 +253,9 @@ def main():
 
     reg_dir = cfg.data_fit_directory(regions = list(d_nll.keys()))
     for region, nll_cfg in d_nll.items():
-        out_dir = reg_dir / region / 'nll.bytes'
-        sut.save_nll(loss = nll_cfg.nll, path = out_dir)
+        out_path = reg_dir / region / 'nll.bytes'
+        log.info(f'Saving: {out_path}')
+        sut.save_nll(loss = nll_cfg.nll, path = out_path)
 # ----------------------
 if __name__ == '__main__':
     main()
