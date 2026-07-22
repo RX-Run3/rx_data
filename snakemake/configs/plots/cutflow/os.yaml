@@ -30,10 +30,10 @@ args:
   - {sample : bdkpienuenu    , trigger : rkst_ee_os , q2bin : low    }
   - {sample : bdkpienuenu    , trigger : rkst_ee_os , q2bin : central}
   - {sample : bdkpienuenu    , trigger : rkst_ee_os , q2bin : high   }
-  # ------------
-  - {sample : bdkpipienu     , trigger : rkst_ee_os , q2bin : low    }
-  - {sample : bdkpipienu     , trigger : rkst_ee_os , q2bin : central}
-  - {sample : bdkpipienu     , trigger : rkst_ee_os , q2bin : high   }
+  # ------------ Low statstics, jobs would fail
+  #- {sample : bdkpipienu     , trigger : rkst_ee_os , q2bin : low    }
+  #- {sample : bdkpipienu     , trigger : rkst_ee_os , q2bin : central}
+  #- {sample : bdkpipienu     , trigger : rkst_ee_os , q2bin : high   }
   # ------------
   - {sample : data_24        , trigger : rkst_mm_os , q2bin : low    }
   - {sample : data_24        , trigger : rkst_mm_ss , q2bin : low    }
