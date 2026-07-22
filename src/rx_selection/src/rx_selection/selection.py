@@ -100,27 +100,6 @@ def _print_selection(d_cut : dict[Cuts,str]) -> None:
     for name, expr in d_cut.items():
         log.debug(f'{name:<20}{expr}')
 #-----------------------
-def _get_truth(
-    component : Component, 
-    trigger   : Trigger) -> str:
-    '''
-    Parameters
-    -----------------
-    component : Represents decay
-    trigger   : Hlt2 trigger, needed to pick truth matching method
-
-    Returns
-    -----------------
-    Truth matching string
-    '''
-    if trigger.project in Project.rkst_projects():
-        return tm.get_truth(component=component, kind='bdkstll')
-
-    if trigger.project in Project.rk_projects():
-        return tm.get_truth(component=component, kind='bukll')
-
-    raise ValueError(f'Invalid project {trigger.project} for trigger: {trigger}')
-#-----------------------
 def selection(
     q2bin     : Qsq,
     process   : Component,
@@ -154,7 +133,7 @@ def selection(
         d_cut[Cuts.truth] = '(1)' 
     else:
         log.debug('Adding truth matching requirement for MC')
-        d_cut[Cuts.truth] = _get_truth(component = process, trigger=trigger)
+        d_cut[Cuts.truth] = tm.get_truth(component=process, project = trigger.project)
 
     d_tmp = _get_selection(
         chan   = trigger.channel, 
