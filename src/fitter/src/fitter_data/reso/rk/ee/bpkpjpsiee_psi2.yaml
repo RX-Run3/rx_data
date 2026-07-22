@@ -14,7 +14,7 @@ categories:
         - mu
         - sg
       values        :
-        sg : [20, 8, 30]
+        sg : [20, 5, 30]
         mu : [5950, 5800, 6000]
   brem_xx2:
     selection : {}
