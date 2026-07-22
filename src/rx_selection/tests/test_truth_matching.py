@@ -5,19 +5,20 @@ import re
 import pytest
 
 from ROOT         import RDF     # type: ignore
-from rx_common    import Component, Trigger, Project
+from rx_common    import Component, Trigger
 from rx_selection import truth_matching as tm
 from rx_data      import RDFGetter
 from dmu          import LogStore
 
 # TODO: Add more samples
-_SEMILEPTONIC_SAMPLES = [
+_SEMILEPTONIC_SAMPLES_RK = [
     Component.bpdnukpiee,
     Component.bpdnuknuee,
-    Component.bpdpiknuee,
-    # ------------------
+    Component.bpdpiknuee]
+
+_SEMILEPTONIC_SAMPLES_RKST = [
     Component.bdkpienuenu,
-    Component.bdkpimunumunu,
+    Component.bdkpipienu,
 ]
 
 _RK_MISIDSAMPLES=[
@@ -266,8 +267,30 @@ def test_custom(sample : Component):
     assert 20 * fin > ini
     log.info(f'eff={fin/ini=:.3f}')
 # --------------------------
-@pytest.mark.parametrize('sample', _SEMILEPTONIC_SAMPLES)
-def test_semileptonic(sample : Component):
+@pytest.mark.parametrize('sample', _SEMILEPTONIC_SAMPLES_RK)
+def test_semileptonic_rk(sample : Component):
+    '''
+    Test truth matching for custom samples, e.g. cocktails
+    swapped tracks, etc
+    '''
+    trigger = Trigger.rk_ee_os
+    cut     = tm.get_truth(component = sample, project = trigger.project)
+
+    gtr = RDFGetter(sample=sample, trigger=trigger)
+    org = gtr.get_rdf(per_file=False)
+
+    ini = org.Count().GetValue()
+    rdf = org.Filter(cut, 'truth match')
+    fin = rdf.Count().GetValue()
+
+    if fin == 0:
+        _check_rdf(rdf=org, selection=cut)
+
+    assert 20 * fin > ini
+    log.info(f'eff={fin/ini=:.3f}')
+# --------------------------
+@pytest.mark.parametrize('sample', _SEMILEPTONIC_SAMPLES_RKST)
+def test_semileptonic_rkst(sample : Component):
     '''
     Test truth matching for custom samples, e.g. cocktails
     swapped tracks, etc
@@ -286,5 +309,6 @@ def test_semileptonic(sample : Component):
         _check_rdf(rdf=org, selection=cut)
 
     assert 20 * fin > ini
+    log.info(f'Candidates: {ini} -> {fin}')
     log.info(f'eff={fin/ini=:.3f}')
 # --------------------------
