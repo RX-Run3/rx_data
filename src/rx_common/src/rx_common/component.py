@@ -617,7 +617,7 @@ class Component(StrEnum):
                 return r'$B_d \to (D^- \to (K^{*0} \to K^+ \pi^-) \, e^- \overline{\nu}_e) \, e^+ \nu_e$'
             # ---------------------------
             case Component.bpdnukpiee:
-                return r'$B^+ \to \overline{D}{}^0 e^+ \nu_e, \quad \overline{D}{}^0 \to K^+ \pi^-$'
+                return r'$B^+ \to (\overline{D}{}^0 \to K^+ \pi^-) e^+ \nu_e$'
             case Component.bpdpiknuee:
                 return r'$B^+ \to (\overline{D}{}^0 \to K^+ e^- \overline{\nu}_e) \, \pi^+$'
             case Component.bpdnuknuee:
