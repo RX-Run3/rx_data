@@ -27,7 +27,9 @@ def get_truth(component : Component, project : Project) -> str:
     if not component.is_mc:
         return '(1)'
 
-    cfg = gut.load_conf(package='rx_selection_data', fpath=f'truth_matching/{project}.yaml')
+    project_name = project.removesuffix('_no_pid')
+
+    cfg = gut.load_conf(package='rx_selection_data', fpath=f'truth_matching/{project_name}.yaml')
     yrs = Resolver(cfg=cfg)
 
     if component.event_type not in yrs:
