@@ -186,8 +186,9 @@ class CCbarModel(BaseModel):
         if len(pdfs) == 1:
             kde      = pdfs[0]
             kde_copy = kde.copy(
-                name = f'{_MERGED_PDFNAME}_{kde.name}',
-                data = kde._data) # type: ignore see: https://github.com/zfit/zfit/issues/736
+                name      = f'{_MERGED_PDFNAME}_{kde.name}',
+                bandwidth = kde._bandwidth, # type: ignore
+                data      = kde._data)      # type: ignore see: https://github.com/zfit/zfit/issues/736
 
             if not isinstance(kde_copy, _KDEPDF):
                 raise ValueError(f'Copy of KDE is not a {_KDEPDF}')
