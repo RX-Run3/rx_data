@@ -11,3 +11,7 @@ paths:
   plots/cutflow/cleanup/latest                               : figs/datasets/cleanup
 # ------------
   tables                                                     : tables/datasets
+  mva/rk/cmb/latest                                          : tables/selection/mva/rk/cmb
+  mva/rk/prc/latest                                          : tables/selection/mva/rk/prc
+  mva/rkst/cmb/latest                                        : tables/selection/mva/rkst/cmb
+  mva/rkst/prc/latest                                        : tables/selection/mva/rkst/prc
