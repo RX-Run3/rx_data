@@ -352,9 +352,7 @@ def main(cfg : DictConfig|None = None):
 
     _check_existing_model()
 
-    with RDFGetter.max_entries(value = Data.max_entries),\
-         RDFGetter.multithreading(nthreads=Data.workers):
-
+    with RDFGetter.max_entries(value = Data.max_entries):
         rdf_sig = _get_rdf(kind='sig')
         rdf_bkg = _get_rdf(kind='bkg')
 
