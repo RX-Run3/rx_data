@@ -33,7 +33,7 @@ from dmu.ml.cv_diagnostics   import CVDiagnostics
 from dmu.ml.cv_classifier    import CVClassifier as cls
 from dmu.plotting.plotter_1d import Plotter1D    as Plotter
 from dmu.plotting.matrix     import MatrixPlotter
-from dmu.logging.log_store   import LogStore
+from dmu.logging.log_store   import LogStore, LogLevels
 
 NPA = numpy.ndarray
 log = LogStore.add_logger('dmu:ml:train_mva')
@@ -49,14 +49,14 @@ class TrainMva:
     '''
     Interface to scikit learn used to train classifier
     '''
-    # TODO: 
+    # TODO:
     # - Hyperparameter optimization methods should go into their own class
     # - Data preprocessing methods might need their own class
     # ---------------------------------------------
     def __init__(
-        self, 
-        bkg : RDF.RNode, 
-        sig : RDF.RNode, 
+        self,
+        bkg : RDF.RNode,
+        sig : RDF.RNode,
         cfg : dict):
         '''
         bkg (ROOT dataframe): Holds real data
@@ -117,7 +117,7 @@ class TrainMva:
             log.debug('Not adding extra columns')
             return self._rdf_from_df(df=df_feat)
 
-        if len(l_extr_col) > 20:
+        if len(l_extr_col) > LogLevels.info:
             for name in l_extr_col:
                 log.debug(name)
             raise ValueError('Found more than 20 extra columns')
@@ -357,7 +357,7 @@ class TrainMva:
     def _save_roc_plot(self, ifold : int) -> None:
         min_x    = 0
         min_y    = 0
-        fold_str = 'all' if ifold == -1 else f'{ifold:03}' 
+        fold_str = 'all' if ifold == -1 else f'{ifold:03}'
 
         if 'min' in self._cfg['plotting']['roc']:
             [min_x, min_y] = self._cfg['plotting']['roc']['min']
@@ -483,8 +483,8 @@ class TrainMva:
         tst is a list of lists as [p_bkg, p_sig]
         '''
 
-        l_sig = [ prb[1] for prb, lab in zip(arr_prob, arr_label) if lab == 1]
-        l_bkg = [ prb[1] for prb, lab in zip(arr_prob, arr_label) if lab == 0]
+        l_sig = [ prb[1] for prb, lab in zip(arr_prob, arr_label, strict = True) if lab == 1]
+        l_bkg = [ prb[1] for prb, lab in zip(arr_prob, arr_label, strict = True) if lab == 0]
 
         arr_sig = numpy.array(l_sig)
         arr_bkg = numpy.array(l_bkg)
@@ -586,7 +586,7 @@ class TrainMva:
         '''
         Will plot an array of scores, associated to a given fold
         '''
-        fold_str = 'all' if ifold == -1 else f'{ifold:03}' 
+        fold_str = 'all' if ifold == -1 else f'{ifold:03}'
         log.debug(f'Plotting scores for {ifold} fold')
 
         val_dir  = self._cfg['saving']['output']
@@ -619,7 +619,7 @@ class TrainMva:
             log.debug('Annotation section in the ROC curve config not found, skipping annotation')
             return
 
-        l_sprb   = [ sprb for sprb, labl in zip(arr_sprb, arr_labl) if labl == 1 ]
+        l_sprb   = [ sprb for sprb, labl in zip(arr_sprb, arr_labl, strict = True) if labl == 1 ]
         arr_sprb = numpy.array(l_sprb)
 
         plt_cfg = roc_cfg['annotate']
@@ -639,7 +639,7 @@ class TrainMva:
         log.debug(60 * '-')
         log.debug(f'{"SigEff":20}{"BkgRej":20}{"Score":20}')
         log.debug(60 * '-')
-        for seff_target, score in zip(arr_seff_target, l_score):
+        for seff_target, score in zip(arr_seff_target, l_score, strict = True):
             arr_diff = numpy.abs(arr_seff - seff_target)
             ind      = numpy.argmin(arr_diff)
 
