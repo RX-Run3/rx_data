@@ -184,7 +184,15 @@ class CCbarModel(BaseModel):
             return
 
         if len(pdfs) == 1:
-            return pdfs[0]
+            kde      = pdfs[0]
+            kde_copy = kde.copy(
+                name = f'{_MERGED_PDFNAME}_{kde.name}',
+                data = kde._data) # type: ignore see: https://github.com/zfit/zfit/issues/736
+
+            if not isinstance(kde_copy, _KDEPDF):
+                raise ValueError(f'Copy of KDE is not a {_KDEPDF}')
+
+            return kde_copy
 
         fractions = [ 
             fraction for model, fraction in zip(self.models, self.fractions, strict = True) 
