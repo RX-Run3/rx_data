@@ -7,7 +7,7 @@ import copy
 import math
 
 from contextlib import contextmanager
-from typing     import Union
+from typing     import Final, Union
 from functools  import partial
 
 import tqdm
@@ -37,6 +37,9 @@ from dmu.logging.log_store   import LogStore, LogLevels
 
 NPA = numpy.ndarray
 log = LogStore.add_logger('dmu:ml:train_mva')
+
+_OPTUNA_STARTUP_TRIALS : Final[int] = 10
+_OPTUNA_WARMUP_STEPS   : Final[int] = 5
 # ---------------------------------------------
 class NoFeatureInfo(Exception):
     '''
@@ -772,9 +775,13 @@ class TrainMva:
         kfold      = StratifiedKFold(n_splits=5, shuffle=True, random_state=self._rdm_state)
         objective  = partial(self._objective, kfold=kfold)
 
+        pruner= optuna.pruners.MedianPruner(
+            n_startup_trials = _OPTUNA_STARTUP_TRIALS, 
+            n_warmup_steps   = _OPTUNA_WARMUP_STEPS)
+
         study = optuna.create_study(
-                direction='maximize',
-                pruner   = optuna.pruners.MedianPruner(n_startup_trials=10, n_warmup_steps=5),)
+            direction='maximize',
+            pruner   = pruner)
 
         study.optimize(
                 objective,
