@@ -45,6 +45,23 @@ bdkstjpsiee_had_swp:
   samples   : 
     bdkstkpijpsiee : 1.0
 # ----------------------------------------
+# pi <-> mu/e swaps
+# ----------------------------------------
+bdkstjpsimm_mix_swp:
+  samples   : 
+    bdkstkpijpsimm : 1.0
+bdkstjpsiee_mix_swp:
+  samples   : 
+    bdkstkpijpsiee : 1.0
+
+bpkpjpsimm_mix_swp:
+  samples   : 
+    bpkpjpsimm     : 1.0
+
+bpkpjpsiee_mix_swp:
+  samples   : 
+    bpkpjpsiee     : 1.0
+# ----------------------------------------
 bsjpsixmm:
   samples : 
     bsjpsixmm : 1.0
