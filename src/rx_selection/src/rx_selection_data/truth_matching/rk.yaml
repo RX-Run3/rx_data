@@ -13,8 +13,10 @@ not_fail          : '{not_fail_lep} && {not_fail_mes} && {not_fail_moth_1} && {n
 not_reso_ee       : '( ({jpsi_ee_kp}) == 0 && ({jpsi_ee_pi}) == 0 && ({psi2_ee_kp}) == 0 && ({psi2_ee_pi}) == 0 )'
 not_reso_mm       : '( ({jpsi_mm_kp}) == 0 && ({jpsi_mm_pi}) == 0 && ({psi2_mm_kp}) == 0 && ({psi2_mm_pi}) == 0 )'
 # ----------
-h_is_pion         : 'TMath::Abs(H_TRUEID)       == 211' 
-h_is_kaon         : 'TMath::Abs(H_TRUEID)       == 321' 
+h_is_electron     : 'TMath::Abs(H_TRUEID)       ==   11' 
+h_is_muon         : 'TMath::Abs(H_TRUEID)       ==   13' 
+h_is_pion         : 'TMath::Abs(H_TRUEID)       ==  211' 
+h_is_kaon         : 'TMath::Abs(H_TRUEID)       ==  321' 
 h_is_proton       : 'TMath::Abs(H_TRUEID)       == 2212'
 
 h_from_phi        : 'TMath::Abs(H_MC_MOTHER_ID) == 333'
@@ -154,19 +156,19 @@ ll_cut0   : '({l1_cut0}) || ({l2_cut0})'
 # Resonant fully reconstructed
 #-------------------------------------------------------------
 # B+ -> Jpsi(-> mu mu) K+
-12143001           : '{b_is_bplus} && {ll_is_jpsi} && {ll_from_bplus} && {lep_are_muons}      && {lep_from_jpsi} && {h_is_kaon} && {h_from_bplus}'
-jpsi_mm_kp         : '{b_is_bplus} && {ll_is_jpsi} && {ll_from_bplus} && {lep_are_muons}      && {lep_from_jpsi} && {h_is_kaon} && {h_from_bplus}'
-bpkpjpsimm_mix_swp : '{b_is_bplus} && {lep_are_mukao} && {h_is_muon}' 
+12143001                   : '{b_is_bplus} && {ll_is_jpsi} && {ll_from_bplus} && {lep_are_muons}      && {lep_from_jpsi} && {h_is_kaon} && {h_from_bplus}'
+jpsi_mm_kp                 : '{b_is_bplus} && {ll_is_jpsi} && {ll_from_bplus} && {lep_are_muons}      && {lep_from_jpsi} && {h_is_kaon} && {h_from_bplus}'
+Bu_JpsiK_mm_eq_DPC_mix_swp : '{b_is_bplus} && {lep_are_mukao} && {h_is_muon}' 
 # B+ -> Jpsi(-> e  e ) K+
-12153001           : '{b_is_bplus} && {ll_is_jpsi} && {ll_from_bplus} && {lep_are_electrons}  && {lep_from_jpsi} && {h_is_kaon} && {h_from_bplus}'
-jpsi_ee_kp         : '{b_is_bplus} && {ll_is_jpsi} && {ll_from_bplus} && {lep_are_electrons}  && {lep_from_jpsi} && {h_is_kaon} && {h_from_bplus}'
-bpkpjpsiee_mix_swp : '{b_is_bplus} && {lep_are_elkao} && {h_is_electron}'
+12153001                   : '{b_is_bplus} && {ll_is_jpsi} && {ll_from_bplus} && {lep_are_electrons}  && {lep_from_jpsi} && {h_is_kaon} && {h_from_bplus}'
+jpsi_ee_kp                 : '{b_is_bplus} && {ll_is_jpsi} && {ll_from_bplus} && {lep_are_electrons}  && {lep_from_jpsi} && {h_is_kaon} && {h_from_bplus}'
+Bu_JpsiK_ee_eq_DPC_mix_swp : '{b_is_bplus} && {lep_are_elkao} && {h_is_electron}'
 #B+ -> Psi(mm) K+
-12143020  : '{b_is_bplus} && {ll_is_psi2} && {ll_from_bplus} && {lep_are_muons}     && {lep_from_psi2} && {h_is_kaon} && {h_from_bplus}'
-psi2_mm_kp: '{b_is_bplus} && {ll_is_psi2} && {ll_from_bplus} && {lep_are_muons}     && {lep_from_psi2} && {h_is_kaon} && {h_from_bplus}'
+12143020                   : '{b_is_bplus} && {ll_is_psi2} && {ll_from_bplus} && {lep_are_muons}      && {lep_from_psi2} && {h_is_kaon} && {h_from_bplus}'
+psi2_mm_kp                 : '{b_is_bplus} && {ll_is_psi2} && {ll_from_bplus} && {lep_are_muons}      && {lep_from_psi2} && {h_is_kaon} && {h_from_bplus}'
 #B+ -> Psi(ee) K+
-12153012  : '{b_is_bplus} && {ll_is_psi2} && {ll_from_bplus} && {lep_are_electrons} && {lep_from_psi2} && {h_is_kaon} && {h_from_bplus}'
-psi2_ee_kp: '{b_is_bplus} && {ll_is_psi2} && {ll_from_bplus} && {lep_are_electrons} && {lep_from_psi2} && {h_is_kaon} && {h_from_bplus}'
+12153012                   : '{b_is_bplus} && {ll_is_psi2} && {ll_from_bplus} && {lep_are_electrons}  && {lep_from_psi2} && {h_is_kaon} && {h_from_bplus}'
+psi2_ee_kp                 : '{b_is_bplus} && {ll_is_psi2} && {ll_from_bplus} && {lep_are_electrons}  && {lep_from_psi2} && {h_is_kaon} && {h_from_bplus}'
 #---------
 #Cabibbo suppressed versions
 #---------
