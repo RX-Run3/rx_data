@@ -95,7 +95,7 @@ class CVClassifier(GradientBoostingClassifier):
         df_ft           = args[0]
         self._l_ft_name = list(df_ft.columns)
 
-        self._s_hash = ut.get_hashes(df_ft)
+        self._s_hash = ut.get_hashes(df_ft, rvalue = 'set')
         log.debug(f'Saving {len(self._s_hash)} hashes')
 
         super().fit(*args, **kwargs)
@@ -112,7 +112,7 @@ class CVClassifier(GradientBoostingClassifier):
         if len(self._s_hash) == 0:
             raise ValueError('Found no hashes in model')
 
-        s_hash  = ut.get_hashes(df_ft)
+        s_hash  = ut.get_hashes(df_ft, rvalue = 'set')
         s_inter = self._s_hash.intersection(s_hash)
 
         nh1 = len(self._s_hash)

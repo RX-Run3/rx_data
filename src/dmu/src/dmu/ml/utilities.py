@@ -3,7 +3,7 @@ Module containing utility functions for ML tools
 '''
 
 import hashlib
-from typing import Union
+from typing import Literal, Union, overload
 
 import numpy
 import pandas as pnd
@@ -114,7 +114,11 @@ def _remove_repeated(df : pnd.DataFrame) -> pnd.DataFrame:
     return df_clean
 # ----------------------------------
 # ---------------------------------------------
-def get_hashes(df_ft : pnd.DataFrame, rvalue : str ='set') -> Union[set[str], list[str]]:
+@overload
+def get_hashes(df_ft : pnd.DataFrame, rvalue : Literal['set'])  -> set[str]:...
+@overload
+def get_hashes(df_ft : pnd.DataFrame, rvalue : Literal['list']) -> list[str]:...
+def get_hashes(df_ft : pnd.DataFrame, rvalue : str)  -> Union[set[str], list[str]]:
     '''
     Will return hashes for each row in the feature dataframe
 

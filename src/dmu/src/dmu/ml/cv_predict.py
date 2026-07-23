@@ -247,7 +247,7 @@ class CVPredict:
         '''
 
         s_mod_hash = model.hashes
-        s_dff_hash = ut.get_hashes(df_ft)
+        s_dff_hash = ut.get_hashes(df_ft, rvalue = 'set')
 
         s_int = s_mod_hash.intersection(s_dff_hash)
         if len(s_int) == 0:
