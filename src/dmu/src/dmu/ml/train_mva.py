@@ -784,10 +784,10 @@ class TrainMva:
             pruner   = pruner)
 
         study.optimize(
-                objective,
-                callbacks = [self._update_progress],
-                n_jobs    = self._nworkers,
-                n_trials  = ntrial)
+            objective,
+            callbacks = [self._update_progress],
+            n_jobs    = self._nworkers,
+            n_trials  = ntrial)
 
         self._print_hyper_opt(study=study)
         self._plot_hyper_opt(study=study)
