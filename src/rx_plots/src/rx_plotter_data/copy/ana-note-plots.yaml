@@ -9,7 +9,7 @@ paths:
   plots/2d/ep_em_pide                                        : figs/datasets/2d/ep_em_pide
   plots/cutflow/cleanup/latest                               : figs/datasets/cleanup
 # ------------
-  mva/rk/cmb/latest                                          : fits/selection/mva/rk/cmb
-  mva/rk/prc/latest                                          : fits/selection/mva/rk/prc
-  mva/rkst/cmb/latest                                        : fits/selection/mva/rkst/cmb
-  mva/rkst/prc/latest                                        : fits/selection/mva/rkst/prc
+  mva/rk/cmb/latest                                          : figs/selection/mva/rk/cmb
+  mva/rk/prc/latest                                          : figs/selection/mva/rk/prc
+  mva/rkst/cmb/latest                                        : figs/selection/mva/rkst/cmb
+  mva/rkst/prc/latest                                        : figs/selection/mva/rkst/prc
