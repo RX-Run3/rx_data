@@ -154,11 +154,13 @@ ll_cut0   : '({l1_cut0}) || ({l2_cut0})'
 # Resonant fully reconstructed
 #-------------------------------------------------------------
 # B+ -> Jpsi(-> mu mu) K+
-12143001  : '{b_is_bplus} && {ll_is_jpsi} && {ll_from_bplus} && {lep_are_muons}      && {lep_from_jpsi} && {h_is_kaon} && {h_from_bplus}'
-jpsi_mm_kp: '{b_is_bplus} && {ll_is_jpsi} && {ll_from_bplus} && {lep_are_muons}      && {lep_from_jpsi} && {h_is_kaon} && {h_from_bplus}'
+12143001           : '{b_is_bplus} && {ll_is_jpsi} && {ll_from_bplus} && {lep_are_muons}      && {lep_from_jpsi} && {h_is_kaon} && {h_from_bplus}'
+jpsi_mm_kp         : '{b_is_bplus} && {ll_is_jpsi} && {ll_from_bplus} && {lep_are_muons}      && {lep_from_jpsi} && {h_is_kaon} && {h_from_bplus}'
+bpkpjpsimm_mix_swp : '{b_is_bplus} && {lep_are_mukao} && {h_is_muon}' 
 # B+ -> Jpsi(-> e  e ) K+
-12153001  : '{b_is_bplus} && {ll_is_jpsi} && {ll_from_bplus} && {lep_are_electrons}  && {lep_from_jpsi} && {h_is_kaon} && {h_from_bplus}'
-jpsi_ee_kp: '{b_is_bplus} && {ll_is_jpsi} && {ll_from_bplus} && {lep_are_electrons}  && {lep_from_jpsi} && {h_is_kaon} && {h_from_bplus}'
+12153001           : '{b_is_bplus} && {ll_is_jpsi} && {ll_from_bplus} && {lep_are_electrons}  && {lep_from_jpsi} && {h_is_kaon} && {h_from_bplus}'
+jpsi_ee_kp         : '{b_is_bplus} && {ll_is_jpsi} && {ll_from_bplus} && {lep_are_electrons}  && {lep_from_jpsi} && {h_is_kaon} && {h_from_bplus}'
+bpkpjpsiee_mix_swp : '{b_is_bplus} && {lep_are_elkao} && {h_is_electron}'
 #B+ -> Psi(mm) K+
 12143020  : '{b_is_bplus} && {ll_is_psi2} && {ll_from_bplus} && {lep_are_muons}     && {lep_from_psi2} && {h_is_kaon} && {h_from_bplus}'
 psi2_mm_kp: '{b_is_bplus} && {ll_is_psi2} && {ll_from_bplus} && {lep_are_muons}     && {lep_from_psi2} && {h_is_kaon} && {h_from_bplus}'
