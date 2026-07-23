@@ -4,12 +4,14 @@ Unit test for Mva class
 import pytest
 import mplhep
 import matplotlib.pyplot as plt
-
-from   dmu.logging.log_store import LogStore
-from   dmu.ml.train_mva      import TrainMva, NoFeatureInfo
 import dmu.testing.utilities as ut
 
+from dmu    import LogStore
+from dmu.ml import TrainMva, NoFeatureInfo
+
 log = LogStore.add_logger('dmu:ml:test_train_mva')
+
+plt.style.use(mplhep.style.LHCb2) # type: ignore
 # -------------------------------
 @pytest.fixture(scope='session', autouse=True)
 def initialize():
@@ -17,7 +19,6 @@ def initialize():
     This will run before any test
     '''
     LogStore.set_level('dmu:ml:train_mva', 10)
-    plt.style.use(mplhep.style.LHCb2)
 # -------------------------------
 @pytest.mark.parametrize('nfold', [3, 10])
 def test_simple(nfold : int):
