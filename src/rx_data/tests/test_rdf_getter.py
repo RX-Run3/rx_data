@@ -26,6 +26,17 @@ from rx_data        import collector as col
 from rx_data        import RDFGetter
 from rx_common      import Trigger
 
+_EMULATED : Final[list[tuple[Component, Component, Trigger]]] = [
+    (Component.bdkstkpijpsimm, Component.bskstjpsimm        , Trigger.rkst_mm_os),
+    (Component.bdkstkpijpsiee, Component.bskstjpsiee        , Trigger.rkst_ee_os),
+    # -------------
+    (Component.bdkstkpijpsimm, Component.bdkstjpsimm_had_swp, Trigger.rkst_mm_os),
+    (Component.bdkstkpijpsiee, Component.bdkstjpsiee_had_swp, Trigger.rkst_ee_os),
+    # -------------
+    (Component.bpkpjpsimm    , Component.bpkpjpsimm_mix_swp , Trigger.rk_mm_os  ),
+    (Component.bpkpjpsiee    , Component.bpkpjpsiee_mix_swp , Trigger.rk_ee_os  ),
+]
+
 _MCSS : Final[list[tuple[Component,Trigger]]] = [
     (Component.bpkpee    , Trigger.rk_ee_ss  ),
     (Component.bdkstkpiee, Trigger.rkst_ee_ss),
@@ -1460,14 +1471,7 @@ def test_same_sign(trigger   : Trigger):
     else:
         assert tot_charge == {+2, -2}
 # --------------------------
-@pytest.mark.parametrize('source, target, trigger',
-    [
-    (Component.bdkstkpijpsimm, Component.bskstjpsimm    , Trigger.rkst_mm_os),
-    (Component.bdkstkpijpsiee, Component.bskstjpsiee    , Trigger.rkst_ee_os),
-    # -------------
-    (Component.bdkstkpijpsimm, Component.bdkstjpsimm_had_swp, Trigger.rkst_mm_os),
-    (Component.bdkstkpijpsiee, Component.bdkstjpsiee_had_swp, Trigger.rkst_ee_os),
-    ])
+@pytest.mark.parametrize('source, target, trigger', _EMULATED)
 def test_emulated_samples(
     source  : Component,
     target  : Component,
