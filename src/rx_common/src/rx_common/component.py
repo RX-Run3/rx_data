@@ -102,6 +102,12 @@ class Component(StrEnum):
 
     bdkstjpsimm_had_swp= auto()
     bdkstjpsiee_had_swp= auto()
+
+    bdkstjpsimm_mix_swp= auto()
+    bdkstjpsiee_mix_swp= auto()
+
+    bpkpjpsimm_mix_swp = auto()
+    bpkpjpsiee_mix_swp = auto()
     # -----
     # Semileptonic
     # -----
@@ -402,10 +408,22 @@ class Component(StrEnum):
             return 'Bs_JpsiKst_mm_eq_DPC'
           case Component.bskstjpsiee:
             return 'Bs_JpsiKst_ee_eq_DPC'
+          # -------
           case Component.bdkstjpsimm_had_swp:
             return 'Bd_JpsiKst_mm_had_swp'
           case Component.bdkstjpsiee_had_swp:
             return 'Bd_JpsiKst_ee_had_swp'
+          # -------
+          case Component.bdkstjpsimm_mix_swp:
+            return 'Bd_JpsiKst_mm_mix_swp'
+          case Component.bdkstjpsiee_mix_swp:
+            return 'Bd_JpsiKst_ee_mix_swp'
+          # -------
+          case Component.bpkpjpsimm_mix_swp:
+            return 'Bu_JpsiK_mm_eq_DPC_mix_swp'
+          case Component.bpkpjpsiee_mix_swp:
+            return 'Bu_JpsiK_ee_eq_DPC_mix_swp'
+          # -------
           case Component.bdkstpi0:
             return 'Bd_Kstpi0_eq_TC_Kst982width100_HighPtPi0'
           case Component.bsphigamma:
@@ -622,6 +640,15 @@ class Component(StrEnum):
                 return r'$B^+ \to (\overline{D}{}^0 \to K^+ e^- \overline{\nu}_e) \, \pi^+$'
             case Component.bpdnuknuee:
                 return r'$B^+ \to (\overline{D}{}^0 \to K^+ e^- \overline{\nu}_e) \, e^+ \nu_e$'
+            # ---------------------------
+            case Component.bdkstjpsiee_had_swp:
+                return r'$B_d\to K^*(\to K^+_{\to\pi^+}\pi^-_{\to K^-})J/\psi(\to e^+e^-)$'
+            case Component.bdkstjpsimm_had_swp:
+                return r'$B_d\to K^*(\to K^+_{\to\pi^+}\pi^-_{\to K^-})J/\psi(\to \mu^+\mu^-)$'
+            case Component.bpkpjpsiee_mix_swp:
+                return r'$B_d\to K^*(\to K^+\pi^-_{\to e^-})J/\psi(\to e^+e^-_{\to \pi^-})$'
+            case Component.bpkpjpsimm_mix_swp:
+                return r'$B_d\to K^*(\to K^+\pi^-_{\to \mu^-})J/\psi(\to \mu^+\mu^-_{\to \pi^-})$'
             # ---------------------------
             case Component.data_24:
                 return 'Data'
