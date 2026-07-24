@@ -3,20 +3,20 @@ plt_cfg: &plt_cfg
   merging : {}
   regions :
     brem_xx0:
-      nbins            : 400
-      stacked          : True
+      nbins   : 210
+      stacked : True
       d_leg :
-        comb           : Combinatorial
-        ccbar          : $B_{s,d,u}\to c\bar{c} X$
-        lbpkjpsimm     : $\Lambda_b \to J/\psi pK$
-        bsphijpsimm    : $B_s \to J/\psi\phi(\to KK)$
-        bskstjpsimm    : $B_s\to J/\psi K^{*0}(\to K^+\pi^-)$
-        bdkstkpijpsimm : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$
-        bdkstjpsimm_had_swp: $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$
-        bdkstkpipsi2mm : $B^0\to \psi(2S) K^{*0}(\to K^+\pi^-)$
+        comb_brem_xx0               : Combinatorial
+        ccbar_brem_xx0              : $B_{s,d,u}\to c\bar{c} X$
+        lbpkjpsimm_brem_xx0         : $\Lambda_b \to J/\psi pK$
+        bsphijpsimm_brem_xx0        : $B_s \to J/\psi\phi(\to KK)$
+        bskstjpsimm_brem_xx0        : $B_s\to J/\psi K^{*0}(\to K^+\pi^-)$
+        bdkstkpijpsimm_brem_xx0     : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$
+        bdkstjpsimm_had_swp_brem_xx0: $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$
+        bdkstkpipsi2mm_brem_xx0     : $B^0\to \psi(2S) K^{*0}(\to K^+\pi^-)$
       plot_range:
-        - 5100
-        - 6100
+        - 5180
+        - 5600
       plot_components:
         - ccbar
 # ----------------------------------------------
@@ -57,10 +57,10 @@ components:
     bdkstkpipsi2mm  : reso/rkst/mm/bdkstkpipsi2mm.yaml
 constraints:
   signal_fraction:
+    - bdkstjpsimm_had_swp
     - bskstjpsimm
     - bsphijpsimm
     - lbpkjpsimm
-    - bdkstjpsimm_had_swp
   combinatorial   : false
   signal_shape    : false
 fit: {}
