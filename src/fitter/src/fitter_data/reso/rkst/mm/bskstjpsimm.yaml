@@ -14,7 +14,7 @@ categories:
       fix           : {}
 fit:
   strategy  :
-    ntries : 10
+    ntries : 15
     pvalue : 0.05
 plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#fit-plotting
   nbins   : 60

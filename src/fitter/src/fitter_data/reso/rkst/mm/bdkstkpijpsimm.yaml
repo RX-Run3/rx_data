@@ -16,7 +16,7 @@ categories:
       fix           : {}
 fit:
   strategy :
-    ntries : 10
+    ntries : 15
     pvalue : 0.05
 plots:
   nbins   : 60
