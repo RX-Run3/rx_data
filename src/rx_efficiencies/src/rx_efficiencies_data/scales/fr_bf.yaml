@@ -87,11 +87,11 @@ bf:
     - 0.005
   # K*0 -> K+pi-, from https://pdglive.lbl.gov/Particle.action?init=0&node=M018&home=MXXX020
   kokp:
-    - 0.9970
+    - 0.6670
     - 0.0002
   # K*+ -> K+pi0, from https://pdglive.lbl.gov/Particle.action?init=0&node=M018&home=MXXX020
   k+kp: 
-    - 0.9990
+    - 0.3330
     - 0.0001
   # K1 -> K pipi
   k13h: 
