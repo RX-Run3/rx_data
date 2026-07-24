@@ -21,12 +21,16 @@ YEAR   = '2024'
 QSQ    = config['q2bin']
 PRJ    = config['project']
 
-if   QSQ == 'jpsi':
+if   QSQ == 'jpsi'        and PRJ == 'rk':
     SIGNAL = 'bpkpjpsimm'
-elif QSQ == 'psi2':
+elif QSQ == 'psi2'        and PRJ == 'rk':
     SIGNAL = 'bpkppsi2mm'
+elif QSQ == 'jpsi'        and PRJ == 'rkst':
+    SIGNAL = 'bdkstkpijpsimm'
+elif QSQ == 'psi2'        and PRJ == 'rkst':
+    SIGNAL = 'bdkstkpipsi2mm'
 else:
-    raise ValueError(f'Invalid q2 bin: {QSQ}')
+    raise ValueError(f'Invalid q2 bin/project: {QSQ}/{PRJ}')
 # ---------------------
 rule all:
     input:
