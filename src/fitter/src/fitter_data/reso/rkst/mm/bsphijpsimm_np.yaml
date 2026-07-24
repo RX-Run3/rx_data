@@ -11,7 +11,7 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
   nbins   : 50
   stacked : True
   d_leg :
-    bsphijpsimm : PDF 
+    bsphijpsimm_brem_xx0 : KDE PDF
   plot_components : []
   plot_range:
     - 5100
