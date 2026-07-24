@@ -1,7 +1,7 @@
 '''
 Module holding Specification and Sample classes
 '''
-from ROOT        import RDataFrame # type: ignore
+from ROOT        import RDataFrame, RDF # type: ignore
 from pathlib     import Path
 from typing      import Final, Literal, overload
 from pydantic    import BaseModel, ConfigDict, Field, model_serializer
@@ -98,10 +98,8 @@ class File(BaseModel):
 
         # Here we do not patch
         if   block is None:
-            arr_blk  = rdf.AsNumpy([_BLOCK])[_BLOCK]
-            values   = arr_blk.tolist()
-            blocks   = { Block(value = value) for value in values }
-        # Main tree that needs patching
+            # Main tree that needs patching
+            blocks = cls._blocks_from_rdf(rdf = rdf, path = path, tree = tree)
         elif patch:
             fname  = path.name.replace('.root', '_')
             link   = get_tmp_path(
@@ -120,6 +118,25 @@ class File(BaseModel):
             entries = entries, 
             blocks  = blocks)
     # ----------------------
+    @classmethod
+    def _blocks_from_rdf(
+        cls, 
+        rdf : RDF.RNode,
+        path: Path,
+        tree: str) -> set[Block]:
+        '''
+        Returns set of blocks in a given ROOT dataframe
+        '''
+        columns = [ name.c_str() for name in rdf.GetColumnNames() ]
+
+        if _BLOCK not in columns:
+            raise ValueError(f'Column {_BLOCK} not found for : {path}:{tree}')
+
+        arr_blk  = rdf.AsNumpy([_BLOCK])[_BLOCK]
+        values   = arr_blk.tolist()
+        blocks   = { Block(value = value) for value in values }
+
+        return blocks
     # ----------------------
     @property
     def is_empty(self) -> bool:
