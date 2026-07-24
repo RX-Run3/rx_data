@@ -1,18 +1,16 @@
 '''
 Module holding FilePatcher class
 '''
-import re
 import array
 
 from pathlib     import Path
 from typing      import Final
 from ROOT        import RDataFrame, TFile # type: ignore
 from dmu         import LogStore
-from dmu.generic import utilities as gut
 
 log=LogStore.add_logger('rx_data:file_patcher')
 
-_HASH_REGEX : Final[str] = r'.*_(\w{10})\.root$'
+_BLOCKNAME : Final[str] = 'block'
 # -----------------------------
 class FilePatcher:
     '''
@@ -29,21 +27,32 @@ class FilePatcher:
         '''
         self._counter = 0
         self._dry_run = dry_run
-        self._blocks : dict[str,int] = gut.load_data(
-            package = 'rx_data_data',
-            fpath   = 'rdf_getter/blocks.json')
     # -----------------------------
-    @property
-    def hashes(self) -> set[str]:
+    def __get_block(self, path : Path) -> int:
         '''
-        List of strings representing hashes in ROOT files
-        hashes identify job that created this file
+        Parameters
+        ----------------
+        path: Path to ROOT file
+
+        Returns
+        ----------------
+        Block number in DecayTree
         '''
-        return set(self._blocks)
+        if self.__is_missing_block(path = path, tree = 'DecayTree'):
+            raise ValueError(f'DecayTree is missing column: {_BLOCKNAME}')
+
+        rdf       = RDataFrame('DecayTree', str(path))
+        arr_block = rdf.AsNumpy([_BLOCKNAME])[_BLOCKNAME]
+        blocks    = arr_block.tolist()
+
+        if len(set(blocks)) != 1:
+            raise ValueError(f'Expected one block found: {set(blocks)}')
+
+        return blocks[0]
     # -----------------------------
-    def _add_block(
+    def __add_block(
         self,
-        block : int | None,
+        block : int,
         path  : Path) -> int:
         '''
         Parameters
@@ -55,29 +64,15 @@ class FilePatcher:
         ------------
         Statust code:
 
-        -2: Block was not added, because MCDecayTree was not found
-        -1: Block was not added, because block was not found
         0 : Block was not added, because it was already there
         1 : Block was added
         2 : Dry run, but would have added a missing block
         '''
-        try:
-            rdf_input = RDataFrame('MCDecayTree', str(path))
-            entries   = rdf_input.Count().GetValue()
-
-            log.debug(f'Found MCDecayTree with {entries} entries')
-        except Exception:
-            log.debug(f'MCDecayTree not found in {path}')
-            return -2
-
-        columns = [ column.c_str() for column in rdf_input.GetColumnNames() ]
+        rdf_input = RDataFrame('MCDecayTree', str(path))
+        columns   = [ column.c_str() for column in rdf_input.GetColumnNames() ]
         if 'block' in columns:
             log.debug(f'Column already present in: {path}')
             return 0
-
-        if block is None:
-            log.warning(f'Block not found for {path}')
-            return -1
 
         log.debug(f'Defining block == {block} for {path}')
         if self._dry_run:
@@ -105,6 +100,24 @@ class FilePatcher:
         file.Close()
 
         return 1
+    # -----------------------------
+    def __is_missing_block(self, path : Path, tree : str) -> bool:
+        '''
+        If true, the patching is needed
+        '''
+        rdf     = RDataFrame(tree, str(path))
+        columns = [ name.c_str() for name in rdf.GetColumnNames() ]
+
+        if _BLOCKNAME not in columns:
+            return True
+
+        return False
+    # -----------------------------
+    def __is_missing_tree(self, path : Path, tree : str) -> bool:
+        ifile = TFile(str(path))
+        key   = ifile.Get(tree)
+
+        return not key
     # -----------------------------
     def run(self, path : Path) -> int:
         '''
@@ -134,12 +147,15 @@ class FilePatcher:
         if not path.exists():
             raise ValueError(f'File not found: {path}')
 
-        mtch = re.match(_HASH_REGEX, str(path))
-        if not mtch:
-            raise ValueError(f'Cannot extract hash from: {path}')
+        if self.__is_missing_tree(path = path, tree = 'MCDecayTree'):
+            return -2
 
-        hash_val = mtch.group(1)
-        block    = self._blocks.get(hash_val)
+        if not self.__is_missing_block(path = path, tree = 'MCDecayTree'):
+            return 0
 
-        return self._add_block(block = block, path = path)
+        block = self.__get_block(path = path)
+
+        log.debug(f'Found block: {block}')
+
+        return self.__add_block(block = block, path = path)
 # -----------------------------
