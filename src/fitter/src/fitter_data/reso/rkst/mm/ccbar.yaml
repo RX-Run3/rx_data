@@ -16,7 +16,7 @@ fit:
       flag : False
   psi2:
     kind      : KDE1DimFFT
-    bandwidth : 10
+    bandwidth : 20
     padding   :
       flag : False
 plots:
