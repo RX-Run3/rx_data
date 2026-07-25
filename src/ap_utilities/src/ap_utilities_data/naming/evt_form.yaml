@@ -2,6 +2,8 @@
 # Custom event types
 # -----------------------------------
 Bu_KxKpipiee               : Bu_KxKpipiee
+Bs_psi2SKst_mm_eq_DPC      : Bs_psi2SKst_mm_eq_DPC
+Bs_psi2SKst_ee_eq_DPC      : Bs_psi2SKst_ee_eq_DPC
 Bs_JpsiKst_ee_eq_DPC       : Bs_JpsiKst_ee_eq_DPC
 Bd_JpsiKst_ee_had_swp      : Bd_JpsiKst_ee_had_swp
 Bd_JpsiKst_mm_had_swp      : Bd_JpsiKst_mm_had_swp
@@ -4387,7 +4389,6 @@ Bu_JpsiK_ee_eq_DPC_mix_swp : Bu_JpsiK_ee_eq_DPC_mix_swp
 '13442001': Bs_JpsiX_mm_eq_JpsiInAcc
 '13442012': Bs_JpsiX_mm_eq_JpsiLeptonInAcceptance
 '13442013': Bs_JpsiX_mm_HighMass_eq_JpsiLeptonInAcceptance
-'13444001': Bs_JpsiKst_mm_eq_DPC
 '13444022': Bs_CharmoniumKX_mumu_PPTcuts_eq_TC
 '13444023': Bs_CharmoniumPiPiX_mumu_eq_TC_ForB2RhoMuNu
 '13444401': Bs_JpsiKKeta_mm_eq_TC

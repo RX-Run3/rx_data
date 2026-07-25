@@ -2,6 +2,8 @@
 # Custom event types
 # -----------------------------------
 Bu_KxKpipiee               : Bu_KxKpipiee
+Bs_psi2SKst_mm_eq_DPC      : Bs_psi2SKst_mm_eq_DPC
+Bs_psi2SKst_ee_eq_DPC      : Bs_psi2SKst_ee_eq_DPC
 Bs_JpsiKst_ee_eq_DPC       : Bs_JpsiKst_ee_eq_DPC
 Bd_JpsiKst_ee_had_swp      : Bd_JpsiKst_ee_had_swp
 Bd_JpsiKst_mm_had_swp      : Bd_JpsiKst_mm_had_swp
@@ -1649,7 +1651,6 @@ Bd_JpsiKspipipi_mm_eq_DPC_pCut1600MeV: '11246502'
 Bd_JpsiKspiplpimn_mm_K1cocktail_eq_DPC: '11246110'
 Bd_JpsiKst_L0L0_eq_HELAMP_TC: '11136101'
 Bd_JpsiKst_ee_eq_DPC: '11154001'
-Bs_JpsiKst_mm_eq_DPC: '13444001'
 Bd_JpsiKst_mm_eq_DPC: '11144001'
 Bd_JpsiKst_mm_eq_LargeLifetime: '11144007'
 Bd_JpsiKst_pipi_eq_DPC: '11134040'
