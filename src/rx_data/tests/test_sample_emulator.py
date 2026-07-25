@@ -15,17 +15,19 @@ from rx_data     import SamplesConf
 log=LogStore.add_logger('rx_data:test_sample_emulator')
 
 _SAMPLES_CONCATENATE = [
-    'Bu_KxKpipi',
+    Component.bpkxkpipiee,
 ]
 
 _SAMPLES_MOTHER_SWAP=[
-    'Bs_JpsiKst_mm_eq_DPC' ,
-    'Bs_JpsiKst_ee_eq_DPC' ,
+    Component.bskstjpsimm,
+    Component.bskstjpsiee,
 ]
 
-_SAMPLE_PAIRS = [
-    ('Bs_JpsiKst_mm_eq_DPC' , 'Bd_JpsiKst_mm_eq_DPC'),
-    ('Bs_JpsiKst_ee_eq_DPC' , 'Bd_JpsiKst_ee_eq_DPC'),
+_SAMPLE_PAIRS : list[tuple[Component, Component]] = [
+    (Component.bskstjpsimm, Component.bdkstkpijpsimm),
+    (Component.bskstjpsiee, Component.bdkstkpijpsiee),
+    (Component.bskstpsi2mm, Component.bdkstkpipsi2mm),
+    (Component.bskstpsi2ee, Component.bdkstkpipsi2ee),
 ]
 
 _SWAPPED_MASSES = [
@@ -77,14 +79,14 @@ def test_samples_conf():
         if not component.has_sample: 
             continue
 
-        cfg = SamplesConf({component.sample : 1.0})
+        cfg = SamplesConf({component : 1.0})
         assert not cfg.is_cocktail
         assert cfg.is_data != component.is_mc
-        assert cfg.contains(sample = component.sample)
+        assert component in cfg.root
 
     cfg = SamplesConf({
-            Component.bpk1kpipiee.sample : 0.5,
-            Component.bpk2kpipiee.sample : 0.5,
+            Component.bpk1kpipiee : 0.5,
+            Component.bpk2kpipiee : 0.5,
          })
 
     assert cfg.is_cocktail
@@ -101,7 +103,7 @@ def test_emulator_conf():
     assert obj is not None
 # --------------------------------------------
 @pytest.mark.parametrize('sample', _SAMPLES_CONCATENATE)
-def test_concatenate(sample : str):
+def test_concatenate(sample : Component):
     '''
     Test with samples resulting from concatenation of other samples
     '''
@@ -112,8 +114,8 @@ def test_concatenate(sample : str):
 # --------------------------------------------
 @pytest.mark.parametrize('new_name, old_name', _SAMPLE_PAIRS)
 def test_rename(
-    new_name : str, 
-    old_name : str):
+    new_name : Component, 
+    old_name : Component):
     '''
     Check renaming of samples
 
@@ -127,7 +129,7 @@ def test_rename(
 # --------------------------------------------
 @pytest.mark.parametrize('sample', _SAMPLES_MOTHER_SWAP)
 @pytest.mark.parametrize('size'  , [0, 100])
-def test_swap_mother(sample : str, size : int):
+def test_swap_mother(sample : Component, size : int):
     '''
     sample: Name of sample to emulate
     '''
