@@ -36,8 +36,8 @@ plots:
   nbins   : 50
   stacked : True
   d_leg :
-    dscb_bdkstkpijpsiee_brem_xx1_1  : DSCB 
-    dscb_bdkstkpijpsiee_brem_xx2_1  : DSCB 
+    dscb_bskstjpsiee_brem_xx1_1  : DSCB 
+    dscb_bskstjpsiee_brem_xx2_1  : DSCB 
   plot_range:
     - 5300
     - 6300
