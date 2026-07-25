@@ -136,9 +136,13 @@ psi2_ee_kstzero_swap : '{b_is_bzero} && {lep_are_electrons} && {ll_is_psi2} && {
 #-------------------------------------------------------------
 # Bs -> Jpsi(mm) Kst(Kpi)
 13444001             : '{b_is_bstrn} && {lep_are_muons}     && {ll_is_jpsi} && {ll_from_bstrn} && {lep_from_jpsi} && {had_are_kpi} && {hh_is_kstzero} && {hh_from_bstrn} && {had_from_kstzero}'
-
 # Bs -> Jpsi(ee) Kst(Kpi)
 Bs_JpsiKst_ee_eq_DPC : '{b_is_bstrn} && {lep_are_electrons} && {ll_is_jpsi} && {ll_from_bstrn} && {lep_from_jpsi} && {had_are_kpi} && {hh_is_kstzero} && {hh_from_bstrn} && {had_from_kstzero}'
+
+# Bs -> psi(2S)(mm) Kst(Kpi)
+Bs_psi2SKst_mm_eq_DPC: '{b_is_bstrn} && {lep_are_muons}     && {ll_is_psi2} && {ll_from_bstrn} && {lep_from_psi2} && {had_are_kpi} && {hh_is_kstzero} && {hh_from_bstrn} && {had_from_kstzero}'
+# Bs -> psi(2S)(ee) Kst(Kpi)
+Bs_psi2SKst_ee_eq_DPC: '{b_is_bstrn} && {lep_are_electrons} && {ll_is_psi2} && {ll_from_bstrn} && {lep_from_psi2} && {had_are_kpi} && {hh_is_kstzero} && {hh_from_bstrn} && {had_from_kstzero}'
 
 # Bs -> Jpsi(ll) Phi(KK)
 13144001             : '{b_is_bstrn} && {lep_are_muons}     && {ll_is_jpsi} && {ll_from_bstrn} && {lep_from_jpsi} && {had_are_kk}  && {hh_is_phi}     && {hh_from_bstrn} && {had_from_phi}'
