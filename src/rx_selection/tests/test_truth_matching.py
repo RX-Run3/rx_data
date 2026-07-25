@@ -11,6 +11,12 @@ from rx_data      import RDFGetter
 from dmu          import LogStore
 
 # TODO: Add more samples
+
+_EMULATED : list[tuple[Component, Trigger]] = [
+    (Component.bskstpsi2ee, Trigger.rkst_ee_os),
+    (Component.bskstpsi2mm, Trigger.rkst_mm_os),
+]
+
 _SEMILEPTONIC_SAMPLES_RK = [
     Component.bpdnukpiee,
     Component.bpdnuknuee,
@@ -310,5 +316,25 @@ def test_semileptonic_rkst(sample : Component):
 
     assert 20 * fin > ini
     log.info(f'Candidates: {ini} -> {fin}')
+    log.info(f'eff={fin/ini=:.3f}')
+# --------------------------
+@pytest.mark.parametrize('sample, trigger', _EMULATED)
+def test_emulated(sample : Component, trigger : Trigger):
+    '''
+    Tests with emulated samples 
+    '''
+    cut = tm.get_truth(component = sample, project = trigger.project)
+    gtr = RDFGetter(sample=sample, trigger=trigger)
+    org = gtr.get_rdf(per_file=False)
+
+    ini = org.Count().GetValue()
+    rdf = org.Filter(cut, 'truth match')
+    fin = rdf.Count().GetValue()
+
+    if fin == 0:
+        _check_rdf(rdf=org, selection=cut)
+
+    assert 20 * fin > ini
+
     log.info(f'eff={fin/ini=:.3f}')
 # --------------------------
