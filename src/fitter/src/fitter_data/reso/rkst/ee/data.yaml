@@ -22,27 +22,38 @@ reg_cfg_psi2: &reg_cfg_psi2
   stacked         : True
   d_leg :
     ccbar_ccbar                  : $B_{s,d,u}\to c\bar{c} X$
+    comb                         : Combinatorial
     comb_brem_xx1                : Combinatorial
     comb_brem_xx2                : Combinatorial
     comb_brem_x12                : Combinatorial
+    lbpkjpsiee                   : $\Lambda_b \to J/\psi pK$
     lbpkjpsiee_brem_xx1          : $\Lambda_b \to J/\psi pK$
     lbpkjpsiee_brem_xx2          : $\Lambda_b \to J/\psi pK$
     lbpkjpsiee_brem_x12          : $\Lambda_b \to J/\psi pK$
+    bsphijpsiee                  : $B_s \to J/\psi\phi(\to KK)$
     bsphijpsiee_brem_xx1         : $B_s \to J/\psi\phi(\to KK)$
     bsphijpsiee_brem_xx2         : $B_s \to J/\psi\phi(\to KK)$
     bsphijpsiee_brem_x12         : $B_s \to J/\psi\phi(\to KK)$
+    bskstjpsiee                  : $B_s\to J/\psi K^{*0}(\to K^+\pi^-)$
     bskstjpsiee_brem_xx1         : $B_s\to J/\psi K^{*0}(\to K^+\pi^-)$
     bskstjpsiee_brem_xx2         : $B_s\to J/\psi K^{*0}(\to K^+\pi^-)$
     bskstjpsiee_brem_x12         : $B_s\to J/\psi K^{*0}(\to K^+\pi^-)$
-    bdkstjpsiee_had_swp_brem_xx1 : B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$ 
-    bdkstjpsiee_had_swp_brem_xx2 : B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$ 
-    bdkstjpsiee_had_swp_brem_x12 : B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$ 
+    bdkstjpsiee                  : $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$ 
+    bdkstjpsiee_had_swp_brem_xx1 : $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$ 
+    bdkstjpsiee_had_swp_brem_xx2 : $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$ 
+    bdkstjpsiee_had_swp_brem_x12 : $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$ 
+    bdkstkpijpsiee               : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$ 
     bdkstkpijpsiee_brem_xx1      : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$ 
     bdkstkpijpsiee_brem_xx2      : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$ 
     bdkstkpijpsiee_brem_x12      : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$ 
+    bdkstkpipsi2ee               : $B^0\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
     bdkstkpipsi2ee_brem_xx1      : $B^0\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
     bdkstkpipsi2ee_brem_xx2      : $B^0\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
     bdkstkpipsi2ee_brem_x12      : $B^0\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
+    bskstkpipsi2ee               : $B_s\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
+    bskstkpipsi2ee_brem_xx1      : $B_s\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
+    bskstkpipsi2ee_brem_xx2      : $B_s\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
+    bskstkpipsi2ee_brem_x12      : $B_s\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
   plot_components : 
     - ccbar
   plot_range :
