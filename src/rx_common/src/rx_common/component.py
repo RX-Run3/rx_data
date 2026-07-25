@@ -99,6 +99,8 @@ class Component(StrEnum):
     # -----
     bskstjpsimm    = auto()
     bskstjpsiee    = auto()
+    bskstpsi2mm    = auto()
+    bskstpsi2ee    = auto()
 
     bdkstjpsimm_had_swp= auto()
     bdkstjpsiee_had_swp= auto()
@@ -409,6 +411,11 @@ class Component(StrEnum):
           case Component.bskstjpsiee:
             return 'Bs_JpsiKst_ee_eq_DPC'
           # -------
+          case Component.bskstpsi2mm:
+            return 'Bs_psi2SKst_mm_eq_DPC'
+          case Component.bskstpsi2ee:
+            return 'Bs_psi2SKst_ee_eq_DPC'
+          # -------
           case Component.bdkstjpsimm_had_swp:
             return 'Bd_JpsiKst_mm_had_swp'
           case Component.bdkstjpsiee_had_swp:
@@ -475,10 +482,16 @@ class Component(StrEnum):
                 return ['bdpskst', 'psee', 'kokp']
             case 'bdkstkpipsi2mm':
                 return ['bdpskst', 'psmm', 'kokp']
+            # ------
             case 'bskstjpsiee':
                 return ['bsjkst' , 'jpee', 'kokp']
             case 'bskstjpsimm':
                 return ['bsjkst' , 'jpmm', 'kokp']
+            # ------
+            case 'bskstpsi2ee':
+                return ['bspkst' , 'ppee', 'kokp']
+            case 'bskstpsi2mm':
+                return ['bspkst' , 'ppmm', 'kokp']
             # ------
             case 'bsphiee':
                 return ['bsph', 'phkk']
@@ -602,6 +615,10 @@ class Component(StrEnum):
                 return r'$B_s \to K^*(\to K^+\pi^-)J/\psi(\to e^+e^-)$'
             case Component.bskstjpsimm:
                 return r'$B_s \to K^*(\to K^+\pi^-)J/\psi(\to \mu^+\mu^-)$'
+            case Component.bskstpsi2ee:
+                return r'$B_s \to K^*(\to K^+\pi^-)\psi(2S)(\to e^+e^-)$'
+            case Component.bskstpsi2mm:
+                return r'$B_s \to K^*(\to K^+\pi^-)\psi(2S)(\to \mu^+\mu^-)$'
             case Component.bsphigamma:
                 return r'$B_s \to \phi(\to K^+K^-)\gamma$'
             case Component.bdkstpi0:

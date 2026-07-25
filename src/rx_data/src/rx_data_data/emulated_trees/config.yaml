@@ -34,6 +34,16 @@ bskstjpsiee:
     bdkstkpijpsiee : 1.0
   redefine :
     <<: *red_001
+bskstpsi2mm:
+  samples : 
+    bdkstkpipsi2mm : 1.0
+  redefine :
+    <<: *red_001
+bskstpsi2ee:
+  samples : 
+    bdkstkpipsi2ee : 1.0
+  redefine :
+    <<: *red_001
 # ----------------------------------------
 # These samples are meant to represent
 # hadronic swapped (K -> pi and pi -> K) decays
