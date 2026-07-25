@@ -1,0 +1,28 @@
+component : bskstpsi2mm
+categories:
+  brem_xx0:
+    selection : {}
+    model:
+      pdfs:
+        - dscb
+        - gauss 
+      shared        : 
+        - mu
+        - sg
+      floating      : []
+      reparametrize : {}
+      fix           : {}
+fit:
+  strategy  :
+    ntries : 15
+    pvalue : 0.05
+plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#fit-plotting
+  nbins   : 75 
+  stacked : True
+  d_leg :
+    gauss_bskstpsi2mm_brem_xx0_1 : Gauss 
+    dscb_bskstpsi2mm_brem_xx0_1  : DSCB 
+  plot_components : []
+  plot_range:
+    - 5300
+    - 5450
