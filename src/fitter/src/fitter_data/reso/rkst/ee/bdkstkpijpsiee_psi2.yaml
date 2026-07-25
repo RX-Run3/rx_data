@@ -1,0 +1,46 @@
+component : bdkstkpijpsiee 
+categories:
+  brem_xx1:
+    selection : {}
+    model:
+      pdfs:
+        - dscb
+      shared        : 
+        - mu
+        - sg
+      floating      :
+        - mu
+        - sg
+      reparametrize : {}
+      fix           : {}
+      values        :
+        sg : [50  ,   20,  150]
+        mu : [5500, 5300, 6500]
+  brem_xx2:
+    selection : {}
+    model:
+      pdfs:
+        - dscb
+      shared        : 
+        - mu
+        - sg
+      floating      :
+        - mu
+        - sg
+      reparametrize : {}
+      fix           : {}
+      values        :
+        sg : [50  ,   20,  150]
+        mu : [5500, 5300, 6500]
+fit:
+  strategy  :
+    ntries : 10
+    pvalue : 0.05
+plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#fit-plotting
+  nbins   : 50
+  stacked : True
+  d_leg :
+    dscb_1  : DSCB 
+  plot_range:
+    - 4700
+    - 5200

@@ -1,0 +1,42 @@
+component : bskstjpsiee 
+categories:
+  brem_xx1:
+    selection : {}
+    model:
+      pdfs:
+        - dscb
+      shared        : 
+        - mu
+        - sg
+      floating      : []
+      reparametrize : {}
+      fix           : {}
+      values        :
+        sg : [20  ,    2,   50]
+        mu : [5400, 5300, 6300]
+  brem_xx2:
+    selection : {}
+    model:
+      pdfs:
+        - dscb
+      shared        : 
+        - mu
+        - sg
+      floating      : []
+      reparametrize : {}
+      fix           : {}
+      values        :
+        sg : [20  ,    2,   50]
+        mu : [5400, 5300, 6300]
+fit:
+  strategy  :
+    ntries : 10
+    pvalue : 0.05
+plots:
+  nbins   : 50
+  stacked : True
+  d_leg :
+    dscb_1 : DSCB 
+  plot_range:
+    - 5200
+    - 5600
