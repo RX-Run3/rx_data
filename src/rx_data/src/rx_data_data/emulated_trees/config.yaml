@@ -22,7 +22,6 @@ bskstjpsimm:
   redefine : &red_001
     B_M                  : B_M                  + 87.23
     B_Mass               : B_Mass               + 87.23
-    B_M_brem_track_2     : B_M_brem_track_2     + 87.23
     B_const_mass_M       : B_const_mass_M       + 87.23
     B_const_mass_psi2S_M : B_const_mass_psi2S_M + 87.23
     B_ID                 : '531'
