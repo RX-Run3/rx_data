@@ -39,11 +39,13 @@ _RESO_RK : Final[list[Component]] = [
 _RESO_RKST_EE: Final[list[Component]] = [
     Component.bdkstkpijpsiee, 
     Component.bskstjpsiee, 
+    Component.bskstpsi2ee, 
     Component.bsphijpsiee, 
     Component.lbpkjpsiee]
 _RESO_RKST_MM: Final[list[Component]] = [
     Component.bdkstkpijpsimm, 
     Component.bskstjpsimm, 
+    Component.bskstpsi2mm, 
     Component.bsphijpsimm, 
     Component.lbpkjpsimm]
 _GROUPS : Final[dict[str,list[Component]]] = {
