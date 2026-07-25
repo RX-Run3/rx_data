@@ -479,7 +479,7 @@ class Component(StrEnum):
             case 'bdkstjpsimm_had_swp':
                 return ['bdjkst' , 'jpmm', 'kokp']
             case 'bdkstkpipsi2ee':
-                return ['bdpkst ', 'psee', 'kokp']
+                return ['bdpkst' , 'psee', 'kokp']
             case 'bdkstkpipsi2mm':
                 return ['bdpkst' , 'psmm', 'kokp']
             # ------
