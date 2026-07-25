@@ -489,9 +489,9 @@ class Component(StrEnum):
                 return ['bsjkst' , 'jpmm', 'kokp']
             # ------
             case 'bskstpsi2ee':
-                return ['bspkst' , 'ppee', 'kokp']
+                return ['bspkst' , 'psee', 'kokp']
             case 'bskstpsi2mm':
-                return ['bspkst' , 'ppmm', 'kokp']
+                return ['bspkst' , 'psmm', 'kokp']
             # ------
             case 'bsphiee':
                 return ['bsph', 'phkk']
