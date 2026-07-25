@@ -38,5 +38,5 @@ plots:
   d_leg :
     dscb_1 : DSCB 
   plot_range:
-    - 5200
-    - 5600
+    - 5300
+    - 6300

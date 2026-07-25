@@ -15,7 +15,7 @@ categories:
       fix           : {}
       values        :
         sg : [50  ,   20,  150]
-        mu : [5500, 5300, 6500]
+        mu : [5900, 5800, 6000]
   brem_xx2:
     selection : {}
     model:
@@ -31,7 +31,7 @@ categories:
       fix           : {}
       values        :
         sg : [50  ,   20,  150]
-        mu : [5500, 5300, 6500]
+        mu : [5900, 5800, 6000]
 fit:
   strategy  :
     ntries : 10
@@ -42,5 +42,5 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
   d_leg :
     dscb_1  : DSCB 
   plot_range:
-    - 4700
-    - 5200
+    - 5500
+    - 6200
