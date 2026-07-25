@@ -49,17 +49,21 @@ bf:
     - 0.00127
     - 0.00005
   # J/psi -> mumu 
-  jpmm: 
-    - 0.0596
+  jpmm: # https://pdglive.lbl.gov/Particle.action?init=0&node=M070&home=MXXX025
+    - 0.05961
     - 0.00033
   # J/psi -> ee
-  jpee: 
-    - 0.0596
+  jpee: # picked electron one
+    - 0.05961
     - 0.00033
   # psi2S -> ee
-  psee:
-    - 0.00789
-    - 0.00017
+  psee: # https://pdglive.lbl.gov/Particle.action?init=0&node=M071&home=MXXX025
+    - 0.00795
+    - 0.00022
+  # psi2S -> mm 
+  psmm: # picked electron one
+    - 0.00795
+    - 0.00022
   # B+ -> K+ee
   bpkp: 
     - 4.53e-7
