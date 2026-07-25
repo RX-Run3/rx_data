@@ -1,24 +1,25 @@
 # This config file defines the yields and the relationships between them
 # For the fit of the resonant muon channel 
 # --------------------
+# Generic parameters
+# --------------------
 fractions: &fractions
   val : 0.5 
   min : 0.0
   max : 1.0 
-# --------------------
 yields: &yields
   val : 10
   min : 0
   max : 1000000
 # -------------------------
+# Total signals
+# -------------------------
 yld_bdkstkpijpsimm_brem_xx0:
   <<: *yields
 yld_bdkstkpipsi2mm_brem_xx0:
   <<: *yields
-yld_ccbar_brem_xx0:
-  <<: *yields
-yld_comb_brem_xx0:
-  <<: *yields
+# -------------------------
+# J/psi scales
 # -------------------------
 s_bdkstjpsimm_had_swp_brem_xx0:
   <<: *fractions
@@ -28,6 +29,19 @@ s_bsphijpsimm_brem_xx0:
   <<: *fractions
 s_bskstjpsimm_brem_xx0:
   <<: *fractions
+# -------------------------
+# psi(2S) scales
+# -------------------------
+s_bdkstpsi2mm_had_swp_brem_xx0:
+  <<: *fractions
+s_lbpkpsi2mm_brem_xx0:
+  <<: *fractions
+s_bsphipsi2mm_brem_xx0:
+  <<: *fractions
+s_bskstpsi2mm_brem_xx0:
+  <<: *fractions
+# -------------------------
+# J/Psi backgrounds
 # -------------------------
 yld_bdkstjpsimm_had_swp_brem_xx0:
   kind: mul
@@ -49,3 +63,33 @@ yld_bskstjpsimm_brem_xx0:
   pars:
     -      s_bskstjpsimm_brem_xx0
     - yld_bdkstkpijpsimm_brem_xx0
+# -------------------------
+# Psi(2S) backgrounds
+# -------------------------
+yld_bdkstpsi2mm_had_swp_brem_xx0:
+  kind: mul
+  pars:
+    -  s_bdkstpsi2mm_had_swp_brem_xx0
+    - yld_bdkstkpipsi2mm_brem_xx0
+yld_lbpkpsi2mm_brem_xx0:
+  kind: mul
+  pars:
+    -       s_lbpkpsi2mm_brem_xx0
+    - yld_bdkstkpipsi2mm_brem_xx0
+yld_bsphipsi2mm_brem_xx0:
+  kind: mul
+  pars:
+    -      s_bsphipsi2mm_brem_xx0
+    - yld_bdkstkpipsi2mm_brem_xx0
+yld_bskstpsi2mm_brem_xx0:
+  kind: mul
+  pars:
+    -      s_bskstpsi2mm_brem_xx0
+    - yld_bdkstkpipsi2mm_brem_xx0
+# -------------------------
+# Shared backgrounds
+# -------------------------
+yld_ccbar_brem_xx0:
+  <<: *yields
+yld_comb_brem_xx0:
+  <<: *yields
