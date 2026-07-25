@@ -19,12 +19,12 @@ fit:
     ntries : 10
     pvalue : 0.05
 plots:
-  nbins   : 50
+  nbins   : 75
   stacked : True
   plot_components : []
   plot_range:
-    - 5200
-    - 5400
+    - 5300
+    - 5450
   d_leg:
     gauss_bdkstkpipsi2mm_brem_xx0_1 : Gauss
     dscb_bdkstkpipsi2mm_brem_xx0_1  : DSCB 
