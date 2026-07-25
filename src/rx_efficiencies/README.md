@@ -30,7 +30,7 @@ micromamba install rapidsim
 To create the ntuples with the decays, do:
 
 ```bash
-create_rapidsim_ntuples -n 100000 -v v2
+create_rapidsim_ntuples -n 100000 -v v3 -d 0
 ```
 
 where the utility will pick up every decay configuration in the `rx_efficiencies_data/prec_decfiles/v2` directory and 
