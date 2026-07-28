@@ -11,7 +11,7 @@ import pandas as pnd
 from typing     import Final
 from contextlib import contextmanager
 from pathlib    import Path
-from dmu        import LogStore
+from dmu        import LogStore, LogLevels
 from dmu.stats  import Measurement
 from rx_common  import Block, Brem, Component, Project, Trigger 
 from rx_common  import Qsq
@@ -169,11 +169,15 @@ class ParameterReader:
     def _format_data(
         self, 
         brem : Brem,
+        sign : Component,
+        dset : Component,
         data : dict[str, float]) -> dict[str,tuple[float,float]]:
         '''
         Parameters
         -------------
         brem: Brem category
+        sign: Component been fitted.
+        dset: Dataset fitted, i.e. data or MC sample
         data: Dictionary mapping quantity with value, value is a float, i.e. dictionary has been filtered
 
         Returns
@@ -181,6 +185,7 @@ class ParameterReader:
         Dictionary mapping quantity with tuple where first element is value and second one is the error
         '''
         output_data : dict[str, list[float]] = dict()
+        log.debug('Extracting parameters')
         for key, val in data.items():
             if math.isnan(val):
                 continue
@@ -194,15 +199,61 @@ class ParameterReader:
             if var_name not in output_data:
                 output_data[var_name] = [-999.0, -999.0]
 
+            log.debug(f'{var_name} @ {index}')
+
             output_data[var_name][index] = val
 
         res = { key : (value[0], value[1]) for key, value in output_data.items() } 
 
         name, val, err = self._extract_brem(brem = brem, data = data)
 
+        log.debug(name)
         res[name] = val, err
 
+        if dset.is_mc:
+            return res
+
+        name, val, err = self._extract_yield(
+            data = data,
+            brem = brem, 
+            sign = sign, 
+            fval = val, 
+            ferr = err)
+
+        res[name]= val, err
+
         return res
+    # ----------------------
+    def _extract_yield(
+        self, 
+        data : dict[str,float],
+        brem : Brem, 
+        sign : Component, 
+        fval : float, 
+        ferr : float) -> tuple[str,float,float]:
+        '''
+        Parameters
+        ----------------
+        data: Dictionary mapping parameter name to value
+        brem: Brem category
+        sign: Signal associated to yield needed
+        fval: Value of brem fraction
+        ferr: Error of brem fraction
+
+        Returns
+        ----------------
+        Tuple with name, value and error of yield for given brem category
+        '''
+        key  = f'yld_{sign}_{Brem.brx12}'
+        val  = data[f'{key}_value'] # yield value
+        err  = data[f'{key}_error'] # yield error
+
+        val  = val * fval                            # yield value in brem category
+        var  = (err * fval) ** 2 + (val * ferr) ** 2 # yield variance in brem category
+        err  = math.sqrt(var)
+        name = f'yld_{sign}_{brem}'
+
+        return name, val, err
     # ----------------------
     def _extract_brem(
         self, 
@@ -243,7 +294,7 @@ class ParameterReader:
     # ----------------------
     def __call__(
         self, 
-        signame   : str,
+        signal    : Component,
         brem      : Brem,
         block     : Block,
         cmb       : MVAWp,
@@ -255,7 +306,7 @@ class ParameterReader:
         '''
         Parameters
         -------------
-        signame  : Identifier for signal parameter, e.g. jpsi 
+        signal   : Identifier for signal parameter, e.g. jpsi 
         brem     : Brem category, e.g. 0, 1, 2
         block    : Block number in 2024, e.g. 1, 2, 3...8
         cmb/prc  : MVA working point 
@@ -284,18 +335,23 @@ class ParameterReader:
             self._print_info(df=df)
             raise ValueError('Not found one and only one row')
 
+        if log.getEffectiveLevel() < LogLevels.info:
+            log.debug(df.T)
+
         raw_data = df.iloc[0].to_dict()
         flt_data = { key : value for key, value in raw_data.items() if isinstance(value, float) }
         data     = self._format_data(
             brem = brem,
+            dset = comp,
+            sign = signal,
             data = flt_data) # type: ignore
 
-        # for simultaneous fits, this removes brem_002 parameters when one needs brem_001
+        # for simultaneous fits, this removes brem_xx2 parameters when one needs brem_xx1
         # and viceversa
         data     = { key : value for key, value in data.items() if str(brem) in key }
 
-        data[f'bk_{signame}'] = (math.nan, math.nan) if comp.is_mc else self._get_block_fraction(
-            signame = signame,
+        data[f'bk_{signal}'] = (math.nan, math.nan) if comp.is_mc else self._get_block_fraction(
+            signal  = signal,
             df      = df_all, 
             brem    = brem,
             block   = block) 
@@ -304,7 +360,7 @@ class ParameterReader:
     # ----------------------
     def _get_block_fraction(
         self,
-        signame: str,
+        signal : Component,
         df     : pnd.DataFrame,
         brem   : Brem,
         block  : Block) -> tuple[float,float]:
@@ -325,9 +381,9 @@ class ParameterReader:
         '''
         arr_blk          = df['block'].to_numpy()
         arr_val, arr_err = self._get_brem_yields(
-            df      = df, 
-            brem    = brem,
-            signame = signame)
+            df     = df, 
+            brem   = brem,
+            signal = signal)
 
         iblock  = numpy.argmax(arr_blk == block.value)
 
@@ -346,17 +402,37 @@ class ParameterReader:
 
         return val, err 
     # ----------------------
+    def _arr_from_df(self, df : pnd.DataFrame, column : str) -> numpy.ndarray:
+        '''
+        Parameters
+        ----------------
+        df    : DataFrame storing fit information
+        column: Name of column in dataframe 
+
+        Return
+        ----------------
+        Numpy array with values of column
+        '''
+        log.debug(f'Retrieving {column}')
+        if column not in df.columns:
+            for val in sorted(df.columns):
+                log.error(val)
+
+            raise ValueError(f'Column {column} not found in dataframe')
+
+        return df[column].to_numpy()
+    # ----------------------
     def _get_brem_yields(
         self, 
-        df      : pnd.DataFrame, 
-        brem    : Brem, 
-        signame : str) -> tuple[numpy.ndarray, numpy.ndarray]:
+        df     : pnd.DataFrame, 
+        brem   : Brem, 
+        signal : Component) -> tuple[numpy.ndarray, numpy.ndarray]:
         '''
         Parameters
         -------------
         df     : DataFrame with yields and fractions information
         brem   : Brem category
-        signame: Name of signal, e.g. jpsik
+        signal : Signal for current fit
 
         Returns
         -------------
@@ -365,10 +441,10 @@ class ParameterReader:
 
         # NOTE: Uncertainties are very small, might not matter if we use
         # covariance between fraction and yield or assume zero correlation
-        arr_yld_val = df[f'yld_{signame}_brem_x12_value'].to_numpy()
-        arr_yld_err = df[f'yld_{signame}_brem_x12_error'].to_numpy()
-        arr_frc_val = df[f'{signame}_fraction_value'    ].to_numpy()
-        arr_frc_err = df[f'{signame}_fraction_error'    ].to_numpy()
+        arr_yld_val = self._arr_from_df(df = df, column = f'yld_{signal}_brem_x12_value')
+        arr_yld_err = self._arr_from_df(df = df, column = f'yld_{signal}_brem_x12_error')
+        arr_frc_val = self._arr_from_df(df = df, column = f'{signal}_fraction_value'    )
+        arr_frc_err = self._arr_from_df(df = df, column = f'{signal}_fraction_error'    )
 
         # Fits are parametrized with total yield and brem 1 fractions 
         # NOTE: Uncertainty on ERR is uncertainty on 1 - ERR
