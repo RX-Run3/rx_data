@@ -79,24 +79,24 @@ observable:
       - 7000
 components:
   jpsi:
-    comb            : reso/rkst/ee/comb.yaml
-    ccbar           : reso/rkst/ee/ccbar.yaml
-    lbpkjpsiee      : reso/rkst/ee/lbpkjpsiee_np.yaml
-    bsphijpsiee     : reso/rkst/ee/bsphijpsiee_np.yaml
-    bskstjpsiee     : reso/rkst/ee/bskstjpsiee.yaml
+    comb                : reso/rkst/ee/comb.yaml
+    ccbar               : reso/rkst/ee/ccbar.yaml
+    lbpkjpsiee          : reso/rkst/ee/lbpkjpsiee_np.yaml
+    bsphijpsiee         : reso/rkst/ee/bsphijpsiee_np.yaml
+    bskstjpsiee         : reso/rkst/ee/bskstjpsiee.yaml
     bdkstjpsiee_had_swp : reso/rkst/ee/bdkstjpsiee_had_swp_np.yaml
-    bdkstkpijpsiee  : reso/rkst/ee/bdkstkpijpsiee.yaml
-    bdkstkpipsi2ee  : reso/rkst/ee/bdkstkpipsi2ee_np.yaml
+    bdkstkpijpsiee      : reso/rkst/ee/bdkstkpijpsiee.yaml
+    bdkstkpipsi2ee      : reso/rkst/ee/bdkstkpipsi2ee_np.yaml
   psi2:
-    comb            : reso/rkst/ee/comb.yaml
-    ccbar           : reso/rkst/ee/ccbar.yaml
-    lbpkjpsiee      : reso/rkst/ee/lbpkjpsiee_np.yaml
-    bsphijpsiee     : reso/rkst/ee/bsphijpsiee_np.yaml
+    comb                : reso/rkst/ee/comb.yaml
+    ccbar               : reso/rkst/ee/ccbar.yaml
+    lbpkjpsiee          : reso/rkst/ee/lbpkjpsiee_np.yaml
+    bsphijpsiee         : reso/rkst/ee/bsphijpsiee_np.yaml
     bdkstjpsiee_had_swp : reso/rkst/ee/bdkstjpsiee_had_swp_np.yaml
-    bskstjpsiee     : reso/rkst/ee/bskstjpsiee_psi2.yaml
-    bskstpsi2ee     : reso/rkst/ee/bskstpsi2ee.yaml
-    bdkstkpijpsiee  : reso/rkst/ee/bdkstkpijpsiee_psi2.yaml
-    bdkstkpipsi2ee  : reso/rkst/ee/bdkstkpipsi2ee.yaml
+    bskstjpsiee         : reso/rkst/ee/bskstjpsiee_psi2.yaml
+    bskstpsi2ee         : reso/rkst/ee/bskstpsi2ee.yaml
+    bdkstkpijpsiee      : reso/rkst/ee/bdkstkpijpsiee_psi2.yaml
+    bdkstkpipsi2ee      : reso/rkst/ee/bdkstkpipsi2ee.yaml
 constraints:
   signal_fraction:
     - bskstjpsiee 
