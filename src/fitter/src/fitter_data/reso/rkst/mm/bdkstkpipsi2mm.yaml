@@ -23,8 +23,8 @@ plots:
   stacked : True
   plot_components : []
   plot_range:
-    - 5300
-    - 5450
+    - 5200
+    - 5400
   d_leg:
     gauss_bdkstkpipsi2mm_brem_xx0_1 : Gauss
     dscb_bdkstkpipsi2mm_brem_xx0_1  : DSCB 

@@ -13,6 +13,8 @@ reg_cfg_jpsi: &reg_cfg_jpsi
     bskstjpsiee_brem_xx2   : $B_s\to J/\psi K^{*0}(\to K^+\pi^-)$
     bdkstkpijpsiee_brem_xx1: $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$ 
     bdkstkpijpsiee_brem_xx2: $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$ 
+    bskstjpsiee            : $B_s\to J/\psi K^{*0}(\to K^+\pi^-)$
+    bdkstkpijpsiee         : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$ 
   plot_components : 
     - ccbar
   plot_range :
@@ -51,10 +53,10 @@ reg_cfg_psi2: &reg_cfg_psi2
     bdkstkpipsi2ee_brem_xx1      : $B^0\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
     bdkstkpipsi2ee_brem_xx2      : $B^0\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
     bdkstkpipsi2ee_brem_x12      : $B^0\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
-    bskstkpipsi2ee               : $B_s\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
-    bskstkpipsi2ee_brem_xx1      : $B_s\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
-    bskstkpipsi2ee_brem_xx2      : $B_s\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
-    bskstkpipsi2ee_brem_x12      : $B_s\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
+    bskstpsi2ee                  : $B_s\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
+    bskstpsi2ee_brem_xx1         : $B_s\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
+    bskstpsi2ee_brem_xx2         : $B_s\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
+    bskstpsi2ee_brem_x12         : $B_s\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
   plot_components : 
     - ccbar
   plot_range :
