@@ -59,10 +59,10 @@ class FitSummary:
 
         self._patterns : Final[dict[Component,str]] = {}
         if data:
-            self._patterns[data]    = f'*_*_*/*/r*/*/*/{data}/fit/*/brem_*/parameters.json'
+            self._patterns[data]   = f'*_*_*/*/r*/*/*/{data}/fit/*/brem_*/parameters.json'
 
         if signal:
-             self._patterns[signal] = f'*_*_*/*/r*/*/*/{signal}/fit/brem_*/brem_*/parameters.json'
+            self._patterns[signal] = f'*_*_*/*/r*/*/*/{signal}/fit/brem_*/brem_*/parameters.json'
     # ----------------------
     def _get_fit_dir(self, name : str) -> Path:
         '''
