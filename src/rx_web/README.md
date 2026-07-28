@@ -50,7 +50,7 @@ for cfg in "${configs[@]}"; do
               --configfile "snakemake/configs/web/$cfg" \
               --config name='reso_dtf-latest' \
               --logger=snkmt \
-              --quiet
+              --quiet -F
 done
 ```
 
