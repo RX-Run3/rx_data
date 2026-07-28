@@ -33,11 +33,25 @@ where `rare` is the name of the directory inside `$ANADIR/fits/data/`
 Here all the components of the fit appear in the same page. To do this run:
 
 ```bash
-snakemake -s snakemake/rules/web/web.smk \
-          -c 5\
-          --configfile snakemake/configs/web/rk_reso_ee.yaml\
-          --config name='reso_dtf_v2'\
-          --logger=snkmt
+configs=(
+  "rk_jpsi_ee.yaml"
+  "rk_jpsi_mm.yaml"
+  "rk_psi2_ee.yaml"
+  "rk_psi2_mm.yaml"
+  "rkst_jpsi_ee.yaml"
+  "rkst_jpsi_mm.yaml"
+  "rkst_psi2_ee.yaml"
+  "rkst_psi2_mm.yaml"
+)
+
+for cfg in "${configs[@]}"; do
+    snakemake -s snakemake/rules/web/web.smk \
+              -c 5 \
+              --configfile "snakemake/configs/web/$cfg" \
+              --config name='reso_dtf-latest' \
+              --logger=snkmt \
+              --quiet
+done
 ```
 
 which will:
