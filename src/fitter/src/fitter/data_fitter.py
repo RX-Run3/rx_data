@@ -124,7 +124,7 @@ class DataFitter(BaseFitter, Cache):
         -------------
         Fit result
         '''
-        result_path = self._out_path / 'parameters.yaml'
+        result_path = self._out_path / 'parameters.json'
         if self._copy_from_cache():
             fres = FitResult.from_json(path = result_path)
             return fres

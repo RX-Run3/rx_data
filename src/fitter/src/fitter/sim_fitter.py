@@ -558,7 +558,7 @@ class SimFitter(BaseFitter, Cache):
         if not isinstance(self._cfg, ParametricConf):
             raise ValueError(f'Config not a parametric one: {type(self._cfg)}')
 
-        result_path = self._out_path / 'parameters.yaml'
+        result_path = self._out_path / 'parameters.json'
         if self._copy_from_cache():
             res = FitResult.from_json(path = result_path)
 
