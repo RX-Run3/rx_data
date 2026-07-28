@@ -34,14 +34,14 @@ Here all the components of the fit appear in the same page. To do this run:
 
 ```bash
 configs=(
-  "rk_jpsi_ee.yaml"
-  "rk_jpsi_mm.yaml"
-  "rk_psi2_ee.yaml"
-  "rk_psi2_mm.yaml"
-  "rkst_jpsi_ee.yaml"
-  "rkst_jpsi_mm.yaml"
-  "rkst_psi2_ee.yaml"
-  "rkst_psi2_mm.yaml"
+  "rk_ee_jpsi.yaml"
+  "rk_ee_psi2.yaml"
+  "rk_mm_jpsi.yaml"
+  "rk_mm_psi2.yaml"
+  "rkst_ee_jpsi.yaml"
+  "rkst_ee_psi2.yaml"
+  "rkst_mm_jpsi.yaml"
+  "rkst_mm_psi2.yaml"
 )
 
 for cfg in "${configs[@]}"; do
