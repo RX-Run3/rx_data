@@ -1,13 +1,11 @@
 trigger : rk_mm_os 
-signal  : bpkpjpsimm
 data    : data_24
 brems   :
   - brem_xx0
+q2bin      : psi2
+signal     : bpkppsi2mm
 components :
   - data_24
-  - bppijpsimm
-q2bins :
-  - jpsi 
 blocks :
   - b4
   - b3

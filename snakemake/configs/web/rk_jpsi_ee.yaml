@@ -1,15 +1,14 @@
 trigger : rk_ee_os 
-signal  : bpkpjpsiee
 data    : data_24
 brems   :
   - brem_xx1
   - brem_xx2
+q2bin      : jpsi 
+signal     : bpkpjpsiee
 components :
   - data_24
   - ccbar
   - bppijpsiee
-q2bins :
-  - jpsi 
 blocks :
   - b4
   - b3
