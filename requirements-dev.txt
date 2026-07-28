@@ -22,6 +22,7 @@ ruff
 -e src/rx_q2
 -e src/rx_selection
 -e src/rx_tests
+-e src/rx_web
 -e src/vector_stubs
 -e src/zfit-stubs
 -e src/systematics
