@@ -14,14 +14,14 @@ def _kind_from_name(name : str) -> str:
     return kind
 # --------------------------------------------
 ANADIR     = Path(os.environ['ANADIR'])
-TRIGGER    = config['trigger'] 
-SIGNAL     = config['signal' ] 
-DATA       = config['data'   ] 
-BLOCKS     = config['blocks' ] 
-BREMS      = config['brems'  ] 
+TRIGGER    = config['trigger'   ] 
+SIGNAL     = config['signal'    ] 
+Q2BIN      = config['q2bin'     ] 
+DATA       = config['data'      ] 
+BLOCKS     = config['blocks'    ] 
+BREMS      = config['brems'     ] 
 COMPONENTS = config['components']
-Q2BINS     = config['q2bins'] 
-NAME       = config['name']
+NAME       = config['name'      ]
 KIND       = _kind_from_name(name = NAME)
 CHANNEL    = Trigger(TRIGGER).channel
 PROJECT    = Trigger(TRIGGER).project
@@ -61,16 +61,14 @@ CMB, PRC = _get_wc()
 rule all:
     input: 
         expand(
-        OUTPUTDIR / f'{{q2bin}}/{{prc}}_{{cmb}}/{{block}}/{DATA}_combined.png',
-        q2bin     = Q2BINS,
+        OUTPUTDIR / f'{Q2BIN}/{{prc}}_{{cmb}}/{{block}}/{DATA}_combined.png',
         prc       = PRC, 
         cmb       = CMB, 
         block     = BLOCKS,
         ),
         # ----------
         expand(
-        OUTPUTDIR / f'{{q2bin}}/{{prc}}_{{cmb}}/{{block}}/{SIGNAL}_{{brem}}.png',
-        q2bin     = Q2BINS,
+        OUTPUTDIR / f'{Q2BIN}/{{prc}}_{{cmb}}/{{block}}/{SIGNAL}_{{brem}}.png',
         prc       = PRC, 
         cmb       = CMB, 
         block     = BLOCKS,
@@ -78,8 +76,7 @@ rule all:
         ),
         # ----------
         expand(
-        OUTPUTDIR / '{q2bin}/{prc}_{cmb}/{block}/{component}_{brem}.png',
-        q2bin     = Q2BINS,
+        OUTPUTDIR / f'{Q2BIN}/{{prc}}_{{cmb}}/{{block}}/{{component}}_{{brem}}.png',
         prc       = PRC, 
         cmb       = CMB, 
         block     = BLOCKS,
@@ -88,16 +85,14 @@ rule all:
         ),
         # ----------
         expand(
-        OUTPUTDIR / '{q2bin}/{prc}_{cmb}/{block}/index.md',
-        q2bin     = Q2BINS,
+        OUTPUTDIR / f'{Q2BIN}/{{prc}}_{{cmb}}/{{block}}/index.md',
         prc       = PRC, 
         cmb       = CMB, 
         block     = BLOCKS,
         )
 rule metadata:
-    output              : OUTPUTDIR / '{q2bin}/{prc}_{cmb}/{block}/index.md'
+    output              : OUTPUTDIR / f'{Q2BIN}/{{prc}}_{{cmb}}/{{block}}/index.md'
     wildcard_constraints:
-        q2bin= '|'.join(Q2BINS),
         prc  = '|'.join(PRC),
         cmb  = '|'.join(CMB),
         block= '|'.join(BLOCKS),
@@ -109,9 +104,8 @@ rule metadata:
         echo "Thumbnail: {params.data}_combined.png"   >> {output}
         '''
 rule copy_signal:
-    output              : OUTPUTDIR / f'{{q2bin}}/{{prc}}_{{cmb}}/{{block}}/{SIGNAL}_{{brem}}.png'
+    output              : OUTPUTDIR / f'{Q2BIN}/{{prc}}_{{cmb}}/{{block}}/{SIGNAL}_{{brem}}.png'
     wildcard_constraints:
-        q2bin     = '|'.join(Q2BINS),
         prc       = '|'.join(PRC),
         cmb       = '|'.join(CMB),
         block     = '|'.join(BLOCKS),
@@ -122,6 +116,7 @@ rule copy_signal:
         project   = PROJECT,
         channel   = CHANNEL,
         signal    = SIGNAL,
+        q2bin     = Q2BIN,
         name      = NAME,
         kind      = KIND,
     shell:
@@ -130,7 +125,7 @@ rule copy_signal:
 
         WP="{wildcards.cmb}_{wildcards.prc}_{wildcards.block}"
 
-        OUTDIR="{params.root_dir}/$WP/{params.kind}/{params.project}/{params.channel}/{wildcards.q2bin}/{params.signal}/fit/{wildcards.brem}/{wildcards.brem}"
+        OUTDIR="{params.root_dir}/$WP/{params.kind}/{params.project}/{params.channel}/{params.q2bin}/{params.signal}/fit/{wildcards.brem}/{wildcards.brem}"
         SOURCE=$OUTDIR/fit_linear.png
 
         if [[ -f $SOURCE ]] && ! identify "$SOURCE" >/dev/null 2>&1; then
@@ -144,9 +139,8 @@ rule copy_signal:
         fi
         '''
 rule copy_non_signal:
-    output              : OUTPUTDIR / '{q2bin}/{prc}_{cmb}/{block}/{component}_{brem}.png'
+    output              : OUTPUTDIR / f'{Q2BIN}/{{prc}}_{{cmb}}/{{block}}/{{component}}_{{brem}}.png'
     wildcard_constraints:
-        q2bin     = '|'.join(Q2BINS),
         prc       = '|'.join(PRC),
         cmb       = '|'.join(CMB),
         block     = '|'.join(BLOCKS),
@@ -156,6 +150,7 @@ rule copy_non_signal:
         root_dir  = INPUT_DIR,
         trigger   = TRIGGER,
         name      = NAME,
+        q2bin     = Q2BIN,
         project   = PROJECT,
         channel   = CHANNEL,
         kind      = KIND,
@@ -168,16 +163,16 @@ rule copy_non_signal:
         WP="{wildcards.cmb}_{wildcards.prc}_{wildcards.block}"
 
         if   [[ $COMP == "data_24" ]]; then
-            OUTDIR="{params.root_dir}/$WP/{params.kind}/{params.project}/{params.channel}/{wildcards.q2bin}/{wildcards.component}/fit/{params.end_path}"
+            OUTDIR="{params.root_dir}/$WP/{params.kind}/{params.project}/{params.channel}/{params.q2bin}/{wildcards.component}/fit/{params.end_path}"
             SOURCE=$OUTDIR/fit_linear.png
         elif [[ $COMP == "comb"    ]]; then
-            OUTDIR="{params.root_dir}/$WP/{params.kind}/{params.project}/{params.channel}/{wildcards.q2bin}/{wildcards.component}/fit/{wildcards.brem}"
+            OUTDIR="{params.root_dir}/$WP/{params.kind}/{params.project}/{params.channel}/{params.q2bin}/{wildcards.component}/fit/{wildcards.brem}"
             SOURCE=$OUTDIR/fit_linear.png
         elif [[ $COMP == "ccbar"   ]]; then
-            OUTDIR="{params.root_dir}/$WP/{params.kind}/{params.project}/{params.channel}/{wildcards.q2bin}/{wildcards.component}/fit/{wildcards.brem}"
+            OUTDIR="{params.root_dir}/$WP/{params.kind}/{params.project}/{params.channel}/{params.q2bin}/{wildcards.component}/fit/{wildcards.brem}"
             SOURCE=$OUTDIR/c-bar-c-X.png
         else
-            OUTDIR="{params.root_dir}/$WP/{params.kind}/{params.project}/{params.channel}/{wildcards.q2bin}/{wildcards.component}/fit/{wildcards.brem}/{wildcards.brem}"
+            OUTDIR="{params.root_dir}/$WP/{params.kind}/{params.project}/{params.channel}/{params.q2bin}/{wildcards.component}/fit/{wildcards.brem}/{wildcards.brem}"
             SOURCE=$OUTDIR/fit_linear.png
         fi
 
@@ -192,9 +187,8 @@ rule copy_non_signal:
         fi
         '''
 rule copy_combined:
-    output: OUTPUTDIR / f'{{q2bin}}/{{prc}}_{{cmb}}/{{block}}/{DATA}_combined.png'
+    output: OUTPUTDIR / f'{Q2BIN}/{{prc}}_{{cmb}}/{{block}}/{DATA}_combined.png'
     wildcard_constraints:
-        q2bin    = '|'.join(Q2BINS),
         prc      = '|'.join(PRC),
         cmb      = '|'.join(CMB),
         block    = '|'.join(BLOCKS),
@@ -205,6 +199,7 @@ rule copy_combined:
         name     = NAME,
         project  = PROJECT,
         channel  = CHANNEL,
+        q2bin    = Q2BIN,
         kind     = KIND,
         end_path = lambda wc : _get_end_path(wc, is_combined = True)
     shell:
@@ -212,7 +207,7 @@ rule copy_combined:
         mkdir -p $(dirname {output})
 
         WP="{wildcards.cmb}_{wildcards.prc}_{wildcards.block}"
-        OUTDIR="{params.root_dir}/$WP/{params.kind}/{params.project}/{params.channel}/{wildcards.q2bin}/{params.data}/fit/{params.end_path}"
+        OUTDIR="{params.root_dir}/$WP/{params.kind}/{params.project}/{params.channel}/{params.q2bin}/{params.data}/fit/{params.end_path}"
         SOURCE=$OUTDIR/fit_linear.png
 
         if [[ -f $SOURCE ]] && ! identify "$SOURCE" >/dev/null 2>&1; then
