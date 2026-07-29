@@ -42,6 +42,23 @@ class Yield(BaseModel):
     def __rmul__(self, other : Efficiency) -> 'Yield':
         return self.__mul__(other)
     # ----------------------------------------
+    def __truediv__(self, other : Efficiency) -> 'Yield':
+        '''
+        Parameters
+        --------------
+        other: Object representing efficiency
+
+        Returns
+        --------------
+        Object representing ratio yield and efficiency
+        errors are propagated without correlation
+        '''
+        val = self.val / other.val
+        rat = (self.err / self.val) ** 2 + (other.err / other.val) ** 2
+        err = val * math.sqrt(rat)
+
+        return Yield(val = val, err = err)
+    # ----------------------------------------
     @model_validator(mode = 'after')
     def _validate(self) -> 'Yield':
         if self.err <= 0.:

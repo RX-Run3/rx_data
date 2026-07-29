@@ -36,5 +36,21 @@ def test_product():
     log.info(eff)
     log.info(yld_1)
 # -------------------------------------------
+def test_ratio():
+    '''
+    Test multiplication with efficiency
+    '''
+    yld = Yield(val = 300, err = 10)
 
+    cut = Cut(cut = Cuts.cmb, val = 0.5, var = 'mva_cmb')
+    wpt = WorkingPoint(root = [cut])
+    eff = Efficiency(gen = 1000, sel = 10, wp = wpt)
 
+    yld_1 = yld / eff
+
+    assert yld_1.val == yld.val / eff.val
+
+    log.info(yld)
+    log.info(eff)
+    log.info(yld_1)
+# -------------------------------------------
