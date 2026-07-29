@@ -23,7 +23,6 @@ from .types              import CCbarWeight
 from .prec               import PRec
 from .prec_scales        import PrecScales
 from .prefit_postfit     import run as plot_prefit_postfit
-from .fit_metadata       import FitMetadata
 from .constraint_reader  import ConstraintReader
 # ----------
 # Combinatorial
@@ -61,7 +60,6 @@ __all__ = [
     'CmbInputConfig',
     'CmbValidationConfig',
     'CmbOutputConfig',
-    'FitMetadata',
     # ------------------
     'MVAConf',
     'MVAWp',
