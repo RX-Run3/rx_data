@@ -36,19 +36,13 @@ def tabulate_scales(
 @app.command()
 def fit_summary(
     name    : str = typer.Option(...           , '--name'   , '-n', help='Name of fits, e.g. mid_window'),
-    signal  : str = typer.Option(...           , '--signal' , '-s', help='Name of signal, e.g. bpkpee'), # noqa: B008
     log_lvl : int = typer.Option(LogLevels.info, '--log_lvl', '-l', help='Logging level'))-> None:
     '''
     This will create a fit summary for a given fit
     '''
-    from fitter    import FitSummary # noqa: PLC0415 
-    from rx_common import Component
+    from fitter import FitSummary # noqa: PLC0415 
 
-    signal = Component(signal)
-    smr    = FitSummary(
-        data   = Component.data_24,
-        signal = signal,
-        name   = name)
+    smr = FitSummary(name = name)
     smr.get_df()
 
     LogStore.set_level('rx_fitter:fit_summary', log_lvl)
