@@ -149,7 +149,7 @@ To collect the fit parameters do:
 from fitter import FitSummary
 
 smr = FitSummary(name='mid_window')
-df  = smr.get_df()
+df  = smr.get_df(force_update = False) # By default False, will cache
 ```
 
 which will:
@@ -157,6 +157,8 @@ which will:
 - Look for all the `mid_window` fits and collect the parameters from
 the JSON files.
 - Use them to build a pandas dataframe and return it.
+- The dataframe will be cached in the fits directory as a parquet file.
+  Run with `force_update=True` to remake it.
 
 ### Access parameters
 
@@ -172,8 +174,10 @@ rdr = ParameterReader(name = 'mid_window')
 ms  = rdr(
     brem     = 1, 
     block    = 3, 
+    is_mc    = True, # or False
+    cmb      = MVAWp.from_str('0.99'),
+    prc      = MVAWp.from_str('0.60'),
     trigger  = Trigger.rk_ee_os, 
-    project  = Project.rk,
     q2bin    = Qsq.jpsi)
 ```
 
@@ -190,8 +194,10 @@ with ParameterReader.inputs_from(pars_path = '/path/to/parameters.parquet'):
     ms  = rdr(
         brem     = 1, 
         block    = 3, 
+        is_mc    = True, # or False
+        cmb      = MVAWp.from_str('0.99'),
+        prc      = MVAWp.from_str('0.60'),
         trigger  = Trigger.rk_ee_os, 
-        project  = Project.rk,
         q2bin    = Qsq.jpsi)
 ```
 
