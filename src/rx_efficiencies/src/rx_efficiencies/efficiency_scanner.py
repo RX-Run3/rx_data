@@ -1,15 +1,13 @@
 '''
 Module containing EfficiencyScanner class
 '''
-from dmu.generic import hashing
-import pandas as pnd
-
 from typing        import Final
 from functools     import cached_property
 from pydantic      import BaseModel, ConfigDict, RootModel, model_validator
 from pathlib       import Path
 from ROOT          import RDF # type: ignore
 from dmu           import LogStore
+from dmu.generic   import hashing
 from dmu.workflow  import Cache
 from rx_data       import RDFGetter
 from rx_selection  import selection as sel
@@ -68,6 +66,54 @@ class WorkingPoint(RootModel[list[Cut]]):
             vars.append(elm.var)
 
         return sorted(vars)
+# --------------------------------
+class EfficiencyGrid(BaseModel):
+    '''
+    Class meant to represent a grid of efficiencies per working point
+    '''
+    gen : int 
+    sel : dict[WorkingPoint,int]
+    # --------------------------------
+    @classmethod
+    def from_json(cls, path : Path) -> 'EfficiencyGrid':
+        '''
+        Parameters
+        ---------------
+        path: Path to JSON file with serialized object
+
+        Returns
+        ---------------
+        Instance of efficiency grid
+        '''
+        string = path.read_text()
+
+        return cls.model_validate_json(json_data = string)
+    # --------------------------------
+    @classmethod
+    def from_rdf(cls, gen : RDF.RNode, rec : dict[WorkingPoint, RDF.RNode]) -> 'EfficiencyGrid':
+        '''
+        Parameters
+        -------------------
+        gen: Dataframe from MCDecayTree, i.e. with generator level data
+        rec: Dictionary mapping working point to corresponding dataframe
+
+        Returns
+        -------------------
+        Efficiency grid object
+        '''
+        ngen = gen.Count().GetValue()
+        nsel = { wp : rdf.Count().GetValue() for wp, rdf in rec.items() }
+
+        return cls(gen = ngen, sel = nsel)
+    # --------------------------------
+    def to_json(self, path : Path) -> None:
+        '''
+        Parameters
+        --------------
+        path: Path to file where current instance will be saved as JSON
+        '''
+        string = self.model_dump_json(indent = 2)
+        path.write_text(string)
 # --------------------------------
 class EfficiencyScannerConf(BaseModel):
     '''
@@ -212,25 +258,21 @@ class EfficiencyScanner(Cache):
 
         return rdf
     # --------------------------------
-    def run(self):
+    def run(self) -> EfficiencyGrid:
         '''
-        return dataframe with efficiency and values of variables in scan
+        Runs calculation of efficiencies in grid of working points
 
-        Caching and Hashing
-        -----------
-        This method caches the efficiencies and uses hashing
-        The hashing uses:
-
-        - The identity of the input data
-        - The configuration, which specifies the variables to scan and where
+        Returns
+        ------------------
+        EfficiencyGrid object
         '''
-        out_path = f'{self._out_path}/efficiencies.json'
+        out_path = self._out_path / 'efficiencies.json'
 
         if self._copy_from_cache():
             log.info('Efficiencies cached, reloading them')
-            df = pnd.read_json(out_path)
+            obj = EfficiencyGrid.from_json(path = out_path)
 
-            return df
+            return obj
 
         rdf_gen   = self._get_rdf(tree = _MCDT)
         rdf_rec   = self._get_rdf(tree = _DT  )
@@ -240,6 +282,10 @@ class EfficiencyScanner(Cache):
             d_rdf_rec[wp] = wp.select(rdf = rdf_rec)
 
 
+        obj = EfficiencyGrid.from_rdf(gen = rdf_gen, rec = d_rdf_rec)
+        obj.to_json(path = out_path)
 
         self._cache()
+
+        return obj
 # --------------------------------
