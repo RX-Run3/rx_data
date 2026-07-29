@@ -67,12 +67,15 @@ class WorkingPoint(RootModel[list[Cut]]):
 
         return sorted(vars)
 # --------------------------------
-class EfficiencyGrid(BaseModel):
+class Efficiency(BaseModel):
+    gen : int
+    sel : int
+    wp  : WorkingPoint
+# --------------------------------
+class EfficiencyGrid(RootModel[list[Efficiency]]):
     '''
     Class meant to represent a grid of efficiencies per working point
     '''
-    gen : int 
-    sel : dict[WorkingPoint,int]
     # --------------------------------
     @classmethod
     def from_json(cls, path : Path) -> 'EfficiencyGrid':
@@ -101,10 +104,12 @@ class EfficiencyGrid(BaseModel):
         -------------------
         Efficiency grid object
         '''
-        ngen = gen.Count().GetValue()
-        nsel = { wp : rdf.Count().GetValue() for wp, rdf in rec.items() }
+        ngen  = gen.Count().GetValue()
+        d_sel = { wp : rdf.Count().GetValue() for wp, rdf in rec.items() }
 
-        return cls(gen = ngen, sel = nsel)
+        efficiencies = [ Efficiency(gen = ngen, sel = nsel, wp = wp) for wp, nsel in d_sel.items() ]
+
+        return cls(root = efficiencies)
     # --------------------------------
     def to_json(self, path : Path) -> None:
         '''
@@ -274,13 +279,13 @@ class EfficiencyScanner(Cache):
 
             return obj
 
+        log.info('Efficiencies not cached, calculating them')
         rdf_gen   = self._get_rdf(tree = _MCDT)
         rdf_rec   = self._get_rdf(tree = _DT  )
 
         d_rdf_rec : dict[WorkingPoint, RDF.RNode] = dict()
         for wp in self._cfg.wps:
             d_rdf_rec[wp] = wp.select(rdf = rdf_rec)
-
 
         obj = EfficiencyGrid.from_rdf(gen = rdf_gen, rec = d_rdf_rec)
         obj.to_json(path = out_path)
