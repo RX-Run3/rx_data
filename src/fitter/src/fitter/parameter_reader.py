@@ -167,16 +167,16 @@ class ParameterReader:
     def _format_data(
         self, 
         brem : Brem,
-        sign : Component,
-        dset : Component,
+        comp : Component,
+        is_mc: bool,
         data : dict[str, float]) -> dict[str,tuple[float,float]]:
         '''
         Parameters
         -------------
-        brem: Brem category
-        sign: Component been fitted.
-        dset: Dataset fitted, i.e. data or MC sample
-        data: Dictionary mapping quantity with value, value is a float, i.e. dictionary has been filtered
+        brem : Brem category
+        sign : Component been fitted.
+        is_mc: True of simulation, false for real data 
+        data : Dictionary mapping quantity with value, value is a float, i.e. dictionary has been filtered
 
         Returns
         -------------
@@ -203,18 +203,18 @@ class ParameterReader:
 
         res = { key : (value[0], value[1]) for key, value in output_data.items() } 
 
-        name, val, err = self._extract_brem(brem = brem, data = data)
+        name, val, err = self._extract_brem(brem = brem, comp = comp, data = data)
 
         log.debug(name)
         res[name] = val, err
 
-        if dset.is_mc:
+        if is_mc:
             return res
 
         name, val, err = self._extract_yield(
             data = data,
             brem = brem, 
-            sign = sign, 
+            sign = comp, 
             fval = val, 
             ferr = err)
 
@@ -256,21 +256,28 @@ class ParameterReader:
     def _extract_brem(
         self, 
         brem : Brem, 
+        comp : Component,
         data : dict[str, float]) -> tuple[str,float,float]:
         '''
         Parameters
         -------------
         brem: brem category, i.e. 1 or 2
+        comp: Fitted component
         data: Dictionary with variable name and value
 
         Returns
         -------------
         Tuple with value of brem fraction, error and name of variable
         '''
-        keys = [ key for key in data if 'fraction' in key ]
+        keys = [ key for key in data if f'{comp}_fraction' in key ]
         if len(keys) != _NBREM:
+            log.error('All keys')
             for key in data:
-                log.error(key)
+                log.info(key)
+            log.error('Found keys')
+            for key in keys:
+                log.info(key)
+
             raise ValueError('Expected two entries corresponding to brem fraction')
 
         [val] = [ data[key] for key in keys if key.endswith('_value') ]
@@ -292,24 +299,20 @@ class ParameterReader:
     # ----------------------
     def __call__(
         self, 
-        signal    : Component,
+        is_mc     : bool,
         brem      : Brem,
         block     : Block,
         cmb       : MVAWp,
         prc       : MVAWp,
-        comp      : Component,
-        project   : Project,
         q2bin     : Qsq,
         trigger   : Trigger) -> Measurement:
         '''
         Parameters
         -------------
-        signal   : Identifier for signal parameter, e.g. jpsi 
+        is_mc    : True if MC parameters required, False otherwise
         brem     : Brem category, e.g. 0, 1, 2
         block    : Block number in 2024, e.g. 1, 2, 3...8
         cmb/prc  : MVA working point 
-        comp     : Component, e.g. bpkpee 
-        project  : E.g. rk, rkst 
         q2bin    : E.g. jpsi
         trigger  : HLT2 trigger, used to pick channel, etc
 
@@ -317,9 +320,14 @@ class ParameterReader:
         -------------
         Measurement instance, i.e. container with parameter names, values and errors
         '''
+
         channel = trigger.channel
+        project = trigger.project
+        comp    = trigger.get_signal_component(qsq = q2bin)
+        dset    = comp if is_mc else _DATA
+
         df      = self._df
-        df      = self._query(df = df, cut = f'comp    == \"{comp}\"'     )
+        df      = self._query(df = df, cut = f'comp    == \"{dset}\"'     )
         df      = self._query(df = df, cut = f'mva_cmb == \"{cmb.lower_str}\"')
         df      = self._query(df = df, cut = f'mva_prc == \"{prc.lower_str}\"')
         df      = self._query(df = df, cut = f'q2bin   == \"{q2bin}\"'    )
@@ -340,16 +348,16 @@ class ParameterReader:
         flt_data = { key : value for key, value in raw_data.items() if isinstance(value, float) }
         data     = self._format_data(
             brem = brem,
-            dset = comp,
-            sign = signal,
+            is_mc= is_mc,
+            comp = comp,
             data = flt_data) # type: ignore
 
         # for simultaneous fits, this removes brem_xx2 parameters when one needs brem_xx1
         # and viceversa
         data     = { key : value for key, value in data.items() if str(brem) in key }
 
-        data[f'bk_{signal}'] = (math.nan, math.nan) if comp.is_mc else self._get_block_fraction(
-            signal  = signal,
+        data[f'bk_{comp}'] = (math.nan, math.nan) if is_mc else self._get_block_fraction(
+            signal  = comp,
             df      = df_all, 
             brem    = brem,
             block   = block) 
