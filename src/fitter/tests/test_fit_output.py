@@ -1,6 +1,7 @@
 '''
 Tests for FitOutput class
 '''
+import os
 import pytest
 
 from pathlib   import Path
@@ -49,9 +50,19 @@ _PATHS : Final[list[str]] = [
 
 log=LogStore.add_logger('test_fit_output')
 
-@pytest.mark.parametrize('path', _PATHS[:1])
+_ANADIR : Final[Path] = Path(os.environ['ANADIR'])
+
+@pytest.mark.parametrize('path', _PATHS)
 def test_simple(path : Path):
+    path = _ANADIR / 'fits/data/reso_dtf-v5' / path
+
     obj = FitOutput(path = path)
     assert obj.signal  in Component 
 
+    if not obj.is_valid:
+        return
+
     log.info(f'Output is validity {obj.is_valid} for {obj.signal}')
+
+    for key, val in obj.info.items():
+        log.info(f'{key:<50}{val}')
