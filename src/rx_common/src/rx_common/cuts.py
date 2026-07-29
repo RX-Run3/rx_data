@@ -4,6 +4,7 @@ Module with Cuts enum
 import yaml
 from enum import StrEnum, auto
 
+# ------------------------------------------
 class Cuts(StrEnum):
     '''
     Class meant to symbolize cuts
@@ -41,7 +42,7 @@ class Cuts(StrEnum):
     # -------------------
     bpkk      = auto()
     bppipi    = auto()
-
+# ------------------------------------------
 # NOTE: https://github.com/yaml/pyyaml/issues/722
 yaml.SafeDumper.add_representer(
       Cuts,
