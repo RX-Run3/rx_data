@@ -2,159 +2,156 @@
 Module holding FitSummary class
 '''
 import os
-import tqdm
+import re
 import math
 import pandas as pnd
 
+from functools     import cached_property
 from dmu           import LogStore
 from dmu.stats     import FitResult
-
+from dmu.generic   import utilities as gut
 from pathlib       import Path
-from typing        import Any, Final
-from rx_common     import Brem, Component
-from .fit_metadata import FitMetadata
+from typing        import Final
+from pydantic      import RootModel
+from pydantic      import BaseModel
+from rx_common     import Block, Brem, Channel, Component, Project, Qsq
+
+from .mva_conf     import MVAWp
 
 log=LogStore.add_logger('fitter:fit_summary')
-# TODO: Generalize tool to deal with any sample, i.e.
-# - Generalize _regex to match any sample and pick name
-# - For MC, instead of nentries use yld_{sample}
-# ----------------------
-def _cast(row : pnd.Series) -> pnd.Series:
-    to_be_casted : list[str] = [
-        'block'    ,
-        'brem'     ,
-        'mva_cmb'  ,
-        'mva_prc'  ,
-    ]
 
-    if row.name not in to_be_casted:
-        return row
-
-    return row.apply(str)
+_ANADIR   : Final[Path]      = Path(os.environ['ANADIR'])
+_DATA     : Final[Component] = Component.data_24
+_COMMON   : Final[str]       = r'.*\/(\d{3}-\d{3}|\d{3})_(\d{3}-\d{3}|\d{3})_(all|b\d)\/(?:reso|rare)\/(rk|rkst)\/(mm|ee)\/(low|central|jpsi|psi2|high)'
+_DT_REGEX : Final[str]       = r'\/data_24\/fit\/.*\/brem_([x,0-9]{3})\/parameters.json'
+_MC_REGEX : Final[str]       = r'\/_SIGNAL\/fit\/brem_([x,0-9]{3})\/brem_[x,0-9]{3}\/parameters.json'
 # -------------------------------
-class FitSummary:
+class FitMetadata(BaseModel):
     '''
-    Class meant to:
-
-    - Collect yields an brem fractions from fits
-    - Plot yields and fractions
-    - Store information in JSON for further usage
+    Class meant to store fit information
     '''
-    # ----------------------
-    def __init__(
-        self,
-        data  : Component | None,
-        signal: Component | None,
-        name  : str) -> None:
+    mva_cmb : MVAWp
+    mva_prc : MVAWp
+    block   : Block
+    project : Project
+    channel : Channel
+    q2bin   : Qsq
+    brem    : Brem
+    # -------------------
+    @classmethod
+    def from_path(
+        cls, 
+        path : Path,
+        comp : Component) -> 'FitMetadata':
         '''
         Parameters
-        -------------
-        data  : Component name associated to data
-        signal: Name of signal component needed to find JSON files or None to skip it
-        name  : Name of directory in {ANADIR}/fits/data/{name}
-        '''
-        self._signal  = signal
-        self._data    = data
-        self._fit_dir = self._get_fit_dir(name=name)
-
-        self._patterns : Final[dict[Component,str]] = {}
-        if data:
-            self._patterns[data]   = f'*_*_*/*/r*/*/*/{data}/fit/*/brem_*/parameters.json'
-
-        if signal:
-            self._patterns[signal] = f'*_*_*/*/r*/*/*/{signal}/fit/brem_*/brem_*/parameters.json'
-    # ----------------------
-    def _get_fit_dir(self, name : str) -> Path:
-        '''
-        Parameters
-        -------------
-        name: Name of directory with fits
+        --------------
+        path: Path to parameters.json, i.e. file with fit parameters
+        comp: Component, e.g. signal or data
 
         Returns
-        -------------
-        Absolute path to directory
+        --------------
+        Object holding fit metadata
         '''
-        ana_dir = Path(os.environ['ANADIR'])
-
-        fit_dir = ana_dir / f'fits/data/{name}'
-
-        if not fit_dir.exists():
-            raise FileNotFoundError(f'Coult not find: {fit_dir}')
-
-        log.info(f'Picking up parameters from directory: {fit_dir}')
-
-        return fit_dir
-    # ----------------------
-    def _get_parameter_paths(self, comp : Component) -> list[Path]:
-        '''
-        Parameters
-        -------------
-        comp: Fit component whose parameters need to be extracted
-
-        Returns
-        -------------
-        List of paths to JSON files with fitting parameters
-        '''
-        pattern = self._patterns[comp]
-        gen     = self._fit_dir.glob(pattern=pattern)
-        files   = list(gen)
-
-        if not files:
-            raise ValueError(f'No files found in: {self._fit_dir}/{pattern}')
+        if comp.is_mc:
+            REGEX = f'{_COMMON}{_MC_REGEX}'
+            REGEX = REGEX.replace('_SIGNAL', comp)
         else:
-            nfile   = len(files)
-            log.info(f'Found {nfile} files')
+            REGEX = f'{_COMMON}{_DT_REGEX}'
 
-        return files
-    # ----------------------
-    def _get_data(
-        self,
-        by_fit : bool,
-        comp   : Component,
-        path   : Path) -> list[dict[str, float | str]] | list[dict[str, float]]:
+        mtch = re.match(REGEX, str(path))
+        if not mtch:
+            log.error(f'Regex: {REGEX}')
+            raise ValueError(f'Path does not conform to pattern: {path}')
+
+        cmb_wp = mtch.group(1)
+        prc_wp = mtch.group(2)
+
+        return cls(
+            mva_cmb = MVAWp.from_label(cmb_wp),
+            mva_prc = MVAWp.from_label(prc_wp),
+            project = Project(mtch.group(4)),
+            channel = Channel(mtch.group(5)),
+            q2bin   = Qsq(    mtch.group(6)),
+            block   = Block.from_str(value = mtch.group(3)),
+            brem    =  Brem.from_str(value = mtch.group(7)),
+        )
+    # -------------------
+    @classmethod
+    def from_pars_path(
+        cls, 
+        path : Path,
+        comp : Component) -> 'FitMetadata':
         '''
         Parameters
-        -------------
-        by_fit : If True each row will represent a fit, otherwise each row represents a parameter
-        comp   : Component, e.g. data or signal MC 
-        path   : Path to JSON file with fit parameters
+        --------------
+        path: Path to parameters.json, i.e. file with fit parameters
+        comp: Component, e.g. signal or data
 
         Returns
-        -------------
-        List of dictionaries, each representing a row in the dataframe
+        --------------
+        Object holding fit metadata
         '''
-        log.debug(f'Using data from: {path}')
-        res = FitResult.from_json(path = path)
-        if by_fit:
-            data = self._get_data_by_fit(res = res, comp = comp, path = path)
-        else:
-            data = self._get_data_by_par(res = res, comp = comp, path = path)
+        metadata_path = path.parent / 'metadata.json'
+        if metadata_path.exists():
+            json_string = metadata_path.read_text()
+            return cls.model_validate_json(json_string)
+
+        return cls.from_path(path = path, comp = comp)
+# -------------------------------
+class FitOutputConf(RootModel):
+    '''
+    Class representing configuration for reading parameters
+    '''
+    root : dict[Qsq,dict[Project,dict[Channel, Component]]]
+# -------------------------------
+class FitOutput:
+    '''
+    Class meant to symbolize a given fit
+    '''
+    # -------------------------------
+    def __init__(self, path : Path):
+        '''
+        Parameters
+        --------------
+        path: Path to JSON file with fit parameters 
+        '''
+        self.__path = path
+        self.__cfg  = gut.load_conf(package = 'fitter_data', fpath = 'fit_summary/conf.yaml')
+        self.__meta = FitMetadata.from_path(path = path, comp = self.signal)
+    # -------------------------------
+    @property
+    def info(self) -> dict[str, float | str]:
+        '''
+        Dictionary mapping name of column with value,
+        corresponds to row of dataframe and to fit
+        '''
+        res  = FitResult.from_json(path = self.__path)
+        data = self.__get_info(res = res)
+
+        data.update(self.__meta.model_dump())
+
+        data['block'] = self.__meta.block.value
 
         return data
-    # ----------------------
-    def _get_data_by_fit(
-        self,
-        path : Path,
-        res  : FitResult,
-        comp : Component) -> list[dict[str,float]]:
+    # -------------------------------
+    def __get_info(self, res : FitResult) -> dict[str,float|str]:
         '''
         Parameters
         -------------
-        path   : Path to JSON file with fit parameters
-        by_fit : If True each row will represent a fit, otherwise each row represents a parameter
-        res    : Fit result
+        res  : Fit result
 
         Returns
         -------------
-        List of dictionaries, each representing a row in the dataframe
+        Dictionary representing a row in the dataframe
         '''
-        data : dict[str,float] = {}
+        data : dict[str,float|str] = {}
         for par in res.parameters:
             data[f'{par.name}_value'] = par.value
             data[f'{par.name}_error'] = par.error
 
-        if comp.is_mc:
-            mc_brem_info = self._get_mc_brem_info(path = path)
+        if self.signal.is_mc:
+            mc_brem_info = self.__get_mc_brem_info(path = self.__path)
             data.update(mc_brem_info)
 
         if res.gof is None:
@@ -164,59 +161,9 @@ class FitSummary:
             data['pvalue_value'] =  res.gof.pval 
             data['pvalue_error'] =  0.1
 
-        return [data]
-    # ----------------------
-    def _get_data_by_par(
-        self,
-        path : Path,
-        res  : FitResult,
-        comp : Component) -> list[dict[str,float | str]]:
-        '''
-        Parameters
-        -------------
-        path   : Path to JSON file with fit parameters
-        by_fit : If True each row will represent a fit, otherwise each row represents a parameter
-        res    : Fit result
-
-        Returns
-        -------------
-        List of dictionaries, each representing a row in the dataframe
-        '''
-        data : list[dict[str,float | str]] = []
-
-        for par in res.parameters:
-            entry : dict[str,float | str] = {
-                'Parameter' : par.name,
-                'Value'     : par.value,
-                'Error'     : par.error,
-            }
-
-            data.append(entry)
-
-        if comp.is_mc:
-            nentries = self._get_mc_nentries(path=path)
-            entry : dict[str,float | str] = {
-                'Parameter' : f'yld_{self._signal}',
-                'Value'     : nentries,
-                'Error'     : math.sqrt(nentries),
-            }
-            data.append(entry)
-
-        entry : dict[str,float | str]  = {}
-        if res.gof is None:
-            entry['Parameter'] = 'pvalue'
-            entry['Value'    ] = -1 
-            entry['Error'    ] =  0 
-        else:
-            entry['Parameter'] = 'pvalue'
-            entry['Value'    ] =  res.gof.pval 
-            entry['Error'    ] =  0.1
-
-        data.append(entry)
-
         return data
     # ----------------------
-    def _get_mc_brem_info(self, path : Path) -> dict[str,float]:
+    def __get_mc_brem_info(self, path : Path) -> dict[str,float]:
         '''
         Parameters
         ----------------
@@ -234,21 +181,21 @@ class FitSummary:
             path_b1  = Path(str(path).replace(str(Brem.two), str(Brem.one)))
             path_b2  = path
 
-        nentries_b1 = self._get_mc_nentries(path=path_b1)
-        nentries_b2 = self._get_mc_nentries(path=path_b2)
+        nentries_b1 = self.__get_mc_nentries(path=path_b1)
+        nentries_b2 = self.__get_mc_nentries(path=path_b2)
 
         nentries = nentries_b1 + nentries_b2
 
-        data[f'yld_{self._signal}_brem_x12_value'] = nentries
-        data[f'yld_{self._signal}_brem_x12_error'] = math.sqrt(nentries)
+        data[f'yld_{self.signal}_brem_x12_value'] = nentries
+        data[f'yld_{self.signal}_brem_x12_error'] = math.sqrt(nentries)
 
         # NOTE: We only store brem 1 fraction, either in brem 1 or brem 2 fits
-        data[f'{self._signal}_fraction_value'] = nentries_b1 / nentries
-        data[f'{self._signal}_fraction_error'] = math.sqrt(nentries_b1) / nentries
+        data[f'{self.signal}_fraction_value'] = nentries_b1 / nentries
+        data[f'{self.signal}_fraction_error'] = math.sqrt(nentries_b1) / nentries
 
         return data
     # ----------------------
-    def _get_mc_nentries(self, path : Path) -> float:
+    def __get_mc_nentries(self, path : Path) -> float:
         '''
         This is needed to get entries from simulated datasets
 
@@ -272,72 +219,89 @@ class FitSummary:
             raise Exception(f'Cannot build dataframe from {json_path}') from exc
 
         return len(df)
-    # ----------------------
-    def _get_df(
-        self,
-        by_fit: bool,
-        comp  : Component) -> pnd.DataFrame:
+    # -------------------------------
+    @cached_property
+    def signal(self) -> Component:
+        for comp in Component:
+            if f'/{comp}/' not in str(self.__path):
+                continue
+
+            return comp
+
+        raise ValueError(f'No component found in: {self.__path}')
+    # -------------------------------
+    @property
+    def is_valid(self) -> bool:
         '''
-        Parameters
-        -------------
-        comp  : Component for which dataframe is needed
-        by_fit: If True, each row represents a fit, i.e. all parameters
-
-        Returns
-        -------------
-        Pandas dataframe with parameters
+        True if path is compatible with valid fit
         '''
-        paths = self._get_parameter_paths(comp = comp)
-        npath = len(paths)
-        log.info(f'Loading {comp} dataframe from {npath} paths')
+        cfg = self.__cfg
+        if self.__meta.q2bin not in cfg:
+            return False
 
-        l_data : list[dict[str,Any]] = []
-        for path in tqdm.tqdm(paths, ascii=' -'):
-            meta     = FitMetadata.from_pars_path(
-                path = path,
-                comp = comp)
+        cfg = cfg[self.__meta.q2bin]
+        if self.__meta.project not in cfg:
+            return False
 
-            info      = self._get_data(
-                by_fit= by_fit,
-                path  = path,
-                comp  = comp)
+        cfg = cfg[self.__meta.project]
+        if self.__meta.channel not in cfg:
+            return False
 
-            meta_info = {name : getattr(meta,name) for name in meta.model_fields_set}
+        comp = cfg[self.__meta.channel]
+        if self.signal not in [comp, _DATA]:
+            return False
 
-            for elm in info:
-                elm.update(meta_info)
-
-            l_data += info
-
-        df         = pnd.DataFrame(l_data)
-        df['comp'] = comp
-
-        return df
-    # ----------------------
-    def _save_df(
-        self,
-        df   : pnd.DataFrame,
-        path : Path) -> None:
+        return True
+    # -------------------------------
+    @classmethod
+    def from_name(cls, name : str) -> list['FitOutput']:
         '''
         Parameters
         ----------------
-        path: Path to parquet file to save
+        name: Identifier for fit, e.g. reso_dtf-latest
+
+        Returns
+        ----------------
+        List of instances of object wrapping fit output
         '''
-        df.to_parquet(path = path)
-        log.info(f'Saving summary to: {path}')
+        paths    = _ANADIR.rglob(pattern = f'fits/data/{name}/*/reso/*/*/*/*/fit/brem_*/brem_*/parameters.json')
+        all_objs = [ cls(path = path) for path in paths ]
 
-        str_path = str(path)
-        str_path = str_path.replace('.parquet', '.md')
-        path     = Path(str_path)
-        df.to_markdown(buf = path)
-
-        log.info(f'Saving summary to: {path}')
+        return [ obj for obj in all_objs if obj.is_valid ]
+# -------------------------------
+class FitSummary:
+    '''
+    Class meant to aggregate fits and return dataframe with the parameters
+    '''
     # ----------------------
-    def get_df(
-        self,
-        by_fit       : bool       = True,
-        suffix       : str | None = None,
-        force_update : bool       = False) -> pnd.DataFrame:
+    def __init__(self, name : str) -> None:
+        '''
+        Parameters
+        -------------
+        name: Name of fit, e.g. reso_dtf-latest 
+        '''
+        self.__name = name
+        self.__fits : list[FitOutput] = FitOutput.from_name(name = name)
+    # ----------------------
+    @property
+    def fit_dir(self) -> Path:
+        '''
+        Returns
+        -------------
+        Absolute path to directory
+        '''
+        ana_dir = Path(os.environ['ANADIR'])
+
+        fit_dir = ana_dir / f'fits/data/{self.__name}'
+
+        if not fit_dir.exists():
+            raise FileNotFoundError(f'Coult not find: {fit_dir}')
+
+        log.info(f'Picking up parameters from directory: {fit_dir}')
+
+        return fit_dir
+    # ----------------------
+    def get_df(self, force_update : bool = False) -> pnd.DataFrame:
         '''
         Parameters
         ---------------
@@ -347,21 +311,17 @@ class FitSummary:
         suffix      : Used in naming of output files
         force_update: If true (default false) will regenerate file, otherwise will reuse file if found
         '''
-        if suffix is None:
-            output_path  = self._fit_dir / 'parameters.parquet'
-        else:
-            output_path  = self._fit_dir / f'parameters_{suffix}.parquet'
+        output_path  = self.fit_dir / 'parameters.parquet'
 
         if output_path.exists() and not force_update:
             log.info(f'Reading cached files at: {output_path}')
             return pnd.read_parquet(output_path)
 
-        l_df : list[pnd.DataFrame] = [ self._get_df(comp = comp, by_fit = by_fit) for comp in [self._data, self._signal] if comp ]
-        df = pnd.concat(l_df, axis=0)
-        df = df.apply(_cast)
-        df = df.reset_index(drop=True)
+        rows : list[dict[str,float|str]] = [ fit_out.info for fit_out in self.__fits ]
 
-        self._save_df(df=df, path = output_path)
+        df = pnd.DataFrame(rows)
+        df.to_parquet(path = output_path)
+        log.info(f'Saving summary to: {output_path}')
 
         return df
 # -------------------------------
