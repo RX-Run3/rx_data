@@ -131,7 +131,8 @@ class FitOutput:
 
         data.update(self.__meta.model_dump())
 
-        data['block'] = self.__meta.block.value
+        data['block'] = self.__meta.block.value  # BaseModel
+        data['brem' ] = self.__meta.brem.region  # Enum -> StrEnum
 
         return data
     # -------------------------------
