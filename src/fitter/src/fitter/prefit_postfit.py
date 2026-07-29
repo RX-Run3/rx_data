@@ -273,7 +273,7 @@ def run(update : bool) -> None:
     log.info(f'Found {npath} paths')
 
     for root_path in paths:
-        pst_path = root_path / 'data_24/fit/brem_x12/parameters.yaml'
+        pst_path = root_path / 'data_24/fit/brem_xx1_brem_xx2/parameters.json'
         if not pst_path.exists():
             log.warning(f'Cannot find {pst_path}, skipping')
             continue
