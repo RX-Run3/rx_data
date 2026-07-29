@@ -1,6 +1,8 @@
 '''
 Module containing EfficiencyScanner class
 '''
+import pandas as pnd
+
 from typing        import Final
 from functools     import cached_property
 from pydantic      import BaseModel, ConfigDict, RootModel, model_validator
@@ -71,11 +73,35 @@ class Efficiency(BaseModel):
     gen : int
     sel : int
     wp  : WorkingPoint
+    # --------------------------------
+    @property
+    def row(self) -> dict[str,float]:
+        '''
+        Dictionary representing row in pandas dataframe
+        '''
+        data = dict()
+        data['gen'] = self.gen
+        data['sel'] = self.sel
+        data['eff'] = self.sel / float(self.gen)
+        for cut in self.wp.root:
+            data[cut.cut] = cut.val
+
+        return data
 # --------------------------------
 class EfficiencyGrid(RootModel[list[Efficiency]]):
     '''
     Class meant to represent a grid of efficiencies per working point
     '''
+    # --------------------------------
+    @property
+    def df(self) -> pnd.DataFrame:
+        '''
+        Table with efficiencies for each working point
+        made into a pandas dataframe 
+        '''
+        rows : list[dict[str,float]] = [ eff.row for eff in self.root ]
+
+        return pnd.DataFrame(rows)
     # --------------------------------
     @classmethod
     def from_json(cls, path : Path) -> 'EfficiencyGrid':
