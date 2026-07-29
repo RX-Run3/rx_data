@@ -13,3 +13,5 @@ paths:
   mva/rk/prc/latest                                          : figs/selection/mva/rk/prc
   mva/rkst/cmb/latest                                        : figs/selection/mva/rkst/cmb
   mva/rkst/prc/latest                                        : figs/selection/mva/rkst/prc
+# ------------
+  fits/data/reso_dtf-latest                                  : figs/mass-fits/reso_dtf
