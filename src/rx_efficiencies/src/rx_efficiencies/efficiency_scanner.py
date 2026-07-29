@@ -1,22 +1,100 @@
 '''
 Module containing EfficiencyScanner class
 '''
-
-import numpy
-import tqdm
+from dmu.generic import hashing
 import pandas as pnd
 
-from pathlib               import Path
-from ROOT                  import RDF # type: ignore
-from dmu.workflow.cache    import Cache
-from dmu.logging.log_store import LogStore
-from dmu.generic           import hashing
-from rx_data.rdf_getter    import RDFGetter
-from rx_selection          import selection as sel
-from rx_common             import Component, Trigger
-from rx_efficiencies       import EfficiencyCalculator
+from typing        import Final
+from functools     import cached_property
+from pydantic      import BaseModel, ConfigDict, RootModel, model_validator
+from pathlib       import Path
+from ROOT          import RDF # type: ignore
+from dmu           import LogStore
+from dmu.workflow  import Cache
+from rx_data       import RDFGetter
+from rx_selection  import selection as sel
+from rx_common     import Component, Cuts, Qsq, Trigger
 
 log = LogStore.add_logger('rx_efficiencies:efficiency_scanner')
+
+_MCDT : Final[str] = 'MCDecayTree'
+_DT   : Final[str] = 'DecayTree'
+# --------------------------------
+class Cut(BaseModel):
+    '''
+    Class meant to represent a cut 
+    '''
+    model_config = ConfigDict(frozen=True)
+    # ----------------
+    cut : Cuts
+    var : str
+    val : float
+# --------------------------------
+class WorkingPoint(RootModel[list[Cut]]):
+    '''
+    Class meant to represent a set of cuts
+    '''
+    model_config = ConfigDict(frozen=True)
+    # ----------------
+    def select(self, rdf : RDF.RNode) -> RDF.RNode:
+        '''
+        Parameters
+        ---------------
+        rdf: Dataframe before selection
+
+        Returns
+        ---------------
+        Dataframe after selection associated to working point
+        '''
+        for cut in self.root:
+            expr = f'{cut.var} > {cut.val}'
+            rdf  = rdf.Filter(expr, cut.cut)
+
+        return rdf
+    # ----------------
+    def __hash__(self) -> int:
+        data = self.model_dump()
+        hsh  = hashing.hash_object(obj = data, as_int = True)
+
+        return hsh
+    # ----------------
+    @cached_property
+    def variables(self) -> list[str]:
+        '''
+        Variables used in working point
+        '''
+        vars : list[str] = []
+        for elm in self.root: 
+            vars.append(elm.var)
+
+        return sorted(vars)
+# --------------------------------
+class EfficiencyScannerConf(BaseModel):
+    '''
+    Class meant to configure EfficiencyScanner
+    '''
+    model_config = ConfigDict(frozen=True)
+    # ---------------------------------
+    sample  : Component
+    trigger : Trigger
+    q2bin   : Qsq
+    wps     : list[WorkingPoint]
+    # ---------------------------------
+    @model_validator(mode = 'after')
+    def _validate(self) -> 'EfficiencyScannerConf':
+        all_vars = [ wp.variables for wp in self.wps ]
+
+        if not all(var == all_vars[0] for var in all_vars):
+            raise ValueError('Not found one and only one set of variables across working points')
+
+        return self
+    # ---------------------------------
+    @cached_property
+    def variables(self) -> list[str]:
+        '''
+        List of variables used for cuts
+        '''
+        return self.wps[0].variables
 # --------------------------------
 class EfficiencyScanner(Cache):
     '''
@@ -28,49 +106,63 @@ class EfficiencyScanner(Cache):
     - Scan those variables and provide dataframe with efficiencies
     '''
     # --------------------------------
-    def __init__(self, cfg : dict):
+    def __init__(self, cfg : EfficiencyScannerConf):
+        '''
+        Parameters
+        ----------------
+        cfg: Object needed to configure scan of efficiencies
+        '''
         super().__init__(
-                out_path= Path('EfficiencyScanner'),
-                cfg     = cfg)
+            out_path= Path('EfficiencyScanner'),
+            cfg     = cfg.model_dump())
 
-        self._cfg    = cfg
-        [xvar, yvar] = list(cfg['variables'].keys())
-
-        self._xvar = xvar
-        self._yvar = yvar
-        self._zvar = 'yield'
-
-        self._yld_default : int = -1
+        self._cfg = cfg
     # --------------------------------
-    def _get_selection(self) -> dict[str,str]:
+    def _get_selection(self) -> dict[Cuts,str]:
+        '''
+        Returns
+        -------------
+        Dictionary mapping a cut object to a cut expression
+        '''
         log.debug('Getting selection')
 
-        sample  = self._cfg['input']['sample']
-        trigger = self._cfg['input']['trigger']
-        q2bin   = self._cfg['input']['q2bin']
+        sample  = self._cfg.sample
+        trigger = self._cfg.trigger
+        q2bin   = self._cfg.q2bin
         d_sel   = sel.selection(trigger=trigger, q2bin=q2bin, process=sample)
 
         return d_sel
     # --------------------------------
     def _check_rdf(self, rdf : RDF.RNode) -> None:
-        l_variable = [ var.c_str()                for var in rdf.GetColumnNames() ]
-
+        '''
+        Check that all variables we will scan exist in dataframe
+        '''
+        columns = [ var.c_str()                for var in rdf.GetColumnNames() ]
         # Drop prefix for variables in friend trees
-        l_variable = [ var.c_str().split('.')[-1] for var in rdf.GetColumnNames() ]
-        l_variable = sorted(l_variable)
+        columns = [ var.c_str().split('.')[-1] for var in rdf.GetColumnNames() ]
+        columns = sorted(columns)
 
         fail = False
-        for variable in self._cfg['variables']:
-            if variable not in l_variable:
+        for variable in self._cfg.variables:
+            if variable not in columns:
                 log.error(f'Missing variable: {variable}')
                 fail = True
 
         if fail:
-            log.info(l_variable)
+            log.info(columns)
             raise ValueError('At least one variable was not found')
     # --------------------------------
     def _skip_cut(self, expr : str) -> bool:
-        d_var = self._cfg['variables']
+        '''
+        Parameters
+        ---------------
+        expr: Cut from full selection
+
+        Returns
+        ---------------
+        True if we are cutting on variable meant to be scanned on
+        '''
+        d_var = self._cfg.variables
 
         for var_name in d_var:
             if var_name in expr:
@@ -78,140 +170,49 @@ class EfficiencyScanner(Cache):
 
         return False
     # --------------------------------
-    def _get_rdf(self) -> tuple[RDF.RNode,str]:
+    def _get_rdf(self, tree : str) -> RDF.RNode:
         '''
         Load dataframe and lazily apply selection, except for the scanning part
 
-        Return dataframe and hash with unique identifier for:
-            - Dataset itself
-            - Selection used on it
+        Parameters
+        ---------------------
+        tree: DecayTree or MCDecayTree
+
+        Returns
+        ---------------------
+        Dataframe
         '''
         log.debug('Getting dataframe')
-        d_cut = self._get_selection()
 
-        sample  = self._cfg['input']['sample']
-        trigger = self._cfg['input']['trigger']
+        sample  = self._cfg.sample
+        trigger = self._cfg.trigger
 
-        gtr = RDFGetter(sample=sample, trigger=trigger)
+        gtr = RDFGetter(sample=sample, trigger=trigger, tree = tree)
         rdf = gtr.get_rdf(per_file = False)
-        uid = gtr.get_uid()
+
+        if tree == _MCDT:
+            return rdf
 
         self._check_rdf(rdf=rdf)
 
         log.debug('Applying selection')
 
-        d_cut_used = {}
+        d_cut_used : dict[Cuts,str] = {}
+        d_cut   = self._get_selection()
         for name, expr in d_cut.items():
             log.debug(f'{name:<20}{expr}')
-            if self._skip_cut(expr):
+
+            if self._skip_cut(expr = expr):
                 log.info(f'Skipping cut: {name}')
-                expr = '(1)'
+                rdf = rdf.Filter('true', name)
+                d_cut_used[name] = 'true' 
+            else:
+                d_cut_used[name] = expr
+                rdf = rdf.Filter(expr, name)
 
-            d_cut_used[name] = expr
-            rdf = rdf.Filter(expr, name)
-
-        hsh = hashing.hash_object([uid, d_cut_used])
-
-        return rdf, hsh
+        return rdf
     # --------------------------------
-    def _scan_rdf(self, rdf : RDF.RNode) -> dict[str,RDF.RNode]:
-        d_var        = self._cfg['variables']
-        [xvar, yvar] = list(d_var.keys())
-        arr_xval     = d_var[xvar]
-        arr_yval     = d_var[yvar]
-        X, Y         = numpy.meshgrid(arr_xval, arr_yval, indexing='xy')
-        arr_bound    = numpy.stack([X.ravel(), Y.ravel()], axis=1)
-
-        d_rdf = {}
-        for [xval, yval] in arr_bound:
-            expr                = f'({xvar} > {xval}) && ({yvar} > {yval})'
-            d_rdf[(xval, yval)] = rdf.Filter(expr)
-
-        return d_rdf
-    # --------------------------------
-    def _eff_from_yield(self, df_tgt : pnd.DataFrame) -> pnd.DataFrame:
-        '''
-        Takes dataframe with yields and adds an efficiency column.
-        The denominator is taken from an `EfficiencyCalculator` instance
-        at the correct process.
-
-        Parameters
-        ------------------
-        df_tgt: Dataframe with yields for different working points
-
-        Returns
-        ------------------
-        Same dataframe with eff column added
-        '''
-        if self._yld_default < 0:
-            raise ValueError(f'Default WP yield (unitizialized?) found to be negative: {self._yld_default}')
-
-        if self._yld_default == 0:
-            raise ValueError('Default WP yield is zero')
-
-        sample = self._cfg['input']['sample' ]
-        trigger= self._cfg['input']['trigger']
-        q2bin  = self._cfg['input']['q2bin'  ]
-
-        obj         = EfficiencyCalculator(
-            q2bin   = q2bin, 
-            sample  = Component(sample), 
-            trigger = Trigger(trigger))
-        eff, _ = obj.get_efficiency()
-
-        # eff = self._yld_default / yld_total
-        # Therefore this should provide efficiency at given WP
-        df_tgt['eff'] = eff * df_tgt['yield'] / self._yld_default
-
-        return df_tgt
-    # --------------------------------
-    def _get_yields(self, rdf : RDF.RNode) -> pnd.DataFrame:
-        '''
-        Parameters 
-        ------------------
-        rdf: ROOT dataframe with actual data/mc
-
-        Returns 
-        ------------------
-        pandas dataframe with:
-
-        X/Y: Coordinates at which cuts are evaluated
-        Z  : Yield
-        '''
-        d_rdf = self._scan_rdf(rdf=rdf)
-
-        log.info('Evaluating yields')
-
-        d_data= {self._xvar : [], self._yvar : [], self._zvar : []}
-        for (xval, yval), rdf_sel in tqdm.tqdm(d_rdf.items()):
-            zval = rdf_sel.Count().GetValue()
-
-            d_data[self._xvar].append(xval)
-            d_data[self._yvar].append(yval)
-            d_data[self._zvar].append(zval)
-
-        return pnd.DataFrame(d_data)
-    # ----------------------
-    def _set_default_wp_yield(self, rdf : RDF.RNode) -> None:
-        '''
-        This method sets _yld_default value. I.e. yield of MC sample
-        for default selection.
-
-        Parameters
-        -------------
-        rdf: ROOT dataframe before selection
-        '''
-        sample  = self._cfg['input']['sample']
-        trigger = self._cfg['input']['trigger']
-        q2bin   = self._cfg['input']['q2bin']
-
-        rdf_sel = sel.apply_full_selection(rdf=rdf, q2bin=q2bin, trigger=trigger, process=sample)
-
-        self._yld_default = rdf_sel.Count().GetValue()
-
-        log.info(f'Setting default WP yield to: {self._yld_default}')
-    # --------------------------------
-    def run(self) -> pnd.DataFrame:
+    def run(self):
         '''
         return dataframe with efficiency and values of variables in scan
 
@@ -223,8 +224,7 @@ class EfficiencyScanner(Cache):
         - The identity of the input data
         - The configuration, which specifies the variables to scan and where
         '''
-        rdf, hsh = self._get_rdf()
-        out_path = f'{self._out_path}/efficiencies_{hsh}.json'
+        out_path = f'{self._out_path}/efficiencies.json'
 
         if self._copy_from_cache():
             log.info('Efficiencies cached, reloading them')
@@ -232,14 +232,14 @@ class EfficiencyScanner(Cache):
 
             return df
 
-        log.info('Efficiencies not cached, recalculating them')
-        self._set_default_wp_yield(rdf=rdf)
+        rdf_gen   = self._get_rdf(tree = _MCDT)
+        rdf_rec   = self._get_rdf(tree = _DT  )
 
-        df = self._get_yields(rdf=rdf)
-        df = self._eff_from_yield(df_tgt=df)
+        d_rdf_rec : dict[WorkingPoint, RDF.RNode] = dict()
+        for wp in self._cfg.wps:
+            d_rdf_rec[wp] = wp.select(rdf = rdf_rec)
 
-        df.to_json(out_path)
+
+
         self._cache()
-
-        return df
 # --------------------------------
