@@ -6,14 +6,18 @@ import os
 import hashlib
 import pandas as pnd
 
-from typing                import Any
+from typing                import Any, Literal, overload
 from pathlib               import Path
 from dmu.logging.log_store import LogStore
 from dmu.generic           import utilities as gut
 
 log=LogStore.add_logger('dmu:generic.hashing')
 # ------------------------------------
-def hash_object(obj : Any) -> str:
+@overload
+def hash_object(obj : Any, as_int : Literal[True ]) -> int: ...
+@overload
+def hash_object(obj : Any, as_int : Literal[False]) -> str: ...
+def hash_object(obj : Any, as_int : bool = False) -> str | int:
     '''
     Function taking a python object and returning
     a string representing the hash
@@ -29,6 +33,9 @@ def hash_object(obj : Any) -> str:
     string_bin = string.encode('utf-8')
     hsh        = hashlib.sha256(string_bin)
     value      = hsh.hexdigest()
+    if as_int:
+        return int(value, 16)
+
     value      = value[:10]
 
     return value
