@@ -2,6 +2,7 @@
 Module containing EfficiencyScanner class
 '''
 import pandas as pnd
+import math
 
 from typing        import Final
 from functools     import cached_property
@@ -70,9 +71,37 @@ class WorkingPoint(RootModel[list[Cut]]):
         return sorted(vars)
 # --------------------------------
 class Efficiency(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
     gen : int
     sel : int
     wp  : WorkingPoint
+    # ----------------------------------------
+    def __str__(self) -> str:
+        msg = f'''
+        Gen: {self.gen}
+        Sel: {self.sel}
+        Eff: {self.val:.3g}
+        Err: {self.err:.3g}
+        '''
+
+        return msg
+    # --------------------------------
+    @cached_property
+    def val(self) -> float:
+        '''
+        Efficiency
+        '''
+        return self.sel / float(self.gen)
+    # --------------------------------
+    @cached_property
+    def err(self) -> float:
+        '''
+        Efficiency error
+        '''
+        var = self.val * (1 - self.val) / self.gen
+
+        return math.sqrt(var)
     # --------------------------------
     @property
     def row(self) -> dict[str,float]:
