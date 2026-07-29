@@ -13,13 +13,14 @@ from contextlib import contextmanager
 from pathlib    import Path
 from dmu        import LogStore, LogLevels
 from dmu.stats  import Measurement
-from rx_common  import Block, Brem, Component, Project, Trigger 
+from rx_common  import Block, Brem, Component, Trigger 
 from rx_common  import Qsq
 from .mva_conf  import MVAWp 
 
 log=LogStore.add_logger('fitter:parameter_reader')
 
-_NBREM : Final[int] = 2
+_NBREM : Final[int]       = 2
+_DATA  : Final[Component] = Component.data_24
 # ------------------------------------
 class ParameterReader:
     '''
@@ -146,7 +147,13 @@ class ParameterReader:
         -------------
         Filtered DataFrame
         '''
-        df_out = df.query(cut)
+        try:
+            df_out = df.query(cut)
+        except Exception as exc:
+            for col in df.columns:
+                log.error(col)
+
+            raise ValueError(f'Cannot apply cut: {cut}') from exc
 
         if len(df_out) == 0:
             log.warning('Querying:')
