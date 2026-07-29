@@ -21,15 +21,6 @@ log=LogStore.add_logger('fitter:parameter_reader')
 
 _NBREM : Final[int] = 2
 # ------------------------------------
-class FitMeasurement(Measurement):
-    '''
-    Class meant to represent the measurements associated to a fit
-    i.e. the fit parameters
-    '''
-    @property
-    def candidates(self) -> tuple[float,float]:
-        return 1, 1
-# ------------------------------------
 class ParameterReader:
     '''
     This class is meant to be an interface to the dataframe
@@ -302,7 +293,7 @@ class ParameterReader:
         comp      : Component,
         project   : Project,
         q2bin     : Qsq,
-        trigger   : Trigger) -> FitMeasurement:
+        trigger   : Trigger) -> Measurement:
         '''
         Parameters
         -------------
@@ -317,7 +308,7 @@ class ParameterReader:
 
         Returns
         -------------
-        FitMeasurement instance, i.e. container with parameter names, values and errors
+        Measurement instance, i.e. container with parameter names, values and errors
         '''
         channel = trigger.channel
         df      = self._df
@@ -356,7 +347,7 @@ class ParameterReader:
             brem    = brem,
             block   = block) 
 
-        return FitMeasurement(data = data)
+        return Measurement(data = data)
     # ----------------------
     def _get_block_fraction(
         self,
