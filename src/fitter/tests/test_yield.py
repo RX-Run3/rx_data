@@ -1,0 +1,40 @@
+'''
+Module holding tests for yield classes
+'''
+
+from fitter          import Yield
+from rx_common       import Cuts
+from rx_efficiencies import Cut, Efficiency, WorkingPoint
+from dmu             import LogStore
+
+log=LogStore.add_logger('fitter:test_yield')
+# -------------------------------------------
+def test_simple():
+    '''
+    Basic initialization test
+    '''
+    Yield(val = 300, err = 10)
+# -------------------------------------------
+def test_product():
+    '''
+    Test multiplication with efficiency
+    '''
+    yld = Yield(val = 300, err = 10)
+
+    cut = Cut(cut = Cuts.cmb, val = 0.5, var = 'mva_cmb')
+    wpt = WorkingPoint(root = [cut])
+    eff = Efficiency(gen = 1000, sel = 10, wp = wpt)
+
+    yld_1 = yld * eff
+    yld_2 = eff * yld
+
+    assert yld_1 == yld_2
+
+    assert yld_1.val == yld.val * eff.sel / eff.gen 
+
+    log.info(yld)
+    log.info(eff)
+    log.info(yld_1)
+# -------------------------------------------
+
+
