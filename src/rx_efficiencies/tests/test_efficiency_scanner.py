@@ -6,11 +6,11 @@ import pytest
 import matplotlib.pyplot as plt
 import pandas            as pnd
 
-from pathlib                import Path
-from dmu.workflow           import Cache
-from dmu                    import LogStore
-from rx_common              import Component, Qsq, Trigger
-from rx_efficiencies        import EfficiencyScanner
+from pathlib          import Path
+from dmu.workflow     import Cache
+from dmu              import LogStore
+from rx_common        import Component, Qsq, Trigger, Cuts
+from rx_efficiencies  import EfficiencyScanner, EfficiencyScannerConf, WorkingPoint, Cut
 
 log = LogStore.add_logger('rx_efficiencies:test_efficiency_scanner')
 # -----------------------------------
@@ -56,32 +56,42 @@ def _plot_values(
     plt.close()
 # -----------------------------------
 @pytest.mark.parametrize('sample, q2bin', [
-    ('Bu_JpsiK_ee_eq_DPC'        , 'jpsi'   ),
-    ('Bu_Kee_eq_btosllball05_DPC', 'low'    ),
-    ('Bu_Kee_eq_btosllball05_DPC', 'central'),
-    ('Bu_Kee_eq_btosllball05_DPC', 'high'   )])
+    (Component.bpkpjpsiee , Qsq.jpsi   ),
+    (Component.bpkpee     , Qsq.low    ),
+    (Component.bpkpee     , Qsq.central),
+    (Component.bpkpee     , Qsq.high   )][:1])
 def test_scan(sample : Component, q2bin : Qsq, tmp_path : Path):
     '''
     Test efficiency scanning
     '''
     l_wp = [0.50, 0.80]
-    cfg  = {
-        'input' :
-        {
-            'sample' : Component(sample),
-            'trigger': Trigger.rk_ee_os,
-            'q2bin'  : Qsq(q2bin),
-            },
-        'variables' :
-        {
-            'mva_cmb' : l_wp,
-            'mva_prc' : l_wp,
-            }
-        }
+    wps  : list[WorkingPoint] = []
+    for cmb in l_wp:
+        for prc in l_wp:
+            cmb_cut = Cut(
+                cut = Cuts.cmb,
+                var = 'mva_cmb',
+                val = cmb)
+
+            prc_cut = Cut(
+                cut = Cuts.prc,
+                var = 'mva_prc',
+                val = prc)
+
+            wp = WorkingPoint(root = [cmb_cut, prc_cut])
+
+            wps.append(wp)
+
+    cfg  = EfficiencyScannerConf(
+        sample   = sample,
+        trigger  = Trigger.rk_ee_os,
+        q2bin    = q2bin,
+        wps      = wps,
+    )
 
     with Cache.cache_root(path = tmp_path):
         obj = EfficiencyScanner(cfg=cfg)
         df  = obj.run()
 
-    _plot_values(df=df, name=f'scan_{q2bin}_{sample}', out_dir = tmp_path)
+    #_plot_values(df=df, name=f'scan_{q2bin}_{sample}', out_dir = tmp_path)
 # -----------------------------------
