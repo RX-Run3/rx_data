@@ -131,8 +131,11 @@ class FitOutput:
 
         data.update(self.__meta.model_dump())
 
-        data['block'] = self.__meta.block.value  # BaseModel
-        data['brem' ] = self.__meta.brem.region  # Enum -> StrEnum
+        data['comp'   ] = self.signal
+        data['mva_cmb'] = self.__meta.mva_cmb.lower_str
+        data['mva_prc'] = self.__meta.mva_prc.lower_str
+        data['block'  ] = self.__meta.block.value  # BaseModel
+        data['brem'   ] = self.__meta.brem.region  # Enum -> StrEnum
 
         return data
     # -------------------------------
