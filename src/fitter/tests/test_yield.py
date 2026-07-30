@@ -3,8 +3,8 @@ Module holding tests for yield classes
 '''
 
 from fitter          import Yield
-from rx_common       import Cuts, Cut
-from rx_efficiencies import Efficiency, WorkingPoint
+from rx_common       import Cuts, Cut, WorkingPoint
+from rx_efficiencies import Efficiency
 from dmu             import LogStore
 
 log=LogStore.add_logger('fitter:test_yield')

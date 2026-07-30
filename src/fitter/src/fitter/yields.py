@@ -5,8 +5,8 @@ import math
 
 from dmu.generic     import utilities as gut
 from pydantic        import RootModel, BaseModel, model_validator
-from rx_common       import Component, Project, Trigger
-from rx_efficiencies import Efficiency, WorkingPoint
+from rx_common       import Component, Project, Trigger, WorkingPoint
+from rx_efficiencies import Efficiency
 from dmu             import LogStore
 
 log=LogStore.add_logger('rx_efficiencies:yields')
