@@ -21,12 +21,30 @@ _Q2BINS   : Final[list[Qsq      ]] = [Qsq.jpsi, Qsq.psi2]
 def initialize() -> None:
     LogStore.set_level('fitter:parameter_reader', 10)
 # -----------------------
+def test_data():
+    '''
+    Test reader with initializer 
+    '''
+    name = 'reso_dtf-latest' # 'reso_no_dtf'
+    rdr  = ParameterReader(name = name)
+    meas = rdr(
+        brem     = Brem.brx12, 
+        block    = Block(value = '1'), 
+        is_mc    = False,
+        cmb      = MVAWp.from_str('0.99'),
+        prc      = MVAWp.from_str('0.60'),
+        q2bin    = Qsq.jpsi,
+        trigger  = Trigger.rk_ee_os, 
+    )
+
+    print(meas)
+# -----------------------
 @pytest.mark.parametrize('q2bin',        _Q2BINS)
 @pytest.mark.parametrize('trig' ,      _TRIGGERS)
 @pytest.mark.parametrize('brem' ,         _BREMS)
 @pytest.mark.parametrize('block', Block.blocks())
 @pytest.mark.parametrize('is_mc',  [True, False])
-def test_initializer(
+def test_all(
     is_mc : bool,
     q2bin : Qsq,
     trig  : Trigger,
