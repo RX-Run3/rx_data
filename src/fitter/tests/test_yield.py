@@ -91,3 +91,4 @@ def test_calculator():
         trigger = Trigger.rk_ee_os)
 
     grid = cal.calculate()
+    log.info(grid.df)
