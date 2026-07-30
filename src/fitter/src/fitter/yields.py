@@ -36,8 +36,20 @@ class YieldCalculatorConf(BaseModel):
     '''
     Class used to hold configuration
     '''
+    path : Path
     fits : str
     grid : dict[Cuts,list[float]]
+    # --------------------
+    @model_validator(mode = 'before')
+    def _validate(cls, data):
+        path = data['path']
+        path = _ANADIR / path
+
+        path.mkdir(parents = True, exist_ok = True)
+
+        data['path'] = path
+
+        return data
     # --------------------
     @cached_property
     def wps(self) -> list[WorkingPoint]:
