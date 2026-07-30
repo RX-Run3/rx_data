@@ -3,9 +3,10 @@ Module holding tests for yield classes
 '''
 
 from fitter          import Yield
-from rx_common       import Cuts, Cut, WorkingPoint
+from rx_common       import Cuts, Cut, Trigger, WorkingPoint, Qsq
 from rx_efficiencies import Efficiency
 from dmu             import LogStore
+from fitter          import YieldCalculator
 
 log=LogStore.add_logger('fitter:test_yield')
 # -------------------------------------------
@@ -75,4 +76,18 @@ def test_sum():
 
     assert tot.val == yld_1.val + yld_2.val
 # -------------------------------------------
+def test_calculator():
+    '''
+    Test yield calculator
+    '''
+    cmb = Cut(cut = Cuts.cmb, val = 0.99, var = 'mva_cmb')
+    prc = Cut(cut = Cuts.prc, val = 0.60, var = 'mva_prc')
+    wpt = WorkingPoint(root = [cmb, prc])
 
+    cal = YieldCalculator(
+        name    = 'rare',
+        wp      = wpt,
+        q2bin   = Qsq.jpsi, # for tests, should be rare otherwise
+        trigger = Trigger.rk_ee_os)
+
+    grid = cal.calculate()
