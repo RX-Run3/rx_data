@@ -3,8 +3,8 @@ Module holding tests for yield classes
 '''
 
 from fitter          import Yield
-from rx_common       import Cuts
-from rx_efficiencies import Cut, Efficiency, WorkingPoint
+from rx_common       import Cuts, Cut
+from rx_efficiencies import Efficiency, WorkingPoint
 from dmu             import LogStore
 
 log=LogStore.add_logger('fitter:test_yield')
@@ -13,16 +13,19 @@ def test_simple():
     '''
     Basic initialization test
     '''
-    Yield(val = 300, err = 10)
+    cut = Cut(cut = Cuts.cmb, val = 0.5, var = 'mva_cmb')
+    wpt = WorkingPoint(root = [cut])
+
+    Yield(val = 300, err = 10, wp = wpt)
 # -------------------------------------------
 def test_product():
     '''
     Test multiplication with efficiency
     '''
-    yld = Yield(val = 300, err = 10)
-
     cut = Cut(cut = Cuts.cmb, val = 0.5, var = 'mva_cmb')
     wpt = WorkingPoint(root = [cut])
+
+    yld = Yield(val = 300, err = 10, wp = wpt)
     eff = Efficiency(gen = 1000, sel = 10, wp = wpt)
 
     yld_1 = yld * eff
@@ -40,10 +43,10 @@ def test_ratio():
     '''
     Test multiplication with efficiency
     '''
-    yld = Yield(val = 300, err = 10)
-
     cut = Cut(cut = Cuts.cmb, val = 0.5, var = 'mva_cmb')
     wpt = WorkingPoint(root = [cut])
+
+    yld = Yield(val = 300, err = 10, wp = wpt)
     eff = Efficiency(gen = 1000, sel = 10, wp = wpt)
 
     yld_1 = yld / eff
