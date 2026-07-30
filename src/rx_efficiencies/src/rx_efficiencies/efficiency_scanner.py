@@ -10,7 +10,6 @@ from pydantic      import BaseModel, ConfigDict, RootModel, model_validator
 from pathlib       import Path
 from ROOT          import RDF # type: ignore
 from dmu           import LogStore
-from dmu.generic   import hashing
 from dmu.workflow  import Cache
 from rx_data       import RDFGetter
 from rx_selection  import selection as sel
@@ -20,55 +19,6 @@ log = LogStore.add_logger('rx_efficiencies:efficiency_scanner')
 
 _MCDT : Final[str] = 'MCDecayTree'
 _DT   : Final[str] = 'DecayTree'
-# --------------------------------
-class Cut(BaseModel):
-    '''
-    Class meant to represent a cut 
-    '''
-    model_config = ConfigDict(frozen=True)
-    # ----------------
-    cut : Cuts
-    var : str
-    val : float
-# --------------------------------
-class WorkingPoint(RootModel[list[Cut]]):
-    '''
-    Class meant to represent a set of cuts
-    '''
-    model_config = ConfigDict(frozen=True)
-    # ----------------
-    def select(self, rdf : RDF.RNode) -> RDF.RNode:
-        '''
-        Parameters
-        ---------------
-        rdf: Dataframe before selection
-
-        Returns
-        ---------------
-        Dataframe after selection associated to working point
-        '''
-        for cut in self.root:
-            expr = f'{cut.var} > {cut.val}'
-            rdf  = rdf.Filter(expr, cut.cut)
-
-        return rdf
-    # ----------------
-    def __hash__(self) -> int:
-        data = self.model_dump()
-        hsh  = hashing.hash_object(obj = data, as_int = True)
-
-        return hsh
-    # ----------------
-    @cached_property
-    def variables(self) -> list[str]:
-        '''
-        Variables used in working point
-        '''
-        vars : list[str] = []
-        for elm in self.root: 
-            vars.append(elm.var)
-
-        return sorted(vars)
 # --------------------------------
 class Efficiency(BaseModel):
     model_config = ConfigDict(frozen=True)
