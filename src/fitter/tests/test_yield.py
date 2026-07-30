@@ -18,8 +18,7 @@ def _plot_values(
     '''
     Plot dataframe as an interpolated mesh
     '''
-    df        = grid.df
-
+    df      = grid.df
     pivoted = df.pivot(
             index  ='prc',
             columns='cmb',
