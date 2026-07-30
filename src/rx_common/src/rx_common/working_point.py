@@ -37,6 +37,13 @@ class WorkingPoint(RootModel[list[Cut]]):
         return hsh
     # ----------------
     @cached_property
+    def is_empty(self) -> bool:
+        '''
+        True if no cuts were found
+        '''
+        return len(self.root) == 0
+    # ----------------
+    @cached_property
     def variables(self) -> list[str]:
         '''
         Variables used in working point
