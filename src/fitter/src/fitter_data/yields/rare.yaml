@@ -1,0 +1,9 @@
+fits: reso_dtf-latest
+rk:
+  trigger       : rk_ee_os
+  signal        : bpkpee
+  normalization : bpkpjpsiee
+rkst:
+  trigger       : rkst_ee_os
+  signal        : bdkstkpiee
+  normalization : bdkstkpijpsiee
