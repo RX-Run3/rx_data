@@ -5,6 +5,7 @@ from typing      import Self
 from pydantic    import BaseModel, RootModel, model_validator
 from contextlib  import contextmanager
 from contextvars import ContextVar
+from rx_common   import WorkingPoint, Cut, Cuts
 
 _MULT_FACTOR : ContextVar[float] = ContextVar('_MULT_FACTOR', default = 1000.) 
 # ---------------------
@@ -15,6 +16,33 @@ class MVAWp(RootModel[float|tuple[float,float]]):
     The value of the config is meant to represent a probability
     i.e. val in [0, 1]
     '''
+    # ----------------------
+    @classmethod
+    def from_wp(cls, wp : WorkingPoint, is_cmb : bool) -> 'MVAWp':
+        '''
+        Parameters
+        ----------------
+        wp    : Generic working point
+        is_cmb: If true will extract combinatorial WP, otherwise part reco
+        '''
+        target : Cut | None = None
+        for cut in wp.root:
+            if cut.cut == Cuts.cmb and     is_cmb:
+                if target is not None:
+                    raise ValueError(f'Cut found multiple times in: {wp}')
+
+                target = cut
+
+            if cut.cut == Cuts.prc and not is_cmb:
+                if target is not None:
+                    raise ValueError(f'Cut found multiple times in: {wp}')
+
+                target = cut
+
+        if target is None:
+            raise ValueError(f'Could not find cut in: {wp}')
+
+        return cls(root = target.val)
     # -------------    
     @property
     def lower_str(self) -> str:
