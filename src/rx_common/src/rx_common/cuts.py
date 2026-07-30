@@ -43,6 +43,20 @@ class Cuts(StrEnum):
     # -------------------
     bpkk      = auto()
     bppipi    = auto()
+    # ----------------------------------
+    @property
+    def var(self) -> str:
+        '''
+        Variable name on which cut is applied
+        If not defined/found, will raise ValueError
+        '''
+        match self:
+            case Cuts.cmb:
+                return 'mva_cmb'
+            case Cuts.prc:
+                return 'mva_prc'
+            case _:
+                raise ValueError(f'Cannot find variable for: {self}')
 # ------------------------------------------
 # NOTE: https://github.com/yaml/pyyaml/issues/722
 yaml.SafeDumper.add_representer(

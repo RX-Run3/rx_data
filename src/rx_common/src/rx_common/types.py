@@ -498,6 +498,32 @@ class Trigger(StrEnum):
     rkst_mm_ss   = auto()
     # -----------
     @property
+    def reso_signal(self) -> Component:
+        '''
+        Component associated to trigger in resonant mode
+        '''
+        match self:
+            case Trigger.rk_ee_os:
+                return Component.bpkpjpsiee
+            case Trigger.rkst_ee_os:
+                return Component.bdkstkpijpsiee
+            case _:
+                raise ValueError(f'No resonant signal component for: {self}')
+    # -----------
+    @property
+    def rare_signal(self) -> Component:
+        '''
+        Component associated to trigger in rare mode
+        '''
+        match self:
+            case Trigger.rk_ee_os:
+                return Component.bpkpee
+            case Trigger.rkst_ee_os:
+                return Component.bdkstkpiee
+            case _:
+                raise ValueError(f'No rare signal component for: {self}')
+    # -----------
+    @property
     def misid_version(self) -> 'Trigger':
         '''
         MisID version of this trigger, if it exists
