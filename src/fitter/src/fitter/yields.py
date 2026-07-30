@@ -120,17 +120,25 @@ class Yield(BaseModel):
 
         raise ValueError('Working points differ')
     # ----------------------------------------
-    def __mul__(self, other : Efficiency) -> 'Yield':
+    @overload
+    def __mul__(self, other : EfficiencyGrid             ) -> 'YieldGrid': ...
+    @overload
+    def __mul__(self, other : Efficiency                 ) -> 'Yield': ...
+    def __mul__(self, other : Efficiency | EfficiencyGrid) -> 'Yield|YieldGrid':
         '''
         Parameters
         --------------
-        other: Object representing efficiency
+        other: Object representing efficiency or collection of efficiencies
 
         Returns
         --------------
-        Object representing product of efficiency and yield
+        Object representing product of efficiency(grid) and yield
         errors are propagated without correlation
         '''
+        if isinstance(other, EfficiencyGrid):
+            yields = [ self * effi for effi in other.root ]
+            return YieldGrid(root = yields)
+
         self.__check_wpt(eff = other)
 
         val = self.val * other.val
