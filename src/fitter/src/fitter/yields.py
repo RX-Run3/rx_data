@@ -105,7 +105,7 @@ class Yield(BaseModel):
 
         return msg
     # ----------------------------------------
-    def __check_wpt(self, eff : Efficiency) -> None:
+    def __check_wpt(self, eff : Efficiency) -> WorkingPoint:
         '''
         Checks that working points for yield and efficiency are the same
 
@@ -113,8 +113,11 @@ class Yield(BaseModel):
         ---------------
         eff: Efficiency object
         '''
+        if self.wp.is_empty:
+            return eff.wp
+
         if eff.wp == self.wp:
-            return
+            return eff.wp
 
         log.error(f'Efficiency: {eff.wp} ')
         log.error(f'Yield     : {self.wp}')
@@ -140,13 +143,12 @@ class Yield(BaseModel):
             yields = [ self * effi for effi in other.root ]
             return YieldGrid(root = yields)
 
-        self.__check_wpt(eff = other)
-
+        wp  = self.__check_wpt(eff = other)
         val = self.val * other.val
         var = (self.val * other.err) ** 2 + (self.err * other.val) ** 2
         err = math.sqrt(var)
 
-        return Yield(val = val, err = err, wp = self.wp)
+        return Yield(val = val, err = err, wp = wp)
     # ----------------------------------------
     def __rmul__(self, other : Efficiency) -> 'Yield':
         return self.__mul__(other)
