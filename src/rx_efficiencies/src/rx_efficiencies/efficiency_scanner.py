@@ -13,7 +13,7 @@ from dmu           import LogStore
 from dmu.workflow  import Cache
 from rx_data       import RDFGetter
 from rx_selection  import selection as sel
-from rx_common     import Component, Cuts, Qsq, Trigger
+from rx_common     import Component, Cuts, Qsq, Trigger, WorkingPoint
 
 log = LogStore.add_logger('rx_efficiencies:efficiency_scanner')
 

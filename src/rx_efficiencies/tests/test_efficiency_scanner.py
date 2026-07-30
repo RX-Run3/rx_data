@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 from pathlib          import Path
 from dmu.workflow     import Cache
 from dmu              import LogStore
-from rx_common        import Component, Qsq, Trigger, Cuts
-from rx_efficiencies  import EfficiencyScanner, EfficiencyScannerConf, EfficiencyGrid, WorkingPoint, Cut
+from rx_common        import Component, Qsq, Trigger, Cuts, Cut, WorkingPoint
+from rx_efficiencies  import EfficiencyScanner, EfficiencyScannerConf, EfficiencyGrid
 
 log = LogStore.add_logger('rx_efficiencies:test_efficiency_scanner')
 # -----------------------------------
