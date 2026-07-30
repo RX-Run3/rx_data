@@ -24,7 +24,7 @@ from .prec               import PRec
 from .prec_scales        import PrecScales
 from .prefit_postfit     import run as plot_prefit_postfit
 from .constraint_reader  import ConstraintReader
-from .yields             import Yield, YieldCalculator
+from .yields             import Yield, YieldCalculator, YieldGrid
 # ----------
 # Combinatorial
 # ----------
@@ -86,6 +86,7 @@ __all__ = [
     'MisIDConf',
     'PrecScales',
     'YieldCalculator',
+    'YieldGrid',
     # ------------------
     'PRec',
     'CCbarWeight',
