@@ -3,6 +3,7 @@ Module holding classes associated to fit yields
 '''
 import os
 import math
+import pandas as pnd
 import itertools
 
 from pathlib           import Path
@@ -96,6 +97,16 @@ class Yield(BaseModel):
     val : float
     err : float
     wp  : WorkingPoint
+    # ----------------------------------------
+    @cached_property
+    def row(self) -> dict[str,float]:
+        '''
+        Data associated to yield meant to go in row in dataframe
+        '''
+        cmb = self.wp.get_val(cut = Cuts.cmb)
+        prc = self.wp.get_val(cut = Cuts.prc)
+
+        return {'yld' : self.val, 'err' : self.err, 'cmb' : cmb, 'prc' : prc}
     # ----------------------------------------
     def __str__(self) -> str:
         msg = f'''
@@ -204,6 +215,15 @@ class YieldGrid(RootModel[list[Yield]]):
     '''
     Class meant to represent a collection of yields
     '''
+    # ---------------------
+    @cached_property
+    def df(self) -> pnd.DataFrame:
+        '''
+        Dataframe with yield information
+        '''
+        rows : list[dict[str,float]] = [ yld.row for yld in self.root ]
+
+        return pnd.DataFrame(rows)
 # ----------------------------------------
 class YieldCalculator:
     '''
