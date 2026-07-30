@@ -248,6 +248,32 @@ class YieldCalculator:
 
         return grid
     # -------------------------------
+    def __get_yld_norm(self) -> Yield:
+        '''
+        Returns
+        --------------
+        Yield in normalization mode
+        '''
+        rdr = ParameterReader(name = self.__cfg.fits)
+
+        total_yield = Yield(val = 0, err = 0, wp = self.__wp)
+        for block in Block.blocks():
+            meas = rdr(
+                is_mc   = False,
+                brem    = _BREM,
+                block   = block,
+                q2bin   = self.__qsq,
+                trigger = self.__trg,
+                cmb     = MVAWp.from_wp(wp = self.__wp, is_cmb =  True),
+                prc     = MVAWp.from_wp(wp = self.__wp, is_cmb = False),
+            )
+
+            val, err = meas[f'yld_{self.__trg.reso_signal}_{_BREM}']
+
+            total_yield += Yield(val = val, err = err, wp = self.__wp)
+
+        return total_yield
+    # -------------------------------
     def calculate(self) -> YieldGrid:
         '''
         Returns
