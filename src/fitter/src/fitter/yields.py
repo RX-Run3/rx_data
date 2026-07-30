@@ -119,7 +119,7 @@ class Yield(BaseModel):
         Working point that will be used in resulting yield
         '''
         if     is_ratio and self.wp == eff.wp:
-            return self.wp
+            return WorkingPoint(root = []) 
 
         if not is_ratio and self.wp.is_empty:
             return eff.wp
