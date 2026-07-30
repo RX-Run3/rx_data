@@ -146,6 +146,13 @@ class EfficiencyScannerConf(BaseModel):
         return self
     # ---------------------------------
     @cached_property
+    def name(self) -> str:
+        '''
+        Identifier for current scan, used for naming outputs
+        '''
+        return f'{self.sample}_{self.trigger}_{self.q2bin}'
+    # ---------------------------------
+    @cached_property
     def variables(self) -> list[str]:
         '''
         List of variables used for cuts
@@ -276,7 +283,7 @@ class EfficiencyScanner(Cache):
         ------------------
         EfficiencyGrid object
         '''
-        out_path = self._out_path / 'efficiencies.json'
+        out_path = self._out_path / f'{self._cfg.name}.json'
 
         if self._copy_from_cache():
             log.info('Efficiencies cached, reloading them')
