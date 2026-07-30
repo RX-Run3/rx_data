@@ -6,8 +6,10 @@ import math
 from dmu.generic     import utilities as gut
 from pydantic        import RootModel, BaseModel, model_validator
 from rx_common       import Component, Project, Trigger
-from rx_efficiencies import Efficiency
+from rx_efficiencies import Efficiency, WorkingPoint
+from dmu             import LogStore
 
+log=LogStore.add_logger('rx_efficiencies:yields')
 # ----------------------------------------
 class ProjectConf(BaseModel):
     '''
@@ -48,6 +50,7 @@ class Yield(BaseModel):
     '''
     val : float
     err : float
+    wp  : WorkingPoint
     # ----------------------------------------
     def __str__(self) -> str:
         msg = f'''
@@ -56,6 +59,22 @@ class Yield(BaseModel):
         '''
 
         return msg
+    # ----------------------------------------
+    def __check_wpt(self, eff : Efficiency) -> None:
+        '''
+        Checks that working points for yield and efficiency are the same
+
+        Parameters
+        ---------------
+        eff: Efficiency object
+        '''
+        if eff.wp == self.wp:
+            return
+
+        log.error(f'Efficiency: {eff.wp} ')
+        log.error(f'Yield     : {self.wp}')
+
+        raise ValueError('Working points differ')
     # ----------------------------------------
     def __mul__(self, other : Efficiency) -> 'Yield':
         '''
@@ -68,11 +87,13 @@ class Yield(BaseModel):
         Object representing product of efficiency and yield
         errors are propagated without correlation
         '''
+        self.__check_wpt(eff = other)
+
         val = self.val * other.val
         var = (self.val * other.err) ** 2 + (self.err * other.val) ** 2
         err = math.sqrt(var)
 
-        return Yield(val = val, err = err)
+        return Yield(val = val, err = err, wp = self.wp)
     # ----------------------------------------
     def __rmul__(self, other : Efficiency) -> 'Yield':
         return self.__mul__(other)
@@ -88,11 +109,13 @@ class Yield(BaseModel):
         Object representing ratio yield and efficiency
         errors are propagated without correlation
         '''
+        self.__check_wpt(eff = other)
+
         val = self.val / other.val
         rat = (self.err / self.val) ** 2 + (other.err / other.val) ** 2
         err = val * math.sqrt(rat)
 
-        return Yield(val = val, err = err)
+        return Yield(val = val, err = err, wp = self.wp)
     # ----------------------------------------
     @model_validator(mode = 'after')
     def _validate(self) -> 'Yield':
