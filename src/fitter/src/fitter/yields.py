@@ -3,9 +3,44 @@ Module holding classes associated to fit yields
 '''
 import math
 
-from pydantic import BaseModel, model_validator
-from rx_efficiencies.efficiency_scanner import Efficiency
+from dmu.generic     import utilities as gut
+from pydantic        import RootModel, BaseModel, model_validator
+from rx_common       import Component, Project, Trigger
+from rx_efficiencies import Efficiency
 
+# ----------------------------------------
+class ProjectConf(BaseModel):
+    '''
+    Class holding configuration
+    '''
+    trigger       : Trigger
+    signal        : Component
+    normalization : Component
+# ----------------------------------------
+class YieldCalculatorConf(BaseModel):
+    '''
+    Class used to hold configuration
+    '''
+    fits : str
+    rk   : ProjectConf
+    rkst : ProjectConf
+    # --------------------
+    @classmethod
+    def from_name(cls, name : str) -> 'YieldCalculatorConf':
+        '''
+        Parameters
+        -----------------
+        name: string identifying file holding configuration, e.g. rare 
+
+        Returns
+        -----------------
+        Configuration object
+        '''
+        data = gut.load_data(
+            package = 'fitter_data', 
+            fpath   = f'yields/{name}.yaml')
+
+        return cls(**data)
 # ----------------------------------------
 class Yield(BaseModel):
     '''
@@ -65,4 +100,31 @@ class Yield(BaseModel):
             raise ValueError(f'Yield error cannot be zero or negative, found: {self.err}')
 
         return self
+# ----------------------------------------
+class YieldGrid(RootModel[list[Yield]]):
+    '''
+    Class meant to represent a collection of yields
+    '''
+# ----------------------------------------
+class YieldCalculator:
+    '''
+    Class used to calculate expected yields based
+    on resonant mode yields and efficiencies
+    '''
+    # -------------------------------
+    def __init__(self, name : str, project : Project):
+        '''
+        Parameters
+        ---------------
+        cfg: Object holding configuration
+        '''
+        self.__cfg = YieldCalculatorConf.from_name(name = name) 
+        self.__prj = project
+    # -------------------------------
+    def calculate(self) -> YieldGrid:
+        '''
+        Returns
+        --------------
+        Yield grid, e.g. holder of yields
+        '''
 # ----------------------------------------
