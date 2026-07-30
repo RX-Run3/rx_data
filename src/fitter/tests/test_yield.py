@@ -57,3 +57,22 @@ def test_ratio():
     log.info(eff)
     log.info(yld_1)
 # -------------------------------------------
+def test_sum():
+    '''
+    Test sum of yields 
+    '''
+    cut = Cut(cut = Cuts.cmb, val = 0.5, var = 'mva_cmb')
+    wpt = WorkingPoint(root = [cut])
+
+    yld_1 = Yield(val = 300, err = 10, wp = wpt)
+    yld_2 = Yield(val = 300, err = 10, wp = wpt)
+
+    tot   = yld_1 + yld_2
+
+    log.info(yld_1)
+    log.info(yld_2)
+    log.info(tot  )
+
+    assert tot.val == yld_1.val + yld_2.val
+# -------------------------------------------
+

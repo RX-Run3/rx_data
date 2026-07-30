@@ -139,6 +139,16 @@ class Yield(BaseModel):
 
         return Yield(val = val, err = err, wp = self.wp)
     # ----------------------------------------
+    def __add__(self, other : 'Yield') -> 'Yield':
+        if self.wp != other.wp:
+            raise ValueError(f'Cannot add yields at different working points: {self.wp} != {other.wp}')
+
+        val = self.val      + other.val
+        var = self.err ** 2 + other.err ** 2
+        err = math.sqrt(var)
+
+        return Yield(val = val, err = err, wp = self.wp)
+    # ----------------------------------------
     @model_validator(mode = 'after')
     def _validate(self) -> 'Yield':
         if self.err <= 0.:
