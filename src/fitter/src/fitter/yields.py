@@ -186,6 +186,13 @@ class Yield(BaseModel):
 
         return Yield(val = val, err = err, wp = self.wp)
     # ----------------------------------------
+    @classmethod
+    def null(cls, wp : WorkingPoint) -> 'Yield':
+        '''
+        Yield representing no entries
+        '''
+        return cls(val = 1e-3, err = 1e-3, wp = wp)
+    # ----------------------------------------
     @model_validator(mode = 'after')
     def _validate(self) -> 'Yield':
         if self.err <= 0.:
@@ -265,7 +272,7 @@ class YieldCalculator:
         '''
         rdr = ParameterReader(name = self.__cfg.fits)
 
-        total_yield = Yield(val = 0, err = 0, wp = self.__wp)
+        total_yield = Yield.null(wp = self.__wp)
         for block in Block.blocks():
             meas = rdr(
                 is_mc   = False,
