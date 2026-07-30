@@ -105,18 +105,23 @@ class Yield(BaseModel):
 
         return msg
     # ----------------------------------------
-    def __check_wpt(self, eff : Efficiency) -> WorkingPoint:
+    def __check_wpt(self, eff : Efficiency, is_ratio : bool) -> WorkingPoint:
         '''
         Checks that working points for yield and efficiency are the same
 
         Parameters
         ---------------
-        eff: Efficiency object
-        '''
-        if self.wp.is_empty:
-            return eff.wp
+        eff     : Efficiency object
+        is_ratio: True if the check is part of a division yld / eff, false for yld * eff
 
-        if eff.wp == self.wp:
+        Returns
+        ---------------
+        Working point that will be used in resulting yield
+        '''
+        if     is_ratio and self.wp == eff.wp:
+            return self.wp
+
+        if not is_ratio and self.wp.is_empty:
             return eff.wp
 
         log.error(f'Efficiency: {eff.wp} ')
@@ -143,7 +148,7 @@ class Yield(BaseModel):
             yields = [ self * effi for effi in other.root ]
             return YieldGrid(root = yields)
 
-        wp  = self.__check_wpt(eff = other)
+        wp  = self.__check_wpt(eff = other, is_ratio = False)
         val = self.val * other.val
         var = (self.val * other.err) ** 2 + (self.err * other.val) ** 2
         err = math.sqrt(var)
@@ -164,13 +169,12 @@ class Yield(BaseModel):
         Object representing ratio yield and efficiency
         errors are propagated without correlation
         '''
-        self.__check_wpt(eff = other)
-
+        wp  = self.__check_wpt(eff = other, is_ratio = True)
         val = self.val / other.val
         rat = (self.err / self.val) ** 2 + (other.err / other.val) ** 2
         err = val * math.sqrt(rat)
 
-        return Yield(val = val, err = err, wp = self.wp)
+        return Yield(val = val, err = err, wp = wp)
     # ----------------------------------------
     def __add__(self, other : 'Yield') -> 'Yield':
         if self.wp != other.wp:
