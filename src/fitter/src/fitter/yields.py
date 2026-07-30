@@ -1,18 +1,28 @@
 '''
 Module holding classes associated to fit yields
 '''
+import os
 import math
 import itertools
 
-from typing          import Literal, overload
-from functools       import cached_property
-from dmu             import LogStore
-from dmu.generic     import utilities as gut
-from pydantic        import RootModel, BaseModel, model_validator
-from rx_common       import Component, Cut, Cuts, Qsq, Trigger, WorkingPoint
-from rx_efficiencies import Efficiency, EfficiencyGrid, EfficiencyScannerConf
+from pathlib           import Path
+from typing            import Final, Literal, overload
+from functools         import cached_property
+from dmu               import LogStore
+from dmu.generic       import utilities as gut
+from dmu.workflow      import Cache
+from pydantic          import RootModel, BaseModel, model_validator
+from rx_common         import Component, Cut, Cuts, Qsq, Trigger, WorkingPoint
+from rx_common         import Brem, Block
+from rx_efficiencies   import Efficiency, EfficiencyGrid, EfficiencyScanner, EfficiencyScannerConf
+
+from .mva_conf         import MVAWp
+from .parameter_reader import ParameterReader
 
 log=LogStore.add_logger('rx_efficiencies:yields')
+
+_ANADIR : Final[Path] = Path(os.environ['ANADIR'])
+_BREM   : Final[Brem] = Brem.brx12    # Will get yields in this brem category
 # ----------------------------------------
 class ProjectConf(BaseModel):
     '''
