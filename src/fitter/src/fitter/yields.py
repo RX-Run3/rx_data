@@ -2,12 +2,15 @@
 Module holding classes associated to fit yields
 '''
 import math
+import itertools
 
+from typing          import Literal, overload
+from functools       import cached_property
+from dmu             import LogStore
 from dmu.generic     import utilities as gut
 from pydantic        import RootModel, BaseModel, model_validator
-from rx_common       import Component, Project, Trigger, WorkingPoint
-from rx_efficiencies import Efficiency
-from dmu             import LogStore
+from rx_common       import Component, Cut, Cuts, Qsq, Trigger, WorkingPoint
+from rx_efficiencies import Efficiency, EfficiencyGrid, EfficiencyScannerConf
 
 log=LogStore.add_logger('rx_efficiencies:yields')
 # ----------------------------------------
@@ -24,8 +27,27 @@ class YieldCalculatorConf(BaseModel):
     Class used to hold configuration
     '''
     fits : str
-    rk   : ProjectConf
-    rkst : ProjectConf
+    grid : dict[Cuts,list[float]]
+    # --------------------
+    @cached_property
+    def wps(self) -> list[WorkingPoint]:
+        '''
+        List of objects representing cuts
+        '''
+        all_cuts : list[list[Cut]] = []
+        for cut, vals in self.grid.items():
+            cuts : list[Cut] = []
+            for val in vals:
+                cut_obj = Cut(cut = cut, val = val, var = cut.var)
+                cuts.append(cut_obj)
+
+            all_cuts.append(cuts)
+
+        combinations = list(itertools.product(*all_cuts))
+
+        values = [WorkingPoint(root = list(combination)) for combination in combinations ]
+
+        return values
     # --------------------
     @classmethod
     def from_name(cls, name : str) -> 'YieldCalculatorConf':
@@ -135,14 +157,47 @@ class YieldCalculator:
     on resonant mode yields and efficiencies
     '''
     # -------------------------------
-    def __init__(self, name : str, project : Project):
+    def __init__(
+        self, 
+        name    : str, 
+        wp      : WorkingPoint,
+        q2bin   : Qsq,
+        trigger : Trigger):
         '''
         Parameters
         ---------------
-        cfg: Object holding configuration
+        name   : Name of configuration file, e.g. rare
+        wp     : Working point used for the normalization yield/efficiency
+        project: E.g. rk
+        q2bin  : E.g. low
         '''
         self.__cfg = YieldCalculatorConf.from_name(name = name) 
-        self.__prj = project
+        self.__trg = trigger 
+        self.__qsq = q2bin
+        self.__wp  = wp
+    # -------------------------------
+    @overload
+    def __get_eff(self, is_norm : Literal[True ]) -> Efficiency    : ...
+    @overload
+    def __get_eff(self, is_norm : Literal[False]) -> EfficiencyGrid: ...
+    def __get_eff(self, is_norm :           bool) -> Efficiency | EfficiencyGrid:
+        '''
+        Returns
+        --------------
+        Normalization channel efficiency
+        '''
+        if is_norm:
+            wps    = [self.__wp]
+            sample = self.__trg.reso_signal
+        else:
+            wps    = self.__cfg.wps
+            sample = self.__trg.rare_signal
+
+        cfg = EfficiencyScannerConf(
+            sample = sample,
+            trigger= self.__trg,
+            q2bin  = self.__qsq,
+            wps    = wps)
     # -------------------------------
     def calculate(self) -> YieldGrid:
         '''
@@ -150,4 +205,12 @@ class YieldCalculator:
         --------------
         Yield grid, e.g. holder of yields
         '''
+        eff_norm = self.__get_eff(is_norm =  True)
+        eff_grid = self.__get_eff(is_norm = False)
+        yld_norm = self.__get_yld_norm()
+
+        yld_raw  = yld_norm / eff_norm
+        yld_grid = yld_raw * eff_grid
+
+        return yld_grid
 # ----------------------------------------
