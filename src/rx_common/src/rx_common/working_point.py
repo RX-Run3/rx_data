@@ -5,7 +5,7 @@ from functools     import cached_property
 from ROOT          import RDF # type: ignore
 from dmu.generic   import hashing
 from pydantic      import RootModel, ConfigDict
-from .cuts         import Cut
+from .cuts         import Cut, Cuts
 
 # --------------------------------
 class WorkingPoint(RootModel[list[Cut]]):
@@ -35,6 +35,22 @@ class WorkingPoint(RootModel[list[Cut]]):
         hsh  = hashing.hash_object(obj = data, as_int = True)
 
         return hsh
+    # ----------------
+    def get_val(self, cut : Cuts) -> float:
+        '''
+        Parameters
+        -------------
+        cut: Cut that should be part of working point
+
+        Returns
+        -------------
+        Value of cut
+        '''
+        for elm in self.root:
+            if elm.cut == cut:
+                return elm.val
+
+        raise ValueError(f'No cut found for {cut}')
     # ----------------
     @cached_property
     def is_empty(self) -> bool:
