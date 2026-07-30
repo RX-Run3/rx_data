@@ -238,6 +238,15 @@ class YieldCalculator:
             trigger= self.__trg,
             q2bin  = self.__qsq,
             wps    = wps)
+
+        with Cache.cache_root(path = self.__cfg.path):
+            obj  = EfficiencyScanner(cfg = cfg)
+            grid = obj.run()
+
+        if is_norm:
+            return grid.root[0]
+
+        return grid
     # -------------------------------
     def calculate(self) -> YieldGrid:
         '''
