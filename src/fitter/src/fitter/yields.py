@@ -21,8 +21,9 @@ from .parameter_reader import ParameterReader
 
 log=LogStore.add_logger('rx_efficiencies:yields')
 
-_ANADIR : Final[Path] = Path(os.environ['ANADIR'])
-_BREM   : Final[Brem] = Brem.brx12    # Will get yields in this brem category
+_ANADIR  : Final[Path] = Path(os.environ['ANADIR'])
+_BREM    : Final[Brem] = Brem.brx12    # Will get yields in this brem category
+_RESO_QSQ: Final[Qsq ] = Qsq.jpsi      # Bin used to get normalization mode efficiencies
 # ----------------------------------------
 class ProjectConf(BaseModel):
     '''
@@ -229,14 +230,16 @@ class YieldCalculator:
         if is_norm:
             wps    = [self.__wp]
             sample = self.__trg.reso_signal
+            q2bin  = _RESO_QSQ
         else:
             wps    = self.__cfg.wps
             sample = self.__trg.rare_signal
+            q2bin  = self.__qsq
 
         cfg = EfficiencyScannerConf(
             sample = sample,
             trigger= self.__trg,
-            q2bin  = self.__qsq,
+            q2bin  = q2bin,
             wps    = wps)
 
         with Cache.cache_root(path = self.__cfg.path):
