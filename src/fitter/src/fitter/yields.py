@@ -101,6 +101,19 @@ class Yield(BaseModel):
     err : float
     wp  : WorkingPoint
     # ----------------------------------------
+    @model_validator(mode = 'after')
+    def _validate(self) -> 'Yield':
+        if math.isnan(self.val) or math.isnan(self.err):
+            raise ValueError(f'Yield contains NaNs: {self}')
+
+        if self.err <= 0.:
+            raise ValueError(f'Yield error cannot be zero or negative, found: {self.err}')
+
+        if self.val < 0 :
+            raise ValueError(f'Yield is negative: {self.val}')
+
+        return self
+    # ----------------------------------------
     @cached_property
     def row(self) -> dict[str,float]:
         '''
@@ -216,13 +229,6 @@ class Yield(BaseModel):
         Yield representing no entries
         '''
         return cls(val = 1e-3, err = 1e-3, wp = wp)
-    # ----------------------------------------
-    @model_validator(mode = 'after')
-    def _validate(self) -> 'Yield':
-        if self.err <= 0.:
-            raise ValueError(f'Yield error cannot be zero or negative, found: {self.err}')
-
-        return self
 # ----------------------------------------
 class YieldGrid(RootModel[list[Yield]]):
     '''
