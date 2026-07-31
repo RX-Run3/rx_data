@@ -39,6 +39,9 @@ class YieldCalculatorConf(BaseModel):
     Class used to hold configuration
     '''
     path : Path
+    '''
+    Path to directory where outputs go
+    '''
     fits : str
     grid : dict[Cuts,list[float]]
     # --------------------
@@ -215,6 +218,10 @@ class YieldGrid(RootModel[list[Yield]]):
     '''
     Class meant to represent a collection of yields
     '''
+    path : Path | None = None
+    '''
+    If set, path to directory where outputs will go, e.g. this grid
+    '''
     # ---------------------
     @cached_property
     def df(self) -> pnd.DataFrame:
@@ -323,7 +330,9 @@ class YieldCalculator:
         yld_norm = self.__get_yld_norm()
 
         yld_raw  = yld_norm / eff_norm
-        yld_grid = yld_raw * eff_grid
+        yld_grid = yld_raw  * eff_grid
+
+        yld_grid.path = self.__cfg.path
 
         return yld_grid
 # ----------------------------------------
