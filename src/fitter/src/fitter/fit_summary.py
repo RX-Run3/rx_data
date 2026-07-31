@@ -120,6 +120,15 @@ class FitOutput:
         self.__cfg  = gut.load_conf(package = 'fitter_data', fpath = 'fit_summary/conf.yaml')
         self.__meta = FitMetadata.from_path(path = path, comp = self.signal)
     # -------------------------------
+    def __str__(self):
+        msg  ='\n-------------------------\n'
+        msg +=f'{"Name":<50}{"Value"}\n'
+        msg += '-------------------------\n'
+        for key, val in self.info.items():
+            msg += f'{key:<50}{val}\n'
+
+        return msg
+    # -------------------------------
     @property
     def info(self) -> dict[str, float | str]:
         '''
