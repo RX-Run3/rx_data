@@ -221,6 +221,20 @@ $$
 N_{\text{sig}}(B^+\to K^+ e^+e^-) = N_{\text{reso}}(B^+\to K^+ J/\psi(\to e^+e^-)) \times \frac{\varepsilon(B^+\to K^+ e^+e^-)}{\varepsilon(B^+\to K^+ J/\psi(\to e^+e^-))} \times \frac{\mathcal{B}(B^+\to K^+ e^+e^-)}{\mathcal{B}(B^+\to K^+ J/\psi)\,\mathcal{B}(J/\psi\to e^+e^-)}
 $$
 
+run:
+
+```bash
+rxfitter signal-expectation -n rare -c 0.99 -p 0.6 -t rk_ee_os -q central
+```
+
+which will:
+
+- Use the config in `rare.yaml`, which specifies the spacing in the MVA plane among other things
+- Pick the resonant mode fit at a combinatorial working point above 0.99 and a part reco working point above 0.6.
+  The corresponding resonant mode efficiencies will also be calculated at this point.
+- Pick the resonant fits and simulation for the $R_K$ analysis in the electron channel to calculate the efficiencies
+- Calculate the efficiencies for the rare mode in the `central` $q^2$ bin.
+
 ## Toys
 
 ### Making them
