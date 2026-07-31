@@ -109,7 +109,9 @@ class EfficiencyGrid(RootModel[list[Efficiency]]):
         -------------------
         Efficiency grid object
         '''
-        log.info('Calculating efficiencies from dataframes')
+        nrec = len(rec)
+
+        log.info(f'Calculating {nrec} efficiencies from dataframes')
 
         ngen  = gen.Count().GetValue()
         d_sel = { wp : rdf.Count().GetValue() for wp, rdf in rec.items() }
