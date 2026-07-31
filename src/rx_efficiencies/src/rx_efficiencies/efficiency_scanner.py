@@ -147,9 +147,13 @@ class EfficiencyScannerConf(BaseModel):
     @model_validator(mode = 'after')
     def _validate(self) -> 'EfficiencyScannerConf':
         all_vars = [ wp.variables for wp in self.wps ]
+        all_cuts = [ wp.cuts      for wp in self.wps ]
 
         if not all(var == all_vars[0] for var in all_vars):
             raise ValueError('Not found one and only one set of variables across working points')
+
+        if not all(var == all_cuts[0] for var in all_cuts):
+            raise ValueError('Not found one and only one set of cuts across working points')
 
         return self
     # ---------------------------------
