@@ -163,7 +163,9 @@ class FitOutput:
             data[f'{par.name}_value'] = par.value
             data[f'{par.name}_error'] = par.error
 
-        if self.dataset.is_mc:
+        if self.__meta.channel == Channel.mm:
+            pass
+        elif self.dataset.is_mc: 
             mc_brem_info = self.__get_mc_brem_info(path = self.__path)
             data.update(mc_brem_info)
         else:
@@ -325,7 +327,7 @@ class FitOutput:
             return False
 
         comp = cfg[self.__meta.channel]
-        if self.dataset == comp or not self.dataset.is_mc:
+        if self.dataset != comp and self.dataset.is_mc:
             return False
 
         return True
