@@ -11,7 +11,11 @@ from dmu       import LogLevels, LogStore
 
 log=LogStore.add_logger('rx_common:test_branching_fraction')
 
-_COMPONENTS : Final[list[Component]] = [Component.bpkpee, Component.bpkpjpsiee, Component.bdkstkpijpsiee]
+_COMPONENTS : Final[list[Component]] = [
+    Component.bpkpee, 
+    Component.bpkpjpsiee,
+    Component.bdkstkpiee, 
+    Component.bdkstkpijpsiee]
 # ----------------------
 @pytest.fixture(scope='session', autouse=True)
 def initialize():
