@@ -261,10 +261,12 @@ class YieldCalculator:
         Normalization channel efficiency
         '''
         if is_norm:
+            log.info('Calculating normalization mode efficiency')
             wps    = [self.__wp]
             sample = self.__trg.reso_signal
             q2bin  = _RESO_QSQ
         else:
+            log.info('Calculating signal mode efficiencies')
             wps    = self.__cfg.wps
             sample = self.__trg.rare_signal
             q2bin  = self.__qsq

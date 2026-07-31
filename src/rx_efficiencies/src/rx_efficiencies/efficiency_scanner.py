@@ -109,10 +109,16 @@ class EfficiencyGrid(RootModel[list[Efficiency]]):
         -------------------
         Efficiency grid object
         '''
+        log.info('Calculating efficiencies from dataframes')
+
         ngen  = gen.Count().GetValue()
         d_sel = { wp : rdf.Count().GetValue() for wp, rdf in rec.items() }
 
+        log.info('Yields calculated')
+
         efficiencies = [ Efficiency(gen = ngen, sel = nsel, wp = wp) for wp, nsel in d_sel.items() ]
+
+        log.info('Efficiencies calculated')
 
         return cls(root = efficiencies)
     # --------------------------------
