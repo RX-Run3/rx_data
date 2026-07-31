@@ -252,6 +252,8 @@ class YieldCalculator:
         self.__trg = trigger 
         self.__qsq = q2bin
         self.__wp  = wp
+
+        self.__out_path : Path | None = None
     # -------------------------------
     @overload
     def __get_eff(self, is_norm : Literal[True ]) -> Efficiency    : ...
@@ -259,9 +261,13 @@ class YieldCalculator:
     def __get_eff(self, is_norm : Literal[False]) -> EfficiencyGrid: ...
     def __get_eff(self, is_norm :           bool) -> Efficiency | EfficiencyGrid:
         '''
+        Parameters
+        --------------
+        is_norm: If true, will calculate the resonant mode efficiencies, otherwise the rare one
+
         Returns
         --------------
-        Normalization channel efficiency
+        Normalization channel efficiency or grid of rare mode efficiencies
         '''
         if is_norm:
             log.info('Calculating normalization mode efficiency')
@@ -287,7 +293,19 @@ class YieldCalculator:
         if is_norm:
             return grid.root[0]
 
+        self.__out_path = obj.path
+
         return grid
+    # -------------------------------
+    @property
+    def path(self) -> Path:
+        '''
+        Path where output of calculations will be
+        '''
+        if self.__out_path is None:
+            raise ValueError('Grid path not set, calculate was not called yet?')
+
+        return self.__out_path
     # -------------------------------
     def __get_yld_norm(self) -> Yield:
         '''
