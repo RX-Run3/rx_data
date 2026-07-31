@@ -6,6 +6,7 @@ import re
 import math
 import pandas as pnd
 
+from gvar          import gvar
 from functools     import cached_property
 from dmu           import LogStore
 from dmu.stats     import FitResult
@@ -176,6 +177,33 @@ class FitOutput:
         else:
             data['pvalue_value'] =  res.gof.pval 
             data['pvalue_error'] =  0.1
+
+        return data
+    # ----------------------
+    def __get_dt_brem_info(self, res : FitResult) -> dict[str,float]:
+        fraction       = f'{self.signal}_fraction'
+        fr_val, fr_err = res[fraction]
+
+        data : dict[str,float] = dict()
+        data[f'{self.signal}_fraction_{Brem.one}_value'] = fr_val
+        data[f'{self.signal}_fraction_{Brem.one}_error'] = fr_err
+
+        data[f'{self.signal}_fraction_{Brem.two}_value'] = 1 - fr_val
+        data[f'{self.signal}_fraction_{Brem.two}_error'] =     fr_err
+
+        total_yield = f'yld_{self.signal}'
+        yl_val, yl_err = res[total_yield]
+
+        frc = gvar(fr_val, fr_err)
+        yld = gvar(yl_val, yl_err)
+        yld_1 = yld * frc
+        yld_2 = yld - yld_1 
+
+        data[f'yld_{self.signal}_{Brem.one}_value'] = yld_1.mean
+        data[f'yld_{self.signal}_{Brem.one}_error'] = yld_1.sdev
+
+        data[f'yld_{self.signal}_{Brem.two}_value'] = yld_2.mean
+        data[f'yld_{self.signal}_{Brem.two}_error'] = yld_2.sdev
 
         return data
     # ----------------------
