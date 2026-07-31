@@ -2,7 +2,6 @@
 This module contains the ParameterReader class
 '''
 import os
-import re
 import math
 import numpy
 import jacobi
@@ -19,7 +18,6 @@ from .mva_conf  import MVAWp
 
 log=LogStore.add_logger('fitter:parameter_reader')
 
-_NBREM : Final[int]       = 2
 _DATA  : Final[Component] = Component.data_24
 # ------------------------------------
 class ParameterReader:
@@ -164,12 +162,7 @@ class ParameterReader:
 
         return df_out
     # ----------------------
-    def _format_data(
-        self, 
-        brem : Brem,
-        comp : Component,
-        is_mc: bool,
-        data : dict[str, float]) -> dict[str,tuple[float,float]]:
+    def _format_data(self, data : dict[str, float]) -> dict[str,tuple[float,float]]:
         '''
         Parameters
         -------------
@@ -203,23 +196,6 @@ class ParameterReader:
 
         res = { key : (value[0], value[1]) for key, value in output_data.items() } 
 
-        name, val, err = self._extract_brem(brem = brem, comp = comp, data = data)
-
-        log.debug(name)
-        res[name] = val, err
-
-        if is_mc:
-            return res
-
-        name, val, err = self._extract_yield(
-            data = data,
-            brem = brem, 
-            sign = comp, 
-            fval = val, 
-            ferr = err)
-
-        res[name]= val, err
-
         return res
     # ----------------------
     def _extract_yield(
@@ -252,50 +228,6 @@ class ParameterReader:
         name = f'yld_{sign}_{brem}'
 
         return name, val, err
-    # ----------------------
-    def _extract_brem(
-        self, 
-        brem : Brem, 
-        comp : Component,
-        data : dict[str, float]) -> tuple[str,float,float]:
-        '''
-        Parameters
-        -------------
-        brem: brem category, i.e. 1 or 2
-        comp: Fitted component
-        data: Dictionary with variable name and value
-
-        Returns
-        -------------
-        Tuple with value of brem fraction, error and name of variable
-        '''
-        keys = [ key for key in data if f'{comp}_fraction' in key ]
-        if len(keys) != _NBREM:
-            log.error('All keys')
-            for key in data:
-                log.info(key)
-            log.error('Found keys')
-            for key in keys:
-                log.info(key)
-
-            raise ValueError('Expected two entries corresponding to brem fraction')
-
-        [val] = [ data[key] for key in keys if key.endswith('_value') ]
-        [err] = [ data[key] for key in keys if key.endswith('_error') ]
-
-        if brem == Brem.two:
-            val = 1 - val # fraction stored is brem 1 one
-
-        # Fraction needs to be named as mu and sg to be used for scales
-        key    = keys[0]
-        regex  = r'(\w+)_fraction_(value|error)'
-        mtch   = re.match(regex, key)
-        if not mtch:
-            raise ValueError(f'Canot extract signal name from: {key}')
-
-        signal = mtch.group(1) 
-
-        return f'fr_{signal}_{brem}', val, err
     # ----------------------
     def __call__(
         self, 
@@ -346,11 +278,7 @@ class ParameterReader:
 
         raw_data = df.iloc[0].to_dict()
         flt_data = { key : value for key, value in raw_data.items() if isinstance(value, float) }
-        data     = self._format_data(
-            brem = brem,
-            is_mc= is_mc,
-            comp = comp,
-            data = flt_data) # type: ignore
+        data     = self._format_data(data = flt_data) # type: ignore
 
         # for simultaneous fits, this removes brem_xx2 parameters when one needs brem_xx1
         # and viceversa
