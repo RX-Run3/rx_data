@@ -184,7 +184,7 @@ class EfficiencyScanner(Cache):
         cfg: Object needed to configure scan of efficiencies
         '''
         super().__init__(
-            out_path= Path('EfficiencyScanner'),
+            out_path= Path(cfg.name),
             cfg     = cfg.model_dump())
 
         self._cfg = cfg
@@ -291,7 +291,7 @@ class EfficiencyScanner(Cache):
         ------------------
         EfficiencyGrid object
         '''
-        out_path = self._out_path / f'{self._cfg.name}.json'
+        out_path = self._out_path / 'efficiency.json'
 
         if self._copy_from_cache():
             log.info('Efficiencies cached, reloading them')
