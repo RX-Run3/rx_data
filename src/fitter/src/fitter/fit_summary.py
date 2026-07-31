@@ -201,6 +201,9 @@ class FitOutput:
         else:
             yl_val, yl_err = res[total_yield_2]
 
+            data[f'yld_{self.signal}_{Brem.brx12}_value'] = yl_val 
+            data[f'yld_{self.signal}_{Brem.brx12}_error'] = yl_err 
+
         frc = gvar(fr_val, fr_err)
         yld = gvar(yl_val, yl_err)
         yld_1 = yld * frc
