@@ -14,6 +14,13 @@ class WorkingPoint(RootModel[list[Cut]]):
     '''
     model_config = ConfigDict(frozen=True)
     # ----------------
+    @cached_property
+    def cuts(self) -> list[Cuts]:
+        '''
+        List of cuts used for the working point
+        '''
+        return [ cut.cut for cut in self.root ]
+    # ----------------
     def select(self, rdf : RDF.RNode) -> RDF.RNode:
         '''
         Parameters
@@ -64,9 +71,7 @@ class WorkingPoint(RootModel[list[Cut]]):
         '''
         Variables used in working point
         '''
-        vars : list[str] = []
-        for elm in self.root: 
-            vars.append(elm.var)
+        vars : list[str] = [ cut.var for cut in self.cuts ]
 
         return sorted(vars)
-
+# --------------------------------
