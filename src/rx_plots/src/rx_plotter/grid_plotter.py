@@ -6,7 +6,9 @@ import matplotlib.pyplot as plt
 
 from typing  import Protocol
 from pathlib import Path
+from dmu     import LogStore
 
+log=LogStore.add_logger('rx_plots:grid_plotter')
 # --------------------------------
 class GridProtocol(Protocol):
     '''
@@ -61,6 +63,8 @@ class GridPlotter:
         plt.tight_layout()
 
         out_path = path / 'yields.png'
+        log.info(f'Saving to: {out_path}')
+
         plt.savefig(out_path)
         plt.close()
 # --------------------------------
