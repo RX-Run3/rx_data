@@ -4,9 +4,10 @@ Module holding GridPlotter
 import pandas            as pnd
 import matplotlib.pyplot as plt
 
-from typing  import Protocol
-from pathlib import Path
-from dmu     import LogStore
+from functools import cached_property
+from typing    import Protocol
+from pathlib   import Path
+from dmu       import LogStore
 
 log=LogStore.add_logger('rx_plots:grid_plotter')
 # --------------------------------
@@ -14,7 +15,7 @@ class GridProtocol(Protocol):
     '''
     Class representing grid-like object
     '''
-    @property
+    @cached_property
     def df(self) -> pnd.DataFrame: ...
 # --------------------------------
 class GridPlotter:
