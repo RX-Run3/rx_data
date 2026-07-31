@@ -13,24 +13,24 @@ class BranchingFraction(BaseModel):
     '''
     Class representing braching fractions
     '''
-    decay : str
-    value : float
-    error : float
+    dec : str
+    val : float
+    err : float
     # ---------------------------------------
     def __mul__(self, other : 'BranchingFraction') -> 'BranchingFraction':
-        val = self.value * other.value
-        var = (self.value * other.error) ** 2 + (self.error * other.value) ** 2
+        val = self.val * other.val
+        var = (self.val * other.err) ** 2 + (self.err * other.val) ** 2
         err = math.sqrt(var)
 
-        decay = f'{self.decay} * {other.decay}'
+        decay = f'{self.dec} * {other.dec}'
 
-        return BranchingFraction(decay = decay, value = val, error = err)
+        return BranchingFraction(dec = decay, val = val, err = err)
     # ---------------------------------------
     def __str__(self) -> str:
         return f'''
-        Decay: {self.decay}
-        Value: {self.value:.3g}
-        Error: {self.error:.3g}
+        Decay: {self.dec}
+        Value: {self.val:.3g}
+        Error: {self.err:.3g}
         ''' 
     # ---------------------------------------
     @classmethod
@@ -64,7 +64,7 @@ class BranchingFraction(BaseModel):
         if tot_brf is None:
             raise ValueError(f'Cannot calculate branching fraction for decays: {decays}')
 
-        tot_brf.decay = latex
+        tot_brf.dec = latex
 
         log.debug(tot_brf)
 
