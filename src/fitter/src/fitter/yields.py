@@ -300,7 +300,7 @@ class YieldCalculator:
                 is_mc   = False,
                 brem    = _BREM,
                 block   = block,
-                q2bin   = self.__qsq,
+                q2bin   = _RESO_QSQ,
                 trigger = self.__trg,
                 cmb     = MVAWp.from_wp(wp = self.__wp, is_cmb =  True),
                 prc     = MVAWp.from_wp(wp = self.__wp, is_cmb = False),
