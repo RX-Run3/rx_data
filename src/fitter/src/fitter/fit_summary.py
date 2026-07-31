@@ -276,6 +276,31 @@ class FitOutput:
 
         raise ValueError(f'No dataset component found in: {self.__path}')
     # -------------------------------
+    @cached_property
+    def signal(self) -> Component:
+        '''
+        Component taken as signal in fit to data or simulation 
+        '''
+        # In MC fits, sample is also signal component
+        if self.dataset.is_mc:
+            return self.dataset
+
+        # In data fits there will be a fraction parameter
+        # that can be used to read the signal component
+        res = FitResult.from_json(path = self.__path)
+
+        signal : Component | None = None
+        for param in res.parameters:
+            if not param.name.endswith('_fraction'):
+                continue
+
+            name   = param.name.removesuffix('_fraction')
+            signal = Component(value = name)
+
+            return signal
+
+        raise ValueError(f'Signal not found in result: {res}')
+    # -------------------------------
     @property
     def is_valid(self) -> bool:
         '''
