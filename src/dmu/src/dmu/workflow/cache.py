@@ -67,7 +67,7 @@ class Cache:
         log.debug(f'Using {self._out_path} output path')
         self._out_path.mkdir(parents=True, exist_ok=True)
 
-        self._hsh       = hashing.hash_object(kwargs)
+        self._hsh       = hashing.hash_object(kwargs, as_int = False)
         self._cache_dir = self._get_dir(kind='cache')
     # ---------------------------
     def _get_code_hash(self) -> str:
