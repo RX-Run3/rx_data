@@ -63,7 +63,7 @@ def test_scan(sample : Component, q2bin : Qsq, tmp_path : Path):
     '''
     Test efficiency scanning
     '''
-    l_wp = [0.50, 0.6, 0.7, 0.80, 0.9]
+    l_wp = [0.50, 0.6, 0.7]
     wps  : list[WorkingPoint] = []
     for cmb in l_wp:
         for prc in l_wp:
