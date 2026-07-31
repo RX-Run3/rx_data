@@ -22,7 +22,6 @@ from .mva_conf     import MVAWp
 log=LogStore.add_logger('fitter:fit_summary')
 
 _ANADIR   : Final[Path]      = Path(os.environ['ANADIR'])
-_DATA     : Final[Component] = Component.data_24
 _COMMON   : Final[str]       = r'.*\/(\d{3}-\d{3}|\d{3})_(\d{3}-\d{3}|\d{3})_(all|b\d)\/(?:reso|rare)\/(rk|rkst)\/(mm|ee)\/(low|central|jpsi|psi2|high)'
 _DT_REGEX : Final[str]       = r'\/data_24\/fit\/.*\/brem_([x,0-9]{3})\/parameters.json'
 _MC_REGEX : Final[str]       = r'\/_SIGNAL\/fit\/brem_([x,0-9]{3})\/brem_[x,0-9]{3}\/parameters.json'
@@ -48,7 +47,7 @@ class FitMetadata(BaseModel):
         Parameters
         --------------
         path: Path to parameters.json, i.e. file with fit parameters
-        comp: Component, e.g. signal or data
+        comp: Component representing dataset been fitted
 
         Returns
         --------------
@@ -119,7 +118,7 @@ class FitOutput:
         '''
         self.__path = path
         self.__cfg  = gut.load_conf(package = 'fitter_data', fpath = 'fit_summary/conf.yaml')
-        self.__meta = FitMetadata.from_path(path = path, comp = self.signal)
+        self.__meta = FitMetadata.from_path(path = path, comp = self.dataset)
     # -------------------------------
     def __str__(self):
         msg  ='\n-------------------------\n'
@@ -141,7 +140,7 @@ class FitOutput:
 
         data.update(self.__meta.model_dump())
 
-        data['comp'   ] = self.signal
+        data['comp'   ] = self.dataset
         data['mva_cmb'] = self.__meta.mva_cmb.lower_str
         data['mva_prc'] = self.__meta.mva_prc.lower_str
         data['block'  ] = self.__meta.block.value  # BaseModel
@@ -164,7 +163,7 @@ class FitOutput:
             data[f'{par.name}_value'] = par.value
             data[f'{par.name}_error'] = par.error
 
-        if self.signal.is_mc:
+        if self.dataset.is_mc:
             mc_brem_info = self.__get_mc_brem_info(path = self.__path)
             data.update(mc_brem_info)
         else:
@@ -265,14 +264,17 @@ class FitOutput:
         return len(df)
     # -------------------------------
     @cached_property
-    def signal(self) -> Component:
+    def dataset(self) -> Component:
+        '''
+        Component representing the dataset been fitted
+        '''
         for comp in Component:
             if f'/{comp}/' not in str(self.__path):
                 continue
 
             return comp
 
-        raise ValueError(f'No component found in: {self.__path}')
+        raise ValueError(f'No dataset component found in: {self.__path}')
     # -------------------------------
     @property
     def is_valid(self) -> bool:
@@ -292,7 +294,7 @@ class FitOutput:
             return False
 
         comp = cfg[self.__meta.channel]
-        if self.signal not in [comp, _DATA]:
+        if self.dataset == comp or not self.dataset.is_mc:
             return False
 
         return True
