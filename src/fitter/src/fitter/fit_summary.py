@@ -166,6 +166,9 @@ class FitOutput:
         if self.signal.is_mc:
             mc_brem_info = self.__get_mc_brem_info(path = self.__path)
             data.update(mc_brem_info)
+        else:
+            dt_brem_info = self.__get_dt_brem_info(res = res)
+            data.update(dt_brem_info)
 
         if res.gof is None:
             data['pvalue_value'] = -1 
