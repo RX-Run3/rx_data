@@ -6,9 +6,11 @@ from .candidate_rebuild   import CandidateRebuild
 from .candidate_rebuild   import CandidateRebuildConf
 from .luminosity          import plot as plot_luminosity
 from .copy_plots          import CopyPlots
+from .grid_plotter        import GridPlotter
 
 __all__ = [
     'CopyPlots',
+    'GridPlotter',
     'plot_luminosity',
     'CandidateRebuild',
     'CandidateRebuildConf',
