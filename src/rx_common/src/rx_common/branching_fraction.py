@@ -55,9 +55,9 @@ class BranchingFraction(BaseModel):
         for decay in decays:
             [val, err] = bfs[decay]
             if tot_brf is None:
-                tot_brf = cls(decay = decay, value = val, error = err)
+                tot_brf = cls(dec = decay, val = val, err = err)
             else:
-                tot_brf = cls(decay = decay, value = val, error = err) * tot_brf
+                tot_brf = cls(dec = decay, val = val, err = err) * tot_brf
 
             log.debug(tot_brf)
 
