@@ -228,6 +228,13 @@ class Cache:
         return True
     # ---------------------------
     @property
+    def path(self) -> Path:
+        '''
+        Path to directory where objects are cached
+        '''
+        return self._out_path
+    # ---------------------------
+    @property
     def hash(self):
         '''
         String with hash associated to dataset
