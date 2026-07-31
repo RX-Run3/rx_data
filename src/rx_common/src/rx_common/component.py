@@ -8,6 +8,7 @@ from typing              import Literal
 from ap_utilities.decays import utilities as aput
 
 from .channel            import Channel
+from .branching_fraction import BranchingFraction
 
 # -------------------------------
 class MissingComponent(Exception):
@@ -515,6 +516,13 @@ class Component(StrEnum):
                 return ['bpjp', 'jpmm']
             case _:
                 raise NotImplementedError(f'Cannot find subdecays for: {self.name}')
+    # --------------------------------------------
+    @property
+    def brf(self) -> BranchingFraction:
+        '''
+        Branching fraction associated to component
+        '''
+        return BranchingFraction.from_decays(decays = self.subdecays, latex = self.latex)
     # --------------------------------------------
     @classmethod
     def get_mc_samples(cls) -> list['Component']:
