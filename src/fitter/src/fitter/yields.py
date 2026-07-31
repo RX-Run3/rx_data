@@ -218,10 +218,6 @@ class YieldGrid(RootModel[list[Yield]]):
     '''
     Class meant to represent a collection of yields
     '''
-    path : Path | None = None
-    '''
-    If set, path to directory where outputs will go, e.g. this grid
-    '''
     # ---------------------
     @cached_property
     def df(self) -> pnd.DataFrame:
@@ -331,8 +327,6 @@ class YieldCalculator:
 
         yld_raw  = yld_norm / eff_norm
         yld_grid = yld_raw  * eff_grid
-
-        yld_grid.path = self.__cfg.path
 
         return yld_grid
 # ----------------------------------------
