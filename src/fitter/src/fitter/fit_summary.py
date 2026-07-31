@@ -190,8 +190,14 @@ class FitOutput:
         data[f'{self.signal}_fraction_{Brem.two}_value'] = 1 - fr_val
         data[f'{self.signal}_fraction_{Brem.two}_error'] =     fr_err
 
-        total_yield = f'yld_{self.signal}'
-        yl_val, yl_err = res[total_yield]
+        # WARNING: rk and rkst fits seem to use different naming
+        # for signal yields of combined category
+        total_yield_1 = f'yld_{self.signal}_{Brem.brx12}'
+        total_yield_2 = f'yld_{self.signal}'
+        if total_yield_1 in res:
+            yl_val, yl_err = res[total_yield_1]
+        else:
+            yl_val, yl_err = res[total_yield_2]
 
         frc = gvar(fr_val, fr_err)
         yld = gvar(yl_val, yl_err)
