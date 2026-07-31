@@ -6,10 +6,11 @@ provided by this project
 
 import typer
 
-from rx_common import Trigger, Qsq
-from dmu       import LogLevels, LogStore
-from dmu.stats import zfit
-from pathlib   import Path
+from rx_common  import Trigger, Qsq
+from dmu        import LogLevels, LogStore
+from dmu.stats  import zfit
+from pathlib    import Path
+from rx_plotter import GridPlotter
 
 app = typer.Typer(
     help            = __doc__,
@@ -169,6 +170,9 @@ def signal_expectation(
         trigger = trigger)
 
     grid = cal.calculate()
+
+    ptr = GridPlotter(grid = grid)
+    ptr.plot(path = cal.path)
 # ----------------------
 if __name__ == '__main__':
     app()
