@@ -178,6 +178,8 @@ grpcio==1.76.0
     # via
     #   tensorboard
     #   tensorflow
+gvar==13.1.9
+    # via -r requirements-dep.in
 h5py==3.15.1
     # via
     #   keras
@@ -339,6 +341,7 @@ numpy==2.3.5
     #   contourpy
     #   dask
     #   dm-tree
+    #   gvar
     #   h5py
     #   hepstats
     #   hist
@@ -531,6 +534,7 @@ scikit-learn==1.8.0
 scipy==1.16.3
     # via
     #   -r requirements-dep.in
+    #   gvar
     #   hepstats
     #   numdifftools
     #   scikit-learn
