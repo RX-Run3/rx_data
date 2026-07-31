@@ -45,14 +45,14 @@ class Cache:
         ---------------
         out_path: Path where outputs will go, it can be relative to _cache_root or not
         kwargs  : Key word arguments symbolizing identity of inputs, used for hashing
-                  If argument `code` is already in kwargs, it will not calculate the
-                  code's hash, i.e. Code changes do not invalidate the hash, useful for testing
+                  If code = True, code will be used to build hash
+                  If code = False or code is not among the arguments, it won't be used
         '''
         if Cache._cache_root is None:
             raise ValueError('Caching directory not set')
 
         log.debug(f'Using {Cache._cache_root} root directory for caching')
-        if 'code' not in kwargs:
+        if 'code' in kwargs and kwargs['code']:
             kwargs['code']  = self._get_code_hash()
         else:
             log.warning('Not using code for hashing')
