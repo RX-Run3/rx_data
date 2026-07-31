@@ -201,21 +201,6 @@ class EfficiencyScanner(Cache):
 
         self._cfg = cfg
     # --------------------------------
-    def _get_selection(self) -> dict[Cuts,str]:
-        '''
-        Returns
-        -------------
-        Dictionary mapping a cut object to a cut expression
-        '''
-        log.debug('Getting selection')
-
-        sample  = self._cfg.sample
-        trigger = self._cfg.trigger
-        q2bin   = self._cfg.q2bin
-        d_sel   = sel.selection(trigger=trigger, q2bin=q2bin, process=sample)
-
-        return d_sel
-    # --------------------------------
     def _check_rdf(self, rdf : RDF.RNode) -> None:
         '''
         Check that all variables we will scan exist in dataframe
@@ -234,24 +219,6 @@ class EfficiencyScanner(Cache):
         if fail:
             log.info(columns)
             raise ValueError('At least one variable was not found')
-    # --------------------------------
-    def _skip_cut(self, expr : str) -> bool:
-        '''
-        Parameters
-        ---------------
-        expr: Cut from full selection
-
-        Returns
-        ---------------
-        True if we are cutting on variable meant to be scanned on
-        '''
-        d_var = self._cfg.variables
-
-        for var_name in d_var:
-            if var_name in expr:
-                return True
-
-        return False
     # --------------------------------
     def _get_rdf(self, tree : str) -> RDF.RNode:
         '''
@@ -280,18 +247,15 @@ class EfficiencyScanner(Cache):
 
         log.debug('Applying selection')
 
-        d_cut_used : dict[Cuts,str] = {}
-        d_cut   = self._get_selection()
-        for name, expr in d_cut.items():
-            log.debug(f'{name:<20}{expr}')
+        custom_sel : dict[Cuts, str] = { cut : 'true' for cut in self._cfg.cuts }
 
-            if self._skip_cut(expr = expr):
-                log.info(f'Skipping cut: {name}')
-                rdf = rdf.Filter('true', name)
-                d_cut_used[name] = 'true' 
-            else:
-                d_cut_used[name] = expr
-                rdf = rdf.Filter(expr, name)
+        with sel.custom_selection(d_sel = custom_sel):
+            rdf         = sel.apply_full_selection(
+                rdf     = rdf,
+                q2bin   = self._cfg.q2bin,
+                process = self._cfg.sample,
+                trigger = self._cfg.trigger,
+                out_path= self.path)
 
         return rdf
     # --------------------------------
