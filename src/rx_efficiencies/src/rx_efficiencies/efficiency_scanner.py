@@ -158,6 +158,14 @@ class EfficiencyScannerConf(BaseModel):
         return self
     # ---------------------------------
     @cached_property
+    def cuts(self) -> list[Cuts]:
+        '''
+        Cuts used by all working points, all working points
+        need to cut on the same quantities
+        '''
+        return self.wps[0].cuts
+    # ---------------------------------
+    @cached_property
     def name(self) -> str:
         '''
         Identifier for current scan, used for naming outputs
