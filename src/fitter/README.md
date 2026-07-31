@@ -211,6 +211,16 @@ value, error = ms['yld_jpsi']
 print(ms)
 ```
 
+## Signal expectation
+
+In order to optimize the MVA working point one needs the signal and background yields.
+The signal can be obtained through the yield in resonant mode, the efficiencies and the branching
+fractions through:
+
+$$
+N_{\text{sig}}(B^+\to K^+ e^+e^-) = N_{\text{reso}}(B^+\to K^+ J/\psi(\to e^+e^-)) \times \frac{\varepsilon(B^+\to K^+ e^+e^-)}{\varepsilon(B^+\to K^+ J/\psi(\to e^+e^-))} \times \frac{\mathcal{B}(B^+\to K^+ e^+e^-)}{\mathcal{B}(B^+\to K^+ J/\psi)\,\mathcal{B}(J/\psi\to e^+e^-)}
+$$
+
 ## Toys
 
 ### Making them
@@ -264,4 +274,3 @@ A summary of the toy fits will be saved in the `summary.yaml` file within the
 ```bash
 summarize_toys -v v3
 ```
-
