@@ -55,7 +55,7 @@ class Cache:
         if 'code' in kwargs and kwargs['code']:
             kwargs['code']  = self._get_code_hash()
         else:
-            log.warning('Not using code for hashing')
+            log.info('Not using code for hashing')
 
         # If user uses absolute path, respect that
         # If relative path, make it relative to _cache_root 
