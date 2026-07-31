@@ -49,8 +49,10 @@ class GridPlotter:
         v3 : float = pivoted.index.min()
         v4 : float = pivoted.index.max()
 
+        plt.figure(figsize=(13, 10))
         plt.imshow(
             pivoted.values,
+            aspect='auto',
             origin='lower',
             extent=(v1, v2, v3, v4),
             cmap='viridis',
@@ -58,7 +60,7 @@ class GridPlotter:
         )
 
         plt.title('Yields vs WP')
-        plt.colorbar(label='z')
+        plt.colorbar()
         plt.xlabel('MVA${}_{comb}$')
         plt.ylabel('MVA${}_{prec}$')
         plt.tight_layout()
