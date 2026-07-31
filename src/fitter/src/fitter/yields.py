@@ -13,7 +13,7 @@ from dmu               import LogStore
 from dmu.generic       import utilities as gut
 from dmu.workflow      import Cache
 from pydantic          import RootModel, BaseModel, model_validator
-from rx_common         import Component, Cut, Cuts, Qsq, Trigger, WorkingPoint
+from rx_common         import BranchingFraction, Component, Cut, Cuts, Qsq, Trigger, WorkingPoint
 from rx_common         import Brem, Block
 from rx_efficiencies   import Efficiency, EfficiencyGrid, EfficiencyScanner, EfficiencyScannerConf
 
@@ -144,10 +144,12 @@ class Yield(BaseModel):
         raise ValueError('Working points differ')
     # ----------------------------------------
     @overload
-    def __mul__(self, other : EfficiencyGrid             ) -> 'YieldGrid': ...
+    def __mul__(self, other : BranchingFraction                              ) -> 'Yield': ...
     @overload
-    def __mul__(self, other : Efficiency                 ) -> 'Yield': ...
-    def __mul__(self, other : Efficiency | EfficiencyGrid) -> 'Yield|YieldGrid':
+    def __mul__(self, other : EfficiencyGrid                                 ) -> 'YieldGrid': ...
+    @overload
+    def __mul__(self, other : Efficiency                                     ) -> 'Yield': ...
+    def __mul__(self, other : BranchingFraction | Efficiency | EfficiencyGrid) -> 'Yield|YieldGrid':
         '''
         Parameters
         --------------
@@ -162,7 +164,11 @@ class Yield(BaseModel):
             yields = [ self * effi for effi in other.root ]
             return YieldGrid(root = yields)
 
-        wp  = self.__check_wpt(eff = other, is_ratio = False)
+        if isinstance(other, Efficiency):
+            wp  = self.__check_wpt(eff = other, is_ratio = False)
+        else:
+            wp  = self.wp
+
         val = self.val * other.val
         var = (self.val * other.err) ** 2 + (self.err * other.val) ** 2
         err = math.sqrt(var)
@@ -172,7 +178,7 @@ class Yield(BaseModel):
     def __rmul__(self, other : Efficiency) -> 'Yield':
         return self.__mul__(other)
     # ----------------------------------------
-    def __truediv__(self, other : Efficiency) -> 'Yield':
+    def __truediv__(self, other : Efficiency | BranchingFraction) -> 'Yield':
         '''
         Parameters
         --------------
@@ -183,7 +189,11 @@ class Yield(BaseModel):
         Object representing ratio yield and efficiency
         errors are propagated without correlation
         '''
-        wp  = self.__check_wpt(eff = other, is_ratio = True)
+        if isinstance(other, Efficiency):
+            wp = self.__check_wpt(eff = other, is_ratio = True)
+        else:
+            wp = self.wp
+
         val = self.val / other.val
         rat = (self.err / self.val) ** 2 + (other.err / other.val) ** 2
         err = val * math.sqrt(rat)
@@ -344,7 +354,10 @@ class YieldCalculator:
         yld_norm = self.__get_yld_norm()
 
         yld_raw  = yld_norm / eff_norm
-        yld_grid = yld_raw  * eff_grid
+        yld_meson= yld_raw  / self.__trg.reso_signal.brf
+
+        yld_rare = yld_meson * self.__trg.rare_signal.brf
+        yld_grid = yld_rare  * eff_grid
 
         return yld_grid
 # ----------------------------------------
