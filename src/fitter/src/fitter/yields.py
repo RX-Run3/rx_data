@@ -310,7 +310,7 @@ class YieldCalculator:
     @property
     def path(self) -> Path:
         '''
-        Path where output of calculations will be
+        Path to directory where output of calculations will be
         '''
         if self.__out_path is None:
             raise ValueError('Grid path not set, calculate was not called yet?')
