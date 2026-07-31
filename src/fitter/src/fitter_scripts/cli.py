@@ -6,6 +6,7 @@ provided by this project
 
 import typer
 
+from rx_common import Trigger, Qsq
 from dmu       import LogLevels, LogStore
 from dmu.stats import zfit
 from pathlib   import Path
@@ -136,6 +137,38 @@ def calculate_sweights(
             x = masses,
             y = weights)
         fun.save(path = swt_path, plot = True)
+# ----------------------
+@app.command()
+def signal_expectation(
+    proc    : int     = typer.Option(1  , '--proc'   , '-p', help='Number of threads to process with'),
+    name    : str     = typer.Option(..., '--name'   , '-n', help='Name of config file'),
+    cmb     : float   = typer.Option(..., '--cmb'    , '-c', help='Working point for combinatorial MVA'),
+    prc     : float   = typer.Option(..., '--prc'    , '-p', help='Working point for part-reco MVA'),
+    trigger : Trigger = typer.Option(..., '--trigger', '-t', help='E.g. rk_ee_os'),
+    q2bin   : Qsq     = typer.Option(..., '--q2bin'  , '-q', help='E.g. central' )) -> None: # noqa: B008
+    '''
+    Calculates grid of signal expected yields in grid of MVA classifiers working points
+    '''
+    from fitter    import YieldCalculator
+    from rx_common import Cut, Cuts
+    from rx_common import WorkingPoint
+    from ROOT      import EnableImplicitMT # type: ignore
+
+    if proc > 1:
+        log.info(f'Using {proc} threads')
+        EnableImplicitMT(proc)
+
+    cmb_obj = Cut(cut = Cuts.cmb, val = cmb, var = 'mva_cmb')
+    prc_obj = Cut(cut = Cuts.prc, val = prc, var = 'mva_prc')
+    wpt     = WorkingPoint(root = [cmb_obj, prc_obj])
+
+    cal = YieldCalculator(
+        name    = name,
+        wp      = wpt,
+        q2bin   = q2bin, # for tests, should be rare otherwise
+        trigger = trigger)
+
+    grid = cal.calculate()
 # ----------------------
 if __name__ == '__main__':
     app()
