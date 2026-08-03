@@ -70,9 +70,8 @@ class Category(BaseModel):
             raise ValueError(f'Cannot extract block information from {self.name}')
 
         block_str = mtch.group(2)
-        block     = int(block_str)
 
-        return Block(value = block)
+        return Block.from_str(block_str)
     # ----------------------
     @cached_property
     def brem(self) -> Brem:
