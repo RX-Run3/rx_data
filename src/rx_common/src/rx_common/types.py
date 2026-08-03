@@ -107,14 +107,14 @@ class Block(BaseModel):
         --------------
         List of elementary blocks
         '''
-        return [ cls(value = block) for block in _ALL_BLOCKS if block != '-1' ]
+        return [ cls(value = block) for block in _ALL_BLOCKS if block != -1 ]
     # ----------------
     @classmethod
     def from_str(cls, value : str) -> 'Block':
         '''
         Parameters
         --------------
-        value: String symbolizing block, e.g. b3, all
+        value: String symbolizing block, e.g. 3, all
 
         Returns
         --------------
@@ -123,13 +123,12 @@ class Block(BaseModel):
         if value == 'all':
             return cls(value=-1)
 
-        if value.startswith('b'):
-            value = value.removeprefix('b')
-            val   = { int(elm) for elm in value } 
+        if len(value) == 1:
+            return cls(value = int(value))
 
-            return cls(value=val)
+        val = { int(elm) for elm in value } 
 
-        raise ValueError(f'Invalid string: {value}')
+        return cls(value=val)
     # ----------------
     def __add__(self, other : 'Block') -> 'Block':
         '''
@@ -152,6 +151,9 @@ class Block(BaseModel):
         return format(str(self), format_spec)
     # ----------------
     def __str__(self):
+        if self.value == -1:
+            return 'all'
+
         if isinstance(self.value, int):
             return str(self.value)
 
