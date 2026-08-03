@@ -61,6 +61,9 @@ class Block(BaseModel):
     @model_validator(mode='before')
     @classmethod
     def coerce_from_primitive(cls, data):
+        if isinstance(data, int):
+            return {'value' : data}
+
         value = data['value']
 
         if isinstance(value, set):
