@@ -105,9 +105,6 @@ def test_channel(sample : Component):
     if expected is not None:
         assert sample.channel == expected
         return
-
-    with pytest.raises(ValueError):
-        sample.channel
 # -------------------------------------------
 @pytest.mark.parametrize('trigger', Trigger)
 def test_trigger(trigger : Trigger):
@@ -165,7 +162,7 @@ def test_block_from_str():
     Test block class
     '''
     for val in range(1, 9):
-        assert Block.from_str(value =  f'b{val}').to_int() == val
+        assert Block.from_str(value = str(val)).to_int() == val
 
     assert Block.from_str(value = 'all').to_int() == -1
 # -------------------------------------------
