@@ -18,7 +18,7 @@ zpar = zfit.param.Parameter
 zpdf = zfit.pdf.BasePDF
 log  = LogStore.add_logger('fitter:category')
 
-CATEGORY_REGEX : Final[str] = r'brem_([x\d]{3})_b(\d+)'
+_CATEGORY_REGEX : Final[str] = r'brem_([x\d]{3})_b(\d+|all)'
 # -----------------------------------
 class Category(BaseModel):
     '''
@@ -65,7 +65,7 @@ class Category(BaseModel):
         -------------
         Block associated to this category
         '''
-        mtch = re.match(CATEGORY_REGEX, self.name)
+        mtch = re.match(_CATEGORY_REGEX, self.name)
         if not mtch:
             raise ValueError(f'Cannot extract block information from {self.name}')
 
@@ -81,7 +81,7 @@ class Category(BaseModel):
         -------------
         Block associated to this category
         '''
-        mtch = re.match(CATEGORY_REGEX, self.name)
+        mtch = re.match(_CATEGORY_REGEX, self.name)
         if not mtch:
             raise ValueError(f'Cannot extract brem information from {self.name}')
 
