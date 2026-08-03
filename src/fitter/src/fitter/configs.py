@@ -655,7 +655,9 @@ class FitModelConf(UnpackerModel):
 
             new_components[comp] = new_conf
 
-        return self.model_copy(update = {'components' : new_components})
+        new_qsq_components = { q2bin : new_components }
+
+        return self.model_copy(update = {'components' : new_qsq_components })
 # ------------------------------
 # Full config
 # ----------------------
