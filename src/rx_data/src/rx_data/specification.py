@@ -133,8 +133,9 @@ class File(BaseModel):
             raise ValueError(f'Column {_BLOCK} not found for : {path}:{tree}')
 
         arr_blk  = rdf.AsNumpy([_BLOCK])[_BLOCK]
-        values   = arr_blk.tolist()
-        blocks   = { Block(value = value) for value in values }
+        svalues  = arr_blk.tolist()
+        ivalues  = [ int(value) for value in svalues ]
+        blocks   = { Block(value = value) for value in ivalues }
 
         return blocks
     # ----------------------

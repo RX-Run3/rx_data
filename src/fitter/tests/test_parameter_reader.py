@@ -29,7 +29,7 @@ def test_data():
     rdr  = ParameterReader(name = name)
     meas = rdr(
         brem     = Brem.brx12, 
-        block    = Block(value = '1'), 
+        block    = Block(value = 1), 
         is_mc    = False,
         cmb      = MVAWp.from_str('0.99'),
         prc      = MVAWp.from_str('0.60'),

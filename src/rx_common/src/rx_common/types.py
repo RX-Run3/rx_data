@@ -12,7 +12,7 @@ from .component  import Component
 from .qsq        import Qsq
 from .region     import Region
 
-_ALL_BLOCKS : Final[set[str]] = {'-1', '1', '2', '3', '4', '5', '6', '7', '8'}
+_ALL_BLOCKS : Final[set[int]] = {-1, 1, 2, 3, 4, 5, 6, 7, 8}
 # ------------------------------
 class DataSet(StrEnum):
     dat = auto()
@@ -56,43 +56,49 @@ class Block(BaseModel):
     '''
     model_config = ConfigDict(frozen=True)
 
-    value : str 
+    value : int | set[int] 
     # ----------------
     @model_validator(mode='before')
     @classmethod
     def coerce_from_primitive(cls, data):
-        if isinstance(data, dict):
-            value = data['value']
-        else:
-            value = data
+        value = data['value']
 
-        if isinstance(value, float):
-            value = int(value)
+        if isinstance(value, set):
+            for val in value:
+                cls._validate_elementary_block(value = val)
 
-        if isinstance(value, int):
-            value = str(value)
-
-        if isinstance(value, str):
-            data = {'value' : value}
-        else:
-            raise ValueError(f'Invalid block: {value}')
-
-        if value == 'all':
             return data
 
-        if value not in _ALL_BLOCKS:
-            raise ValueError(f'Invalid value: {value}')
+        cls._validate_elementary_block(value = value)
 
-        return data 
+        return data
+    # ----------------
+    @classmethod
+    def _validate_elementary_block(cls, value) -> None:
+        if not isinstance(value, int):
+            raise ValueError(f'Expected an int, found: {value}')
+
+        if value not in _ALL_BLOCKS:
+            raise ValueError(f'Invalid block: {value}')
     # ----------------
     def to_int(self) -> int:
         '''
-        Integer version of block, e.g. b1 -> 1
-        '''
-        if self.value == 'all':
-            return -1
+        Integer version of block, e.g. 
 
-        return int(self.value)
+        - b1     ->  1
+        - b1, b2 -> 12
+        - all    -> -1 
+        '''
+        if isinstance(self.value, int):
+            return self.value
+
+        values = list(self.value)
+        values = sorted(values)
+        values = [ str(value) for value in values ]
+
+        total  = ''.join(values)
+
+        return int(total)
     # ----------------
     @classmethod
     def blocks(cls) -> list['Block']:
@@ -115,11 +121,13 @@ class Block(BaseModel):
         Block instance
         '''
         if value == 'all':
-            return cls(value=value)
+            return cls(value=-1)
 
         if value.startswith('b'):
             value = value.removeprefix('b')
-            return cls(value=value)
+            val   = { int(elm) for elm in value } 
+
+            return cls(value=val)
 
         raise ValueError(f'Invalid string: {value}')
     # ----------------
@@ -133,9 +141,10 @@ class Block(BaseModel):
         if self == other:
             return self
 
-        new_value = self.value + other.value
-        new_value = sorted(new_value)
-        new_value = ''.join(new_value)
+        this_val  = {self.value}  if isinstance(self.value,  int) else self.value
+        other_val = {other.value} if isinstance(other.value, int) else other.value
+
+        new_value = this_val | other_val
 
         return Block(value=new_value)
     # ----------------
@@ -143,10 +152,20 @@ class Block(BaseModel):
         return format(str(self), format_spec)
     # ----------------
     def __str__(self):
-        return self.value
+        if isinstance(self.value, int):
+            return str(self.value)
+
+        values = list(self.value)
+        values = sorted(values)
+        values = [ str(val) for val in values ]
+
+        return ''.join(values)
     # ----------------
     def __lt__(self, other : 'Block') -> bool:
-        return self.value < other.value
+        if isinstance(self.value, int) and isinstance(other.value, int):
+            return self.value < other.value
+
+        raise ValueError(f'Cannot order composite blocks: {self} and {other}')
     # ----------------
     def __hash__(self):
         return hash(self.value)

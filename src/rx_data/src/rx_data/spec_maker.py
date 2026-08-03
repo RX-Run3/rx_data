@@ -206,7 +206,7 @@ class SpecMaker:
         if ftree == _MAIN_TREE:
             block = None
         else:
-            block = Block(value = '1') # Dummy block, for friend trees, friend trees do not have block column
+            block = Block(value = 1) # Dummy block, for friend trees, friend trees do not have block column
 
         files = [ 
             File.from_path(

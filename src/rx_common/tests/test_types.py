@@ -142,25 +142,23 @@ def test_block():
     Test block class
     '''
     for block in range(1, 9):
-        str_block = str(block)
-
-        Block(value = str_block)
+        Block(value = block)
 
     with pytest.raises(ValueError):
-        Block(value = '11')
+        Block(value = 11)
 
     with pytest.raises(ValueError):
-        Block(value = '10')
+        Block(value = 10)
 
-    b1 = Block(value = '1')
-    b2 = Block(value = '2')
+    b1 = Block(value = 1)
+    b2 = Block(value = 2)
 
-    assert (b1 + b2) == Block(value = '12')
+    assert (b1 + b2) == Block(value = {1, 2})
     assert '1'       == str(b1)
     assert '2'       == str(b2)
     assert '12'      == str(b1 + b2)
 
-    assert Block(value = 'all').to_int() == -1
+    assert Block(value = -1).to_int() == -1
 # -------------------------------------------
 def test_block_from_str():
     '''
@@ -176,8 +174,6 @@ def test_block_dump():
     Test block class
     '''
     for block in range(1, 9):
-        str_block = str(block)
-
-        data = Block(value = str_block).model_dump()
+        data = Block(value = block).model_dump()
         print(data)
 # -------------------------------------------
