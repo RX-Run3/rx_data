@@ -14,10 +14,10 @@ from dmu.generic           import utilities as gut
 log=LogStore.add_logger('dmu:generic.hashing')
 # ------------------------------------
 @overload
-def hash_object(obj : Any, as_int : Literal[True ]) -> int: ...
+def hash_object(obj : Any, as_int : Literal[True ]        ) -> int: ...
 @overload
-def hash_object(obj : Any, as_int : Literal[False]) -> str: ...
-def hash_object(obj : Any, as_int : bool = False) -> str | int:
+def hash_object(obj : Any, as_int : Literal[False] =   ...) -> str: ...
+def hash_object(obj : Any, as_int :           bool = False) -> str | int:
     '''
     Function taking a python object and returning
     a string representing the hash
