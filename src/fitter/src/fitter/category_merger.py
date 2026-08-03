@@ -101,7 +101,7 @@ class CategoryMerger:
 
         categories = sorted(categories)
         blocks = [ cat.block for cat in categories ]
-        block  = sum(blocks[:-1], blocks[-1])
+        block  = sum(blocks, blocks[0])
         brem   = categories[0].brem
 
         corr   = Correction.blok_fraction
