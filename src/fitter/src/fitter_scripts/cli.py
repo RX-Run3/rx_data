@@ -4,8 +4,10 @@ provided by this project
 '''
 # ruff: noqa: PLC0415
 
+import os
 import typer
 
+from typing     import Final
 from rx_common  import Trigger, Qsq
 from dmu        import LogLevels, LogStore
 from dmu.stats  import zfit
@@ -16,6 +18,8 @@ app = typer.Typer(
     help            = __doc__,
     context_settings= {"help_option_names": ["-h", "--help"]})
 log = LogStore.add_logger('rx_fitter:cli')
+
+_ANADIR : Final[Path] = Path(os.environ['ANADIR'])
 # ----------------------
 @app.command()
 def tabulate_scales(
@@ -34,6 +38,23 @@ def tabulate_scales(
     cfg = ScalesTabulatorConf.load()
     ptr = ScalesTabulator(cfg = cfg)
     ptr.run()
+# ----------------------
+@app.command()
+def tabulate_mc_stats(
+    trig : Trigger = typer.Option(..., '--trigger', '-t', help='Name trigger'     ),          # noqa: B008 
+    name : str     = typer.Option(..., '--name'   , '-n', help='Name of fit group')) -> None: # noqa: B008
+    '''
+    Makes latex table with cutflow for low statistics samples that were dropped from fits
+    '''
+    from dmu.pdataframe import utilities as put
+    from fitter         import DatasetSummary
+
+    dsm = DatasetSummary(name = name, trigger = trig)
+    df  = dsm.get_df()
+
+    path = _ANADIR / 'tables/dropped_stats.tex'
+
+    put.df_to_tex(df = df, path = path) 
 # ----------------------
 @app.command()
 def fit_summary(
