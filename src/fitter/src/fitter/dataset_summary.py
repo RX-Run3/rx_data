@@ -119,7 +119,7 @@ class DatasetSummary:
         df['q2bin'] = Qsq.from_path(path = path) 
         df['Block'] = self.__block_from_path(path = path)
         df['Brem' ] = str(Brem.from_path(path = path))
-        df['Sample']= sample.latex
+        df['Sample']= sample.value
 
         return df
     # ----------------------------------------------
