@@ -45,6 +45,73 @@ class Cuts(StrEnum):
     bppipi    = auto()
     # ----------------------------------
     @property
+    def latex(self) -> str:
+        '''
+        Latex representation (for tables) of cut
+        '''
+        match self:
+            case Cuts.truth:
+                return 'Truth matching'
+            case Cuts.q2:
+                return r'$q^2$'
+            case Cuts.clean:
+                return r'Data quality'
+            case Cuts.block:
+                return r'Block'
+            case Cuts.ghost:
+                return 'Ghost prob'
+            case Cuts.tr_ipchi2:
+                return r'$\chi^2_{IP}$'
+            case Cuts.cmb:
+                return r'MVA${}_{cmb}$'
+            case Cuts.prc:
+                return r'MVA${}_{prc}$'
+            case Cuts.kst_mass:
+                return r'M$(K^*)$'
+            case Cuts.kst_pt:
+                return r'$p_{T}(K^*)$'
+            case Cuts.mass:
+                return r'M$(B)$'
+            case Cuts.hlt1:
+                return 'Hlt1'
+            case Cuts.hlt2:
+                return 'Hlt2'
+            case Cuts.pid_l:
+                return 'Lepton PID'
+            case Cuts.pid_k:
+                return 'Kaon PID'
+            case Cuts.pid_pi:
+                return 'Pion PID'
+            case Cuts.rich:
+                return 'Rich'
+            case Cuts.acceptance:
+                return 'Acceptance'
+            case Cuts.cascade:
+                return 'Cascade veto'
+            case Cuts.jpsi_misid:
+                return r'$J/\psi$ veto'
+            case Cuts.leakage:
+                return r'Charmonium veto'
+            case Cuts.brem:
+                return r'Bremsstrahlung requirement'
+            case Cuts.clones:
+                return r'Clones veto'
+            case Cuts.kinem_lep:
+                return r'Lepton kinematics'
+            case Cuts.kinem_had:
+                return r'Hadron kinematics'
+            case Cuts.hop:
+                return r'HOP mass'
+            case Cuts.extra:
+                return r'Extra cut'
+            case Cuts.convert:
+                return r'Photon convertion veto'
+            case Cuts.bpkk:
+                return r'$KK$ control region'
+            case Cuts.bppipi:
+                return r'$\pi\pi$ control region'
+    # ----------------------------------
+    @property
     def var(self) -> str:
         '''
         Variable name on which cut is applied
