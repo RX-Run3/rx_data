@@ -41,7 +41,11 @@ def df_to_tex(
         st=st.format(formatter=d_format)
 
     log.info(f'Saving to: {path}')
-    buf = st.to_latex(buf=path, hrules=True, **kwargs)
+    buf = st.to_latex(
+        buf            = path, 
+        hrules         = True, 
+        position_float = 'centering',
+        **kwargs)
 
     return buf
 # -------------------------------------
