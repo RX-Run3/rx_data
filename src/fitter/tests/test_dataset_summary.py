@@ -1,12 +1,17 @@
 '''
 Module with tests for DatasetSummary class
 '''
+import pytest
 
+from typing    import Final
 from pathlib   import Path
 from fitter    import DatasetSummary
 from rx_common import Trigger
+from dmu       import LogLevels, LogStore
 
-cutflow = '''
+log=LogStore.add_logger('fitter:test_dataset_summary')
+
+_CUTFLOW : Final[str] = '''
 |    | cut        |   All |   Passed | Efficiency          |   Cummulative |
 |---:|:-----------|------:|---------:|:--------------------|--------------:|
 |  0 | truth      |  8784 |     3752 | 0.42714025500910746 |    0.42714    |
@@ -33,10 +38,17 @@ cutflow = '''
 | 21 | block      |    20 |        0 | 0.0                 |    0          |
 | 22 | brem       |     0 |        0 | <NA>                |  nan          |
 '''
-# -------------------------------------
+# ----------------------
+@pytest.fixture(scope='session', autouse=True)
+def initialize():
+    '''
+    This will run before any test
+    '''
+    LogStore.set_level('fitter:dataset_summary', LogLevels.debug)
+# ----------------------
 def test_markdown_to_df(tmp_path : Path):
     path = tmp_path / 'markdown.md' 
-    path.write_text(cutflow)
+    path.write_text(_CUTFLOW)
 
     df = DatasetSummary.markdown_to_df(path = path)
 
