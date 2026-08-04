@@ -6,6 +6,7 @@ provided by this project
 
 import os
 import typer
+import pandas as pnd
 
 from typing     import Final
 from rx_common  import Trigger, Qsq
@@ -41,20 +42,61 @@ def tabulate_scales(
 # ----------------------
 @app.command()
 def tabulate_mc_stats(
-    trig : Trigger = typer.Option(..., '--trigger', '-t', help='Name trigger'     ),          # noqa: B008 
-    name : str     = typer.Option(..., '--name'   , '-n', help='Name of fit group')) -> None: # noqa: B008
+    cache: bool    = typer.Option(True, '--cache/--no-cache', '-c', help='If used will re-use cached file '),          # noqa: B008 
+    trig : Trigger = typer.Option(... , '--trigger', '-t', help='Name trigger'                    ),          # noqa: B008 
+    name : str     = typer.Option(... , '--name'   , '-n', help='Name of fit group')              ) -> None: # noqa: B008
     '''
     Makes latex table with cutflow for low statistics samples that were dropped from fits
     '''
     from dmu.pdataframe import utilities as put
     from fitter         import DatasetSummary
+    from rx_common      import Component, Cuts
 
-    dsm = DatasetSummary(name = name, trigger = trig)
-    df  = dsm.get_df()
+    cache_path = Path('/tmp/data_summary.parquet')
+    if cache and cache_path.exists():
+        log.info(f'Picking cached dataframe from: {cache_path}')
+        df = pnd.read_parquet(cache_path)
+    else:
+        log.info('Creating dataframe')
+        dsm = DatasetSummary(name = name, trigger = trig)
+        df  = dsm.get_df()
 
-    path = _ANADIR / 'tables/dropped_stats.tex'
+    df.to_parquet(cache_path)
+    df = df.query('Sample != \"Data\"')
+    df = df.query('Block  == 1')
+    for _, df_brem in df.groupby(by = 'Brem'):
+        for sample, df_sample in df_brem.groupby(by = 'Sample'):
+            for q2bin, df_q2bin in df_sample.groupby(by = 'q2bin'):
+                df_q2bin.drop(columns = ['Block', 'Brem', 'Sample', 'q2bin'], inplace = True)
 
-    put.df_to_tex(df = df, path = path) 
+                cut_has_block = df_q2bin['cut'].str.contains('block')
+                df_filt = df_q2bin[~cut_has_block]
+
+                cut_has_brem  = df_filt['cut'].str.contains('brem')
+                df_filt = df_filt[~cut_has_brem]
+
+                cols = list(df_filt.columns)
+                cols[0], cols[1] = cols[1], cols[0]
+                df_filt = df_filt[cols]
+                df_filt = df_filt.rename(columns={df.columns[1]: 'Cut'})
+                df_filt['Cut'] = df_filt['Cut'].str.strip()
+
+                path    = _ANADIR / 'tables/dropped_stats' / f'{sample}_{q2bin}.tex'
+                path.parent.mkdir(parents = True, exist_ok = True)
+
+                comp    = Component(sample)
+                qsq     = Qsq(q2bin)
+
+                caption = f'Statistics of simulated {comp.latex} candidates in {qsq.latex} bin.'
+
+                cuts           = df_filt['Cut'].to_list()
+                cut_map        = { cut : Cuts(cut).latex for cut in cuts }
+                df_filt['Cut'] = df_filt['Cut'].replace(cut_map)
+
+                put.df_to_tex(
+                    df      = df_filt, 
+                    path    = path, 
+                    caption = caption) 
 # ----------------------
 @app.command()
 def fit_summary(
