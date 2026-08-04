@@ -8,7 +8,7 @@ import pandas as pnd
 from pathlib   import Path
 from typing    import Final
 from dmu       import LogStore
-from rx_common import Trigger, Component, Brem
+from rx_common import Qsq, Trigger, Component, Brem
 
 _ANADIR      : Final[Path]      = Path(os.environ['ANADIR'])
 _BLOCK_REGEX : Final[str]       = r'\d{3}_\d{3}_b(\d)' # Used to extract block from path
@@ -116,6 +116,7 @@ class DatasetSummary:
         df          = self.markdown_to_df(path = path)
         df          = df[_COLUMNS]
         sample      = Component.from_path(path = path) 
+        df['q2bin'] = Qsq.from_path(path = path) 
         df['Block'] = self.__block_from_path(path = path)
         df['Brem' ] = str(Brem.from_path(path = path))
         df['Sample']= sample.latex
