@@ -1,15 +1,18 @@
 '''
 Module with DatasetSummary class
 '''
+import re
 import os
 import pandas as pnd
 
 from pathlib   import Path
 from typing    import Final
 from dmu       import LogStore
-from rx_common import Trigger, Component
+from rx_common import Trigger, Component, Brem
 
-_ANADIR : Final[Path] = Path(os.environ['ANADIR'])
+_ANADIR      : Final[Path]      = Path(os.environ['ANADIR'])
+_BLOCK_REGEX : Final[str]       = r'\d{3}_\d{3}_b(\d)' # Used to extract block from path
+_COLUMNS     : Final[list[str]] = ['Passed', 'cut']    # Pick up these columns for each fit
 
 log=LogStore.add_logger('fitter:dataset_summary')
 # ----------------------------------------------
@@ -59,6 +62,8 @@ class DatasetSummary:
         -----------------
         List of paths to data.md files for low statistics fits 
         '''
+        log.info('Finding paths')
+
         root_pattern = f'fits/data/{self.__name}/*/*/{self.__trigger.project}/{self.__trigger.channel}/**/data.md'
         all_paths    = list(_ANADIR.rglob(pattern = root_pattern))
 
@@ -75,7 +80,25 @@ class DatasetSummary:
 
         return no_fit_paths
     # ----------------------------------------------
-    def __col_from_path(self, path : Path) -> tuple[str, pnd.Series]:
+    def __block_from_path(self, path : Path) -> int:
+        '''
+        Parameters
+        ----------------
+        path: Path to file
+
+        Returns
+        ----------------
+        Integer representing block
+        '''
+        mtch = re.search(pattern = _BLOCK_REGEX, string = str(path))
+        if not mtch:
+            raise ValueError(f'Cannot extract block from: {path}')
+
+        val = mtch.group(1)
+
+        return int(val)
+    # ----------------------------------------------
+    def __col_from_path(self, path : Path) -> pnd.DataFrame:
         '''
         Parameters
         ---------------
@@ -88,12 +111,16 @@ class DatasetSummary:
         - Name of component as latex
         - Pandas series with statistics as content and cut as index
         '''
-        log.info(f'Reading: {path}')
+        log.debug(f'Reading: {path}')
 
-        df     = self.markdown_to_df(path = path)
-        sample = Component.from_path(path = path) 
+        df          = self.markdown_to_df(path = path)
+        df          = df[_COLUMNS]
+        sample      = Component.from_path(path = path) 
+        df['Block'] = self.__block_from_path(path = path)
+        df['Brem' ] = str(Brem.from_path(path = path))
+        df['Sample']= sample.latex
 
-        return sample.latex, df['Passed']
+        return df
     # ----------------------------------------------
     @staticmethod
     def markdown_to_df(path : Path) -> pnd.DataFrame:
@@ -110,7 +137,6 @@ class DatasetSummary:
         df.columns = df.columns.str.strip()
         df = df.dropna(axis=1, how='all')
         df = df.iloc[1:].reset_index(drop=True)
-        df = df.set_index('cut', drop = True)
 
         return df
     # ----------------------------------------------
@@ -121,7 +147,7 @@ class DatasetSummary:
         dataframe with statistics
         '''
         paths = self.__find_paths()
-        cols  = [ self.__col_from_path(path = path) for path in paths ]
+        dfs   = [ self.__col_from_path(path = path) for path in paths ]
 
-        return pnd.concat( dict(cols), axis = 1)
+        return pnd.concat(dfs)
 # ----------------------------------------------
