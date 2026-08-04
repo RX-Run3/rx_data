@@ -17,7 +17,7 @@ def df_to_tex(
     path       : str | Path,
     hide_index : bool                 = True,
     d_format   : dict[str,str] | None = None,
-    **kwargs   : str               ) -> None:
+    **kwargs) -> None:
     '''
     Saves pandas dataframe to latex
 
