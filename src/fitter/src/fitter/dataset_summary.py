@@ -73,7 +73,7 @@ class DatasetSummary:
         npaths = len(all_paths)
         log.info(f'Found {npaths} paths')
 
-        no_fit_paths = [ path for path in all_paths if self.__has_fit(path = path) ]
+        no_fit_paths = [ path for path in all_paths if not self.__has_fit(path = path) ]
 
         npaths_nofit = len(no_fit_paths)
         log.info(f'Found {npaths_nofit} paths not associated to any fit')
