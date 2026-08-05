@@ -4,8 +4,12 @@ source_dir: ANADIR
 target_dir: NOTEDIR
 paths:
   tables/datasets       : tables/datasets
-  tables/dropped_stats  : tables/fits/mc_stats
   mva/rk/cmb/latest     : tables/selection/mva/rk/cmb
   mva/rk/prc/latest     : tables/selection/mva/rk/prc
   mva/rkst/cmb/latest   : tables/selection/mva/rkst/cmb
   mva/rkst/prc/latest   : tables/selection/mva/rkst/prc
+  # ------------
+  # Fits
+  # ------------
+  tables/dropped_stats  : tables/fits/mc_stats
+  scales/               : tables/fits/scales/
