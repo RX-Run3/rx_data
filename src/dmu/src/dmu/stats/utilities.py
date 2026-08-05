@@ -381,11 +381,15 @@ def _print_component_pdfs(pdf : zpdf) -> list[str]:
 
     return msg
 #---------------------------------------------
-def save_nll(loss : Loss, path : Path | None = None) -> Path:
+def save_nll(
+    loss : Loss, 
+    rdir : Path | None = None,
+    path : Path | None = None) -> Path:
     '''
     Parameters
     -------------
     loss: NLL
+    rdir: ROOT directory where NLL will be saved instead of /tmp/...
     path: Path to file where NLL is saved, by default None, it will be saved to /tmp/
 
     Returns
@@ -398,7 +402,10 @@ def save_nll(loss : Loss, path : Path | None = None) -> Path:
         path.write_bytes(data = loss_bytes)
         return path
 
-    with tempfile.NamedTemporaryFile(mode='w+b', delete=False) as temp:
+    if rdir is not None:
+        rdir.mkdir(parents = True, exist_ok = True)
+
+    with tempfile.NamedTemporaryFile(mode='w+b', delete=False, dir = rdir) as temp:
         path = Path(temp.name)
         path.write_bytes(data = loss_bytes)
 
