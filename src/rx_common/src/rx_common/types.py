@@ -376,6 +376,8 @@ class Brem(Enum):
                 return r'$1\gamma$'
             case Brem.two:
                 return r'$2\gamma$'
+            case Brem.brx12:
+                return r'$1\gamma + 2\gamma$'
             case _:
                 raise ValueError(f'No color assciated to {self}')
     # ----------------------
