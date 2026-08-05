@@ -28,8 +28,7 @@ from zfit         import dill
 
 log = LogStore.add_logger('dmu:tests:stats:test_utilities')
 
-_FLOAT_TOLERANCE : Final[float]             = 1e-5
-_ROOT_PATHS      : Final[list[Path | None]] = [None, Path('/tmp/alternative')]
+_FLOAT_TOLERANCE : Final[float] = 1e-5
 #----------------------------------
 class Data:
     '''
@@ -294,13 +293,33 @@ def test_yield_from_zdata(weighted : bool):
 
     assert abs(val - target) < _FLOAT_TOLERANCE
 #----------------------------------
-@pytest.mark.parametrize('root', _ROOT_PATHS)
-def test_save_nll(root : Path):
+def test_save_nll():
     '''
     Saves NLL to temporary path
     '''
     nll  = get_nll(kind = 's+b', suffix = '')
-    path = sut.save_nll(loss = nll, rdir = root)
+    path = sut.save_nll(loss = nll)
+
+    log.info(f'Saving NLL to: {path}')
+
+    assert path.exists()
+
+    nll_bytes = path.read_bytes()
+    nll       = dill.loads(nll_bytes)
+
+    minimizer = zfit.minimize.Minuit()
+    res = minimizer.minimize(loss = nll)
+    print(res)
+#----------------------------------
+def test_save_nll_context():
+    '''
+    Saves NLL to temporary path set by context manager
+    '''
+    root_dir = Path('/tmp/alternative_context')
+
+    nll  = get_nll(kind = 's+b', suffix = '')
+    with sut.root_directory(root_dir = root_dir):
+        path = sut.save_nll(loss = nll)
 
     log.info(f'Saving NLL to: {path}')
 
