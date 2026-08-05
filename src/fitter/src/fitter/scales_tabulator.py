@@ -122,6 +122,21 @@ class ScalesTabulator:
 
         return df, category.signal
     # ----------------------------------------
+    def _update_q2bin(self, df : pnd.DataFrame) -> pnd.DataFrame:
+        '''
+        Parameters
+        --------------
+        df: DataFrame
+
+        Returns
+        --------------
+        Dataframe with q2bin column renamed with latex
+        '''
+        naming       = { qsq.value : qsq.latex for qsq in Qsq }
+        df[_Q2LABEL] = df[_Q2LABEL].replace(naming)
+
+        return df
+    # ----------------------------------------
     def _tabulate(self, name : str, category : ScalesCategory) -> None:
         '''
         Parameters
@@ -133,6 +148,7 @@ class ScalesTabulator:
         df_for_tex = df.assign(Background=df['Background'].apply(lambda sample : Component(sample).latex))
         df_for_tex = df_for_tex.assign(Value=df_for_tex['Value'].apply(lambda value : 100 * value))
         df_for_tex = df_for_tex.assign(Error=df_for_tex['Error'].apply(lambda error : 100 * error))
+        df_for_tex = self._update_q2bin(df = df_for_tex)
 
         path = self._cfg.output_directory / f'{name}-{signal.value}.tex'
         log.info(f'Saving to: {path}')
