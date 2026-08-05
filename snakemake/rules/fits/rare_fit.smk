@@ -11,7 +11,7 @@ HOME      = '/afs/ihep.ac.cn/users/c/campoverde'
 ANADIR    = '/publicfs/ucas/user/campoverde/Data'
 LOGDIR    = '/publicfs/ucas/user/campoverde/Jobs/snakemake'
 out_path  = f'{ANADIR}/fits/data'
-group_name= 'rare_fix_cmb_pars'
+group_name= 'rare_fit'
 mode      = 'rare'
 # ---------------------------------------
 paths = []
