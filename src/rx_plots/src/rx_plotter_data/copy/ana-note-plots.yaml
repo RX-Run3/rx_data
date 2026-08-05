@@ -17,7 +17,7 @@ paths:
 # Fits
 # ------------
   fits/data/reso_dtf-latest                                  : figs/mass-fits/reso_dtf
-  fits/data/reso_no_dtf-latest                               : figs/mass_fits/reso_no_dtf
+  fits/data/reso_no_dtf-latest                               : figs/mass-fits/reso_no_dtf
 # ------------
 # Acceptances
 # ------------
