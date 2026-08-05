@@ -28,7 +28,8 @@ from zfit         import dill
 
 log = LogStore.add_logger('dmu:tests:stats:test_utilities')
 
-FLOAT_TOLERANCE : Final[float] = 1e-5
+_FLOAT_TOLERANCE : Final[float]             = 1e-5
+_ROOT_PATHS      : Final[list[Path | None]] = [None, Path('/tmp/alternative')]
 #----------------------------------
 class Data:
     '''
@@ -291,14 +292,15 @@ def test_yield_from_zdata(weighted : bool):
 
     val = sut.yield_from_zdata(data=data)
 
-    assert abs(val - target) < FLOAT_TOLERANCE
+    assert abs(val - target) < _FLOAT_TOLERANCE
 #----------------------------------
-def test_save_nll():
+@pytest.mark.parametrize('root', _ROOT_PATHS)
+def test_save_nll(root : Path):
     '''
     Saves NLL to temporary path
     '''
     nll  = get_nll(kind = 's+b', suffix = '')
-    path = sut.save_nll(loss = nll)
+    path = sut.save_nll(loss = nll, rdir = root)
 
     log.info(f'Saving NLL to: {path}')
 
