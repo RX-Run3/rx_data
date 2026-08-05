@@ -338,7 +338,7 @@ def test_merge_sum_models_missing(pair : Literal['by_name', 'by_order', 'by_pref
     pdf_b = get_model(kind = 's+b'   , suffix = 'b', obs = obs, suffix_pdfs = pair != 'by_name')
     pdf_c = get_model(kind = 's+b'   , suffix = 'c', obs = obs, suffix_pdfs = pair != 'by_name')
 
-    prefixes = {'signal', 'signal_alt', 'bkg'}
+    prefixes = ['signal', 'signal_alt', 'bkg']
 
     if pair != 'by_prefix':
         with pytest.raises(ValueError):
