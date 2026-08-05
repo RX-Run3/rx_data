@@ -1,4 +1,5 @@
 from .fit_summary        import FitSummary, FitOutput
+from .dataset_summary    import DatasetSummary
 from .parameter_reader   import ParameterReader
 from .likelihood_factory import LikelihoodFactory
 from .toy_maker          import ToyMaker
@@ -62,6 +63,7 @@ __all__ = [
     'CmbInputConfig',
     'CmbValidationConfig',
     'CmbOutputConfig',
+    'DatasetSummary',
     # ------------------
     'MVAConf',
     'MVAWp',

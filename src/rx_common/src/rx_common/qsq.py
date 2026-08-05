@@ -1,7 +1,8 @@
 '''
 Module containing Qsq enum
 '''
-from enum import StrEnum, auto
+from pathlib import Path
+from enum    import StrEnum, auto
 
 # -----------------------
 class Qsq(StrEnum):
@@ -15,6 +16,29 @@ class Qsq(StrEnum):
     jpsi    = auto()
     psi2    = auto()
     high    = auto()
+    # --------------------------
+    @classmethod
+    def from_path(cls, path : Path) -> 'Qsq':
+        '''
+        Parameters
+        ----------------
+        path: Path to file containing '/{q2bin}/' substring
+
+        Returns
+        ----------------
+        q2 bin
+        '''
+        q2bins : list[Qsq] = []
+        for q2bin in Qsq:
+            if f'/{q2bin}/' not in str(path):
+                continue
+
+            q2bins.append(q2bin)
+
+        if len(q2bins) != 1:
+            raise ValueError(f'Not found one and only one q2bin in: {path}')
+
+        return q2bins[0]
     # --------------------------
     @classmethod
     def for_physics(cls) -> list['Qsq']:

@@ -1,10 +1,12 @@
 '''
 This module contains classes derived from Enum
 '''
+from pathlib     import Path
 from enum        import StrEnum, Enum, auto
 from typing      import Final
 from dmu.stats   import CorrectionImplementation
 from pydantic    import BaseModel, ConfigDict, model_validator
+
 from .mass       import Mass
 from .project    import Project
 from .channel    import Channel
@@ -481,6 +483,29 @@ class Brem(Enum):
                 return Brem.br012
             case _:
                 raise ValueError(f'Invalid brem string: {value}')
+    # ----------------------
+    @staticmethod
+    def from_path(path : Path) -> 'Brem':
+        '''
+        Parameters
+        ----------------
+        path: Path to file containing brem in the form '/{brem}/'
+
+        Returns
+        ----------------
+        Brem category in path
+        '''
+        brems : list[Brem] = []
+        for brem in Brem:
+            if f'/{brem}/' not in str(path):
+                continue
+
+            brems.append(brem)
+
+        if len(brems) != 1:
+            raise ValueError(f'Not found one and only one brem category in: {path}')
+
+        return brems[0]
     # ----------------------
     def __eq__(self, other) -> bool:
         if isinstance(other, str):

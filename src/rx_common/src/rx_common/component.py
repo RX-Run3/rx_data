@@ -6,6 +6,7 @@ from functools           import cache
 from enum                import StrEnum, auto
 from typing              import Literal
 from ap_utilities.decays import utilities as aput
+from pathlib             import Path
 
 from .channel            import Channel
 from .branching_fraction import BranchingFraction
@@ -237,6 +238,29 @@ class Component(StrEnum):
         sample = aput.read_decay_name(event_type = etype)
 
         return cls.from_sample(sample = sample)
+    # --------------------------------------------
+    @classmethod
+    def from_path(cls, path : Path) -> 'Component':
+        '''
+        Parameters
+        ----------------
+        path: Path to file
+
+        Returns
+        ----------------
+        Component whose name is part of the path as '/{component}/'
+        '''
+        components : list['Component'] = []
+        for comp in cls:
+            if f'/{comp}/' not in str(path):
+                continue
+
+            components.append(comp)
+
+        if len(components) != 1:
+            raise ValueError(f'Not found one and only one component in: {path}')
+
+        return components[0]
     # --------------------------------------------
     @classmethod
     def has_component(cls, sample :  str) -> bool:
