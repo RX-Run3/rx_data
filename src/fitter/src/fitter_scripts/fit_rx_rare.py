@@ -12,6 +12,7 @@ from typing           import Final
 from contextlib       import ExitStack
 from dmu.generic      import UnpackerModel, utilities as gut
 from dmu.stats        import ParameterLibrary as PL
+from dmu.stats        import utilities as sut
 from dmu.workflow     import Cache
 from dmu              import LogStore
 from rx_data          import RDFGetter
@@ -191,6 +192,7 @@ def main():
         stack.enter_context(Cache.cache_root(path=cfg.output_directory))
         stack.enter_context(PL.parameter_schema(cfg=cfg.mod_cfg.yields))
         stack.enter_context(sel.custom_selection(d_sel=cfg.overriding_selection))
+        stack.enter_context(sut.root_directory(root_dir=cfg.output_directory / 'failed_nll'))
 
         _fit(cfg=cfg)
 # ----------------------

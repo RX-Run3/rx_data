@@ -14,4 +14,11 @@ paths:
   mva/rkst/cmb/latest                                        : figs/selection/mva/rkst/cmb
   mva/rkst/prc/latest                                        : figs/selection/mva/rkst/prc
 # ------------
+# Fits
+# ------------
   fits/data/reso_dtf-latest                                  : figs/mass-fits/reso_dtf
+  fits/data/reso_no_dtf-latest                               : figs/mass-fits/reso_no_dtf
+# ------------
+# Acceptances
+# ------------
+  efficiencies/acceptances/latest                            : figs/efficiencies/acceptances

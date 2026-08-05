@@ -44,7 +44,6 @@ def df_to_tex(
     buf = st.to_latex(
         buf            = path, 
         hrules         = True, 
-        position_float = 'centering',
         **kwargs)
 
     return buf

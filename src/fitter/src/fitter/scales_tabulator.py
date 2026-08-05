@@ -14,8 +14,10 @@ from dmu.generic    import utilities as gut
 from rx_common      import Brem, Component, Qsq, Trigger
 from fitter         import PrecScales
 
-_ANADIR : Final[Path] = Path(os.environ['ANADIR'])
 log = LogStore.add_logger('fitter:scales_tabulator')
+
+_ANADIR : Final[Path] = Path(os.environ['ANADIR'])
+_Q2LABEL: Final[str]  = r'$q^2$ bin' # Label used for q2bin column
 # ----------------------------------------
 class ScalesCategory(BaseModel):
     '''
@@ -26,6 +28,16 @@ class ScalesCategory(BaseModel):
     q2bin      : list[Qsq]
     backgrounds: list[Component]
     signal     : Component
+    # ------------------
+    @property
+    def group(self) -> str:
+        '''
+        Identifier for group that this category belongs to 
+        '''
+        q2bins            = '-'.join(self.q2bin)
+        no_channel_signal = self.signal.replace('ee', '').replace('mm', '')
+
+        return f'{q2bins}_{no_channel_signal}_{self.trigger.project}'
     # ------------------
     @model_validator(mode = 'before')
     @classmethod
@@ -80,7 +92,7 @@ class ScalesTabulator:
 
         self._cfg = cfg
     # ----------------------------------------
-    def _get_df(self, name : str, category : ScalesCategory) -> tuple[pnd.DataFrame, Component]:
+    def _get_df(self, name : str, category : ScalesCategory) -> pnd.DataFrame:
         '''
         Parameters
         --------------
@@ -89,14 +101,11 @@ class ScalesTabulator:
 
         Returns
         --------------
-        Tuple with:
-
         Dataframe with values and errors of scales for different backgrounds
-        Signal component with respect to which the scales are calculated 
         '''
         log.info(f'Tabulating {name}')
 
-        df = pnd.DataFrame(columns = ['Background', 'Value', 'Error', '$q^2$ bin'])
+        df = pnd.DataFrame(columns = ['Background', 'Value', 'Error', 'Brem', _Q2LABEL])
         for q2bin in category.q2bin:
             obj = PrecScales(
                 output_directory = self._cfg.output_directory,
@@ -115,28 +124,43 @@ class ScalesTabulator:
                     'Background' : background,
                     'Value'      : val,
                     'Error'      : err, 
-                    '$q^2$ bin'  : q2bin,
+                    'Brem'       : category.brem.latex,
+                    '$q^2$ bin'  : q2bin.latex,
                 }
 
-        return df, category.signal
+        return df
     # ----------------------------------------
-    def _tabulate(self, name : str, category : ScalesCategory) -> None:
+    def _get_tex_df(self, name : str, category : ScalesCategory) -> pnd.DataFrame:
         '''
         Parameters
         --------------
         name    : Name of category
         category: Config to plot a given group of scale factors
+
+        Returns
+        --------------
+        Pandas dataframe with values and errors for scales
         '''
-        df, signal = self._get_df(name = name, category = category)
+        df         = self._get_df(name = name, category = category)
         df_for_tex = df.assign(Background=df['Background'].apply(lambda sample : Component(sample).latex))
         df_for_tex = df_for_tex.assign(Value=df_for_tex['Value'].apply(lambda value : 100 * value))
         df_for_tex = df_for_tex.assign(Error=df_for_tex['Error'].apply(lambda error : 100 * error))
 
-        path = self._cfg.output_directory / f'{name}-{signal.value}.tex'
+        return df_for_tex
+    # ----------------------------------------
+    def __save_group(self, name : str, dfs : list[pnd.DataFrame]) -> None:
+        '''
+        Parameters
+        ---------------
+        name: Name of group
+        dfs : List of dataframes in group
+        '''
+        df   = pnd.concat(dfs)
+        path = self._cfg.output_directory / f'{name}.tex'
         log.info(f'Saving to: {path}')
 
         put.df_to_tex(
-            df        = df_for_tex, 
+            df        = df, 
             path      = path, 
             hide_index=True, 
             d_format  ={'Background' : '{}', 'Value' : '{:.3g}', 'Error' : '{:.3g}'})
@@ -145,7 +169,18 @@ class ScalesTabulator:
         '''
         Runs plotting
         '''
+        dataframes : dict[str,list[pnd.DataFrame]] = dict()
+
         for name, category in self._cfg.categories.items():
             with Cache.cache_root(path = _ANADIR / 'scales/.cache' ):
-                self._tabulate(name = name, category = category)
+                df = self._get_tex_df(name = name, category = category)
+
+            group = category.group
+            if group not in dataframes:
+                dataframes[group] = [df]
+            else:
+                dataframes[group].append(df)
+
+        for group, l_df in dataframes.items():
+            self.__save_group(name = group, dfs = l_df)
 # ----------------------------------------

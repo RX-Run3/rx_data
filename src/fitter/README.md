@@ -288,3 +288,19 @@ A summary of the toy fits will be saved in the `summary.yaml` file within the
 ```bash
 summarize_toys -v v3
 ```
+## Tables
+
+The `rxfitter` CLI can create latex tables with:
+
+```bash
+rxfitter tabulate-scales
+```
+
+for normalization scales between signal and background components.
+
+```bash
+rxfitter tabulate-mc-stats -t rkst_ee_os -n reso_dtf-latest-990-600
+```
+
+to create tables with statics for simulated samples associated to the 
+`reso_dtf-latest-990-600` in the `rkst_ee_os` triggered candidate fits.

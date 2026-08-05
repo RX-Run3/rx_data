@@ -18,6 +18,7 @@ from .imports         import zfit
 from typing           import Any, Literal, overload, Final, Sequence
 from pathlib          import Path
 from contextlib       import contextmanager
+from contextvars      import ContextVar
 
 from omegaconf        import OmegaConf, DictConfig
 from zfit.data        import Data          as zdata
@@ -39,9 +40,10 @@ SingleLiteral = Literal['signal', 'signal_alt', 'bkg']
 SumLiteral    = Literal['s+b', 's_alt+b']
 AllLiteral    = Literal['signal', 'signal_alt', 'bkg', 's+b', 's_alt+b']
 
-_MIN_MERGE_MODELS : Final[int] = 2    # Cannot merge fewer than 2 models
-_MIN_LIMITS       : Final[int] = 2    # Need at least upper and lower limit in observable
-_MIN_INT_PRINT    : Final[int] = 1000 # Minimum value of a float that would be printed without decimals
+_MIN_MERGE_MODELS : Final[int]            = 2    # Cannot merge fewer than 2 models
+_MIN_LIMITS       : Final[int]            = 2    # Need at least upper and lower limit in observable
+_MIN_INT_PRINT    : Final[int]            = 1000 # Minimum value of a float that would be printed without decimals
+_ROOT_DIR         : ContextVar[Path|None] = ContextVar('ROOT_DIR', default = None) # When saving an NLL can override /tmp/ with this directory 
 #-------------------------------------------------------
 class Data:
     '''
@@ -67,6 +69,19 @@ def blinded_variables(regex_list : list[str]|None = None):
         yield
     finally:
         Data.l_blind_vars = old_val
+#-------------------------------------------------------
+@contextmanager
+def root_directory(root_dir : Path):
+    '''
+    Parameters
+    -------------
+    root_dir: Directory that will override /tmp/ when saving NLL
+    '''
+    token = _ROOT_DIR.set(root_dir)
+    try:
+        yield
+    finally:
+        _ROOT_DIR.reset(token)
 #-------------------------------------------------------
 def name_from_obs(obs : zobs) -> str:
     '''
@@ -381,7 +396,9 @@ def _print_component_pdfs(pdf : zpdf) -> list[str]:
 
     return msg
 #---------------------------------------------
-def save_nll(loss : Loss, path : Path | None = None) -> Path:
+def save_nll(
+    loss : Loss, 
+    path : Path | None = None) -> Path:
     '''
     Parameters
     -------------
@@ -398,7 +415,11 @@ def save_nll(loss : Loss, path : Path | None = None) -> Path:
         path.write_bytes(data = loss_bytes)
         return path
 
-    with tempfile.NamedTemporaryFile(mode='w+b', delete=False) as temp:
+    rdir = _ROOT_DIR.get()
+    if rdir is not None:
+        rdir.mkdir(parents = True, exist_ok = True)
+
+    with tempfile.NamedTemporaryFile(mode='w+b', delete=False, dir = rdir) as temp:
         path = Path(temp.name)
         path.write_bytes(data = loss_bytes)
 

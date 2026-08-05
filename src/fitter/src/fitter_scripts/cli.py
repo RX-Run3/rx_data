@@ -50,7 +50,7 @@ def tabulate_mc_stats(
     '''
     from dmu.pdataframe import utilities as put
     from fitter         import DatasetSummary
-    from rx_common      import Component, Cuts
+    from rx_common      import Cuts
 
     cache_path = Path('/tmp/data_summary.parquet')
     if cache and cache_path.exists():
@@ -84,19 +84,13 @@ def tabulate_mc_stats(
                 path    = _ANADIR / 'tables/dropped_stats' / f'{sample}_{q2bin}.tex'
                 path.parent.mkdir(parents = True, exist_ok = True)
 
-                comp    = Component(sample)
-                qsq     = Qsq(q2bin)
-
-                caption = f'Statistics of simulated {comp.latex} candidates in {qsq.latex} bin.'
-
                 cuts           = df_filt['Cut'].to_list()
                 cut_map        = { cut : Cuts(cut).latex for cut in cuts }
                 df_filt['Cut'] = df_filt['Cut'].replace(cut_map)
 
                 put.df_to_tex(
                     df      = df_filt, 
-                    path    = path, 
-                    caption = caption) 
+                    path    = path)
 # ----------------------
 @app.command()
 def fit_summary(
