@@ -50,7 +50,7 @@ def tabulate_mc_stats(
     '''
     from dmu.pdataframe import utilities as put
     from fitter         import DatasetSummary
-    from rx_common      import Component, Cuts
+    from rx_common      import Cuts
 
     cache_path = Path('/tmp/data_summary.parquet')
     if cache and cache_path.exists():
