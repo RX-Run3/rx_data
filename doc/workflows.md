@@ -132,7 +132,25 @@ channel with `dtf-fits-mm.smk` instead. This workflow will:
 
 For the muon channel use `dtf-fits-mm.smk` instead
 
+### Rare fits
+
+To run the fits to the rare mode do:
+
+```bash
+snakemake -s           snakemake/rules/fits/rare_fit.smk \
+          --configfile snakemake/configs/fits/scan.yaml  \
+          --profile    ihep                              \
+          --logger=flowo                                 \
+          --logger-flowo-name=rare-scan                  \
+          --keep-going                                   \
+          --quiet
+```
+
+where `scan.yaml` runs a fit on a grid of MVA working points. Different configurations can be tried
+based on the `yaml` file. The fits will fit the full 2024 dataset together.
+
 ## Ntuple transfers
+
 
 Run:
 
