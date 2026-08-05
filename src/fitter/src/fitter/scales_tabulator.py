@@ -14,8 +14,10 @@ from dmu.generic    import utilities as gut
 from rx_common      import Brem, Component, Qsq, Trigger
 from fitter         import PrecScales
 
-_ANADIR : Final[Path] = Path(os.environ['ANADIR'])
 log = LogStore.add_logger('fitter:scales_tabulator')
+
+_ANADIR : Final[Path] = Path(os.environ['ANADIR'])
+_Q2LABEL: Final[str]  = r'$q^2$ bin' # Label used for q2bin column
 # ----------------------------------------
 class ScalesCategory(BaseModel):
     '''
@@ -96,7 +98,7 @@ class ScalesTabulator:
         '''
         log.info(f'Tabulating {name}')
 
-        df = pnd.DataFrame(columns = ['Background', 'Value', 'Error', '$q^2$ bin'])
+        df = pnd.DataFrame(columns = ['Background', 'Value', 'Error', _Q2LABEL])
         for q2bin in category.q2bin:
             obj = PrecScales(
                 output_directory = self._cfg.output_directory,
