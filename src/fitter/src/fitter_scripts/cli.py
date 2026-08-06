@@ -47,9 +47,9 @@ def tabulate_scales(
 # ----------------------
 @app.command()
 def tabulate_mc_stats(
-    cache: bool    = typer.Option(True, '--cache/--no-cache', '-c', help='If used will re-use cached file '),          # noqa: B008 
+    cache: bool    = typer.Option(True, '--cache/--no-cache', '-c', help='If used will re-use cached file '), # noqa: B008 
     trig : Trigger = typer.Option(... , '--trigger', '-t', help='Name trigger'                    ),          # noqa: B008 
-    name : str     = typer.Option(... , '--name'   , '-n', help='Name of fit group')              ) -> None: # noqa: B008
+    name : str     = typer.Option(... , '--name'   , '-n', help='Name of fit group')              ) -> None:  # noqa: B008
     '''
     Makes latex table with cutflow for low statistics samples that were dropped from fits
     '''
@@ -208,7 +208,7 @@ def signal_expectation(
     name    : str     = typer.Option(..., '--name'   , '-n', help='Name of config file'),
     cmb     : float   = typer.Option(..., '--cmb'    , '-c', help='Working point for combinatorial MVA'),
     prc     : float   = typer.Option(..., '--prc'    , '-p', help='Working point for part-reco MVA'),
-    trigger : Trigger = typer.Option(..., '--trigger', '-t', help='E.g. rk_ee_os'),
+    trigger : Trigger = typer.Option(..., '--trigger', '-t', help='E.g. rk_ee_os'),          # noqa: B008
     q2bin   : Qsq     = typer.Option(..., '--q2bin'  , '-q', help='E.g. central' )) -> None: # noqa: B008
     '''
     Calculates grid of signal expected yields in grid of MVA classifiers working points
