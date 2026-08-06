@@ -171,6 +171,7 @@ def load_from_wcard(
 
     return l_list
 # --------------------------------
+@cache
 def load_conf(
     package       : str,
     fpath         : str,
