@@ -3,9 +3,10 @@ Module with tests for FitSummary class
 '''
 import pytest
 
-from dmu     import LogStore
-from fitter  import FitSummary, FitOutput
-from pathlib import Path
+from dmu         import LogStore
+from fitter      import FitSummary, FitOutput, FitOutputConf
+from pathlib     import Path
+from dmu.generic import utilities as gut
 
 log=LogStore.add_logger('fitter:test_fit_summary')
 
@@ -23,16 +24,25 @@ def initialize():
 # ----------------------
 @pytest.mark.parametrize('path', _PATHS)
 def test_fit_output(path : Path):
-    fou  = FitOutput(path = path)
+    data = gut.load_data(package = 'fitter_data', fpath = 'fit_summary/reso.yaml')
+    cfg  = FitOutputConf(root = data)
+    fou  = FitOutput(path = path, cfg = cfg)
 
     print(fou)
 # ----------------------
-@pytest.mark.parametrize('name', ['reso_dtf-latest'])
+@pytest.mark.parametrize('name', ['rare_fit-test', 'reso_dtf-latest'])
 def test_local(name : str) -> None:
     '''
     Test where overriden path
     '''
-    smr = FitSummary(name = name)
+    if   name.startswith('rare'):
+        kind = 'rare'
+    elif name.startswith('reso'):
+        kind = 'reso'
+    else:
+        raise ValueError(f'Invalid kind: {name}')
+
+    smr = FitSummary(name = name, kind = kind)
     df  = smr.get_df(force_update = True)
 
     assert len(df) > 0
@@ -47,7 +57,7 @@ def test_update(force_update : bool) -> None:
     '''
     Test updating the parquet file
     '''
-    smr = FitSummary(name = 'reso_no_dtf')
+    smr = FitSummary(name = 'reso_no_dtf', kind = 'reso')
     df  = smr.get_df(force_update = force_update)
 
     assert len(df) > 0
