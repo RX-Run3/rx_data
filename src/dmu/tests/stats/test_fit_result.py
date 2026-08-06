@@ -7,7 +7,7 @@ import pytest
 
 from pathlib     import Path
 from dmu         import LogStore
-from dmu.stats   import FitResult
+from dmu.stats   import FitResult, FitParameter
 from dmu.stats   import zfit
 from dmu.testing import get_nll
 from dmu.generic import rxran 
@@ -113,6 +113,30 @@ def test_get():
 
     assert a == 3
     assert b == 3
+# -----------------------------
+def test_extend():
+    '''
+    Test extending fit result 
+    '''
+    nll = get_nll(kind = 's+b', suffix = '')
+    min = zfit.minimize.Minuit()
+
+    res = min.minimize(loss = nll)
+    res.hesse(name = 'minuit_hesse')
+
+    ores = FitResult.from_zfit(res = res)
+
+    p1  = FitParameter(name = 'f1', value = 1, error = 1)
+    p2  = FitParameter(name = 'f2', value = 2, error = 2)
+
+    eres = ores.extend(pars = [p1, p2])
+
+    log.info(ores)
+    log.info(eres)
+
+    with pytest.raises(ValueError):
+        mu = FitParameter(name = 'mu', value = 1, error = 1)
+        ores.extend(pars = [mu])
 # -----------------------------
 def test_no_errors_ok():
     '''

@@ -2,6 +2,7 @@
 Module containing FitResult class
 '''
 import re
+import copy
 import math
 import yaml
 import json
@@ -9,13 +10,13 @@ import numpy
 import pprint
 import pandas as pnd
 
-from typing      import Self
+from typing      import Self, Sequence
 from contextvars import ContextVar
 from contextlib  import contextmanager
 from typing      import Final
 from scipy.stats import chi2 as chi2_dist
 from pathlib     import Path
-from pydantic    import BaseModel, ConfigDict, model_validator
+from pydantic    import BaseModel, ConfigDict, Field, model_validator
 from dmu         import LogStore
 from .imports    import zfit
 
@@ -213,8 +214,38 @@ class FitResult(BaseModel):
     valid      : bool
     status     : int
     gof        : GoodnessOfFit | None = None
+    extra_pars : list[FitParameter]   = Field(default_factory = list, description = 'E.g. parameters derived from main parameters')
     parameters : tuple[FitParameter,...]
     covariance : list[list[float]] 
+    # ----------------------
+    def extend(self, pars : list[FitParameter]) -> 'FitResult':
+        '''
+        Parameters
+        -----------------
+        pars: Tuple of FitParameter objects used to attach to current object
+
+        Returns
+        -----------------
+        Copy of current object with extra parameters
+        '''
+        fail = False
+        for par in pars:
+            if par.name in self:
+                fail = True
+                log.error(par)
+
+        if fail:
+            raise ValueError('Cannot extend FitResult with parameters already found')
+
+        extra_pars = copy.deepcopy(self.extra_pars)
+        extra_pars.extend(pars)
+        data = {'extra_pars' : extra_pars}
+
+        return self.model_copy( update = data )
+    # ----------------------
+    @property
+    def __all_parameters(self) -> Sequence[FitParameter]:
+        return list(self.parameters) + self.extra_pars
     # ----------------------
     @property
     def df(self) -> pnd.DataFrame:
@@ -223,7 +254,7 @@ class FitResult(BaseModel):
         as columns
         '''
         l_data : list[dict] = []
-        for parameter in self.parameters:
+        for parameter in self.__all_parameters:
             data = {
                 'Parameter' : parameter.name,
                 'Value'     : parameter.value,
@@ -267,7 +298,7 @@ class FitResult(BaseModel):
     # ----------------------
     def __hash__(self) -> int:
         cov  = tuple( tuple(row) for row in self.covariance )
-        data = cov, self.valid, self.status, self.parameters, self.gof
+        data = cov, self.valid, self.status, self.__all_parameters, self.gof
 
         return hash(data)
     # ----------------------
@@ -347,7 +378,7 @@ class FitResult(BaseModel):
         -------------
         Tuple with fit value and error
         '''
-        for par in self.parameters:
+        for par in self.__all_parameters:
             if par.name != name:
                 continue
 
@@ -365,7 +396,7 @@ class FitResult(BaseModel):
         -------------
         True if parameter exists in fit result
         '''
-        return any(par.name == name for par in self.parameters)
+        return any(par.name == name for par in self.__all_parameters)
     # ----------------------
     def get(self, name : str, fall_back : float) -> tuple[float,float]:
         '''
@@ -378,7 +409,7 @@ class FitResult(BaseModel):
         ----------------
         Tuple with value and error
         '''
-        for par in self.parameters:
+        for par in self.__all_parameters:
             if par.name != name:
                 continue
 
@@ -397,7 +428,7 @@ class FitResult(BaseModel):
         msg += 100 * '-' + '\n'
         msg += f'{"Name":<50}{"Value":<20}{"":<5}{"Error":<20}\n'
         msg += 100 * '-' + '\n'
-        for par in self.parameters:
+        for par in self.__all_parameters:
             msg += str(par) + '\n' 
 
         return msg
