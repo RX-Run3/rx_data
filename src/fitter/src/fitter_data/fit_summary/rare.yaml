@@ -1,0 +1,14 @@
+all: &all
+  rk   : 
+    ee : bpkpee 
+    mm : bpkpmm 
+  rkst : 
+    ee : bdkstkpiee
+    mm : bdkstkpimm
+# ---------------
+low    :
+  <<: *all
+central:
+  <<: *all
+high   :
+  <<: *all
