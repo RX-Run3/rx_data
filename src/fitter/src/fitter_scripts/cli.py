@@ -8,6 +8,7 @@ import os
 import typer
 import pandas as pnd
 
+from enum       import StrEnum, auto
 from typing     import Final
 from rx_common  import Trigger, Qsq
 from dmu        import LogLevels, LogStore
@@ -21,6 +22,10 @@ app = typer.Typer(
 log = LogStore.add_logger('rx_fitter:cli')
 
 _ANADIR : Final[Path] = Path(os.environ['ANADIR'])
+# ----------------------
+class FitKind(StrEnum):
+    rare = auto()
+    reso = auto()
 # ----------------------
 @app.command()
 def tabulate_scales(
@@ -94,15 +99,16 @@ def tabulate_mc_stats(
 # ----------------------
 @app.command()
 def fit_summary(
-    name    : str = typer.Option(...           , '--name'   , '-n', help='Name of fits, e.g. mid_window'),
-    log_lvl : int = typer.Option(LogLevels.info, '--log_lvl', '-l', help='Logging level'))-> None:
+    kind    : FitKind = typer.Option(...           , '--kind'   , '-k', help='E.g. rare or reso'), # noqa: B008
+    name    : str     = typer.Option(...           , '--name'   , '-n', help='Name of fits, e.g. mid_window'),
+    log_lvl : int     = typer.Option(LogLevels.info, '--log_lvl', '-l', help='Logging level'))-> None:
     '''
     This will create a fit summary for a given fit
     '''
     from fitter import FitSummary # noqa: PLC0415 
 
-    smr = FitSummary(name = name)
-    smr.get_df()
+    smr = FitSummary(name = name, kind = kind)
+    smr.get_df(force_update = True)
 
     LogStore.set_level('rx_fitter:fit_summary', log_lvl)
 # ----------------------
