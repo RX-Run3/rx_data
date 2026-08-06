@@ -12,7 +12,7 @@ from dmu           import LogStore
 from dmu.stats     import FitResult
 from dmu.generic   import utilities as gut
 from pathlib       import Path
-from typing        import Final
+from typing        import Final, Sequence
 from pydantic      import RootModel
 from pydantic      import BaseModel
 from rx_common     import Block, Brem, Channel, Component, Project, Qsq
@@ -22,9 +22,9 @@ from .mva_conf     import MVAWp
 log=LogStore.add_logger('fitter:fit_summary')
 
 _ANADIR   : Final[Path]      = Path(os.environ['ANADIR'])
-_COMMON   : Final[str]       = r'.*\/(\d{3}-\d{3}|\d{3})_(\d{3}-\d{3}|\d{3})_(all|b\d)\/(?:reso|rare)\/(rk|rkst)\/(mm|ee)\/(low|central|jpsi|psi2|high)'
+_COMMON   : Final[str]       = r'.*\/(\d+-\d+|\d{3})_(\d+-\d+|\d{3})_(all|b\d)\/(?:reso|rare)\/(rk|rkst)\/(mm|ee)\/(low|central|jpsi|psi2|high)'
 _DT_REGEX : Final[str]       = r'\/data_24\/fit\/.*\/brem_([x,0-9]{3})\/parameters.json'
-_MC_REGEX : Final[str]       = r'\/_SIGNAL\/fit\/brem_([x,0-9]{3})\/brem_[x,0-9]{3}\/parameters.json'
+_MC_REGEX : Final[str]       = r'\/_SIGNAL\/fit\/brem_([x,0-9]{3})\/brem_[x,0-9]{3}(_b\d)?\/parameters.json'
 # -------------------------------
 class FitMetadata(BaseModel):
     '''
@@ -54,18 +54,25 @@ class FitMetadata(BaseModel):
         Object holding fit metadata
         '''
         if comp.is_mc:
-            REGEX = f'{_COMMON}{_MC_REGEX}'
-            REGEX = REGEX.replace('_SIGNAL', comp)
+            regex = f'{_COMMON}{_MC_REGEX}'
+            regex = regex.replace('_SIGNAL', comp)
         else:
-            REGEX = f'{_COMMON}{_DT_REGEX}'
+            regex = f'{_COMMON}{_DT_REGEX}'
 
-        mtch = re.match(REGEX, str(path))
+        mtch = re.match(regex, str(path))
         if not mtch:
-            log.error(f'Regex: {REGEX}')
-            raise ValueError(f'Path does not conform to pattern: {path}')
+            log.error(f'Regex: {regex}')
+            message = f'''
+            Path does not conform to pattern
+
+            Path   : {path}
+            Pattern: {regex}
+            '''
+            raise ValueError(message)
 
         cmb_wp = mtch.group(1)
         prc_wp = mtch.group(2)
+        block  = mtch.group(3).removeprefix('b') # b3 -> 3
 
         return cls(
             mva_cmb = MVAWp.from_label(cmb_wp),
@@ -73,7 +80,7 @@ class FitMetadata(BaseModel):
             project = Project(mtch.group(4)),
             channel = Channel(mtch.group(5)),
             q2bin   = Qsq(    mtch.group(6)),
-            block   = Block.from_str(value = mtch.group(3)),
+            block   = Block.from_str(value = block),
             brem    =  Brem.from_str(value = mtch.group(7)),
         )
     # -------------------
@@ -110,14 +117,15 @@ class FitOutput:
     Class meant to symbolize a given fit
     '''
     # -------------------------------
-    def __init__(self, path : Path):
+    def __init__(self, path : Path, cfg : FitOutputConf):
         '''
         Parameters
         --------------
         path: Path to JSON file with fit parameters 
+        cfg : Configuration object 
         '''
         self.__path = path
-        self.__cfg  = gut.load_conf(package = 'fitter_data', fpath = 'fit_summary/conf.yaml')
+        self.__cfg  = cfg
         self.__meta = FitMetadata.from_path(path = path, comp = self.dataset)
     # -------------------------------
     def __str__(self):
@@ -143,7 +151,7 @@ class FitOutput:
         data['comp'   ] = self.dataset
         data['mva_cmb'] = self.__meta.mva_cmb.lower_str
         data['mva_prc'] = self.__meta.mva_prc.lower_str
-        data['block'  ] = self.__meta.block.value  # BaseModel
+        data['block'  ] = str(self.__meta.block)   # BaseModel
         data['brem'   ] = self.__meta.brem.region  # Enum -> StrEnum
 
         return data
@@ -163,7 +171,7 @@ class FitOutput:
             data[f'{par.name}_value'] = par.value
             data[f'{par.name}_error'] = par.error
 
-        if self.__meta.channel == Channel.mm:
+        if self.__skip_brem_info(res = res):
             pass
         elif self.dataset.is_mc: 
             mc_brem_info = self.__get_mc_brem_info(path = self.__path)
@@ -180,6 +188,29 @@ class FitOutput:
             data['pvalue_error'] =  0.1
 
         return data
+    # ----------------------
+    def __skip_brem_info(self, res : FitResult) -> bool:
+        '''
+        Parameters
+        ------------
+        res: Object holding results of fit
+
+        Returns
+        ------------
+        True if yields per brem fraction won't be extracted
+        e.g. for the muon channel or when fits are not done per brem category 
+        '''
+        if self.__meta.channel == Channel.mm:
+            return True
+
+        # NOTE: If fit is not per-brem, fraction won't exist
+        # therefore, skip brem info extraction
+        for comp in Component:
+            brem_fraction = f'{comp}_fraction' 
+            if brem_fraction in res:
+                return False
+
+        return True 
     # ----------------------
     def __get_dt_brem_info(self, res : FitResult) -> dict[str,float]:
         fraction       = f'{self.signal}_fraction'
@@ -300,15 +331,10 @@ class FitOutput:
         # that can be used to read the signal component
         res = FitResult.from_json(path = self.__path)
 
-        signal : Component | None = None
-        for param in res.parameters:
-            if not param.name.endswith('_fraction'):
-                continue
-
-            name   = param.name.removesuffix('_fraction')
-            signal = Component(value = name)
-
-            return signal
+        for comp in Component:
+            fraction_parameter = f'{comp}_fraction'
+            if fraction_parameter in res:
+                return comp
 
         raise ValueError(f'Signal not found in result: {res}')
     # -------------------------------
@@ -318,10 +344,10 @@ class FitOutput:
         True if path is compatible with valid fit
         '''
         cfg = self.__cfg
-        if self.__meta.q2bin not in cfg:
+        if self.__meta.q2bin not in cfg.root:
             return False
 
-        cfg = cfg[self.__meta.q2bin]
+        cfg = cfg.root[self.__meta.q2bin]
         if self.__meta.project not in cfg:
             return False
 
@@ -336,34 +362,60 @@ class FitOutput:
         return True
     # -------------------------------
     @classmethod
-    def from_name(cls, name : str) -> list['FitOutput']:
+    def from_name(
+        cls, 
+        kind : str,
+        name : str) -> Sequence['FitOutput']:
         '''
         Parameters
         ----------------
         name: Identifier for fit, e.g. reso_dtf-latest
+        kind: E.g. rare, reso
 
         Returns
         ----------------
         List of instances of object wrapping fit output
         '''
-        paths    = _ANADIR.rglob(pattern = f'fits/data/{name}/*/reso/*/*/*/*/fit/brem_*/brem_*/parameters.json')
-        all_objs = [ cls(path = path) for path in paths ]
+        log.info('Looking for paths')
 
-        return [ obj for obj in all_objs if obj.is_valid ]
+        json_wc  = f'fits/data/{name}/*/{kind}/*/*/*/*/fit/brem_*/brem_*/parameters.json'
+        paths    = list(_ANADIR.glob(pattern = json_wc))
+
+        log.info(f'Found {len(paths)} paths')
+
+        data     = gut.load_data(package = 'fitter_data', fpath = f'fit_summary/{kind}.yaml')
+        cfg      = FitOutputConf(**data)
+
+        all_objs = [ cls(path = path, cfg = cfg) for path in paths ]
+
+        if not all_objs:
+            raise ValueError(f'No JSON files found in: {_ANADIR/json_wc}')
+
+        log.info(f'Made {len(all_objs)} fit objects')
+
+        outputs  = [ obj for obj in all_objs if obj.is_valid ]
+
+        if not outputs:
+            raise ValueError('No fit oututs found')
+
+        log.info(f'Found {len(outputs)} fit outputs')
+
+        return outputs
 # -------------------------------
 class FitSummary:
     '''
     Class meant to aggregate fits and return dataframe with the parameters
     '''
     # ----------------------
-    def __init__(self, name : str) -> None:
+    def __init__(self, name : str, kind : str) -> None:
         '''
         Parameters
         -------------
         name: Name of fit, e.g. reso_dtf-latest 
+        kind: E.g. rare, reso
         '''
         self.__name = name
-        self.__fits : list[FitOutput] = FitOutput.from_name(name = name)
+        self.__fits : Sequence[FitOutput] = FitOutput.from_name(name = name, kind = kind)
     # ----------------------
     @property
     def fit_dir(self) -> Path:
