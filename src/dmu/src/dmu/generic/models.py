@@ -188,12 +188,10 @@ class UnpackerModel(BaseModel):
 
         return _context()
 # --------------------------------------------------
-class HashableModel(BaseModel):
+class HashableModel(BaseModel, frozen = True):
     '''
     Mixing that makes pydantic models hashable 
     '''
-    model_config = ConfigDict(frozen=True)
-
     # -------------------------
     def __hash__(self) -> int:
         string = self.model_dump_json()
