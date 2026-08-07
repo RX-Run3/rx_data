@@ -7,6 +7,7 @@ import tqdm
 from gvar          import gvar
 from dmu           import LogStore
 from dmu.stats     import FitParameter, FitResult
+from functools     import cached_property
 from pathlib       import Path
 from typing        import Final
 from pydantic      import RootModel
@@ -47,12 +48,23 @@ class FitHarmonizer:
 
         # NOTE: If fit is not per-brem, fraction won't exist
         # therefore, skip brem info extraction
+        if self.signal is not None:
+            return False
+
+        return True 
+    # ----------------------
+    @cached_property
+    def signal(self) -> Component | None:
+        '''
+        Component used as signal if associated brem fraction
+        exists. Otherwise None
+        '''
         for comp in Component:
             brem_fraction = f'{comp}_fraction' 
             if brem_fraction in self.__fres:
-                return False
+                return comp 
 
-        return True 
+        return None
     # ----------------------
     def __get_dt_brem_pars(self) -> list[FitParameter]:
         '''
@@ -60,7 +72,7 @@ class FitHarmonizer:
         -------------
         List of parameters needed to be added for FitSummary in data
         '''
-        signal                    = self.__meta.component
+        signal                    = self.signal
         res                       = self.__fres
         pars : list[FitParameter] = []
 
@@ -96,11 +108,11 @@ class FitHarmonizer:
         ----------------
         Dictionary with information associated to brem (yields, fractions, etc)
         '''
-        signal   = self.__meta.component
+        comp     = self.__meta.component
         brem     = self.__meta.brem
         val, err = self.__meta.stats
 
-        par = FitParameter(name = f'yld_{signal}_{brem}', value = val, error = err)
+        par = FitParameter(name = f'yld_{comp}_{brem}', value = val, error = err)
 
         return [par]
     # -------------------------------
