@@ -131,7 +131,14 @@ class FitHarmonizer:
         else:
             pars = self.__get_dt_brem_pars()
 
-        return self.__fres.extend(pars = pars)
+        try:
+            fres = self.__fres.extend(pars = pars)
+        except Exception as exc:
+            log.error(self.__fres)
+            log.error(self.__meta)
+            raise ValueError('Cannot extend fit result') from exc
+
+        return fres
 # -------------------------------
 class FitSummary(RootModel[list[tuple[FitMetadata,FitResult]]]):
     '''
