@@ -5,7 +5,7 @@ from typing    import Final
 from pathlib   import Path
 from fitter    import ParameterReader
 from fitter    import MVAWp
-from rx_common import Brem
+from rx_common import Brem, Component
 from rx_common import Trigger 
 from rx_common import Qsq 
 from rx_common import Block
@@ -23,14 +23,15 @@ def initialize() -> None:
 # -----------------------
 def test_data():
     '''
-    Test reader with initializer 
+    Test reader with data 
     '''
+    comp = Component.data_24
     name = 'reso_dtf-latest' # 'reso_no_dtf'
     rdr  = ParameterReader(name = name)
     meas = rdr(
+        comp     = comp,
         brem     = Brem.brx12, 
         block    = Block(value = 1), 
-        is_mc    = False,
         cmb      = MVAWp.from_str('0.99'),
         prc      = MVAWp.from_str('0.60'),
         q2bin    = Qsq.jpsi,
@@ -40,74 +41,68 @@ def test_data():
     print(meas)
 # -----------------------
 @pytest.mark.parametrize('q2bin',        _Q2BINS)
-@pytest.mark.parametrize('trig' ,      _TRIGGERS)
 @pytest.mark.parametrize('brem' ,         _BREMS)
 @pytest.mark.parametrize('block', Block.blocks())
-@pytest.mark.parametrize('is_mc',  [True, False])
 def test_all(
-    is_mc : bool,
     q2bin : Qsq,
-    trig  : Trigger,
     block : Block, 
     brem  : Brem):
     '''
     Test reader with initializer 
     '''
-    if trig.is_electron and brem == Brem.zero:
-        return
-
-    if trig.is_muon     and brem != Brem.zero:
-        return
+    if brem == Brem.zero:
+        trig = Trigger.rk_mm_os
+        comp = Component.bpkpjpsimm if q2bin == Qsq.jpsi else Component.bpkppsi2mm
+    else:
+        trig = Trigger.rk_ee_os
+        comp = Component.bpkpjpsiee if q2bin == Qsq.jpsi else Component.bpkppsi2ee
 
     name = 'reso_dtf-latest' # 'reso_no_dtf'
     rdr  = ParameterReader(name = name)
-    meas = rdr(
+    res  = rdr(
+        comp     = comp,
         brem     = brem, 
         block    = block, 
-        is_mc    = is_mc,
         cmb      = MVAWp.from_str('0.99'),
         prc      = MVAWp.from_str('0.60'),
         q2bin    = q2bin,
         trigger  = trig, 
     )
 
-    print(meas)
+    print(res)
 # -----------------------
 @pytest.mark.parametrize('q2bin',        _Q2BINS)
-@pytest.mark.parametrize('trig' ,      _TRIGGERS)
 @pytest.mark.parametrize('brem' ,         _BREMS)
 @pytest.mark.parametrize('block', Block.blocks())
-@pytest.mark.parametrize('is_mc',  [True, False])
 def test_pars_path(
-    is_mc : bool,
     q2bin : Qsq,
-    trig  : Trigger,
     block : Block, 
     brem  : Brem):
     '''
     Test context manager user to set path to parameters 
     '''
-    if trig.is_electron and brem == Brem.zero:
-        return
-
-    if trig.is_muon     and brem != Brem.zero:
-        return
+    if brem == Brem.zero:
+        trig = Trigger.rk_mm_os
+        comp = Component.bpkpjpsimm if q2bin == Qsq.jpsi else Component.bpkppsi2mm
+    else:
+        trig = Trigger.rk_ee_os
+        comp = Component.bpkpjpsiee if q2bin == Qsq.jpsi else Component.bpkppsi2ee
 
     name      = 'reso_dtf-latest' # 'reso_no_dtf'
     ana_dir   = Path(os.environ['ANADIR'])
-    pars_path = ana_dir / f'fits/data/{name}/parameters.parquet'
+    pars_path = ana_dir / f'fits/data/{name}/fit_summary.json'
 
     with ParameterReader.inputs_from(pars_path = pars_path):
-        rdr  = ParameterReader()
-        meas = rdr(
-            brem     = brem, 
-            block    = block, 
-            is_mc    = is_mc,
-            cmb      = MVAWp.from_str('0.99'),
-            prc      = MVAWp.from_str('0.60'),
-            q2bin    = q2bin,
-            trigger  = trig, 
+        rdr = ParameterReader()
+        res = rdr(
+            comp    = comp,
+            brem    = brem, 
+            block   = block, 
+            cmb     = MVAWp.from_str('0.99'),
+            prc     = MVAWp.from_str('0.60'),
+            q2bin   = q2bin,
+            trigger = trig, 
         )
 
-        print(meas)
+    print(res)
 # -----------------------
