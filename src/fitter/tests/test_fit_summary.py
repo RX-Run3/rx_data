@@ -61,3 +61,18 @@ def test_summarizer(name : str) -> None:
     for meta, fsmr in val.root:
         assert val.at(meta) == fsmr
 # ----------------------
+@pytest.mark.parametrize('value', _DATA_PATHS + _SIGN_PATHS)
+def test_at(value : str) -> None:
+    '''
+    Test at method
+    '''
+    path = _ANADIR / f'fits/data/{value}' 
+
+    meta = FitMetadata.from_pars_path(path = path)
+    fres = FitResult.from_json(path = path)
+
+    data = [(meta , fres)]
+    smr  = FitSummary(root = data)
+
+    assert smr.at(meta) == fres
+# ----------------------
