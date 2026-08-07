@@ -2,6 +2,7 @@
 Module holding FitSummary class
 '''
 import os
+import tqdm
 
 from gvar          import gvar
 from dmu           import LogStore
@@ -135,6 +136,19 @@ class FitSummary(RootModel[dict[FitMetadata,FitResult]]):
         string = path.read_text()
 
         return cls.model_validate_json(json_data = string)
+    # -----------------
+    def to_json(self, path : Path) -> None:
+        '''
+        Parameters
+        ----------------
+        path: Path to JSON file
+        '''
+        path.parent.mkdir(exist_ok=True, parents=True)
+
+        log.info(f'Saving fit summary to: {path}')
+
+        string = self.model_dump_json(indent = 2)
+        path.write_text(string)
 # -------------------------------
 class FitSummarizer:
     '''
@@ -161,6 +175,8 @@ class FitSummarizer:
 
         json_wc  = f'fits/data/{self.__name}/*/{self.__kind}/*/*/*/*/fit/brem_*/brem_*/parameters.json'
         paths    = list(_ANADIR.glob(pattern = json_wc))
+
+        log.info(f'Found {len(paths)} paths')
 
         return paths
     # ----------------------
@@ -197,12 +213,17 @@ class FitSummarizer:
         data : dict[FitMetadata,FitResult] = {}
 
         paths = self.__get_paths()
-        for path in paths:
+
+        log.info('Building summary')
+        for path in tqdm.tqdm(paths, ascii = ' -'):
             meta = FitMetadata.from_pars_path(path = path)
             fres = FitResult.from_json(path = path)
 
             hrm        = FitHarmonizer(fres = fres, meta = meta)
             data[meta] = hrm.get_result()
 
-        return FitSummary(root = data) 
+        summary = FitSummary(root = data) 
+        summary.to_json(path = output_path)
+
+        return summary
 # -------------------------------
