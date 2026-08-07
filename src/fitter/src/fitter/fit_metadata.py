@@ -32,6 +32,19 @@ class FitMetadata(HashableModel, frozen = True):
     brem      : Brem
     stats     : tuple[float,float] 
     # -------------------
+    def __str__(self):
+        return f'''
+        Component       : {self.component}
+        Combinatorial WP: {self.mva_cmb}
+        Part-reco WP    : {self.mva_prc}
+        Block           : {self.block}
+        Project         : {self.project}
+        Channel         : {self.channel}
+        Q2 bin          : {self.q2bin}
+        Brem            : {self.brem}
+        Entries         : {self.stats}
+        '''
+    # -------------------
     @staticmethod
     def __stats_from_path(path : Path) -> tuple[float,float]:
         '''
@@ -49,8 +62,9 @@ class FitMetadata(HashableModel, frozen = True):
 
         string = data_path.read_text()
         masses = json.loads(string)
+        values = masses['Mass']
 
-        value  = len(masses)
+        value  = len(values)
         error  = math.sqrt(value)
 
         return value, error
