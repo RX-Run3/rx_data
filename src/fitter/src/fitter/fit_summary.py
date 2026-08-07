@@ -3,6 +3,7 @@ Module holding FitSummary class
 '''
 import os
 import tqdm
+import math
 
 from gvar          import gvar
 from dmu           import LogStore
@@ -11,8 +12,9 @@ from functools     import cached_property
 from pathlib       import Path
 from typing        import Any, Final
 from pydantic      import RootModel
-from rx_common     import Component, Channel, Brem
+from rx_common     import Component, Channel, Brem, Cut, Cuts, WorkingPoint
 
+from .yields       import Yield, YieldGrid
 from .fit_metadata import FitMetadata
 
 log=LogStore.add_logger('fitter:fit_summary')
@@ -146,6 +148,33 @@ class FitSummary(RootModel[list[tuple[FitMetadata,FitResult]]]):
     '''
     Class representing a collection of fit results
     '''
+    # ----------------------
+    def make_grid(self, x : str, y : str, z : str) -> YieldGrid:
+        '''
+        Parameters
+        --------------------
+        x/y: Name of fields in metadata that will be used in X and Y axes
+        z  : Name of variable in FitResult objects for Z axis
+        '''
+        grid = YieldGrid(root = [])
+        for meta, fres in self.root:
+            xval = getattr(meta, x)
+            yval = getattr(meta, y)
+            zval, zerr = fres.get(name = z, fall_back = math.nan)
+
+            xcut = Cut(cut = Cuts(x), val = xval, var = x)
+            ycut = Cut(cut = Cuts(y), val = yval, var = y)
+
+            wp = WorkingPoint(root = [xcut, ycut])
+
+            yld     = Yield(
+                val = zval,
+                err = zerr,
+                wp  = wp)
+
+            grid.root.append(yld)
+
+        return grid
     # -----------------
     def at(self, meta : FitMetadata) -> FitResult:
         '''
