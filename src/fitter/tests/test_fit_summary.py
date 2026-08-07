@@ -16,17 +16,17 @@ from fitter.fit_summary import FitSummarizer
 log=LogStore.add_logger('fitter:test_fit_summary')
 
 _DATA_PATHS = [
-    'reso_no_dtf/990_800_b1/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx1/parameters.json',
-    'reso_no_dtf/990_800_b1/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx2/parameters.json',
-    'reso_no_dtf/990_500_b3/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx1/parameters.json',
-    'reso_no_dtf/990_500_b3/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx2/parameters.json',
+    'reso_no_dtf-latest/990_800_b1/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx1/parameters.json',
+    'reso_no_dtf-latest/990_800_b1/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx2/parameters.json',
+    'reso_no_dtf-latest/990_500_b3/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx1/parameters.json',
+    'reso_no_dtf-latest/990_500_b3/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx2/parameters.json',
 ]
 
 _SIGN_PATHS = [
-    'reso_no_dtf/990_800_b1/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx1/brem_xx1/parameters.json',
-    'reso_no_dtf/990_800_b1/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx2/brem_xx2/parameters.json',
-    'reso_no_dtf/990_500_b3/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx1/brem_xx1/parameters.json',
-    'reso_no_dtf/990_500_b3/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx2/brem_xx2/parameters.json',
+    'reso_no_dtf-latest/990_800_b1/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx1/brem_xx1/parameters.json',
+    'reso_no_dtf-latest/990_800_b1/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx2/brem_xx2/parameters.json',
+    'reso_no_dtf-latest/990_500_b3/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx1/brem_xx1/parameters.json',
+    'reso_no_dtf-latest/990_500_b3/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx2/brem_xx2/parameters.json',
 ]
 
 _ANADIR : Final[Path] = Path(os.environ['ANADIR'])
@@ -53,7 +53,7 @@ def test_simple(value : str) -> None:
 
     assert len(smr.root) > 0
 # ----------------------
-@pytest.mark.parametrize('name', ['reso_dtf-latest'])
+@pytest.mark.parametrize('name', ['reso_dtf-latest', 'reso_no_dtf-latest'])
 def test_summarizer(name : str) -> None:
     smr = FitSummarizer(name = name, kind = 'reso')
     smr.get_summary()
