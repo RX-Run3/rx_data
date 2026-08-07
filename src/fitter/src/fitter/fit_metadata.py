@@ -32,6 +32,13 @@ class FitMetadata(HashableModel, frozen = True):
     brem      : Brem
     stats     : tuple[float,float] 
     # -------------------
+    @property
+    def as_str(self) -> str:
+        str_1 = f'{self.component.latex:<30}{self.mva_cmb:<10}{self.mva_prc:<10}'
+        str_2 = f'{self.block:<5}{self.project:<10}{self.channel:<5}{self.q2bin:<10}{self.brem:<10}'
+
+        return f'{str_1}{str_2}'
+    # -------------------
     def __str__(self):
         return f'''
         Component       : {self.component}
