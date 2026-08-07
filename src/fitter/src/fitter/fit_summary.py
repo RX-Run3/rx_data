@@ -96,9 +96,11 @@ class FitHarmonizer:
         yld_1 = yld * frc
         yld_2 = yld - yld_1 
 
-        pars.append(FitParameter(name = f'yld_{signal}_{Brem.brx12}', value = yld_val   , error = yld_err   ))
         pars.append(FitParameter(name = f'yld_{signal}_{Brem.one}'  , value = yld_1.mean, error = yld_1.sdev))
         pars.append(FitParameter(name = f'yld_{signal}_{Brem.two}'  , value = yld_2.mean, error = yld_2.sdev))
+
+        if total_yield_1 not in res:
+            pars.append(FitParameter(name = f'yld_{signal}_{Brem.brx12}', value = yld_val   , error = yld_err   ))
 
         return pars 
     # ----------------------
