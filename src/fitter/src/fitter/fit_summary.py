@@ -147,6 +147,13 @@ class FitSummary(RootModel[list[tuple[FitMetadata,FitResult]]]):
     Class representing a collection of fit results
     '''
     # -----------------
+    def __str__(self):
+        msg = '\n'
+        for meta, _ in self.root:
+            msg += f'{meta.as_str}\n'
+
+        return msg
+    # -----------------
     @classmethod
     def from_json(cls, path : Path) -> 'FitSummary':
         '''
