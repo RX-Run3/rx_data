@@ -2,6 +2,8 @@
 Module holding FitMetadata class
 '''
 import re
+import math
+import json
 
 from pathlib   import Path
 from typing    import Final
@@ -31,6 +33,30 @@ class FitMetadata(BaseModel):
     channel   : Channel
     q2bin     : Qsq
     brem      : Brem
+    stats     : tuple[float,float] 
+    # -------------------
+    @staticmethod
+    def __stats_from_path(path : Path) -> tuple[float,float]:
+        '''
+        Parameters
+        ---------------
+        path: Path to parameters.json
+
+        Returns
+        ---------------
+        Object holding statistics
+        '''
+        data_path = path.parent / 'data.json' 
+        if not data_path.exists():
+            raise ValueError(f'Cannot find {data_path}')
+
+        string = data_path.read_text()
+        masses = json.loads(string)
+
+        value  = len(masses)
+        error  = math.sqrt(value)
+
+        return value, error
     # -------------------
     @classmethod
     def from_pars_path(cls, path : Path) -> 'FitMetadata':
@@ -70,6 +96,7 @@ class FitMetadata(BaseModel):
         cmb_wp = mtch.group(1)
         prc_wp = mtch.group(2)
         block  = mtch.group(3).removeprefix('b') # b3 -> 3
+        stats  = cls.__stats_from_path(path = path)
 
         return cls(
             component= component,
@@ -79,5 +106,7 @@ class FitMetadata(BaseModel):
             channel  = Channel(mtch.group(5)),
             q2bin    = Qsq(    mtch.group(6)),
             block    = Block.from_str(value = block),
-            brem     =  Brem.from_str(value = mtch.group(7)))
+            brem     = Brem.from_str(value = mtch.group(7)),
+            stats    = stats,
+        )
 # -------------------
