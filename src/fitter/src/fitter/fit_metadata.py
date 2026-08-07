@@ -5,13 +5,12 @@ import re
 import math
 import json
 
-from pathlib   import Path
-from typing    import Final
-from pydantic  import BaseModel, ConfigDict
-from rx_common import Block, Brem, Channel, Component, Project, Qsq
-from dmu       import LogStore
-
-from .mva_conf import MVAWp
+from pathlib     import Path
+from typing      import Final
+from rx_common   import Block, Brem, Channel, Component, Project, Qsq
+from dmu         import LogStore
+from dmu.generic import HashableModel
+from .mva_conf   import MVAWp
 
 _COMMON   : Final[str] = r'.*\/(\d+-\d+|\d{3})_(\d+-\d+|\d{3})_(all|b\d)\/(?:reso|rare)\/(rk|rkst)\/(mm|ee)\/(low|central|jpsi|psi2|high)'
 _DT_REGEX : Final[str] = r'\/_COMP\/fit\/.*\/brem_([x,0-9]{3})\/parameters.json'
@@ -19,12 +18,10 @@ _MC_REGEX : Final[str] = r'\/_COMP\/fit\/brem_([x,0-9]{3})\/brem_[x,0-9]{3}(_b\d
 
 log=LogStore.add_logger('fitter:fit_metadata')
 # -------------------------------
-class FitMetadata(BaseModel):
+class FitMetadata(HashableModel, frozen = True):
     '''
     Class meant to identify fitted sample 
     '''
-    model_config = ConfigDict(frozen=True)
-
     component : Component
     mva_cmb   : MVAWp
     mva_prc   : MVAWp
