@@ -7,9 +7,10 @@ import json
 
 from pathlib     import Path
 from typing      import Final
+from pydantic    import BaseModel
 from rx_common   import Block, Brem, Channel, Component, Project, Qsq
 from dmu         import LogStore
-from dmu.generic import HashableModel
+from dmu.generic import hashing
 from .mva_conf   import MVAWp
 
 _COMMON   : Final[str] = r'.*\/(\d+-\d+|\d{3})_(\d+-\d+|\d{3})_(all|b\d)\/(?:reso|rare)\/(rk|rkst)\/(mm|ee)\/(low|central|jpsi|psi2|high)'
@@ -17,8 +18,10 @@ _DT_REGEX : Final[str] = r'\/_COMP\/fit\/.*\/brem_([x,0-9]{3})\/parameters.json'
 _MC_REGEX : Final[str] = r'\/_COMP\/fit\/brem_([x,0-9]{3})\/brem_[x,0-9]{3}(_b\d)?\/parameters.json'
 
 log=LogStore.add_logger('fitter:fit_metadata')
+
+_HASH_STATS : Final[tuple[float,float]] = 1, 1 # Used to calculate hashes, hash should not depend on stats
 # -------------------------------
-class FitMetadata(HashableModel, frozen = True):
+class FitMetadata(BaseModel, frozen = True):
     '''
     Class meant to identify fitted sample 
     '''
@@ -31,6 +34,19 @@ class FitMetadata(HashableModel, frozen = True):
     q2bin     : Qsq
     brem      : Brem
     stats     : tuple[float,float] 
+    # -------------------
+    def __hash__(self) -> int:
+        data = self.nostats.model_dump()
+
+        return hashing.hash_object(obj = data, as_int = True)
+    # -------------------
+    @property
+    def nostats(self) -> 'FitMetadata':
+        '''
+        FitMetadata with statistics field replaced
+        with placeholder
+        '''
+        return self.model_copy(update = {'stats' : _HASH_STATS})
     # -------------------
     @property
     def as_str(self) -> str:
