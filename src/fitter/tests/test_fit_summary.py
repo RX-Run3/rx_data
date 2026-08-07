@@ -47,9 +47,8 @@ def test_simple(value : str) -> None:
     meta = FitMetadata.from_pars_path(path = path)
     fres = FitResult.from_json(path = path)
 
-    data = {meta : fres}
-
-    smr = FitSummary(root = data)
+    data = [(meta , fres)]
+    smr  = FitSummary(root = data)
 
     assert len(smr.root) > 0
 # ----------------------

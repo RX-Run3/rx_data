@@ -121,7 +121,7 @@ class FitHarmonizer:
 
         return self.__fres.extend(pars = pars)
 # -------------------------------
-class FitSummary(RootModel[dict[FitMetadata,FitResult]]):
+class FitSummary(RootModel[list[tuple[FitMetadata,FitResult]]]):
     '''
     Class representing a collection of fit results
     '''
@@ -210,7 +210,7 @@ class FitSummarizer:
             log.info(f'Reading cached files at: {output_path}')
             return FitSummary.from_json(path = output_path)
 
-        data : dict[FitMetadata,FitResult] = {}
+        fits : list[tuple[FitMetadata,FitResult]] = [] 
 
         paths = self.__get_paths()
 
@@ -219,10 +219,11 @@ class FitSummarizer:
             meta = FitMetadata.from_pars_path(path = path)
             fres = FitResult.from_json(path = path)
 
-            hrm        = FitHarmonizer(fres = fres, meta = meta)
-            data[meta] = hrm.get_result()
+            hrm  = FitHarmonizer(fres = fres, meta = meta)
+            fres = hrm.get_result()
+            fits.append((meta, fres))
 
-        summary = FitSummary(root = data) 
+        summary = FitSummary(root = fits) 
         summary.to_json(path = output_path)
 
         return summary
