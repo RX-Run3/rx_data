@@ -11,6 +11,7 @@ from typing      import Final
 from pathlib     import Path
 
 from fitter.fit_metadata import FitMetadata
+from fitter.fit_summary import FitSummarizer
 
 log=LogStore.add_logger('fitter:test_fit_summary')
 
@@ -51,4 +52,9 @@ def test_simple(value : str) -> None:
     smr  = FitSummary(root = data)
 
     assert len(smr.root) > 0
+# ----------------------
+@pytest.mark.parametrize('name', ['reso_dtf-latest'])
+def test_summarizer(name : str) -> None:
+    smr = FitSummarizer(name = name, kind = 'reso')
+    smr.get_summary()
 # ----------------------
