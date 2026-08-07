@@ -157,7 +157,13 @@ class FitSummary(RootModel[list[tuple[FitMetadata,FitResult]]]):
         ---------------
         Fit result corresponding to metadata
         '''
-        return self.__as_dict[meta]
+        try:
+            val = self.__as_dict[meta]
+        except KeyError as exc:
+            log.error(self)
+            raise KeyError(f'Cannot read at: {meta.as_str}') from exc
+
+        return val
     # -----------------
     @cached_property
     def __as_dict(self) -> dict[FitMetadata,FitResult]:
