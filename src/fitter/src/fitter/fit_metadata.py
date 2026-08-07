@@ -36,12 +36,12 @@ class FitMetadata(BaseModel, frozen = True):
     stats     : tuple[float,float] 
     # -------------------
     def __hash__(self) -> int:
-        data = self.nostats.model_dump()
+        data = self.__nostats.model_dump()
 
         return hashing.hash_object(obj = data, as_int = True)
     # -------------------
     @property
-    def nostats(self) -> 'FitMetadata':
+    def __nostats(self) -> 'FitMetadata':
         '''
         FitMetadata with statistics field replaced
         with placeholder
