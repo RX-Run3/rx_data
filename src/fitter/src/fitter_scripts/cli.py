@@ -105,10 +105,10 @@ def fit_summary(
     '''
     This will create a fit summary for a given fit
     '''
-    from fitter import FitSummary # noqa: PLC0415 
+    from fitter.fit_summary import FitSummarizer
 
-    smr = FitSummary(name = name, kind = kind)
-    smr.get_df(force_update = True)
+    smr = FitSummarizer(name = name, kind = kind)
+    smr.get_summary(force_update = True)
 
     LogStore.set_level('rx_fitter:fit_summary', log_lvl)
 # ----------------------
