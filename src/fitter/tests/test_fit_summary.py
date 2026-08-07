@@ -1,19 +1,34 @@
 '''
 Module with tests for FitSummary class
 '''
+import os
 import pytest
 
+from dmu.stats   import FitResult
 from dmu         import LogStore
-from fitter      import FitSummary, FitOutput, FitOutputConf
+from fitter      import FitSummary
+from typing      import Final
 from pathlib     import Path
-from dmu.generic import utilities as gut
+
+from fitter.fit_metadata import FitMetadata
 
 log=LogStore.add_logger('fitter:test_fit_summary')
 
-_PATHS : list[Path] = [
-    Path('/home/acampove/RX/fits/data/reso_dtf-latest/990_800_b1/reso/rkst/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_x12/parameters.json'),
-    Path('/home/acampove/RX/fits/data/reso_dtf-latest/990_800_b1/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_x12/parameters.json'),
+_DATA_PATHS = [
+    'reso_no_dtf/990_800_b1/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx1/parameters.json',
+    'reso_no_dtf/990_800_b1/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx2/parameters.json',
+    'reso_no_dtf/990_500_b3/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx1/parameters.json',
+    'reso_no_dtf/990_500_b3/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx2/parameters.json',
 ]
+
+_SIGN_PATHS = [
+    'reso_no_dtf/990_800_b1/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx1/brem_xx1/parameters.json',
+    'reso_no_dtf/990_800_b1/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx2/brem_xx2/parameters.json',
+    'reso_no_dtf/990_500_b3/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx1/brem_xx1/parameters.json',
+    'reso_no_dtf/990_500_b3/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx2/brem_xx2/parameters.json',
+]
+
+_ANADIR : Final[Path] = Path(os.environ['ANADIR'])
 # ----------------------
 @pytest.fixture(scope='session', autouse=True)
 def initialize():
@@ -22,46 +37,19 @@ def initialize():
     '''
     LogStore.set_level('fitter:fit_summary', 10)
 # ----------------------
-@pytest.mark.parametrize('path', _PATHS)
-def test_fit_output(path : Path):
-    data = gut.load_data(package = 'fitter_data', fpath = 'fit_summary/reso.yaml')
-    cfg  = FitOutputConf(root = data)
-    fou  = FitOutput(path = path, cfg = cfg)
-
-    print(fou)
-# ----------------------
-@pytest.mark.parametrize('name', ['rare_fit-test', 'reso_dtf-latest'])
-def test_local(name : str) -> None:
+@pytest.mark.parametrize('value', _DATA_PATHS + _SIGN_PATHS)
+def test_simple(value : str) -> None:
     '''
     Test where overriden path
     '''
-    if   name.startswith('rare'):
-        kind = 'rare'
-    elif name.startswith('reso'):
-        kind = 'reso'
-    else:
-        raise ValueError(f'Invalid kind: {name}')
+    path = _ANADIR / f'fits/data/{value}' 
 
-    smr = FitSummary(name = name, kind = kind)
-    df  = smr.get_df(force_update = True)
+    meta = FitMetadata.from_pars_path(path = path)
+    fres = FitResult.from_json(path = path)
 
-    assert len(df) > 0
+    data = {meta : fres}
 
-    print('')
-    print(df)
-    for column in df.columns:
-        print(column)
-# ----------------------
-@pytest.mark.parametrize('force_update', [True, False])
-def test_update(force_update : bool) -> None:
-    '''
-    Test updating the parquet file
-    '''
-    smr = FitSummary(name = 'reso_no_dtf', kind = 'reso')
-    df  = smr.get_df(force_update = force_update)
+    smr = FitSummary(root = data)
 
-    assert len(df) > 0
-
-    print('')
-    print(df)
+    assert len(smr.root) > 0
 # ----------------------
