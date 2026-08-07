@@ -157,13 +157,47 @@ class FitSummary(RootModel[list[tuple[FitMetadata,FitResult]]]):
         ---------------
         Fit result corresponding to metadata
         '''
-        try:
-            val = self.__as_dict[meta]
-        except KeyError as exc:
-            log.error(self)
-            raise KeyError(f'Cannot read at: {meta.as_str}') from exc
+        key = hash(meta)
+        if key in self.__as_dict:
+            return self.__as_dict[key]
 
-        return val
+        summary = self
+        for name, value in meta.fields:
+            tmp = summary.query(name = name, value = value)
+            if not tmp.root:
+                log.warning(f'Failed: {name} = {value}')
+                log.warning(summary)
+            else:
+                log.info(f'Filtered by: {name} = {value}')
+                log.info(tmp)
+
+            summary = tmp
+
+        if len(summary.root) == 1:
+            [(meta_summary, _)] = summary.root
+
+            log.error(meta_summary)
+            log.error(meta)
+            log.error(f'{hash(meta)} != {hash(meta_summary)}')
+            raise KeyError('Entries do not match')
+
+        log.error(meta)
+        raise KeyError('Cannot read summary')
+    # -----------------
+    def query(self, name : str, value : Any) -> 'FitSummary':
+        '''
+        Parameters
+        ---------------
+        name : Name of field
+        value: Value of field
+
+        Returns
+        ---------------
+        Summary containing only given value of field in metadata
+        '''
+        filtered_data = [ (meta, fres) for meta, fres in self.root if getattr(meta, name) == value ]
+
+        return FitSummary(root = filtered_data)
     # -----------------
     @cached_property
     def __as_dict(self) -> dict[int,FitResult]:
