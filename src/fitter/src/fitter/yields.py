@@ -334,7 +334,7 @@ class YieldCalculator:
         total_yield = Yield.null(wp = self.__wp)
         for block in Block.blocks():
             meas = rdr(
-                is_mc   = False,
+                comp    = Component.data_24,
                 brem    = _BREM,
                 block   = block,
                 q2bin   = _RESO_QSQ,
