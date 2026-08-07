@@ -2,7 +2,7 @@
 This module contains classes derived from Enum
 '''
 from pathlib     import Path
-from enum        import StrEnum, Enum, auto
+from enum        import StrEnum, IntEnum, auto
 from typing      import Final
 from dmu.stats   import CorrectionImplementation
 from pydantic    import BaseModel, ConfigDict, model_validator
@@ -270,7 +270,7 @@ class MVA(StrEnum):
     cmb = 'cmb'
     prc = 'prc'
 # ---------------------------------------
-class Brem(Enum):
+class Brem(IntEnum):
     '''
     Enum meant to represent brem category
     '''
@@ -428,7 +428,7 @@ class Brem(Enum):
         '''
         return [cls.zero, cls.one, cls.two]
     # ----------------------
-    def __add__(self, other : 'Brem') -> 'Brem':
+    def __add__(self, other : 'Brem') -> 'Brem': # type: ignore[reportIncompatibleMethodOverride]
         '''
         Parameters
         -------------
@@ -518,7 +518,7 @@ class Brem(Enum):
 
         return False
     # ----------------
-    def __lt__(self, other : 'Brem') -> bool:
+    def __lt__(self, other : 'Brem') -> bool: # type: ignore[reportIncompatibleMethodOverride]
         return self.value < other.value
     # ----------------------
     def __hash__(self) -> int:
