@@ -191,6 +191,9 @@ class MVAWp(RootModel[float|tuple[float,float]]):
         low, high  = self.root # type: ignore[misc]
 
         return f'{low:.2f}-{high:.2f}'
+    # -------------    
+    def __format__(self, spec):
+        return format(str(self), spec)
 # ---------------------
 class MVAConf(BaseModel):
     '''
