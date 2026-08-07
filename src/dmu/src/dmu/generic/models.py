@@ -10,6 +10,7 @@ from jinja2              import Template
 from contextvars         import ContextVar
 from importlib.resources import files
 from dmu                 import LogStore
+from dmu.generic         import hashing
 from typing              import Self
 from pathlib             import Path
 from pydantic            import BaseModel, model_validator, ConfigDict
@@ -186,4 +187,16 @@ class UnpackerModel(BaseModel):
                 _PACKAGE.reset(token) 
 
         return _context()
+# --------------------------------------------------
+class HashableModel(BaseModel):
+    '''
+    Mixing that makes pydantic models hashable 
+    '''
+    model_config = ConfigDict(frozen=True)
+
+    # -------------------------
+    def __hash__(self) -> int:
+        string = self.model_dump_json()
+
+        return hashing.hash_object(obj = string, as_int = True)
 # --------------------------------------------------
