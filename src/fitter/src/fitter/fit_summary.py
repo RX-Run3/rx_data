@@ -9,7 +9,7 @@ from dmu           import LogStore
 from dmu.stats     import FitParameter, FitResult
 from functools     import cached_property
 from pathlib       import Path
-from typing        import Final
+from typing        import Any, Final
 from pydantic      import RootModel
 from rx_common     import Component, Channel, Brem
 
@@ -166,11 +166,13 @@ class FitSummary(RootModel[list[tuple[FitMetadata,FitResult]]]):
         return val
     # -----------------
     @cached_property
-    def __as_dict(self) -> dict[FitMetadata,FitResult]:
+    def __as_dict(self) -> dict[int,FitResult]:
         '''
-        Dictionary version of fit summary, used to query entries
+        Dictionary mapping metadata hash to fitresult
         '''
-        return dict(self.root)
+        data = { hash(meta) : fres for meta, fres in self.root }
+
+        return data 
     # -----------------
     def __str__(self):
         msg = '\n'
