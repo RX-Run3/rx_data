@@ -6,7 +6,7 @@ import math
 import json
 
 from pathlib     import Path
-from typing      import Final
+from typing      import Any, Final
 from pydantic    import BaseModel
 from rx_common   import Block, Brem, Channel, Component, Project, Qsq
 from dmu         import LogStore
@@ -35,6 +35,16 @@ class FitMetadata(BaseModel, frozen = True):
     brem      : Brem
     stats     : tuple[float,float] 
     # -------------------
+    @property
+    def fields(self) -> list[tuple[str,Any]]:
+        '''
+        List of tuples with name and value of fields, excluding stats
+        Needed to query based on everything but 'stats'
+        '''
+        all_fields = type(self).model_fields
+
+        return [ (name, getattr(self, name)) for name in all_fields if name != 'stats' ]
+    # -------------------
     def __hash__(self) -> int:
         data = self.__nostats.model_dump()
 
@@ -50,7 +60,7 @@ class FitMetadata(BaseModel, frozen = True):
     # -------------------
     @property
     def as_str(self) -> str:
-        str_1 = f'{self.component:<30}{self.mva_cmb:<10}{self.mva_prc:<10}'
+        str_1 = f'{self.component:<20}{self.mva_cmb:<10}{self.mva_prc:<10}'
         str_2 = f'{self.block:<5}{self.project:<10}{self.channel:<5}{self.q2bin:<10}{self.brem:<10}'
 
         return f'{str_1}{str_2}'
