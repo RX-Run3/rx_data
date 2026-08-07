@@ -56,5 +56,8 @@ def test_simple(value : str) -> None:
 @pytest.mark.parametrize('name', ['reso_dtf-latest', 'reso_no_dtf-latest'])
 def test_summarizer(name : str) -> None:
     smr = FitSummarizer(name = name, kind = 'reso')
-    smr.get_summary()
+    val = smr.get_summary()
+
+    for meta, fsmr in val.root:
+        assert val.at(meta) == fsmr
 # ----------------------

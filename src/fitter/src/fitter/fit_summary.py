@@ -147,6 +147,25 @@ class FitSummary(RootModel[list[tuple[FitMetadata,FitResult]]]):
     Class representing a collection of fit results
     '''
     # -----------------
+    def at(self, meta : FitMetadata) -> FitResult:
+        '''
+        Parameters
+        ---------------
+        meta: Object holding fit metadata
+
+        Returns
+        ---------------
+        Fit result corresponding to metadata
+        '''
+        return self.__as_dict[meta]
+    # -----------------
+    @cached_property
+    def __as_dict(self) -> dict[FitMetadata,FitResult]:
+        '''
+        Dictionary version of fit summary, used to query entries
+        '''
+        return dict(self.root)
+    # -----------------
     def __str__(self):
         msg = '\n'
         for meta, _ in self.root:
