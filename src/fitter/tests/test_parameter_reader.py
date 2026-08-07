@@ -13,9 +13,8 @@ from dmu       import LogStore
 
 log=LogStore.add_logger('fitter:test_parameter_reader')
 
-_TRIGGERS : Final[list[Trigger  ]] = [Trigger.rk_ee_os, Trigger.rkst_ee_os, Trigger.rk_mm_os, Trigger.rkst_mm_os]
-_BREMS    : Final[list[Brem     ]] = [Brem.zero, Brem.one, Brem.two]
-_Q2BINS   : Final[list[Qsq      ]] = [Qsq.jpsi, Qsq.psi2]
+_BREMS  : Final[list[Brem]] = [Brem.zero, Brem.one, Brem.two]
+_Q2BINS : Final[list[Qsq ]] = [Qsq.jpsi, Qsq.psi2]
 # ----------------------
 @pytest.fixture(scope='session', autouse=True)
 def initialize() -> None:
