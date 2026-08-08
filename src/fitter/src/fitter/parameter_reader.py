@@ -89,8 +89,8 @@ class ParameterReader:
         '''
         meta = FitMetadata(
             component = comp,
-            mva_cmb   = cmb,
-            mva_prc   = prc,
+            cmb       = cmb,
+            prc       = prc,
             block     = block,
             project   = trigger.project,
             channel   = trigger.channel,
