@@ -50,12 +50,24 @@ class FitHarmonizer:
         if self.__meta.channel == Channel.mm:
             return True
 
-        # NOTE: If fit is not per-brem, fraction won't exist
-        # therefore, skip brem info extraction
-        if self.signal is not None:
+        if self.has_brem_fraction:
             return False
 
         return True 
+    # ----------------------
+    @cached_property
+    def has_brem_fraction(self) -> bool:
+        '''
+        True if fit is in electron channel and simultaneously in brem categories 
+        '''
+        # NOTE: {SIGNAL}_fraction will exist if fit was done simultaneously
+        # in brem categories
+        for comp in Component:
+            brem_fraction = f'{comp}_fraction' 
+            if brem_fraction in self.__fres:
+                return True
+
+        return False
     # ----------------------
     @cached_property
     def signal(self) -> Component | None:
