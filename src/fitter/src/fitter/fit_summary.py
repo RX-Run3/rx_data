@@ -105,6 +105,37 @@ class FitHarmonizer:
 
         return pars 
     # ----------------------
+    def __get_dt_yield_pars(self) -> list[FitParameter]:
+        '''
+        Returns
+        -------------
+        Yield parameters calculated from e.g. scales
+        '''
+        if self.signal is None:
+            log.debug('No signal found, no extra yield parameters calculated')
+            return []
+
+        scales = self.__fres.get_pars(prefix = 's_')
+        if not scales:
+            log.debug('No scales found, no extra yield parameters calculated')
+            return []
+
+        pars = self.__fres.get_pars(prefix = f'yld_{self.signal}_')
+        if len(pars) != 1:
+            raise ValueError(f'Not found one and only one signal parameter: {pars}')
+
+        sig_par = pars[0]
+
+        pars : list[FitParameter] = []
+        for scale in scales:
+            par      = scale * sig_par
+            nopref   = scale.name.removeprefix('s_')
+            par.name = f'yld_{nopref}' 
+
+            pars.append(par)
+
+        return pars 
+    # ----------------------
     def __get_mc_brem_pars(self) -> list[FitParameter]:
         '''
         Returns
@@ -130,9 +161,10 @@ class FitHarmonizer:
 
         pars : list[FitParameter] = []
         if self.__meta.component.is_mc: 
-            pars = self.__get_mc_brem_pars()
+            pars += self.__get_mc_brem_pars()
         else:
-            pars = self.__get_dt_brem_pars()
+            pars += self.__get_dt_brem_pars()
+            pars += self.__get_dt_yield_pars()
 
         try:
             fres = self.__fres.extend(pars = pars)
