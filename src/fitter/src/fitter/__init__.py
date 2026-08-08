@@ -1,4 +1,4 @@
-from .fit_summary        import FitSummary
+from .fit_summary        import FitSummary, FitSummarizer, FitHarmonizer
 from .dataset_summary    import DatasetSummary
 from .parameter_reader   import ParameterReader
 from .likelihood_factory import LikelihoodFactory
@@ -99,6 +99,8 @@ __all__ = [
     'ComponentHolder',
     'DataModel',
     'FitSummary',
+    'FitSummarizer',
+    'FitHarmonizer',
     'ParsLoader',
     'RXFitConfig',
     'MisIDConstraints',
