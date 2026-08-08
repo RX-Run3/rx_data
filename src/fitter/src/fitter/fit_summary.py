@@ -12,6 +12,8 @@ from pathlib       import Path
 from typing        import Any, Final
 from pydantic      import RootModel
 from rx_common     import Component, Channel, Brem
+from contextvars   import ContextVar
+from contextlib    import contextmanager
 
 from .yields       import Yield, YieldGrid
 from .fit_metadata import FitMetadata
@@ -19,6 +21,7 @@ from .fit_metadata import FitMetadata
 log=LogStore.add_logger('fitter:fit_summary')
 
 _ANADIR : Final[Path] = Path(os.environ['ANADIR'])
+_SIGNAL : ContextVar[Component | None] = ContextVar('_SIGNAL', default = None) 
 # -------------------------------
 class FitHarmonizer:
     '''
@@ -60,12 +63,33 @@ class FitHarmonizer:
         Component used as signal if associated brem fraction
         exists. Otherwise None
         '''
+        context_signal = _SIGNAL.get()
+        if context_signal is not None:
+            return context_signal
+
         for comp in Component:
             brem_fraction = f'{comp}_fraction' 
             if brem_fraction in self.__fres:
                 return comp 
 
         return None
+    # ---------------------------------
+    @classmethod
+    def set_signal(cls, component : Component):
+        '''
+        Parameters
+        ---------------
+        component: Component to be used as signal during sumarization 
+        '''
+        token = _SIGNAL.set(component)
+        @contextmanager
+        def _context():
+            try:
+                yield
+            finally:
+                _SIGNAL.reset(token)
+
+        return _context()
     # ----------------------
     def __get_dt_brem_pars(self) -> list[FitParameter]:
         '''
