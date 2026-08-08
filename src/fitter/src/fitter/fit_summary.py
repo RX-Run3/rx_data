@@ -149,8 +149,25 @@ class FitSummary(RootModel[list[tuple[FitMetadata,FitResult]]]):
     '''
     # ----------------------
     def make_grid(self, var : str) -> YieldGrid:
+    def get_yields(self, exclude : Component | None = None) -> list[str]:
         '''
         Parameters
+        ----------------
+        exclude: Name of component whose yield will be excluded, e.g. `..._{COMPONENT}_...`
+
+        Returns
+        ----------------
+        List of names of yields in fits
+        '''
+        names : set[str] = set()
+        for _, result in self.root:
+            pars = result.get_pars(prefix = 'yld')
+            names= names | { par.name for par in pars }
+
+        if exclude is None:
+            return list(names)
+
+        return [ name for name in names if f'_{exclude}_' not in name ]
         --------------------
         x/y: Name of fields in metadata that will be used in X and Y axes
         z  : Name of variable in FitResult objects for Z axis
