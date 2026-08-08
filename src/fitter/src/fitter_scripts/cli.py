@@ -238,25 +238,44 @@ def signal_expectation(
     ptr.plot(path = cal.path, randomize = True)
 # ----------------------
 @app.command()
-def background_yields():
-    name = 'rare_fit'
+def background_yields(
+    name    : str     = typer.Option(..., '--name'   , '-n', help='Name of config file'),
+    trigger : Trigger = typer.Option(..., '--trigger', '-t', help='E.g. rk_ee_os'),          # noqa: B008
+    q2bin   : Qsq     = typer.Option(..., '--q2bin'  , '-q', help='E.g. central' )) -> None: # noqa: B008
+    '''
+    Plots background yields
+    '''
     path = _ANADIR / f'fits/data/{name}/fit_summary.json'
 
-    from rx_common  import Component, Project
+    from rx_common  import Component
     from rx_plotter import GridPlotter
     from fitter     import ParameterReader
+    from fitter     import YieldGrid
 
     with ParameterReader.inputs_from(pars_path = path):
-        rdr     = ParameterReader()
+        rdr = ParameterReader()
 
     summary = rdr.summary
     summary = summary.query(name = 'component', value = Component.data_24)
-    summary = summary.query(name = 'project'  , value = Project.rk) 
-    summary = summary.query(name = 'q2bin'    , value = Qsq.central)
+    summary = summary.query(name = 'project'  , value = trigger.project) 
+    summary = summary.query(name = 'q2bin'    , value = q2bin)
 
-    variable = 'yld_comb_brem_x12'
-    grid     = summary.make_grid(var = variable)
-    out_path = _ANADIR / f'yields/rare/background/{variable}.png'
+    variables = summary.get_yields(exclude = trigger.rare_signal)
+    log.info('Building grid from yields:')
+    for var in variables:
+        log.info(var)
+
+    grid : YieldGrid | None = None 
+    for variable in variables:
+        if grid is None:
+            grid  = summary.make_grid(var = variable, fall_back = 0.)
+        else:
+            grid += summary.make_grid(var = variable, fall_back = 0.)
+
+    if grid is None:
+        raise ValueError('Resulting grid is missing')
+
+    out_path = _ANADIR / f'yields/rare/background/{trigger}_{q2bin}.png'
 
     ptr  = GridPlotter(grid = grid)
     ptr.plot(path = out_path, randomize = False)
