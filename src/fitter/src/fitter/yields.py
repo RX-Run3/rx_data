@@ -185,6 +185,23 @@ class YieldGrid(RootModel[list[Yield]]):
     Class meant to represent a collection of yields
     '''
     # ---------------------
+    def __add__(self, other : 'YieldGrid') -> 'YieldGrid':
+        if self.size != other.size:
+            raise ValueError(f'Cannot add grids with different sizes: {self.size} != {other.size}')
+
+        total : list[Yield] = []
+        for first, second in zip(self.root, other.root, strict=True):
+            total.append(first + second)
+
+        return YieldGrid(root = total)
+    # ---------------------
+    @property
+    def size(self):
+        '''
+        Number of yields in grid
+        '''
+        return len(self.root)
+    # ---------------------
     @cached_property
     def df(self) -> pnd.DataFrame:
         '''
