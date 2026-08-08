@@ -3,7 +3,6 @@ Module holding FitSummary class
 '''
 import os
 import tqdm
-import math
 
 from gvar          import gvar
 from dmu           import LogStore
@@ -158,7 +157,7 @@ class FitSummary(RootModel[list[tuple[FitMetadata,FitResult]]]):
         '''
         grid = YieldGrid(root = [])
         for meta, fres in self.root:
-            zval, zerr = fres.get(name = var, fall_back = math.nan)
+            zval, zerr = fres.get(name = var, fall_back = None)
 
             with Yield.allow_nan():
                 yld     = Yield(

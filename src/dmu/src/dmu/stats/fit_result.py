@@ -398,12 +398,13 @@ class FitResult(BaseModel):
         '''
         return any(par.name == name for par in self.__all_parameters)
     # ----------------------
-    def get(self, name : str, fall_back : float) -> tuple[float,float]:
+    def get(self, name : str, fall_back : float | None) -> tuple[float,float]:
         '''
         Parameters
         ----------------
         name     : Name of parameter
         fall_back: Replacement for value and error if parameter not found
+                   If None, will raise if parameter is not found
 
         Returns
         ----------------
@@ -414,6 +415,9 @@ class FitResult(BaseModel):
                 continue
 
             return par.value, par.error
+
+        if fall_back is None:
+            raise ValueError(f'Parameter {name} not found')
 
         return fall_back, fall_back
     # ----------------------
