@@ -172,9 +172,10 @@ class FitHarmonizer:
             log.debug('No scales found, no extra yield parameters calculated')
             return []
 
-        pars = self.__fres.get_pars(prefix = f'yld_{self.signal}_')
+        pars = self.__fres.get_pars(prefix = f'yld_{self.signal}')
         if len(pars) != 1:
-            raise ValueError(f'Not found one and only one signal parameter: {pars}')
+            log.error(self.__fres)
+            raise ValueError(f'Not found one and only one signal ({self.signal}) parameter: {pars}')
 
         sig_par = pars[0]
 
