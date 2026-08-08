@@ -475,6 +475,18 @@ class FitResult(BaseModel):
 
         return pars
     # ----------------------
+    def get_pars(self, prefix : str) -> list[FitParameter]:
+        '''
+        Parameters
+        --------------
+        prefix: Starting substring in parameter name, e.g. {prefix}mu_gauss
+
+        Returns
+        --------------
+        Set of parameters starting with prefix
+        '''
+        return [ par for par in self.parameters if par.name.startswith(prefix) ]
+    # ----------------------
     @classmethod
     def _par_from_zfit(
         cls, 
