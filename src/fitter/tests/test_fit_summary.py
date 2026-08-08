@@ -70,9 +70,8 @@ def test_rare(value : str) -> None:
     meta = FitMetadata.from_pars_path(path = path)
     fres = FitResult.from_json(path = path)
 
-    with FitHarmonizer.set_signal(component = Component.bpkpee):
-        hrm  = FitHarmonizer(fres = fres, meta = meta)
-        fres = hrm.get_result()
+    hrm  = FitHarmonizer(fres = fres, meta = meta)
+    fres = hrm.get_result()
 
     print(fres)
 # ----------------------
