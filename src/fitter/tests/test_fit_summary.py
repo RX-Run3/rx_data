@@ -9,6 +9,7 @@ from dmu         import LogStore
 from fitter      import FitSummary
 from typing      import Final
 from pathlib     import Path
+from rx_common   import Component
 
 from fitter.fit_metadata import FitMetadata
 from fitter.fit_summary import FitSummarizer
@@ -75,4 +76,21 @@ def test_at(value : str) -> None:
     smr  = FitSummary(root = data)
 
     assert smr.at(meta) == fres
+# ----------------------
+@pytest.mark.parametrize('value', _DATA_PATHS)
+def test_grid(value : str) -> None:
+    '''
+    Test make_grid method
+    '''
+    comp = Component.bpkpjpsiee
+    path = _ANADIR / f'fits/data/{value}' 
+
+    meta = FitMetadata.from_pars_path(path = path)
+    fres = FitResult.from_json(path = path)
+
+    data = [(meta , fres)]
+    smr  = FitSummary(root = data)
+    grd  = smr.make_grid(var = f'yld_{comp}_brem_x12')
+
+    log.info(f'\n{grd.df}')
 # ----------------------
