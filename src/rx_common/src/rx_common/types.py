@@ -550,6 +550,36 @@ class Trigger(StrEnum):
     rkst_mm_nopid= auto()
     rkst_mm_ss   = auto()
     # -----------
+    @classmethod
+    def get_main_trigger(
+        cls, 
+        channel : Channel, 
+        project : Project) -> 'Trigger':
+        '''
+        Parameters
+        ----------------
+        channel: E.g. ee, mm
+        project: E.g. rk, rkst
+
+        Returns
+        ----------------
+        Trigger used for this project/channel combination
+        for actual measurement
+        '''
+        for trig in cls:
+            if not trig.is_main:
+                continue
+
+            if trig.channel != channel:
+                continue
+
+            if trig.project != project:
+                continue
+
+            return trig
+
+        raise ValueError(f'Cannot find main trigger for: {project}/{channel}')
+    # -----------
     @property
     def reso_signal(self) -> Component:
         '''
@@ -798,6 +828,15 @@ class Trigger(StrEnum):
         True if it is a same sign trigger
         '''
         return 'ss' in self.name
+    @property
+    def is_main(self) -> bool:
+        '''
+        True if trigger is used for actual measurement
+        '''
+        ee_trig = [Trigger.rk_ee_os, Trigger.rkst_ee_os]
+        mm_trig = [Trigger.rk_mm_os, Trigger.rkst_mm_os]
+
+        return self in ee_trig + mm_trig
     # -----------
     @property
     def project(self) -> Project:
