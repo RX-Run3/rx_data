@@ -12,7 +12,7 @@ from functools     import cached_property
 from pathlib       import Path
 from typing        import Any, Final
 from pydantic      import RootModel
-from rx_common     import Component, Channel, Brem, Cut, Cuts, WorkingPoint
+from rx_common     import Component, Channel, Brem
 
 from .yields       import Yield, YieldGrid
 from .fit_metadata import FitMetadata
@@ -149,7 +149,7 @@ class FitSummary(RootModel[list[tuple[FitMetadata,FitResult]]]):
     Class representing a collection of fit results
     '''
     # ----------------------
-    def make_grid(self, x : str, y : str, z : str) -> YieldGrid:
+    def make_grid(self, var : str) -> YieldGrid:
         '''
         Parameters
         --------------------
@@ -158,19 +158,13 @@ class FitSummary(RootModel[list[tuple[FitMetadata,FitResult]]]):
         '''
         grid = YieldGrid(root = [])
         for meta, fres in self.root:
-            xval = getattr(meta, x)
-            yval = getattr(meta, y)
-            zval, zerr = fres.get(name = z, fall_back = math.nan)
+            zval, zerr = fres.get(name = var, fall_back = math.nan)
 
-            xcut = Cut(cut = Cuts(x), val = xval, var = x)
-            ycut = Cut(cut = Cuts(y), val = yval, var = y)
-
-            wp = WorkingPoint(root = [xcut, ycut])
-
-            yld     = Yield(
-                val = zval,
-                err = zerr,
-                wp  = wp)
+            with Yield.allow_nan():
+                yld     = Yield(
+                    val = zval,
+                    err = zerr,
+                    wp  = meta.wp)
 
             grid.root.append(yld)
 
