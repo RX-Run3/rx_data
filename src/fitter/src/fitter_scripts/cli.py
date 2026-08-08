@@ -14,7 +14,6 @@ from rx_common  import Trigger, Qsq
 from dmu        import LogLevels, LogStore
 from dmu.stats  import zfit
 from pathlib    import Path
-from rx_plotter import GridPlotter
 
 app = typer.Typer(
     help            = __doc__,
@@ -213,10 +212,11 @@ def signal_expectation(
     '''
     Calculates grid of signal expected yields in grid of MVA classifiers working points
     '''
-    from fitter    import YieldCalculator
-    from rx_common import Cut, Cuts
-    from rx_common import WorkingPoint
-    from ROOT      import EnableImplicitMT # type: ignore
+    from fitter     import YieldCalculator
+    from rx_common  import Cut, Cuts
+    from rx_common  import WorkingPoint
+    from ROOT       import EnableImplicitMT # type: ignore
+    from rx_plotter import GridPlotter
 
     if proc > 1:
         log.info(f'Using {proc} threads')
@@ -235,7 +235,31 @@ def signal_expectation(
     grid = cal.calculate()
 
     ptr = GridPlotter(grid = grid)
-    ptr.plot(path = cal.path)
+    ptr.plot(path = cal.path, randomize = True)
+# ----------------------
+@app.command()
+def background_yields():
+    name = 'rare_fit'
+    path = _ANADIR / f'fits/data/{name}/fit_summary.json'
+
+    from rx_common  import Component, Project
+    from rx_plotter import GridPlotter
+    from fitter     import ParameterReader
+
+    with ParameterReader.inputs_from(pars_path = path):
+        rdr     = ParameterReader()
+
+    summary = rdr.summary
+    summary = summary.query(name = 'component', value = Component.data_24)
+    summary = summary.query(name = 'project'  , value = Project.rk) 
+    summary = summary.query(name = 'q2bin'    , value = Qsq.central)
+
+    variable = 'yld_comb_brem_x12'
+    grid     = summary.make_grid(var = variable)
+    out_path = _ANADIR / f'yields/rare/background/{variable}.png'
+
+    ptr  = GridPlotter(grid = grid)
+    ptr.plot(path = out_path, randomize = False)
 # ----------------------
 if __name__ == '__main__':
     app()
