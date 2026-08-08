@@ -206,4 +206,4 @@ class YieldCalculator:
         yld_grid = yld_rare  * eff_grid
 
         return yld_grid
-
+# ----------------------------------------
