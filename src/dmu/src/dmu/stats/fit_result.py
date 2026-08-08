@@ -10,6 +10,7 @@ import numpy
 import pprint
 import pandas as pnd
 
+from gvar        import gvar
 from typing      import Self, Sequence
 from contextvars import ContextVar
 from contextlib  import contextmanager
@@ -143,6 +144,15 @@ class FitParameter(BaseModel):
     name : str
     value: float 
     error: float
+    # ----------------------
+    def __mul__(self, other : 'FitParameter') -> 'FitParameter':
+        name      = f'{self.name}_prod_{other.name}'
+        this_val  = gvar(self.value , self.error )
+        other_val = gvar(other.value, other.error)
+
+        res_val   = this_val * other_val
+
+        return FitParameter(name = name, value = res_val.mean, error = res_val.sdev)
     # ----------------------
     def model_post_init(self, _) -> None:
         if not _VALIDATE_PAR_NAME.get():
