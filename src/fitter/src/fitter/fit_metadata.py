@@ -8,7 +8,7 @@ import json
 from pathlib     import Path
 from typing      import Any, Final
 from pydantic    import BaseModel
-from rx_common   import Project, Qsq, WorkingPoint
+from rx_common   import Trigger, Project, Qsq, WorkingPoint
 from rx_common   import Block, Brem, Channel, Component, Cut, Cuts
 from dmu         import LogStore
 from dmu.generic import hashing
@@ -35,6 +35,20 @@ class FitMetadata(BaseModel, frozen = True):
     q2bin     : Qsq
     brem      : Brem
     stats     : tuple[float,float] 
+    # -------------------
+    @property
+    def signal(self) -> Component:
+        '''
+        Signal component associated to fit 
+        '''
+        trig = Trigger.get_main_trigger(
+            channel = self.channel,
+            project = self.project)
+
+        if self.q2bin.is_rare:
+            return trig.rare_signal
+        
+        return trig.reso_signal
     # -------------------
     @property
     def wp(self) -> WorkingPoint:
