@@ -41,10 +41,10 @@ class Yield(BaseModel):
         if not allow_nan and has_nans:
             raise ValueError(f'Yield contains NaNs: {self}')
 
-        if self.err <= 0.:
+        if self.err < 0.:
             raise ValueError(f'Yield error cannot be zero or negative, found: {self.err}')
 
-        if self.val < 0 :
+        if self.val < 0.:
             raise ValueError(f'Yield is negative: {self.val}')
 
         return self
