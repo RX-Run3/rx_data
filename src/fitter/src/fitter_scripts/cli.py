@@ -14,6 +14,7 @@ from rx_common  import Trigger, Qsq
 from dmu        import LogLevels, LogStore
 from dmu.stats  import zfit
 from pathlib    import Path
+from fitter     import YieldGrid
 
 app = typer.Typer(
     help            = __doc__,
@@ -25,6 +26,20 @@ _ANADIR : Final[Path] = Path(os.environ['ANADIR'])
 class FitKind(StrEnum):
     rare = auto()
     reso = auto()
+# ----------------------
+def __save_grid_plot(grid : YieldGrid, name : str):
+    '''
+    Parameters
+    -----------------
+    grid: Object holding yields in grid
+    name: Name of file where grid plot will be saved
+    '''
+    from rx_plotter import GridPlotter
+
+    out_path = _ANADIR / f'yields/rare/background/{name}.png'
+
+    ptr  = GridPlotter(grid = grid)
+    ptr.plot(path = out_path, randomize = False)
 # ----------------------
 @app.command()
 def tabulate_scales(
@@ -248,9 +263,7 @@ def background_yields(
     path = _ANADIR / f'fits/data/{name}/fit_summary.json'
 
     from rx_common  import Component
-    from rx_plotter import GridPlotter
     from fitter     import ParameterReader
-    from fitter     import YieldGrid
 
     with ParameterReader.inputs_from(pars_path = path):
         rdr = ParameterReader()
@@ -267,18 +280,18 @@ def background_yields(
 
     grid : YieldGrid | None = None 
     for variable in variables:
+        tmp = summary.make_grid(var = variable, fall_back = 0.)
+        __save_grid_plot(grid = tmp, name = f'{trigger}_{q2bin}_{variable}')
+
         if grid is None:
-            grid  = summary.make_grid(var = variable, fall_back = 0.)
+            grid  = tmp
         else:
-            grid += summary.make_grid(var = variable, fall_back = 0.)
+            grid += tmp 
 
     if grid is None:
-        raise ValueError('Resulting grid is missing')
+        raise ValueError('Missing yields grid')
 
-    out_path = _ANADIR / f'yields/rare/background/{trigger}_{q2bin}.png'
-
-    ptr  = GridPlotter(grid = grid)
-    ptr.plot(path = out_path, randomize = False)
+    __save_grid_plot(grid = grid, name = f'{trigger}_{q2bin}_total')
 # ----------------------
 if __name__ == '__main__':
     app()
