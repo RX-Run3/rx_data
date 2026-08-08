@@ -26,8 +26,8 @@ class FitMetadata(BaseModel, frozen = True):
     Class meant to identify fitted sample 
     '''
     component : Component
-    mva_cmb   : MVAWp
-    mva_prc   : MVAWp
+    cmb       : MVAWp
+    prc       : MVAWp
     block     : Block
     project   : Project
     channel   : Channel
@@ -60,7 +60,7 @@ class FitMetadata(BaseModel, frozen = True):
     # -------------------
     @property
     def as_str(self) -> str:
-        str_1 = f'{self.component:<20}{self.mva_cmb:<10}{self.mva_prc:<10}'
+        str_1 = f'{self.component:<20}{self.cmb:<10}{self.prc:<10}'
         str_2 = f'{self.block:<5}{self.project:<10}{self.channel:<5}{self.q2bin:<10}{self.brem:<10}'
 
         return f'{str_1}{str_2}'
@@ -68,8 +68,8 @@ class FitMetadata(BaseModel, frozen = True):
     def __str__(self):
         return f'''
         Component       : {self.component}
-        Combinatorial WP: {self.mva_cmb}
-        Part-reco WP    : {self.mva_prc}
+        Combinatorial WP: {self.cmb}
+        Part-reco WP    : {self.prc}
         Block           : {self.block}
         Project         : {self.project}
         Channel         : {self.channel}
@@ -144,8 +144,8 @@ class FitMetadata(BaseModel, frozen = True):
 
         return cls(
             component= component,
-            mva_cmb  = MVAWp.from_label(cmb_wp),
-            mva_prc  = MVAWp.from_label(prc_wp),
+            cmb      = MVAWp.from_label(cmb_wp),
+            prc      = MVAWp.from_label(prc_wp),
             project  = Project(mtch.group(4)),
             channel  = Channel(mtch.group(5)),
             q2bin    = Qsq(    mtch.group(6)),
