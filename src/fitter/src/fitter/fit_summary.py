@@ -12,8 +12,6 @@ from pathlib       import Path
 from typing        import Any, Final
 from pydantic      import RootModel
 from rx_common     import Component, Channel, Brem
-from contextvars   import ContextVar
-from contextlib    import contextmanager
 
 from .yields       import Yield, YieldGrid
 from .fit_metadata import FitMetadata
@@ -21,7 +19,6 @@ from .fit_metadata import FitMetadata
 log=LogStore.add_logger('fitter:fit_summary')
 
 _ANADIR : Final[Path] = Path(os.environ['ANADIR'])
-_SIGNAL : ContextVar[Component | None] = ContextVar('_SIGNAL', default = None) 
 # -------------------------------
 class FitHarmonizer:
     '''
@@ -51,77 +48,28 @@ class FitHarmonizer:
             log.debug('Skipping brem info')
             return True
 
-        if self.has_brem_fraction:
-            log.debug('Not skipping brem info')
-            return False
+        # NOTE: {SIGNAL}_fraction will exist if fit was done simultaneously
+        # in brem categories
+        brem_fraction = f'{self.__meta.signal}_fraction' 
+        if brem_fraction in self.__fres:
+            return False 
 
         log.debug('Skipping brem info')
         return True 
-    # ----------------------
-    @cached_property
-    def has_brem_fraction(self) -> bool:
-        '''
-        True if fit is in electron channel and simultaneously in brem categories 
-        '''
-        # NOTE: {SIGNAL}_fraction will exist if fit was done simultaneously
-        # in brem categories
-        for comp in Component:
-            brem_fraction = f'{comp}_fraction' 
-            if brem_fraction in self.__fres:
-                return True
-
-        return False
-    # ----------------------
-    @cached_property
-    def signal(self) -> Component | None:
-        '''
-        Component used as signal if associated brem fraction
-        exists. Otherwise None
-        '''
-        context_signal = _SIGNAL.get()
-        if context_signal is not None:
-            log.debug(f'Found user defined signal: {context_signal}')
-            return context_signal
-
-        log.debug('No user defined signal found')
-        for comp in Component:
-            brem_fraction = f'{comp}_fraction' 
-            if brem_fraction in self.__fres:
-                log.debug(f'Read signal from fit result: {comp}')
-                return comp 
-
-        log.debug('No signal can be retrieved from fit results')
-
-        return None
-    # ---------------------------------
-    @classmethod
-    def set_signal(cls, component : Component):
-        '''
-        Parameters
-        ---------------
-        component: Component to be used as signal during sumarization 
-        '''
-        log.debug(f'Setting signal: {component}')
-        token = _SIGNAL.set(component)
-        @contextmanager
-        def _context():
-            try:
-                yield
-            finally:
-                _SIGNAL.reset(token)
-
-        return _context()
     # ----------------------
     def __get_dt_brem_pars(self) -> list[FitParameter]:
         '''
         Returns
         -------------
-        List of parameters needed to be added for FitSummary in data
+        List of brem related parameters needed for FitSummary in data
         '''
         if self.__meta.component.is_mc:
             return []
 
-        signal                    = self.signal
+        if self.__skip_brem_info(): 
+            return []
+
+        signal                    = self.__meta.signal
         res                       = self.__fres
         pars : list[FitParameter] = []
 
@@ -162,20 +110,18 @@ class FitHarmonizer:
         if self.__meta.component.is_mc:
             return []
 
-        if self.signal is None:
-            log.debug('No signal found, no extra yield parameters calculated')
-            return []
+        signal = self.__meta.signal
 
-        log.debug(f'Using signal {self.signal} to add scaled yield parameters in data')
+        log.debug(f'Using signal {signal} to add scaled yield parameters in data')
         scales = self.__fres.get_pars(prefix = 's_')
         if not scales:
             log.debug('No scales found, no extra yield parameters calculated')
             return []
 
-        pars = self.__fres.get_pars(prefix = f'yld_{self.signal}')
+        pars = self.__fres.get_pars(prefix = f'yld_{signal}')
         if len(pars) != 1:
             log.error(self.__fres)
-            raise ValueError(f'Not found one and only one signal ({self.signal}) parameter: {pars}')
+            raise ValueError(f'Not found one and only one signal ({signal}) parameter: {pars}')
 
         sig_par = pars[0]
 
@@ -200,6 +146,9 @@ class FitHarmonizer:
         if not self.__meta.component.is_mc:
             return []
 
+        if self.__skip_brem_info(): 
+            return []
+
         log.debug('Adding MC brem parameters')
 
         comp     = self.__meta.component
@@ -217,10 +166,9 @@ class FitHarmonizer:
         FitResult after harmonization
         '''
         pars : list[FitParameter] = []
-        if not self.__skip_brem_info(): 
-            pars += self.__get_mc_brem_pars()
-            pars += self.__get_dt_brem_pars()
 
+        pars += self.__get_mc_brem_pars()
+        pars += self.__get_dt_brem_pars()
         pars += self.__get_dt_yield_pars()
 
         try:
