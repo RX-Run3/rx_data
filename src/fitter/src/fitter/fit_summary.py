@@ -168,12 +168,13 @@ class FitSummary(RootModel[list[tuple[FitMetadata,FitResult]]]):
 
         return [ name for name in names if f'_{exclude}_' not in name ]
     # ----------------------
-    def make_grid(self, var : str, fall_back : float) -> YieldGrid:
+    def make_grid(self, var : str, fall_back : float | None) -> YieldGrid:
         '''
         Parameters
         --------------------
         var      : Name of variable in FitResult objects for Z axis
         fall_back: Value used if value is missing in any grid point 
+                   If None, will raise exception when value is missing
 
         Returns
         --------------------

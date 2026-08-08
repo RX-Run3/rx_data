@@ -90,7 +90,7 @@ def test_grid(value : str) -> None:
 
     data = [(meta , fres)]
     smr  = FitSummary(root = data)
-    grd  = smr.make_grid(var = f'yld_{comp}_brem_x12')
+    grd  = smr.make_grid(var = f'yld_{comp}_brem_x12', fall_back = None)
 
     log.info(f'\n{grd.df}')
 # ----------------------
