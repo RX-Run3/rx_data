@@ -827,7 +827,8 @@ class Trigger(StrEnum):
         '''
         True if it is a same sign trigger
         '''
-        return 'ss' in self.name
+        return 'SameSign' in str(self)
+    # -----------
     @property
     def is_main(self) -> bool:
         '''
