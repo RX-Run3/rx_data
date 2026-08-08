@@ -493,7 +493,9 @@ class FitResult(BaseModel):
         --------------
         Set of parameters starting with prefix
         '''
-        return [ par for par in self.parameters if par.name.startswith(prefix) ]
+        all_pars = list(self.parameters) + self.extra_pars
+
+        return [ par for par in all_pars if par.name.startswith(prefix) ]
     # ----------------------
     @classmethod
     def _par_from_zfit(
