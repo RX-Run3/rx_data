@@ -159,11 +159,10 @@ class FitSummary(RootModel[list[tuple[FitMetadata,FitResult]]]):
         for meta, fres in self.root:
             zval, zerr = fres.get(name = var, fall_back = None)
 
-            with Yield.allow_nan():
-                yld     = Yield(
-                    val = zval,
-                    err = zerr,
-                    wp  = meta.wp)
+            yld     = Yield(
+                val = zval,
+                err = zerr,
+                wp  = meta.wp)
 
             grid.root.append(yld)
 
