@@ -11,8 +11,9 @@ from typing      import Final
 from pathlib     import Path
 from rx_common   import Component
 
-from fitter.fit_metadata import FitMetadata
-from fitter.fit_summary import FitSummarizer
+from fitter      import FitMetadata
+from fitter      import FitSummarizer
+from fitter      import FitHarmonizer
 
 log=LogStore.add_logger('fitter:test_fit_summary')
 
@@ -21,6 +22,12 @@ _DATA_PATHS = [
     'reso_no_dtf-latest/990_800_b1/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx2/parameters.json',
     'reso_no_dtf-latest/990_500_b3/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx1/parameters.json',
     'reso_no_dtf-latest/990_500_b3/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx2/parameters.json',
+]
+
+_DATA_RARE  = [
+    'rare_fit/0600-1000_0300-1000_all/rare/rk/ee/low/data_24/fit/brem_x12/brem_x12/parameters.json',
+    'rare_fit/0600-1000_0300-1000_all/rare/rk/ee/central/data_24/fit/brem_x12/brem_x12/parameters.json',
+    'rare_fit/0600-1000_0300-1000_all/rare/rk/ee/high/data_24/fit/brem_x12/brem_x12/parameters.json',
 ]
 
 _SIGN_PATHS = [
@@ -53,6 +60,21 @@ def test_simple(value : str) -> None:
     smr  = FitSummary(root = data)
 
     assert len(smr.root) > 0
+# ----------------------
+@pytest.mark.parametrize('value', _DATA_RARE)
+def test_rare(value : str) -> None:
+    '''
+    Test where overriden path
+    '''
+    path = _ANADIR / f'fits/data/{value}' 
+    meta = FitMetadata.from_pars_path(path = path)
+    fres = FitResult.from_json(path = path)
+
+    with FitHarmonizer.set_signal(component = Component.bpkpee):
+        hrm  = FitHarmonizer(fres = fres, meta = meta)
+        fres = hrm.get_result()
+
+    print(fres)
 # ----------------------
 @pytest.mark.parametrize('name', ['reso_dtf-latest', 'reso_no_dtf-latest'])
 def test_summarizer(name : str) -> None:
