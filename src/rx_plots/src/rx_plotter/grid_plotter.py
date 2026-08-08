@@ -41,6 +41,8 @@ class GridPlotter:
         path     : Path to directory where plot will be saved
         randomize: If True, will scale all values by a random number from Gauss(mu=1, sigma = 0.2)
         '''
+        path.parent.mkdir(parents = True, exist_ok = True)
+
         df      = self.__grid.df
         pivoted = df.pivot(
                 index  ='prc',
@@ -76,9 +78,8 @@ class GridPlotter:
         plt.ylabel('MVA${}_{prec}$')
         plt.tight_layout()
 
-        out_path = path / 'yields.png'
-        log.info(f'Saving to: {out_path}')
+        log.info(f'Saving to: {path}')
 
-        plt.savefig(out_path)
+        plt.savefig(path)
         plt.close()
 # --------------------------------
