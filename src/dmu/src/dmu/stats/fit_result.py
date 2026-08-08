@@ -135,12 +135,10 @@ class GoodnessOfFit(BaseModel):
         '''
         return self.chi2 > other.chi2
 # -------------------------------------
-class FitParameter(BaseModel):
+class FitParameter(BaseModel, frozen = True):
     '''
     Class meant to represent fitting parameter
     '''
-    model_config = ConfigDict(frozen=True)
-
     name : str
     value: float 
     error: float
