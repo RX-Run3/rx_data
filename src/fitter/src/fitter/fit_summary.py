@@ -180,11 +180,13 @@ class FitHarmonizer:
 
         pars : list[FitParameter] = []
         for scale in scales:
-            par      = scale * sig_par
-            nopref   = scale.name.removeprefix('s_')
-            par.name = f'yld_{nopref}' 
+            par     = scale * sig_par
+            nopref  = scale.name.removeprefix('s_')
+            new_par = par.model_copy(update = {'name' : f'yld_{nopref}'})
 
-            pars.append(par)
+            log.debug(f'Adding {new_par.name}')
+
+            pars.append(new_par)
 
         return pars 
     # ----------------------
@@ -213,15 +215,12 @@ class FitHarmonizer:
         -------------
         FitResult after harmonization
         '''
-        if self.__skip_brem_info():
-            return self.__fres
-
         pars : list[FitParameter] = []
-        if self.__meta.component.is_mc: 
+        if not self.__skip_brem_info(): 
             pars += self.__get_mc_brem_pars()
-        else:
             pars += self.__get_dt_brem_pars()
-            pars += self.__get_dt_yield_pars()
+
+        pars += self.__get_dt_yield_pars()
 
         try:
             fres = self.__fres.extend(pars = pars)
