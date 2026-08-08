@@ -148,7 +148,6 @@ class FitSummary(RootModel[list[tuple[FitMetadata,FitResult]]]):
     Class representing a collection of fit results
     '''
     # ----------------------
-    def make_grid(self, var : str) -> YieldGrid:
     def get_yields(self, exclude : Component | None = None) -> list[str]:
         '''
         Parameters
@@ -168,13 +167,21 @@ class FitSummary(RootModel[list[tuple[FitMetadata,FitResult]]]):
             return list(names)
 
         return [ name for name in names if f'_{exclude}_' not in name ]
+    # ----------------------
+    def make_grid(self, var : str, fall_back : float) -> YieldGrid:
+        '''
+        Parameters
         --------------------
-        x/y: Name of fields in metadata that will be used in X and Y axes
-        z  : Name of variable in FitResult objects for Z axis
+        var      : Name of variable in FitResult objects for Z axis
+        fall_back: Value used if value is missing in any grid point 
+
+        Returns
+        --------------------
+        Grid of yields for passed variable, 
         '''
         grid = YieldGrid(root = [])
         for meta, fres in self.root:
-            zval, zerr = fres.get(name = var, fall_back = None)
+            zval, zerr = fres.get(name = var, fall_back = fall_back)
 
             yld     = Yield(
                 val = zval,
