@@ -8,7 +8,8 @@ import json
 from pathlib     import Path
 from typing      import Any, Final
 from pydantic    import BaseModel
-from rx_common   import Block, Brem, Channel, Component, Project, Qsq
+from rx_common   import Project, Qsq, WorkingPoint
+from rx_common   import Block, Brem, Channel, Component, Cut, Cuts
 from dmu         import LogStore
 from dmu.generic import hashing
 from .mva_conf   import MVAWp
@@ -34,6 +35,19 @@ class FitMetadata(BaseModel, frozen = True):
     q2bin     : Qsq
     brem      : Brem
     stats     : tuple[float,float] 
+    # -------------------
+    @property
+    def wp(self) -> WorkingPoint:
+        '''
+        MVA working point associated to this fit
+        '''
+        cmb_cut = Cuts.cmb
+        prc_cut = Cuts.prc
+
+        cmb = Cut(cut = cmb_cut, val = self.cmb.lower, var = cmb_cut.var)
+        prc = Cut(cut = prc_cut, val = self.prc.lower, var = prc_cut.var)
+
+        return WorkingPoint(root = [cmb, prc])
     # -------------------
     @property
     def fields(self) -> list[tuple[str,Any]]:
