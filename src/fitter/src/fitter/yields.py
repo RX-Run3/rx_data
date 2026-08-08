@@ -10,8 +10,12 @@ from dmu               import LogStore
 from pydantic          import RootModel, BaseModel, model_validator
 from rx_common         import BranchingFraction, Component, Cuts, Trigger, WorkingPoint
 from rx_efficiencies   import Efficiency, EfficiencyGrid
+from contextlib        import contextmanager
+from contextvars       import ContextVar
 
 log=LogStore.add_logger('rx_efficiencies:yields')
+
+_ALLOW_NAN_YIELD : ContextVar[bool] = ContextVar('_ALLOW_NAN_YIELD', default = False) 
 # ----------------------------------------
 class ProjectConf(BaseModel):
     '''
@@ -31,7 +35,10 @@ class Yield(BaseModel):
     # ----------------------------------------
     @model_validator(mode = 'after')
     def _validate(self) -> 'Yield':
-        if math.isnan(self.val) or math.isnan(self.err):
+        allow_nan = _ALLOW_NAN_YIELD.get()
+        has_nans  = math.isnan(self.val) or math.isnan(self.err)
+
+        if not allow_nan and has_nans:
             raise ValueError(f'Yield contains NaNs: {self}')
 
         if self.err <= 0.:
@@ -157,6 +164,21 @@ class Yield(BaseModel):
         Yield representing no entries
         '''
         return cls(val = 1e-3, err = 1e-3, wp = wp)
+    # ---------------------------------
+    @classmethod
+    def allow_nan(cls):
+        '''
+        Inside this context, Yield will accept NaN values
+        '''
+        token = _ALLOW_NAN_YIELD.set(True)
+        @contextmanager
+        def _context():
+            try:
+                yield
+            finally:
+                _ALLOW_NAN_YIELD.reset(token)
+
+        return _context()
 # ----------------------------------------
 class YieldGrid(RootModel[list[Yield]]):
     '''
