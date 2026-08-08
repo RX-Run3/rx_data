@@ -5,6 +5,7 @@ from pathlib     import Path
 from enum        import StrEnum, IntEnum, auto
 from typing      import Final
 from dmu.stats   import CorrectionImplementation
+from dmu         import LogStore
 from pydantic    import BaseModel, ConfigDict, model_validator
 
 from .mass       import Mass
@@ -15,6 +16,7 @@ from .qsq        import Qsq
 from .region     import Region
 
 _ALL_BLOCKS : Final[set[int]] = {-1, 1, 2, 3, 4, 5, 6, 7, 8}
+log=LogStore.add_logger('rx_common:types')
 # ------------------------------
 class DataSet(StrEnum):
     dat = auto()
