@@ -48,11 +48,14 @@ class FitHarmonizer:
         e.g. for the muon channel or when fits are not done per brem category 
         '''
         if self.__meta.channel == Channel.mm:
+            log.debug('Skipping brem info')
             return True
 
         if self.has_brem_fraction:
+            log.debug('Not skipping brem info')
             return False
 
+        log.debug('Skipping brem info')
         return True 
     # ----------------------
     @cached_property
@@ -77,12 +80,17 @@ class FitHarmonizer:
         '''
         context_signal = _SIGNAL.get()
         if context_signal is not None:
+            log.debug(f'Found user defined signal: {context_signal}')
             return context_signal
 
+        log.debug('No user defined signal found')
         for comp in Component:
             brem_fraction = f'{comp}_fraction' 
             if brem_fraction in self.__fres:
+                log.debug(f'Read signal from fit result: {comp}')
                 return comp 
+
+        log.debug('No signal can be retrieved from fit results')
 
         return None
     # ---------------------------------
@@ -93,6 +101,7 @@ class FitHarmonizer:
         ---------------
         component: Component to be used as signal during sumarization 
         '''
+        log.debug(f'Setting signal: {component}')
         token = _SIGNAL.set(component)
         @contextmanager
         def _context():
@@ -151,6 +160,7 @@ class FitHarmonizer:
             log.debug('No signal found, no extra yield parameters calculated')
             return []
 
+        log.debug(f'Using signal {self.signal} to add scaled yield parameters in data')
         scales = self.__fres.get_pars(prefix = 's_')
         if not scales:
             log.debug('No scales found, no extra yield parameters calculated')
