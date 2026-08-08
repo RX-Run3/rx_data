@@ -118,6 +118,9 @@ class FitHarmonizer:
         -------------
         List of parameters needed to be added for FitSummary in data
         '''
+        if self.__meta.component.is_mc:
+            return []
+
         signal                    = self.signal
         res                       = self.__fres
         pars : list[FitParameter] = []
@@ -156,6 +159,9 @@ class FitHarmonizer:
         -------------
         Yield parameters calculated from e.g. scales
         '''
+        if self.__meta.component.is_mc:
+            return []
+
         if self.signal is None:
             log.debug('No signal found, no extra yield parameters calculated')
             return []
@@ -188,6 +194,11 @@ class FitHarmonizer:
         ----------------
         Dictionary with information associated to brem (yields, fractions, etc)
         '''
+        if not self.__meta.component.is_mc:
+            return []
+
+        log.debug('Adding MC brem parameters')
+
         comp     = self.__meta.component
         brem     = self.__meta.brem
         val, err = self.__meta.stats
