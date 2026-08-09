@@ -45,9 +45,9 @@ class GridPlotter:
 
         df      = self.__grid.df
         pivoted = df.pivot(
-                index  ='prc',
-                columns='cmb',
-                values ='yld')
+            index  ='prc',
+            columns='cmb',
+            values ='yld')
 
         if randomize:
             scale   = random.gauss(mu = 1, sigma = _RANDOM_SIGMA)
