@@ -107,25 +107,29 @@ class FitHarmonizer:
         -------------
         Yield parameters calculated from e.g. scales
         '''
+        yield_pars : list[FitParameter] = []
+
         if self.__meta.component.is_mc:
-            return []
+            return yield_pars
+
+        val, err = self.__meta.stats
+        par = FitParameter(name = 'yld_all', value = val, error = err)
+        yield_pars.append(par)
 
         signal = self.__meta.signal
-
         log.debug(f'Using signal {signal} to add scaled yield parameters in data')
         scales = self.__fres.get_pars(prefix = 's_')
         if not scales:
             log.debug('No scales found, no extra yield parameters calculated')
-            return []
+            return yield_pars
 
-        pars = self.__fres.get_pars(prefix = f'yld_{signal}')
-        if len(pars) != 1:
+        fit_pars = self.__fres.get_pars(prefix = f'yld_{signal}')
+        if len(yield_pars) != 1:
             log.error(self.__fres)
-            raise ValueError(f'Not found one and only one signal ({signal}) parameter: {pars}')
+            raise ValueError(f'Not found one and only one signal ({signal}) parameter: {yield_pars}')
 
-        sig_par = pars[0]
+        sig_par = fit_pars[0]
 
-        pars : list[FitParameter] = []
         for scale in scales:
             par     = scale * sig_par
             nopref  = scale.name.removeprefix('s_')
@@ -133,13 +137,9 @@ class FitHarmonizer:
 
             log.debug(f'Adding {new_par.name}')
 
-            pars.append(new_par)
+            yield_pars.append(new_par)
 
-        val, err = self.__meta.stats
-        par = FitParameter(name = 'yld_all', value = val, error = err)
-        pars.append(par)
-
-        return pars 
+        return yield_pars 
     # ----------------------
     def __get_mc_brem_pars(self) -> list[FitParameter]:
         '''
