@@ -219,8 +219,10 @@ def calculate_sweights(
             y = weights)
         fun.save(path = swt_path, plot = True)
 # ----------------------
+# Yield grids
+# ----------------------
 @app.command()
-def signal_expectation(
+def expected_signal(
     proc    : int     = typer.Option(1  , '--proc'   , '-p', help='Number of threads to process with'),
     name    : str     = typer.Option(..., '--name'   , '-n', help='Name of config file'),
     cmb     : float   = typer.Option(..., '--cmb'    , '-c', help='Working point for combinatorial MVA'),
@@ -256,7 +258,7 @@ def signal_expectation(
     ptr.plot(path = cal.path / 'yields.png', randomize = True)
 # ----------------------
 @app.command()
-def background_yields(
+def fitted_background(
     name    : str     = typer.Option(..., '--name'   , '-n', help='Name of config file'),
     trigger : Trigger = typer.Option(..., '--trigger', '-t', help='E.g. rk_ee_os'),          # noqa: B008
     q2bin   : Qsq     = typer.Option(..., '--q2bin'  , '-q', help='E.g. central' )) -> None: # noqa: B008
@@ -303,7 +305,7 @@ def background_yields(
         name = f'{trigger}_{q2bin}_total')
 # ----------------------
 @app.command()
-def background_expectation(
+def expected_background(
     name    : str     = typer.Option(..., '--name'   , '-n', help='Name of config file'),
     cmb     : float   = typer.Option(..., '--cmb'    , '-c', help='Working point for combinatorial MVA'),
     prc     : float   = typer.Option(..., '--prc'    , '-p', help='Working point for part-reco MVA'),
