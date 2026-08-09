@@ -25,7 +25,7 @@ class ProjectConf(BaseModel):
     signal        : Component
     normalization : Component
 # ----------------------------------------
-class Yield(BaseModel):
+class Yield(BaseModel, frozen = True):
     '''
     Class used to represent yields
     '''
@@ -158,6 +158,26 @@ class Yield(BaseModel):
 
         return Yield(val = val, err = err, wp = self.wp)
     # ----------------------------------------
+    def __sub__(self, other : 'Yield') -> 'Yield':
+        if self.wp != other.wp:
+            log.error(self.wp)
+            log.error(other.wp)
+            raise ValueError('Cannot add yields at different working points')
+
+        val = self.val      - other.val
+        # NOTE: Negative yields are not allowed, make it zero
+        # This is likely a statistical fluctuation
+        if val < 0:
+            log.debug(f'Found non-positive difference: {self.val} - {other.val}')
+            val = math.nan
+
+        var = self.err ** 2 + other.err ** 2
+        err = math.sqrt(var)
+
+        yld = Yield(val = val, err = err, wp = self.wp)
+
+        return yld
+    # ----------------------------------------
     @classmethod
     def null(cls, wp : WorkingPoint) -> 'Yield':
         '''
@@ -180,7 +200,7 @@ class Yield(BaseModel):
 
         return _context()
 # ----------------------------------------
-class YieldGrid(RootModel[list[Yield]]):
+class YieldGrid(RootModel[list[Yield]], frozen = True):
     '''
     Class meant to represent a collection of yields
     '''
@@ -194,6 +214,52 @@ class YieldGrid(RootModel[list[Yield]]):
             total.append(first + second)
 
         return YieldGrid(root = total)
+    # ---------------------
+    def __sub__(self, other : 'YieldGrid') -> 'YieldGrid':
+        if self.size != other.size:
+            raise ValueError(f'Cannot add grids with different sizes: {self.size} != {other.size}')
+
+        total : list[Yield] = []
+
+        nnans = 0
+        for first in self.root:
+            second = other.at(wp = first.wp)
+            diff   = first - second
+            if math.isnan(diff.val):
+                nnans += 1
+
+            log.debug(diff)
+            total.append(diff)
+
+        if nnans > 0:
+            log.warning(f'Found {nnans}/{self.size} NaNs')
+
+        return YieldGrid(root = total)
+    # ---------------------
+    @cached_property
+    def __mapping(self) -> dict[int,Yield]:
+        yields = { hash(yld.wp) : yld for yld in self.root }
+
+        if len(yields) != self.size:
+            raise ValueError(f'Hashes in yield grid are non-unique: {len(yields)} < {self.size}')
+
+        return yields
+    # ---------------------
+    def at(self, wp : WorkingPoint) -> Yield:
+        '''
+        Parameters
+        -------------
+        wp: Working point at which yield will be searched in current grid
+
+        Returns
+        -------------
+        Yield
+        '''
+        hsh = hash(wp)
+        if hsh not in self.__mapping:
+            raise ValueError(f'No yield found at WP: {wp}')
+
+        return self.__mapping[hsh]
     # ---------------------
     @property
     def size(self):
