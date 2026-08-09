@@ -35,6 +35,9 @@ class FitMetadata(BaseModel, frozen = True):
     q2bin     : Qsq
     brem      : Brem
     stats     : tuple[float,float] 
+    '''
+    Number of entries and uncertainty for dataset that was fitted
+    '''
     # -------------------
     @property
     def signal(self) -> Component:
