@@ -135,6 +135,10 @@ class FitHarmonizer:
 
             pars.append(new_par)
 
+        val, err = self.__meta.stats
+        par = FitParameter(name = 'yld_all', value = val, error = err)
+        pars.append(par)
+
         return pars 
     # ----------------------
     def __get_mc_brem_pars(self) -> list[FitParameter]:
