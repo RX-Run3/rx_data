@@ -250,7 +250,7 @@ def signal_expectation(
     grid = cal.calculate()
 
     ptr = GridPlotter(grid = grid)
-    ptr.plot(path = cal.path, randomize = True)
+    ptr.plot(path = cal.path / 'yields.png', randomize = True)
 # ----------------------
 @app.command()
 def background_yields(
