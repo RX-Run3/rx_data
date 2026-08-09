@@ -91,6 +91,17 @@ class Yield(BaseModel, frozen = True):
 
         raise ValueError('Working points differ')
     # ----------------------------------------
+    @classmethod
+    def nan(cls) -> 'Yield':
+        '''
+        Placeholder yield, if no valid yield found
+        '''
+        wp = WorkingPoint(root = [])
+        with cls.allow_nan():
+            yld = Yield(val = math.nan, err = 0, wp = wp)
+
+        return yld
+    # ----------------------------------------
     @overload
     def __mul__(self, other : BranchingFraction                              ) -> 'Yield': ...
     @overload
@@ -216,14 +227,11 @@ class YieldGrid(RootModel[list[Yield]], frozen = True):
         return YieldGrid(root = total)
     # ---------------------
     def __sub__(self, other : 'YieldGrid') -> 'YieldGrid':
-        if self.size != other.size:
-            raise ValueError(f'Cannot add grids with different sizes: {self.size} != {other.size}')
-
         total : list[Yield] = []
 
         nnans = 0
         for first in self.root:
-            second = other.at(wp = first.wp)
+            second = other.at(wp = first.wp, fall_back = Yield.nan())
             diff   = first - second
             if math.isnan(diff.val):
                 nnans += 1
@@ -245,21 +253,28 @@ class YieldGrid(RootModel[list[Yield]], frozen = True):
 
         return yields
     # ---------------------
-    def at(self, wp : WorkingPoint) -> Yield:
+    def at(
+        self, 
+        wp        : WorkingPoint, 
+        fall_back : Yield | None) -> Yield:
         '''
         Parameters
         -------------
-        wp: Working point at which yield will be searched in current grid
+        wp       : Working point at which yield will be searched in current grid
+        fall_back: If yield not found at `wp`, pick this value
 
         Returns
         -------------
         Yield
         '''
         hsh = hash(wp)
-        if hsh not in self.__mapping:
-            raise ValueError(f'No yield found at WP: {wp}')
+        if hsh in self.__mapping:
+            return self.__mapping[hsh]
 
-        return self.__mapping[hsh]
+        if fall_back:
+            return fall_back
+
+        raise ValueError(f'No yield found at WP: {wp}')
     # ---------------------
     @property
     def size(self):
