@@ -16,6 +16,7 @@ components :
 q2bins :
   - low
   - central
+  - high 
 blocks :
   - 4
   - 3
