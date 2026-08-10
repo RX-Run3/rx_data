@@ -1,13 +1,8 @@
-project:
-  - rk
-channel:
-  - ee
-# ----------------
 qsq_bin:
   - low
   - central
   - high
-mva_cmb:
-  - 0600-1000
-mva_prc:
-  - 0600-1000
+project:
+  - rk
+channel:
+  - ee

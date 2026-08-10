@@ -1,5 +1,4 @@
 # This file configures scanning used for MVA WP optimization
-
 qsq_bin:
   - low
   - central
