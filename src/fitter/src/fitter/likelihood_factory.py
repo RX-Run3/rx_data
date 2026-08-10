@@ -106,7 +106,7 @@ class LikelihoodFactory:
         model= mod.get_model()
 
         log.info(30 * '-')
-        log.info('Getting real data')
+        log.info(f'Getting real data: {self._sample}/{self._trigger}/{self._q2bin}')
         log.info(30 * '-')
 
         with ExitStack() as stack:
@@ -123,7 +123,7 @@ class LikelihoodFactory:
             data = dpr.get_data()
 
         log.info(50 * '-')
-        log.info(f'Making likelihood for: {self._sample}/{self._trigger}/{self._q2bin}/{self._name}')
+        log.info(f'Making {self._name} likelihood')
         log.info(50 * '-')
 
         nll = zfit.loss.ExtendedUnbinnedNLL(model=model, data=data)
