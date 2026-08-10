@@ -2,9 +2,10 @@
 This module contains classes derived from Enum
 '''
 from pathlib     import Path
-from enum        import StrEnum, Enum, auto
+from enum        import StrEnum, IntEnum, auto
 from typing      import Final
 from dmu.stats   import CorrectionImplementation
+from dmu         import LogStore
 from pydantic    import BaseModel, ConfigDict, model_validator
 
 from .mass       import Mass
@@ -15,6 +16,7 @@ from .qsq        import Qsq
 from .region     import Region
 
 _ALL_BLOCKS : Final[set[int]] = {-1, 1, 2, 3, 4, 5, 6, 7, 8}
+log=LogStore.add_logger('rx_common:types')
 # ------------------------------
 class DataSet(StrEnum):
     dat = auto()
@@ -270,7 +272,7 @@ class MVA(StrEnum):
     cmb = 'cmb'
     prc = 'prc'
 # ---------------------------------------
-class Brem(Enum):
+class Brem(IntEnum):
     '''
     Enum meant to represent brem category
     '''
@@ -428,7 +430,7 @@ class Brem(Enum):
         '''
         return [cls.zero, cls.one, cls.two]
     # ----------------------
-    def __add__(self, other : 'Brem') -> 'Brem':
+    def __add__(self, other : 'Brem') -> 'Brem': # type: ignore[reportIncompatibleMethodOverride]
         '''
         Parameters
         -------------
@@ -518,7 +520,7 @@ class Brem(Enum):
 
         return False
     # ----------------
-    def __lt__(self, other : 'Brem') -> bool:
+    def __lt__(self, other : 'Brem') -> bool: # type: ignore[reportIncompatibleMethodOverride]
         return self.value < other.value
     # ----------------------
     def __hash__(self) -> int:
@@ -547,6 +549,36 @@ class Trigger(StrEnum):
     rkst_mm_os   = auto()
     rkst_mm_nopid= auto()
     rkst_mm_ss   = auto()
+    # -----------
+    @classmethod
+    def get_main_trigger(
+        cls, 
+        channel : Channel, 
+        project : Project) -> 'Trigger':
+        '''
+        Parameters
+        ----------------
+        channel: E.g. ee, mm
+        project: E.g. rk, rkst
+
+        Returns
+        ----------------
+        Trigger used for this project/channel combination
+        for actual measurement
+        '''
+        for trig in cls:
+            if not trig.is_main:
+                continue
+
+            if trig.channel != channel:
+                continue
+
+            if trig.project != project:
+                continue
+
+            return trig
+
+        raise ValueError(f'Cannot find main trigger for: {project}/{channel}')
     # -----------
     @property
     def reso_signal(self) -> Component:
@@ -795,7 +827,17 @@ class Trigger(StrEnum):
         '''
         True if it is a same sign trigger
         '''
-        return 'ss' in self.name
+        return 'SameSign' in str(self)
+    # -----------
+    @property
+    def is_main(self) -> bool:
+        '''
+        True if trigger is used for actual measurement
+        '''
+        ee_trig = [Trigger.rk_ee_os, Trigger.rkst_ee_os]
+        mm_trig = [Trigger.rk_mm_os, Trigger.rkst_mm_os]
+
+        return self in ee_trig + mm_trig
     # -----------
     @property
     def project(self) -> Project:

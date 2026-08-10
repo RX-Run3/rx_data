@@ -1,18 +1,43 @@
 '''
 Module with tests for FitSummary class
 '''
+import os
 import pytest
 
-from dmu     import LogStore
-from fitter  import FitSummary, FitOutput
-from pathlib import Path
+from dmu.stats   import FitResult
+from dmu         import LogStore
+from fitter      import FitSummary
+from typing      import Final
+from pathlib     import Path
+from rx_common   import Component
+
+from fitter      import FitMetadata
+from fitter      import FitSummarizer
+from fitter      import FitHarmonizer
 
 log=LogStore.add_logger('fitter:test_fit_summary')
 
-_PATHS : list[Path] = [
-    Path('/home/acampove/RX/fits/data/reso_dtf-latest/990_800_b1/reso/rkst/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_x12/parameters.json'),
-    Path('/home/acampove/RX/fits/data/reso_dtf-latest/990_800_b1/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_x12/parameters.json'),
+_DATA_PATHS = [
+    'reso_no_dtf-latest/990_800_b1/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx1/parameters.json',
+    'reso_no_dtf-latest/990_800_b1/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx2/parameters.json',
+    'reso_no_dtf-latest/990_500_b3/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx1/parameters.json',
+    'reso_no_dtf-latest/990_500_b3/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx2/parameters.json',
 ]
+
+_DATA_RARE  = [
+    'rare_fit/0600-1000_0300-1000_all/rare/rk/ee/low/data_24/fit/brem_x12/brem_x12/parameters.json',
+    'rare_fit/0600-1000_0300-1000_all/rare/rk/ee/central/data_24/fit/brem_x12/brem_x12/parameters.json',
+    'rare_fit/0600-1000_0300-1000_all/rare/rk/ee/high/data_24/fit/brem_x12/brem_x12/parameters.json',
+]
+
+_SIGN_PATHS = [
+    'reso_no_dtf-latest/990_800_b1/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx1/brem_xx1/parameters.json',
+    'reso_no_dtf-latest/990_800_b1/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx2/brem_xx2/parameters.json',
+    'reso_no_dtf-latest/990_500_b3/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx1/brem_xx1/parameters.json',
+    'reso_no_dtf-latest/990_500_b3/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx2/brem_xx2/parameters.json',
+]
+
+_ANADIR : Final[Path] = Path(os.environ['ANADIR'])
 # ----------------------
 @pytest.fixture(scope='session', autouse=True)
 def initialize():
@@ -21,37 +46,72 @@ def initialize():
     '''
     LogStore.set_level('fitter:fit_summary', 10)
 # ----------------------
-@pytest.mark.parametrize('path', _PATHS)
-def test_fit_output(path : Path):
-    fou  = FitOutput(path = path)
-
-    print(fou)
-# ----------------------
-@pytest.mark.parametrize('name', ['reso_dtf-latest'])
-def test_local(name : str) -> None:
+@pytest.mark.parametrize('value', _DATA_PATHS + _SIGN_PATHS)
+def test_simple(value : str) -> None:
     '''
     Test where overriden path
     '''
-    smr = FitSummary(name = name)
-    df  = smr.get_df(force_update = True)
+    path = _ANADIR / f'fits/data/{value}' 
 
-    assert len(df) > 0
+    meta = FitMetadata.from_pars_path(path = path)
+    fres = FitResult.from_json(path = path)
 
-    print('')
-    print(df)
-    for column in df.columns:
-        print(column)
+    data = [(meta , fres)]
+    smr  = FitSummary(root = data)
+
+    assert len(smr.root) > 0
 # ----------------------
-@pytest.mark.parametrize('force_update', [True, False])
-def test_update(force_update : bool) -> None:
+@pytest.mark.parametrize('value', _DATA_RARE)
+def test_rare(value : str) -> None:
     '''
-    Test updating the parquet file
+    Test where overriden path
     '''
-    smr = FitSummary(name = 'reso_no_dtf')
-    df  = smr.get_df(force_update = force_update)
+    path = _ANADIR / f'fits/data/{value}' 
+    meta = FitMetadata.from_pars_path(path = path)
+    fres = FitResult.from_json(path = path)
 
-    assert len(df) > 0
+    hrm  = FitHarmonizer(fres = fres, meta = meta)
+    fres = hrm.get_result()
 
-    print('')
-    print(df)
+    print(fres)
+# ----------------------
+@pytest.mark.parametrize('name', ['reso_dtf-latest', 'reso_no_dtf-latest'])
+def test_summarizer(name : str) -> None:
+    smr = FitSummarizer(name = name, kind = 'reso')
+    val = smr.get_summary()
+
+    for meta, fsmr in val.root:
+        assert val.at(meta) == fsmr
+# ----------------------
+@pytest.mark.parametrize('value', _DATA_PATHS + _SIGN_PATHS)
+def test_at(value : str) -> None:
+    '''
+    Test at method
+    '''
+    path = _ANADIR / f'fits/data/{value}' 
+
+    meta = FitMetadata.from_pars_path(path = path)
+    fres = FitResult.from_json(path = path)
+
+    data = [(meta , fres)]
+    smr  = FitSummary(root = data)
+
+    assert smr.at(meta) == fres
+# ----------------------
+@pytest.mark.parametrize('value', _DATA_PATHS)
+def test_grid(value : str) -> None:
+    '''
+    Test make_grid method
+    '''
+    comp = Component.bpkpjpsiee
+    path = _ANADIR / f'fits/data/{value}' 
+
+    meta = FitMetadata.from_pars_path(path = path)
+    fres = FitResult.from_json(path = path)
+
+    data = [(meta , fres)]
+    smr  = FitSummary(root = data)
+    grd  = smr.make_grid(var = f'yld_{comp}_brem_x12', fall_back = None)
+
+    log.info(f'\n{grd.df}')
 # ----------------------

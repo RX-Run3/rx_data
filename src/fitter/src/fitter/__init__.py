@@ -1,4 +1,4 @@
-from .fit_summary        import FitSummary, FitOutput
+from .fit_summary        import FitSummary, FitSummarizer, FitHarmonizer
 from .dataset_summary    import DatasetSummary
 from .parameter_reader   import ParameterReader
 from .likelihood_factory import LikelihoodFactory
@@ -25,7 +25,9 @@ from .prec               import PRec
 from .prec_scales        import PrecScales
 from .prefit_postfit     import run as plot_prefit_postfit
 from .constraint_reader  import ConstraintReader
-from .yields             import Yield, YieldCalculator, YieldGrid
+from .yields             import Yield, YieldGrid
+from .yield_calculator   import YieldCalculator
+from .fit_metadata       import FitMetadata
 # ----------
 # Combinatorial
 # ----------
@@ -64,6 +66,7 @@ __all__ = [
     'CmbValidationConfig',
     'CmbOutputConfig',
     'DatasetSummary',
+    'FitMetadata',
     # ------------------
     'MVAConf',
     'MVAWp',
@@ -96,7 +99,8 @@ __all__ = [
     'ComponentHolder',
     'DataModel',
     'FitSummary',
-    'FitOutput',
+    'FitSummarizer',
+    'FitHarmonizer',
     'ParsLoader',
     'RXFitConfig',
     'MisIDConstraints',

@@ -2,368 +2,359 @@
 Module holding FitSummary class
 '''
 import os
-import re
-import math
-import pandas as pnd
+import tqdm
 
 from gvar          import gvar
-from functools     import cached_property
 from dmu           import LogStore
-from dmu.stats     import FitResult
-from dmu.generic   import utilities as gut
+from dmu.stats     import FitParameter, FitResult
+from functools     import cached_property
 from pathlib       import Path
-from typing        import Final
+from typing        import Any, Final
 from pydantic      import RootModel
-from pydantic      import BaseModel
-from rx_common     import Block, Brem, Channel, Component, Project, Qsq
+from rx_common     import Component, Channel, Brem
 
-from .mva_conf     import MVAWp
+from .yields       import Yield, YieldGrid
+from .fit_metadata import FitMetadata
 
 log=LogStore.add_logger('fitter:fit_summary')
 
-_ANADIR   : Final[Path]      = Path(os.environ['ANADIR'])
-_COMMON   : Final[str]       = r'.*\/(\d{3}-\d{3}|\d{3})_(\d{3}-\d{3}|\d{3})_(all|b\d)\/(?:reso|rare)\/(rk|rkst)\/(mm|ee)\/(low|central|jpsi|psi2|high)'
-_DT_REGEX : Final[str]       = r'\/data_24\/fit\/.*\/brem_([x,0-9]{3})\/parameters.json'
-_MC_REGEX : Final[str]       = r'\/_SIGNAL\/fit\/brem_([x,0-9]{3})\/brem_[x,0-9]{3}\/parameters.json'
+_ANADIR : Final[Path] = Path(os.environ['ANADIR'])
 # -------------------------------
-class FitMetadata(BaseModel):
+class FitHarmonizer:
     '''
-    Class meant to store fit information
+    Class meant to equalize fit results between data and simulation
+    I.e. fits to simulation and data need the same parameters, this
+    class will make sure that it happens
     '''
-    mva_cmb : MVAWp
-    mva_prc : MVAWp
-    block   : Block
-    project : Project
-    channel : Channel
-    q2bin   : Qsq
-    brem    : Brem
-    # -------------------
-    @classmethod
-    def from_path(
-        cls, 
-        path : Path,
-        comp : Component) -> 'FitMetadata':
+    # -------------------------------
+    def __init__(self, fres : FitResult, meta : FitMetadata):
         '''
         Parameters
         --------------
-        path: Path to parameters.json, i.e. file with fit parameters
-        comp: Component representing dataset been fitted
-
-        Returns
-        --------------
-        Object holding fit metadata
+        fres: Object holding fit result 
+        meta: Object holding information on fitted sample
         '''
-        if comp.is_mc:
-            REGEX = f'{_COMMON}{_MC_REGEX}'
-            REGEX = REGEX.replace('_SIGNAL', comp)
-        else:
-            REGEX = f'{_COMMON}{_DT_REGEX}'
-
-        mtch = re.match(REGEX, str(path))
-        if not mtch:
-            log.error(f'Regex: {REGEX}')
-            raise ValueError(f'Path does not conform to pattern: {path}')
-
-        cmb_wp = mtch.group(1)
-        prc_wp = mtch.group(2)
-
-        return cls(
-            mva_cmb = MVAWp.from_label(cmb_wp),
-            mva_prc = MVAWp.from_label(prc_wp),
-            project = Project(mtch.group(4)),
-            channel = Channel(mtch.group(5)),
-            q2bin   = Qsq(    mtch.group(6)),
-            block   = Block.from_str(value = mtch.group(3)),
-            brem    =  Brem.from_str(value = mtch.group(7)),
-        )
-    # -------------------
-    @classmethod
-    def from_pars_path(
-        cls, 
-        path : Path,
-        comp : Component) -> 'FitMetadata':
-        '''
-        Parameters
-        --------------
-        path: Path to parameters.json, i.e. file with fit parameters
-        comp: Component, e.g. signal or data
-
-        Returns
-        --------------
-        Object holding fit metadata
-        '''
-        metadata_path = path.parent / 'metadata.json'
-        if metadata_path.exists():
-            json_string = metadata_path.read_text()
-            return cls.model_validate_json(json_string)
-
-        return cls.from_path(path = path, comp = comp)
-# -------------------------------
-class FitOutputConf(RootModel):
-    '''
-    Class representing configuration for reading parameters
-    '''
-    root : dict[Qsq,dict[Project,dict[Channel, Component]]]
-# -------------------------------
-class FitOutput:
-    '''
-    Class meant to symbolize a given fit
-    '''
-    # -------------------------------
-    def __init__(self, path : Path):
-        '''
-        Parameters
-        --------------
-        path: Path to JSON file with fit parameters 
-        '''
-        self.__path = path
-        self.__cfg  = gut.load_conf(package = 'fitter_data', fpath = 'fit_summary/conf.yaml')
-        self.__meta = FitMetadata.from_path(path = path, comp = self.dataset)
-    # -------------------------------
-    def __str__(self):
-        msg  ='\n-------------------------\n'
-        msg +=f'{"Name":<50}{"Value"}\n'
-        msg += '-------------------------\n'
-        for key, val in self.info.items():
-            msg += f'{key:<50}{val}\n'
-
-        return msg
-    # -------------------------------
-    @property
-    def info(self) -> dict[str, float | str]:
-        '''
-        Dictionary mapping name of column with value,
-        corresponds to row of dataframe and to fit
-        '''
-        res  = FitResult.from_json(path = self.__path)
-        data = self.__get_info(res = res)
-
-        data.update(self.__meta.model_dump())
-
-        data['comp'   ] = self.dataset
-        data['mva_cmb'] = self.__meta.mva_cmb.lower_str
-        data['mva_prc'] = self.__meta.mva_prc.lower_str
-        data['block'  ] = self.__meta.block.value  # BaseModel
-        data['brem'   ] = self.__meta.brem.region  # Enum -> StrEnum
-
-        return data
-    # -------------------------------
-    def __get_info(self, res : FitResult) -> dict[str,float|str]:
-        '''
-        Parameters
-        -------------
-        res  : Fit result
-
-        Returns
-        -------------
-        Dictionary representing a row in the dataframe
-        '''
-        data : dict[str,float|str] = {}
-        for par in res.parameters:
-            data[f'{par.name}_value'] = par.value
-            data[f'{par.name}_error'] = par.error
-
-        if self.__meta.channel == Channel.mm:
-            pass
-        elif self.dataset.is_mc: 
-            mc_brem_info = self.__get_mc_brem_info(path = self.__path)
-            data.update(mc_brem_info)
-        else:
-            dt_brem_info = self.__get_dt_brem_info(res = res)
-            data.update(dt_brem_info)
-
-        if res.gof is None:
-            data['pvalue_value'] = -1 
-            data['pvalue_error'] =  0 
-        else:
-            data['pvalue_value'] =  res.gof.pval 
-            data['pvalue_error'] =  0.1
-
-        return data
+        self.__fres = fres 
+        self.__meta = meta 
     # ----------------------
-    def __get_dt_brem_info(self, res : FitResult) -> dict[str,float]:
-        fraction       = f'{self.signal}_fraction'
+    def __skip_brem_info(self) -> bool:
+        '''
+        Returns
+        ------------
+        True if yields per brem fraction won't be extracted
+        e.g. for the muon channel or when fits are not done per brem category 
+        '''
+        if self.__meta.channel == Channel.mm:
+            log.debug('Skipping brem info')
+            return True
+
+        # NOTE: {SIGNAL}_fraction will exist if fit was done simultaneously
+        # in brem categories
+        brem_fraction = f'{self.__meta.signal}_fraction' 
+        if brem_fraction in self.__fres:
+            return False 
+
+        log.debug('Skipping brem info')
+        return True 
+    # ----------------------
+    def __get_dt_brem_pars(self) -> list[FitParameter]:
+        '''
+        Returns
+        -------------
+        List of brem related parameters needed for FitSummary in data
+        '''
+        if self.__meta.component.is_mc:
+            return []
+
+        if self.__skip_brem_info(): 
+            return []
+
+        signal                    = self.__meta.signal
+        res                       = self.__fres
+        pars : list[FitParameter] = []
+
+        fraction       = f'{signal}_fraction'
         fr_val, fr_err = res[fraction]
 
-        data : dict[str,float] = dict()
-        data[f'{self.signal}_fraction_{Brem.one}_value'] = fr_val
-        data[f'{self.signal}_fraction_{Brem.one}_error'] = fr_err
-
-        data[f'{self.signal}_fraction_{Brem.two}_value'] = 1 - fr_val
-        data[f'{self.signal}_fraction_{Brem.two}_error'] =     fr_err
+        pars.append(FitParameter(name = f'{signal}_fraction_{Brem.one}', value =     fr_val, error = fr_err))
+        pars.append(FitParameter(name = f'{signal}_fraction_{Brem.two}', value = 1 - fr_val, error = fr_err))
 
         # WARNING: rk and rkst fits seem to use different naming
         # for signal yields of combined category
-        total_yield_1 = f'yld_{self.signal}_{Brem.brx12}'
-        total_yield_2 = f'yld_{self.signal}'
+        total_yield_1 = f'yld_{signal}_{Brem.brx12}'
+        total_yield_2 = f'yld_{signal}'
         if total_yield_1 in res:
-            yl_val, yl_err = res[total_yield_1]
+            yld_val, yld_err = res[total_yield_1]
         else:
-            yl_val, yl_err = res[total_yield_2]
-
-            data[f'yld_{self.signal}_{Brem.brx12}_value'] = yl_val 
-            data[f'yld_{self.signal}_{Brem.brx12}_error'] = yl_err 
+            yld_val, yld_err = res[total_yield_2]
 
         frc = gvar(fr_val, fr_err)
-        yld = gvar(yl_val, yl_err)
+        yld = gvar(yld_val, yld_err)
         yld_1 = yld * frc
         yld_2 = yld - yld_1 
 
-        data[f'yld_{self.signal}_{Brem.one}_value'] = yld_1.mean
-        data[f'yld_{self.signal}_{Brem.one}_error'] = yld_1.sdev
+        pars.append(FitParameter(name = f'yld_{signal}_{Brem.one}'  , value = yld_1.mean, error = yld_1.sdev))
+        pars.append(FitParameter(name = f'yld_{signal}_{Brem.two}'  , value = yld_2.mean, error = yld_2.sdev))
 
-        data[f'yld_{self.signal}_{Brem.two}_value'] = yld_2.mean
-        data[f'yld_{self.signal}_{Brem.two}_error'] = yld_2.sdev
+        if total_yield_1 not in res:
+            pars.append(FitParameter(name = f'yld_{signal}_{Brem.brx12}', value = yld_val   , error = yld_err   ))
 
-        return data
+        return pars 
     # ----------------------
-    def __get_mc_brem_info(self, path : Path) -> dict[str,float]:
+    def __get_dt_yield_pars(self) -> list[FitParameter]:
         '''
-        Parameters
-        ----------------
-        path: Path to `parameters.json` file with fit parameters
+        Returns
+        -------------
+        Yield parameters calculated from e.g. scales
+        '''
+        yield_pars : list[FitParameter] = []
 
+        if self.__meta.component.is_mc:
+            return yield_pars
+
+        val, err = self.__meta.stats
+        par = FitParameter(name = 'yld_all', value = val, error = err)
+        yield_pars.append(par)
+
+        signal = self.__meta.signal
+        log.debug(f'Using signal {signal} to add scaled yield parameters in data')
+        scales = self.__fres.get_pars(prefix = 's_')
+        if not scales:
+            log.debug('No scales found, no extra yield parameters calculated')
+            return yield_pars
+
+        fit_pars = self.__fres.get_pars(prefix = f'yld_{signal}')
+        if len(yield_pars) != 1:
+            log.error(self.__fres)
+            raise ValueError(f'Not found one and only one signal ({signal}) parameter: {yield_pars}')
+
+        sig_par = fit_pars[0]
+
+        for scale in scales:
+            par     = scale * sig_par
+            nopref  = scale.name.removeprefix('s_')
+            new_par = par.model_copy(update = {'name' : f'yld_{nopref}'})
+
+            log.debug(f'Adding {new_par.name}')
+
+            yield_pars.append(new_par)
+
+        return yield_pars 
+    # ----------------------
+    def __get_mc_brem_pars(self) -> list[FitParameter]:
+        '''
         Returns
         ----------------
         Dictionary with information associated to brem (yields, fractions, etc)
         '''
-        data : dict[str,float] = {}
-        if str(Brem.one) in str(path):
-            path_b1  = path
-            path_b2  = Path(str(path).replace(str(Brem.one), str(Brem.two)))
-        else:
-            path_b1  = Path(str(path).replace(str(Brem.two), str(Brem.one)))
-            path_b2  = path
+        if not self.__meta.component.is_mc:
+            return []
 
-        nentries_b1 = self.__get_mc_nentries(path=path_b1)
-        nentries_b2 = self.__get_mc_nentries(path=path_b2)
+        if self.__skip_brem_info(): 
+            return []
 
-        nentries = nentries_b1 + nentries_b2
+        log.debug('Adding MC brem parameters')
 
-        data[f'yld_{self.signal}_brem_x12_value'] = nentries
-        data[f'yld_{self.signal}_brem_x12_error'] = math.sqrt(nentries)
+        comp     = self.__meta.component
+        brem     = self.__meta.brem
+        val, err = self.__meta.stats
 
-        # NOTE: We only store brem 1 fraction, either in brem 1 or brem 2 fits
-        data[f'{self.signal}_fraction_value'] = nentries_b1 / nentries
-        data[f'{self.signal}_fraction_error'] = math.sqrt(nentries_b1) / nentries
+        par = FitParameter(name = f'yld_{comp}_{brem}', value = val, error = err)
 
-        return data
-    # ----------------------
-    def __get_mc_nentries(self, path : Path) -> float:
+        return [par]
+    # -------------------------------
+    def get_result(self) -> FitResult: 
         '''
-        This is needed to get entries from simulated datasets
-
-        Parameters
-        -------------
-        path: Path to YAML file with parameters
-
         Returns
         -------------
-        Number of entries in dataset used in fit
+        FitResult after harmonization
         '''
-        log.debug(f'Getting MC entries from: {path}')
+        pars : list[FitParameter] = []
 
-        json_path = path.parent / 'data.json'
-        if not json_path.exists():
-            raise FileNotFoundError(f'Cannot find: {json_path}')
+        pars += self.__get_mc_brem_pars()
+        pars += self.__get_dt_brem_pars()
+        pars += self.__get_dt_yield_pars()
 
         try:
-            df   = pnd.read_json(json_path)
+            fres = self.__fres.extend(pars = pars)
         except Exception as exc:
-            raise Exception(f'Cannot build dataframe from {json_path}') from exc
+            log.error(self.__fres)
+            log.error(self.__meta)
+            raise ValueError('Cannot extend fit result') from exc
 
-        return len(df)
-    # -------------------------------
-    @cached_property
-    def dataset(self) -> Component:
-        '''
-        Component representing the dataset been fitted
-        '''
-        for comp in Component:
-            if f'/{comp}/' not in str(self.__path):
-                continue
-
-            return comp
-
-        raise ValueError(f'No dataset component found in: {self.__path}')
-    # -------------------------------
-    @cached_property
-    def signal(self) -> Component:
-        '''
-        Component taken as signal in fit to data or simulation 
-        '''
-        # In MC fits, sample is also signal component
-        if self.dataset.is_mc:
-            return self.dataset
-
-        # In data fits there will be a fraction parameter
-        # that can be used to read the signal component
-        res = FitResult.from_json(path = self.__path)
-
-        signal : Component | None = None
-        for param in res.parameters:
-            if not param.name.endswith('_fraction'):
-                continue
-
-            name   = param.name.removesuffix('_fraction')
-            signal = Component(value = name)
-
-            return signal
-
-        raise ValueError(f'Signal not found in result: {res}')
-    # -------------------------------
-    @property
-    def is_valid(self) -> bool:
-        '''
-        True if path is compatible with valid fit
-        '''
-        cfg = self.__cfg
-        if self.__meta.q2bin not in cfg:
-            return False
-
-        cfg = cfg[self.__meta.q2bin]
-        if self.__meta.project not in cfg:
-            return False
-
-        cfg = cfg[self.__meta.project]
-        if self.__meta.channel not in cfg:
-            return False
-
-        comp = cfg[self.__meta.channel]
-        if self.dataset != comp and self.dataset.is_mc:
-            return False
-
-        return True
-    # -------------------------------
-    @classmethod
-    def from_name(cls, name : str) -> list['FitOutput']:
+        return fres
+# -------------------------------
+class FitSummary(RootModel[list[tuple[FitMetadata,FitResult]]]):
+    '''
+    Class representing a collection of fit results
+    '''
+    # ----------------------
+    def get_yields(self, exclude : Component | None = None) -> list[str]:
         '''
         Parameters
         ----------------
-        name: Identifier for fit, e.g. reso_dtf-latest
+        exclude: Name of component whose yield will be excluded, e.g. `..._{COMPONENT}_...`
 
         Returns
         ----------------
-        List of instances of object wrapping fit output
+        List of names of yields in fits
         '''
-        paths    = _ANADIR.rglob(pattern = f'fits/data/{name}/*/reso/*/*/*/*/fit/brem_*/brem_*/parameters.json')
-        all_objs = [ cls(path = path) for path in paths ]
+        names : set[str] = set()
+        for _, result in self.root:
+            pars = result.get_pars(prefix = 'yld')
+            names= names | { par.name for par in pars }
 
-        return [ obj for obj in all_objs if obj.is_valid ]
-# -------------------------------
-class FitSummary:
-    '''
-    Class meant to aggregate fits and return dataframe with the parameters
-    '''
+        if exclude is None:
+            return list(names)
+
+        return [ name for name in names if f'_{exclude}_' not in name ]
     # ----------------------
-    def __init__(self, name : str) -> None:
+    def make_grid(self, var : str, fall_back : float | None) -> YieldGrid:
+        '''
+        Parameters
+        --------------------
+        var      : Name of variable in FitResult objects for Z axis
+        fall_back: Value used if value is missing in any grid point 
+                   If None, will raise exception when value is missing
+
+        Returns
+        --------------------
+        Grid of yields for passed variable, 
+        '''
+        grid = YieldGrid(root = [])
+        for meta, fres in self.root:
+            zval, zerr = fres.get(name = var, fall_back = fall_back)
+
+            yld     = Yield(
+                val = zval,
+                err = zerr,
+                wp  = meta.wp)
+
+            grid.root.append(yld)
+
+        return grid
+    # -----------------
+    def at(self, meta : FitMetadata) -> FitResult:
+        '''
+        Parameters
+        ---------------
+        meta: Object holding fit metadata
+
+        Returns
+        ---------------
+        Fit result corresponding to metadata
+        '''
+        key = hash(meta)
+        if key in self.__as_dict:
+            return self.__as_dict[key]
+
+        summary = self
+        for name, value in meta.fields:
+            tmp = summary.query(name = name, value = value)
+            if not tmp.root:
+                log.warning(f'Failed: {name} = {value}')
+                log.warning(summary)
+            else:
+                log.info(f'Filtered by: {name} = {value}')
+                log.info(tmp)
+
+            summary = tmp
+
+        if len(summary.root) == 1:
+            [(meta_summary, _)] = summary.root
+
+            log.error(meta_summary)
+            log.error(meta)
+            log.error(f'{hash(meta)} != {hash(meta_summary)}')
+            raise KeyError('Entries do not match')
+
+        log.error(meta)
+        raise KeyError('Cannot read summary')
+    # -----------------
+    def query(self, name : str, value : Any) -> 'FitSummary':
+        '''
+        Parameters
+        ---------------
+        name : Name of field
+        value: Value of field
+
+        Returns
+        ---------------
+        Summary containing only given value of field in metadata
+        '''
+        filtered_data = [ (meta, fres) for meta, fres in self.root if getattr(meta, name) == value ]
+
+        return FitSummary(root = filtered_data)
+    # -----------------
+    @cached_property
+    def __as_dict(self) -> dict[int,FitResult]:
+        '''
+        Dictionary mapping metadata hash to fitresult
+        '''
+        data = { hash(meta) : fres for meta, fres in self.root }
+
+        return data 
+    # -----------------
+    def __str__(self):
+        msg = '\n'
+        for meta, _ in self.root:
+            msg += f'{meta.as_str}\n'
+
+        return msg
+    # -----------------
+    @classmethod
+    def from_json(cls, path : Path) -> 'FitSummary':
         '''
         Parameters
         -------------
+        path: Path to JSON file with serialized FitSummary
+        '''
+        string = path.read_text()
+
+        return cls.model_validate_json(json_data = string)
+    # -----------------
+    def to_json(self, path : Path) -> None:
+        '''
+        Parameters
+        ----------------
+        path: Path to JSON file
+        '''
+        path.parent.mkdir(exist_ok=True, parents=True)
+
+        log.info(f'Saving fit summary to: {path}')
+
+        string = self.model_dump_json(indent = 2)
+        path.write_text(string)
+# -------------------------------
+class FitSummarizer:
+    '''
+    Class meant to aggregate fits and return FitSummary 
+    '''
+    # ----------------------
+    def __init__(self, name : str, kind : str) -> None:
+        '''
+        Parameters
+        -------------FitHarmoniFitHarmonizer
         name: Name of fit, e.g. reso_dtf-latest 
+        kind: E.g. rare, reso
         '''
         self.__name = name
-        self.__fits : list[FitOutput] = FitOutput.from_name(name = name)
+        self.__kind = kind
+    # ----------------------
+    def __get_paths(self) -> list[Path]:
+        '''
+        Returns
+        --------------
+        List of paths to parameters.json files storing fits
+        '''
+        log.info('Looking for paths')
+
+        json_wc  = f'fits/data/{self.__name}/*/{self.__kind}/*/*/*/*/fit/brem_*/brem_*/parameters.json'
+        paths    = list(_ANADIR.glob(pattern = json_wc))
+
+        log.info(f'Found {len(paths)} paths')
+
+        return paths
     # ----------------------
     @property
     def fit_dir(self) -> Path:
@@ -383,27 +374,33 @@ class FitSummary:
 
         return fit_dir
     # ----------------------
-    def get_df(self, force_update : bool = False) -> pnd.DataFrame:
+    def get_summary(self, force_update : bool = False) -> FitSummary:
         '''
         Parameters
         ---------------
-        by_fit      : If True each row represents a fit with all parameters.
-                      False would make each parameter a row
-
-        suffix      : Used in naming of output files
         force_update: If true (default false) will regenerate file, otherwise will reuse file if found
         '''
-        output_path  = self.fit_dir / 'parameters.parquet'
+        output_path  = self.fit_dir / 'fit_summary.json'
 
         if output_path.exists() and not force_update:
             log.info(f'Reading cached files at: {output_path}')
-            return pnd.read_parquet(output_path)
+            return FitSummary.from_json(path = output_path)
 
-        rows : list[dict[str,float|str]] = [ fit_out.info for fit_out in self.__fits ]
+        fits : list[tuple[FitMetadata,FitResult]] = [] 
 
-        df = pnd.DataFrame(rows)
-        df.to_parquet(path = output_path)
-        log.info(f'Saving summary to: {output_path}')
+        paths = self.__get_paths()
 
-        return df
+        log.info('Building summary')
+        for path in tqdm.tqdm(paths, ascii = ' -'):
+            meta = FitMetadata.from_pars_path(path = path)
+            fres = FitResult.from_json(path = path)
+
+            hrm  = FitHarmonizer(fres = fres, meta = meta)
+            fres = hrm.get_result()
+            fits.append((meta, fres))
+
+        summary = FitSummary(root = fits) 
+        summary.to_json(path = output_path)
+
+        return summary
 # -------------------------------

@@ -8,12 +8,13 @@ import os
 import typer
 import pandas as pnd
 
+from enum       import StrEnum, auto
 from typing     import Final
 from rx_common  import Trigger, Qsq
 from dmu        import LogLevels, LogStore
 from dmu.stats  import zfit
 from pathlib    import Path
-from rx_plotter import GridPlotter
+from fitter     import YieldGrid
 
 app = typer.Typer(
     help            = __doc__,
@@ -21,6 +22,27 @@ app = typer.Typer(
 log = LogStore.add_logger('rx_fitter:cli')
 
 _ANADIR : Final[Path] = Path(os.environ['ANADIR'])
+# ----------------------
+class FitKind(StrEnum):
+    rare = auto()
+    reso = auto()
+# ----------------------
+def __save_grid_plot(
+    grid : YieldGrid, 
+    kind : str,
+    name : str):
+    '''
+    Parameters
+    -----------------
+    grid: Object holding yields in grid
+    name: Name of file where grid plot will be saved
+    '''
+    from rx_plotter import GridPlotter
+
+    out_path = _ANADIR / f'yields/rare/{kind}/{name}.png'
+
+    ptr  = GridPlotter(grid = grid)
+    ptr.plot(path = out_path, randomize = False)
 # ----------------------
 @app.command()
 def tabulate_scales(
@@ -42,9 +64,9 @@ def tabulate_scales(
 # ----------------------
 @app.command()
 def tabulate_mc_stats(
-    cache: bool    = typer.Option(True, '--cache/--no-cache', '-c', help='If used will re-use cached file '),          # noqa: B008 
+    cache: bool    = typer.Option(True, '--cache/--no-cache', '-c', help='If used will re-use cached file '), # noqa: B008 
     trig : Trigger = typer.Option(... , '--trigger', '-t', help='Name trigger'                    ),          # noqa: B008 
-    name : str     = typer.Option(... , '--name'   , '-n', help='Name of fit group')              ) -> None: # noqa: B008
+    name : str     = typer.Option(... , '--name'   , '-n', help='Name of fit group')              ) -> None:  # noqa: B008
     '''
     Makes latex table with cutflow for low statistics samples that were dropped from fits
     '''
@@ -94,15 +116,16 @@ def tabulate_mc_stats(
 # ----------------------
 @app.command()
 def fit_summary(
-    name    : str = typer.Option(...           , '--name'   , '-n', help='Name of fits, e.g. mid_window'),
-    log_lvl : int = typer.Option(LogLevels.info, '--log_lvl', '-l', help='Logging level'))-> None:
+    kind    : FitKind = typer.Option(...           , '--kind'   , '-k', help='E.g. rare or reso'), # noqa: B008
+    name    : str     = typer.Option(...           , '--name'   , '-n', help='Name of fits, e.g. mid_window'),
+    log_lvl : int     = typer.Option(LogLevels.info, '--log_lvl', '-l', help='Logging level'))-> None:
     '''
     This will create a fit summary for a given fit
     '''
-    from fitter import FitSummary # noqa: PLC0415 
+    from fitter.fit_summary import FitSummarizer
 
-    smr = FitSummary(name = name)
-    smr.get_df()
+    smr = FitSummarizer(name = name, kind = kind)
+    smr.get_summary(force_update = True)
 
     LogStore.set_level('rx_fitter:fit_summary', log_lvl)
 # ----------------------
@@ -196,21 +219,24 @@ def calculate_sweights(
             y = weights)
         fun.save(path = swt_path, plot = True)
 # ----------------------
+# Yield grids
+# ----------------------
 @app.command()
-def signal_expectation(
+def expected_signal(
     proc    : int     = typer.Option(1  , '--proc'   , '-p', help='Number of threads to process with'),
     name    : str     = typer.Option(..., '--name'   , '-n', help='Name of config file'),
     cmb     : float   = typer.Option(..., '--cmb'    , '-c', help='Working point for combinatorial MVA'),
     prc     : float   = typer.Option(..., '--prc'    , '-p', help='Working point for part-reco MVA'),
-    trigger : Trigger = typer.Option(..., '--trigger', '-t', help='E.g. rk_ee_os'),
+    trigger : Trigger = typer.Option(..., '--trigger', '-t', help='E.g. rk_ee_os'),          # noqa: B008
     q2bin   : Qsq     = typer.Option(..., '--q2bin'  , '-q', help='E.g. central' )) -> None: # noqa: B008
     '''
     Calculates grid of signal expected yields in grid of MVA classifiers working points
     '''
-    from fitter    import YieldCalculator
-    from rx_common import Cut, Cuts
-    from rx_common import WorkingPoint
-    from ROOT      import EnableImplicitMT # type: ignore
+    from fitter     import YieldCalculator
+    from rx_common  import Cut, Cuts
+    from rx_common  import WorkingPoint
+    from ROOT       import EnableImplicitMT # type: ignore
+    from rx_plotter import GridPlotter
 
     if proc > 1:
         log.info(f'Using {proc} threads')
@@ -229,7 +255,110 @@ def signal_expectation(
     grid = cal.calculate()
 
     ptr = GridPlotter(grid = grid)
-    ptr.plot(path = cal.path)
+    ptr.plot(path = cal.path / 'yields.png', randomize = True)
+# ----------------------
+@app.command()
+def fitted_background(
+    name    : str     = typer.Option(..., '--name'   , '-n', help='Name of config file'),
+    trigger : Trigger = typer.Option(..., '--trigger', '-t', help='E.g. rk_ee_os'),          # noqa: B008
+    q2bin   : Qsq     = typer.Option(..., '--q2bin'  , '-q', help='E.g. central' )) -> None: # noqa: B008
+    '''
+    Plots background yields
+    '''
+    path = _ANADIR / f'fits/data/{name}/fit_summary.json'
+
+    from rx_common  import Component
+    from fitter     import ParameterReader
+
+    with ParameterReader.inputs_from(pars_path = path):
+        rdr = ParameterReader()
+
+    summary = rdr.summary
+    summary = summary.query(name = 'component', value = Component.data_24)
+    summary = summary.query(name = 'project'  , value = trigger.project) 
+    summary = summary.query(name = 'q2bin'    , value = q2bin)
+
+    variables = summary.get_yields(exclude = trigger.rare_signal)
+    log.info('Building grid from yields:')
+    for var in variables:
+        log.info(var)
+
+    grid : YieldGrid | None = None 
+    for variable in variables:
+        tmp = summary.make_grid(var = variable, fall_back = 0.)
+        __save_grid_plot(
+            grid = tmp, 
+            kind = 'fitted_background',
+            name = f'{trigger}_{q2bin}_{variable}')
+
+        if grid is None:
+            grid  = tmp
+        else:
+            grid += tmp 
+
+    if grid is None:
+        raise ValueError('Missing yields grid')
+
+    __save_grid_plot(
+        grid = grid, 
+        kind = 'fitted_background',
+        name = f'{trigger}_{q2bin}_total')
+# ----------------------
+@app.command()
+def expected_background(
+    name    : str     = typer.Option(..., '--name'   , '-n', help='Name of config file'),
+    cmb     : float   = typer.Option(..., '--cmb'    , '-c', help='Working point for combinatorial MVA'),
+    prc     : float   = typer.Option(..., '--prc'    , '-p', help='Working point for part-reco MVA'),
+    trigger : Trigger = typer.Option(..., '--trigger', '-t', help='E.g. rk_ee_os'),          # noqa: B008
+    q2bin   : Qsq     = typer.Option(..., '--q2bin'  , '-q', help='E.g. central' )) -> None: # noqa: B008
+    '''
+    Plots background yields
+    '''
+    path = _ANADIR / f'fits/data/{name}/fit_summary.json'
+
+    from rx_common  import Component
+    from fitter     import ParameterReader
+    from fitter     import YieldCalculator, Yield
+    from rx_common  import Cut, Cuts
+    from rx_common  import WorkingPoint
+
+    cmb_obj = Cut(cut = Cuts.cmb, val = cmb, var = 'mva_cmb')
+    prc_obj = Cut(cut = Cuts.prc, val = prc, var = 'mva_prc')
+    wpt     = WorkingPoint(root = [cmb_obj, prc_obj])
+
+    cal = YieldCalculator(
+        name    = 'mva_scan',
+        wp      = wpt,
+        q2bin   = q2bin, # for tests, should be rare otherwise
+        trigger = trigger)
+
+    grid_sig = cal.calculate()
+    __save_grid_plot(
+        grid = grid_sig, 
+        kind = 'expected_background',
+        name = f'{trigger}_{q2bin}_sig')
+
+    with ParameterReader.inputs_from(pars_path = path):
+        rdr = ParameterReader()
+
+    summary = rdr.summary
+    summary = summary.query(name = 'component', value = Component.data_24)
+    summary = summary.query(name = 'project'  , value = trigger.project) 
+    summary = summary.query(name = 'q2bin'    , value = q2bin)
+
+    grid_all = summary.make_grid(var = 'yld_all', fall_back = 0.)
+    __save_grid_plot(
+        grid = grid_all, 
+        kind = 'expected_background',
+        name = f'{trigger}_{q2bin}_all')
+
+    with Yield.allow_nan():
+        grid_bkg = grid_all - grid_sig
+
+    __save_grid_plot(
+        grid = grid_bkg, 
+        kind = 'expected_background',
+        name = f'{trigger}_{q2bin}_bkg')
 # ----------------------
 if __name__ == '__main__':
     app()
