@@ -7,10 +7,14 @@ import pandas as pnd
 import jacobi
 
 from dmu       import LogStore
+from typing    import Final
 from pathlib   import Path
 from rx_common import Block, Brem, Correction
 
 log=LogStore.add_logger('fitter:scale_reader')
+
+_ANADIR : Final[Path] = Path(os.environ['ANADIR'])
+_FITDIR : Final[str]  = 'reso_no_dtf-latest' # Name of directory with fits providing scales
 # -------------------------------------
 class ScaleReader:
     '''
@@ -26,8 +30,7 @@ class ScaleReader:
         ---------------
         version: Version of scales
         '''
-        ana_dir   = Path(os.environ['ANADIR'])
-        data_path = ana_dir / f'fits/data/reso_no_dtf/{version}/rk_ee/plots/scales.json'
+        data_path = _ANADIR / f'fits/data/{_FITDIR}/{version}/rk_ee/plots/scales.json'
         if not data_path.exists():
             raise FileNotFoundError(f'Cannot find scales file: {data_path}')
 

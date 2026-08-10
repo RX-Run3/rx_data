@@ -188,7 +188,6 @@ def main():
     _set_logs()
 
     with ExitStack() as stack:
-        stack.enter_context(RDFGetter.custom_friends(versions = {}))
         stack.enter_context(Cache.cache_root(path=cfg.output_directory))
         stack.enter_context(PL.parameter_schema(cfg=cfg.mod_cfg.yields))
         stack.enter_context(sel.custom_selection(d_sel=cfg.overriding_selection))
