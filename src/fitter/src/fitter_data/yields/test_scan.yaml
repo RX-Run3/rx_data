@@ -1,0 +1,7 @@
+path: yields/rare
+fits: reso_dtf-latest
+grid:
+  cmb:
+    - 0.6
+  prc:
+    - 0.6
