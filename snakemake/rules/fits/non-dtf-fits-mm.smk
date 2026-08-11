@@ -28,7 +28,7 @@ rule all:
 # ---------------------
 rule scales:
     output :
-        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}/rk_mm/plots/fit_summary.json',
+        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}/rk_mm/plots/scales.json',
     input  :
         expand(
             [
