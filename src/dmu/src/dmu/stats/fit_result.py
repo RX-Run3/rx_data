@@ -432,6 +432,7 @@ class FitResult(BaseModel):
             return par.value, par.error
 
         if fall_back is None:
+            log.error(self)
             raise ValueError(f'Parameter {name} not found')
 
         return fall_back, fall_back
