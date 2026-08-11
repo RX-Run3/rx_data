@@ -410,7 +410,7 @@ class SummaryProcessor:
             total = total + element
 
         fractions  = { block : block_yield / total for block, block_yield in yields.items() }
-        parameters = { block : FitParameter(name = f'blk_{signal}_{brem}', value = fr.mean, error = fr.sdev) for block, fr in fractions.items() }
+        parameters = { block : FitParameter(name = f'bk_{signal}_{brem}', value = fr.mean, error = fr.sdev) for block, fr in fractions.items() }
 
         data : list[tuple[FitMetadata, FitResult]] = []
         for meta, fres in summary.root:
