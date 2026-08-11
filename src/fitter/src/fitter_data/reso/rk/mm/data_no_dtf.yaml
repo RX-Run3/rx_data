@@ -8,7 +8,7 @@ observable:
   jpsi:
     name : B_Mass
     range:
-      - 5100 
+      - 5000 
       - 6500
 components:
   jpsi:

@@ -11,7 +11,7 @@ weights:
 fit:
   jpsi:
     kind      : KDE1DimFFT
-    bandwidth : 10
+    bandwidth : 5
     padding   :
       flag : False
   psi2:
