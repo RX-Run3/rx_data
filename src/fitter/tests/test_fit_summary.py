@@ -9,11 +9,12 @@ from dmu         import LogStore
 from fitter      import FitSummary
 from typing      import Final
 from pathlib     import Path
-from rx_common   import Component
+from rx_common   import Block, Component
 
 from fitter      import FitMetadata
 from fitter      import FitSummarizer
 from fitter      import FitHarmonizer
+from fitter      import SummaryProcessor
 
 log=LogStore.add_logger('fitter:test_fit_summary')
 
@@ -76,12 +77,63 @@ def test_rare(value : str) -> None:
     print(fres)
 # ----------------------
 @pytest.mark.parametrize('name', ['reso_dtf-latest', 'reso_no_dtf-latest'])
-def test_summarizer(name : str) -> None:
+def test_summarizer_at(name : str) -> None:
+    '''
+    Test at method of sumarizer
+    '''
     smr = FitSummarizer(name = name, kind = 'reso')
     val = smr.get_summary()
 
     for meta, fsmr in val.root:
         assert val.at(meta) == fsmr
+# ----------------------
+@pytest.mark.parametrize('name', ['reso_dtf-latest', 'reso_no_dtf-latest'])
+def test_merge_summary(name : str) -> None:
+    '''
+    Test merging summaries
+    '''
+    smr = FitSummarizer(name = name, kind = 'reso')
+    org_summary = smr.get_summary()
+
+    summaries   = org_summary.split(by = 'block')
+    mrg_summary = FitSummary.merge(summaries = summaries)
+
+    assert len(org_summary.root) == len(mrg_summary.root)
+# ----------------------
+@pytest.mark.parametrize('name', ['reso_dtf-latest', 'reso_no_dtf-latest'])
+def test_process_summary(name : str) -> None:
+    '''
+    Test merging summaries
+    '''
+    smr = FitSummarizer(name = name, kind = 'reso')
+    org_summary = smr.get_summary(force_update = True)
+# ----------------------
+@pytest.mark.parametrize('name', ['reso_dtf-latest', 'reso_no_dtf-latest'])
+def test_summarizer_split(name : str) -> None:
+    '''
+    Test split method of sumarizer
+    '''
+    smr = FitSummarizer(name = name, kind = 'reso')
+    val = smr.get_summary()
+
+    summaries = val.split(by = 'block')
+
+    assert len(summaries) > 0
+
+    nblocks = len(Block.blocks()) # Number of blocks
+    fail    = False
+    for summary in summaries:
+        meta, _ = summary.root[0]
+        if meta.component.is_mc: # Background components might be missing in some blocks
+            continue
+
+        if len(summary.root) == nblocks:
+            continue
+
+        log.error(summary)
+        fail = True
+
+    assert not fail
 # ----------------------
 @pytest.mark.parametrize('value', _DATA_PATHS + _SIGN_PATHS)
 def test_at(value : str) -> None:

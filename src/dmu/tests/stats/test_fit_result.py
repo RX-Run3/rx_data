@@ -91,6 +91,26 @@ def test_getitem():
     print(val)
     print(x,y)
 # -----------------------------
+def test_getpar():
+    '''
+    Test conversion from zfit object
+    '''
+    nll = get_nll(kind = 's+b', suffix = '_gaus_test_1')
+    min = zfit.minimize.Minuit()
+
+    res = min.minimize(loss = nll)
+    res.hesse(name = 'minuit_hesse')
+
+    val = FitResult.from_zfit(res = res)
+    mu  = val.get_par(prefix = 'mu')
+    sg  = val.get_par(prefix = 'sg')
+
+    _, _ = mu.data
+    _, _ = sg.data
+
+    with pytest.raises(ValueError):
+        val.get_par(prefix = 'missing_')
+# -----------------------------
 def test_get():
     '''
     Test conversion from zfit object

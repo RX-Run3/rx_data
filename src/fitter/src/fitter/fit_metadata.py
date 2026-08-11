@@ -39,6 +39,29 @@ class FitMetadata(BaseModel, frozen = True):
     Number of entries and uncertainty for dataset that was fitted
     '''
     # -------------------
+    def weak_hash(self, exclude : str) -> str:
+        '''
+        Parameters
+        -------------
+        exclude: Name of field
+
+        Returns
+        -------------
+        Hash of object, disregarding `exclude` field.
+        I.e. two objects with different `exclude` fields would have
+        identical hashes
+        '''
+        excluded = [exclude, 'stats']
+
+        values = []
+        for name, this_value in self:
+            if name in excluded:
+                continue
+
+            values.append(str(this_value))
+
+        return hashing.hash_object(obj = values)
+    # -------------------
     @property
     def signal(self) -> Component:
         '''
@@ -51,7 +74,12 @@ class FitMetadata(BaseModel, frozen = True):
         if self.q2bin.is_rare:
             return trig.rare_signal
         
-        return trig.reso_signal
+        if   self.q2bin == Qsq.jpsi:
+            return trig.reso_jpsi_signal
+        elif self.q2bin == Qsq.psi2:
+            return trig.reso_psi2_signal
+        else:
+            raise ValueError(f'Cannot find resonant signal for {self.q2bin} bin and {trig} trigger')
     # -------------------
     @property
     def wp(self) -> WorkingPoint:
