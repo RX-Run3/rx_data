@@ -4,14 +4,18 @@ CMB    = [
     '990',
     ]
 PRC    = [
+    '400',
+    '500',
     '600',
+    '700',
+    '800',
     ]
 # ---------------------
 ENV    = 'rx_run3'
 HOME   = '/afs/ihep.ac.cn/users/c/campoverde'
 ANADIR = '/publicfs/ucas/user/campoverde/Data'
 LOGDIR = '/publicfs/ucas/user/campoverde/Jobs/snakemake'
-BLOCK  = list(range(1, 2))
+BLOCK  = list(range(1, 9))
 NAME   = 'reso_no_dtf'
 YEAR   = '2024'
 # ---------------------
@@ -28,7 +32,7 @@ rule all:
 # ---------------------
 rule scales:
     output :
-        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}/rk_mm/plots/fit_summary.json',
+        f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}/rk_mm/plots/scales.json',
     input  :
         expand(
             [
