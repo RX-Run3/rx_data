@@ -1,9 +1,0 @@
-# This file configures scanning for validation of combinatorial shape
-qsq_bin:
-  - low
-  - central
-  - high
-project:
-  - rk
-channel:
-  - ee

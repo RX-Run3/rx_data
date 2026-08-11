@@ -1,8 +1,0 @@
-qsq_bin:
-  - low
-  - central
-  - high
-project:
-  - rk
-channel:
-  - ee
