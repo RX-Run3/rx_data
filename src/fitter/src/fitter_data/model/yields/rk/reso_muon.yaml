@@ -22,4 +22,6 @@ yld_bpkpjpsimm_brem_xx0:
   <<: *yields
 yld_bpkppsi2mm_brem_xx0:
   <<: *yields
+yld_ccbar_brem_xx0:
+  <<: *yields
 # -------------------------

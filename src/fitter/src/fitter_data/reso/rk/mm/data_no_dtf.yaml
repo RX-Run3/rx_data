@@ -13,6 +13,7 @@ observable:
 components:
   jpsi:
     comb       : reso/rk/mm/comb.yaml
+    ccbar      : reso/rk/mm/ccbar.yaml
     bppijpsimm : reso/rk/mm/bppijpsimm.yaml
     bpkpjpsimm : reso/rk/mm/bpkpjpsimm_no_dtf.yaml
 constraints:
