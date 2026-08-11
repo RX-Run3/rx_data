@@ -14,6 +14,7 @@ from rx_common   import Block, Component
 from fitter      import FitMetadata
 from fitter      import FitSummarizer
 from fitter      import FitHarmonizer
+from fitter      import SummaryProcessor
 
 log=LogStore.add_logger('fitter:test_fit_summary')
 
@@ -98,6 +99,14 @@ def test_merge_summary(name : str) -> None:
     mrg_summary = FitSummary.merge(summaries = summaries)
 
     assert len(org_summary.root) == len(mrg_summary.root)
+# ----------------------
+@pytest.mark.parametrize('name', ['reso_dtf-latest', 'reso_no_dtf-latest'])
+def test_process_summary(name : str) -> None:
+    '''
+    Test merging summaries
+    '''
+    smr = FitSummarizer(name = name, kind = 'reso')
+    org_summary = smr.get_summary(force_update = True)
 # ----------------------
 @pytest.mark.parametrize('name', ['reso_dtf-latest', 'reso_no_dtf-latest'])
 def test_summarizer_split(name : str) -> None:

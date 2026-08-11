@@ -4,14 +4,14 @@ Module holding FitSummary class
 import os
 import tqdm
 
-from gvar          import gvar
+from gvar          import GVar, gvar
 from dmu           import LogStore
 from dmu.stats     import FitParameter, FitResult
 from functools     import cached_property
 from pathlib       import Path
 from typing        import Any, Final
 from pydantic      import RootModel
-from rx_common     import Component, Channel, Brem
+from rx_common     import Block, Component, Channel, Brem
 
 from .yields       import Yield, YieldGrid
 from .fit_metadata import FitMetadata
@@ -371,6 +371,67 @@ class FitSummary(RootModel[list[tuple[FitMetadata,FitResult]]], frozen = True):
         string = self.model_dump_json(indent = 2)
         path.write_text(string)
 # -------------------------------
+class SummaryProcessor:
+    '''
+    Class meant to process fit summaries
+    '''
+    # -------------------------------
+    def __init__(self, summary : FitSummary):
+        '''
+        Parameters
+        -----------------
+        summary: Object storing fit summary
+        '''
+        self.__summary = summary
+    # -------------------------------
+    def _process_blocks(self, summary : FitSummary) -> FitSummary:
+        '''
+        Parameters
+        ---------------
+        summary: Fit summary where fits differ by only block
+        '''
+        yields : dict[Block,GVar] = dict()
+
+        meta, _ = summary.root[0]
+
+        if meta.component.is_mc:
+            return summary
+
+        signal  = meta.signal
+        brem    = meta.brem
+        total   = gvar(0, 0)
+
+        for meta, fres in summary.root:
+            name               = f'yld_{signal}_{brem}'
+            val, err           = fres.get(name = name, fall_back = None)
+            element            = gvar(val, err)
+            yields[meta.block] = element
+
+            total = total + element
+
+        fractions  = { block : block_yield / total for block, block_yield in yields.items() }
+        parameters = { block : FitParameter(name = f'blk_{signal}_{brem}', value = fr.mean, error = fr.sdev) for block, fr in fractions.items() }
+
+        data : list[tuple[FitMetadata, FitResult]] = []
+        for meta, fres in summary.root:
+            param    = parameters[meta.block]
+            new_fres = fres.extend(pars = [param])
+
+            data.append((meta, new_fres))
+
+        return FitSummary(root = data)
+    # -------------------------------
+    def run(self) -> FitSummary:
+        '''
+        Returns
+        ---------------
+        Processed summary object
+        '''
+        org_summaries = self.__summary.split(by = 'block')
+        prc_summaries = [ self._process_blocks(summary = summary) for summary in org_summaries ]
+
+        return FitSummary.merge(summaries = prc_summaries)
+# -------------------------------
 class FitSummarizer:
     '''
     Class meant to aggregate fits and return FitSummary 
@@ -445,6 +506,10 @@ class FitSummarizer:
             fits.append((meta, fres))
 
         summary = FitSummary(root = fits) 
+
+        prc     = SummaryProcessor(summary = summary)
+        summary = prc.run()
+
         summary.to_json(path = output_path)
 
         return summary
