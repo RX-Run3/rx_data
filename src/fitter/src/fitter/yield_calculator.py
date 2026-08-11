@@ -128,7 +128,7 @@ class YieldCalculator:
         if is_norm:
             log.info('Calculating normalization mode efficiency')
             wps    = [self.__wp]
-            sample = self.__trg.reso_signal
+            sample = self.__trg.reso_jpsi_signal
             q2bin  = _RESO_QSQ
         else:
             log.info('Calculating signal mode efficiencies')
@@ -183,7 +183,7 @@ class YieldCalculator:
                 prc     = MVAWp.from_wp(wp = self.__wp, is_cmb = False),
             )
 
-            val, err = meas[f'yld_{self.__trg.reso_signal}_{_BREM}']
+            val, err = meas[f'yld_{self.__trg.reso_jpsi_signal}_{_BREM}']
 
             total_yield += Yield(val = val, err = err, wp = self.__wp)
 
@@ -200,7 +200,7 @@ class YieldCalculator:
         yld_norm = self.__get_yld_norm()
 
         yld_raw  = yld_norm / eff_norm
-        yld_meson= yld_raw  / self.__trg.reso_signal.brf
+        yld_meson= yld_raw  / self.__trg.reso_jpsi_signal.brf
 
         yld_rare = yld_meson * self.__trg.rare_signal.brf
         yld_grid = yld_rare  * eff_grid
