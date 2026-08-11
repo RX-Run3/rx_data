@@ -184,10 +184,37 @@ class FitHarmonizer:
 
         return fres
 # -------------------------------
-class FitSummary(RootModel[list[tuple[FitMetadata,FitResult]]]):
+class FitSummary(RootModel[list[tuple[FitMetadata,FitResult]]], frozen = True):
     '''
     Class representing a collection of fit results
     '''
+    # ----------------------
+    def split(self, by : str) -> list['FitSummary']:
+        '''
+        Parameters
+        -------------------
+        by: Name of field in FitMetadata
+
+        Returns
+        -------------------
+        List of FitSummary objects where only the attribute passed
+        differs
+        '''
+        if by not in FitMetadata.model_fields:
+            raise ValueError(f'Field {by} not in FieldMetadata')
+
+        data : dict[str, list[tuple[FitMetadata,FitResult]]] = dict()
+        
+        for meta, fsmr in self.root:
+            hsh = meta.weak_hash(exclude = by)
+            elm = meta, fsmr
+
+            if hsh not in data:
+                data[hsh] = [elm]
+            else:
+                data[hsh].append(elm)
+
+        return [ FitSummary(root = elements) for elements in data.values() ]
     # ----------------------
     def get_yields(self, exclude : Component | None = None) -> list[str]:
         '''
