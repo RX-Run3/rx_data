@@ -14,7 +14,7 @@ components:
   jpsi:
     comb       : reso/rk/mm/comb.yaml
     bppijpsimm : reso/rk/mm/bppijpsimm.yaml
-    bpkpjpsimm : reso/rk/mm/bpkpjpsimm.yaml
+    bpkpjpsimm : reso/rk/mm/bpkpjpsimm_no_dtf.yaml
 constraints:
   signal_fraction:
     - bppijpsimm
