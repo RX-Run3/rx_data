@@ -39,6 +39,33 @@ class FitMetadata(BaseModel, frozen = True):
     Number of entries and uncertainty for dataset that was fitted
     '''
     # -------------------
+    def is_equivalent(
+        self, 
+        other   : 'FitMetadata',
+        exclude : str) -> bool:
+        '''
+        Parameters
+        -------------
+        other  : Instance of FitMetadata
+        exclude: Name of field
+
+        Returns
+        -------------
+        True if every field, but `exclude` are identical
+        '''
+        excluded = [exclude, 'stats']
+
+        for name, this_value in self:
+            if name in excluded:
+                continue
+
+            other_value = getattr(other, name)
+
+            if this_value != other_value:
+                return False
+
+        return True
+    # -------------------
     @property
     def signal(self) -> Component:
         '''
