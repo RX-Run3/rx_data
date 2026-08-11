@@ -11,7 +11,7 @@ weights:
 fit:
   jpsi:
     kind      : KDE1DimFFT
-    bandwidth : 20
+    bandwidth : 10
     padding   :
       flag : False
   psi2:
@@ -22,4 +22,4 @@ fit:
 plots:
   nbins  : 40
   stacked: True
-  plot_range : [5100, 6000]
+  plot_range : [5000, 5600]
