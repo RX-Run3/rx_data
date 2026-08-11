@@ -1,6 +1,6 @@
 # This is a configuration file controlling the way the scales plots are made
 # ---------------------------
-jpsi_mass : 5279.34
+pdg_mass : 5279.34
 # ---------------------------
 mm:
   mu  : [5275, 5280]
