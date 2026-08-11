@@ -143,6 +143,13 @@ class FitParameter(BaseModel, frozen = True):
     value: float 
     error: float
     # ----------------------
+    @property
+    def data(self) -> tuple[float,float]:
+        '''
+        Tuple with value and error of parameter
+        '''
+        return self.value, self.error
+    # ----------------------
     def __mul__(self, other : 'FitParameter') -> 'FitParameter':
         name      = f'{self.name}_prod_{other.name}'
         this_val  = gvar(self.value , self.error )
@@ -496,6 +503,24 @@ class FitResult(BaseModel):
         all_pars = list(self.parameters) + self.extra_pars
 
         return [ par for par in all_pars if par.name.startswith(prefix) ]
+    # ----------------------
+    def get_par(self, prefix : str) -> FitParameter:
+        '''
+        Parameters
+        -----------------
+        prefix: Starting substring of parameter name
+
+        Returns
+        -----------------
+        Parameter whose name matches prefix, if not found one and only one
+        will raise exception
+        '''
+        pars = self.get_pars(prefix = prefix)
+        if len(pars) != 1:
+            log.error(self)
+            raise ValueError(f'Not found one and only one parameter matching prefix: {prefix}')
+
+        return pars[0]
     # ----------------------
     @classmethod
     def _par_from_zfit(
