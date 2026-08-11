@@ -1,4 +1,5 @@
-from .fit_summary        import FitSummary, FitSummarizer, FitHarmonizer
+from .fit_summary        import FitHarmonizer, SummaryProcessor
+from .fit_summary        import FitSummary, FitSummarizer
 from .dataset_summary    import DatasetSummary
 from .parameter_reader   import ParameterReader
 from .likelihood_factory import LikelihoodFactory
@@ -7,10 +8,10 @@ from .toy_maker          import ToyConf
 from .toy_plotter        import ToyPlotter
 from .data_fitter        import DataFitter
 from .data_model         import DataModel
-from .data_fitter        import NLLConf 
+from .data_fitter        import NLLConf
 from .sim_fitter         import SimFitter
 from .data_preprocessor  import DataPreprocessor
-from .constraint_reader  import add_constraints 
+from .constraint_reader  import add_constraints
 from .cmb_constraints    import CmbConstraints
 from .category           import Category
 from .category_merger    import CategoryMerger
@@ -33,9 +34,9 @@ from .fit_metadata       import FitMetadata
 # ----------
 from .cmb_validator      import CmbValidatorConf
 from .cmb_validator      import CmbValidator
-from .cmb_validator      import CmbInputConfig 
-from .cmb_validator      import CmbValidationConfig 
-from .cmb_validator      import CmbOutputConfig 
+from .cmb_validator      import CmbInputConfig
+from .cmb_validator      import CmbValidationConfig
+from .cmb_validator      import CmbOutputConfig
 # ----------
 # Configs
 # ----------
@@ -48,7 +49,7 @@ from .configs  import CCbarConf
 from .configs  import NonParametricConf
 from .configs  import ParametricConf
 from .configs  import RXFitConfig
-from .configs  import ObservableConf 
+from .configs  import ObservableConf
 from .configs  import CmbConstraintConf
 # ----------
 from .scales_tabulator import ScalesTabulator
@@ -59,6 +60,7 @@ __all__ = [
     'plot_prefit_postfit',
     'Yield',
     # ------------------
+    'SummaryProcessor',
     'CmbConstraintConf',
     'CmbValidatorConf',
     'CmbValidator',
