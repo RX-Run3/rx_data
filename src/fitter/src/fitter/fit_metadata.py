@@ -39,32 +39,28 @@ class FitMetadata(BaseModel, frozen = True):
     Number of entries and uncertainty for dataset that was fitted
     '''
     # -------------------
-    def is_equivalent(
-        self, 
-        other   : 'FitMetadata',
-        exclude : str) -> bool:
+    def weak_hash(self, exclude : str) -> str:
         '''
         Parameters
         -------------
-        other  : Instance of FitMetadata
         exclude: Name of field
 
         Returns
         -------------
-        True if every field, but `exclude` are identical
+        Hash of object, disregarding `exclude` field.
+        I.e. two objects with different `exclude` fields would have
+        identical hashes
         '''
         excluded = [exclude, 'stats']
 
+        values = []
         for name, this_value in self:
             if name in excluded:
                 continue
 
-            other_value = getattr(other, name)
+            values.append(str(this_value))
 
-            if this_value != other_value:
-                return False
-
-        return True
+        return hashing.hash_object(obj = values)
     # -------------------
     @property
     def signal(self) -> Component:

@@ -36,7 +36,7 @@ def test_from_data_path(path : Path):
     log.info(meta)
     log.info(meta.as_str)
 # --------------------------------------------------
-def test_equivalence():
+def test_weak_hash():
     root   = _ANADIR / 'fits/data' 
     paths  = [ root / path for path in _DATA_PATHS ]
 
@@ -45,8 +45,10 @@ def test_equivalence():
     meta_2 = FitMetadata.from_pars_path(path = paths[2])
     meta_3 = FitMetadata.from_pars_path(path = paths[3])
 
-    assert not meta_0.is_equivalent(other = meta_1, exclude = 'block') # different brems
-    assert     meta_1.is_equivalent(other = meta_1, exclude = 'block') # same object
-    assert     meta_0.is_equivalent(other = meta_2, exclude = 'block') # different blocks
-    assert     meta_1.is_equivalent(other = meta_3, exclude = 'block') # different blocks
+    assert meta_1.weak_hash(exclude = 'block') == meta_1.weak_hash(exclude = 'block') # same object
+    assert meta_0.weak_hash(exclude = 'block') == meta_2.weak_hash(exclude = 'block') # different blocks
+    assert meta_1.weak_hash(exclude = 'block') == meta_3.weak_hash(exclude = 'block') # different blocks
+
+    assert meta_0.weak_hash(exclude = 'block') != meta_1.weak_hash(exclude = 'block') # different brem 
+    assert meta_2.weak_hash(exclude = 'block') != meta_3.weak_hash(exclude = 'block') # different brem
 # --------------------------------------------------
