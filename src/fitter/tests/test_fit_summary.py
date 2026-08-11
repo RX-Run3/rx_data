@@ -87,6 +87,19 @@ def test_summarizer_at(name : str) -> None:
         assert val.at(meta) == fsmr
 # ----------------------
 @pytest.mark.parametrize('name', ['reso_dtf-latest', 'reso_no_dtf-latest'])
+def test_merge_summary(name : str) -> None:
+    '''
+    Test merging summaries
+    '''
+    smr = FitSummarizer(name = name, kind = 'reso')
+    org_summary = smr.get_summary()
+
+    summaries   = org_summary.split(by = 'block')
+    mrg_summary = FitSummary.merge(summaries = summaries)
+
+    assert len(org_summary.root) == len(mrg_summary.root)
+# ----------------------
+@pytest.mark.parametrize('name', ['reso_dtf-latest', 'reso_no_dtf-latest'])
 def test_summarizer_split(name : str) -> None:
     '''
     Test split method of sumarizer

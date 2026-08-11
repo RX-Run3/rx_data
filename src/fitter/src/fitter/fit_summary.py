@@ -216,6 +216,24 @@ class FitSummary(RootModel[list[tuple[FitMetadata,FitResult]]], frozen = True):
 
         return [ FitSummary(root = elements) for elements in data.values() ]
     # ----------------------
+    @classmethod
+    def merge(cls, summaries : list['FitSummary']) -> 'FitSummary':
+        '''
+        Parameters
+        --------------
+        summaries: List of fit summaries
+
+        Returns
+        --------------
+        Merged fit summaries
+        '''
+        data : list[tuple[FitMetadata, FitResult]] = []
+
+        for summary in summaries:
+            data.extend(summary.root)
+
+        return cls(root = data)
+    # ----------------------
     def get_yields(self, exclude : Component | None = None) -> list[str]:
         '''
         Parameters
