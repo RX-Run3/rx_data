@@ -581,15 +581,38 @@ class Trigger(StrEnum):
         raise ValueError(f'Cannot find main trigger for: {project}/{channel}')
     # -----------
     @property
-    def reso_signal(self) -> Component:
+    def reso_jpsi_signal(self) -> Component:
         '''
         Component associated to trigger in resonant mode
+        for the jpsi bin
         '''
         match self:
             case Trigger.rk_ee_os:
                 return Component.bpkpjpsiee
+            case Trigger.rk_mm_os:
+                return Component.bpkpjpsimm
             case Trigger.rkst_ee_os:
                 return Component.bdkstkpijpsiee
+            case Trigger.rkst_mm_os:
+                return Component.bdkstkpijpsimm
+            case _:
+                raise ValueError(f'No resonant signal component for: {self}')
+    # -----------
+    @property
+    def reso_psi2_signal(self) -> Component:
+        '''
+        Component associated to trigger in resonant mode
+        for the psi2S bin
+        '''
+        match self:
+            case Trigger.rk_ee_os:
+                return Component.bpkppsi2ee
+            case Trigger.rk_mm_os:
+                return Component.bpkppsi2mm
+            case Trigger.rkst_ee_os:
+                return Component.bdkstkpipsi2ee
+            case Trigger.rkst_mm_os:
+                return Component.bdkstkpipsi2mm
             case _:
                 raise ValueError(f'No resonant signal component for: {self}')
     # -----------
@@ -601,8 +624,12 @@ class Trigger(StrEnum):
         match self:
             case Trigger.rk_ee_os:
                 return Component.bpkpee
+            case Trigger.rk_mm_os:
+                return Component.bpkpmm
             case Trigger.rkst_ee_os:
                 return Component.bdkstkpiee
+            case Trigger.rkst_mm_os:
+                return Component.bdkstkpimm
             case _:
                 raise ValueError(f'No rare signal component for: {self}')
     # -----------
