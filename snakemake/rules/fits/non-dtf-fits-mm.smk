@@ -21,7 +21,7 @@ rule all:
             [
              f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}/rk_mm/plots/scales.json',
              f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/mm/jpsi/data_24/fit/brem_xx0/brem_xx0/parameters.json',
-             f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/mm/jpsi/bpkpjpsimm/fit/brem_xx0/brem_xx0/parameters.json',
+             f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}_b{{block}}/reso/rk/mm/jpsi/bpkpjpsimm/fit/brem_xx0/brem_xx0/parameters.json'],
             cmb   = CMB,
             prc   = PRC,
             block = BLOCK)
