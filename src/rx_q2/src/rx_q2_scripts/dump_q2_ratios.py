@@ -21,20 +21,20 @@ from dmu             import LogStore
 from dmu.generic     import utilities        as gut
 from typing          import Callable, Final
 from matplotlib.axes import Axes
-from fitter          import FitSummary, MVAWp
+from fitter          import FitSummarizer, MVAWp
 from rx_q2           import ScalesConf
 from rx_q2           import ParameterReader
 from fitter          import ParameterReader as FitParameterReader
-from rx_common       import Block, Correction, Project
+from rx_common       import Block, Correction
 from rx_common       import Trigger, Component
 from rx_common       import Qsq
 from rx_common       import Brem
 
 log=LogStore.add_logger('rx_q2:dump_q2_ratios')
 
-PROJECTS   : list[str]        = ['rk_ee', 'rk_mm', 'rkst_ee', 'rkst_mm']
 _FRACTIONS : Final[list[str]] = ['fr']
 _DATA      : Component        = Component.data_24
+_KIND      : Final[str]       = 'reso'              # All fits used for scales are to resonant mode
 #-------------------------------------
 def _load_config(args : argparse.Namespace) -> ScalesConf:
     '''
@@ -47,47 +47,59 @@ def _load_config(args : argparse.Namespace) -> ScalesConf:
     data['comb'] = args.comb
     data['prec'] = args.prec
     data['year'] = args.year
-    data['proj'] = args.project
+    data['trig'] = args.trig
+    data['name'] = args.name
 
-    cfg  = ScalesConf(**data)
+    cfg = ScalesConf(**data)
 
     return cfg
 #-------------------------------------
 # TODO: This is too hardcoded
 def _get_Bx_df(cfg : ScalesConf) -> pnd.DataFrame:
-    name   = 'reso_no_dtf'
+    '''
+    Parameters
+    -----------------
+    cfg: Object holding configuration
+
+    Returns
+    -----------------
+    Pandas dataframe with mu, sg, fr, block, MVA wp
+    '''
     signal = Component.bpkpjpsiee
     brems  = [Brem.one, Brem.two]
     blocks = Block.blocks()
     comps  = [_DATA, signal]
-    suffix = f'{cfg.kind}_{cfg.comb.name}_{cfg.prec.name}_{cfg.year}'
 
-    smr = FitSummary(
-        name   = name,
-        data   = _DATA,
-        signal = signal)
-    smr.get_df(suffix = suffix)
+    smr     = FitSummarizer(name = cfg.name, kind = _KIND)
+    summary = smr.get_summary()
 
-    rdr    = FitParameterReader(name = name, suffix = suffix)
+    path = smr.fit_dir / 'fit_summary.json' 
+    summary.to_json(path = path)
+
+    with FitParameterReader.inputs_from(pars_path = path):
+        rdr = FitParameterReader()
+
     l_data = []
     for brem in brems:
         for block in blocks:
             for comp in comps:
                 msr = rdr(
-                    signame  = signal,
                     brem     = brem,
                     block    = block,
                     cmb      = cfg.comb,
                     prc      = cfg.prec,
                     comp     = comp,
                     trigger  = Trigger.rk_ee_os,
-                    project  = Project.rk,
                     q2bin    = Qsq.jpsi)
 
-                mu_val, mu_err = msr.get_values(prefix = f'mu_{signal}')
-                sg_val, sg_err = msr.get_values(prefix = f'sg_{signal}')
-                fr_val, fr_err = msr.get_values(prefix = f'fr_{signal}')
-                bk_val, bk_err = msr.get_values(prefix = f'bk_{signal}')
+                mu_val, mu_err = msr.get_par(prefix = f'mu_{signal}_{brem}').data
+                sg_val, sg_err = msr.get_par(prefix = f'sg_{signal}_{brem}').data
+                if not comp.is_mc:
+                    bk_val, bk_err = msr.get_par(prefix = f'bk_{signal}_{brem}').data
+                else:
+                    bk_val, bk_err = 1.0, 0.0
+
+                fr_val, fr_err = msr.get_par(prefix = f'fr_{signal}_{brem}').data
 
                 data = {
                     'mu_val' : mu_val,
@@ -128,7 +140,7 @@ def _get_q2_df(
 
         return pnd.concat([df_dat, df_sim], axis=0, ignore_index=True)
 
-    path_wc = cfg.inp_dir / f'{sample}/{cfg.proj}_{cfg.year}'
+    path_wc = cfg.inp_dir / f'{sample}/{cfg.trig.project}_{cfg.year}'
     l_path  = list(path_wc.glob(pattern = '*/parameters.json'))
     nfiles  = len(l_path)
 
@@ -389,7 +401,7 @@ def _plot_variables(
 
     if   variable == 'mu':
         plt.ylabel(rf'$\mu^{{{latex}}}$[MeV]')
-        ax.axhline(y=cfg.jpsi_mass, color='black', linestyle=':', label='PDG')
+        ax.axhline(y=cfg.pdg_mass, color='black', linestyle=':', label='PDG')
     elif variable == 'sg':
         plt.ylabel(rf'$\sigma^{{{latex}}}$[MeV]')
     elif variable == 'fr':
@@ -462,7 +474,8 @@ def main():
     parser.add_argument('-k', '--kind'   , type=str           , help='Type of scales'   , required=True, choices=['q2', 'B'])
     parser.add_argument('-C', '--comb'   , type=MVAWp.from_str, help='Combinatorial WP' , required=True)
     parser.add_argument('-P', '--prec'   , type=MVAWp.from_str, help='Part reco WP'     , required=True)
-    parser.add_argument('-p', '--project', type=str           , help='Name of project'  , required=True, choices=PROJECTS)
+    parser.add_argument('-t', '--trig'   , type=Trigger       , help='Name of trigger'  , required=True)
+    parser.add_argument('-n', '--name'   , type=str           , help='Name of fits'     , required=True)
     parser.add_argument('-y', '--year'   , type=str           , help='Year for data whose corrections are needed', default='2024')
     args = parser.parse_args()
 
