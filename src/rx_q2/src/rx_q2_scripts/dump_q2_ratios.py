@@ -104,7 +104,10 @@ def _get_Bx_df(cfg : ScalesConf) -> pnd.DataFrame:
                 else:
                     bk_val, bk_err = 1.0, 0.0
 
-                fr_val, fr_err = msr.get_par(prefix = f'fr_{signal}_{brem}').data
+                if channel == Channel.mm:
+                    fr_val, fr_err = 0.0, 0.0 # Brem fraction for brem 1 is zero in muon channel 
+                else:
+                    fr_val, fr_err = msr.get_par(prefix = f'fr_{signal}_{brem}').data
 
                 data = {
                     'mu_val' : mu_val,
