@@ -35,8 +35,6 @@ rule all:
 rule scales:
     output :
         f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}/rk_ee/plots/scales.json',
-        f'{ANADIR}/fits/data/{NAME}/parameters_B_{{cmb}}_{{prc}}_{YEAR}.parquet',
-        f'{ANADIR}/fits/data/{NAME}/parameters_B_{{cmb}}_{{prc}}_{YEAR}.md',
     input  :
         expand(
             [
@@ -47,18 +45,33 @@ rule scales:
             ],
             allow_missing = True,
             block         = BLOCK)
-    log    : f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}/rk_ee/plots/scales.log'
+    log   :
+        prc = f'{LOGDIR}/scales_{{cmb}}_{{prc}}.prc',
+        err = f'{LOGDIR}/scales_{{cmb}}_{{prc}}.err',
+        out = f'{LOGDIR}/scales_{{cmb}}_{{prc}}.out',
+        LOG = f'{LOGDIR}/scales_{{cmb}}_{{prc}}.log',
     params :
-        home = HOME,
+        LOGD = LOGDIR,
         env  = ENV,
+        home = HOME,
+        name = NAME,
     shell  :
         '''
+        (
         source setup.sh {params.env} {params.home}
 
         CMB_WP=$(rxfitter wp-translator -w {wildcards.cmb})
         PRC_WP=$(rxfitter wp-translator -w {wildcards.prc})
 
-        dump_q2_ratios -k B -p rk_ee -y 2024 -C $CMB_WP -P $PRC_WP > {log} 2>&1 || true
+        dump_q2_ratios -n {params.name} -k B -t rk_ee_os -y 2024 -C $CMB_WP -P $PRC_WP
+
+        echo "Scales calculated with status: $?"
+        ) > {log.prc} 2>&1
+
+        JOBID=$(grep -m1 '^ClusterId' $_CONDOR_JOB_AD | awk '{{print $3}}')
+        ln -s {params.LOGD}/$JOBID.err {log.err} || true
+        ln -s {params.LOGD}/$JOBID.out {log.out} || true
+        ln -s {params.LOGD}/$JOBID.log {log.LOG} || true
         '''
 # ---------------------
 rule fits:
