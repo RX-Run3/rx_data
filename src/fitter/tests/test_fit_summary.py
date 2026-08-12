@@ -14,7 +14,6 @@ from rx_common   import Block, Component
 from fitter      import FitMetadata
 from fitter      import FitSummarizer
 from fitter      import FitHarmonizer
-from fitter      import SummaryProcessor
 
 log=LogStore.add_logger('fitter:test_fit_summary')
 
@@ -25,17 +24,17 @@ _DATA_PATHS = [
     'reso_no_dtf-latest/990_500_b3/reso/rk/ee/jpsi/data_24/fit/brem_xx1_brem_xx2/brem_xx2/parameters.json',
 ]
 
+_SIGN_PATHS = [
+    'reso_no_dtf-latest/990_800_b1/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx1/brem_xx1/parameters.json',
+    'reso_no_dtf-latest/990_800_b1/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx2/brem_xx2/parameters.json',
+    'reso_no_dtf-latest/990_800_b3/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx1/brem_xx1/parameters.json',
+    'reso_no_dtf-latest/990_800_b3/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx2/brem_xx2/parameters.json',
+]
+
 _DATA_RARE  = [
     'rare_fit/0600-1000_0300-1000_all/rare/rk/ee/low/data_24/fit/brem_x12/brem_x12/parameters.json',
     'rare_fit/0600-1000_0300-1000_all/rare/rk/ee/central/data_24/fit/brem_x12/brem_x12/parameters.json',
     'rare_fit/0600-1000_0300-1000_all/rare/rk/ee/high/data_24/fit/brem_x12/brem_x12/parameters.json',
-]
-
-_SIGN_PATHS = [
-    'reso_no_dtf-latest/990_800_b1/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx1/brem_xx1/parameters.json',
-    'reso_no_dtf-latest/990_800_b1/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx2/brem_xx2/parameters.json',
-    'reso_no_dtf-latest/990_500_b3/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx1/brem_xx1/parameters.json',
-    'reso_no_dtf-latest/990_500_b3/reso/rk/ee/jpsi/bpkpjpsiee/fit/brem_xx2/brem_xx2/parameters.json',
 ]
 
 _ANADIR : Final[Path] = Path(os.environ['ANADIR'])

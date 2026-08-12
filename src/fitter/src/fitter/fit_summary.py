@@ -76,8 +76,8 @@ class FitHarmonizer:
         fraction       = f'{signal}_fraction'
         fr_val, fr_err = res[fraction]
 
-        pars.append(FitParameter(name = f'{signal}_fraction_{Brem.one}', value =     fr_val, error = fr_err))
-        pars.append(FitParameter(name = f'{signal}_fraction_{Brem.two}', value = 1 - fr_val, error = fr_err))
+        pars.append(FitParameter(name = f'fr_{signal}_{Brem.one}', value =     fr_val, error = fr_err))
+        pars.append(FitParameter(name = f'fr_{signal}_{Brem.two}', value = 1 - fr_val, error = fr_err))
 
         # WARNING: rk and rkst fits seem to use different naming
         # for signal yields of combined category
@@ -421,16 +421,60 @@ class SummaryProcessor:
 
         return FitSummary(root = data)
     # -------------------------------
+    def _process_brems(self, summary : FitSummary) -> FitSummary:
+        '''
+        Parameters
+        --------------------
+        summary: Holder of identical fits, but different brem categories
+
+        Returns
+        --------------------
+        Summary with brem information added for MC, data will do early return
+        '''
+        any_meta, _ = summary.root[0] # All elements are identical, except for brem
+
+        if not any_meta.component.is_mc:
+            return summary
+
+        if any_meta.channel != Channel.ee:
+            return summary
+
+        tot = gvar(0, 0)
+        yields : dict[Brem,GVar] = dict()
+        for meta, _ in summary.root:
+            val, err = meta.stats
+            yld      = gvar(val, err)
+            tot      = tot + yld
+
+            yields[meta.brem] = yld
+
+        fractions : dict[Brem,GVar] = { brem : yld / tot for brem, yld in yields.items() }
+
+        elements : list[tuple[FitMetadata,FitResult]] = []
+        for meta, fres in summary.root:
+            fr            = fractions[meta.brem]
+            par           = FitParameter(name = f'fr_{meta.signal}_{meta.brem}', value = fr.mean, error = fr.sdev)
+            extended_fres = fres.extend(pars = [par])
+
+            elements.append((meta, extended_fres))
+
+        return FitSummary(root = elements)
+    # -------------------------------
     def run(self) -> FitSummary:
         '''
         Returns
         ---------------
         Processed summary object
         '''
-        org_summaries = self.__summary.split(by = 'block')
-        prc_summaries = [ self._process_blocks(summary = summary) for summary in org_summaries ]
+        summaries = self.__summary.split(by = 'block')
+        summaries = [ self._process_blocks(summary = summary) for summary in summaries ]
 
-        return FitSummary.merge(summaries = prc_summaries)
+        merged    = FitSummary.merge(summaries = summaries)
+
+        summaries = merged.split(by = 'brem')
+        summaries = [ self._process_brems(summary = summary) for summary in summaries ]
+
+        return FitSummary.merge(summaries = summaries)
 # -------------------------------
 class FitSummarizer:
     '''
