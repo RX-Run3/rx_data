@@ -63,9 +63,9 @@ rule scales:
         CMB_WP=$(rxfitter wp-translator -w {wildcards.cmb})
         PRC_WP=$(rxfitter wp-translator -w {wildcards.prc})
 
-        dump_q2_ratios -n {params.name} -k B -t rk_ee_os -y 2024 -C $CMB_WP -P $PRC_WP > {log} 2>&1 || true
+        dump_q2_ratios -n {params.name} -k B -t rk_ee_os -y 2024 -C $CMB_WP -P $PRC_WP
 
-        echo "Fit done with status: $?"
+        echo "Scales calculated with status: $?"
         ) > {log.prc} 2>&1
 
         JOBID=$(grep -m1 '^ClusterId' $_CONDOR_JOB_AD | awk '{{print $3}}')
