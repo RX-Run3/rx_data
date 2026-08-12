@@ -36,6 +36,7 @@ _FRACTIONS : Final[list[str]]         = ['fr']
 _DATA      : Component                = Component.data_24
 _KIND      : Final[str]               = 'reso'              # All fits used for scales are to resonant mode
 _BREMS     : dict[Channel,list[Brem]] = { Channel.ee : [Brem.one, Brem.two], Channel.mm : [Brem.zero] }
+_Q2BIN     : Final[Qsq]               = Qsq.jpsi
 #-------------------------------------
 def _load_config(args : argparse.Namespace) -> ScalesConf:
     '''
@@ -66,8 +67,9 @@ def _get_Bx_df(cfg : ScalesConf) -> pnd.DataFrame:
     -----------------
     Pandas dataframe with mu, sg, fr, block, MVA wp
     '''
-    signal = cfg.trig.reso_jpsi_signal
-    channel= cfg.trig.channel
+    trigger= cfg.trig
+    signal = trigger.reso_jpsi_signal
+    channel= trigger.channel
     blocks = Block.blocks()
     comps  = [_DATA, signal]
 
@@ -87,13 +89,13 @@ def _get_Bx_df(cfg : ScalesConf) -> pnd.DataFrame:
         for block in blocks:
             for comp in comps:
                 msr = rdr(
-                    brem     = brem,
-                    block    = block,
-                    cmb      = cfg.comb,
-                    prc      = cfg.prec,
-                    comp     = comp,
-                    trigger  = Trigger.rk_ee_os,
-                    q2bin    = Qsq.jpsi)
+                    brem    = brem,
+                    block   = block,
+                    cmb     = cfg.comb,
+                    prc     = cfg.prec,
+                    comp    = comp,
+                    trigger = trigger,
+                    q2bin   = _Q2BIN)
 
                 mu_val, mu_err = msr.get_par(prefix = f'mu_{signal}_{brem}').data
                 sg_val, sg_err = msr.get_par(prefix = f'sg_{signal}_{brem}').data
