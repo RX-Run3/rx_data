@@ -22,18 +22,20 @@ observable:
       - 4500 
       - 7000
 components:
-  #comb       : reso/rk/ee/comb_no_dtf.yaml
-  #bppijpsiee : reso/rk/ee/bppijpsiee.yaml
-  #ccbar      : reso/rk/ee/ccbar.yaml
-  bpkpjpsiee : reso/rk/ee/bpkpjpsiee_no_dtf.yaml
-  #bpkppsi2ee : reso/rk/ee/bpkppsi2ee.yaml
+  jpsi:
+    #comb       : reso/rk/ee/comb_no_dtf.yaml
+    #bppijpsiee : reso/rk/ee/bppijpsiee.yaml
+    #ccbar      : reso/rk/ee/ccbar.yaml
+    bpkpjpsiee : reso/rk/ee/bpkpjpsiee_no_dtf.yaml
+    #bpkppsi2ee : reso/rk/ee/bpkppsi2ee.yaml
 constraints:
   signal_fraction : []
   combinatorial : false
   signal_shape  : false
 fit: {}
 plots:
-  merging : {}
-  regions :
-    brem_xx1 : *plots_settings
-    brem_xx2 : *plots_settings
+  jpsi:
+    merging : {}
+    regions :
+      brem_xx1 : *plots_settings
+      brem_xx2 : *plots_settings
