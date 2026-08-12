@@ -105,7 +105,7 @@ def _get_Bx_df(cfg : ScalesConf) -> pnd.DataFrame:
                     bk_val, bk_err = 1.0, 0.0
 
                 if channel == Channel.mm:
-                    fr_val, fr_err = 0.0, 0.0 # Brem fraction for brem 1 is zero in muon channel 
+                    fr_val, fr_err = 0.001, 0.0 # Brem fraction for brem 1 is zero in muon channel 
                 else:
                     fr_val, fr_err = msr.get_par(prefix = f'fr_{signal}_{brem}').data
 
@@ -317,10 +317,6 @@ def _plot_df(
     variable : str,
     brem     : Brem,
     ax       : Axes) -> Axes:
-
-    # Skip brem 0
-    if brem not in {Brem.one, Brem.two}:
-        return ax
 
     val   = f'{variable}_val'
     err   = f'{variable}_err'
