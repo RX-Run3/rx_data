@@ -35,18 +35,17 @@ class EmptyDataSet(Exception):
     '''
     ...
 #----------------------------------------
-class ZFitPlotterConf(BaseModel):
+class ZFitPlotterConf(BaseModel, frozen = True):
     '''
     Class meant to hold configuration for ZFitPlotter
     '''
-    model_config = ConfigDict(frozen=True)
-
     nbins           : int
     stacked         : bool
     plot_components : list[str]                 = Field(default_factory=list)
     plot_range      : tuple[float,float] | None = None
     ext_text        : str                       = ''
     title           : str | None                = None
+    skip_pulls      : bool                      = False
     d_leg           : dict[str,str]             = Field(default_factory=dict)
     # ---------------------------
     @classmethod
@@ -760,5 +759,6 @@ class ZFitPlotter:
             plot_range      = cfg.plot_range,     
             ext_text        = cfg.ext_text,       
             title           = cfg.title,          
+            skip_pulls      = cfg.skip_pulls,
             d_leg           = cfg.d_leg)
 #----------------------------------------
