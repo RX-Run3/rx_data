@@ -260,7 +260,7 @@ def test_rep_signal(
         pdf        = pdf, 
         fix_scales = fix_scales )
 #--------------------------
-@pytest.mark.parametrize('kind', [Model.cbr, Model.cbl, Model.dscb, Model.gauss])
+@pytest.mark.parametrize('kind', [Model.cbr, Model.cbl, Model.dscb, Model.gauss, Model.ipatia])
 def test_override_parameter(kind: Model):
     '''
     Will create a PDF by overriding parameters
