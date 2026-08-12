@@ -51,6 +51,7 @@ rule scales:
     params :
         home = HOME,
         env  = ENV,
+        name = NAME,
     shell  :
         '''
         source setup.sh {params.env} {params.home}
@@ -58,7 +59,7 @@ rule scales:
         CMB_WP=$(rxfitter wp-translator -w {wildcards.cmb})
         PRC_WP=$(rxfitter wp-translator -w {wildcards.prc})
 
-        dump_q2_ratios -k B -p rk_ee -y 2024 -C $CMB_WP -P $PRC_WP > {log} 2>&1 || true
+        dump_q2_ratios -n {params.name} -k B -t rk_ee_os -y 2024 -C $CMB_WP -P $PRC_WP > {log} 2>&1 || true
         '''
 # ---------------------
 rule fits:

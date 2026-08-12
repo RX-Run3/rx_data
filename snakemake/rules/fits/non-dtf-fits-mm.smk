@@ -44,6 +44,7 @@ rule scales:
     log    : f'{ANADIR}/fits/data/{NAME}/{{cmb}}_{{prc}}/rk_mm/plots/scales.log'
     params :
         home = HOME,
+        name = NAME,
         env  = ENV,
     shell  :
         '''
@@ -52,7 +53,7 @@ rule scales:
         CMB_WP=$(rxfitter wp-translator -w {wildcards.cmb})
         PRC_WP=$(rxfitter wp-translator -w {wildcards.prc})
 
-        dump_q2_ratios -k B -p rk_mm -y 2024 -C $CMB_WP -P $PRC_WP > {log} 2>&1 || true
+        dump_q2_ratios -n {params.name} -k B -t rk_mm_os -y 2024 -C $CMB_WP -P $PRC_WP > {log} 2>&1 || true
         '''
 # ---------------------
 rule fits:
