@@ -47,8 +47,9 @@ rule scales:
         out = f'{LOGDIR}/scales_{{cmb}}_{{prc}}.out',
         LOG = f'{LOGDIR}/scales_{{cmb}}_{{prc}}.log',
     params :
-        home = HOME,
+        LOGD = LOGDIR,
         name = NAME,
+        home = HOME,
         env  = ENV,
     shell  :
         '''
