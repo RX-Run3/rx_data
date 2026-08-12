@@ -19,6 +19,7 @@ from .zfit_models         import ModExp
 from .zfit_models         import HypExp
 from .function            import Function
 from .zfit_models         import FermiDirac 
+from .ipatia              import Ipatia 
 from .fit_conf            import FitConf, KDEConf, PaddingConf
 from .imports             import zfit
 from .imports             import tensorflow
@@ -47,7 +48,6 @@ __all__ = [
     'is_pdf_usable',
     'ZFitPlotterConf',
     'GoodnessOfFit',
-    'FermiDirac',
     'Model',
     'KDEModel',
     'Retries',
@@ -69,8 +69,12 @@ __all__ = [
     'Constraint',
     'ModelFactory',
     'ModelFactoryConf',
+    # ---------------------
+    'FermiDirac',
     'ModExp',
     'HypExp',
+    'Ipatia',
+    # ---------------------
     'MethodRegistry',
     'Constraint1D',
     'ConstraintND',

@@ -10,7 +10,7 @@ from pathlib     import Path
 from functools   import cache
 from dmu.generic import utilities as gut
 from dmu.stats   import ZFitPlotter, ZFitPlotterConf, zfit
-from ipatia      import Ipatia
+from dmu.stats   import Ipatia
 
 zfit.run.set_graph_mode(False)
 # ----------------------
