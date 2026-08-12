@@ -76,8 +76,8 @@ class FitHarmonizer:
         fraction       = f'{signal}_fraction'
         fr_val, fr_err = res[fraction]
 
-        pars.append(FitParameter(name = f'{signal}_fraction_{Brem.one}', value =     fr_val, error = fr_err))
-        pars.append(FitParameter(name = f'{signal}_fraction_{Brem.two}', value = 1 - fr_val, error = fr_err))
+        pars.append(FitParameter(name = f'fr_{signal}_{Brem.one}', value =     fr_val, error = fr_err))
+        pars.append(FitParameter(name = f'fr_{signal}_{Brem.two}', value = 1 - fr_val, error = fr_err))
 
         # WARNING: rk and rkst fits seem to use different naming
         # for signal yields of combined category
