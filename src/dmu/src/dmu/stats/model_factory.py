@@ -16,6 +16,7 @@ from dmu.stats       import ParameterLibrary as PL
 
 from .imports        import zfit
 from .types          import CorrectionImplementation, Model
+from .ipatia         import Ipatia
 from .zfit_models    import HypExp
 from .zfit_models    import ModExp
 from .zfit_models    import FermiDirac 
@@ -402,6 +403,33 @@ class ModelFactory:
     def _get_exponential(self, suffix : str = '') -> zpdf:
         c   = self._get_parameter(kind = Model.exp, name = 'c', suffix = suffix)
         pdf = zfit.pdf.Exponential(c, self._obs, name=f'exp_{self._preffix}{suffix}')
+
+        return pdf
+    #-----------------------------------------
+    @MethodRegistry.register(Model.ipatia)
+    def _get_ipatia(self, suffix : str = '') -> zpdf:
+        mu   = self._get_parameter(kind = Model.ipatia, name = 'mu'  , suffix = suffix)
+        sg   = self._get_parameter(kind = Model.ipatia, name = 'sg'  , suffix = suffix)
+        nl   = self._get_parameter(kind = Model.ipatia, name = 'nl'  , suffix = suffix)
+        al   = self._get_parameter(kind = Model.ipatia, name = 'al'  , suffix = suffix)
+        nr   = self._get_parameter(kind = Model.ipatia, name = 'nr'  , suffix = suffix)
+        ar   = self._get_parameter(kind = Model.ipatia, name = 'ar'  , suffix = suffix)
+        lam  = self._get_parameter(kind = Model.ipatia, name = 'lam' , suffix = suffix)
+        beta = self._get_parameter(kind = Model.ipatia, name = 'beta', suffix = suffix)
+        zeta = self._get_parameter(kind = Model.ipatia, name = 'zeta', suffix = suffix)
+
+        pdf = Ipatia(
+            mu   = mu,
+            sigma= sg,
+            lambd= lam,
+            zeta = zeta,
+            beta = beta,
+            al   = al,
+            nl   = nl,
+            ar   = ar,
+            nr   = nr,
+            obs  = self._obs,
+            name = f'ipatia_{self._preffix}{suffix}')
 
         return pdf
     # ---------------------------------------------

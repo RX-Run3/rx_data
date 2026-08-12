@@ -26,6 +26,7 @@ class Model(StrEnum):
     Enum meant to represent fitting models
     '''
     fermi_dirac = auto()
+    ipatia      = auto()
     exp         = auto()
     hypexp      = auto()
     modexp      = auto()
