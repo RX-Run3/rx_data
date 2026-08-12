@@ -1,11 +1,11 @@
 '''
 Module with tests for ParameterLibrary class
 '''
-
 import pytest
 
 from dmu            import LogStore
 from dmu.stats      import zfit
+from dmu.stats      import Model
 from dmu.stats      import YieldsConf
 from dmu.stats      import ParameterLibrary as PL
 from dmu.generic    import utilities        as gut
@@ -63,33 +63,33 @@ def _composed_has_par(name : str, par : zpar) -> bool:
 
     return False
 # ------------------------------------
-@pytest.mark.parametrize('kind', ['gauss', 'cbl', 'cbr', 'suj'])
-def test_print(kind : str):
+@pytest.mark.parametrize('model', Model)
+def test_print(model : Model):
     '''
     Will test printing parameters
     '''
-    PL.print_parameters(kind=kind)
+    PL.print_parameters(kind=model)
 # ------------------------------------
-@pytest.mark.parametrize('parameter', ['mu', 'sg', 'al', 'nl'])
-def test_get_values(parameter : str):
+def test_get_values():
     '''
     Will test retrieving values for different parameters of cbl
     '''
-    kind = 'cbl'
+    kind = Model.cbl
 
-    x, y, z = PL.get_values(kind=kind, parameter=parameter)
+    for par in ['mu', 'sg', 'al', 'nl']:
+        x, y, z = PL.get_values(kind=kind, parameter=par)
 
-    log.info(f'{parameter:<20}{x:<10.0f}{y:<10.0f}{z:<10.0f}')
+        log.info(f'{par:<20}{x:<10.0f}{y:<10.0f}{z:<10.0f}')
 # ------------------------------------
 @pytest.mark.parametrize('parameter', ['mu', 'sg', 'al', 'nl'])
 def test_values(parameter : str):
     '''
     Will test retrieving values for different parameters of cbl
     '''
-    kind = 'cbl'
-    x_in = 22222
-    y_in = 11111
-    z_in = 33333
+    kind = Model.cbl
+    v_in = 22222
+    l_in = 11111
+    h_in = 33333
 
     with PL.values(kind=kind, parameter=parameter, val=v_in, low=l_in, high=h_in):
         v_out, l_out, h_out = PL.get_values(kind=kind, parameter=parameter)

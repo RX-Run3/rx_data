@@ -49,7 +49,7 @@ class ParameterLibrary:
         log.debug(f'Found {npdf} PDFs')
     # --------------------------------
     @classmethod
-    def print_parameters(cls, kind : str) -> None:
+    def print_parameters(cls, kind : Model) -> None:
         '''
         Method taking the kind of PDF to which the parameters are associated
         and printing the values.
