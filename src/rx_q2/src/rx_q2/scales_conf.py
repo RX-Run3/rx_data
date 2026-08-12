@@ -50,7 +50,7 @@ class ScalesConf(BaseModel, frozen = True):
             case 'q2':
                 out_dir = ana_dir / f'q2/fits/{name}/plots/{proj}_{chan}'
             case 'B':
-                out_dir = ana_dir / f'fits/data/reso_no_dtf/{name}/{proj}_{chan}/plots'
+                out_dir = ana_dir / f'fits/data/{self.name}/{name}/{proj}_{chan}/plots'
 
         out_dir.mkdir(parents=True, exist_ok=True)
 
