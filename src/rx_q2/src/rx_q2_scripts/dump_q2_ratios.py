@@ -70,13 +70,15 @@ def _get_Bx_df(cfg : ScalesConf) -> pnd.DataFrame:
     blocks = Block.blocks()
     comps  = [_DATA, signal]
 
-    smr     = FitSummarizer(name = cfg.name, kind = _KIND)
-    summary = smr.get_summary()
+    smr= FitSummarizer(name = cfg.name, kind = _KIND)
+    smr.get_summary(
+        force_update = True, 
+        out_name     = f'fit_summary_{cfg.comb.name}_{cfg.prec.name}.json')
 
-    path = smr.fit_dir / 'fit_summary.json' 
-    summary.to_json(path = path)
+    if not smr.output_path:
+        raise ValueError('Output path not found')
 
-    with FitParameterReader.inputs_from(pars_path = path):
+    with FitParameterReader.inputs_from(pars_path = smr.output_path):
         rdr = FitParameterReader()
 
     l_data = []
