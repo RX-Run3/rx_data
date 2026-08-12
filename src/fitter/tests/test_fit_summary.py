@@ -87,6 +87,18 @@ def test_summarizer_at(name : str) -> None:
         assert val.at(meta) == fsmr
 # ----------------------
 @pytest.mark.parametrize('name', ['reso_dtf-latest', 'reso_no_dtf-latest'])
+def test_save_summary(name : str) -> None:
+    '''
+    Test at method of sumarizer
+    '''
+    smr = FitSummarizer(name = name, kind = 'reso')
+    smr.get_summary(out_name = 'test.json')
+
+    assert smr.output_path
+    assert smr.output_path.exists()
+    smr.output_path.unlink()
+# ----------------------
+@pytest.mark.parametrize('name', ['reso_dtf-latest', 'reso_no_dtf-latest'])
 def test_merge_summary(name : str) -> None:
     '''
     Test merging summaries
@@ -105,7 +117,7 @@ def test_process_summary(name : str) -> None:
     Test merging summaries
     '''
     smr = FitSummarizer(name = name, kind = 'reso')
-    org_summary = smr.get_summary(force_update = True)
+    smr.get_summary(force_update = True)
 # ----------------------
 @pytest.mark.parametrize('name', ['reso_dtf-latest', 'reso_no_dtf-latest'])
 def test_summarizer_split(name : str) -> None:

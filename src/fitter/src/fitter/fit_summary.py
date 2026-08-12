@@ -490,6 +490,22 @@ class FitSummarizer:
         '''
         self.__name = name
         self.__kind = kind
+        self.__out_name : str | None = None
+    # ----------------------
+    @property
+    def out_name(self) -> str:
+        """The out_name property."""
+        if not self.__out_name:
+            raise ValueError('Undefined output name')
+
+        return self.__out_name
+    # ----------------------
+    @out_name.setter
+    def out_name(self, value : str):
+        if self.__out_name:
+            raise ValueError(f'out_name already set as: {self.__out_name}')
+
+        self.__out_name = value
     # ----------------------
     def __get_paths(self) -> list[Path]:
         '''
@@ -524,17 +540,33 @@ class FitSummarizer:
 
         return fit_dir
     # ----------------------
-    def get_summary(self, force_update : bool = False) -> FitSummary:
+    @property
+    def output_path(self) -> Path | None:
+        '''
+        Full path to JSON file where summary will be saved
+        if no file name specified, return None
+        '''
+        if not self.out_name:
+            return None
+
+        return self.fit_dir / self.out_name 
+    # ---------------------------------
+    def get_summary(
+        self, 
+        out_name     : str | None = None,
+        force_update : bool       = False) -> FitSummary:
         '''
         Parameters
         ---------------
+        out_name    : If specified, will save JSON file with summary there
         force_update: If true (default false) will regenerate file, otherwise will reuse file if found
         '''
-        output_path  = self.fit_dir / 'fit_summary.json'
+        if out_name:
+            self.out_name = out_name
 
-        if output_path.exists() and not force_update:
-            log.info(f'Reading cached files at: {output_path}')
-            return FitSummary.from_json(path = output_path)
+        if self.output_path and self.output_path.exists() and not force_update:
+            log.info(f'Reading cached files at: {self.output_path}')
+            return FitSummary.from_json(path = self.output_path)
 
         fits : list[tuple[FitMetadata,FitResult]] = [] 
 
@@ -554,7 +586,8 @@ class FitSummarizer:
         prc     = SummaryProcessor(summary = summary)
         summary = prc.run()
 
-        summary.to_json(path = output_path)
+        if self.output_path:
+            summary.to_json(path = self.output_path)
 
         return summary
 # -------------------------------
