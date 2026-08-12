@@ -403,7 +403,12 @@ class SummaryProcessor:
 
         for meta, fres in summary.root:
             name               = f'yld_{signal}_{brem}'
-            val, err           = fres.get(name = name, fall_back = None)
+            try:
+                val, err           = fres.get(name = name, fall_back = None)
+            except ValueError as exc:
+                log.error(meta)
+                raise ValueError('Cannot add block fractions') from exc
+
             element            = gvar(val, err)
             yields[meta.block] = element
 
