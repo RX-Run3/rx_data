@@ -25,16 +25,17 @@ from fitter          import FitSummarizer, MVAWp
 from rx_q2           import ScalesConf
 from rx_q2           import ParameterReader
 from fitter          import ParameterReader as FitParameterReader
-from rx_common       import Block, Correction
+from rx_common       import Block, Channel, Correction
 from rx_common       import Trigger, Component
 from rx_common       import Qsq
 from rx_common       import Brem
 
 log=LogStore.add_logger('rx_q2:dump_q2_ratios')
 
-_FRACTIONS : Final[list[str]] = ['fr']
-_DATA      : Component        = Component.data_24
-_KIND      : Final[str]       = 'reso'              # All fits used for scales are to resonant mode
+_FRACTIONS : Final[list[str]]         = ['fr']
+_DATA      : Component                = Component.data_24
+_KIND      : Final[str]               = 'reso'              # All fits used for scales are to resonant mode
+_BREMS     : dict[Channel,list[Brem]] = { Channel.ee : [Brem.one, Brem.two], Channel.mm : [Brem.zero] }
 #-------------------------------------
 def _load_config(args : argparse.Namespace) -> ScalesConf:
     '''
@@ -65,8 +66,8 @@ def _get_Bx_df(cfg : ScalesConf) -> pnd.DataFrame:
     -----------------
     Pandas dataframe with mu, sg, fr, block, MVA wp
     '''
-    signal = Component.bpkpjpsiee
-    brems  = [Brem.one, Brem.two]
+    signal = cfg.trig.reso_jpsi_signal
+    channel= cfg.trig.channel
     blocks = Block.blocks()
     comps  = [_DATA, signal]
 
@@ -82,7 +83,7 @@ def _get_Bx_df(cfg : ScalesConf) -> pnd.DataFrame:
         rdr = FitParameterReader()
 
     l_data = []
-    for brem in brems:
+    for brem in _BREMS[channel]:
         for block in blocks:
             for comp in comps:
                 msr = rdr(
