@@ -9,8 +9,9 @@ from contextvars           import ContextVar
 from contextlib            import contextmanager
 from importlib.resources   import files
 from zfit.param            import Parameter as zpar
-
 from dmu                   import LogStore
+
+from .types                import Model
 from .configs              import YieldsConf
 from .configs              import SimpleYieldConf
 from .configs              import CompositeYieldConf
@@ -65,7 +66,7 @@ class ParameterLibrary:
         log.info(yaml.safe_dump(data, indent=2))
     # --------------------------------
     @classmethod
-    def get_values(cls, kind : str, parameter : str) -> tuple[float,float,float]:
+    def get_values(cls, kind : Model, parameter : str) -> tuple[float,float,float]:
         '''
         Parameters
         --------------
