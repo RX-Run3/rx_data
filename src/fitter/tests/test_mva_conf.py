@@ -28,51 +28,29 @@ def test_from_tuple():
     log.info(cfg.cmb.get_cut(name = 'mva_cmb'))
     log.info(cfg.prc.get_cut(name = 'mva_prc'))
 # ----------------------------------------
-@pytest.mark.parametrize('str_val', ['0.3', '0.1-0.2'])
+@pytest.mark.parametrize('str_val', ['0300', '0100-0200'])
 def test_str_to_wp(str_val : str):
     '''
     Test transforming string into floats
     '''
-    wp = MVAWp.from_str(val = str_val)
-    if str_val == '0.3':
-        assert wp.lower == 0.3 
-        assert wp.upper == 1.0 
+    wp_1 = MVAWp.from_str(val = str_val)
+    # NOTE: Initialize through string only for tests
+    # use from_str for actual code.
+    # Tests needs to check that a string will be
+    # usable as input to MVAWp 
+    wp_2 = MVAWp(str_val) # type: ignore
 
-    if str_val == '0.1-0.2':
-        assert wp.lower == 0.1 
-        assert wp.upper == 0.2 
+    assert wp_1 == wp_2
+
+    if str_val == '0300':
+        assert wp_1.lower == 0.3 
+        assert wp_1.upper == 1.0 
+
+    if str_val == '0100-0200':
+        assert wp_1.lower == 0.1 
+        assert wp_2.upper == 0.2 
 
     # Invalid string raises
     with pytest.raises(ValueError):
         MVAWp.from_str(val = '200')
-# ----------------------------------------
-def test_label_to_wp():
-    '''
-    Test transforming string into floats
-    '''
-    # Single WP for both
-    flt_val = 0.3
-    int_val = int(flt_val * 1000)
-    str_val = f'{int_val:03d}' 
-
-    wp = MVAWp.from_label(val = str_val)
-    assert wp.lower == flt_val
-
-    # Invalid string raises
-    with pytest.raises(ValueError):
-        MVAWp.from_label(val = '2000')
-# ----------------------------------------
-def test_label_factor():
-    '''
-    Test transforming string into floats
-    '''
-    fact    = 100
-    flt_val = 0.3
-    int_val = int(flt_val * fact)
-    str_val = f'{int_val:03d}' 
-
-    with MVAWp.mult_factor(value = fact):
-        wp = MVAWp.from_label(val = str_val)
-
-    assert wp.lower == flt_val
 # ----------------------------------------
