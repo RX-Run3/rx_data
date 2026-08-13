@@ -208,7 +208,7 @@ class Yield(BaseModel, frozen = True):
         return yld
     # ----------------------------------------
     @property
-    def __gvar(self) -> GVar:
+    def gauss(self) -> GVar:
         '''
         Gaussian random variable version of current yield
         '''
@@ -219,7 +219,7 @@ class Yield(BaseModel, frozen = True):
         '''
         Square root of current object
         '''
-        var = sqrt(self.__gvar)
+        var = sqrt(self.gauss)
 
         return Yield(val = var.mean, err = var.sdev, wp = self.wp)
     # ----------------------------------------
