@@ -34,7 +34,7 @@ class YieldCalculatorConf(BaseModel):
     Path to directory where outputs go
     '''
     fits : str
-    grid : dict[Cuts,list[float]]
+    grid : dict[Cuts,list[MVAWp]]
     # --------------------
     @model_validator(mode = 'before')
     def _validate(cls, data):
@@ -56,7 +56,7 @@ class YieldCalculatorConf(BaseModel):
         for cut, vals in self.grid.items():
             cuts : list[Cut] = []
             for val in vals:
-                cut_obj = Cut(cut = cut, val = val, var = cut.var)
+                cut_obj = Cut(cut = cut, val = val.lower, var = cut.var)
                 cuts.append(cut_obj)
 
             all_cuts.append(cuts)
