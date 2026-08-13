@@ -203,8 +203,8 @@ class FitMetadata(BaseModel, frozen = True):
 
         return cls(
             component= component,
-            cmb      = MVAWp.from_label(cmb_wp),
-            prc      = MVAWp.from_label(prc_wp),
+            cmb      = MVAWp.from_str(cmb_wp),
+            prc      = MVAWp.from_str(prc_wp),
             project  = Project(mtch.group(4)),
             channel  = Channel(mtch.group(5)),
             q2bin    = Qsq(    mtch.group(6)),
