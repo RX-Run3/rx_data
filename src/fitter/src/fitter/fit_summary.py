@@ -234,7 +234,7 @@ class FitSummary(RootModel[list[tuple[FitMetadata,FitResult]]], frozen = True):
 
         return cls(root = data)
     # ----------------------
-    def get_yields(self, exclude : Component | None = None) -> list[str]:
+    def get_fitted_yields(self, exclude : Component | None = None) -> list[str]:
         '''
         Parameters
         ----------------

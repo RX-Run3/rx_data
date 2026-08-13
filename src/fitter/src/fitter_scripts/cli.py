@@ -280,7 +280,7 @@ def fitted_background(
     summary = summary.query(name = 'project'  , value = trigger.project) 
     summary = summary.query(name = 'q2bin'    , value = q2bin)
 
-    variables = summary.get_yields(exclude = trigger.rare_signal)
+    variables = summary.get_fitted_yields(exclude = trigger.rare_signal)
     log.info('Building grid from yields:')
     for var in variables:
         log.info(var)
