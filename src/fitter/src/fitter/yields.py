@@ -109,17 +109,6 @@ class Yield(BaseModel, frozen = True):
 
         raise ValueError('Working points differ')
     # ----------------------------------------
-    @classmethod
-    def nan(cls) -> 'Yield':
-        '''
-        Placeholder yield, if no valid yield found
-        '''
-        wp = WorkingPoint(root = [])
-        with cls.allow_nan():
-            yld = Yield(val = math.nan, err = 0, wp = wp)
-
-        return yld
-    # ----------------------------------------
     @overload
     def __mul__(self, other : BranchingFraction                              ) -> 'Yield': ...
     @overload
@@ -222,6 +211,17 @@ class Yield(BaseModel, frozen = True):
         var = sqrt(self.gauss)
 
         return Yield(val = var.mean, err = var.sdev, wp = self.wp)
+    # ----------------------------------------
+    @classmethod
+    def nan(cls, wp : WorkingPoint) -> 'Yield':
+        '''
+        Placeholder yield, if no valid yield found
+        but with defined working point
+        '''
+        with cls.allow_nan():
+            yld = Yield(val = math.nan, err = 0, wp = wp)
+
+        return yld
     # ----------------------------------------
     @classmethod
     def null(cls, wp : WorkingPoint) -> 'Yield':
