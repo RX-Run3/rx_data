@@ -262,7 +262,6 @@ def _get_os_df(
 
     with ExitStack() as stack:
         stack.enter_context(gut.environment(mapping = {'ANADIR' : _IHEP_ANADIR}))
-        stack.enter_context(MVAWp.mult_factor(value = 100))
 
         smr= FitSummary(
             name   = 'rare_fix_cmb_pars',

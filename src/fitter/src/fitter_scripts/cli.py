@@ -173,7 +173,7 @@ def wp_translator(
     '''
     from fitter import MVAWp # noqa 
 
-    val = MVAWp.from_label(val = wp)
+    val = MVAWp.from_str(val = wp)
 
     print(val)
 # ----------------------
