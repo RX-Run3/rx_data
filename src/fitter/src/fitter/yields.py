@@ -7,6 +7,7 @@ import pandas as pnd
 from typing            import overload
 from functools         import cached_property
 from dmu               import LogStore
+from dmu.generic       import Serializable
 from pydantic          import RootModel, BaseModel, model_validator
 from rx_common         import BranchingFraction, Component, Cuts, Trigger, WorkingPoint
 from rx_efficiencies   import Efficiency, EfficiencyGrid
@@ -211,7 +212,7 @@ class Yield(BaseModel, frozen = True):
 
         return _context()
 # ----------------------------------------
-class YieldGrid(RootModel[list[Yield]], frozen = True):
+class YieldGrid(Serializable, RootModel[list[Yield]], frozen = True):
     '''
     Class meant to represent a collection of yields
     '''
