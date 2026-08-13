@@ -4,6 +4,7 @@ Module holding classes associated to fit yields
 import math
 import pandas as pnd
 
+from gvar              import GVar, gvar, sqrt
 from typing            import overload
 from functools         import cached_property
 from dmu               import LogStore
@@ -190,6 +191,22 @@ class Yield(BaseModel, frozen = True):
 
         return yld
     # ----------------------------------------
+    @property
+    def __gvar(self) -> GVar:
+        '''
+        Gaussian random variable version of current yield
+        '''
+        return gvar(self.val, self.err)
+    # ----------------------------------------
+    @property
+    def sqrt(self) -> 'Yield':
+        '''
+        Square root of current object
+        '''
+        var = sqrt(self.__gvar)
+
+        return Yield(val = var.mean, err = var.sdev, wp = self.wp)
+    # ----------------------------------------
     @classmethod
     def null(cls, wp : WorkingPoint) -> 'Yield':
         '''
@@ -245,6 +262,15 @@ class YieldGrid(Serializable, RootModel[list[Yield]], frozen = True):
             log.warning(f'Found {nnans}/{self.size} NaNs')
 
         return YieldGrid(root = total)
+    # ---------------------
+    @property
+    def sqrt(self) -> 'YieldGrid':
+        '''
+        Takes square root of argument grid
+        '''
+        new_data = [ yld.sqrt for yld in self.root ]
+
+        return YieldGrid(root = new_data)
     # ---------------------
     @cached_property
     def __mapping(self) -> dict[int,Yield]:

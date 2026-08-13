@@ -1,6 +1,7 @@
 '''
 Module holding tests for yield classes
 '''
+import numpy
 import matplotlib.pyplot as plt
 
 from fitter          import Yield, YieldGrid
@@ -95,6 +96,15 @@ def test_ratio():
     log.info(eff)
     log.info(yld_1)
 # -------------------------------------------
+def test_sqrt():
+    cut = Cut(cut = Cuts.cmb, val = 0.5, var = 'mva_cmb')
+    wpt = WorkingPoint(root = [cut])
+
+    val = Yield(val = 300, err = 10, wp = wpt)
+    sqr = val.sqrt
+
+    assert numpy.isclose(sqr.val * sqr.val, val.val)
+# -------------------------------------------
 def test_sum():
     '''
     Test sum of yields 
@@ -149,4 +159,19 @@ def test_add_grids():
 
     for index in range(grid_3.size):
         assert grid_1.root[index] + grid_2.root[index] == grid_3.root[index]
+# -------------------------------------------
+def test_sqrt_grids():
+    cut = Cut(cut = Cuts.cmb, val = 0.5, var = 'mva_cmb')
+    wpt = WorkingPoint(root = [cut])
+
+    yld_11 = Yield(val = 100, err = 10, wp = wpt)
+    yld_12 = Yield(val = 200, err = 10, wp = wpt)
+    yld_21 = Yield(val = 300, err = 10, wp = wpt)
+    yld_22 = Yield(val = 400, err = 10, wp = wpt)
+
+    grid   = YieldGrid(root = [yld_11, yld_12, yld_21, yld_22])
+    sqrt   = grid.sqrt
+
+    for val, sqr in zip(grid.root, sqrt.root, strict = True):
+        assert numpy.isclose(val.val, sqr.val * sqr.val)
 # -------------------------------------------
