@@ -5,7 +5,8 @@ from typing      import Self, Final
 from pydantic    import BaseModel, RootModel, model_validator
 from rx_common   import WorkingPoint, Cut, Cuts
 
-_MULT_FACTOR : Final[float] = 1000.
+_MULT_FACTOR : Final[float] = 1000. # Needed to go back and forth from string representation
+_LEN_STR     : Final[int  ] = 4     # String representation of MVAWp should be like 0100
 # ---------------------
 class MVAWp(RootModel[float|tuple[float,float]]):
     '''
@@ -89,11 +90,28 @@ class MVAWp(RootModel[float|tuple[float,float]]):
         '''
         if '-' in val:
             lower, upper = val.split('-')
-            values = float(lower) / _MULT_FACTOR, float(upper) / _MULT_FACTOR
+            lo     = cls.__str_to_float(val = lower) 
+            hi     = cls.__str_to_float(val = upper) 
+            values = lo, hi
 
             return cls(values)
 
-        return cls(float(val) / _MULT_FACTOR)
+        flt_val = cls.__str_to_float(val = val)
+
+        return cls(flt_val)
+    # -------------    
+    @classmethod
+    def __str_to_float(cls, val : str) -> float:
+        '''
+        Takes string representing float, returns float 
+        '''
+        if not val.isnumeric():
+            raise ValueError(f'{val} is not numeric')
+
+        if len(val) != _LEN_STR:
+            raise ValueError(f'{val} expected to have {_LEN_STR} decimals')
+
+        return float(val) / _MULT_FACTOR
     # -------------    
     @model_validator(mode = 'after')
     def validate_value(self) -> 'MVAWp':
