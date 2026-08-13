@@ -258,7 +258,7 @@ class YieldGrid(Serializable, RootModel[list[Yield]], frozen = True):
 
         nnans = 0
         for first in self.root:
-            second = other.at(wp = first.wp, fall_back = Yield.nan())
+            second = other.at(wp = first.wp, fall_back = Yield.nan(wp = first.wp))
             diff   = first - second
             if math.isnan(diff.val):
                 log.debug(first.wp)
@@ -276,9 +276,9 @@ class YieldGrid(Serializable, RootModel[list[Yield]], frozen = True):
         yields : list[Yield] = []
         nnans = 0
         for num in self.root:
-            den   = other.at(wp = num.wp, fall_back = Yield.nan())
+            den   = other.at(wp = num.wp, fall_back = Yield.nan(wp = num.wp))
             if math.isnan(den.val):
-                ratio = Yield.nan()
+                ratio = Yield.nan(wp = num.wp)
                 nnans+= 1
             else:
                 ratio = num / den
