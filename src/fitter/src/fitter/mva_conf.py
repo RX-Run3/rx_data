@@ -1,13 +1,11 @@
 '''
 Module containing MVAConf class
 '''
-from typing      import Self
+from typing      import Self, Final
 from pydantic    import BaseModel, RootModel, model_validator
-from contextlib  import contextmanager
-from contextvars import ContextVar
 from rx_common   import WorkingPoint, Cut, Cuts
 
-_MULT_FACTOR : ContextVar[float] = ContextVar('_MULT_FACTOR', default = 1000.) 
+_MULT_FACTOR : Final[float] = 1000.
 # ---------------------
 class MVAWp(RootModel[float|tuple[float,float]]):
     '''
@@ -83,7 +81,7 @@ class MVAWp(RootModel[float|tuple[float,float]]):
         '''
         Parameters
         -------------
-        val: String representing WP, e.g. 0.3 or 0.5-0.8
+        val: String representing WP, e.g. 0300 or 0500-0800
 
         Returns
         -------------
@@ -91,31 +89,11 @@ class MVAWp(RootModel[float|tuple[float,float]]):
         '''
         if '-' in val:
             lower, upper = val.split('-')
-            values = float(lower), float(upper)
+            values = float(lower) / _MULT_FACTOR, float(upper) / _MULT_FACTOR
 
             return cls(values)
 
-        return cls(float(val))
-    # -------------    
-    @classmethod
-    def from_label(cls, val : str) -> Self:
-        '''
-        Parameters
-        -------------
-        val: String representing WP, e.g. 030 or 050-080
-
-        Returns
-        -------------
-        Instance of MVAWp
-        '''
-        fact = _MULT_FACTOR.get()
-        if '-' in val:
-            lower, upper = val.split('-')
-            values = float(lower) / fact, float(upper) / fact 
-
-            return cls(values)
-
-        return cls(float(val) / fact)
+        return cls(float(val) / _MULT_FACTOR)
     # -------------    
     @model_validator(mode = 'after')
     def validate_value(self) -> 'MVAWp':
@@ -155,34 +133,16 @@ class MVAWp(RootModel[float|tuple[float,float]]):
     @property
     def name(self):
         '''
-        Friendlier name for working point, e.g. 523 (0.523)
+        Friendlier name for working point, e.g. 0523 for 0.523
         '''
-        fact = _MULT_FACTOR.get()
         if isinstance(self.root, (float, int)):
-            val = int(fact * self.root)
+            val = int(_MULT_FACTOR * self.root)
             return str(val)
 
-        low = int(fact * self.root[0])
-        hig = int(fact * self.root[1])
+        low = int(_MULT_FACTOR * self.root[0])
+        hig = int(_MULT_FACTOR * self.root[1])
 
         return f'{low:04d}-{hig:04d}'
-    # ---------------------------------
-    @classmethod
-    def mult_factor(cls, value : float):
-        '''
-        Parameters
-        ---------------
-        value: Factor needed to switch MVA WP from probability to labels
-        '''
-        token = _MULT_FACTOR.set(value)
-        @contextmanager
-        def _context():
-            try:
-                yield
-            finally:
-                _MULT_FACTOR.reset(token)
-
-        return _context()
     # -------------    
     def __str__(self):
         if isinstance(self.root, float):
