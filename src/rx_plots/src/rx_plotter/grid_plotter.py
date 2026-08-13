@@ -61,11 +61,10 @@ class GridPlotter:
         plt.figure(figsize=(13, 10))
         plt.imshow(
             pivoted.values,
-            aspect='auto',
-            origin='lower',
-            extent=(v1, v2, v3, v4),
-            cmap='viridis',
-            interpolation='bilinear',
+            aspect = 'auto',
+            origin = 'lower',
+            extent = (v1, v2, v3, v4),
+            cmap   = 'viridis',
         )
 
         if randomize:
