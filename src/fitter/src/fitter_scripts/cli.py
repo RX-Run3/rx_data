@@ -125,7 +125,9 @@ def fit_summary(
     from fitter.fit_summary import FitSummarizer
 
     smr = FitSummarizer(name = name, kind = kind)
-    smr.get_summary(force_update = True)
+    smr.get_summary(
+        out_name     = 'fit_summary.json',
+        force_update = True)
 
     LogStore.set_level('rx_fitter:fit_summary', log_lvl)
 # ----------------------
