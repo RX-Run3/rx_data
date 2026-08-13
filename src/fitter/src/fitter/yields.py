@@ -17,6 +17,7 @@ from contextvars       import ContextVar
 
 log=LogStore.add_logger('rx_efficiencies:yields')
 
+_ALLOW_UNMATCHED : ContextVar[bool] = ContextVar('_ALLOW_UNMATCHED', default = False)
 _ALLOW_NAN_YIELD : ContextVar[bool] = ContextVar('_ALLOW_NAN_YIELD', default = False) 
 # ......
 # TODO: Yields and yield grids implement 
@@ -244,11 +245,10 @@ class YieldGrid(Serializable, RootModel[list[Yield]], frozen = True):
     '''
     # ---------------------
     def __add__(self, other : 'YieldGrid') -> 'YieldGrid':
-        if self.size != other.size:
-            raise ValueError(f'Cannot add grids with different sizes: {self.size} != {other.size}')
-
         total : list[Yield] = []
-        for first, second in zip(self.root, other.root, strict=True):
+        for first in self.root:
+            fall_back = Yield.nan(wp = first.wp) if _ALLOW_UNMATCHED.get() else None
+            second    = other.at(first.wp, fall_back = fall_back)
             total.append(first + second)
 
         return YieldGrid(root = total)
@@ -298,6 +298,21 @@ class YieldGrid(Serializable, RootModel[list[Yield]], frozen = True):
         new_data = [ yld.sqrt for yld in self.root ]
 
         return YieldGrid(root = new_data)
+    # ---------------------------------
+    @classmethod
+    def allow_unmatched(cls):
+        '''
+        Inside this context operations between grids do not need to have matching working points
+        '''
+        token = _ALLOW_UNMATCHED.set(True)
+        @contextmanager
+        def _context():
+            try:
+                yield
+            finally:
+                _ALLOW_UNMATCHED.reset(token)
+
+        return _context()
     # ---------------------
     @cached_property
     def __mapping(self) -> dict[int,Yield]:
