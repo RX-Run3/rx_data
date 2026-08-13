@@ -78,9 +78,9 @@ def test_product():
     log.info(eff)
     log.info(yld_1)
 # -------------------------------------------
-def test_ratio():
+def test_ratio_eff():
     '''
-    Test multiplication with efficiency
+    Test ration with efficiency
     '''
     cut = Cut(cut = Cuts.cmb, val = 0.5, var = 'mva_cmb')
     wpt = WorkingPoint(root = [cut])
@@ -95,6 +95,23 @@ def test_ratio():
     log.info(yld)
     log.info(eff)
     log.info(yld_1)
+# -------------------------------------------
+def test_ratio_yld():
+    '''
+    Test ration with efficiency
+    '''
+    cut = Cut(cut = Cuts.cmb, val = 0.5, var = 'mva_cmb')
+    wpt = WorkingPoint(root = [cut])
+
+    yld = Yield(val = 300, err = 10, wp = wpt)
+
+    rat = yld       / yld
+    ran = yld.gauss / yld.gauss
+
+    assert numpy.isclose(rat.val , ran.mean)
+    assert numpy.isclose(rat.err , ran.sdev)
+
+    print(rat)
 # -------------------------------------------
 def test_sqrt():
     cut = Cut(cut = Cuts.cmb, val = 0.5, var = 'mva_cmb')
@@ -174,4 +191,23 @@ def test_sqrt_grids():
 
     for val, sqr in zip(grid.root, sqrt.root, strict = True):
         assert numpy.isclose(val.val, sqr.val * sqr.val)
+# -------------------------------------------
+def test_ratio_grids():
+    yields : list[Yield] = []
+    for val in [0.1, 0.2, 0.3, 0.4]:
+        cut = Cut(cut = Cuts.cmb, val = val, var = 'mva_cmb')
+        wpt = WorkingPoint(root = [cut])
+        yld = Yield(val = 100 * val, err = 10, wp = wpt)
+
+        yields.append(yld)
+
+    grid_num = YieldGrid(root = yields)
+    grid_den = YieldGrid(root = yields)
+    grid_rat = grid_num / grid_den
+
+    for rat, num, den in zip(grid_rat.root, grid_num.root, grid_den.root, strict = True):
+        cal = num.gauss / den.gauss
+
+        assert numpy.isclose(rat.val , cal.mean)
+        assert numpy.isclose(rat.err , cal.sdev)
 # -------------------------------------------
