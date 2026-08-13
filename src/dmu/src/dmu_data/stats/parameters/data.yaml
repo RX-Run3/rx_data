@@ -135,8 +135,8 @@ ipatia:
     max : 50
   ar:
     val : 2
-    min : 14.
-    max : 0.1
+    min : 0.1
+    max : 14.
   nr:
     val : 1
     min : 0.1
