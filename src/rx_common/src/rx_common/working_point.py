@@ -14,6 +14,12 @@ class WorkingPoint(RootModel[list[Cut]]):
     '''
     model_config = ConfigDict(frozen=True)
     # ----------------
+    def __str__(self):
+        cuts  = [ str(cut) for cut in self.root ]
+        lines = '\n'.join(cuts)
+
+        return f'\n{lines}'
+    # ----------------
     @cached_property
     def cuts(self) -> list[Cuts]:
         '''
