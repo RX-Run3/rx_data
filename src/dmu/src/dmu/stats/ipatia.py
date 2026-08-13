@@ -109,27 +109,24 @@ def _ipatia(
     cond1   = diff < -asigma
     cond2   = diff > a2sigma
 
-    if zeta != 0:
-        phi   = _bessel_second_kind(lam + 1.0, zeta) / _bessel_second_kind(lam, zeta)
-        cons1 = sigma / tnp.sqrt(phi)
-        alpha = cons0 / cons1
-        delta = cons0 * cons1
+    phi   = _bessel_second_kind(lam + 1.0, zeta) / _bessel_second_kind(lam, zeta)
+    cons1 = sigma / tnp.sqrt(phi)
+    alpha = cons0 / cons1
+    delta = cons0 * cons1
 
-        k1    = _log_eval (-asigma, lam, alpha, beta, delta)
-        k2    = _diff_eval(-asigma, lam, alpha, beta, delta)
-        var_b = -asigma + nl * k1 / k2
-        var_a = k1    * tnp.power(var_b + asigma,  nl)
-        out1  = var_a * tnp.power(var_b - diff  , -nl)
+    k1    = _log_eval (-asigma, lam, alpha, beta, delta)
+    k2    = _diff_eval(-asigma, lam, alpha, beta, delta)
+    var_b = -asigma + nl * k1 / k2
+    var_a = k1    * tnp.power(var_b + asigma,  nl)
+    out1  = var_a * tnp.power(var_b - diff  , -nl)
 
-        k1    = _log_eval( a2sigma, lam, alpha, beta, delta)
-        k2    = _diff_eval(a2sigma, lam, alpha, beta, delta)
-        var_b = -a2sigma - nr * k1 / k2
-        var_a = k1    * tnp.power(var_b + a2sigma,  nr)
-        out2  = var_a * tnp.power(var_b + diff   , -nr)
+    k1    = _log_eval( a2sigma, lam, alpha, beta, delta)
+    k2    = _diff_eval(a2sigma, lam, alpha, beta, delta)
+    var_b = -a2sigma - nr * k1 / k2
+    var_a = k1    * tnp.power(var_b + a2sigma,  nr)
+    out2  = var_a * tnp.power(var_b + diff   , -nr)
 
-        out3  = _log_eval(diff, lam, alpha, beta, delta)
-
-        return tnp.where(cond1, out1, tnp.where(cond2, out2, out3))
+    out3  = _log_eval(diff, lam, alpha, beta, delta)
 
     cons1 = -2.0 * lam
     condx = lam <= -1.0
@@ -156,7 +153,10 @@ def _ipatia(
 
     outz3 = tnp.exp(beta * diff) * tnp.power(1.0 + diff * diff / delta2, lam - 0.5)
 
-    return tnp.where(cond1, outz1, tnp.where(cond2, outz2, outz3))
+    val_nozero = tnp.where(cond1, out1 , tnp.where(cond2, out2 , out3 ))
+    val_yszero = tnp.where(cond1, outz1, tnp.where(cond2, outz2, outz3))
+
+    return tnp.where(zeta != 0, val_nozero, val_yszero)
 # -------------------------------------
 class Ipatia(zfit.pdf.ZPDF):
     """Hypatia2 / Ipatia2 PDF (unnormalized). Draft — verify normalization before fitting."""
