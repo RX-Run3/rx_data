@@ -421,7 +421,7 @@ class ModelFactory:
         pdf = Ipatia(
             mu   = mu,
             sigma= sg,
-            lambd= lam,
+            lam  = lam,
             zeta = zeta,
             beta = beta,
             al   = al,
