@@ -121,7 +121,7 @@ ipatia:
     val : 5300
     min : 5100
     max : 6000
-  sigma:
+  sg:
     val : 50
     min : 2
     max : 300
