@@ -3,7 +3,7 @@ Module with Cuts enum
 '''
 import yaml
 from enum     import StrEnum, auto
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 
 # ------------------------------------------
 class Cuts(StrEnum):
@@ -131,12 +131,14 @@ yaml.SafeDumper.add_representer(
       yaml.representer.SafeRepresenter.represent_str,
 )                                                            
 # --------------------------------
-class Cut(BaseModel):
+class Cut(BaseModel, frozen = True):
     '''
     Class meant to represent a cut 
     '''
-    model_config = ConfigDict(frozen=True)
-    # ----------------
     cut : Cuts
     var : str
     val : float
+    # ----------------
+    def __str__(self):
+        return f'{self.cut:<20}{self.val}'
+# --------------------------------
