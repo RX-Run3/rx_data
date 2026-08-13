@@ -329,7 +329,7 @@ def expected_background(
     wpt     = WorkingPoint(root = [cmb_obj, prc_obj])
 
     cal = YieldCalculator(
-        name    = 'mva_scan',
+        name    = 'full_scan',
         wp      = wpt,
         q2bin   = q2bin, # for tests, should be rare otherwise
         trigger = trigger)
