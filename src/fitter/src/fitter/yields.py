@@ -170,11 +170,9 @@ class Yield(BaseModel, frozen = True):
         if self.wp != other.wp:
             raise ValueError(f'Cannot add yields at different working points: {self.wp} != {other.wp}')
 
-        val = self.val      + other.val
-        var = self.err ** 2 + other.err ** 2
-        err = math.sqrt(var)
+        var = self.gauss + other.gauss
 
-        return Yield(val = val, err = err, wp = self.wp)
+        return Yield(val = var.mean, err = var.sdev, wp = self.wp)
     # ----------------------------------------
     def __sub__(self, other : 'Yield') -> 'Yield':
         if self.wp != other.wp:
@@ -182,17 +180,12 @@ class Yield(BaseModel, frozen = True):
             log.error(other.wp)
             raise ValueError('Cannot add yields at different working points')
 
-        val = self.val      - other.val
-        # NOTE: Negative yields are not allowed, make it zero
-        # This is likely a statistical fluctuation
-        if val < 0:
+        if self.val < other.val:
             log.debug(f'Found non-positive difference: {self.val} - {other.val}')
-            val = math.nan
+            return Yield.nan(wp = self.wp)
 
-        var = self.err ** 2 + other.err ** 2
-        err = math.sqrt(var)
-
-        yld = Yield(val = val, err = err, wp = self.wp)
+        res = self.gauss - other.gauss
+        yld = Yield(val = res.mean, err = res.sdev, wp = self.wp)
 
         return yld
     # ----------------------------------------
