@@ -6,7 +6,7 @@ from typing  import Protocol
 
 # ---------------------------
 class _SupportsModelDumpJson(Protocol):
-    def model_dump_json(self, indent: int) -> str: ...
+    def model_dump_json(self, *, indent: int) -> str: ...
 # ---------------------------
 class Serializable:
     '''
