@@ -5,7 +5,7 @@ import math
 import pandas as pnd
 
 from gvar              import GVar, gvar, sqrt
-from typing            import overload
+from typing            import Protocol, overload, runtime_checkable
 from functools         import cached_property
 from dmu               import LogStore
 from dmu.generic       import Serializable
@@ -18,6 +18,22 @@ from contextvars       import ContextVar
 log=LogStore.add_logger('rx_efficiencies:yields')
 
 _ALLOW_NAN_YIELD : ContextVar[bool] = ContextVar('_ALLOW_NAN_YIELD', default = False) 
+# ......
+# TODO: Yields and yield grids implement 
+# ......
+# yield * yield
+# sqrt(yield)
+# yield / yield
+# ......
+# which all return yields. They should return something else
+# ----------------------------------------
+@runtime_checkable
+class _ImplementsWP(Protocol):
+    '''
+    Represents classes that implement a WorkingPoint property as `wp`
+    '''
+    @property
+    def wp(self) -> WorkingPoint: ...
 # ----------------------------------------
 class ProjectConf(BaseModel):
     '''
@@ -69,27 +85,27 @@ class Yield(BaseModel, frozen = True):
 
         return msg
     # ----------------------------------------
-    def __check_wpt(self, eff : Efficiency, is_ratio : bool) -> WorkingPoint:
+    def __check_wpt(self, obj : _ImplementsWP, is_ratio : bool) -> WorkingPoint:
         '''
         Checks that working points for yield and efficiency are the same
 
         Parameters
         ---------------
-        eff     : Efficiency object
+        obj     : Object implementing wp as property with WorkingPoint type 
         is_ratio: True if the check is part of a division yld / eff, false for yld * eff
 
         Returns
         ---------------
         Working point that will be used in resulting yield
         '''
-        if     is_ratio and self.wp == eff.wp:
+        if     is_ratio and self.wp == obj.wp:
             return WorkingPoint(root = []) 
 
         if not is_ratio and self.wp.is_empty:
-            return eff.wp
+            return obj.wp
 
-        log.error(f'Efficiency: {eff.wp} ')
-        log.error(f'Yield     : {self.wp}')
+        log.error(f'Other : {obj.wp} ')
+        log.error(f'Yield : {self.wp}')
 
         raise ValueError('Working points differ')
     # ----------------------------------------
@@ -126,7 +142,7 @@ class Yield(BaseModel, frozen = True):
             return YieldGrid(root = yields)
 
         if isinstance(other, Efficiency):
-            wp  = self.__check_wpt(eff = other, is_ratio = False)
+            wp  = self.__check_wpt(obj = other, is_ratio = False)
         else:
             wp  = self.wp
 
