@@ -155,19 +155,19 @@ class Yield(BaseModel, frozen = True):
     def __rmul__(self, other : Efficiency) -> 'Yield':
         return self.__mul__(other)
     # ----------------------------------------
-    def __truediv__(self, other : Efficiency | BranchingFraction) -> 'Yield':
+    def __truediv__(self, other : 'Yield | Efficiency | BranchingFraction') -> 'Yield':
         '''
         Parameters
         --------------
-        other: Object representing efficiency
+        other: Object representing efficiency, branching fraction or yield
 
         Returns
         --------------
         Object representing ratio yield and efficiency
         errors are propagated without correlation
         '''
-        if isinstance(other, Efficiency):
-            wp = self.__check_wpt(eff = other, is_ratio = True)
+        if isinstance(other, _ImplementsWP):
+            wp = self.__check_wpt(obj = other, is_ratio = True)
         else:
             wp = self.wp
 
@@ -278,6 +278,24 @@ class YieldGrid(Serializable, RootModel[list[Yield]], frozen = True):
             log.warning(f'Found {nnans}/{self.size} NaNs')
 
         return YieldGrid(root = total)
+    # ---------------------
+    def __truediv__(self, other : 'YieldGrid') -> 'YieldGrid':
+        yields : list[Yield] = []
+        nnans = 0
+        for num in self.root:
+            den   = other.at(wp = num.wp, fall_back = Yield.nan())
+            if math.isnan(den.val):
+                ratio = Yield.nan()
+                nnans+= 1
+            else:
+                ratio = num / den
+
+            yields.append(ratio)
+
+        if nnans:
+            log.warning(f'Found {nnans}/{self.size} NaNs')
+
+        return YieldGrid(root = yields)
     # ---------------------
     @property
     def sqrt(self) -> 'YieldGrid':
