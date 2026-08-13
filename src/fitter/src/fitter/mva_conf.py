@@ -113,6 +113,15 @@ class MVAWp(RootModel[float|tuple[float,float]]):
 
         return float(val) / _MULT_FACTOR
     # -------------    
+    @model_validator(mode = 'before')
+    @classmethod
+    def validate_input(cls, data):
+        if isinstance(data, str):
+            wp = MVAWp.from_str(data)
+            return wp.root
+
+        return data
+    # -------------    
     @model_validator(mode = 'after')
     def validate_value(self) -> 'MVAWp':
         if isinstance(self.root, (float, int)):
