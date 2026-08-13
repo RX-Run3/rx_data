@@ -15,6 +15,7 @@ from dmu        import LogLevels, LogStore
 from dmu.stats  import zfit
 from pathlib    import Path
 from fitter     import YieldGrid
+from fitter     import FitSummary
 
 app = typer.Typer(
     help            = __doc__,
@@ -43,6 +44,9 @@ def __save_grid_plot(
 
     ptr  = GridPlotter(grid = grid)
     ptr.plot(path = out_path, randomize = False)
+
+    out_path = out_path.with_suffix('.json')
+    grid.to_json(path = out_path)
 # ----------------------
 @app.command()
 def tabulate_scales(
@@ -267,15 +271,10 @@ def fitted_background(
     '''
     Plots background yields
     '''
-    path = _ANADIR / f'fits/data/{name}/fit_summary.json'
-
     from rx_common  import Component
-    from fitter     import ParameterReader
 
-    with ParameterReader.inputs_from(pars_path = path):
-        rdr = ParameterReader()
-
-    summary = rdr.summary
+    path    = _ANADIR / f'fits/data/{name}/fit_summary.json'
+    summary = FitSummary.from_json(path = path) 
     summary = summary.query(name = 'component', value = Component.data_24)
     summary = summary.query(name = 'project'  , value = trigger.project) 
     summary = summary.query(name = 'q2bin'    , value = q2bin)
@@ -316,10 +315,7 @@ def expected_background(
     '''
     Plots background yields
     '''
-    path = _ANADIR / f'fits/data/{name}/fit_summary.json'
-
     from rx_common  import Component
-    from fitter     import ParameterReader
     from fitter     import YieldCalculator, Yield
     from rx_common  import Cut, Cuts
     from rx_common  import WorkingPoint
@@ -328,7 +324,7 @@ def expected_background(
     prc_obj = Cut(cut = Cuts.prc, val = prc, var = 'mva_prc')
     wpt     = WorkingPoint(root = [cmb_obj, prc_obj])
 
-    cal = YieldCalculator(
+    cal         = YieldCalculator(
         name    = 'full_scan',
         wp      = wpt,
         q2bin   = q2bin, # for tests, should be rare otherwise
@@ -340,15 +336,14 @@ def expected_background(
         kind = 'expected_background',
         name = f'{trigger}_{q2bin}_sig')
 
-    with ParameterReader.inputs_from(pars_path = path):
-        rdr = ParameterReader()
+    path    = _ANADIR / f'fits/data/{name}/fit_summary.json'
 
-    summary = rdr.summary
+    summary = FitSummary.from_json(path = path)
     summary = summary.query(name = 'component', value = Component.data_24)
-    summary = summary.query(name = 'project'  , value = trigger.project) 
-    summary = summary.query(name = 'q2bin'    , value = q2bin)
+    summary = summary.query(name = 'project'  , value = trigger.project  ) 
+    summary = summary.query(name = 'q2bin'    , value = q2bin            )
 
-    grid_all = summary.make_grid(var = 'yld_all', fall_back = 0.)
+    grid_all = summary.make_grid(var = 'yld_all', fall_back = 0)
     __save_grid_plot(
         grid = grid_all, 
         kind = 'expected_background',
