@@ -498,11 +498,8 @@ class FitSummarizer:
         self.__out_name : str | None = None
     # ----------------------
     @property
-    def out_name(self) -> str:
+    def out_name(self) -> str | None:
         """The out_name property."""
-        if not self.__out_name:
-            raise ValueError('Undefined output name')
-
         return self.__out_name
     # ----------------------
     @out_name.setter
