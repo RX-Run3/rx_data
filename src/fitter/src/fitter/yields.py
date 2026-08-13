@@ -234,6 +234,7 @@ class YieldGrid(RootModel[list[Yield]], frozen = True):
             second = other.at(wp = first.wp, fall_back = Yield.nan())
             diff   = first - second
             if math.isnan(diff.val):
+                log.info(first.wp)
                 nnans += 1
 
             log.debug(diff)
