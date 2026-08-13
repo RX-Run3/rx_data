@@ -18,7 +18,8 @@ from .fit_metadata import FitMetadata
 
 log=LogStore.add_logger('fitter:fit_summary')
 
-_ANADIR : Final[Path] = Path(os.environ['ANADIR'])
+_ANADIR    : Final[Path] = Path(os.environ['ANADIR'])
+_DSET_SIZE : Final[str ] = 'yld_all'
 # -------------------------------
 class FitHarmonizer:
     '''
@@ -113,7 +114,7 @@ class FitHarmonizer:
             return yield_pars
 
         val, err = self.__meta.stats
-        par = FitParameter(name = 'yld_all', value = val, error = err)
+        par = FitParameter(name = _DSET_SIZE, value = val, error = err)
         yield_pars.append(par)
 
         signal = self.__meta.signal
@@ -247,7 +248,7 @@ class FitSummary(RootModel[list[tuple[FitMetadata,FitResult]]], frozen = True):
         names : set[str] = set()
         for _, result in self.root:
             pars = result.get_pars(prefix = 'yld')
-            names= names | { par.name for par in pars }
+            names= names | { par.name for par in pars if par.name != _DSET_SIZE } # Exclude yld_all, which is a yield, but not from fit
 
         if exclude is None:
             return list(names)
