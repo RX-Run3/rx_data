@@ -2,23 +2,15 @@
 Module holding GridPlotter
 '''
 import random
-import pandas            as pnd
 import matplotlib.pyplot as plt
 
-from functools import cached_property
-from typing    import Final, Protocol
-from pathlib   import Path
-from dmu       import LogStore
+from typing      import Final
+from pathlib     import Path
+from dmu         import LogStore
+from dmu.generic import GridProtocol
 
 log=LogStore.add_logger('rx_plots:grid_plotter')
 _RANDOM_SIGMA : Final[float] = 0.2 # When randomizing grid, use value aroung 1 \pm 0.2
-# --------------------------------
-class GridProtocol(Protocol):
-    '''
-    Class representing grid-like object
-    '''
-    @cached_property
-    def df(self) -> pnd.DataFrame: ...
 # --------------------------------
 class GridPlotter:
     '''
