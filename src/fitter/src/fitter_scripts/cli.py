@@ -8,6 +8,7 @@ import os
 import typer
 import pandas as pnd
 
+from contextlib import ExitStack
 from enum       import StrEnum, auto
 from typing     import Final
 from rx_common  import Trigger, Qsq
@@ -47,6 +48,41 @@ def __save_grid_plot(
 
     out_path = out_path.with_suffix('.json')
     grid.to_json(path = out_path)
+# ----------------------
+def __get_signal_grid(
+    trig : Trigger,
+    q2bin: Qsq,
+    name : str,
+    proc : int, 
+    cmb  : float, 
+    prc  : float) -> tuple[YieldGrid, Path]: 
+    '''
+    Returns
+    ---------------
+    Tuple with yield grid and path to directory where outputs are saved
+    '''
+    from fitter     import YieldCalculator
+    from rx_common  import Cut, Cuts
+    from rx_common  import WorkingPoint
+    from ROOT       import EnableImplicitMT # type: ignore
+
+    if proc > 1:
+        log.info(f'Using {proc} threads')
+        EnableImplicitMT(proc)
+
+    cmb_obj = Cut(cut = Cuts.cmb, val = cmb, var = 'mva_cmb')
+    prc_obj = Cut(cut = Cuts.prc, val = prc, var = 'mva_prc')
+    wpt     = WorkingPoint(root = [cmb_obj, prc_obj])
+
+    cal = YieldCalculator(
+        name    = name,
+        wp      = wpt,
+        q2bin   = q2bin, # for tests, should be rare otherwise
+        trigger = trig)
+
+    grid = cal.calculate()
+
+    return grid, cal.path
 # ----------------------
 @app.command()
 def tabulate_scales(
@@ -238,30 +274,12 @@ def expected_signal(
     '''
     Calculates grid of signal expected yields in grid of MVA classifiers working points
     '''
-    from fitter     import YieldCalculator
-    from rx_common  import Cut, Cuts
-    from rx_common  import WorkingPoint
-    from ROOT       import EnableImplicitMT # type: ignore
     from rx_plotter import GridPlotter
 
-    if proc > 1:
-        log.info(f'Using {proc} threads')
-        EnableImplicitMT(proc)
+    grid, path = __get_signal_grid(proc = proc, trig = trigger, q2bin = q2bin, cmb = cmb, prc = prc, name = name)
+    ptr        = GridPlotter(grid = grid)
 
-    cmb_obj = Cut(cut = Cuts.cmb, val = cmb, var = 'mva_cmb')
-    prc_obj = Cut(cut = Cuts.prc, val = prc, var = 'mva_prc')
-    wpt     = WorkingPoint(root = [cmb_obj, prc_obj])
-
-    cal = YieldCalculator(
-        name    = name,
-        wp      = wpt,
-        q2bin   = q2bin, # for tests, should be rare otherwise
-        trigger = trigger)
-
-    grid = cal.calculate()
-
-    ptr = GridPlotter(grid = grid)
-    ptr.plot(path = cal.path / 'yields.png', randomize = True)
+    ptr.plot(path = path / 'yields.png', randomize = True)
 # ----------------------
 @app.command()
 def fitted_background(
@@ -304,6 +322,58 @@ def fitted_background(
         grid = grid, 
         kind = 'fitted_background',
         name = f'{trigger}_{q2bin}_total')
+# ----------------------
+@app.command()
+def significance(
+    proc    : int     = typer.Option(1  , '--proc'   , '-p', help='Number of threads to process with'),
+    grid    : str     = typer.Option(..., '--grid'   , '-g', help='Name of config file with grid'),
+    fits    : str     = typer.Option(..., '--fits'   , '-f', help='Name of fits, e.g. rare_full_scan'),
+    cmb     : float   = typer.Option(..., '--cmb'    , '-c', help='Working point for combinatorial MVA'),
+    prc     : float   = typer.Option(..., '--prc'    , '-p', help='Working point for part-reco MVA'),
+    trigger : Trigger = typer.Option(..., '--trigger', '-t', help='E.g. rk_ee_os'),          # noqa: B008
+    q2bin   : Qsq     = typer.Option(..., '--q2bin'  , '-q', help='E.g. central' )) -> None: # noqa: B008
+    '''
+    Calculates signal significances in grid of MVA classifiers working points
+    '''
+    from rx_plotter import GridPlotter
+    from rx_common  import Component
+    from fitter     import Yield
+
+    path    = _ANADIR / f'fits/data/{fits}/fit_summary.json'
+    summary = FitSummary.from_json(path = path) 
+    summary = summary.query(name = 'component', value = Component.data_24)
+    summary = summary.query(name = 'project'  , value = trigger.project) 
+    summary = summary.query(name = 'q2bin'    , value = q2bin)
+
+    variables = summary.get_fitted_yields(exclude = trigger.rare_signal)
+    log.info('Building grid from yields:')
+    for var in variables:
+        log.info(var)
+
+    grid_bkg : YieldGrid | None = None 
+    for variable in variables:
+        tmp = summary.make_grid(var = variable, fall_back = 0.)
+
+        if grid_bkg is None:
+            grid_bkg  = tmp
+        else:
+            grid_bkg += tmp 
+
+    if grid_bkg is None:
+        raise ValueError('background yield is None')
+
+    grid_sig, path = __get_signal_grid(proc = proc, trig = trigger, q2bin = q2bin, cmb = cmb, prc = prc, name = grid)
+
+    ctx_1 = YieldGrid.allow_unmatched()
+    ctx_2 = Yield.allow_nan()
+    with ExitStack() as stack:
+        stack.enter_context(ctx_1)
+        stack.enter_context(ctx_2)
+
+        grid_sgn = grid_sig / (grid_sig + grid_bkg).sqrt
+
+    ptr = GridPlotter(grid = grid_sgn)
+    ptr.plot(path = path / 'significance.png', randomize = False)
 # ----------------------
 @app.command()
 def expected_background(
