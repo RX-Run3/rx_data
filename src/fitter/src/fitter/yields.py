@@ -4,6 +4,7 @@ Module holding classes associated to fit yields
 import math
 import pandas as pnd
 
+from enum              import StrEnum, auto
 from gvar              import GVar, gvar, sqrt
 from typing            import Protocol, overload, runtime_checkable
 from functools         import cached_property
@@ -27,6 +28,13 @@ _ALLOW_NAN_YIELD : ContextVar[bool] = ContextVar('_ALLOW_NAN_YIELD', default = F
 # yield / yield
 # ......
 # which all return yields. They should return something else
+# ----------------------------------------
+class Operator(StrEnum):
+    '''
+    Class representing binary operation
+    '''
+    prod = auto()
+    div  = auto()
 # ----------------------------------------
 @runtime_checkable
 class _ImplementsWP(Protocol):
@@ -86,29 +94,41 @@ class Yield(BaseModel, frozen = True):
 
         return msg
     # ----------------------------------------
-    def __check_wpt(self, obj : _ImplementsWP, is_ratio : bool) -> WorkingPoint:
+    def __check_wpt(self, obj : _ImplementsWP | BranchingFraction, operator : Operator) -> WorkingPoint:
         '''
         Checks that working points for yield and efficiency are the same
 
         Parameters
         ---------------
-        obj     : Object implementing wp as property with WorkingPoint type 
-        is_ratio: True if the check is part of a division yld / eff, false for yld * eff
+        obj     : Object implementing wp as property with WorkingPoint type or BranchingFraction
+        operator: Represents binary operation between this object and `obj`
 
         Returns
         ---------------
         Working point that will be used in resulting yield
         '''
-        if     is_ratio and self.wp == obj.wp:
-            return WorkingPoint(root = []) 
+        if isinstance(obj, BranchingFraction):
+            return self.wp
 
-        if not is_ratio and self.wp.is_empty:
-            return obj.wp
+        if operator == Operator.div:
+            # Yield / eff = Yield before cuts
+            if isinstance(obj, Efficiency) and self.wp == obj.wp:
+                return WorkingPoint(root = []) 
 
-        log.error(f'Other : {obj.wp} ')
-        log.error(f'Yield : {self.wp}')
+            # Yield / yield = object at same wp
+            if isinstance(obj,      Yield) and self.wp == obj.wp:
+                return self.wp 
 
-        raise ValueError('Working points differ')
+            log.error(f'Other : {obj.wp} ')
+            log.error(f'Yield : {self.wp}')
+
+            raise ValueError('Working points differ')
+
+        if isinstance(obj, Yield):
+            raise ValueError('Raise cannot multiply yields')
+
+        # yield * efficiency = yield at efficiency wp
+        return obj.wp.extend(self.wp)
     # ----------------------------------------
     @overload
     def __mul__(self, other : BranchingFraction                              ) -> 'Yield': ...
@@ -131,11 +151,7 @@ class Yield(BaseModel, frozen = True):
             yields = [ self * effi for effi in other.root ]
             return YieldGrid(root = yields)
 
-        if isinstance(other, Efficiency):
-            wp  = self.__check_wpt(obj = other, is_ratio = False)
-        else:
-            wp  = self.wp
-
+        wp  = self.__check_wpt(obj = other, operator = Operator.prod)
         val = self.val * other.val
         var = (self.val * other.err) ** 2 + (self.err * other.val) ** 2
         err = math.sqrt(var)
@@ -156,11 +172,7 @@ class Yield(BaseModel, frozen = True):
         Object representing ratio yield and efficiency
         errors are propagated without correlation
         '''
-        if isinstance(other, _ImplementsWP):
-            wp = self.__check_wpt(obj = other, is_ratio = True)
-        else:
-            wp = self.wp
-
+        wp  = self.__check_wpt(obj = other, operator = Operator.div)
         val = self.val / other.val
         rat = (self.err / self.val) ** 2 + (other.err / other.val) ** 2
         err = val * math.sqrt(rat)
