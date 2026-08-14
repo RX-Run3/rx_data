@@ -191,6 +191,28 @@ def test_sqrt_grids():
     for val, sqr in zip(grid.root, sqrt.root, strict = True):
         assert numpy.isclose(val.val, sqr.val * sqr.val)
 # -------------------------------------------
+def test_points_grid():
+    '''
+    Test `points` grid method
+    '''
+    cmb_1 = Cut(cut = Cuts.cmb, val = 0.5, var = 'mva_cmb')
+    cmb_2 = Cut(cut = Cuts.cmb, val = 0.1, var = 'mva_cmb')
+
+    prc_1 = Cut(cut = Cuts.prc, val = 0.5, var = 'mva_prc')
+    prc_2 = Cut(cut = Cuts.prc, val = 0.1, var = 'mva_prc')
+
+    wpt_1 = WorkingPoint(root = [cmb_1, prc_1])
+    wpt_2 = WorkingPoint(root = [cmb_2, prc_2])
+
+    yld_1 = Yield(val = 100, err = 10, wp = wpt_1)
+    yld_2 = Yield(val = 200, err = 10, wp = wpt_2)
+
+    grid  = YieldGrid(root = [yld_1, yld_2])
+
+    points= grid.points
+
+    assert points == [(0.1, 0.1), (0.1, 0.5), (0.5, 0.1), (0.5, 0.5)]
+# -------------------------------------------
 def test_ratio_grids():
     yields : list[Yield] = []
     for val in [0.1, 0.2, 0.3, 0.4]:
