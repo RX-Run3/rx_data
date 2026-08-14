@@ -250,7 +250,7 @@ class Yield(BaseModel, frozen = True):
 
         return _context()
 # ----------------------------------------
-class YieldGrid(Serializable, Patchable, RootModel[list[Yield]], frozen = True):
+class YieldGrid(Serializable, Patchable['YieldGrid'], RootModel[list[Yield]], frozen = True):
     '''
     Class meant to represent a collection of yields
     '''
