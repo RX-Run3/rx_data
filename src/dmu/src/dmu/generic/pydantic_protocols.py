@@ -28,6 +28,12 @@ class GridElementProtocol(Protocol):
     Protocol meant to symbolize grid elements
     '''
     @property
+    def val(self) -> float: ...
+
+    @property
+    def err(self) -> float: ...
+
+    @property
     def wp(self) -> NodeLocProtocol: ...
 # ---------------------------
 T_loc_contra = TypeVar('T_loc_contra', bound = NodeLocProtocol    , contravariant =  True)
