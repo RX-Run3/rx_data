@@ -4,15 +4,23 @@ Module holding
 from functools     import cached_property
 from ROOT          import RDF # type: ignore
 from dmu.generic   import hashing
-from pydantic      import RootModel, ConfigDict
+from pydantic      import RootModel, model_validator
 from .cuts         import Cut, Cuts
 
 # --------------------------------
-class WorkingPoint(RootModel[list[Cut]]):
+class WorkingPoint(RootModel[list[Cut]], frozen = True):
     '''
     Class meant to represent a set of cuts
     '''
-    model_config = ConfigDict(frozen=True)
+    # ----------------
+    @model_validator(mode = 'after')
+    def _validate(self) -> 'WorkingPoint':
+        unique_cuts = set(self.root)
+
+        if len(unique_cuts) != self.size:
+            raise ValueError(f'Found repeated cuts: {self}')
+
+        return self
     # ----------------
     def __str__(self):
         cuts  = [ str(cut) for cut in self.root ]
@@ -64,6 +72,21 @@ class WorkingPoint(RootModel[list[Cut]]):
                 return elm.val
 
         raise ValueError(f'No cut found for {cut}')
+    # ----------------
+    def extend(self, other : 'WorkingPoint') -> 'WorkingPoint':
+        '''
+        Takes working point, returns working point with extended cuts
+        '''
+        new_root = self.root + other.root
+
+        return WorkingPoint(root = new_root)
+    # ----------------
+    @cached_property
+    def size(self) -> int:
+        '''
+        Number of cuts in working point
+        '''
+        return len(self.root)
     # ----------------
     @cached_property
     def is_empty(self) -> bool:
