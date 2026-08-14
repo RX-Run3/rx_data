@@ -29,7 +29,7 @@ _ALLOW_NAN_YIELD : ContextVar[bool] = ContextVar('_ALLOW_NAN_YIELD', default = F
 # ......
 # which all return yields. They should return something else
 # ----------------------------------------
-class Operator(StrEnum):
+class _Operator(StrEnum):
     '''
     Class representing binary operation
     '''
@@ -94,7 +94,7 @@ class Yield(BaseModel, frozen = True):
 
         return msg
     # ----------------------------------------
-    def __check_wpt(self, obj : _ImplementsWP | BranchingFraction, operator : Operator) -> WorkingPoint:
+    def __check_wpt(self, obj : _ImplementsWP | BranchingFraction, operator : _Operator) -> WorkingPoint:
         '''
         Checks that working points for yield and efficiency are the same
 
@@ -110,7 +110,7 @@ class Yield(BaseModel, frozen = True):
         if isinstance(obj, BranchingFraction):
             return self.wp
 
-        if operator == Operator.div:
+        if operator == _Operator.div:
             # Yield / eff = Yield before cuts
             if isinstance(obj, Efficiency) and self.wp == obj.wp:
                 return WorkingPoint(root = []) 
@@ -151,7 +151,7 @@ class Yield(BaseModel, frozen = True):
             yields = [ self * effi for effi in other.root ]
             return YieldGrid(root = yields)
 
-        wp  = self.__check_wpt(obj = other, operator = Operator.prod)
+        wp  = self.__check_wpt(obj = other, operator = _Operator.prod)
         val = self.val * other.val
         var = (self.val * other.err) ** 2 + (self.err * other.val) ** 2
         err = math.sqrt(var)
@@ -172,7 +172,7 @@ class Yield(BaseModel, frozen = True):
         Object representing ratio yield and efficiency
         errors are propagated without correlation
         '''
-        wp  = self.__check_wpt(obj = other, operator = Operator.div)
+        wp  = self.__check_wpt(obj = other, operator = _Operator.div)
         val = self.val / other.val
         rat = (self.err / self.val) ** 2 + (other.err / other.val) ** 2
         err = val * math.sqrt(rat)
