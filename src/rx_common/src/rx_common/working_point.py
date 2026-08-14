@@ -1,7 +1,7 @@
 '''
 Module holding 
 '''
-from functools     import cached_property
+from functools     import cached_property, lru_cache
 from ROOT          import RDF # type: ignore
 from dmu.generic   import hashing
 from pydantic      import RootModel, model_validator
@@ -80,6 +80,11 @@ class WorkingPoint(RootModel[list[Cut]], frozen = True):
         new_root = self.root + other.root
 
         return WorkingPoint(root = new_root)
+    # ----------------
+    @classmethod
+    @lru_cache
+    def empty(cls) -> 'WorkingPoint':
+        return cls(root = []) 
     # ----------------
     @cached_property
     def size(self) -> int:
