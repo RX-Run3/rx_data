@@ -4,6 +4,7 @@ Module holding tests for yield classes
 import numpy
 import matplotlib.pyplot as plt
 
+from rx_plotter      import GridPlotter
 from fitter          import Yield, YieldGrid
 from rx_common       import Cuts, Cut, Trigger, WorkingPoint, Qsq
 from rx_efficiencies import Efficiency
@@ -209,3 +210,26 @@ def test_ratio_grids():
         assert numpy.isclose(rat.val , cal.mean)
         assert numpy.isclose(rat.err , cal.sdev)
 # -------------------------------------------
+def test_patch_grids(tmp_path : Path):
+    yields : list[Yield] = []
+    for cmb in [0.1, 0.2, 0.3, 0.4]:
+        for prc in [0.1, 0.2, 0.3, 0.4]:
+            if prc == 0.2 and cmb == 0.2: # noqa: PLR2004
+                continue
+
+            cmb_cut = Cut(cut = Cuts.cmb, val = cmb, var = 'mva_cmb')
+            prc_cut = Cut(cut = Cuts.prc, val = prc, var = 'mva_prc')
+
+            wpt = WorkingPoint(root = [cmb_cut, prc_cut])
+            yld = Yield(val = 100 * cmb * prc, err = 10, wp = wpt)
+
+            yields.append(yld)
+
+    grid_original= YieldGrid(root = yields)
+    grid_patched = grid_original.patch()
+
+    for name, grid in {'original' : grid_original, 'patched' : grid_patched}.items():
+        ptr = GridPlotter(grid = grid)
+        ptr.plot(path = tmp_path / f'{name}.png', randomize = False)
+# -------------------------------------------
+
