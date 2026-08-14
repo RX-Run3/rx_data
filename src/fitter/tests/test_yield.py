@@ -64,7 +64,7 @@ def test_product():
     cut = Cut(cut = Cuts.cmb, val = 0.5, var = 'mva_cmb')
     wpt = WorkingPoint(root = [cut])
 
-    yld = Yield(val = 300, err = 10, wp = wpt)
+    yld = Yield(val = 300, err = 10, wp = WorkingPoint.empty())
     eff = Efficiency(gen = 1000, sel = 10, wp = wpt)
 
     yld_1 = yld * eff
@@ -149,9 +149,9 @@ def test_calculator(tmp_path : Path):
     wpt = WorkingPoint(root = [cmb, prc])
 
     cal = YieldCalculator(
-        name    = 'rare',
+        name    = 'full_scan',
         wp      = wpt,
-        q2bin   = Qsq.jpsi, # for tests, should be rare otherwise
+        q2bin   = Qsq.low, # for tests, should be rare otherwise
         trigger = Trigger.rk_ee_os)
 
     grid = cal.calculate()
@@ -159,17 +159,15 @@ def test_calculator(tmp_path : Path):
     _plot_values(grid = grid, out_dir = tmp_path)
 # -------------------------------------------
 def test_add_grids():
-    cut = Cut(cut = Cuts.cmb, val = 0.5, var = 'mva_cmb')
-    wpt = WorkingPoint(root = [cut])
+    yields : list[Yield] = []
+    for val in [0.1, 0.2, 0.3, 0.4]:
+        cut = Cut(cut = Cuts.cmb, val = val, var = 'mva_cmb')
+        wpt = WorkingPoint(root = [cut])
+        yld = Yield(val = 100 * val, err = 10, wp = wpt)
+        yields.append(yld)
 
-    yld_11 = Yield(val = 100, err = 10, wp = wpt)
-    yld_12 = Yield(val = 200, err = 10, wp = wpt)
-    yld_21 = Yield(val = 300, err = 10, wp = wpt)
-    yld_22 = Yield(val = 400, err = 10, wp = wpt)
-
-    grid_1 = YieldGrid(root = [yld_11, yld_12])
-    grid_2 = YieldGrid(root = [yld_21, yld_22])
-
+    grid_1 = YieldGrid(root = yields)
+    grid_2 = YieldGrid(root = yields)
     grid_3 = grid_1 + grid_2
 
     assert grid_3.size == grid_1.size == grid_2.size
