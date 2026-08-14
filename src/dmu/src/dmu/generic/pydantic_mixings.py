@@ -1,11 +1,13 @@
 '''
 Module holding useful mixings for pydantic models
 '''
+from gvar                import GVar, gvar
 from pathlib             import Path
-from typing              import Generic, TypeVar
-from .pydantic_protocols import GridProtocol
+from typing              import Sequence, TypeVar
+
+from .pydantic_protocols import GridElementProtocol, NodeLocProtocol
 from .pydantic_protocols import SupportsModelDumpJson 
-from .regular_graph      import RegularGraph
+from .regular_graph      import RegularGraphMaker, LinkedNode
 
 # ---------------------------
 class Serializable:
@@ -26,22 +28,34 @@ class Serializable:
         string = self.model_dump_json(indent = 2)
         path.write_text(string)
 # ---------------------------
-T = TypeVar('T', bound=GridProtocol)
-class Patchable(Generic[T]):
+Node = TypeVar('Node', bound=GridElementProtocol)
+class Patchable:
     '''
     Implements:
 
     patch
     '''
     # ----------------------------------------------
-    def patch(self : T) -> T:
+    def _patch(self, linked_node : LinkedNode) -> tuple[NodeLocProtocol,GVar]:
+        total = gvar(mean = 0, sdev = 0)
+        for lnode in linked_node.neighbours:
+            var      = gvar(
+                mean = lnode.node.val,
+                sdev = lnode.node.err)
+
+            total += var
+
+        value = total / len(linked_node.neighbours)
+        wp    = linked_node.node.wp
+
+        return wp, value 
+    # ----------------------------------------------
+    def patch(self, nodes : Sequence[Node] ) -> Sequence[tuple[NodeLocProtocol,GVar]]:
         '''
         Patches missing elements in grid
         '''
-        rgr     = RegularGraph(grid = self)
-        missing = rgr.get_missing_nodes()
+        rgr = RegularGraphMaker(nodes = nodes)
+        grp = rgr.get_graph()
 
-        all_pts = [ *missing , *self.root ]
-
-        return self.model_copy(update = {'root' : all_pts}) 
+        return [ self._patch(linked_node) for linked_node in grp.missing_nodes ]
 # ---------------------------
