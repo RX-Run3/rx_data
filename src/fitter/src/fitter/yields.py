@@ -60,6 +60,13 @@ class Yield(BaseModel, frozen = True):
     err : float
     wp  : WorkingPoint
     # ----------------------------------------
+    @cached_property
+    def ndim(self) -> int:
+        '''
+        Number of cuts in working point
+        '''
+        return len(self.wp.root)
+    # ----------------------------------------
     @model_validator(mode = 'after')
     def _validate(self) -> 'Yield':
         allow_nan = _ALLOW_NAN_YIELD.get()
@@ -255,6 +262,15 @@ class YieldGrid(Serializable, Patchable, RootModel[list[Yield]], frozen = True):
     '''
     Class meant to represent a collection of yields
     '''
+    # ---------------------
+    @model_validator(mode = 'after')
+    def _validate(self) -> 'YieldGrid':
+        dims = { elm.ndim for elm in self.root }
+
+        if len(dims) != 1:
+            raise ValueError(f'Found elements with different dimentions in grid: {dims}')
+
+        return self
     # ---------------------
     def __add__(self, other : 'YieldGrid') -> 'YieldGrid':
         total : list[Yield] = []
