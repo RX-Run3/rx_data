@@ -26,3 +26,19 @@ class Serializable:
         string = self.model_dump_json(indent = 2)
         path.write_text(string)
 # ---------------------------
+class _GridLike(Protocol):
+    '''
+    Protocol for containers consistent with grids
+    '''
+# ---------------------------
+class Patchable:
+    '''
+    Implements:
+
+    patch
+    '''
+    def patch(self : _GridLike) -> _GridLike:
+        '''
+        Patches missing elements in grid
+        '''
+        return self
