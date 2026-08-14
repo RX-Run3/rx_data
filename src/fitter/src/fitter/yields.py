@@ -6,7 +6,7 @@ import pandas as pnd
 
 from enum              import StrEnum, auto
 from gvar              import GVar, gvar, sqrt
-from typing            import Protocol, overload, runtime_checkable
+from typing            import overload
 from functools         import cached_property
 from dmu               import LogStore
 from dmu.generic       import Serializable, Patchable
@@ -35,14 +35,6 @@ class _Operator(StrEnum):
     '''
     prod = auto()
     div  = auto()
-# ----------------------------------------
-@runtime_checkable
-class _ImplementsWP(Protocol):
-    '''
-    Represents classes that implement a WorkingPoint property as `wp`
-    '''
-    @property
-    def wp(self) -> WorkingPoint: ...
 # ----------------------------------------
 class ProjectConf(BaseModel):
     '''
@@ -101,13 +93,13 @@ class Yield(BaseModel, frozen = True):
 
         return msg
     # ----------------------------------------
-    def __check_wpt(self, obj : _ImplementsWP | BranchingFraction, operator : _Operator) -> WorkingPoint:
+    def __check_wpt(self, obj : 'Yield | Efficiency | BranchingFraction', operator : _Operator) -> WorkingPoint:
         '''
         Checks that working points for yield and efficiency are the same
 
         Parameters
         ---------------
-        obj     : Object implementing wp as property with WorkingPoint type or BranchingFraction
+        obj     : Yield efficiency or BranchingFraction
         operator: Represents binary operation between this object and `obj`
 
         Returns
