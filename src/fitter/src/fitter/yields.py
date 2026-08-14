@@ -343,6 +343,30 @@ class YieldGrid(Serializable, Patchable, RootModel[list[Yield]], frozen = True):
         return _context()
     # ---------------------
     @cached_property
+    def points(self) -> list[tuple[float,float]]:
+        '''
+        List of tuples representing locations in 2D grid 
+        '''
+        xs = self.__get_axis(dim = 0)
+        ys = self.__get_axis(dim = 1)
+
+        return [ (x,y) for x in xs for y in ys ]
+    # ---------------------
+    def __get_axis(self, dim : int) -> list[float]:
+        '''
+        Parameters
+        ---------------
+        dim: Dimention for which grid locations are needed
+
+        Returns
+        ---------------
+        Sorted list of locations along a given axis
+        '''
+        vals = [ elm.wp.root[dim].val for elm in self.root ]
+
+        return sorted(vals)
+    # ---------------------
+    @cached_property
     def __mapping(self) -> dict[int,Yield]:
         yields = { hash(yld.wp) : yld for yld in self.root }
 
