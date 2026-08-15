@@ -230,10 +230,20 @@ def test_from_linked_node():
     assert node.wp.location == loc
 # -------------------------------------------
 def test_patch_grids(tmp_path : Path):
+    '''
+    Test of grid patching, i.e. filling holes with
+    average of sorrounding nodes 
+    '''
     yields : list[Yield] = []
     for cmb in [0.1, 0.2, 0.3, 0.4]:
         for prc in [0.1, 0.2, 0.3, 0.4]:
             if prc == 0.2 and cmb == 0.2: # noqa: PLR2004
+                continue
+
+            if prc == 0.4 and cmb == 0.4: # noqa: PLR2004
+                continue
+
+            if prc == 0.4 and cmb == 0.1: # noqa: PLR2004
                 continue
 
             cmb_cut = Cut(cut = Cuts.cmb, val = cmb, var = 'mva_cmb')
@@ -245,7 +255,17 @@ def test_patch_grids(tmp_path : Path):
             yields.append(yld)
 
     grid_original= YieldGrid(root = yields)
-    grid_patched = grid_original.patch()
+    node_data    = grid_original.patch(nodes = yields)
+
+    patch_yields : list[Yield] = []
+    wp = yields[0].wp
+    for lnode in node_data:
+        node = Yield.from_linked_node(lnode = lnode, wp = wp)
+        patch_yields.append(node)
+
+    grid_patched = YieldGrid(root = patch_yields + grid_original.root)
+
+    log.info(grid_patched)
 
     for name, grid in {'original' : grid_original, 'patched' : grid_patched}.items():
         ptr = GridPlotter(grid = grid)
