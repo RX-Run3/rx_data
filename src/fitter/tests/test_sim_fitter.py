@@ -492,6 +492,47 @@ def test_reso_rkst_mm(
             q2bin    = q2bin)
         ftr.get_model()
 # ---------------------------------------------------
+@pytest.mark.parametrize('component', [Component.bpkpjpsimm])
+def test_reso_rk_mm(
+    component : Component,
+    tmp_path  : Path):
+    '''
+    Test resonant jpsi and psi2S in rkst muon channel
+    '''
+    q2bin = {
+        Component.bpkpjpsimm : Qsq.jpsi,
+        Component.bpkppsi2mm : Qsq.psi2,
+    }[component]
+
+    mass = {
+        Qsq.jpsi : Mass.bp_dtf_jpsi,
+        Qsq.psi2 : Mass.bp_dtf_psi2
+    }[q2bin]
+
+    cfg_obs   = ObservableConf(
+        name  = mass,
+        range = (4800, 6000))
+
+    data = gut.load_data(package='fitter_data', fpath=f'reso/rk/mm/{component}_ipatia.yaml')
+    cfg  = ParametricConf(**data)
+    cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
+
+    import ROOT
+    ROOT.EnableImplicitMT(4)
+    stats = RDFGetter.max_entries(value = 500_000)
+    cache = Cache.cache_root(path = tmp_path)
+    with ExitStack() as stack:
+        stack.enter_context(stats)
+        stack.enter_context(cache)
+
+        ftr = SimFitter(
+            name     = 'main',
+            component= cfg.component,
+            cfg      = cfg,
+            trigger  = Trigger.rk_mm_os,
+            q2bin    = q2bin)
+        ftr.get_model()
+# ---------------------------------------------------
 @pytest.mark.parametrize('component', [Component.bdkstkpijpsiee, Component.bdkstkpipsi2ee])
 def test_reso_rkst_ee(
     component : Component,
