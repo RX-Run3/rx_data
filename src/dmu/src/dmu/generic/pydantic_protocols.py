@@ -23,7 +23,8 @@ class NodeLocProtocol(_RootModelProtocol[Sequence], Protocol):
     Protocol representing the location of a node in a grid
     '''
 # ---------------------------
-class GridElementProtocol(Protocol):
+Loc_co = TypeVar('Loc_co', bound = NodeLocProtocol, covariant = True)
+class GridElementProtocol(Protocol[Loc_co]):
     '''
     Protocol meant to symbolize grid elements
     '''
@@ -34,7 +35,7 @@ class GridElementProtocol(Protocol):
     def err(self) -> float: ...
 
     @property
-    def wp(self) -> NodeLocProtocol: ...
+    def wp(self) -> Loc_co: ...
 # ---------------------------
 T_loc_contra = TypeVar('T_loc_contra', bound = NodeLocProtocol    , contravariant =  True)
 T_elem       = TypeVar('T_elem'      , bound = GridElementProtocol, covariant     = False)
