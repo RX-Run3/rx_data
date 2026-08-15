@@ -36,7 +36,7 @@ class Patchable:
     '''
     # ----------------------------------------------
     def _patch(self, linked_node : LinkedNode) -> LinkedNode:
-        total = gvar(mean = 0, sdev = 0)
+        total = gvar(0, 0)
         for lnode in linked_node.neighbours:
             if lnode.gauss is None:
                 continue

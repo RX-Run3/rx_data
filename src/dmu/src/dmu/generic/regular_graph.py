@@ -78,7 +78,7 @@ class LinkedNode(BaseModel, frozen = True):
         if self.val is None or self.err is None:
             return None
 
-        return gvar(mean = self.val, sdev = self.err)
+        return gvar(self.val, self.err)
 # ---------------------------------
 class RegularGraph(RootModel[list[LinkedNode]], frozen = True):
     '''
