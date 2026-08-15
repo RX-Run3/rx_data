@@ -90,6 +90,23 @@ class WorkingPoint(RootModel[list[Cut]], frozen = True):
 
         return WorkingPoint(root = new_root)
     # ----------------
+    def clone(self, values : list[float]) -> 'WorkingPoint':
+        '''
+        Parameters
+        -----------------
+        values: List of values of cuts at this WorkingPoint
+
+        Returns
+        -----------------
+        Copy of current working point with cut values overriden
+        '''
+        if self.size != len(values):
+            raise ValueError(f'Cut values have the wrong size, expected {self.size}, got: {values}')
+
+        new_cuts = [ cut.clone(value = value) for cut, value in zip(self.root, values, strict = True) ]
+
+        return WorkingPoint(root = new_cuts)
+    # ----------------
     @classmethod
     @lru_cache
     def empty(cls) -> 'WorkingPoint':
