@@ -390,6 +390,22 @@ class YieldGrid(Serializable, Patchable, RootModel[list[Yield]], frozen = True):
 
         raise ValueError(f'No yield found at WP: {wp}')
     # ---------------------
+    def patch(self) -> 'YieldGrid':
+        '''
+        Returns
+        -------------
+        Patched version of current grid
+        '''
+        node_data = self.patch_yields(nodes = self.root)
+
+        patch_yields : list[Yield] = []
+        wp = self.root[0].wp
+        for lnode in node_data:
+            node = Yield.from_linked_node(lnode = lnode, wp = wp)
+            patch_yields.append(node)
+
+        return YieldGrid(root = patch_yields + self.root)
+    # ---------------------
     @property
     def size(self):
         '''

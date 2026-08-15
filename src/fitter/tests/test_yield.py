@@ -255,17 +255,7 @@ def test_patch_grids(tmp_path : Path):
             yields.append(yld)
 
     grid_original= YieldGrid(root = yields)
-    node_data    = grid_original.patch(nodes = yields)
-
-    patch_yields : list[Yield] = []
-    wp = yields[0].wp
-    for lnode in node_data:
-        node = Yield.from_linked_node(lnode = lnode, wp = wp)
-        patch_yields.append(node)
-
-    grid_patched = YieldGrid(root = patch_yields + grid_original.root)
-
-    log.info(grid_patched)
+    grid_patched = grid_original.patch()
 
     for name, grid in {'original' : grid_original, 'patched' : grid_patched}.items():
         ptr = GridPlotter(grid = grid)
