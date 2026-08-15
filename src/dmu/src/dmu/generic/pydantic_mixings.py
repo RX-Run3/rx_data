@@ -38,6 +38,9 @@ class Patchable:
     def _patch(self, linked_node : LinkedNode) -> LinkedNode:
         total = gvar(mean = 0, sdev = 0)
         for lnode in linked_node.neighbours:
+            if lnode.gauss is None:
+                continue
+
             total += lnode.gauss
 
         avg = total / len(linked_node.neighbours)
@@ -47,12 +50,20 @@ class Patchable:
             err         = avg.sdev,
             coordinates = linked_node.coordinates)
     # ----------------------------------------------
+    def _node_location(self, node : NodeProtocol) -> tuple[float,float]:
+        loc = node.wp.location
+        try:
+            x, y = loc
+            return x, y
+        except Exception as exc:
+            raise ValueError(f'Cannot extract location from: {loc}') from exc
+    # ----------------------------------------------
     def patch(self, nodes : Sequence[NodeProtocol] ) -> Sequence[LinkedNode]:
         '''
         Patches missing elements in grid
         '''
-        data = { node.wp.location : node.gauss for node in nodes }
-        rgr  = RegularGraphMaker(nodes = data)
+        data = { self._node_location(node) : node.gauss for node in nodes }
+        rgr  = RegularGraphMaker(data = data)
         grp  = rgr.get_graph()
         res  = [ self._patch(linked_node) for linked_node in grp.missing_nodes ]
 
