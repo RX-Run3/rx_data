@@ -1,10 +1,9 @@
 '''
 Module holding the RegularGraph class
 '''
-
-from typing              import Self, Sequence
-from pydantic            import BaseModel
-from .pydantic_protocols import GridElementProtocol
+from gvar     import GVar, gvar
+from typing   import Self, Sequence
+from pydantic import BaseModel
 
 # ---------------------------------
 class LinkedNode(BaseModel):
@@ -12,7 +11,16 @@ class LinkedNode(BaseModel):
     Class representing node with links
     to neighbouring nodes
     '''
-    node : GridElementProtocol
+    coordinates : tuple[float,...]
+    val         : float
+    err         : float
+    # ------------------------------
+    @property
+    def gauss(self) -> GVar:
+        '''
+        Random Gaussian variable with node's data
+        '''
+        return gvar(mean = self.val, sdev = self.err)
     # ------------------------------
     @property
     def neighbours(self) -> Sequence[Self]:
@@ -39,7 +47,7 @@ class RegularGraphMaker:
     Maker of RegularGraph objects
     '''
     # ---------------------------------
-    def __init__(self, nodes : Sequence[GridElementProtocol]):
+    def __init__(self, nodes : dict[tuple[float,...],GVar]):
         '''
         Parameters
         --------------
