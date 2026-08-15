@@ -24,7 +24,7 @@ class NodeLocProtocol(_RootModelProtocol[Sequence], Protocol):
     Protocol representing the location of a node in a grid
     '''
     @property
-    def location(self) -> tuple[float,...]: ...
+    def location(self) -> tuple[float,float]: ...
 # ---------------------------
 class NodeProtocol(Protocol):
     '''
