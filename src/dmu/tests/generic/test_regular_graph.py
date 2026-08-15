@@ -9,9 +9,9 @@ from gvar        import gvar
 def _pick(coo : tuple[float,float]) -> bool:
     x, y = coo
     if x == 2 and y == 5:
-        return True
+        return False 
 
-    return False 
+    return True 
 # -------------------------------
 def test_simple():
     xs = [1., 2., 3.]
@@ -23,4 +23,8 @@ def test_simple():
 
     mkr = RegularGraphMaker(data = data)
     grp = mkr.get_graph()
+    mis = grp.missing_nodes
 
+    assert len(mis)               == 1
+    assert len(mis[0].neighbours) == 4
+# -------------------------------
