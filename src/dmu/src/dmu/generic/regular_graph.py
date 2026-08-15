@@ -4,7 +4,9 @@ Module holding the RegularGraph class
 from gvar     import GVar, gvar
 from typing   import Any, Sequence
 from pydantic import BaseModel, RootModel
+from dmu      import LogStore
 
+log=LogStore.add_logger('dmu:generic:regular_graph')
 # ---------------------------------
 class LinkedNode(BaseModel, frozen = True):
     '''
@@ -15,6 +17,19 @@ class LinkedNode(BaseModel, frozen = True):
     val         : float | None
     err         : float | None
     neighbours  : list['LinkedNode'] = []
+    # ------------------------------
+    def __str__(self):
+        nei_coo     = [ str(nei.coordinates) for nei in self.neighbours ]
+        nei_coo_str = ';'.join(nei_coo)
+
+        msg = f'''
+        val: {self.val}
+        err: {self.err}
+        loc: {self.coordinates}
+        nei: {nei_coo_str}
+        '''
+
+        return msg
     # ------------------------------
     @property
     def is_valid(self) -> bool:
@@ -115,7 +130,7 @@ class RegularGraphMaker:
         '''
         locs  = [ loc      for loc     in self.__data ]
         xs    = { xval     for xval, _ in locs }
-        ys    = { yval     for yval, _ in locs }
+        ys    = { yval     for _, yval in locs }
         pairs = [ (xv, yv) for xv in xs for yv in ys ]
 
         res : list[tuple[float,float, GVar | None]] = []
@@ -123,6 +138,12 @@ class RegularGraphMaker:
             x, y = pair
             z    = None if pair not in self.__data else self.__data[pair]
             elm  = x, y , z
+
+            if z is None:
+                log.debug(f'{x:<20}{y:<20}{"None":<20}')
+            else:
+                val = f'({z.mean}, {z.sdev})'
+                log.debug(f'{x:<20}{y:<20}{val:<20}')
 
             res.append(elm)
 
