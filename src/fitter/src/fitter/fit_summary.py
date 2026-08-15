@@ -267,7 +267,7 @@ class FitSummary(RootModel[list[tuple[FitMetadata,FitResult]]], frozen = True):
         --------------------
         Grid of yields for passed variable, 
         '''
-        grid = YieldGrid(root = [])
+        nodes = []
         for meta, fres in self.root:
             zval, zerr = fres.get(name = var, fall_back = fall_back)
 
@@ -276,7 +276,9 @@ class FitSummary(RootModel[list[tuple[FitMetadata,FitResult]]], frozen = True):
                 err = zerr,
                 wp  = meta.wp)
 
-            grid.root.append(yld)
+            nodes.append(yld)
+
+        grid = YieldGrid(root = nodes) 
 
         return grid
     # -----------------
