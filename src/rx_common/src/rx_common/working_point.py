@@ -13,6 +13,15 @@ class WorkingPoint(RootModel[list[Cut]], frozen = True):
     Class meant to represent a set of cuts
     '''
     # ----------------
+    @property
+    def location(self) -> tuple[float,...]:
+        '''
+        Tuple of floats with the location of working point
+        '''
+        values = [ elm.val for elm in self.root ]
+
+        return tuple(values)
+    # ----------------
     @model_validator(mode = 'after')
     def _validate(self) -> 'WorkingPoint':
         unique_cuts = set(self.root)
