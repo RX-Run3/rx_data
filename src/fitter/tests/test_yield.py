@@ -4,6 +4,7 @@ Module holding tests for yield classes
 import numpy
 import matplotlib.pyplot as plt
 
+from dmu.generic     import LinkedNode
 from rx_plotter      import GridPlotter
 from fitter          import Yield, YieldGrid
 from rx_common       import Cuts, Cut, Trigger, WorkingPoint, Qsq
@@ -209,6 +210,24 @@ def test_ratio_grids():
 
         assert numpy.isclose(rat.val , cal.mean)
         assert numpy.isclose(rat.err , cal.sdev)
+# -------------------------------------------
+def test_from_linked_node():
+    '''
+    Test building of Yield from LinkedNode
+    '''
+    loc   = 0.1, 0.2
+    lnode = LinkedNode(
+        val         = 1.3,
+        err         = 0.2,
+        coordinates = loc)
+
+    cmb_cut = Cut(cut = Cuts.cmb, val = 1.1, var = 'mva_cmb')
+    prc_cut = Cut(cut = Cuts.prc, val = 1.2, var = 'mva_prc')
+    wp      = WorkingPoint(root = [cmb_cut, prc_cut])
+
+    node    = Yield.from_linked_node(wp = wp, lnode = lnode)
+
+    assert node.wp.location == loc
 # -------------------------------------------
 def test_patch_grids(tmp_path : Path):
     yields : list[Yield] = []
