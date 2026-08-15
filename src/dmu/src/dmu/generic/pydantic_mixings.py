@@ -4,11 +4,13 @@ Module holding useful mixings for pydantic models
 from gvar                import gvar
 from pathlib             import Path
 from typing              import Sequence
+from dmu                 import LogStore
 
 from .pydantic_protocols import NodeProtocol
 from .pydantic_protocols import SupportsModelDumpJson 
 from .regular_graph      import RegularGraphMaker, LinkedNode
 
+log=LogStore.add_logger('dmu::generic::pydantic_mixins')
 # ---------------------------
 class Serializable:
     '''
@@ -36,19 +38,26 @@ class Patchable:
     '''
     # ----------------------------------------------
     def _patch(self, linked_node : LinkedNode) -> LinkedNode:
-        total = gvar(0, 0)
+        total           = gvar(0, 0)
+        valid_neighbors = 0
+        log.debug('Patching')
         for lnode in linked_node.neighbours:
             if lnode.gauss is None:
                 continue
 
-            total += lnode.gauss
+            log.debug(lnode)
+            total           += lnode.gauss
+            valid_neighbors += 1
 
-        avg = total / len(linked_node.neighbours)
-
-        return LinkedNode(
+        avg  = total / valid_neighbors 
+        node = LinkedNode(
             val         = avg.mean,
             err         = avg.sdev,
             coordinates = linked_node.coordinates)
+
+        log.debug(f'Patched:\n {node}')
+
+        return node
     # ----------------------------------------------
     def _node_location(self, node : NodeProtocol) -> tuple[float,float]:
         loc = node.wp.location
