@@ -139,6 +139,18 @@ class Cut(BaseModel, frozen = True):
     var : str
     val : float
     # ----------------
+    def clone(self, value : float) -> 'Cut':
+        '''
+        Parameters
+        -----------------
+        value: Value of cut
+
+        Returns
+        -----------------
+        Copy of current object with cut valur overriden
+        '''
+        return self.model_copy(update = {'val' : value})
+    # ----------------
     def __str__(self):
         return f'{self.cut:<20}{self.val}'
 # --------------------------------
