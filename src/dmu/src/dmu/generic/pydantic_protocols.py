@@ -3,6 +3,7 @@ Module with protocol classes for pydantic classes
 '''
 import pandas as pnd
 
+from gvar      import GVar
 from typing    import Protocol, Sequence, TypeVar, Any, Self
 from functools import cached_property
 
@@ -22,23 +23,29 @@ class NodeLocProtocol(_RootModelProtocol[Sequence], Protocol):
     '''
     Protocol representing the location of a node in a grid
     '''
+    @property
+    def location(self) -> tuple[float,...]: ...
 # ---------------------------
-Loc_co = TypeVar('Loc_co', bound = NodeLocProtocol, covariant = True)
-class GridElementProtocol(Protocol[Loc_co]):
+class NodeProtocol(Protocol):
     '''
     Protocol meant to symbolize grid elements
     '''
     @property
-    def val(self) -> float: ...
+    def wp(self) -> NodeLocProtocol:
+        '''
+        Object holding location of node
+        '''
+        ...
 
     @property
-    def err(self) -> float: ...
-
-    @property
-    def wp(self) -> Loc_co: ...
+    def gauss(self) -> GVar:
+        '''
+        Gaussian random variable with node value
+        '''
+        ...
 # ---------------------------
 T_loc_contra = TypeVar('T_loc_contra', bound = NodeLocProtocol    , contravariant =  True)
-T_elem       = TypeVar('T_elem'      , bound = GridElementProtocol, covariant     = False)
+T_elem       = TypeVar('T_elem'      , bound = NodeProtocol, covariant     = False)
 class GridProtocol(_RootModelProtocol[Sequence[T_elem]], Protocol[T_loc_contra, T_elem]):
     '''
     Protocol for containers consistent with grids
