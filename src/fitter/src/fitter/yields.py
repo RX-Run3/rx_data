@@ -9,7 +9,7 @@ from gvar              import GVar, gvar, sqrt
 from typing            import overload
 from functools         import cached_property
 from dmu               import LogStore
-from dmu.generic       import Serializable, Patchable
+from dmu.generic       import Serializable, Patchable, LinkedNode
 from pydantic          import RootModel, BaseModel, model_validator
 from rx_common         import BranchingFraction, Component, Cuts, Trigger, WorkingPoint
 from rx_efficiencies   import Efficiency, EfficiencyGrid
@@ -249,6 +249,30 @@ class Yield(BaseModel, frozen = True):
                 _ALLOW_NAN_YIELD.reset(token)
 
         return _context()
+    # ---------------------------------
+    @classmethod
+    def from_linked_node(
+        cls, 
+        wp    : WorkingPoint,
+        lnode : LinkedNode) -> 'Yield':
+        '''
+        Parameters
+        ---------------
+        lnode: Linked node
+        wp   : Working point used as template, cut values will be replaced 
+               with location of linked node
+        '''
+        gaus = lnode.gauss
+        if gaus is None:
+            raise ValueError(f'Invalid linked node: {lnode}')
+
+        new_wp  = wp.clone(values = list(lnode.coordinates))
+        node    = cls(
+            val = gaus.mean,
+            err = gaus.sdev,
+            wp  = new_wp)
+
+        return node
 # ----------------------------------------
 class YieldGrid(Serializable, Patchable, RootModel[list[Yield]], frozen = True):
     '''
