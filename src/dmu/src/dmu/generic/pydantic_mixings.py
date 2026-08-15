@@ -60,7 +60,13 @@ class Patchable:
     # ----------------------------------------------
     def patch(self, nodes : Sequence[NodeProtocol] ) -> Sequence[LinkedNode]:
         '''
-        Patches missing elements in grid
+        Parameters
+        ----------------
+        nodes: List of nodes to be patched
+
+        Returns
+        ----------------
+        List of nodes that replace missing ones
         '''
         data = { self._node_location(node) : node.gauss for node in nodes }
         rgr  = RegularGraphMaker(data = data)
