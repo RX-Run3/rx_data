@@ -29,6 +29,7 @@ class Serializable:
         path.write_text(string)
 # ---------------------------
 Node = TypeVar('Node', bound=GridElementProtocol)
+Loc  = TypeVar('Loc' , bound=NodeLocProtocol)
 class Patchable:
     '''
     Implements:
@@ -36,7 +37,7 @@ class Patchable:
     patch
     '''
     # ----------------------------------------------
-    def _patch(self, linked_node : LinkedNode) -> tuple[NodeLocProtocol,GVar]:
+    def _patch(self, linked_node : LinkedNode[Loc]) -> tuple[Loc,GVar]:
         total = gvar(mean = 0, sdev = 0)
         for lnode in linked_node.neighbours:
             var      = gvar(
@@ -50,7 +51,7 @@ class Patchable:
 
         return wp, value 
     # ----------------------------------------------
-    def patch(self, nodes : Sequence[Node] ) -> Sequence[tuple[NodeLocProtocol,GVar]]:
+    def patch(self, nodes : Sequence[Node] ) -> Sequence[tuple[Loc,GVar]]:
         '''
         Patches missing elements in grid
         '''
