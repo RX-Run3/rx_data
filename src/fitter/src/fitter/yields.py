@@ -281,7 +281,10 @@ class YieldGrid(Serializable, Patchable, RootModel[list[Yield]], frozen = True):
     # ---------------------
     @model_validator(mode = 'after')
     def _validate(self) -> 'YieldGrid':
-        dims = { elm.ndim for elm in self.root }
+        if self.size == 0:
+            raise ValueError('Empty grid found')
+
+        dims : set[int] = { elm.ndim for elm in self.root }
 
         if len(dims) != 1:
             raise ValueError(f'Found elements with different dimentions in grid: {dims}')
