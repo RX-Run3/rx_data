@@ -58,7 +58,7 @@ class Patchable:
         except Exception as exc:
             raise ValueError(f'Cannot extract location from: {loc}') from exc
     # ----------------------------------------------
-    def patch(self, nodes : Sequence[NodeProtocol] ) -> Sequence[LinkedNode]:
+    def patch_yields(self, nodes : Sequence[NodeProtocol] ) -> Sequence[LinkedNode]:
         '''
         Parameters
         ----------------
