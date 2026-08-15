@@ -362,6 +362,7 @@ def significance(
     if grid_bkg is None:
         raise ValueError('background yield is None')
 
+    grid_bkg       = grid_bkg.patch()
     grid_sig, path = __get_signal_grid(proc = proc, trig = trigger, q2bin = q2bin, cmb = cmb, prc = prc, name = grid)
 
     ctx_1 = YieldGrid.allow_unmatched()
@@ -372,8 +373,11 @@ def significance(
 
         grid_sgn = grid_sig / (grid_sig + grid_bkg).sqrt
 
-    ptr = GridPlotter(grid = grid_sgn)
-    ptr.plot(path = path / 'significance.png', randomize = False)
+    grids = {'signal' : grid_sig, 'background' : grid_bkg, 'significance' : grid_sgn}
+
+    for name, this_grid in grids.items():
+        ptr = GridPlotter(grid = this_grid)
+        ptr.plot(path = path / f'{name}.png', randomize = False)
 # ----------------------
 @app.command()
 def expected_background(
