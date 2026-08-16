@@ -198,7 +198,11 @@ def _get_df(
             process= sample, 
             trigger= cfg.rdf_cfg['trigger'])
 
-    spl   = SampleSplitter(rdf = rdf, cfg = cfg.splitter)
+    out_dir = Path('misid')
+    spl   = SampleSplitter(
+        rdf     = rdf, 
+        cfg     = cfg.splitter,
+        out_dir = out_dir)
     df    = spl.get_sample()
 
     wgt   = SampleWeighter(
