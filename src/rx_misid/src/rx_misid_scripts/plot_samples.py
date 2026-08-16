@@ -8,8 +8,6 @@ where the misID samples are B-> KKK and B -> Kpipi
 '''
 import os
 import argparse
-from dataclasses import dataclass, field
-from pathlib     import Path
 
 import tqdm
 import numpy
@@ -17,6 +15,11 @@ import mplhep
 import seaborn           as sns
 import pandas            as pnd
 import matplotlib.pyplot as plt
+
+from dataclasses              import dataclass, field
+from pathlib                  import Path
+from rx_common                import Component, Cuts, Qsq
+from typing                   import Final
 from omegaconf                import DictConfig, OmegaConf
 from rx_data.rdf_getter       import RDFGetter
 from rx_misid.sample_splitter import SampleSplitter
@@ -28,6 +31,7 @@ from dmu.generic              import utilities  as gut
 from dmu.workflow.cache       import Cache      as Wcache
 
 log=LogStore.add_logger('rx_misid:plot_samples')
+_MAX_EFF : Final[float] = 100
 # ----------------------
 @dataclass
 class PlotConfig:
@@ -52,9 +56,9 @@ class PlotConfig:
     splitter : DictConfig = field(init=False)
     # ----------------------
     def __post_init__(self):
-        cfg = gut.load_conf(package='rx_misid_data', fpath='sample_plotting.yaml')
-        this_dir = os.getcwd()
-        Wcache.set_cache_root(f'{this_dir}/.cache')
+        cfg      = gut.load_conf(package='rx_misid_data', fpath='sample_plotting.yaml')
+        this_dir = Path(os.getcwd())
+        Wcache.set_cache_root(root =this_dir / '.cache')
 
         self._build_rdf_getter(cfg=cfg)
         self.weighter = cfg.wgt_cfg
@@ -164,8 +168,8 @@ def _set_logs(level : int) -> None:
 # ----------------------
 def _get_df(
     cfg    : PlotConfig, 
-    q2bin  : str,
-    sample : str,
+    q2bin  : Qsq,
+    sample : Component,
     region : str) -> pnd.DataFrame:
     '''
     Parameters
@@ -183,8 +187,8 @@ def _get_df(
     rdf   = gtr.get_rdf(per_file=False)
     uid   = gtr.get_uid()
     cuts  = {
-        'pid_l' : '(1)', 
-        'brem'  : 'nbrem != 0'} # Do not care about brem 0 candidates
+        Cuts.pid_l : '(1)', 
+        Cuts.brem  : 'nbrem != 0'} # Do not care about brem 0 candidates
 
     with sel.custom_selection(d_sel = cuts):
         rdf = sel.apply_full_selection(
@@ -229,7 +233,7 @@ def _plot_overlay(
     styles = ['dotted', 'dashed', 'solid']
 
     _plot_map(hist=hist)
-    for level, style in zip(levels, styles):
+    for level, style in zip(levels, styles, strict=True):
         sns.kdeplot(
             x         =arr_pt, 
             y         =arr_et, 
@@ -280,9 +284,9 @@ def _plot_map(hist : bh) -> None:
     arr_x, arr_y = numpy.meshgrid(x_edges, y_edges)
 
     counts  = 100 * bin_values 
-    tmp     = numpy.where((counts < 100) & (counts >= 0), counts, 0)
+    tmp     = numpy.where((counts < _MAX_EFF) & (counts >= 0), counts, 0)
     maxz    = numpy.max(tmp)
-    plt.pcolormesh(arr_x, arr_y, counts.T, shading='auto', norm=None, vmin=0, vmax=maxz)
+    plt.pcolormesh(arr_x, arr_y, counts.T, shading='auto', vmin=0, vmax=maxz)
     plt.colorbar(label='Efficiency [%]')
 # ----------------------
 def _get_array(
@@ -326,28 +330,28 @@ def main():
     pbar = tqdm.tqdm(total=cfg.nplots, ascii=' -')
 
     for bremcat in PlotConfig.BREMCATS:
-        if cfg.bremcat != 'all' and cfg.bremcat != bremcat:
+        if cfg.bremcat not in ['all', bremcat]:
             log.debug(f'Skip {bremcat}')
             continue
 
         for region in PlotConfig.REGIONS:
-            if cfg.region != 'all' and cfg.region != region:
+            if cfg.region not in ['all', region]:
                 log.debug(f'Skip {region}')
                 continue
 
             for q2bin in PlotConfig.Q2BINS:
-                if cfg.q2bin != 'all' and cfg.q2bin != q2bin:
+                if cfg.q2bin not in ['all', q2bin]:
                     log.debug(f'Skip {q2bin}')
                     continue
 
                 for sample in PlotConfig.SAMPLES:
-                    if cfg.sample != 'all' and cfg.sample != sample:
+                    if cfg.sample not in ['all', sample]:
                         log.debug(f'Skip {sample}')
                         continue
 
                     df  = _get_df(cfg=cfg, region=region, q2bin=q2bin, sample=sample)
                     for block in PlotConfig.BLOCKS:
-                        if cfg.block != -1 and cfg.block != block:
+                        if cfg.block not in [-1, block]:
                             log.debug(f'Skip {block}')
                             continue
 
