@@ -83,11 +83,14 @@ class ParameterLibrary:
         if parameter not in cls._values[kind]:
             raise ValueError(f'For PDF {kind}, cannot find parameter: {parameter}')
 
-        par = cls._values[kind][parameter].root
-        if not isinstance(par, SimpleYieldConf):
-            raise ValueError(f'Parameter {parameter} is not elementary: {par}')
+        cfg = cls._values[kind][parameter].root
+        if not isinstance(cfg, SimpleYieldConf):
+            raise ValueError(f'Parameter {parameter} is not elementary: {cfg}')
 
-        return par.val, par.min, par.max 
+        if cfg.fix:
+            return cfg.val, cfg.val, cfg.val
+
+        return cfg.val, cfg.min, cfg.max 
     # --------------------------------
     @classmethod
     def values(
