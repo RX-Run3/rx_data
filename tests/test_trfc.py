@@ -1,14 +1,11 @@
 
-import ROOT
 import zutils.utils      as zut
 import matplotlib.pyplot as plt
 import mplhep
 import zfit
-import os
 
 from hqm2.trfc    import trfc 
 from hqm2.config  import config
-from zutils.plot  import plot      as zfp
 from log_store    import log_store
 
 #--------------------------------------
@@ -38,7 +35,7 @@ def test_psi2_high_brem(ibin):
 #--------------------------------------
 def test_psi2_high():
     obj     = trfc(obs=data.obs, qsq_src='psi2', qsq_tgt='high', proc='psi2', dset='2018', pref='psi2_high_pr_2018')
-    pdf_trf = obj.get_trf()
+    obj.get_trf()
 #--------------------------------------
 def test_jpsi_high():
     obj     = trfc(obs=data.obs, qsq_src='jpsi', qsq_tgt='high', proc='ctrl', dset='comb', pref='jpsi_high_pr_comb')

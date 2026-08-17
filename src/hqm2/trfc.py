@@ -6,7 +6,6 @@ import zfit
 import os
 
 from zutils.pdf          import SUJohnson as zpdf_jh
-from importlib.resources import files
 from log_store           import log_store
 
 from hqm2.data_store     import data_store
