@@ -1,9 +1,11 @@
 '''
 Module containing tests for ZModel class
 '''
-
+import matplotlib.pyplot as plt
 import pytest
+import numpy
 
+from pathlib     import Path
 from dmu         import LogStore
 from dmu.stats   import zfit
 from dmu.stats   import print_pdf
@@ -12,6 +14,7 @@ from dmu.stats   import ModelFactoryConf
 from dmu.stats   import ParameterLibrary
 from dmu.stats   import Model
 from dmu.stats   import CorrectionImplementation
+from dmu.stats   import utilities  as sut
 from zfit.pdf    import BasePDF    as zpdf
 
 log=LogStore.add_logger('dmu:stats:test_model_factory')
@@ -56,6 +59,7 @@ def initialize():
     This runs before tests
     '''
     LogStore.set_level('dmu:stats:model_factory', 10)
+    LogStore.set_level('dmu:parameters'         , 10)
 # ----------------------
 def _check_reparametrized_pdf(
     pdf        : zpdf,
@@ -153,6 +157,25 @@ def test_fix_params():
     pdf   = mod.get_pdf()
 
     print_pdf(pdf)
+#--------------------------
+def test_ipatia(tmp_path : Path):
+    mod   = ModelFactory(
+        preffix = '',
+        obs     = Data.obs,
+        l_pdf   = [Model.ipatia],
+        l_shared= [],
+        l_float = [])
+    pdf   = mod.get_pdf()
+
+    xs = numpy.linspace(5000, 5600, 1000)
+    ys = pdf.pdf(xs)
+
+    assert not numpy.isnan(ys).all()
+
+    plt.scatter(xs, ys, s = 1)
+    plt.savefig(tmp_path / 'plot.png')
+
+    sut.print_pdf(pdf = pdf)
 #--------------------------
 def test_unique_pdf():
     '''
