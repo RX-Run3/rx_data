@@ -1,17 +1,3 @@
-"""
-Draft implementation of the Ipatia2 (Hypatia2) PDF for zfit.
-
-Source: https://gist.github.com/jonas-eschle/e829f6c85181c6bc30f8d69dd0b6d963
-Author: jonas-eschle (zfit core maintainer), created 2022-08-08
-
-Reference distribution: RooHypatia2 in ROOT/RooFit
-https://root.cern.ch/doc/master/classRooHypatia2.html
-Based on: https://arxiv.org/abs/1312.5000
-
-NOTE: this is an unofficial draft, not part of zfit or zfit-physics.
-Needs testing / normalization checks before production use.
-"""
-
 import zfit
 import numpy                  as np
 import tensorflow_probability as tfp
@@ -47,20 +33,19 @@ def _bessel_second_kind(ni, x) -> Tensor:
 
     return tnp.where(cond, low_x_bk, tfp.math.bessel_kve(nu, x))
 # -------------------------------------
-def _log_eval(d, lam, alpha, beta, delta) -> Tensor:
-    gamma   = alpha
-    dl_gm   = delta * gamma
-    term_02 = delta ** 2 + d ** 2
-    term_03 = gamma * tnp.sqrt(term_02)
+def _log_eval(ax_sigma, lam, rt, beta, pr) -> Tensor:
+    dl_ap   = pr * rt 
+    term_02 = pr ** 2 + ax_sigma ** 2
+    term_03 = rt * tnp.sqrt(term_02)
 
-    bes_01  = _bessel_second_kind(lam      ,   dl_gm)
+    bes_01  = _bessel_second_kind(lam      ,   dl_ap)
     bes_02  = _bessel_second_kind(lam - 0.5, term_03)
 
-    logno   = lam * tnp.log(gamma / delta) - _LOGSQ2PI - tnp.log(bes_01)
+    logno   = lam * tnp.log(rt / pr) - _LOGSQ2PI - tnp.log(bes_01)
     ns1     = 0.5 - lam
     # -------
-    term_01 = tnp.log(gamma) - 0.5 * tnp.log(term_02)
-    tot_log = logno + beta * d + ns1 * term_01 + tnp.log(bes_02)
+    term_01 = tnp.log(rt) - 0.5 * tnp.log(term_02)
+    tot_log = logno + beta * ax_sigma + ns1 * term_01 + tnp.log(bes_02)
 
     return tnp.exp(tot_log)
 # -------------------------------------
@@ -89,6 +74,48 @@ def _diff_eval(d, lam, alpha, beta, delta) -> Tensor:
         / 2.0
     )
 # -------------------------------------
+def _get_tail_n(ax, nx, sigma, lam, rt, beta, pr, diff, sign) -> Tensor:
+    '''
+    sign: -1 for left, +1 for right
+
+    Returns
+    -------------
+    Tensor for tail (right or left) for case when zeta > 0
+    '''
+    k1    = _log_eval (sign * ax * sigma, lam, rt, beta, pr)
+    k2    = _diff_eval(sign * ax * sigma, lam, rt, beta, pr)
+    var_b = - ax * sigma - sign * nx * k1 / k2
+    var_a = k1 * tnp.power(var_b + ax * sigma,  nx)
+
+    return  var_a * tnp.power(var_b + sign * diff, -nx)
+# -------------------------------------
+def _get_tail_z(ax, nx, sigma, lam, beta, diff, sign) -> Tensor:
+    '''
+    sign: -1 for left, +1 for right
+
+    Returns
+    -------------
+    Tensor for tail (right or left) for case when zeta == 0
+    '''
+    cx    = tnp.exp(sign * beta * ax * sigma)
+    phx   = 1.0 + ax * ax
+    k1    = cx * tnp.power(phx, lam - 0.5)
+    k2    = beta  * k1 + sign * cx * (lam - 0.5) * tnp.power(phx, lam - 1.5) * 2 * ax / sigma 
+    var_b = - ax  * sigma - sign * nx * k1 / k2
+    var_a = k1    * tnp.power(var_b + ax * sigma,  nx)
+
+    return var_a * tnp.power(var_b + sign * diff , -nx)
+# -------------------------------------
+def _get_rat_prd(zeta, lam, sigma) -> tuple[Tensor,Tensor]:
+    cons0 = tnp.sqrt(zeta)
+    phi   = _bessel_second_kind(lam + 1.0, zeta) / _bessel_second_kind(lam, zeta)
+    cons1 = sigma / tnp.sqrt(phi)
+
+    rt    = cons0 / cons1
+    pr    = cons0 * cons1
+
+    return rt, pr
+# -------------------------------------
 @gut.timeit
 def _ipatia(
     x     : Space,
@@ -101,62 +128,33 @@ def _ipatia(
     nr    : Parameter,
     al    : Parameter,
     ar    : Parameter) -> Tensor:
-    diff    = x - mu
-    cons0   = tnp.sqrt(zeta)
-    asigma  = al * sigma
-    a2sigma = ar * sigma
+    rt, pr       = _get_rat_prd(zeta = zeta, lam = lam, sigma = sigma)
+    diff         = x - mu
 
-    cond1   = diff < -asigma
-    cond2   = diff > a2sigma
+    # zeta > 0
+    right_tail_n = _get_tail_n(ar, nr, sigma, lam, rt, beta, pr, diff, +1)
+    left_tail_n  = _get_tail_n(al, nl, sigma, lam, rt, beta, pr, diff, -1)
 
-    phi   = _bessel_second_kind(lam + 1.0, zeta) / _bessel_second_kind(lam, zeta)
-    cons1 = sigma / tnp.sqrt(phi)
-    alpha = cons0 / cons1
-    delta = cons0 * cons1
+    # zeta = 0
+    right_tail_z = _get_tail_z(ar, nr, sigma, lam, beta, diff, +1)
+    left_tail_z  = _get_tail_z(al, nl, sigma, lam, beta, diff, -1)
 
-    k1    = _log_eval (-asigma, lam, alpha, beta, delta)
-    k2    = _diff_eval(-asigma, lam, alpha, beta, delta)
-    var_b = -asigma + nl * k1 / k2
-    var_a = k1    * tnp.power(var_b + asigma,  nl)
-    out1  = var_a * tnp.power(var_b - diff  , -nl)
+    base         = 1.0 + tnp.power(diff / sigma, 2)
+    core_z       = tnp.exp(beta * diff) * tnp.power(base, lam - 0.5)
+    core_n       = _log_eval(diff, lam, rt, beta, pr)
 
-    k1    = _log_eval( a2sigma, lam, alpha, beta, delta)
-    k2    = _diff_eval(a2sigma, lam, alpha, beta, delta)
-    var_b = -a2sigma - nr * k1 / k2
-    var_a = k1    * tnp.power(var_b + a2sigma,  nr)
-    out2  = var_a * tnp.power(var_b + diff   , -nr)
+    is_left_tail = diff < -al * sigma
+    is_right_tail= diff >  ar * sigma
 
-    out3  = _log_eval(diff, lam, alpha, beta, delta)
+    val_nozero   = tnp.where(is_left_tail, left_tail_n, tnp.where(is_right_tail, right_tail_n, core_n))
+    val_yszero   = tnp.where(is_left_tail, left_tail_z, tnp.where(is_right_tail, right_tail_z, core_z))
+    val_noneg    = tnp.where(zeta == 0   , val_yszero , val_nozero)
 
-    cons1 = -2.0 * lam
-    condx = lam <= -1.0
+    inv_1 = zeta < 0
+    inv_2 = tf.logical_and(zeta == 0, lam > 0)
+    inv   = tf.logical_or(inv_1, inv_2)
 
-    delta1= sigma * tnp.sqrt(-2 + cons1)
-    delta = tnp.where(condx, delta1, sigma)
-    delta2= delta * delta
-
-    cons1 = tnp.exp(-beta * asigma)
-    phi   = 1.0 + asigma * asigma / delta2
-    k1    = cons1 * tnp.power(phi, lam - 0.5)
-    k2    = beta  * k1 - cons1 * (lam - 0.5) * tnp.power(phi, lam - 1.5) * 2 * asigma / delta2
-    var_b = -asigma + nl * k1 / k2
-    var_a = k1    * tnp.power(var_b + asigma,  nl)
-    outz1 = var_a * tnp.power(var_b - diff  , -nl)
-
-    cons1 = tnp.exp(beta * a2sigma)
-    phi   = 1.0 + a2sigma * a2sigma / delta2
-    k1    = cons1 * tnp.power(phi, lam - 0.5)
-    k2    = beta * k1 + cons1 * (lam - 0.5) * tnp.power(phi, lam - 1.5) * 2.0 * a2sigma / delta2
-    var_b = -a2sigma - nr * k1 / k2
-    var_a = k1    * tnp.power(var_b + a2sigma,  nr)
-    outz2 = var_a * tnp.power(var_b + diff   , -nr)
-
-    outz3 = tnp.exp(beta * diff) * tnp.power(1.0 + diff * diff / delta2, lam - 0.5)
-
-    val_nozero = tnp.where(cond1, out1 , tnp.where(cond2, out2 , out3 ))
-    val_yszero = tnp.where(cond1, outz1, tnp.where(cond2, outz2, outz3))
-
-    return tnp.where(zeta != 0, val_nozero, val_yszero)
+    return tnp.where(inv, 0, val_noneg)
 # -------------------------------------
 class Ipatia(zfit.pdf.ZPDF):
     """Hypatia2 / Ipatia2 PDF (unnormalized). Draft — verify normalization before fitting."""
