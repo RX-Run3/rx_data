@@ -13,7 +13,7 @@ from hqm2.config         import config
 
 log=log_store.add_logger('rx_hqm2:trfc')
 #---------------------------------
-class trfc:
+class TransferFunction:
     '''
     Class used to provide transfer functions to go from a given q2 bin to another, using a given process in MC for the fitting/training
     '''

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import mplhep
 import zfit
 
-from hqm2.trfc    import trfc 
+from hqm2.trfc    import TransferFunction 
 from hqm2.config  import config
 from log_store    import log_store
 
@@ -27,34 +27,34 @@ def test_psi2_high_brem(ibin):
     config.binning['bin'] =            ibin
     config.binning['cut'] = f'cbrem=={ibin}'
 
-    obj     = trfc(obs=data.obs, qsq_src='psi2', qsq_tgt='high', proc='psi2', dset='2018', pref='psi2_high_pr_2018')
+    obj     = TransferFunction(obs=data.obs, qsq_src='psi2', qsq_tgt='high', proc='psi2', dset='2018', pref='psi2_high_pr_2018')
     pdf_trf = obj.get_trf()
 
     zut.print_pdf(pdf_trf)
     config.binning=dict()
 #--------------------------------------
 def test_psi2_high():
-    obj     = trfc(obs=data.obs, qsq_src='psi2', qsq_tgt='high', proc='psi2', dset='2018', pref='psi2_high_pr_2018')
+    obj     = TransferFunction(obs=data.obs, qsq_src='psi2', qsq_tgt='high', proc='psi2', dset='2018', pref='psi2_high_pr_2018')
     obj.get_trf()
 #--------------------------------------
 def test_jpsi_high():
-    obj     = trfc(obs=data.obs, qsq_src='jpsi', qsq_tgt='high', proc='ctrl', dset='comb', pref='jpsi_high_pr_comb')
+    obj     = TransferFunction(obs=data.obs, qsq_src='jpsi', qsq_tgt='high', proc='ctrl', dset='comb', pref='jpsi_high_pr_comb')
     pdf_trf = obj.get_trf()
 #--------------------------------------
 def test_jpsi_jpsi():
-    obj     = trfc(obs=data.obs, qsq_src='jpsi', qsq_tgt='jpsi', proc='ctrl', dset='2018', pref='jpsi_jpsi_2018_pr')
+    obj     = TransferFunction(obs=data.obs, qsq_src='jpsi', qsq_tgt='jpsi', proc='ctrl', dset='2018', pref='jpsi_jpsi_2018_pr')
     pdf_trf = obj.get_trf()
 #--------------------------------------
 def test_jpsi_psi2():
-    obj     = trfc(obs=data.obs, qsq_src='jpsi', qsq_tgt='psi2', proc='ctrl', dset='2018', pref='jpsi_psi2_2018_pr')
+    obj     = TransferFunction(obs=data.obs, qsq_src='jpsi', qsq_tgt='psi2', proc='ctrl', dset='2018', pref='jpsi_psi2_2018_pr')
     pdf_trf = obj.get_trf()
 #--------------------------------------
 def test_psi2_jpsi():
-    obj     = trfc(obs=data.obs, qsq_src='psi2', qsq_tgt='jpsi', proc='psi2', dset='2018', pref='psi2_jpsi_2018_pr')
+    obj     = TransferFunction(obs=data.obs, qsq_src='psi2', qsq_tgt='jpsi', proc='psi2', dset='2018', pref='psi2_jpsi_2018_pr')
     pdf_trf = obj.get_trf()
 #--------------------------------------
 def test_psi2_psi2():
-    obj     = trfc(obs=data.obs, qsq_src='psi2', qsq_tgt='psi2', proc='psi2', dset='2018', pref='psi2_psi2_2018_pr')
+    obj     = TransferFunction(obs=data.obs, qsq_src='psi2', qsq_tgt='psi2', proc='psi2', dset='2018', pref='psi2_psi2_2018_pr')
     pdf_trf = obj.get_trf()
 #--------------------------------------
 def main():
