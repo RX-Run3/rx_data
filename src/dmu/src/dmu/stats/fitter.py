@@ -62,15 +62,7 @@ class Fitter:
         self._data_np : numpy.ndarray
         self._obs     : zfit.Space
 
-        self._initialized = False
-    #------------------------------
-    def _initialize(self):
-        if self._initialized:
-            return
-
         self._check_data()
-
-        self._initialized = True
     #------------------------------
     def _check_data(self):
         if   isinstance(self._data_in, numpy.ndarray):
@@ -301,8 +293,6 @@ class Fitter:
         ----------------------
         Fit result object
         '''
-        self._initialize()
-
         cfg = FitConf.default() if cfg is None else cfg
         if cfg.strategy is None:
             log.info('Not using any strategy, simple fit')
