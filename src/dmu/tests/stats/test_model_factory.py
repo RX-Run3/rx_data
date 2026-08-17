@@ -14,6 +14,7 @@ from dmu.stats   import ModelFactoryConf
 from dmu.stats   import ParameterLibrary
 from dmu.stats   import Model
 from dmu.stats   import CorrectionImplementation
+from dmu.stats   import ZFitPlotter, ZFitPlotterConf
 from dmu.stats   import utilities  as sut
 from zfit.pdf    import BasePDF    as zpdf
 
@@ -166,8 +167,9 @@ def test_ipatia(tmp_path : Path):
         l_shared= [],
         l_float = [])
     pdf   = mod.get_pdf()
+    sut.print_pdf(pdf = pdf)
 
-    xs = numpy.linspace(5000, 5600, 1000)
+    xs = numpy.linspace(5000, 5600, 200)
     ys = pdf.pdf(xs)
 
     assert not numpy.isnan(ys).all()
@@ -175,7 +177,18 @@ def test_ipatia(tmp_path : Path):
     plt.scatter(xs, ys, s = 1)
     plt.savefig(tmp_path / 'plot.png')
 
-    sut.print_pdf(pdf = pdf)
+    data = pdf.create_sampler(n=10_000)
+    nll  = zfit.loss.UnbinnedNLL(model=pdf, data=data)
+    
+    minimizer = zfit.minimize.Minuit()
+    res = minimizer.minimize(nll)
+
+    cfg = ZFitPlotterConf.default()
+    ptr = ZFitPlotter(data = data, model = pdf)
+    ptr.run(cfg = cfg)
+    plt.savefig(tmp_path / 'fit.png')
+
+    print(res)
 #--------------------------
 def test_unique_pdf():
     '''
