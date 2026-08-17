@@ -106,9 +106,9 @@ def test_values():
     MU_LOW = 5511
     MU_HIG = 6033
 
-    SG_VAL = 11.1 
-    SG_LOW =  3.3 
-    SG_HIG = 20.2 
+    SG_VAL = 11.1
+    SG_LOW =  3.3
+    SG_HIG = 20.2
 
     values= {
         'mu' : (MU_VAL, MU_LOW, MU_HIG),
@@ -179,7 +179,7 @@ def test_ipatia(tmp_path : Path):
 
     data = pdf.create_sampler(n=10_000)
     nll  = zfit.loss.UnbinnedNLL(model=pdf, data=data)
-    
+
     minimizer = zfit.minimize.Minuit()
     res = minimizer.minimize(nll)
 
@@ -257,7 +257,7 @@ def test_all_pdf(name : Model):
     [Model.cbl, Model.cbr],
 ])
 @pytest.mark.parametrize(
-    'fix_scales', 
+    'fix_scales',
     [True, False])
 def test_rep_signal(
     fix_scales : bool,
@@ -279,7 +279,7 @@ def test_rep_signal(
 
     l_shr = ['mu', 'sg']
     l_flt = []
-    d_rep = {'mu' : CorrectionImplementation.scale, 
+    d_rep = {'mu' : CorrectionImplementation.scale,
              'sg' : CorrectionImplementation.reso}
 
     with ModelFactory.correction(fixed = fix_scales):
@@ -293,7 +293,7 @@ def test_rep_signal(
         pdf = mod.get_pdf()
 
     _check_reparametrized_pdf(
-        pdf        = pdf, 
+        pdf        = pdf,
         fix_scales = fix_scales )
 #--------------------------
 @pytest.mark.parametrize('kind', [Model.cbr, Model.cbl, Model.dscb, Model.gauss, Model.ipatia])
@@ -326,7 +326,7 @@ def test_override_parameter(kind: Model):
     [sg]  = [ par for par in s_par if par.name == f'sg_{kind}'     ]
 
     assert sg.value().numpy() == SG
-    assert mu.value().numpy() == MU 
+    assert mu.value().numpy() == MU
 
     print_pdf(pdf)
 #--------------------------
@@ -372,7 +372,7 @@ def test_from_conf():
 
     cfg = ModelFactoryConf.default(pdfs = [Model.gauss])
     obj = ModelFactory.from_conf(
-        prefix = 'test', 
+        prefix = 'test',
         cfg    = cfg,
         obs    = obs)
 
