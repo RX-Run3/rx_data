@@ -29,9 +29,11 @@ def _bessel_second_kind(ni, x) -> Tensor:
     second_cond = tf.logical_and(tf.logical_and(x < 1.0e-04, nu > 0.0), nu < 55)
     third_cond  = tf.logical_and(x < 0.1, nu >= 55)
     cond        = tf.logical_or(first_cond, tf.logical_or(second_cond, third_cond))
-    low_x_bk    = _gamma_func(nu) * tnp.power(2.0, nu - 1.0) * tnp.power(x, -nu)
 
-    return tnp.where(cond, low_x_bk, tfp.math.bessel_kve(nu, x))
+    low_x_bk    = _gamma_func(nu) * tnp.power(2.0, nu - 1.0) * tnp.power(x, -nu)
+    high_x_bk   = tfp.math.bessel_kve(nu, x) * tf.exp(-tf.abs(x))
+
+    return tnp.where(cond, low_x_bk, high_x_bk)
 # -------------------------------------
 def _log_eval(ax_sigma, lam, rt, beta, pr) -> Tensor:
     dl_ap   = pr * rt 
@@ -74,7 +76,7 @@ def _diff_eval(d, lam, alpha, beta, delta) -> Tensor:
         / 2.0
     )
 # -------------------------------------
-def _get_tail_n(ax, nx, sigma, lam, rt, beta, pr, diff, sign) -> Tensor:
+def _get_tail_n(ax, nx, sigma, lam, rt, beta, pr, diff, sign) -> Tensor: # noqa: PLR0913
     '''
     sign: -1 for left, +1 for right
 
@@ -89,7 +91,7 @@ def _get_tail_n(ax, nx, sigma, lam, rt, beta, pr, diff, sign) -> Tensor:
 
     return  var_a * tnp.power(var_b + sign * diff, -nx)
 # -------------------------------------
-def _get_tail_z(ax, nx, sigma, lam, beta, diff, sign) -> Tensor:
+def _get_tail_z(ax, nx, sigma, lam, beta, diff, sign) -> Tensor: # noqa: PLR0913
     '''
     sign: -1 for left, +1 for right
 
@@ -117,7 +119,7 @@ def _get_rat_prd(zeta, lam, sigma) -> tuple[Tensor,Tensor]:
     return rt, pr
 # -------------------------------------
 @gut.timeit
-def _ipatia(
+def _ipatia( # noqa: PLR0913
     x     : Space,
     lam   : Parameter,
     zeta  : Parameter,
@@ -151,7 +153,7 @@ def _ipatia(
     val_noneg    = tnp.where(zeta == 0   , val_yszero , val_nozero)
 
     inv_1 = zeta < 0
-    inv_2 = tf.logical_and(zeta == 0, lam > 0)
+    inv_2 = tf.logical_and(zeta == 0, lam >= 0)
     inv   = tf.logical_or(inv_1, inv_2)
 
     return tnp.where(inv, 0, val_noneg)
