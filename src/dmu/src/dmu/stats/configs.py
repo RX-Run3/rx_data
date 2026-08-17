@@ -4,18 +4,16 @@ Module with classes meant to represent configurations needed to build yields
 
 from typing   import Literal, Self, Final
 from pydantic import BaseModel, model_validator
-from pydantic import RootModel, ConfigDict
+from pydantic import RootModel
 
 _MIN_COMPOSITE_PARS : Final[int] = 2
 # TODO: Add validation for parameter building
 # e.g. actually build the parameters
 # ------------------------------
-class SimpleYieldConf(BaseModel):            # Tested
+class SimpleYieldConf(BaseModel, frozen = True):            # Tested
     '''
     Class representing configuration for yields
     '''
-    model_config = ConfigDict(frozen=True)
-
     val : float
     min : float
     max : float
@@ -28,12 +26,10 @@ class SimpleYieldConf(BaseModel):            # Tested
 
         return self
 # ------------------------------
-class CompositeYieldConf(BaseModel):
+class CompositeYieldConf(BaseModel, frozen = True):
     '''
     Class meant to represent composite yield
     '''
-    model_config = ConfigDict(frozen=True)
-
     kind : Literal['mul', 'dif']
     pars : list[str]
     # ----------------------
@@ -47,20 +43,18 @@ class CompositeYieldConf(BaseModel):
 
         return self
 # ------------------------------
-class YieldConf(RootModel):
+class YieldConf(RootModel, frozen = True):
     '''
     Class meant to wrap SimpleYieldConf and CompositeYieldConf
     pydantic models
     '''
     root : SimpleYieldConf | CompositeYieldConf
 # ------------------------------
-class YieldsConf(RootModel):
+class YieldsConf(RootModel, frozen = True):
     '''
     Class meant to represent dictionary between
     parameter and configuration
     '''
-    model_config = ConfigDict(frozen=True)
-
     root : dict[str, YieldConf]
     # --------------------
     def __iter__(self):  # type: ignore[override]
