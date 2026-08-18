@@ -15,7 +15,7 @@ from zutils.pdf          import SUJohnson as zpdf_jh
 from dmu                 import LogStore
 
 from hqm2.data_store     import data_store
-from hqm2.config         import config
+from hqm2.config         import Conf
 
 log=LogStore.add_logger('rx_hqm:trfc')
 
@@ -58,11 +58,11 @@ class TransferFunction:
         self._set_suffix()
     #---------------------------------
     def _set_suffix(self):
-        if len(config.binning) == 0:
+        if len(Conf.binning) == 0:
             return
 
-        varn = config.binning['var']
-        ibin = config.binning['bin']
+        varn = Conf.binning['var']
+        ibin = Conf.binning['bin']
 
         self._bin_suf = f'{varn}_{ibin}'
         self._prefix     = f'{self._prefix}_{self._bin_suf}'
@@ -83,7 +83,7 @@ class TransferFunction:
         plot_path = json_path.replace('.json', '.png')
 
         d_plt_opt = {'plot_path' : plot_path, 'plot_range' : plot_range, 'skip_pulls' : True , 'stacked' : False}
-        d_fit_opt = dict(config.fitting)
+        d_fit_opt = dict(Conf.fitting)
         d_fit_opt['ignore_status'] = True
         d_par     = zut.get_fit_pars(pdf_ees, arr_dt_ee, d_plt_opt=d_plt_opt, d_fit_opt=d_fit_opt)
         d_par     = self._rename_pars(d_par, suffix='remove')
@@ -104,10 +104,10 @@ class TransferFunction:
         plt.close('sim_dset')
     #---------------------------------
     def _get_bin_title(self):
-        if len(config.binning) == 0:
+        if len(Conf.binning) == 0:
             return ''
 
-        cut = config.binning['cut']
+        cut = Conf.binning['cut']
 
         return f'; {cut}'
     #---------------------------------
@@ -271,7 +271,7 @@ class TransferFunction:
         return pdf_trf
     #---------------------------------
     def _is_binned(self):
-        return len(config.binning) > 0
+        return len(Conf.binning) > 0
     #---------------------------------
     def _get_plot_range(self):
         if self._source == 'psi2' and self._target == 'psi2':
@@ -315,7 +315,7 @@ class TransferFunction:
         '''
         plot_range = self._get_plot_range()
         pdf_trf    = self._get_trf_pdf()
-        json_path  = config.make_data_path(kind='tfunc', dset=self._trigger, fname=f'{self._source}_{self._target}_{self._sample}.json')
+        json_path  = Conf.make_data_path(kind='tfunc', dset=self._trigger, fname=f'{self._source}_{self._target}_{self._sample}.json')
 
         if os.path.isfile(json_path):
             log.info(f'Transfer function for {self._trigger}, {self._source} -> {self._target} found, i.e. {json_path}')

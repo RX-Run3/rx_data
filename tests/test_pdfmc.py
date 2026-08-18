@@ -4,7 +4,7 @@ import zutils.utils      as zut
 import matplotlib.pyplot as plt
 
 from hqm2.pdfmc  import pdfmc
-from hqm2.config import config
+from hqm2.config import Conf
 
 from log_store   import log_store
 
@@ -20,17 +20,17 @@ def set_logs():
     log_store.set_level('tools:calc_utility'      , 40)
 #-------------------------------------
 def test_brem_bin(ibin):
-    config.fitting['ntries'] = 10 
+    Conf.fitting['ntries'] = 10 
 
-    config.binning['var'] =          'cbrem'
-    config.binning['bin'] =            ibin
-    config.binning['cut'] = f'cbrem=={ibin}'
+    Conf.binning['var'] =          'cbrem'
+    Conf.binning['bin'] =            ibin
+    Conf.binning['cut'] = f'cbrem=={ibin}'
 
     obj=pdfmc(obs=data.obs, dset='2018', proc='psi2', qsq='high')
     pdf=obj.get_pdf()
 
     zut.print_pdf(pdf)
-    config.binning=dict()
+    Conf.binning=dict()
 #-------------------------------------
 def test_psi2_high():
     obj=pdfmc(obs=data.obs, dset='2018', proc='psi2', qsq='high')

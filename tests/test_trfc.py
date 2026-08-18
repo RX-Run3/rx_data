@@ -6,7 +6,7 @@ import zfit
 
 from rx_common    import Component, Trigger, Qsq
 from hqm2.trfc    import TransferFunction 
-from hqm2.config  import config
+from hqm2.config  import Conf
 from dmu          import LogStore
 
 log=LogStore.add_logger('rx_hqm:test_trfc')
@@ -23,17 +23,17 @@ def set_log():
     LogStore.set_level('tools:calc_utility'           , 30)
 #--------------------------------------
 def test_psi2_high_brem(ibin):
-    config.fitting['ntries'] = 10 
+    Conf.fitting['ntries'] = 10 
 
-    config.binning['var'] =          'cbrem'
-    config.binning['bin'] =            ibin
-    config.binning['cut'] = f'cbrem=={ibin}'
+    Conf.binning['var'] =          'cbrem'
+    Conf.binning['bin'] =            ibin
+    Conf.binning['cut'] = f'cbrem=={ibin}'
 
     obj     = TransferFunction(obs=data.obs, source='psi2', target='high', sample='psi2', trigger='2018', prefix='psi2_high_pr_2018')
     pdf_trf = obj.get_trf()
 
     zut.print_pdf(pdf_trf)
-    config.binning=dict()
+    Conf.binning=dict()
 #--------------------------------------
 def test_psi2_high():
     obj     = TransferFunction(obs=data.obs, source='psi2', target='high', sample='psi2', trigger='2018', prefix='psi2_high_pr_2018')

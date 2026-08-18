@@ -8,7 +8,7 @@ import utils_noroot  as utnr
 import matplotlib.pyplot as plt
 
 from hqm2.data_store     import data_store
-from hqm2.config         import config
+from hqm2.config         import Conf
 from hqm2.wgtc           import wgtc
 
 from importlib.resources import files
@@ -41,7 +41,7 @@ class pdfmc:
         if self._initialized:
             return
 
-        self._out_dir=config.make_data_path(kind='fits', dset=self._dset, dname=f'{self._proc}_{self._trig}_{self._qsq}', fname=None)
+        self._out_dir=Conf.make_data_path(kind='fits', dset=self._dset, dname=f'{self._proc}_{self._trig}_{self._qsq}', fname=None)
 
         self._set_pdf_suffix()
         self._set_ranges()
@@ -51,13 +51,13 @@ class pdfmc:
     #------------------------------------
     def _set_pdf_suffix(self):
         pdf_suf= f'mc_{self._proc}_{self._dset}_{self._qsq}'
-        if len(config.binning) == 0:
+        if len(Conf.binning) == 0:
             self._bin_suf = None
             self._pdf_suf = pdf_suf
             return
 
-        varn = config.binning['var']
-        ibin = config.binning['bin']
+        varn = Conf.binning['var']
+        ibin = Conf.binning['bin']
 
         self._bin_suf = f'{varn}_{ibin}'
         self._pdf_suf = f'{pdf_suf}_{self._bin_suf}'
@@ -124,7 +124,7 @@ class pdfmc:
         if self._qsq == 'high':
             return True
 
-        if len(config.binning) == 0:
+        if len(Conf.binning) == 0:
             return False
 
         if self._proc == 'ctrl' and self._qsq == 'jpsi':
@@ -150,7 +150,7 @@ class pdfmc:
 
         plot_path = f'{self._out_dir}/fit.png'
         d_plt_opt = {'title' : title, 'plot_path' : plot_path, 'plot_range' : self._prange, 'skip_pulls' : True , 'stacked' : False}
-        d_par     = zut.get_fit_pars(self._pdf, zdt, d_plt_opt=d_plt_opt, d_fit_opt=config.fitting)
+        d_par     = zut.get_fit_pars(self._pdf, zdt, d_plt_opt=d_plt_opt, d_fit_opt=Conf.fitting)
 
         return d_par
     #------------------------------------

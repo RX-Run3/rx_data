@@ -1,5 +1,5 @@
 from hqm2.data_store import data_store
-from hqm2.config     import config
+from hqm2.config     import Conf
 
 import zfit
 import numpy
@@ -29,9 +29,9 @@ def configure_brem(brem):
     if brem is None:
         return
 
-    config.binning['var'] =          'cbrem'
-    config.binning['bin'] =            brem 
-    config.binning['cut'] = f'cbrem=={brem}'
+    Conf.binning['var'] =          'cbrem'
+    Conf.binning['bin'] =            brem 
+    Conf.binning['cut'] = f'cbrem=={brem}'
 #----------------------------------------------------------------------
 def get_pdf_name(**kwargs):
     l_val = [ f'{key}_{val}' for key, val in kwargs.items() if val is not None ]
@@ -57,7 +57,7 @@ def get_pdf(obs=None, dset=None, kind=None, trig=None, bts=None, brem=None):
     pdf.arr_mas = arr_mas
     pdf.arr_wgt = arr_wgt
 
-    config.binning = dict()
+    Conf.binning = dict()
 
     return pdf
 #----------------------------------------------------------------------

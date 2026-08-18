@@ -8,7 +8,7 @@ import utils_noroot      as utnr
 import zutils.utils      as zut
 
 from hqm2.data_store     import data_store
-from hqm2.config         import config
+from hqm2.config         import Conf
 from hqm2.pdfmc          import pdfmc
 from hqm2.trfc           import TransferFunction
 from hqm2.ratc           import ratc
@@ -74,12 +74,12 @@ class ccprc:
             raise
 
         if self._brem is None:
-            config.binning = dict()
+            Conf.binning = dict()
             return
 
-        config.binning['var'] =                'cbrem'
-        config.binning['bin'] =             self._brem
-        config.binning['cut'] = f'cbrem=={self._brem}'
+        Conf.binning['var'] =                'cbrem'
+        Conf.binning['bin'] =             self._brem
+        Conf.binning['cut'] = f'cbrem=={self._brem}'
     #---------------------------------
     def _get_muon_pdf(self):
         arr_mass  = self._get_muon_sb()
@@ -104,7 +104,7 @@ class ccprc:
         ax.set_title(info)
         ax.legend()
 
-        plot_path = config.make_data_path(kind='fits', dset=self._dset, dname=f'data_MTOS_{self._qsq_src}', fname='fit.png')
+        plot_path = Conf.make_data_path(kind='fits', dset=self._dset, dname=f'data_MTOS_{self._qsq_src}', fname='fit.png')
         plt.savefig(plot_path)
         plt.close()
     #---------------------------------
@@ -231,7 +231,7 @@ class ccprc:
         pdf      = zfit.pdf.SumPDF([pdf_prc, pdf_res], r, name=name)
         pdf.d_cns= d_cns
 
-        config.binning = dict()
+        Conf.binning = dict()
 
         return pdf
 #-----------------------------------

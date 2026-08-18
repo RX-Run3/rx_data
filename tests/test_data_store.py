@@ -1,5 +1,5 @@
 from hqm2.data_store import data_store
-from hqm2.config     import config 
+from hqm2.config     import Conf 
 from log_store       import log_store
 
 import matplotlib.pyplot as plt
@@ -70,9 +70,9 @@ def test_dset():
     plot_data(arr_dat, plt_dir)
 # ------------------------------------
 def test_binning():
-    config.binning['var'] =        'B_PT'
-    config.binning['bin'] =           '1'
-    config.binning['cut'] = 'B_PT < 5750'
+    Conf.binning['var'] =        'B_PT'
+    Conf.binning['bin'] =           '1'
+    Conf.binning['cut'] = 'B_PT < 5750'
 
     obj     = data_store(qsq='psi2', dset='r1', trig='MTOS', proc='data')
     arr_dat = obj.get_array()

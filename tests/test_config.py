@@ -1,23 +1,23 @@
-from hqm2.config import config
+from hqm2.config import Conf
 
 #----------------------------------
 def test_simple():
-    config.binning['cut'] = 'a < 3'
-    config.binning['var'] = 'a'
-    config.binning['bin'] = '2'
+    Conf.binning['cut'] = 'a < 3'
+    Conf.binning['var'] = 'a'
+    Conf.binning['bin'] = '2'
 
-    config.print_config('binning')
+    Conf.print_config('binning')
 #----------------------------------
 def test_make_path():
-    out_dir=config.make_data_path(kind='test', dset='2018', dname=f'dir_name', fname=None)
-    out_pat=config.make_data_path(kind='test', dset='2018', dname=f'dir_name', fname='file.json')
+    out_dir=Conf.make_data_path(kind='test', dset='2018', dname=f'dir_name', fname=None)
+    out_pat=Conf.make_data_path(kind='test', dset='2018', dname=f'dir_name', fname='file.json')
 
-    config.binning['cut'] = 'a < 3'
-    config.binning['var'] = 'a'
-    config.binning['bin'] = '2'
+    Conf.binning['cut'] = 'a < 3'
+    Conf.binning['var'] = 'a'
+    Conf.binning['bin'] = '2'
 
-    out_dir=config.make_data_path(kind='test', dset='2018', dname=f'dir_name', fname=None)
-    out_pat=config.make_data_path(kind='test', dset='2018', dname=f'dir_name', fname='file.json')
+    out_dir=Conf.make_data_path(kind='test', dset='2018', dname=f'dir_name', fname=None)
+    out_pat=Conf.make_data_path(kind='test', dset='2018', dname=f'dir_name', fname='file.json')
 #----------------------------------
 def main():
     test_simple()

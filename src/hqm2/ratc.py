@@ -1,5 +1,5 @@
 from hqm2.data_store     import data_store
-from hqm2.config         import config
+from hqm2.config         import Conf
 from hqm2.pdfmc          import pdfmc
 from hqm2.trfc           import TransferFunction
 
@@ -58,7 +58,7 @@ class ratc:
         if self._initialized:
             return
 
-        self._out_dir = config.make_data_path(kind='ratios', dset=self._dset)
+        self._out_dir = Conf.make_data_path(kind='ratios', dset=self._dset)
 
         self._initialized=True
     #-----------------------------
@@ -238,10 +238,10 @@ class ratc:
         plt.savefig(f'{self._out_dir}/fit_{proc}.png')
     #-----------------------------
     def _add_title(self, ax):
-        if len(config.binning) == 0:
+        if len(Conf.binning) == 0:
             return
 
-        cut = config.binning['cut']
+        cut = Conf.binning['cut']
         ax.set_title(cut)
     #-----------------------------
     def _save_figs(self):
