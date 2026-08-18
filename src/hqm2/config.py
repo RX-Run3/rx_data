@@ -9,9 +9,9 @@ log=LogStore.add_logger('rx_hqm:config')
 class Conf:
     binning=dict()
     fitting={'ntries' : 10, 'pval_threshold' : 0.05}
-
+    # -----------------------------------------------
     @staticmethod
-    def print_config(name):
+    def print_config(name) -> None:
         if not hasattr(Conf, name):
             log.error(f'Cannot find {name} in configuration')
             raise
@@ -22,7 +22,7 @@ class Conf:
         log.info(80 * '-')
         for key, val in d_data.items():
             log.info(f'{key:<30}{val:<50}')
-
+    # -----------------------------------------------
     @staticmethod
     def make_path(kind=None, dset=None, dname=None, fname=None) -> Path:
         '''
@@ -37,7 +37,7 @@ class Conf:
 
         Returns
         -----------------
-        string holding path to either file or directory
+        Path to either file or directory
         '''
         if len(Conf.binning) == 0:
             binning = 'int'
@@ -51,11 +51,11 @@ class Conf:
         else:
             dir_path = files('hqm2_data').joinpath(f'{kind}/{binning}/{dset}')
 
-        dir_path = str(dir_path)
-        os.makedirs(dir_path, exist_ok=True)
+        dir_path = Path(str(dir_path))
+        dir_path.mkdir(parents = True, exist_ok = True)
 
         if fname is None:
             return dir_path
 
-        return f'{dir_path}/{fname}'
+        return dir_path / fname 
 #-------------------------------------------------------------------
