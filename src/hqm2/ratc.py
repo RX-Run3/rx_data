@@ -178,7 +178,7 @@ class ratc:
         mas_cns   = {'psi2' : 'B_const_mass_psi2S_M', 'ctrl' : 'B_const_mass_M'}[proc]
         qsq_src   = {'psi2' :                 'psi2', 'ctrl' :           'jpsi'}[proc]
 
-        obj       = TransferFunction(obs=self._obs, qsq_src=qsq_src, qsq_tgt=qsq, proc=proc, dset=self._dset, pref=f'{qsq_src}_{qsq}_{self._dset}_pr')
+        obj       = TransferFunction(obs=self._obs, source=qsq_src, target=qsq, sample=proc, trigger=self._dset, prefix=f'{qsq_src}_{qsq}_{self._dset}_pr')
         pdf_trf   = obj.get_trf()
 
         obj       = data_store(qsq=qsq_src, dset=self._dset, trig='MTOS', proc='data')

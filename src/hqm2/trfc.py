@@ -20,17 +20,17 @@ class TransferFunction:
     def __init__(
         self, 
         obs    : zfit.Space, 
-        qsq_src=None, 
-        qsq_tgt=None, 
-        proc   =None, 
-        dset   =None, 
-        pref   =None):
+        source=None, 
+        target=None, 
+        sample   =None, 
+        trigger   =None, 
+        prefix   =None):
         self._obs     = obs
-        self._dset    = dset
-        self._suf     = pref
-        self._proc    = proc
-        self._qsq_src = qsq_src
-        self._qsq_tgt = qsq_tgt
+        self._dset    = trigger
+        self._suf     = prefix
+        self._proc    = sample
+        self._qsq_src = source
+        self._qsq_tgt = target
 
         self._bandwidth= 15
         self._fft_npt  = 1000

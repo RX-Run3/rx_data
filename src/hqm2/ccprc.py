@@ -186,11 +186,11 @@ class ccprc:
     def _get_trf(self):
         obj     = TransferFunction(
                 obs    = self._obs,
-                dset   = self._dset,
-                pref   = self._pref,
-                proc   = self._proc,
-                qsq_src= self._qsq_src,
-                qsq_tgt= self._qsq_tgt,
+                trigger   = self._dset,
+                prefix   = self._pref,
+                sample   = self._proc,
+                source= self._qsq_src,
+                target= self._qsq_tgt,
                 )
 
         pdf_trf = obj.get_trf()
