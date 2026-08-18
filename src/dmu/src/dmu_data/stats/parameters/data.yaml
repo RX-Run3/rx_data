@@ -119,12 +119,12 @@ cbl:
 ipatia:
   mu:
     val : 5300
-    min : 5100
-    max : 6000
+    min : 5250
+    max : 5350
   sg:
-    val : 50
-    min : 2
-    max : 300
+    val : 8
+    min : 5
+    max : 10
   al:
     val : 2
     min : 0.1
@@ -147,13 +147,13 @@ ipatia:
     max : -5 
     fix : true
   beta:
-    val : 0.0
-    min : -1
-    max : 1
+    val : -0.05
+    min : -0.10
+    max :  0.00
   zeta:
     val : 1
     min : 0.01
-    max : 20
+    max : 2
 cbg:
   mu:
     val : 5300
