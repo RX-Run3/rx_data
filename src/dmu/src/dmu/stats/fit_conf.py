@@ -93,7 +93,15 @@ class Minimization(BaseModel, frozen = True):
     Used to hold parameters needed for zfit's Minuit class 
     '''
     mode    : int  = 0
-    gradient: str  = 'zfit'
+    '''
+    0: Do not call Hesse, use approximation to calculate step size
+    1: Calculate step size with Hesse, more expensive
+    '''
+    gradient: bool = False
+    '''
+    True : Use Minuit numerical gradient
+    False: Use TensorFlow's gradient, faster
+    '''
 #------------------------------
 class FitConf(BaseModel, frozen = True):
     '''
