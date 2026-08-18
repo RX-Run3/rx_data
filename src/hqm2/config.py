@@ -16,9 +16,13 @@ class BinningConf(BaseModel, frozen = True):
     '''
     Index of bin
     '''
+    cut      : str
+    '''
+    Expression defining cut
+    '''
 #-------------------------------------------------------------------
 class Conf(BaseModel, frozen = True):
-    binning : BinningConf
+    binning : BinningConf | None
     fitting : FitConf
     # -----------------------------------------------
     @staticmethod
