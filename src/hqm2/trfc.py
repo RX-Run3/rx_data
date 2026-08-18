@@ -1,10 +1,14 @@
+'''
+Module holding TransferFunction
+'''
 import zutils.utils      as zut
 import utils_noroot      as utnr
 import matplotlib.pyplot as plt
 import numpy
 import os
 
-from dmu                 import zfit
+from rx_common           import Component, Qsq, Trigger
+from dmu.stats           import zfit
 from zutils.pdf          import SUJohnson as zpdf_jh
 from dmu                 import LogStore
 
@@ -20,17 +24,26 @@ class TransferFunction:
     def __init__(
         self, 
         obs    : zfit.Space, 
-        source=None, 
-        target=None, 
-        sample   =None, 
-        trigger   =None, 
-        prefix   =None):
-        self._obs     = obs
-        self._trigger    = trigger
-        self._prefix     = prefix
-        self._sample    = sample
-        self._source = source
-        self._target = target
+        source : Qsq, 
+        target : Qsq, 
+        sample : Component, 
+        trigger: Trigger, 
+        prefix : str):
+        '''
+        Parameters
+        ----------------
+        obs    : Observable to be used in PDFs
+        source : q2bin used to get sideband dataset to be smeared
+        target : q2bin that needs to be obtained from transfer function
+        trigger: Describes dataset, channel and rk vs rkst
+        prefix : Used for naming
+        '''
+        self._obs      = obs
+        self._trigger  = trigger
+        self._prefix   = prefix
+        self._sample   = sample
+        self._source   = source
+        self._target   = target
 
         self._bandwidth= 15
         self._fft_npt  = 1000
