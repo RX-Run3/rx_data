@@ -26,11 +26,11 @@ class TransferFunction:
         trigger   =None, 
         prefix   =None):
         self._obs     = obs
-        self._dset    = trigger
-        self._suf     = prefix
-        self._proc    = sample
-        self._qsq_src = source
-        self._qsq_tgt = target
+        self._trigger    = trigger
+        self._prefix     = prefix
+        self._sample    = sample
+        self._source = source
+        self._target = target
 
         self._bandwidth= 15
         self._fft_npt  = 1000
@@ -56,16 +56,16 @@ class TransferFunction:
         ibin = config.binning['bin']
 
         self._bin_suf = f'{varn}_{ibin}'
-        self._suf     = f'{self._suf}_{self._bin_suf}'
+        self._prefix     = f'{self._prefix}_{self._bin_suf}'
     #---------------------------------
     def _get_trf_pars(self, pdf_trf, json_path, plot_range):
-        obj       = data_store(qsq=self._qsq_src, dset=self._dset, trig='MTOS', proc=self._proc)
+        obj       = data_store(qsq=self._source, dset=self._trigger, trig='MTOS', proc=self._sample)
         arr_dt_mm = obj.get_array()
         zdata     = zfit.Data.from_numpy(self._obs, array=arr_dt_mm)
         pdf_mms   = zfit.pdf.KDE1DimFFT(obs=self._obs, data=zdata, bandwidth=self._bandwidth, name='mc psi2S muon')
         pdf_ees   = zfit.pdf.FFTConvPDFV1(func=pdf_mms, kernel=pdf_trf, name='pdf ee', n=self._fft_npt)
 
-        obj       = data_store(qsq=self._qsq_tgt, dset=self._dset, trig='ETOS', proc=self._proc)
+        obj       = data_store(qsq=self._target, dset=self._trigger, trig='ETOS', proc=self._sample)
         arr_dt_ee = obj.get_array()
 
         plot_path = json_path.replace('.json', '_data.png')
@@ -87,10 +87,10 @@ class TransferFunction:
     #---------------------------------
     def _plot_datasets(self, arr_dt_mm, arr_dt_ee, plot_path):
         plt.figure('sim_dset')
-        plt.hist(arr_dt_mm, bins=100, density=True, histtype='step', label=f'$\mu\mu\in${self._qsq_src}')
-        plt.hist(arr_dt_ee, bins=100, density=True, histtype='step', label=f'$e^+e^-\in${self._qsq_tgt}')
+        plt.hist(arr_dt_mm, bins=100, density=True, histtype='step', label=f'$\mu\mu\in${self._source}')
+        plt.hist(arr_dt_ee, bins=100, density=True, histtype='step', label=f'$e^+e^-\in${self._target}')
         plt.legend()
-        plt.title(f'Process: {self._proc}; Dataset: {self._dset}; $\mu$:{arr_dt_mm.shape[0]}; $e$:{arr_dt_ee.shape[0]}' + self._get_bin_title() )
+        plt.title(f'Process: {self._sample}; Dataset: {self._trigger}; $\mu$:{arr_dt_mm.shape[0]}; $e$:{arr_dt_ee.shape[0]}' + self._get_bin_title() )
         plt.savefig(plot_path)
         plt.close('sim_dset')
     #---------------------------------
@@ -121,12 +121,12 @@ class TransferFunction:
         return f'{kind}_{self._bin_suf}'
     #---------------------------------
     def _get_dscb(self):
-        al  = zfit.param.Parameter(f'al_trf_{self._suf}', 1.5, 1e-3,   10)
-        ar  = zfit.param.Parameter(f'ar_trf_{self._suf}', 1.5, 1e-3,   10)
-        sg  = zfit.param.Parameter(f'sg_trf_{self._suf}',  40,  0.1,  100)
-        nl  = zfit.param.Parameter(f'nl_trf_{self._suf}',   1, 1e-3,  110)
-        nr  = zfit.param.Parameter(f'nr_trf_{self._suf}',   1, 1e-3,  110)
-        mu  = zfit.param.Parameter(f'mu_trf_{self._suf}',   0, -100,  100)
+        al  = zfit.param.Parameter(f'al_trf_{self._prefix}', 1.5, 1e-3,   10)
+        ar  = zfit.param.Parameter(f'ar_trf_{self._prefix}', 1.5, 1e-3,   10)
+        sg  = zfit.param.Parameter(f'sg_trf_{self._prefix}',  40,  0.1,  100)
+        nl  = zfit.param.Parameter(f'nl_trf_{self._prefix}',   1, 1e-3,  110)
+        nr  = zfit.param.Parameter(f'nr_trf_{self._prefix}',   1, 1e-3,  110)
+        mu  = zfit.param.Parameter(f'mu_trf_{self._prefix}',   0, -100,  100)
         pdf = zfit.pdf.DoubleCB(
                 obs   = self._obs_trf,
                 mu    = mu,
@@ -141,26 +141,26 @@ class TransferFunction:
         return pdf
     #---------------------------------
     def _get_3cb(self):
-        mu  = zfit.param.Parameter(f'mu_trf_{self._suf}',    0, -200, 200)
+        mu  = zfit.param.Parameter(f'mu_trf_{self._prefix}',    0, -200, 200)
 
-        sg1 = zfit.param.Parameter(f'sg1_trf_{self._suf}',  10,  0.1, 400)
-        sg2 = zfit.param.Parameter(f'sg2_trf_{self._suf}',  40,  0.1, 400)
-        sg3 = zfit.param.Parameter(f'sg3_trf_{self._suf}',  40,  0.1, 400)
+        sg1 = zfit.param.Parameter(f'sg1_trf_{self._prefix}',  10,  0.1, 400)
+        sg2 = zfit.param.Parameter(f'sg2_trf_{self._prefix}',  40,  0.1, 400)
+        sg3 = zfit.param.Parameter(f'sg3_trf_{self._prefix}',  40,  0.1, 400)
 
-        al  = zfit.param.Parameter(f'al_trf_{self._suf}', 1.5, 1e-3,   10)
-        ar  = zfit.param.Parameter(f'ar_trf_{self._suf}', 1.5, 1e-3,   10)
-        ac  = zfit.param.Parameter(f'ac_trf_{self._suf}', 1.5, 1e-3,   10)
+        al  = zfit.param.Parameter(f'al_trf_{self._prefix}', 1.5, 1e-3,   10)
+        ar  = zfit.param.Parameter(f'ar_trf_{self._prefix}', 1.5, 1e-3,   10)
+        ac  = zfit.param.Parameter(f'ac_trf_{self._prefix}', 1.5, 1e-3,   10)
 
-        nl  = zfit.param.Parameter(f'nl_trf_{self._suf}',   1, 1e-3,  110)
-        nr  = zfit.param.Parameter(f'nr_trf_{self._suf}',   1, 1e-3,  110)
-        nc  = zfit.param.Parameter(f'nc_trf_{self._suf}',   1, 1e-3,  110)
+        nl  = zfit.param.Parameter(f'nl_trf_{self._prefix}',   1, 1e-3,  110)
+        nr  = zfit.param.Parameter(f'nr_trf_{self._prefix}',   1, 1e-3,  110)
+        nc  = zfit.param.Parameter(f'nc_trf_{self._prefix}',   1, 1e-3,  110)
 
         cb1 = zfit.pdf.CrystalBall(mu, sg1, ar, nr, self._obs_trf, name='CB1')
         cb2 = zfit.pdf.CrystalBall(mu, sg2, al, nl, self._obs_trf, name='CB2')
         cb3 = zfit.pdf.CrystalBall(mu, sg3, ac, nc, self._obs_trf, name='CB3')
 
-        frc_1 = zfit.param.Parameter(f'frc_1_trf_{self._suf}', 0.5, 0, 1)
-        frc_2 = zfit.param.Parameter(f'frc_2_trf_{self._suf}', 0.5, 0, 1)
+        frc_1 = zfit.param.Parameter(f'frc_1_trf_{self._prefix}', 0.5, 0, 1)
+        frc_2 = zfit.param.Parameter(f'frc_2_trf_{self._prefix}', 0.5, 0, 1)
 
         pdf   = zfit.pdf.SumPDF(
                 [cb1, cb2, cb3],
@@ -171,22 +171,22 @@ class TransferFunction:
         return pdf
     #---------------------------------
     def _get_2cb(self):
-        mu  = zfit.param.Parameter(f'mu_trf_{self._suf}',    0, -200, 200)
+        mu  = zfit.param.Parameter(f'mu_trf_{self._prefix}',    0, -200, 200)
 
-        sg1 = zfit.param.Parameter(f'sg1_trf_{self._suf}',  10,  0.1, 400)
-        sg2 = zfit.param.Parameter(f'sg2_trf_{self._suf}',  40,  0.1, 400)
+        sg1 = zfit.param.Parameter(f'sg1_trf_{self._prefix}',  10,  0.1, 400)
+        sg2 = zfit.param.Parameter(f'sg2_trf_{self._prefix}',  40,  0.1, 400)
 
-        al  = zfit.param.Parameter(f'al_trf_{self._suf}',  -1,  -10,    0)
-        ar  = zfit.param.Parameter(f'ar_trf_{self._suf}',  +1,    0,   10)
+        al  = zfit.param.Parameter(f'al_trf_{self._prefix}',  -1,  -10,    0)
+        ar  = zfit.param.Parameter(f'ar_trf_{self._prefix}',  +1,    0,   10)
 
-        nl  = zfit.param.Parameter(f'nl_trf_{self._suf}',   1, 1e-3,  110)
-        nr  = zfit.param.Parameter(f'nr_trf_{self._suf}',   1, 1e-3,  110)
+        nl  = zfit.param.Parameter(f'nl_trf_{self._prefix}',   1, 1e-3,  110)
+        nr  = zfit.param.Parameter(f'nr_trf_{self._prefix}',   1, 1e-3,  110)
 
         cb1 = zfit.pdf.CrystalBall(mu, sg1, ar, nr, self._obs_trf, name='CB1')
         cb2 = zfit.pdf.CrystalBall(mu, sg2, al, nl, self._obs_trf, name='CB2')
 
-        frc_1 = zfit.param.Parameter(f'frc_1_trf_{self._suf}', 0.5, 0, 1)
-        frc_2 = zfit.param.Parameter(f'frc_2_trf_{self._suf}', 0.5, 0, 1)
+        frc_1 = zfit.param.Parameter(f'frc_1_trf_{self._prefix}', 0.5, 0, 1)
+        frc_2 = zfit.param.Parameter(f'frc_2_trf_{self._prefix}', 0.5, 0, 1)
 
         pdf   = zfit.pdf.SumPDF(
                 [cb1, cb2],
@@ -197,10 +197,10 @@ class TransferFunction:
         return pdf
     #---------------------------------
     def _get_cb(self):
-        mu  = zfit.param.Parameter(f'mu_trf_{self._suf}',-300, -400, 2400)
-        sg  = zfit.param.Parameter(f'sg_trf_{self._suf}', 100,    1,  600)
-        al  = zfit.param.Parameter(f'al_trf_{self._suf}',   0,   -9,   +9)
-        nt  = zfit.param.Parameter(f'nt_trf_{self._suf}',   7,    0,  150)
+        mu  = zfit.param.Parameter(f'mu_trf_{self._prefix}',-300, -400, 2400)
+        sg  = zfit.param.Parameter(f'sg_trf_{self._prefix}', 100,    1,  600)
+        al  = zfit.param.Parameter(f'al_trf_{self._prefix}',   0,   -9,   +9)
+        nt  = zfit.param.Parameter(f'nt_trf_{self._prefix}',   7,    0,  150)
         pdf = zfit.pdf.CrystalBall(
                 mu,
                 sg,
@@ -213,10 +213,10 @@ class TransferFunction:
         return pdf
     #---------------------------------
     def _get_sj(self):
-        ms = zfit.Parameter(f'ms_trf_{self._suf}',    0, -300,  300)
-        lm = zfit.Parameter(f'lm_trf_{self._suf}',   50,   10,  200)
-        gm = zfit.Parameter(f'gm_trf_{self._suf}',    0,  -10,   10)
-        dl = zfit.Parameter(f'dl_trf_{self._suf}',    2,  -10,   10)
+        ms = zfit.Parameter(f'ms_trf_{self._prefix}',    0, -300,  300)
+        lm = zfit.Parameter(f'lm_trf_{self._prefix}',   50,   10,  200)
+        gm = zfit.Parameter(f'gm_trf_{self._prefix}',    0,  -10,   10)
+        dl = zfit.Parameter(f'dl_trf_{self._prefix}',    2,  -10,   10)
 
         pdf= zpdf_jh(
                 obs  = self._obs_trf,
@@ -232,7 +232,7 @@ class TransferFunction:
     def _get_sjcb(self):
         pdf_sj = self._get_sj()
         pdf_cb = self._get_cb()
-        frc    = zfit.param.Parameter(f'frc_trf_{self._suf}', 0.5, 0, 1)
+        frc    = zfit.param.Parameter(f'frc_trf_{self._prefix}', 0.5, 0, 1)
 
         pdf    = zfit.pdf.SumPDF(
                 [pdf_sj, pdf_cb],
@@ -243,20 +243,20 @@ class TransferFunction:
         return pdf
     #---------------------------------
     def _get_trf_pdf(self):
-        if   self._qsq_src == 'psi2' and self._qsq_tgt == 'high':
+        if   self._source == 'psi2' and self._target == 'high':
             pdf_trf = self._get_cb()
-        elif self._qsq_src == 'jpsi' and self._qsq_tgt == 'high':
+        elif self._source == 'jpsi' and self._target == 'high':
             pdf_trf = self._get_cb()
-        elif self._qsq_src == 'jpsi' and self._qsq_tgt == 'jpsi':
+        elif self._source == 'jpsi' and self._target == 'jpsi':
             pdf_trf = self._get_3cb()
-        elif self._qsq_src == 'jpsi' and self._qsq_tgt == 'psi2':
+        elif self._source == 'jpsi' and self._target == 'psi2':
             pdf_trf = self._get_sjcb()
-        elif self._qsq_src == 'psi2' and self._qsq_tgt == 'jpsi':
+        elif self._source == 'psi2' and self._target == 'jpsi':
             pdf_trf = self._get_sjcb()
-        elif self._qsq_src == 'psi2' and self._qsq_tgt == 'psi2':
+        elif self._source == 'psi2' and self._target == 'psi2':
             pdf_trf = self._get_sjcb()
         else:
-            log.error(f'Invalid source/target q2: {self._qsq_src}/{self._qsq_tgt}')
+            log.error(f'Invalid source/target q2: {self._source}/{self._target}')
             raise
 
         return pdf_trf
@@ -265,25 +265,25 @@ class TransferFunction:
         return len(config.binning) > 0
     #---------------------------------
     def _get_plot_range(self):
-        if self._qsq_src == 'psi2' and self._qsq_tgt == 'psi2':
+        if self._source == 'psi2' and self._target == 'psi2':
             return [4500, 6000]
 
-        if self._qsq_src == 'jpsi' and self._qsq_tgt == 'jpsi':
+        if self._source == 'jpsi' and self._target == 'jpsi':
             return [4500, 5800]
 
-        if self._qsq_src == 'psi2' and self._qsq_tgt == 'jpsi':
+        if self._source == 'psi2' and self._target == 'jpsi':
             return [4500, 5500]
 
-        if self._qsq_src == 'jpsi' and self._qsq_tgt == 'psi2':
+        if self._source == 'jpsi' and self._target == 'psi2':
             return [5000, 6000]
 
-        if self._qsq_src == 'psi2' and self._qsq_tgt == 'high':
+        if self._source == 'psi2' and self._target == 'high':
             return [5000, 6400]
 
-        if self._qsq_src == 'jpsi' and self._qsq_tgt == 'high':
+        if self._source == 'jpsi' and self._target == 'high':
             return [5500, 7000]
 
-        log.error(f'Invalid src/trg q2: {self._qsq_src}/{self._qsq_tgt}')
+        log.error(f'Invalid src/trg q2: {self._source}/{self._target}')
         raise
     #---------------------------------
     def _rename_pars(self, d_par=None, suffix=None):
@@ -308,13 +308,13 @@ class TransferFunction:
 
         plot_range = self._get_plot_range()
         pdf_trf    = self._get_trf_pdf()
-        json_path  = config.make_data_path(kind='tfunc', dset=self._dset, fname=f'{self._qsq_src}_{self._qsq_tgt}_{self._proc}.json')
+        json_path  = config.make_data_path(kind='tfunc', dset=self._trigger, fname=f'{self._source}_{self._target}_{self._sample}.json')
 
         if os.path.isfile(json_path):
-            log.info(f'Transfer function for {self._dset}, {self._qsq_src} -> {self._qsq_tgt} found, i.e. {json_path}')
+            log.info(f'Transfer function for {self._trigger}, {self._source} -> {self._target} found, i.e. {json_path}')
             d_par = utnr.load_json(json_path)
         else:
-            log.info(f'Transfer function for {self._dset}, {self._qsq_src} -> {self._qsq_tgt} not found, i.e. {json_path}')
+            log.info(f'Transfer function for {self._trigger}, {self._source} -> {self._target} not found, i.e. {json_path}')
             d_par = self._get_trf_pars(pdf_trf, json_path, plot_range)
 
         d_par   = self._rename_pars(d_par, suffix='add')
