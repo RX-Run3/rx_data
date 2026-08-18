@@ -1,17 +1,17 @@
 '''
 Module holding FitConf class
 '''
-from pydantic        import BaseModel, ConfigDict, model_validator
-from typing          import Self, Final
-from .constraint     import Constraint
-from .types          import KDEModel
+from pydantic    import BaseModel, model_validator
+from typing      import Self, Final
+from .constraint import Constraint
+from .types      import KDEModel
 
 _PVALUE : Final[float] = 0.05
 _NTRIES : Final[int  ] = 3
 #------------------------------
 # Non-parametric
 #------------------------------
-class PaddingConf(BaseModel):
+class PaddingConf(BaseModel, frozen = True):
     '''
     Class meant to configure padding in zfit KDEs
     '''
@@ -53,7 +53,7 @@ class PaddingConf(BaseModel):
     def default(cls) -> Self:
         return cls()
 #------------------------------
-class KDEConf(BaseModel):
+class KDEConf(BaseModel, frozen = True):
     '''
     Class meant to configure building of KDE PDFs
     '''
@@ -70,12 +70,10 @@ class KDEConf(BaseModel):
 #------------------------------
 # Strategies
 #------------------------------
-class Retries(BaseModel):
+class Retries(BaseModel, frozen = True):
     '''
     Constrols fit when it is retried multiple times
     '''
-    model_config = ConfigDict(frozen=True)
-
     ntries : int
     pvalue : float
     #------------
@@ -83,29 +81,24 @@ class Retries(BaseModel):
     def default(cls) -> Self:
         return cls(ntries = _NTRIES, pvalue = _PVALUE)
 #------------------------------
-class Context(BaseModel):
+class Context(BaseModel, frozen = True):
     '''
     Used if minimization should be run in a separate process
     '''
-    model_config = ConfigDict(frozen=True)
 #------------------------------
 # Minimization itself
 #------------------------------
-class Minimization(BaseModel):
+class Minimization(BaseModel, frozen = True):
     '''
     Used to hold parameters needed for zfit's Minuit class 
     '''
-    model_config = ConfigDict(frozen=True)
-
     mode    : int  = 0
     gradient: str  = 'zfit'
 #------------------------------
-class FitConf(BaseModel):
+class FitConf(BaseModel, frozen = True):
     '''
     Class meant to define how a fit will be done
     '''
-    model_config = ConfigDict(frozen=True)
-
     minimization: Minimization                       = Minimization()
     nentries    : int                                = -1 
     run_gof     : bool                               = True
