@@ -142,9 +142,9 @@ ipatia:
     min : 0.1
     max : 5
   lam:
-    val : -6.0
+    val : -5.0
     min : -10
-    max : -5 
+    max : -4
     fix : true
   beta:
     val : -0.05
