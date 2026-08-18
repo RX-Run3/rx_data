@@ -54,15 +54,7 @@ class TransferFunction:
 
         self._bin_suf  = None
 
-        self._initialized = False
-    #---------------------------------
-    def _initialize(self):
-        if self._initialized:
-            return
-
         self._set_suffix()
-
-        self._initialized = True
     #---------------------------------
     def _set_suffix(self):
         if len(config.binning) == 0:
