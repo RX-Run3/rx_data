@@ -1,14 +1,25 @@
-import os
-
 from dmu                 import LogStore
 from pathlib             import Path
 from importlib.resources import files
+from dmu.stats           import FitConf
+from pydantic            import BaseModel
+from rx_common           import Block, Trigger
 
 log=LogStore.add_logger('rx_hqm:config')
 #-------------------------------------------------------------------
-class Conf:
-    binning=dict()
-    fitting={'ntries' : 10, 'pval_threshold' : 0.05}
+class BinningConf(BaseModel, frozen = True):
+    variable : str
+    '''
+    Name of variable to bin with
+    '''
+    bin      : int
+    '''
+    Index of bin
+    '''
+#-------------------------------------------------------------------
+class Conf(BaseModel, frozen = True):
+    binning : BinningConf
+    fitting : FitConf
     # -----------------------------------------------
     @staticmethod
     def print_config(name) -> None:
@@ -24,16 +35,20 @@ class Conf:
             log.info(f'{key:<30}{val:<50}')
     # -----------------------------------------------
     @staticmethod
-    def make_path(kind=None, dset=None, dname=None, fname=None) -> Path:
+    def make_path(
+        kind    : str, 
+        fname   : str,
+        block   : Block, 
+        trigger : Trigger) -> Path:
         '''
         Function will make a path and return it. 
 
         Parameters 
         -----------------
-        kind  (str): Name of directory meant to sybolize what data will be stored there, e.g. fits, trfc
-        dset  (str): Year, e.g. r1, r2p1
-        dname (str): Optional, descriptive name for kind of data stored, e.g. ctrl_ETOS
-        fname (str): Optional, file name, e.g. data.json
+        kind   : Name of directory meant to sybolize what data will be stored there, e.g. fits, trfc
+        fname  : Optional, file name, e.g. data.json
+        Block  : E.g. block 1,...8 
+        trigger: E.g. rk_ee_os 
 
         Returns
         -----------------
@@ -46,10 +61,10 @@ class Conf:
             ibin    = Conf.binning['bin']
             binning = f'{var}_{ibin}'
 
-        if dname is not None:
-            dir_path = files('hqm2_data').joinpath(f'{kind}/{binning}/{dset}/{dname}')
+        if trigger is not None:
+            dir_path = files('hqm2_data').joinpath(f'{kind}/{binning}/{block}/{trigger}')
         else:
-            dir_path = files('hqm2_data').joinpath(f'{kind}/{binning}/{dset}')
+            dir_path = files('hqm2_data').joinpath(f'{kind}/{binning}/{block}')
 
         dir_path = Path(str(dir_path))
         dir_path.mkdir(parents = True, exist_ok = True)

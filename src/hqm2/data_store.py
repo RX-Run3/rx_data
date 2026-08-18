@@ -162,8 +162,8 @@ class data_store:
 
         scache.cache_path = Conf.make_path(
             kind ='data',
-            dset =self._dset,
-            dname=f'{self._qsq}_{self._proc}_{self._trig}',
+            block =self._dset,
+            trigger=f'{self._qsq}_{self._proc}_{self._trig}',
             fname=f'{variable}_{cut_hash}.json')
 
         df_cf             = self._calculate_array(variable=variable, d_cut=d_cut)

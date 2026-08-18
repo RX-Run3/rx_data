@@ -104,7 +104,7 @@ class ccprc:
         ax.set_title(info)
         ax.legend()
 
-        plot_path = Conf.make_path(kind='fits', dset=self._dset, dname=f'data_MTOS_{self._qsq_src}', fname='fit.png')
+        plot_path = Conf.make_path(kind='fits', block=self._dset, trigger=f'data_MTOS_{self._qsq_src}', fname='fit.png')
         plt.savefig(plot_path)
         plt.close()
     #---------------------------------

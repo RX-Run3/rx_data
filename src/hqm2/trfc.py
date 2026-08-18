@@ -315,7 +315,7 @@ class TransferFunction:
         '''
         plot_range = self._get_plot_range()
         pdf_trf    = self._get_trf_pdf()
-        json_path  = Conf.make_path(kind='tfunc', dset=self._trigger, fname=f'{self._source}_{self._target}_{self._sample}.json')
+        json_path  = Conf.make_path(kind='tfunc', block=self._trigger, fname=f'{self._source}_{self._target}_{self._sample}.json')
 
         if os.path.isfile(json_path):
             log.info(f'Transfer function for {self._trigger}, {self._source} -> {self._target} found, i.e. {json_path}')
