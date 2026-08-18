@@ -1,12 +1,14 @@
 '''
 Module holding TransferFunction
 '''
+
 import zutils.utils      as zut
 import utils_noroot      as utnr
 import matplotlib.pyplot as plt
 import numpy
 import os
 
+from typing              import Final
 from rx_common           import Component, Qsq, Trigger
 from dmu.stats           import zfit
 from zutils.pdf          import SUJohnson as zpdf_jh
@@ -16,6 +18,9 @@ from hqm2.data_store     import data_store
 from hqm2.config         import config
 
 log=LogStore.add_logger('rx_hqm:trfc')
+
+_BANDWIDTH : Final[int] = 15
+_FFT_NPT   : Final[int] = 1000
 #---------------------------------
 class TransferFunction:
     '''
@@ -45,8 +50,6 @@ class TransferFunction:
         self._source   = source
         self._target   = target
 
-        self._bandwidth= 15
-        self._fft_npt  = 1000
         self._obs_trf  = zfit.Space('B_M', limits=(-1000, +1000))
 
         self._bin_suf  = None
@@ -75,8 +78,8 @@ class TransferFunction:
         obj       = data_store(qsq=self._source, dset=self._trigger, trig='MTOS', proc=self._sample)
         arr_dt_mm = obj.get_array()
         zdata     = zfit.Data.from_numpy(self._obs, array=arr_dt_mm)
-        pdf_mms   = zfit.pdf.KDE1DimFFT(obs=self._obs, data=zdata, bandwidth=self._bandwidth, name='mc psi2S muon')
-        pdf_ees   = zfit.pdf.FFTConvPDFV1(func=pdf_mms, kernel=pdf_trf, name='pdf ee', n=self._fft_npt)
+        pdf_mms   = zfit.pdf.KDE1DimFFT(obs=self._obs, data=zdata, bandwidth=_BANDWIDTH, name='mc psi2S muon')
+        pdf_ees   = zfit.pdf.FFTConvPDFV1(func=pdf_mms, kernel=pdf_trf, name='pdf ee', n=_FFT_NPT)
 
         obj       = data_store(qsq=self._target, dset=self._trigger, trig='ETOS', proc=self._sample)
         arr_dt_ee = obj.get_array()
