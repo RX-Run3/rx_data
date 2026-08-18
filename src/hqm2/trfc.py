@@ -103,10 +103,10 @@ class TransferFunction:
     #---------------------------------
     def _plot_datasets(self, arr_dt_mm, arr_dt_ee, plot_path):
         plt.figure('sim_dset')
-        plt.hist(arr_dt_mm, bins=100, density=True, histtype='step', label=f'$\mu\mu\in${self._source}')
-        plt.hist(arr_dt_ee, bins=100, density=True, histtype='step', label=f'$e^+e^-\in${self._target}')
+        plt.hist(arr_dt_mm, bins=100, density=True, histtype='step', label=rf'$\mu\mu\in${self._source}')
+        plt.hist(arr_dt_ee, bins=100, density=True, histtype='step', label=rf'$e^+e^-\in${self._target}')
         plt.legend()
-        plt.title(f'Process: {self._sample}; Dataset: {self._trigger}; $\mu$:{arr_dt_mm.shape[0]}; $e$:{arr_dt_ee.shape[0]}' + self._get_bin_title() )
+        plt.title(rf'Process: {self._sample}; Trigger: {self._trigger}; $\mu$:{arr_dt_mm.shape[0]}; $e$:{arr_dt_ee.shape[0]}' + self._get_bin_title() )
         plt.savefig(plot_path)
         plt.close('sim_dset')
     #---------------------------------
