@@ -4,21 +4,23 @@ import matplotlib.pyplot as plt
 import mplhep
 import zfit
 
+from rx_common    import Component, Trigger, Qsq
 from hqm2.trfc    import TransferFunction 
 from hqm2.config  import config
-from log_store    import log_store
+from dmu          import LogStore
 
+log=LogStore.add_logger('rx_hqm:test_trfc')
 #--------------------------------------
 class data:
     obs = zfit.Space("B_M", limits=(0, 7000))
 #--------------------------------------
 def set_log():
-    log_store.set_level('rx_scripts:zfitter'           , 20)
-    log_store.set_level('rx_hqm2:trfc'                 , 10)
-    log_store.set_level('rx_scripts:atr_mgr:mgr'       , 30)
-    log_store.set_level('rx_scripts:atr_mgr:ldr'       , 30)
-    log_store.set_level('rx_scripts:version_management', 30)
-    log_store.set_level('tools:calc_utility'           , 30)
+    LogStore.set_level('rx_scripts:zfitter'           , 20)
+    LogStore.set_level('rx_hqm2:trfc'                 , 10)
+    LogStore.set_level('rx_scripts:atr_mgr:mgr'       , 30)
+    LogStore.set_level('rx_scripts:atr_mgr:ldr'       , 30)
+    LogStore.set_level('rx_scripts:version_management', 30)
+    LogStore.set_level('tools:calc_utility'           , 30)
 #--------------------------------------
 def test_psi2_high_brem(ibin):
     config.fitting['ntries'] = 10 
