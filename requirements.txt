@@ -1,6 +1,0 @@
-jacobi
-numpy
-matplotlib
-zfit
-rx_scripts
-rx_selection
