@@ -2,22 +2,29 @@ import zutils.utils      as zut
 import utils_noroot      as utnr
 import matplotlib.pyplot as plt
 import numpy
-import zfit
 import os
 
+from dmu                 import zfit
 from zutils.pdf          import SUJohnson as zpdf_jh
-from log_store           import log_store
+from dmu                 import LogStore
 
 from hqm2.data_store     import data_store
 from hqm2.config         import config
 
-log=log_store.add_logger('rx_hqm2:trfc')
+log=LogStore.add_logger('rx_hqm:trfc')
 #---------------------------------
 class TransferFunction:
     '''
     Class used to provide transfer functions to go from a given q2 bin to another, using a given process in MC for the fitting/training
     '''
-    def __init__(self, obs=None, qsq_src=None, qsq_tgt=None, proc=None, dset=None, pref=None):
+    def __init__(
+        self, 
+        obs    : zfit.Space, 
+        qsq_src=None, 
+        qsq_tgt=None, 
+        proc   =None, 
+        dset   =None, 
+        pref   =None):
         self._obs     = obs
         self._dset    = dset
         self._suf     = pref
