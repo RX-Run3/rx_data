@@ -1,21 +1,21 @@
 import os
 
-from log_store           import log_store
+from dmu                 import LogStore
 from importlib.resources import files
 
-log=log_store.add_logger('rx_hqm2:config')
+log=LogStore.add_logger('rx_hqm:config')
 #-------------------------------------------------------------------
-class config:
+class Conf:
     binning=dict()
     fitting={'ntries' : 10, 'pval_threshold' : 0.05}
 
     @staticmethod
     def print_config(name):
-        if not hasattr(config, name):
+        if not hasattr(Conf, name):
             log.error(f'Cannot find {name} in configuration')
             raise
 
-        d_data = getattr(config, name)
+        d_data = getattr(Conf, name)
         log.info(80 * '-')
         log.info(f'{"Setting":<30}{"Value":<50}')
         log.info(80 * '-')
@@ -38,11 +38,11 @@ class config:
         -----------------
         string holding path to either file or directory
         '''
-        if len(config.binning) == 0:
+        if len(Conf.binning) == 0:
             binning = 'int'
         else:
-            var     = config.binning['var']
-            ibin    = config.binning['bin']
+            var     = Conf.binning['var']
+            ibin    = Conf.binning['bin']
             binning = f'{var}_{ibin}'
 
         if dname is not None:
