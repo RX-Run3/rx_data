@@ -26,6 +26,7 @@ class TransferFunction:
     '''
     Class used to provide transfer functions to go from a given q2 bin to another, using a given process in MC for the fitting/training
     '''
+    #---------------------------------
     def __init__(
         self, 
         obs    : zfit.Space, 
@@ -312,8 +313,6 @@ class TransferFunction:
         '''
         Will return zfit PDF representing transfer function
         '''
-        self._initialize()
-
         plot_range = self._get_plot_range()
         pdf_trf    = self._get_trf_pdf()
         json_path  = config.make_data_path(kind='tfunc', dset=self._trigger, fname=f'{self._source}_{self._target}_{self._sample}.json')
