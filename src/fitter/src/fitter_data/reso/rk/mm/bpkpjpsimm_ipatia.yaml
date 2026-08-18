@@ -15,8 +15,11 @@ categories:
       fix           : {}
 fit:
   strategy  :
-    ntries : 10
+    ntries : 1
     pvalue : 0.05
+  minimization:
+    gradient : True # Use numerical gradient, due to missing Bessel gradient in TF
+    mode     : 0    # Do not call hesse in minimization, faster
 plots:
   nbins     : 50
   stacked   : True
@@ -24,5 +27,4 @@ plots:
     - 5200
     - 5400
   d_leg :
-    cbl_bpkpjpsimm_brem_xx0_1  : Crystal Ball 
-    dscb_bpkpjpsimm_brem_xx0_1 : DSCB 
+    ipatia_bpkpjpsimm_brem_xx0_1 : Hypatia 
