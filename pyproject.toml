@@ -1,11 +1,11 @@
 [build-system]
-requires      = ["setuptools>=61"]
-build-backend = "setuptools.build_meta"
+requires      = ['setuptools>=61']
+build-backend = 'setuptools.build_meta'
 
 [project]
-name         = "rx_hqm2"
-version      = "0.0.1"
-description  = "Used to build fitting model for high-q2 bin"
+name         = 'hqm'
+version      = '0.0.1'
+description  = 'Used to build fitting model for high-q2 bin'
 dependencies = [
     'matplotlib',
     'jacobi',
@@ -14,20 +14,20 @@ dependencies = [
 ]
 
 [tool.setuptools]
-package-dir = {"" = "src"}
+package-dir = {'' = 'src'}
 
-[tool.setuptools.packages]
-find = {}
+[tool.setuptools.packages.find]
+where = ['src']
 
 [tool.setuptools.package-data]
 hqm2_data = [
-    "tfunc/int/*/psi2_high_psi2.json",
-    "ratios/int/*/parameters.json",
-    "fits/int/*/psi2_ETOS_high/pars.json",
-    "data/int/*/high_psi2_ETOS/B_M_*.json",
-    "data/int/*/high_bdks_ETOS/B_M_*.json",
-    "data/int/*/high_bpks_ETOS/B_M_*.json",
-    "data/int/*/high_bsph_ETOS/B_M_*.json",
-    "data/int/*/psi2_data_MTOS/B_M_*.json",
-    "config/*.toml",
+    'tfunc/int/*/psi2_high_psi2.json',
+    'ratios/int/*/parameters.json',
+    'fits/int/*/psi2_ETOS_high/pars.json',
+    'data/int/*/high_psi2_ETOS/B_M_*.json',
+    'data/int/*/high_bdks_ETOS/B_M_*.json',
+    'data/int/*/high_bpks_ETOS/B_M_*.json',
+    'data/int/*/high_bsph_ETOS/B_M_*.json',
+    'data/int/*/psi2_data_MTOS/B_M_*.json',
+    'config/*.toml',
 ]
