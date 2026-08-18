@@ -1,6 +1,7 @@
 import os
 
 from dmu                 import LogStore
+from pathlib             import Path
 from importlib.resources import files
 
 log=LogStore.add_logger('rx_hqm:config')
@@ -23,7 +24,7 @@ class Conf:
             log.info(f'{key:<30}{val:<50}')
 
     @staticmethod
-    def make_data_path(kind=None, dset=None, dname=None, fname=None):
+    def make_path(kind=None, dset=None, dname=None, fname=None) -> Path:
         '''
         Function will make a path and return it. 
 

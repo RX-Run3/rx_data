@@ -160,7 +160,7 @@ class data_store:
         d_cut             = self._update_cuts(d_cut)
         cut_hash          = self._hash_from_dict(d_cut)
 
-        scache.cache_path = Conf.make_data_path(
+        scache.cache_path = Conf.make_path(
             kind ='data',
             dset =self._dset,
             dname=f'{self._qsq}_{self._proc}_{self._trig}',

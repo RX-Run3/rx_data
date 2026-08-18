@@ -41,7 +41,7 @@ class pdfmc:
         if self._initialized:
             return
 
-        self._out_dir=Conf.make_data_path(kind='fits', dset=self._dset, dname=f'{self._proc}_{self._trig}_{self._qsq}', fname=None)
+        self._out_dir=Conf.make_path(kind='fits', dset=self._dset, dname=f'{self._proc}_{self._trig}_{self._qsq}', fname=None)
 
         self._set_pdf_suffix()
         self._set_ranges()

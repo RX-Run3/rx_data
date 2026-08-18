@@ -58,7 +58,7 @@ class ratc:
         if self._initialized:
             return
 
-        self._out_dir = Conf.make_data_path(kind='ratios', dset=self._dset)
+        self._out_dir = Conf.make_path(kind='ratios', dset=self._dset)
 
         self._initialized=True
     #-----------------------------
