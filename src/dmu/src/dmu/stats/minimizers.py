@@ -218,6 +218,8 @@ class AnealingMinimizer:
             try:
                 obj = self._min.minimize(loss, params = params, init = init)
             except (FailMinimizeNaN, ValueError, RuntimeError) as exc:
+                for pdf in loss.model:
+                    print_pdf(pdf)
                 log.warning(f'Failed minimization: {exc}')
                 continue
 
@@ -356,7 +358,7 @@ def _calculate_errors(res : zres, cfg : FitConf) -> zres:
             res.hesse(name='minuit_hesse', method = method)
         except ValueError as exc:
             log.error(res)
-            raise ValueError('Failed calculating error') from exc
+            raise ValueError(f'Failed calculating error with method: {method}') from exc
 
         if not res.valid:
             log.warning('Result invalid after error calculation')
