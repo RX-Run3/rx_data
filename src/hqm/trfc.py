@@ -9,7 +9,8 @@ from typing         import Final, TypeAlias
 from pydantic       import BaseModel
 from rx_common      import Block, Channel, Component, Project, Trigger
 from dmu            import LogStore
-from dmu.stats      import FitResult, Fitter, Model, ModelFactory, ZFitPlotter, zfit
+from dmu.stats      import FitResult, Fitter, Model, ModelFactory
+from dmu.stats      import ZFitPlotter, zfit, utilities as gut
 
 from hqm.config     import Conf
 
@@ -18,6 +19,7 @@ log=LogStore.add_logger('rx_hqm:trfc')
 _SHARED         : Final[list[str]] = ['mu', 'sg'] # Shared parameters in transfer functions
 _SOURCE_CHANNEL : Final[Channel  ] = Channel.mm
 _TARGET_CHANNEL : Final[Channel  ] = Channel.ee
+_MU_TRF_VALS    : Final[tuple[int,int,int]]= 0, -1000, 1000 # Value and range for observable of transffer function
 
 zpdf = zfit.pdf.BasePDF
 kpdf : TypeAlias = zfit.pdf.KDE1DimFFT
@@ -98,8 +100,12 @@ class TransferFunctionMaker:
 
         return obj.get_array()
     #---------------------------------
-    def __get_source_pdf(self) -> tuple[kpdf,numpy.ndarray]:
+    def __get_source_pdf(self, path : Path) -> tuple[kpdf,numpy.ndarray]:
         '''
+        Parameters
+        -----------------------
+        path: Path to JSON file with parameters, to be repurposed for fit
+
         Returns
         -----------------------
         Zfit PDF built from source dataset, e.g. muon psi2S data
@@ -114,6 +120,13 @@ class TransferFunctionMaker:
             bandwidth= self._cfg.bandwidth, 
             name     = 'source_pdf')
 
+        ptr = ZFitPlotter(data = array, model = pdf)
+        ptr.run(cfg = self._cfg.plots)
+
+        fit_path = path.with_name(f'{path.stem}_source.png')
+        plt.savefig(fit_path)
+        plt.close()
+
         return pdf, array
     #---------------------------------
     def __get_fit_result(self, pdf_trf : zpdf, json_path : Path) -> FitResult:
@@ -127,28 +140,56 @@ class TransferFunctionMaker:
         ------------------------
         FitResult with transfer function parameters
         '''
-        pdf_src, arr_src = self.__get_source_pdf()
-        pdf_ees   = zfit.pdf.FFTConvPDFV1(
-            name  = 'target_pdf', 
-            func  = pdf_trf, 
-            kernel= pdf_src, 
-            n     = self._cfg.fft_npt)
-
-        arr_dt_ee = self.__get_masses(is_source = False)
+        arr_tgt          = self.__get_masses(is_source = False)
+        pdf_src, arr_src = self.__get_source_pdf(path = json_path)
 
         plot_path = json_path.with_name(f'{json_path.stem}_data.png')
         self.__plot_datasets(
             source = arr_src, 
-            target = arr_dt_ee, 
+            target = arr_tgt, 
             path   = plot_path)
 
-        ftr = Fitter(pdf = pdf_ees, data = arr_dt_ee)
+        pdf_tgt    = zfit.pdf.FFTConvPDFV1(
+            name   = 'target_pdf', 
+            func   = pdf_src, 
+            kernel = pdf_trf, 
+            n      = self._cfg.fft_npt)
+
+        lower, upper = self._cfg.observable.mass_range
+        xs  = numpy.linspace(lower, upper, self._cfg.fft_npt)
+        ys  = pdf_tgt.pdf(xs)
+        plt.scatter(xs, ys, s = 1)
+        path= json_path.with_name(f'{json_path.stem}_conv_prefit.png')
+        plt.savefig(path)
+        plt.close()
+
+        res = self._fit_trf(data = arr_tgt, pdf = pdf_tgt, path = json_path)
+
+        return res
+    #---------------------------------
+    def _fit_trf(
+        self, 
+        path : Path,
+        data : numpy.ndarray, 
+        pdf  : zpdf) -> FitResult:
+        '''
+        Parameters
+        ----------------
+        path: JSON file path, will override ending to save fit plot
+
+        Returns
+        --------------
+        Fit result
+        '''
+        ftr = Fitter(pdf = pdf, data = data)
         res = ftr.fit(cfg = self._cfg.fits)
 
-        ptr = ZFitPlotter(data = arr_dt_ee, model = pdf_ees)
+        print(res)
+
+        ptr = ZFitPlotter(data = data, model = pdf)
         ptr.run(cfg = self._cfg.plots)
 
-        fit_path = json_path.with_suffix('.png')
+        fit_path = path.with_name(f'{path.stem}_conv_postfit.png')
         plt.savefig(fit_path)
         plt.close()
 
@@ -176,32 +217,51 @@ class TransferFunctionMaker:
         plt.savefig(path)
         plt.close('sim_dset')
     #---------------------------------
-    def __get_trf_pdf(self) -> zpdf:
+    def __get_trf_pdf(self, path : Path) -> zpdf:
         '''
+        Parameters
+        --------------
+        path : Path to JSON file, needed to save plot after overriding ending
+
         Returns
         --------------
         zfit PDF used as transfer function
         '''
         obs = self._cfg.observable.trn_obs
+
         fac = ModelFactory(
             preffix  = self._cfg.name,
             obs      = obs,
             l_pdf    = self._cfg.models,
             l_shared = _SHARED,
-            l_float  = [])
+            l_float  = [],
+            values   = {'mu' : _MU_TRF_VALS},
+        )
 
-        return fac.get_pdf()
+        pdf = fac.get_pdf()
+
+        _, lower, higher = _MU_TRF_VALS
+        xs  = numpy.linspace(lower, higher, self._cfg.fft_npt)
+        ys  = pdf.pdf(xs)
+
+        plt.scatter(xs, ys, s=2)
+
+        path = path.with_name(f'{path.stem}_trf.png')
+        plt.savefig(path)
+        plt.close()
+
+        return pdf
     #---------------------------------
     def get_trf(self) -> TransferFunction:
         '''
         Will return transfer function 
         '''
-        pdf_trf   = self.__get_trf_pdf()
         json_path = self._cfg.make_path(
             kind    = 'trfc',
             project = self._project,
-            fname   = f'{self._block}_{self._cfg.name}.json')
+            fname   = f'block_{self._block}_{self._cfg.name}.json')
 
+        pdf_trf = self.__get_trf_pdf(path = json_path)
         if json_path.exists():
             log.info(f'Transfer function found in {json_path}')
             return TransferFunction.from_json(path = json_path)
