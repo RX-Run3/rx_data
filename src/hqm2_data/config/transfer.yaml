@@ -1,0 +1,34 @@
+binning : null
+fitting :
+  run_gof   : false
+  do_errors : false
+qsq:
+  - source     : psi2
+    target     : high
+    models     : [cbl]
+    plot_range : [5000, 6400]
+  
+  - source     : jpsi
+    target     : high
+    models     : [cbl]
+    plot_range : [5500, 7000]
+  
+  - source     : jpsi
+    target     : jpsi
+    models     : [cbl, cbr]
+    plot_range : [4500, 5800]
+  
+  - source     : jpsi
+    target     : psi2
+    models     : [suj, cbl]
+    plot_range : [5000, 6000]
+  
+  - source     : psi2
+    target     : jpsi
+    models     : [suj, cbl]
+    plot_range : [4500, 5500]
+  
+  - source     : psi2
+    target     : psi2
+    models     : [suj, cbl]
+    plot_range : [4500, 6000]
