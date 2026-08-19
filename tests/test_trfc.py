@@ -1,18 +1,19 @@
 
-import zutils.utils      as zut
 import matplotlib.pyplot as plt
 import mplhep
+import pytest
+import numpy
 import zfit
 
-from rx_common    import Component, Trigger, Qsq
-from hqm2.trfc    import TransferFunctionMaker 
-from hqm2.config  import Conf
-from dmu          import LogStore
+from pathlib     import Path
+from typing      import Final
+from rx_common   import Block, Component, Project, Qsq
+from hqm.trfc    import TransferFunctionMaker 
+from hqm.config  import Conf
+from dmu         import LogStore
 
 log=LogStore.add_logger('rx_hqm:test_trfc')
-#--------------------------------------
-class data:
-    obs = zfit.Space("B_M", limits=(0, 7000))
+obs : Final[zfit.Space] = zfit.Space("B_M", limits=(0, 7000))
 #--------------------------------------
 def set_log():
     LogStore.set_level('rx_scripts:zfitter'           , 20)
@@ -22,18 +23,37 @@ def set_log():
     LogStore.set_level('rx_scripts:version_management', 30)
     LogStore.set_level('tools:calc_utility'           , 30)
 #--------------------------------------
-def test_psi2_high_brem(ibin):
-    Conf.fits['ntries'] = 10 
+def _get_masses(self, is_source : bool) -> numpy.ndarray:
+    if is_source:
+        return numpy.random.normal(loc = 5280, scale = 10, size = 2000)
 
-    Conf.binning['var'] =          'cbrem'
-    Conf.binning['bin'] =            ibin
-    Conf.binning['cut'] = f'cbrem=={ibin}'
+    return numpy.random.normal(loc = 5200, scale = 30, size = 2000)
+#--------------------------------------
+@pytest.fixture(autouse = True)
+def _use_fake_masses(monkeypatch):
+    monkeypatch.setattr(
+        TransferFunctionMaker,
+        '_TransferFunctionMaker__get_masses',
+        _get_masses)
+#--------------------------------------
+def test_psi2_high_brem(monkeypatch, tmp_path : Path):
+    '''
+    Basic test
+    '''
+    monkeypatch.setenv('ANADIR', str(tmp_path))
 
-    obj     = TransferFunctionMaker(obs=data.obs, source='psi2', target='high', sample='psi2', trigger='2018', prefix='psi2_high_pr_2018')
-    pdf_trf = obj.get_trf()
+    cfgs        = Conf.load(
+        binning = 'none', 
+        source  = Qsq.psi2,
+        target  = Qsq.high) 
 
-    zut.print_pdf(pdf_trf)
-    Conf.binning=dict()
+    obj         = TransferFunctionMaker(
+        cfg     = cfgs[0],
+        sample  = Component.bpkpjpsimm, 
+        project = Project.rk,
+        block   = Block(value = 1) )
+
+    obj.get_trf()
 #--------------------------------------
 def test_psi2_high():
     obj     = TransferFunctionMaker(obs=data.obs, source='psi2', target='high', sample='psi2', trigger='2018', prefix='psi2_high_pr_2018')
