@@ -4,7 +4,7 @@ import copy
 from dmu         import LogStore
 from dmu.stats   import Model, ZFitPlotterConf, zfit
 from dmu.generic import utilities as gut
-from typing      import Final, Self
+from typing      import Self
 from pathlib     import Path
 from dmu.stats   import FitConf
 from pydantic    import BaseModel, model_validator
@@ -197,7 +197,7 @@ class Conf(BaseModel, frozen = True):
 
         nbin = len(bin_data[binning]['cuts'])
 
-        confs : list[cls] = []
+        confs : list['Conf'] = []
         for ibin in range(nbin):
             this_cfg = copy.deepcopy(cfg)
             this_cfg['binning']['bin'] = ibin
@@ -243,7 +243,7 @@ class Conf(BaseModel, frozen = True):
             binning = f'{self.binning.name}_{self.binning.bin}'
 
         anadir = Path(os.environ['ANADIR'])
-        log.error(f'Using ANADIR: {anadir}')
+        log.debug(f'Using ANADIR: {anadir}')
 
         dir_path = anadir / f'{kind}/{binning}/{project}'
         dir_path.mkdir(parents = True, exist_ok = True)
