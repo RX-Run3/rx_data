@@ -12,7 +12,6 @@ from rx_common   import Project, Qsq
 
 log = LogStore.add_logger('rx_hqm:config')
 
-_ANADIR : Final[Path] = Path(os.environ['ANADIR'])
 #-------------------------------------------------------------------
 class ObsConf(BaseModel, frozen = True):
     '''
@@ -243,7 +242,10 @@ class Conf(BaseModel, frozen = True):
         else:
             binning = f'{self.binning.name}_{self.binning.bin}'
 
-        dir_path = _ANADIR / f'{kind}/{binning}/{project}'
+        anadir = Path(os.environ['ANADIR'])
+        log.error(f'Using ANADIR: {anadir}')
+
+        dir_path = anadir / f'{kind}/{binning}/{project}'
         dir_path.mkdir(parents = True, exist_ok = True)
 
         if fname is None:
