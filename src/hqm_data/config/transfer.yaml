@@ -1,4 +1,4 @@
-bandwidth : 15
+bandwidth : 3 
 fft_npt   : 1000
 observable:
   name       : B_Mass
@@ -15,7 +15,7 @@ qsq:
     target     : high
     models     : [cbl]
     plots      : 
-      plot_range : [5000, 6400]
+      plot_range : [5100, 5500]
   - source     : jpsi
     target     : high
     models     : [cbl]
