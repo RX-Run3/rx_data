@@ -25,7 +25,7 @@ def set_log():
 #--------------------------------------
 def _get_masses(self, is_source : bool) -> numpy.ndarray:
     if is_source:
-        return numpy.random.normal(loc = 5280, scale = 10, size = 2000)
+        return numpy.random.normal(loc = 5280, scale = 20, size = 2000)
 
     return numpy.random.normal(loc = 5200, scale = 30, size = 2000)
 #--------------------------------------
