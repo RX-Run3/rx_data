@@ -2,7 +2,7 @@ import os
 import copy
 
 from dmu         import LogStore
-from dmu.stats   import Model, ZFitPlotterConf
+from dmu.stats   import Model, ZFitPlotterConf, zfit
 from dmu.generic import utilities as gut
 from typing      import Final, Self
 from pathlib     import Path
@@ -13,6 +13,29 @@ from rx_common   import Project, Qsq
 log = LogStore.add_logger('rx_hqm:config')
 
 _ANADIR : Final[Path] = Path(os.environ['ANADIR'])
+#-------------------------------------------------------------------
+class ObsConf(BaseModel, frozen = True):
+    '''
+    Class meant to configure observables needed in
+    transfer function calculation
+    '''
+    name       : str
+    mass_range : tuple[float,float]
+    tran_range : tuple[float,float]
+    #---------------------------------
+    @property
+    def fit_obs(self) -> zfit.Space:
+        '''
+        Observable that will be fitted for source and target datasets
+        '''
+        return zfit.Space(self.name, limits = self.mass_range)
+    #---------------------------------
+    @property
+    def trn_obs(self) -> zfit.Space:
+        '''
+        Observable for transfer function 
+        '''
+        return zfit.Space(self.name, limits = self.tran_range)
 #-------------------------------------------------------------------
 class BinningConf(BaseModel, frozen = True):
     '''
@@ -83,6 +106,7 @@ class Conf(BaseModel, frozen = True):
     '''
     Configuration controlling how transfer function is built
     '''
+    observable: ObsConf
     bandwidth : int
     fft_npt   : int
     fits      : FitConf
@@ -162,10 +186,11 @@ class Conf(BaseModel, frozen = True):
 
             cfg.update(q2_cfg)
 
-        cfg['fits'     ] = trf_data['fits'     ]
-        cfg['binning'  ] = bin_data[binning    ]
-        cfg['fft_npt'  ] = trf_data['fft_npt'  ]
-        cfg['bandwidth'] = trf_data['bandwidth']
+        cfg['fits'      ] = trf_data['fits'       ]
+        cfg['observable'] = trf_data['observable' ]
+        cfg['binning'   ] = bin_data[binning      ]
+        cfg['fft_npt'   ] = trf_data['fft_npt'    ]
+        cfg['bandwidth' ] = trf_data['bandwidth'  ]
 
         cfg['plots'].update(trf_data['plots'])
         if cfg is None:
