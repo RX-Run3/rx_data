@@ -408,12 +408,17 @@ def minimize(
         except (FailMinimizeNaN, RuntimeError) as exc:
             raise MinimizerFailError('Minimization failed') from exc
 
-    gcl = GofCalculator(nll = nll)
-    gof = gcl.get_gof()
+    gof = None
+    if cfg.run_gof:
+        gcl = GofCalculator(nll = nll)
+        gof = gcl.get_gof()
 
     if isinstance(obj, zres):
         obj = _calculate_errors(res = obj, cfg = cfg)
-        res = FitResult.from_zfit(res = obj, gof = gof)
+        res = FitResult.from_zfit(
+            res          = obj, 
+            gof          = gof,
+            no_errors_ok = not cfg.do_errors)
     else:
         res = obj
 
@@ -424,8 +429,11 @@ def minimize(
     if res.valid:
         return res
 
-    log.debug('Found bad fit')
-    log.debug(f'{gof.chi2:<10.3f}{gof.pval:<10.3e}{res.status:<10}')
+    if gof:
+        log.debug('Found bad fit')
+        log.debug(f'{gof.chi2:<10.3f}{gof.pval:<10.3e}{res.status:<10}')
+    else:
+        log.debug('Found bad fit, no GOF (turned off)')
 
     if log.getEffectiveLevel() < LogLevels.info:
         log.info(res)
