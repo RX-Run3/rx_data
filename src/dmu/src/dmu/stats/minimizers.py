@@ -406,6 +406,8 @@ def minimize(
         try:
             obj = mnm.minimize(loss = nll)
         except (FailMinimizeNaN, RuntimeError) as exc:
+            path = sut.save_nll(loss = nll)
+            log.error(f'Saved NLL in: {path}')
             raise MinimizerFailError('Minimization failed') from exc
 
     gof = None
