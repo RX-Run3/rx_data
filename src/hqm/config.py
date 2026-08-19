@@ -34,6 +34,13 @@ class BinningConf(BaseModel, frozen = True):
     '''
     # ------------------------
     @property
+    def cut(self) -> str:
+        '''
+        Cut associated to current bin
+        '''
+        return self.cuts[self.bin]
+    # ------------------------
+    @property
     def is_unbinned(self) -> bool:
         '''
         True if unbinned
