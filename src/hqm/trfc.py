@@ -4,164 +4,206 @@ Module holding TransferFunction
 import numpy
 import matplotlib.pyplot as plt
 
-from typing         import Final
-from rx_common      import Block, Component, Qsq, Trigger
+from pathlib        import Path
+from typing         import Final, TypeAlias
+from pydantic       import BaseModel
+from rx_common      import Block, Channel, Component, Project, Trigger
 from dmu            import LogStore
-from dmu.stats      import ModelFactory, zfit
+from dmu.stats      import FitResult, Fitter, Model, ModelFactory, ZFitPlotter, zfit
 
-from hqm.data_store import data_store
 from hqm.config     import Conf
 
 log=LogStore.add_logger('rx_hqm:trfc')
 
-_SHARED : Final[list[str]] = ['mu', 'sg'] # Shared parameters in transfer functions
+_SHARED         : Final[list[str]] = ['mu', 'sg'] # Shared parameters in transfer functions
+_SOURCE_CHANNEL : Final[Channel  ] = Channel.mm
+_TARGET_CHANNEL : Final[Channel  ] = Channel.ee
 
 zpdf = zfit.pdf.BasePDF
+kpdf : TypeAlias = zfit.pdf.KDE1DimFFT
+#---------------------------------
+class TransferFunction(BaseModel, frozen = True):
+    '''
+    Class meant to represent a transfer function
+    '''
+    fit_result : FitResult
+    models     : list[Model]
+    #----------------------
+    @classmethod
+    def from_json(cls, path : Path) -> 'TransferFunction':
+        '''
+        Parameters
+        ----------------
+        path: Path to JSON file holding transfer function
+
+        Returns
+        ----------------
+        Transfer function instance
+        '''
+        string = path.read_text()
+
+        return cls.model_validate_json(json_data = string)
 #---------------------------------
 class TransferFunctionMaker:
     '''
-    Class used to provide transfer functions to go from a given q2 bin to another, using a given process in MC for the fitting/training
+    Class meant to:
+
+    - Loading datasets
+    - Building KDE and non-KDE (transfer function itself) models
+    - Fitting to get transfer function parameters
+    - Save plots of data and fit
+    - Use fit parameters to build and return TransferFunction instance
     '''
     #---------------------------------
     def __init__(
         self, 
-        obs    : zfit.Space, 
-        source : Qsq, 
-        target : Qsq, 
+        cfg    : Conf,
         sample : Component, 
-        trigger: Trigger, 
+        project: Project, 
         block  : Block):
         '''
         Parameters
         ----------------
-        obs    : Observable to be used in PDFs
-        source : q2bin used to get sideband dataset to be smeared
-        target : q2bin that needs to be obtained from transfer function
-        trigger: Describes dataset, channel and rk vs rkst
+        cfg    : Configuration controling the building of TransferFunction
+        sample : Describes simulated sample needed to make function
+        project: E.g. rk or rkst 
         block  : E.g. 1 to 8
         '''
-        self._obs      = obs
-        self._trigger  = trigger
+        self._cfg      = cfg
+        self._project  = project 
         self._sample   = sample
         self._block    = block
-
-        self._obs_trf  = zfit.Space('B_M', limits=(-1000, +1000))
-        self._cfg      = Conf.load(name = 'transfer', source = source, target = target)
     #---------------------------------
-    def _get_trf_pars(self, pdf_trf, json_path):
-        obj       = data_store(qsq=self._source, dset=self._trigger, trig='MTOS', proc=self._sample)
-        arr_dt_mm = obj.get_array()
-        zdata     = zfit.Data.from_numpy(self._obs, array=arr_dt_mm)
-        pdf_mms   = zfit.pdf.KDE1DimFFT(obs=self._obs, data=zdata, bandwidth=_BANDWIDTH, name='mc psi2S muon')
-        pdf_ees   = zfit.pdf.FFTConvPDFV1(func=pdf_mms, kernel=pdf_trf, name='pdf ee', n=_FFT_NPT)
+    def __get_masses(self, is_source : bool) -> numpy.ndarray:
+        '''
+        Parameters
+        ----------------
+        is_source: True if dataset is from the starting distribution, e.g. muon
 
-        obj       = data_store(qsq=self._target, dset=self._trigger, trig='ETOS', proc=self._sample)
-        arr_dt_ee = obj.get_array()
+        Returns
+        ----------------
+        Numpy array with masses
+        '''
+        from hqm.data_store import data_store
 
-        plot_path = json_path.replace('.json', '_data.png')
-        self._plot_datasets(arr_dt_mm, arr_dt_ee, plot_path)
+        trigger     = Trigger.get_main_trigger(
+            channel = _TARGET_CHANNEL, 
+            project = self._project)
 
-        plot_path = json_path.replace('.json', '.png')
-        plot_range= self._cfg.q2_cfg(source = self._source, target = self._target).plot_range
+        obj     = data_store(
+            qsq = self._cfg.target, 
+            dset= self._block, 
+            trig= trigger, 
+            proc= self._sample)
 
-        d_plt_opt = {'plot_path' : plot_path, 'plot_range' : plot_range, 'skip_pulls' : True , 'stacked' : False}
-        d_fit_opt = dict(Conf.fitting)
-        d_fit_opt['ignore_status'] = True
-        d_par     = zut.get_fit_pars(pdf_ees, arr_dt_ee, d_plt_opt=d_plt_opt, d_fit_opt=d_fit_opt)
-        d_par     = self._rename_pars(d_par, suffix='remove')
-        utnr.dump_json(d_par, json_path)
-
-        plot_path = json_path.fits('.json', '_kde.png')
-        self._plot_pdf(pdf_ees, plot_range, plot_path)
-
-        return d_par
+        return obj.get_array()
     #---------------------------------
-    def _plot_datasets(self, arr_dt_mm, arr_dt_ee, plot_path):
+    def __get_source_pdf(self) -> tuple[kpdf,numpy.ndarray]:
+        '''
+        Returns
+        -----------------------
+        Zfit PDF built from source dataset, e.g. muon psi2S data
+        '''
+        obs   = self._cfg.observable.fit_obs
+        array = self.__get_masses(is_source = True)
+        zdata = zfit.Data.from_numpy(obs, array=array)
+
+        pdf          = zfit.pdf.KDE1DimFFT(
+            data     = zdata, 
+            obs      = obs, 
+            bandwidth= self._cfg.bandwidth, 
+            name     = 'source_pdf')
+
+        return pdf, array
+    #---------------------------------
+    def __get_fit_result(self, pdf_trf : zpdf, json_path : Path) -> FitResult:
+        '''
+        Parameters
+        ------------------------
+        pdf_trf  : PDF used as the transfer function
+        json_path: Path to JSON where transfer function will be saved
+
+        Returns
+        ------------------------
+        FitResult with transfer function parameters
+        '''
+        pdf_src, arr_src = self.__get_source_pdf()
+        pdf_ees   = zfit.pdf.FFTConvPDFV1(
+            name  = 'target_pdf', 
+            func  = pdf_trf, 
+            kernel= pdf_src, 
+            n     = self._cfg.fft_npt)
+
+        arr_dt_ee = self.__get_masses(is_source = False)
+
+        plot_path = json_path.with_name(f'{json_path.stem}_data.png')
+        self.__plot_datasets(
+            source = arr_src, 
+            target = arr_dt_ee, 
+            path   = plot_path)
+
+        ftr = Fitter(pdf = pdf_ees, data = arr_dt_ee)
+        res = ftr.fit(cfg = self._cfg.fits)
+
+        ptr = ZFitPlotter(data = arr_dt_ee, model = pdf_ees)
+        ptr.run(cfg = self._cfg.plots)
+
+        fit_path = json_path.with_suffix('.png')
+        plt.savefig(fit_path)
+        plt.close()
+
+        return res
+    #---------------------------------
+    def __plot_datasets(self, 
+        source : numpy.ndarray, 
+        target : numpy.ndarray, 
+        path   : Path) -> None:
+        '''
+        Parameters:
+        -----------------
+        source/target: Arrays with masses from source/target distributions
+        path         : Path to plot
+        '''
         plt.figure('sim_dset')
-        plt.hist(arr_dt_mm, bins=100, density=True, histtype='step', label=rf'$\mu\mu\in${self._source}')
-        plt.hist(arr_dt_ee, bins=100, density=True, histtype='step', label=rf'$e^+e^-\in${self._target}')
+        plt.hist(source, bins=100, density=True, histtype='step', label=rf'$\mu\mu\in${self._cfg.source}')
+        plt.hist(target, bins=100, density=True, histtype='step', label=rf'$e^+e^-\in${self._cfg.target}')
         plt.legend()
-        plt.title(rf'Process: {self._sample}; Trigger: {self._trigger}; $\mu$:{arr_dt_mm.shape[0]}; $e$:{arr_dt_ee.shape[0]}' + self._get_bin_title() )
-        plt.savefig(plot_path)
+        plt.title(rf'Process: {self._sample}; Trigger: {self._project}; $\mu$:{source.shape[0]}; $e$:{target.shape[0]}; {self._cfg.binning.name}')
+        plt.savefig(path)
         plt.close('sim_dset')
     #---------------------------------
-    def _get_bin_title(self) -> str:
-        if self._cfg.binning is None:
-            return ''
-
-        return f'; {self._cfg.binning.cut}'
-    #---------------------------------
-    def _plot_pdf(self, pdf, plot_range, plot_path):
-        [minx, maxx] = plot_range
-        arr_x = numpy.linspace(minx, maxx, 300)
-        arr_y = pdf.pdf(arr_x)
-
-        plt.figure('pdf_only')
-        plt.plot(arr_x, arr_y)
-        plt.legend()
-        plt.title(self._get_bin_title())
-        plt.savefig(plot_path)
-        plt.close('pdf_only')
-    #---------------------------------
-    def _get_pdf_name(self, kind : str) -> str:
-        if self._cfg.binning is None:
-            return kind
-
-        return f'{kind}_{self._cfg.variable}_{self._cfg.bin}'
-    #---------------------------------
-    def _get_trf_pdf(self) -> zpdf:
+    def __get_trf_pdf(self) -> zpdf:
         '''
         Returns
         --------------
         zfit PDF used as transfer function
         '''
-        models = self._cfg.q2_cfg(
-            source = self._source,
-            target = self._target)
-
+        obs = self._cfg.observable.trn_obs
         fac = ModelFactory(
-            obs      = self._obs,
-            preffix  = self._prefix,
-            l_pdf    = models,
+            preffix  = self._cfg.name,
+            obs      = obs,
+            l_pdf    = self._cfg.models,
             l_shared = _SHARED,
             l_float  = [])
 
         return fac.get_pdf()
     #---------------------------------
-    def _rename_pars(self, d_par=None, suffix=None):
-        if self._cfg.binning is None:
-            return d_par
-
-        if   suffix == 'add':
-            d_par_new = { f'{key}_{self._bin_suf}'             : val for key, val in d_par.items() }
-        elif suffix == 'remove':
-            d_par_new = { key.replace(f'_{self._bin_suf}', '') : val for key, val in d_par.items() }
-        else:
-            log.error(f'Invalid argument: {suffix}')
-            raise
-
-        return d_par_new
-    #---------------------------------
-    def get_trf(self):
+    def get_trf(self) -> TransferFunction:
         '''
-        Will return zfit PDF representing transfer function
+        Will return transfer function 
         '''
-        pdf_trf   = self._get_trf_pdf()
+        pdf_trf   = self.__get_trf_pdf()
         json_path = self._cfg.make_path(
-            kind    = 'tfunc', 
-            block   = self._block, 
-            trigger = self._trigger,
-            fname   = f'{self._cfg.name}.json')
+            kind    = 'trfc',
+            project = self._project,
+            fname   = f'{self._block}_{self._cfg.name}.json')
 
         if json_path.exists():
-            log.info(f'Transfer function for {self._trigger}, {self._source} -> {self._target} found, i.e. {json_path}')
-            d_par = utnr.load_json(json_path)
-        else:
-            log.info(f'Transfer function for {self._trigger}, {self._source} -> {self._target} not found, i.e. {json_path}')
-            d_par = self._get_trf_pars(pdf_trf, json_path)
+            log.info(f'Transfer function found in {json_path}')
+            return TransferFunction.from_json(path = json_path)
 
-        d_par   = self._rename_pars(d_par, suffix='add')
-        pdf_trf = zut.fix_pars(pdf_trf, d_par)
+        log.info('Transfer function not found')
+        res = self.__get_fit_result(pdf_trf, json_path)
 
-        return pdf_trf
+        return TransferFunction(fit_result = res, models = self._cfg.models) 
 #---------------------------------
