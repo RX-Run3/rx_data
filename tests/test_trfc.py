@@ -1,6 +1,7 @@
+'''
+Module holding tests for TransferFunctionMaker
+'''
 
-import matplotlib.pyplot as plt
-import mplhep
 import pytest
 import numpy
 import zfit
@@ -79,25 +80,3 @@ def test_psi2_psi2():
     obj     = TransferFunctionMaker(obs=data.obs, source='psi2', target='psi2', sample='psi2', trigger='2018', prefix='psi2_psi2_2018_pr')
     pdf_trf = obj.get_trf()
 #--------------------------------------
-def main():
-    set_log()
-    plt.style.use(mplhep.style.LHCb2)
-
-    test_jpsi_high()
-    test_psi2_high()
-
-    test_psi2_high_brem(0)
-    test_psi2_high_brem(1)
-    test_psi2_high_brem(2)
-
-    test_jpsi_jpsi()
-    test_psi2_psi2()
-    test_jpsi_jpsi()
-    test_psi2_psi2()
-    test_jpsi_jpsi()
-    test_jpsi_psi2()
-    test_psi2_jpsi()
-#--------------------------------------
-if __name__ == '__main__':
-    main()
-
