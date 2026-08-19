@@ -23,7 +23,7 @@ def set_log():
     LogStore.set_level('tools:calc_utility'           , 30)
 #--------------------------------------
 def test_psi2_high_brem(ibin):
-    Conf.fitting['ntries'] = 10 
+    Conf.fits['ntries'] = 10 
 
     Conf.binning['var'] =          'cbrem'
     Conf.binning['bin'] =            ibin

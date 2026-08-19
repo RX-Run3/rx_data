@@ -20,7 +20,7 @@ def set_logs():
     log_store.set_level('tools:calc_utility'      , 40)
 #-------------------------------------
 def test_brem_bin(ibin):
-    Conf.fitting['ntries'] = 10 
+    Conf.fits['ntries'] = 10 
 
     Conf.binning['var'] =          'cbrem'
     Conf.binning['bin'] =            ibin
