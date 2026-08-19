@@ -151,7 +151,7 @@ class TransferFunctionMaker:
             kind    = 'tfunc', 
             block   = self._block, 
             trigger = self._trigger,
-            fname   = f'{self._source}_{self._target}_{self._sample}.json')
+            fname   = f'{self._cfg.name}.json')
 
         if json_path.exists():
             log.info(f'Transfer function for {self._trigger}, {self._source} -> {self._target} found, i.e. {json_path}')

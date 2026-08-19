@@ -46,6 +46,8 @@ class Conf(BaseModel, frozen = True):
     # -----------------------------------------------
     def __str__(self):
         return f'''
+        Name: {self.name}
+
         ----------
         Data
         ----------
@@ -70,7 +72,7 @@ class Conf(BaseModel, frozen = True):
         '''
     # -----------------------------------------------
     @property
-    def prefix(self) -> str:
+    def name(self) -> str:
         '''
         String meant to be used to identify PDFs, etc
         '''
