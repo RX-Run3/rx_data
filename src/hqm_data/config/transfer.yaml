@@ -1,3 +1,5 @@
+bandwidth : 15
+fft_npt   : 1000
 fits:
   run_gof   : false
   do_errors : false

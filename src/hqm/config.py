@@ -26,14 +26,23 @@ class BinningConf(BaseModel, frozen = True):
     '''
     Expression defining cut
     '''
+    # ------------------------
+    @property
+    def prefix(self) -> str:
+        return f'{self.variable}_{self.bin}'
 #-------------------------------------------------------------------
 class Conf(BaseModel, frozen = True):
-    fits    : FitConf
-    plots   : ZFitPlotterConf
-    binning : BinningConf | None
-    source  : Qsq
-    target  : Qsq
-    models  : list[Model]
+    '''
+    Configuration controlling how transfer function is built
+    '''
+    bandwidth : int
+    fft_npt   : int
+    fits      : FitConf
+    plots     : ZFitPlotterConf
+    binning   : BinningConf | None
+    source    : Qsq
+    target    : Qsq
+    models    : list[Model]
     # -----------------------------------------------
     def __str__(self):
         return f'''
@@ -59,6 +68,18 @@ class Conf(BaseModel, frozen = True):
         ----------
         {self.binning}
         '''
+    # -----------------------------------------------
+    @property
+    def prefix(self) -> str:
+        '''
+        String meant to be used to identify PDFs, etc
+        '''
+        if self.binning is None:
+            binning = 'unbinned'
+        else:
+            binning = self.binning.prefix
+
+        return f'{self.source}_{self.target}_{binning}'
     # -----------------------------------------------
     @classmethod
     def load(
@@ -90,8 +111,10 @@ class Conf(BaseModel, frozen = True):
 
             cfg.update(q2_cfg)
 
-        cfg['fits'   ] = data['fits'   ]
-        cfg['binning'] = data['binning']
+        cfg['fits'     ] = data['fits'     ]
+        cfg['binning'  ] = data['binning'  ]
+        cfg['fft_npt'  ] = data['fft_npt'  ]
+        cfg['bandwidth'] = data['bandwidth']
         cfg['plots'  ].update(data['plots'])
         if cfg is None:
             raise ValueError(f'Missing configuration for {source}/{target}')
