@@ -33,7 +33,32 @@ class Conf(BaseModel, frozen = True):
     binning : BinningConf | None
     source  : Qsq
     target  : Qsq
-    model   : list[Model]
+    models  : list[Model]
+    # -----------------------------------------------
+    def __str__(self):
+        return f'''
+        ----------
+        Data
+        ----------
+        Source: {self.source}
+        Target: {self.target}
+        Models: {self.models}
+
+        ----------
+        Fits
+        ----------
+        {self.fits}
+
+        ----------
+        Plots
+        ----------
+        {self.plots}
+
+        ----------
+        Binning
+        ----------
+        {self.binning}
+        '''
     # -----------------------------------------------
     @classmethod
     def load(
@@ -54,23 +79,24 @@ class Conf(BaseModel, frozen = True):
         '''
         data     = gut.load_data(package = 'hqm_data', fpath = f'config/{name}.yaml')
         qsq_data = data['qsq']
-        cfg      = None
+        cfg      = dict() 
 
         for q2_cfg in qsq_data:
-            if q2_cfg[0] != source:
+            if q2_cfg['source'] != source:
                 continue
 
-            if q2_cfg[1] != target:
+            if q2_cfg['target'] != target:
                 continue
 
-            cfg = q2_cfg
+            cfg.update(q2_cfg)
 
+        cfg['fits'   ] = data['fits'   ]
+        cfg['binning'] = data['binning']
+        cfg['plots'  ].update(data['plots'])
         if cfg is None:
             raise ValueError(f'Missing configuration for {source}/{target}')
 
-        data.update(cfg)
-
-        return cls(**data)
+        return cls(**cfg)
     # -----------------------------------------------
     @staticmethod
     def print_config(name) -> None:
