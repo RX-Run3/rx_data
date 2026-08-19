@@ -6,7 +6,7 @@ observable:
   tran_range : [-1000, 1000]
 fits:
   run_gof   : false
-  do_errors : false
+  do_errors : true 
 plots :
   stacked : true
   nbins   : 100
