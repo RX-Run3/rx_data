@@ -494,7 +494,7 @@ class ZFitPlotter:
         y           = None
         l_y         = []
         was_blinded = False
-        for model, par in zip(self.total_model.pdfs, self.total_model.params.values(), strict = True):
+        for model, par in zip(self.total_model.pdfs, self.total_model.params.values()):
             if model.name == blind_name:
                 was_blinded = True
                 log.debug(f'Skipping blinded PDF: {blind_name}')
@@ -503,7 +503,7 @@ class ZFitPlotter:
             nevt = self._get_component_yield(model, par)
 
             if   model.name in self._l_plot_components and     hasattr(model, 'pdfs'):
-                l_model = [ (frc, pdf) for pdf, frc in zip(model.pdfs, model.params.values(), strict = True) ]
+                l_model = [ (frc, pdf) for pdf, frc in zip(model.pdfs, model.params.values()) ]
             elif model.name in self._l_plot_components and not hasattr(model, 'pdfs'):
                 log.warning(f'Cannot plot {model.name} as separate components, despite it was requested')
                 l_model = [ (1, model)]
