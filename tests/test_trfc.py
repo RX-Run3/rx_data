@@ -5,7 +5,7 @@ import mplhep
 import zfit
 
 from rx_common    import Component, Trigger, Qsq
-from hqm2.trfc    import TransferFunction 
+from hqm2.trfc    import TransferFunctionMaker 
 from hqm2.config  import Conf
 from dmu          import LogStore
 
@@ -29,34 +29,34 @@ def test_psi2_high_brem(ibin):
     Conf.binning['bin'] =            ibin
     Conf.binning['cut'] = f'cbrem=={ibin}'
 
-    obj     = TransferFunction(obs=data.obs, source='psi2', target='high', sample='psi2', trigger='2018', prefix='psi2_high_pr_2018')
+    obj     = TransferFunctionMaker(obs=data.obs, source='psi2', target='high', sample='psi2', trigger='2018', prefix='psi2_high_pr_2018')
     pdf_trf = obj.get_trf()
 
     zut.print_pdf(pdf_trf)
     Conf.binning=dict()
 #--------------------------------------
 def test_psi2_high():
-    obj     = TransferFunction(obs=data.obs, source='psi2', target='high', sample='psi2', trigger='2018', prefix='psi2_high_pr_2018')
+    obj     = TransferFunctionMaker(obs=data.obs, source='psi2', target='high', sample='psi2', trigger='2018', prefix='psi2_high_pr_2018')
     obj.get_trf()
 #--------------------------------------
 def test_jpsi_high():
-    obj     = TransferFunction(obs=data.obs, source='jpsi', target='high', sample='ctrl', trigger='comb', prefix='jpsi_high_pr_comb')
+    obj     = TransferFunctionMaker(obs=data.obs, source='jpsi', target='high', sample='ctrl', trigger='comb', prefix='jpsi_high_pr_comb')
     pdf_trf = obj.get_trf()
 #--------------------------------------
 def test_jpsi_jpsi():
-    obj     = TransferFunction(obs=data.obs, source='jpsi', target='jpsi', sample='ctrl', trigger='2018', prefix='jpsi_jpsi_2018_pr')
+    obj     = TransferFunctionMaker(obs=data.obs, source='jpsi', target='jpsi', sample='ctrl', trigger='2018', prefix='jpsi_jpsi_2018_pr')
     pdf_trf = obj.get_trf()
 #--------------------------------------
 def test_jpsi_psi2():
-    obj     = TransferFunction(obs=data.obs, source='jpsi', target='psi2', sample='ctrl', trigger='2018', prefix='jpsi_psi2_2018_pr')
+    obj     = TransferFunctionMaker(obs=data.obs, source='jpsi', target='psi2', sample='ctrl', trigger='2018', prefix='jpsi_psi2_2018_pr')
     pdf_trf = obj.get_trf()
 #--------------------------------------
 def test_psi2_jpsi():
-    obj     = TransferFunction(obs=data.obs, source='psi2', target='jpsi', sample='psi2', trigger='2018', prefix='psi2_jpsi_2018_pr')
+    obj     = TransferFunctionMaker(obs=data.obs, source='psi2', target='jpsi', sample='psi2', trigger='2018', prefix='psi2_jpsi_2018_pr')
     pdf_trf = obj.get_trf()
 #--------------------------------------
 def test_psi2_psi2():
-    obj     = TransferFunction(obs=data.obs, source='psi2', target='psi2', sample='psi2', trigger='2018', prefix='psi2_psi2_2018_pr')
+    obj     = TransferFunctionMaker(obs=data.obs, source='psi2', target='psi2', sample='psi2', trigger='2018', prefix='psi2_psi2_2018_pr')
     pdf_trf = obj.get_trf()
 #--------------------------------------
 def main():

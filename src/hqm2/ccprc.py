@@ -10,7 +10,7 @@ import zutils.utils      as zut
 from hqm2.data_store     import data_store
 from hqm2.config         import Conf
 from hqm2.pdfmc          import pdfmc
-from hqm2.trfc           import TransferFunction
+from hqm2.trfc           import TransferFunctionMaker
 from hqm2.ratc           import ratc
 
 from importlib.resources import files
@@ -184,7 +184,7 @@ class ccprc:
         return par, d_cns
     #---------------------------------
     def _get_trf(self):
-        obj     = TransferFunction(
+        obj     = TransferFunctionMaker(
                 obs    = self._obs,
                 trigger   = self._dset,
                 prefix   = self._pref,
