@@ -20,7 +20,7 @@ package-dir = {'' = 'src'}
 where = ['src']
 
 [tool.setuptools.package-data]
-hqm2_data = [
+hqm_data = [
     'tfunc/int/*/psi2_high_psi2.json',
     'ratios/int/*/parameters.json',
     'fits/int/*/psi2_ETOS_high/pars.json',
@@ -29,5 +29,5 @@ hqm2_data = [
     'data/int/*/high_bpks_ETOS/B_M_*.json',
     'data/int/*/high_bsph_ETOS/B_M_*.json',
     'data/int/*/psi2_data_MTOS/B_M_*.json',
-    'config/*.toml',
+    'config/*.yaml',
 ]
