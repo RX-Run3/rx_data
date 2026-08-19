@@ -1,22 +1,20 @@
 '''
 Module holding TransferFunction
 '''
-import matplotlib.pyplot as plt
 import numpy
+import matplotlib.pyplot as plt
 
-from typing          import Final
-from rx_common       import Block, Component, Qsq, Trigger
-from dmu.stats       import ModelFactory, zfit
-from dmu             import LogStore
+from typing         import Final
+from rx_common      import Block, Component, Qsq, Trigger
+from dmu            import LogStore
+from dmu.stats      import ModelFactory, zfit
 
-from hqm2.data_store import data_store
-from hqm2.config     import Conf
+from hqm.data_store import data_store
+from hqm.config     import Conf
 
 log=LogStore.add_logger('rx_hqm:trfc')
 
-_BANDWIDTH : Final[int]       = 15
-_FFT_NPT   : Final[int]       = 1000
-_SHARED    : Final[list[str]] = ['mu', 'sg'] # Shared parameters in transfer functions
+_SHARED : Final[list[str]] = ['mu', 'sg'] # Shared parameters in transfer functions
 
 zpdf = zfit.pdf.BasePDF
 #---------------------------------
@@ -32,8 +30,7 @@ class TransferFunctionMaker:
         target : Qsq, 
         sample : Component, 
         trigger: Trigger, 
-        block  : Block,
-        prefix : str):
+        block  : Block):
         '''
         Parameters
         ----------------
@@ -42,30 +39,14 @@ class TransferFunctionMaker:
         target : q2bin that needs to be obtained from transfer function
         trigger: Describes dataset, channel and rk vs rkst
         block  : E.g. 1 to 8
-        prefix : Used for naming
         '''
         self._obs      = obs
         self._trigger  = trigger
         self._sample   = sample
-        self._source   = source
-        self._target   = target
         self._block    = block
 
         self._obs_trf  = zfit.Space('B_M', limits=(-1000, +1000))
-        self._prefix   = self._update_prefix(prefix = prefix)
-        self._cfg      = Conf.load(name = 'transfer')
-    #---------------------------------
-    def _update_prefix(self, prefix : str) -> str:
-        '''
-        Returns prefix updated with binning information
-        '''
-        if self._cfg.binning is None:
-            return prefix
-
-        varn = self._cfg.binning.variable
-        ibin = self._cfg.binning.bin
-
-        return f'{self._prefix}_{varn}_{ibin}'
+        self._cfg      = Conf.load(name = 'transfer', source = source, target = target)
     #---------------------------------
     def _get_trf_pars(self, pdf_trf, json_path):
         obj       = data_store(qsq=self._source, dset=self._trigger, trig='MTOS', proc=self._sample)
