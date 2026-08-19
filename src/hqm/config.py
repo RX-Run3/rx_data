@@ -1,11 +1,17 @@
+import os
+
 from dmu                 import LogStore
+from dmu.stats           import Model, ZFitPlotterConf
+from dmu.generic         import utilities as gut
+from typing              import Final
 from pathlib             import Path
-from importlib.resources import files
 from dmu.stats           import FitConf
 from pydantic            import BaseModel
-from rx_common           import Block, Trigger
+from rx_common           import Block, Trigger, Qsq
 
-log=LogStore.add_logger('rx_hqm:config')
+log = LogStore.add_logger('rx_hqm:config')
+
+_ANADIR : Final[Path] = Path(os.environ['ANADIR'])
 #-------------------------------------------------------------------
 class BinningConf(BaseModel, frozen = True):
     variable : str
@@ -22,8 +28,49 @@ class BinningConf(BaseModel, frozen = True):
     '''
 #-------------------------------------------------------------------
 class Conf(BaseModel, frozen = True):
+    fits    : FitConf
+    plots   : ZFitPlotterConf
     binning : BinningConf | None
-    fitting : FitConf
+    source  : Qsq
+    target  : Qsq
+    model   : list[Model]
+    # -----------------------------------------------
+    @classmethod
+    def load(
+        cls, 
+        name   : str,
+        source : Qsq,
+        target : Qsq) -> 'Conf':
+        '''
+        Parameters
+        ---------------
+        name: Name of config file used to create config
+        source: Origin (muon) q2 bin 
+        target: Needed (electron) q2 bin
+
+        Returns
+        ---------------
+        Config object
+        '''
+        data     = gut.load_data(package = 'hqm_data', fpath = f'config/{name}.yaml')
+        qsq_data = data['qsq']
+        cfg      = None
+
+        for q2_cfg in qsq_data:
+            if q2_cfg[0] != source:
+                continue
+
+            if q2_cfg[1] != target:
+                continue
+
+            cfg = q2_cfg
+
+        if cfg is None:
+            raise ValueError(f'Missing configuration for {source}/{target}')
+
+        data.update(cfg)
+
+        return cls(**data)
     # -----------------------------------------------
     @staticmethod
     def print_config(name) -> None:
@@ -38,8 +85,8 @@ class Conf(BaseModel, frozen = True):
         for key, val in d_data.items():
             log.info(f'{key:<30}{val:<50}')
     # -----------------------------------------------
-    @staticmethod
     def make_path(
+        self,
         kind    : str, 
         fname   : str,
         block   : Block, 
@@ -58,19 +105,12 @@ class Conf(BaseModel, frozen = True):
         -----------------
         Path to either file or directory
         '''
-        if len(Conf.binning) == 0:
+        if self.binning is None:
             binning = 'int'
         else:
-            var     = Conf.binning['var']
-            ibin    = Conf.binning['bin']
-            binning = f'{var}_{ibin}'
+            binning = f'{self.binning.variable}_{self.binning.bin}'
 
-        if trigger is not None:
-            dir_path = files('hqm2_data').joinpath(f'{kind}/{binning}/{block}/{trigger}')
-        else:
-            dir_path = files('hqm2_data').joinpath(f'{kind}/{binning}/{block}')
-
-        dir_path = Path(str(dir_path))
+        dir_path = _ANADIR / f'{kind}/{binning}/{block}'
         dir_path.mkdir(parents = True, exist_ok = True)
 
         if fname is None:

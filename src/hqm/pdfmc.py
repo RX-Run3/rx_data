@@ -150,7 +150,7 @@ class pdfmc:
 
         plot_path = f'{self._out_dir}/fit.png'
         d_plt_opt = {'title' : title, 'plot_path' : plot_path, 'plot_range' : self._prange, 'skip_pulls' : True , 'stacked' : False}
-        d_par     = zut.get_fit_pars(self._pdf, zdt, d_plt_opt=d_plt_opt, d_fit_opt=Conf.fitting)
+        d_par     = zut.get_fit_pars(self._pdf, zdt, d_plt_opt=d_plt_opt, d_fit_opt=Conf.fits)
 
         return d_par
     #------------------------------------
