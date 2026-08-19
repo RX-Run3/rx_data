@@ -1,35 +1,76 @@
 import os
+import copy
 
-from dmu                 import LogStore
-from dmu.stats           import Model, ZFitPlotterConf
-from dmu.generic         import utilities as gut
-from typing              import Final
-from pathlib             import Path
-from dmu.stats           import FitConf
-from pydantic            import BaseModel
-from rx_common           import Block, Trigger, Qsq
+from dmu         import LogStore
+from dmu.stats   import Model, ZFitPlotterConf
+from dmu.generic import utilities as gut
+from typing      import Final, Self
+from pathlib     import Path
+from dmu.stats   import FitConf
+from pydantic    import BaseModel, model_validator
+from rx_common   import Project, Qsq
 
 log = LogStore.add_logger('rx_hqm:config')
 
 _ANADIR : Final[Path] = Path(os.environ['ANADIR'])
 #-------------------------------------------------------------------
 class BinningConf(BaseModel, frozen = True):
-    variable : str
     '''
-    Name of variable to bin with
+    Config describing 
     '''
-    bin      : int
+    name : str
     '''
-    Index of bin
+    Label for cut used to get current bin, e.g occupacy
     '''
-    cut      : str
+
+    bin   : int
+    '''
+    Index of bin, needed to pick up cut
+    '''
+
+    cuts  : list[str]
     '''
     Expression defining cut
     '''
     # ------------------------
     @property
+    def is_unbinned(self) -> bool:
+        '''
+        True if unbinned
+        '''
+        return len(self.cuts) == 1 and self.cuts[0] == 'true'
+    # ------------------------
+    @model_validator(mode = 'after')
+    def _validate(self) -> Self:
+        ncut = len(self.cuts)
+        if self.bin < 0:
+            raise ValueError(f'Non-positive bin found: {self.bin}')
+
+        if ncut == 0:
+            raise ValueError('Found no cuts')
+
+        if self.name == 'none':
+            if ncut != 1:
+                raise ValueError('Unbinned case requires one bin')
+
+            [cut] = self.cuts
+            if cut != 'true':
+                raise ValueError(f'Unbinned case using invalid cut: {cut}')
+
+        if ncut <= self.bin:
+            raise ValueError(f'Bin index {self.bin} incompatible with number of bins {ncut}')
+
+        return self
+    # ------------------------
+    @property
     def prefix(self) -> str:
-        return f'{self.variable}_{self.bin}'
+        '''
+        String used to identify transfer function, e.g. brem_001
+        '''
+        if self.is_unbinned:
+            return 'unbinned'
+
+        return f'{self.name}_{self.bin:03d}'
 #-------------------------------------------------------------------
 class Conf(BaseModel, frozen = True):
     '''
@@ -39,7 +80,7 @@ class Conf(BaseModel, frozen = True):
     fft_npt   : int
     fits      : FitConf
     plots     : ZFitPlotterConf
-    binning   : BinningConf | None
+    binning   : BinningConf
     source    : Qsq
     target    : Qsq
     models    : list[Model]
@@ -86,22 +127,23 @@ class Conf(BaseModel, frozen = True):
     @classmethod
     def load(
         cls, 
-        name   : str,
+        binning: str,
         source : Qsq,
-        target : Qsq) -> 'Conf':
+        target : Qsq) -> list['Conf']:
         '''
         Parameters
         ---------------
-        name: Name of config file used to create config
-        source: Origin (muon) q2 bin 
-        target: Needed (electron) q2 bin
+        binning: Name of binning, e.g. none
+        source : Origin (muon) q2 bin 
+        target : Needed (electron) q2 bin
 
         Returns
         ---------------
         Config object
         '''
-        data     = gut.load_data(package = 'hqm_data', fpath = f'config/{name}.yaml')
-        qsq_data = data['qsq']
+        trf_data = gut.load_data(package = 'hqm_data', fpath = 'config/transfer.yaml')
+        bin_data = gut.load_data(package = 'hqm_data', fpath = 'config/binning.yaml')
+        qsq_data = trf_data['qsq']
         cfg      = dict() 
 
         for q2_cfg in qsq_data:
@@ -113,15 +155,25 @@ class Conf(BaseModel, frozen = True):
 
             cfg.update(q2_cfg)
 
-        cfg['fits'     ] = data['fits'     ]
-        cfg['binning'  ] = data['binning'  ]
-        cfg['fft_npt'  ] = data['fft_npt'  ]
-        cfg['bandwidth'] = data['bandwidth']
-        cfg['plots'  ].update(data['plots'])
+        cfg['fits'     ] = trf_data['fits'     ]
+        cfg['binning'  ] = bin_data[binning    ]
+        cfg['fft_npt'  ] = trf_data['fft_npt'  ]
+        cfg['bandwidth'] = trf_data['bandwidth']
+
+        cfg['plots'].update(trf_data['plots'])
         if cfg is None:
             raise ValueError(f'Missing configuration for {source}/{target}')
 
-        return cls(**cfg)
+        nbin = len(bin_data[binning]['cuts'])
+
+        confs : list[cls] = []
+        for ibin in range(nbin):
+            this_cfg = copy.deepcopy(cfg)
+            this_cfg['binning']['bin'] = ibin
+
+            confs.append(cls(**this_cfg))
+
+        return confs
     # -----------------------------------------------
     @staticmethod
     def print_config(name) -> None:
@@ -138,10 +190,9 @@ class Conf(BaseModel, frozen = True):
     # -----------------------------------------------
     def make_path(
         self,
-        kind    : str, 
         fname   : str,
-        block   : Block, 
-        trigger : Trigger) -> Path:
+        kind    : str, 
+        project : Project) -> Path:
         '''
         Function will make a path and return it. 
 
@@ -149,8 +200,7 @@ class Conf(BaseModel, frozen = True):
         -----------------
         kind   : Name of directory meant to sybolize what data will be stored there, e.g. fits, trfc
         fname  : Optional, file name, e.g. data.json
-        Block  : E.g. block 1,...8 
-        trigger: E.g. rk_ee_os 
+        project: E.g. rk, rkst
 
         Returns
         -----------------
@@ -159,9 +209,9 @@ class Conf(BaseModel, frozen = True):
         if self.binning is None:
             binning = 'int'
         else:
-            binning = f'{self.binning.variable}_{self.binning.bin}'
+            binning = f'{self.binning.name}_{self.binning.bin}'
 
-        dir_path = _ANADIR / f'{kind}/{binning}/{block}'
+        dir_path = _ANADIR / f'{kind}/{binning}/{project}'
         dir_path.mkdir(parents = True, exist_ok = True)
 
         if fname is None:
