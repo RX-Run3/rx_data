@@ -1,0 +1,9 @@
+none:
+  name : none
+  cuts :
+    - 'true'
+brem:
+  name : brem
+  cuts :
+    - nbrem == 1
+    - nbrem == 2

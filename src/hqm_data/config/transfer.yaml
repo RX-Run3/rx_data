@@ -3,9 +3,8 @@ fft_npt   : 1000
 fits:
   run_gof   : false
   do_errors : false
-binning : null
 plots :
-  stacked : True
+  stacked : true
   nbins   : 100
 qsq:
   - source     : psi2
