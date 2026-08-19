@@ -13,7 +13,7 @@ import numpy                 as np
 import matplotlib.pyplot     as plt
 
 from typing                 import Final, Self
-from pydantic               import BaseModel, ConfigDict, Field
+from pydantic               import BaseModel, Field
 from matplotlib.axes        import Axes
 from zfit.pdf               import BasePDF    as zpdf
 from zfit.data              import Data       as zdat
@@ -25,9 +25,11 @@ from dmu.stats              import utilities  as sut
 from .imports               import zfit
 
 log = LogStore.add_logger('dmu:zfit_plotter')
+plt.style.use(mplhep.style.LHCb2) # type: ignore
 
 _NORMAL_BINNING : Final[int] = 100
 _FINE_BINNING   : Final[int] = 200
+_MAX_PULL       : Final[int] = 5   # If fit ull is beyond this, will print info message
 #----------------------------------------
 class EmptyDataSet(Exception):
     '''
@@ -323,7 +325,7 @@ class ZFitPlotter:
             # Ignore these cases
             if math.isinf(pul):
                 pass
-            elif abs(pul) > 5:
+            elif abs(pul) > _MAX_PULL:
                 log.info(f'Pull: {pul:.2f}=({dat_val:.2f}-{pdf_val:.2f})/{err:.2f}')
             else:
                 log.debug(f'Pull: {pul:.2f}=({dat_val:.2f}-{pdf_val:.2f})/{err:.2f}')
@@ -357,7 +359,7 @@ class ZFitPlotter:
         )
     #----------------------------------------
     def _get_zfit_gof(self):
-        if not hasattr(self._result, 'gof'):
+        if not self._result or not hasattr(self._result, 'gof'):
             return None
 
         chi2, ndof, pval = getattr(self._result, 'gof')
@@ -443,7 +445,6 @@ class ZFitPlotter:
         ----------------
         Tuple with axes for main fit and pull
         '''
-        plt.style.use(mplhep.style.LHCb2)
         if skip_pulls:
             _, (ax) = plt.subplots(1)
             return (ax,)
@@ -493,7 +494,7 @@ class ZFitPlotter:
         y           = None
         l_y         = []
         was_blinded = False
-        for model, par in zip(self.total_model.pdfs, self.total_model.params.values()):
+        for model, par in zip(self.total_model.pdfs, self.total_model.params.values(), strict = True):
             if model.name == blind_name:
                 was_blinded = True
                 log.debug(f'Skipping blinded PDF: {blind_name}')
@@ -502,7 +503,7 @@ class ZFitPlotter:
             nevt = self._get_component_yield(model, par)
 
             if   model.name in self._l_plot_components and     hasattr(model, 'pdfs'):
-                l_model = [ (frc, pdf) for pdf, frc in zip(model.pdfs, model.params.values()) ]
+                l_model = [ (frc, pdf) for pdf, frc in zip(model.pdfs, model.params.values(), strict = True) ]
             elif model.name in self._l_plot_components and not hasattr(model, 'pdfs'):
                 log.warning(f'Cannot plot {model.name} as separate components, despite it was requested')
                 l_model = [ (1, model)]
