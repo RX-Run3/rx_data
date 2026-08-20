@@ -101,7 +101,48 @@ class BinningConf(BaseModel, frozen = True):
 
         return f'{self.name}_{self.bin:03d}'
 #-------------------------------------------------------------------
-class TransferFunctionMakerConf(BaseModel, frozen = True):
+class _Conf:
+    '''
+    Base class for all configuration classes
+    '''
+    binning   : BinningConf
+    # -----------------------------------------------
+    def make_path(
+        self,
+        *,
+        kind    : str, 
+        project : Project,
+        fname   : str | None = None) -> Path:
+        '''
+        Function will make a path and return it. 
+
+        Parameters 
+        -----------------
+        kind   : Name of directory meant to sybolize what data will be stored there, e.g. fits, trfc
+        project: E.g. rk, rkst
+        fname  : Optional, file name, e.g. data.json
+
+        Returns
+        -----------------
+        Path to either file or directory
+        '''
+        if self.binning is None:
+            binning = 'int'
+        else:
+            binning = f'{self.binning.name}_{self.binning.bin}'
+
+        anadir = Path(os.environ['ANADIR'])
+        log.debug(f'Using ANADIR: {anadir}')
+
+        dir_path = anadir / f'{kind}/{binning}/{project}'
+        dir_path.mkdir(parents = True, exist_ok = True)
+
+        if fname is None:
+            return dir_path
+
+        return dir_path / fname 
+#-------------------------------------------------------------------
+class TransferFunctionMakerConf(BaseModel, _Conf, frozen = True):
     '''
     Configuration controlling how transfer function is built
     '''
@@ -110,7 +151,6 @@ class TransferFunctionMakerConf(BaseModel, frozen = True):
     fft_npt   : int
     fits      : FitConf
     plots     : ZFitPlotterConf
-    binning   : BinningConf
     source    : Qsq
     target    : Qsq
     models    : list[Model]
@@ -218,38 +258,8 @@ class TransferFunctionMakerConf(BaseModel, frozen = True):
         log.info(80 * '-')
         for key, val in d_data.items():
             log.info(f'{key:<30}{val:<50}')
-    # -----------------------------------------------
-    def make_path(
-        self,
-        fname   : str,
-        kind    : str, 
-        project : Project) -> Path:
-        '''
-        Function will make a path and return it. 
-
-        Parameters 
-        -----------------
-        kind   : Name of directory meant to sybolize what data will be stored there, e.g. fits, trfc
-        fname  : Optional, file name, e.g. data.json
-        project: E.g. rk, rkst
-
-        Returns
-        -----------------
-        Path to either file or directory
-        '''
-        if self.binning is None:
-            binning = 'int'
-        else:
-            binning = f'{self.binning.name}_{self.binning.bin}'
-
-        anadir = Path(os.environ['ANADIR'])
-        log.debug(f'Using ANADIR: {anadir}')
-
-        dir_path = anadir / f'{kind}/{binning}/{project}'
-        dir_path.mkdir(parents = True, exist_ok = True)
-
-        if fname is None:
-            return dir_path
-
-        return dir_path / fname 
 #-------------------------------------------------------------------
+class CCbarRatioCalculatorConf(BaseModel, _Conf, frozen = True):
+    '''
+    Class meant to configure CCbarRatioCalculator
+    '''
