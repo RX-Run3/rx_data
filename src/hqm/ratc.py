@@ -1,7 +1,7 @@
-from hqm2.data_store     import data_store
-from hqm2.config         import Conf
-from hqm2.pdfmc          import pdfmc
-from hqm2.trfc           import TransferFunctionMaker
+from hqm.data_store     import data_store
+from hqm.config         import Conf
+from hqm.pdfmc          import pdfmc
+from hqm.trfc           import TransferFunctionMaker
 
 from zutils.plot         import plot      as zfp
 from log_store           import log_store
@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
 log=log_store.add_logger('rx_hqm2:ratc')
 #-----------------------------
-class ratc:
+class CCbarRatioCalculator:
     '''
     Class that builds model using:
     - smeared muon data to represent electron partially reconstructed
