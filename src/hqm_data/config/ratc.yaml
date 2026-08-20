@@ -1,3 +1,5 @@
+bandwidth : 20
+sb_mass   : 5180
 fits:
   strategy:
     ntries : 15
