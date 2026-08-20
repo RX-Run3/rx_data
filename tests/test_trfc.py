@@ -44,7 +44,7 @@ def test_psi2_high_brem(monkeypatch, tmp_path : Path):
     monkeypatch.setenv('ANADIR', str(tmp_path))
 
     cfgs        = TransferFunctionMakerConf.load(
-        binning = 'none', 
+        variable= 'none', 
         source  = Qsq.psi2,
         target  = Qsq.high) 
 

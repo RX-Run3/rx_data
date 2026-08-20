@@ -217,7 +217,7 @@ class TransferFunctionMaker:
         plt.hist(source, bins=100, density=True, histtype='step', label=rf'$\mu\mu\in${self._cfg.source}')
         plt.hist(target, bins=100, density=True, histtype='step', label=rf'$e^+e^-\in${self._cfg.target}')
         plt.legend()
-        plt.title(rf'Process: {self._sample}; Trigger: {self._project}; $\mu$:{source.shape[0]}; $e$:{target.shape[0]}; {self._cfg.binning.name}')
+        plt.title(rf'Process: {self._sample}; Trigger: {self._project}; $\mu$:{source.shape[0]}; $e$:{target.shape[0]}; {self._cfg.binning.variable}')
 
         log.info(f'Saving to: {path}')
         plt.savefig(path)
