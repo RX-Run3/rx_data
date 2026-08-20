@@ -4,7 +4,7 @@ import copy
 from dmu         import LogStore
 from dmu.stats   import Model, ZFitPlotterConf, zfit
 from dmu.generic import utilities as gut
-from typing      import Self
+from typing      import Final, Self
 from pathlib     import Path
 from dmu.stats   import FitConf
 from pydantic    import BaseModel, model_validator
@@ -12,6 +12,7 @@ from rx_common   import Project, Qsq
 
 log = LogStore.add_logger('rx_hqm:config')
 
+_NONE_VAR : Final[str] = 'none' # Name of variable when not binning
 #-------------------------------------------------------------------
 class ObsConf(BaseModel, frozen = True):
     '''
@@ -40,9 +41,9 @@ class BinningConf(BaseModel, frozen = True):
     '''
     Config describing 
     '''
-    name : str
+    variable : str
     '''
-    Label for cut used to get current bin, e.g occupacy
+    Variable to cut on, e.g. B_PT
     '''
 
     bin   : int
@@ -50,7 +51,7 @@ class BinningConf(BaseModel, frozen = True):
     Index of bin, needed to pick up cut
     '''
 
-    cuts  : list[str]
+    bins  : list[tuple[float,float]]
     '''
     Expression defining cut
     '''
@@ -58,33 +59,35 @@ class BinningConf(BaseModel, frozen = True):
     @property
     def cut(self) -> str:
         '''
-        Cut associated to current bin
+        Cut associated to current bin, meant to be used
+        by RDataFrame::Filter, uses semi-open range [lower, upper)
         '''
-        return self.cuts[self.bin]
+        if self.variable == _NONE_VAR:
+            return 'true'
+
+        lower, upper = self.bins[self.bin]
+
+        return f'({self.variable} >= {lower}) && ({self.variable} < {upper})'
     # ------------------------
     @property
     def is_unbinned(self) -> bool:
         '''
         True if unbinned
         '''
-        return len(self.cuts) == 1 and self.cuts[0] == 'true'
+        return self.variable == _NONE_VAR
     # ------------------------
     @model_validator(mode = 'after')
     def _validate(self) -> Self:
-        ncut = len(self.cuts)
+        ncut = len(self.bins)
         if self.bin < 0:
             raise ValueError(f'Non-positive bin found: {self.bin}')
 
         if ncut == 0:
             raise ValueError('Found no cuts')
 
-        if self.name == 'none':
+        if self.variable == _NONE_VAR:
             if ncut != 1:
                 raise ValueError('Unbinned case requires one bin')
-
-            [cut] = self.cuts
-            if cut != 'true':
-                raise ValueError(f'Unbinned case using invalid cut: {cut}')
 
         if ncut <= self.bin:
             raise ValueError(f'Bin index {self.bin} incompatible with number of bins {ncut}')
@@ -99,13 +102,13 @@ class BinningConf(BaseModel, frozen = True):
         if self.is_unbinned:
             return 'unbinned'
 
-        return f'{self.name}_{self.bin:03d}'
+        return f'{self.variable}_{self.bin:03d}'
 #-------------------------------------------------------------------
 class _Conf(BaseModel, frozen = True):
     '''
     Base class for all configuration classes
     '''
-    binning   : BinningConf
+    binning : BinningConf
     # -----------------------------------------------
     def make_path(
         self,
@@ -129,7 +132,7 @@ class _Conf(BaseModel, frozen = True):
         if self.binning.is_unbinned:
             binning = 'unbinned'
         else:
-            binning = f'{self.binning.name}_{self.binning.bin:03d}'
+            binning = f'{self.binning.variable}_{self.binning.bin:03d}'
 
         anadir = Path(os.environ['ANADIR'])
         log.debug(f'Using ANADIR: {anadir}')
@@ -197,15 +200,15 @@ class TransferFunctionMakerConf(_Conf, frozen = True):
     @classmethod
     def load(
         cls, 
-        binning: str,
-        source : Qsq,
-        target : Qsq) -> list['TransferFunctionMakerConf']:
+        variable: str,
+        source  : Qsq,
+        target  : Qsq) -> list['TransferFunctionMakerConf']:
         '''
         Parameters
         ---------------
-        binning: Name of binning, e.g. none
-        source : Origin (muon) q2 bin 
-        target : Needed (electron) q2 bin
+        variable : Variable to bin, none for unbinned 
+        source   : Origin (muon) q2 bin 
+        target   : Needed (electron) q2 bin
 
         Returns
         ---------------
@@ -227,7 +230,6 @@ class TransferFunctionMakerConf(_Conf, frozen = True):
 
         cfg['fits'      ] = trf_data['fits'       ]
         cfg['observable'] = trf_data['observable' ]
-        cfg['binning'   ] = bin_data[binning      ]
         cfg['fft_npt'   ] = trf_data['fft_npt'    ]
         cfg['bandwidth' ] = trf_data['bandwidth'  ]
 
@@ -235,12 +237,20 @@ class TransferFunctionMakerConf(_Conf, frozen = True):
         if cfg is None:
             raise ValueError(f'Missing configuration for {source}/{target}')
 
-        nbin = len(bin_data[binning]['cuts'])
+        nbin = len(bin_data[variable])
+        if nbin == 0:
+            raise ValueError(f'No bins found for variable: {variable}')
 
         confs : list['TransferFunctionMakerConf'] = []
         for ibin in range(nbin):
-            this_cfg = copy.deepcopy(cfg)
-            this_cfg['binning']['bin'] = ibin
+            this_cfg            = copy.deepcopy(cfg)
+
+            cfg_bin             = dict()
+            cfg_bin['variable'] = variable 
+            cfg_bin['bin'     ] = ibin
+            cfg_bin['bins'    ] = bin_data[variable]
+
+            this_cfg['binning'] = cfg_bin
 
             confs.append(cls(**this_cfg))
 
