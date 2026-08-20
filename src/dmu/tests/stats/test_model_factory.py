@@ -217,11 +217,11 @@ def test_repeated_pdf():
     l_shr = ['mu', 'sg']
     l_flt = ['mu']
     mod   = ModelFactory(
-            preffix = 'repeated',
-            obs     = Data.obs,
-            l_pdf   = l_pdf,
-            l_shared= l_shr,
-            l_float = l_flt)
+        preffix = 'repeated',
+        obs     = Data.obs,
+        l_pdf   = l_pdf,
+        l_shared= l_shr,
+        l_float = l_flt)
     pdf   = mod.get_pdf()
 
     print_pdf(pdf)
