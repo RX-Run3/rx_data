@@ -270,11 +270,12 @@ def _get_messages(
     str_space = str(pdf.space)
 
     l_msg=[]
-    l_msg.append('-' * 20)
-    l_msg.append(f'Name: {pdf.name}')
+    l_msg.append(125 * '-')
+    l_msg.append(f'Name : {pdf.name}')
     l_msg.append(f'Label: {pdf.label}')
-    l_msg.append(f'OBS: {str_space}')
-    l_msg.append(f'{"Name":<50}{"Value":>15}{"Low":>15}{"High":>15}{"Floating":>5}{"Constraint":>25}')
+    l_msg.append(f'OBS  : {str_space}')
+    l_msg.append(125 * '-')
+    l_msg.append(f'{"Parameter":<50}{"Value":>15}{"Low":>15}{"High":>15}{"Floating":>5}{"Constraint":>25}')
     l_msg.append('-' * 20)
     for par in l_par_flt:
         value = par.value().numpy()
@@ -324,25 +325,26 @@ def print_pdf(
     l_msg               += _print_component_pdfs(pdf = pdf)
     l_msg               += _print_obs(obs = pdf.space)
 
+    text = '\n'.join(l_msg)
+    text = f'\n{text}'
+
     if txt_path is not None:
         log.debug(f'Saving to: {txt_path}')
-        message  = '\n'.join(l_msg)
         dir_path = os.path.dirname(txt_path)
         os.makedirs(dir_path, exist_ok=True)
         with open(txt_path, 'w', encoding='utf-8') as ofile:
-            ofile.write(message)
+            ofile.write(text)
 
         return l_msg
 
-    for msg in l_msg:
-        if   level == LogLevels.error:
-            log.error(msg)
-        elif level == LogLevels.info:
-            log.info(msg)
-        elif level == LogLevels.debug:
-            log.debug(msg)
-        else:
-            raise ValueError(f'Invalid level: {level}')
+    if   level == LogLevels.error:
+        log.error(text)
+    elif level == LogLevels.info:
+        log.info(text)
+    elif level == LogLevels.debug:
+        log.debug(text)
+    else:
+        raise ValueError(f'Invalid level: {level}')
 
     return l_msg
 # ----------------------
