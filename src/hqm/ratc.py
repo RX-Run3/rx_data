@@ -7,6 +7,7 @@ from hqm.data_store   import data_store
 from hqm.config       import Conf
 from hqm.pdfmc        import pdfmc
 from hqm.trfc         import TransferFunctionMaker
+from rx_common        import Block
 from dmu              import LogStore
 
 log=LogStore.add_logger('hqm:ratc')
@@ -21,15 +22,15 @@ class CCbarRatioCalculator:
     of fully reconstructed over partially reconstructed
     '''
     #-----------------------------
-    def __init__(self, obs=None, dset=None, proc=None):
+    def __init__(self, obs=None, block : Block, proc=None):
         '''
         obs       : zfit observable used in the simultaneous fits
         dset (str): Dataset, e.g. r1, r2p1, 2017, 2018
         proc (str): Process for which the ratio is returned, i.e. psi2 and ctrl
         '''
-        self._obs  = obs
-        self._dset = dset
-        self._proc = proc
+        self._obs   = obs
+        self._block = block 
+        self._proc  = proc
 
         self._plot_range = [4500, 6000]
         self._bandwidth  = 15
@@ -54,7 +55,7 @@ class CCbarRatioCalculator:
         if self._initialized:
             return
 
-        self._out_dir = Conf.make_path(kind='ratios', block=self._dset)
+        self._out_dir = Conf.make_path(kind='ratios', block=self._block)
 
         self._initialized=True
     #-----------------------------
@@ -97,7 +98,7 @@ class CCbarRatioCalculator:
         qsq     = {'ctrl' : 'jpsi', 'psi2' : 'psi2'}[proc]
 
         pdf     = self._get_model(qsq=qsq)
-        ds      = data_store(qsq=qsq, dset=self._dset, trig='ETOS', proc='data')
+        ds      = data_store(qsq=qsq, dset=self._block, trig='ETOS', proc='data')
         arr_dat = ds.get_array()
         zdat    = zfit.Data.from_numpy(obs=self._obs, array=arr_dat)
         nll     = zfit.loss.ExtendedUnbinnedNLL(model=pdf, data=zdat)
@@ -137,7 +138,7 @@ class CCbarRatioCalculator:
         return res
     #-----------------------------
     def _get_mc_pdf(self, proc=None, qsq=None):
-        obj = pdfmc(obs=self._obs, dset=self._dset, proc=proc, qsq=qsq)
+        obj = pdfmc(obs=self._obs, dset=self._block, proc=proc, qsq=qsq)
         pdf = obj.get_pdf()
 
         rat = {'ctrl' : self._rat_ctrl, 'psi2' : self._rat_psi2}[proc]
@@ -174,10 +175,10 @@ class CCbarRatioCalculator:
         mas_cns   = {'psi2' : 'B_const_mass_psi2S_M', 'ctrl' : 'B_const_mass_M'}[proc]
         qsq_src   = {'psi2' :                 'psi2', 'ctrl' :           'jpsi'}[proc]
 
-        obj       = TransferFunctionMaker(obs=self._obs, source=qsq_src, target=qsq, sample=proc, trigger=self._dset, prefix=f'{qsq_src}_{qsq}_{self._dset}_pr')
+        obj       = TransferFunctionMaker(obs=self._obs, source=qsq_src, target=qsq, sample=proc, trigger=self._block, prefix=f'{qsq_src}_{qsq}_{self._block}_pr')
         pdf_trf   = obj.get_trf()
 
-        obj       = data_store(qsq=qsq_src, dset=self._dset, trig='MTOS', proc='data')
+        obj       = data_store(qsq=qsq_src, dset=self._block, trig='MTOS', proc='data')
         arr_dt_mm = obj.get_array(variable='B_M', d_cut={'sb_mass' : f'{mas_cns} < {self._sb_mass}'})
 
         self._book_histogram(name=f'mm_{qsq}', label=qsq_src, binning=numpy.linspace(3500, 5300, 100), arr_val=arr_dt_mm)
@@ -246,4 +247,3 @@ class CCbarRatioCalculator:
             plt.legend()
             plt.savefig(f'{self._out_dir}/{fig_name}.png')
 #-----------------------------
-
