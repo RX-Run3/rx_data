@@ -108,7 +108,48 @@ class _Conf(BaseModel, frozen = True):
     '''
     Base class for all configuration classes
     '''
-    binning : BinningConf
+    observable : ObsConf
+    binning    : BinningConf
+    # ----------------------------------
+    def __str__(self):
+        return f'''
+        -----------------
+        Observable
+        -----------------
+        {self.observable}
+
+        -----------------
+        Binning 
+        -----------------
+        {self.binning}
+        '''
+    # -----------------------------------------------
+    @classmethod
+    def _get_bin_cfgs(cls, variable : str) -> list[dict]:
+        '''
+        Parameters
+        ----------------
+        variable: Name of variable used for binning
+
+        Returns
+        ----------------
+        List of dictionaries with data used to build BinningConf
+        '''
+        bin_data = gut.load_data(package = 'hqm_data', fpath = 'config/binning.yaml')
+        nbin = len(bin_data[variable])
+        if nbin == 0:
+            raise ValueError(f'No bins found for variable: {variable}')
+
+        bin_cfgs : list[dict] = []
+        for ibin in range(nbin):
+            cfg_bin             = dict()
+            cfg_bin['variable'] = variable 
+            cfg_bin['bin'     ] = ibin
+            cfg_bin['bins'    ] = bin_data[variable]
+
+            bin_cfgs.append(cfg_bin)
+
+        return bin_cfgs
     # -----------------------------------------------
     def make_path(
         self,
@@ -149,7 +190,6 @@ class TransferFunctionMakerConf(_Conf, frozen = True):
     '''
     Configuration controlling how transfer function is built
     '''
-    observable: ObsConf
     bandwidth : int
     fft_npt   : int
     fits      : FitConf
@@ -215,7 +255,6 @@ class TransferFunctionMakerConf(_Conf, frozen = True):
         Config object
         '''
         trf_data = gut.load_data(package = 'hqm_data', fpath = 'config/transfer.yaml')
-        bin_data = gut.load_data(package = 'hqm_data', fpath = 'config/binning.yaml')
         qsq_data = trf_data['qsq']
         cfg      = dict() 
 
@@ -237,19 +276,11 @@ class TransferFunctionMakerConf(_Conf, frozen = True):
         if cfg is None:
             raise ValueError(f'Missing configuration for {source}/{target}')
 
-        nbin = len(bin_data[variable])
-        if nbin == 0:
-            raise ValueError(f'No bins found for variable: {variable}')
+        bin_cfgs = cls._get_bin_cfgs(variable = variable)
 
         confs : list['TransferFunctionMakerConf'] = []
-        for ibin in range(nbin):
-            this_cfg            = copy.deepcopy(cfg)
-
-            cfg_bin             = dict()
-            cfg_bin['variable'] = variable 
-            cfg_bin['bin'     ] = ibin
-            cfg_bin['bins'    ] = bin_data[variable]
-
+        for cfg_bin in bin_cfgs:
+            this_cfg = copy.deepcopy(cfg)
             this_cfg['binning'] = cfg_bin
 
             confs.append(cls(**this_cfg))
@@ -273,4 +304,30 @@ class CCbarRatioCalculatorConf(_Conf, frozen = True):
     '''
     Class meant to configure CCbarRatioCalculator
     '''
+    # ----------------------------------
+    @classmethod
+    def load(cls, variable: str) -> list['CCbarRatioCalculatorConf']:
+        '''
+        Parameters
+        ----------------
+        variable: Variable to bin in, none for unbinned
+
+        Returns
+        ----------------
+        List of configuration objects
+        '''
+        trf_data = gut.load_data(package = 'hqm_data', fpath = 'config/transfer.yaml')
+
+        data               = dict()
+        data['observable'] = trf_data['observable']
+        bin_cfgs = cls._get_bin_cfgs(variable = variable)
+
+        cfgs : list['CCbarRatioCalculatorConf'] = []
+        for bin_data in bin_cfgs:
+            this_data            = copy.deepcopy(data)
+            this_data['binning'] = bin_data
+
+            cfgs.append(cls(**this_data))
+
+        return cfgs
 #-------------------------------------------------------------------
