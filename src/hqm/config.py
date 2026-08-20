@@ -108,6 +108,7 @@ class _Conf(BaseModel, frozen = True):
     '''
     Base class for all configuration classes
     '''
+    bandwidth  : int
     observable : ObsConf
     binning    : BinningConf
     # ----------------------------------
@@ -190,7 +191,6 @@ class TransferFunctionMakerConf(_Conf, frozen = True):
     '''
     Configuration controlling how transfer function is built
     '''
-    bandwidth : int
     fft_npt   : int
     fits      : FitConf
     plots     : ZFitPlotterConf
@@ -326,6 +326,11 @@ class CCbarRatioCalculatorConf(_Conf, frozen = True):
     '''
     Class meant to configure CCbarRatioCalculator
     '''
+    sb_mass : float
+    '''
+    Mass cut on DTF mass, needed to isolate part reco candidates
+    in muon dataset
+    '''
     # ----------------------------------
     @classmethod
     def load(cls, variable: str) -> list['CCbarRatioCalculatorConf']:
@@ -339,14 +344,14 @@ class CCbarRatioCalculatorConf(_Conf, frozen = True):
         List of configuration objects
         '''
         trf_data = gut.load_data(package = 'hqm_data', fpath = 'config/transfer.yaml')
+        rtc_data = gut.load_data(package = 'hqm_data', fpath = 'config/ratc.yaml')
 
-        data               = dict()
-        data['observable'] = trf_data['observable']
+        rtc_data['observable'] = trf_data['observable']
         bin_cfgs = cls._get_bin_cfgs(variable = variable)
 
         cfgs : list['CCbarRatioCalculatorConf'] = []
         for bin_data in bin_cfgs:
-            this_data            = copy.deepcopy(data)
+            this_data            = copy.deepcopy(rtc_data)
             this_data['binning'] = bin_data
 
             cfgs.append(cls(**this_data))
