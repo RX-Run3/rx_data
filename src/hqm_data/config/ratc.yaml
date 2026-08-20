@@ -1,0 +1,5 @@
+fits:
+  strategy:
+    ntries : 15
+    pvalue : 0.05
+# ------------------
