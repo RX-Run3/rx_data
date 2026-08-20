@@ -4,10 +4,10 @@ import numpy
 import matplotlib.pyplot as plt
 
 from hqm.data_store   import data_store
-from hqm.config       import Conf
+from hqm.config       import CCbarRatioCalculatorConf 
 from hqm.pdfmc        import pdfmc
 from hqm.trfc         import TransferFunctionMaker
-from rx_common        import Block
+from rx_common        import Block, Project
 from dmu              import LogStore
 
 log=LogStore.add_logger('hqm:ratc')
@@ -22,23 +22,20 @@ class CCbarRatioCalculator:
     of fully reconstructed over partially reconstructed
     '''
     #-----------------------------
-    def __init__(self, obs=None, block : Block, proc=None):
+    def __init__(
+        self, 
+        cfg     : CCbarRatioCalculatorConf, 
+        project : Project,
+        block   : Block):
         '''
-        obs       : zfit observable used in the simultaneous fits
-        dset (str): Dataset, e.g. r1, r2p1, 2017, 2018
-        proc (str): Process for which the ratio is returned, i.e. psi2 and ctrl
+        Parameters
+        ------------------
+        block: E.g. 1..8 
+        cfg  : Object holding configuration
         '''
-        self._obs   = obs
-        self._block = block 
-        self._proc  = proc
-
-        self._plot_range = [4500, 6000]
-        self._bandwidth  = 15
-        self._fft_npt    = 1000
-        self._sb_mass    = 5180
-        self._figsize    = 15, 10
-        self._d_pdf_dat  = dict() 
-        self._out_dir    = None
+        self._cfg      = cfg
+        self._block    = block 
+        self._d_pdf_dat= dict() 
 
         self._rat_psi2 = zfit.param.Parameter('rat_psi2', 0.1, 0, 1)
         self._rat_ctrl = zfit.param.Parameter('rat_ctrl', 0.1, 0, 1)
@@ -49,15 +46,7 @@ class CCbarRatioCalculator:
         self._npr_pc= zfit.param.Parameter('npr_pc', 1e3, 0, 4e5)
         self._npr_pp= zfit.param.Parameter('npr_pp', 1e3, 0, 4e5)
 
-        self._initialized=False
-    #-----------------------------
-    def _initialize(self):
-        if self._initialized:
-            return
-
-        self._out_dir = Conf.make_path(kind='ratios', block=self._block)
-
-        self._initialized=True
+        self._out_dir = self._cfg.make_path(kind='ratios', project = project)
     #-----------------------------
     def get_ratio(self):
         self._initialize()
@@ -126,7 +115,6 @@ class CCbarRatioCalculator:
 
         return pdf
     #-----------------------------
-    @utnr.timeit
     def _sim_fit(self, nll):
         log.info('Fitting')
         minimizer = zfit.minimize.Minuit()
@@ -219,7 +207,6 @@ class CCbarRatioCalculator:
 
         return nevt
     #-----------------------------
-    @utnr.timeit
     def _plot_fit(self, proc):
         dat, pdf = self._d_pdf_dat[proc]
 
