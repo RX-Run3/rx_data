@@ -25,7 +25,7 @@ log=LogStore.add_logger('dmu:stats:model_factory')
 
 _FIX_CORRECTION : ContextVar[bool] = ContextVar('_FIX_CORRECTION', default = True)
 # ------------------------------
-class ModelFactoryConf(BaseModel):
+class ModelFactoryConf(BaseModel, frozen = True):
     '''
     Class meant to configure the builder of PDFs 
 
@@ -33,9 +33,7 @@ class ModelFactoryConf(BaseModel):
     ----------------
     values: Dictionary mapping parameter name (e.g. mu) to tuple with default, low and high bound
     '''
-    model_config = ConfigDict(
-        arbitrary_types_allowed=True, # Due to reuse field that uses zpar
-        frozen                 =True)
+    model_config = ConfigDict(arbitrary_types_allowed=True) # Due to reuse field that uses zpar
 
     pdfs          : list[Model]
     shared        : list[str]
