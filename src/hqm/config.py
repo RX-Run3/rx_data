@@ -101,7 +101,7 @@ class BinningConf(BaseModel, frozen = True):
 
         return f'{self.name}_{self.bin:03d}'
 #-------------------------------------------------------------------
-class _Conf:
+class _Conf(BaseModel, frozen = True):
     '''
     Base class for all configuration classes
     '''
@@ -126,10 +126,10 @@ class _Conf:
         -----------------
         Path to either file or directory
         '''
-        if self.binning is None:
-            binning = 'int'
+        if self.binning.is_unbinned:
+            binning = 'unbinned'
         else:
-            binning = f'{self.binning.name}_{self.binning.bin}'
+            binning = f'{self.binning.name}_{self.binning.bin:03d}'
 
         anadir = Path(os.environ['ANADIR'])
         log.debug(f'Using ANADIR: {anadir}')
@@ -142,7 +142,7 @@ class _Conf:
 
         return dir_path / fname 
 #-------------------------------------------------------------------
-class TransferFunctionMakerConf(BaseModel, _Conf, frozen = True):
+class TransferFunctionMakerConf(_Conf, frozen = True):
     '''
     Configuration controlling how transfer function is built
     '''
@@ -187,7 +187,7 @@ class TransferFunctionMakerConf(BaseModel, _Conf, frozen = True):
         '''
         String meant to be used to identify PDFs, etc
         '''
-        if self.binning is None:
+        if self.binning.is_unbinned:
             binning = 'unbinned'
         else:
             binning = self.binning.prefix
@@ -259,7 +259,8 @@ class TransferFunctionMakerConf(BaseModel, _Conf, frozen = True):
         for key, val in d_data.items():
             log.info(f'{key:<30}{val:<50}')
 #-------------------------------------------------------------------
-class CCbarRatioCalculatorConf(BaseModel, _Conf, frozen = True):
+class CCbarRatioCalculatorConf(_Conf, frozen = True):
     '''
     Class meant to configure CCbarRatioCalculator
     '''
+#-------------------------------------------------------------------
