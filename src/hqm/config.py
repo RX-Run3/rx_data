@@ -7,13 +7,74 @@ from dmu.generic import utilities as gut
 from typing      import Final, Self
 from pathlib     import Path
 from dmu.stats   import FitConf
-from pydantic    import BaseModel, model_validator
+from pydantic    import BaseModel, RootModel, model_validator
 from rx_common   import Project, Qsq
 
 log = LogStore.add_logger('rx_hqm:config')
 
 _NONE_VAR : Final[str] = 'none' # Name of variable when not binning
-#-------------------------------------------------------------------
+zpar = zfit.Parameter
+# -------------------------------------------------------------------
+class ParamConf(RootModel[dict[str,tuple[float,float,float]]]):
+    '''
+    Configuration for parameters used in fits to J/psi and psi2S bins
+    '''
+    # -------------------
+    def get_ratio(self, qsq : Qsq) -> zpar:
+        '''
+        Parameters
+        --------------
+        qsq: q2-bin
+
+        Returns
+        --------------
+        Ratio of part reconstructed and fully reconstructed candidates in passed bin
+        '''
+        match qsq:
+            case Qsq.jpsi:
+                return self._get_parameter(name = 'rat_jpsi')
+            case Qsq.psi2:
+                return self._get_parameter(name = 'rat_psi2')
+            case _:
+                raise ValueError(f'Invalid bin: {qsq}')
+    # -------------------
+    def get_part_reco_yield(
+        self, 
+        qsq_comp : Qsq, 
+        qsq_bin  : Qsq) -> zpar:
+        '''
+        Parameters
+        ----------------
+        qsq_comp : q2-bin associated to decays whose yield is retrieved
+        qsq_bin  : q2-bin where those decays live
+
+        Returns
+        ----------------
+        Associated part-reco component's yield. E.g. Yield of Jpsi -> ee component
+        in psi2S bin: (jpsi, psi2s)
+        '''
+        if qsq_comp == Qsq.jpsi and qsq_bin == Qsq.jpsi:
+            return self._get_parameter(name = 'npr_jj')
+
+        if qsq_comp == Qsq.psi2 and qsq_bin == Qsq.jpsi:
+            return self._get_parameter(name = 'npr_pj')
+
+        if qsq_comp == Qsq.jpsi and qsq_bin == Qsq.psi2:
+            return self._get_parameter(name = 'npr_jp')
+
+        if qsq_comp == Qsq.psi2 and qsq_bin == Qsq.psi2:
+            return self._get_parameter(name = 'npr_pp')
+
+        raise ValueError(f'Invalid q2-bins: {qsq_comp}/{qsq_bin}')
+    # -------------------
+    def _get_parameter(self, name : str) -> zpar:
+        '''
+        Retturns zfit parameter given name
+        '''
+        val, lower, upper = self.root[name]
+
+        return zfit.param.Parameter(name, val, lower, upper)
+# -------------------------------------------------------------------
 class ObsConf(BaseModel, frozen = True):
     '''
     Class meant to configure observables needed in
@@ -36,7 +97,7 @@ class ObsConf(BaseModel, frozen = True):
         Observable for transfer function 
         '''
         return zfit.Space(self.name, limits = self.tran_range)
-#-------------------------------------------------------------------
+# -------------------------------------------------------------------
 class BinningConf(BaseModel, frozen = True):
     '''
     Config describing 
@@ -103,7 +164,7 @@ class BinningConf(BaseModel, frozen = True):
             return 'unbinned'
 
         return f'{self.variable}_{self.bin:03d}'
-#-------------------------------------------------------------------
+# -------------------------------------------------------------------
 class _Conf(BaseModel, frozen = True):
     '''
     Base class for all configuration classes
@@ -191,7 +252,7 @@ class _Conf(BaseModel, frozen = True):
             return dir_path
 
         return dir_path / fname 
-#-------------------------------------------------------------------
+# -------------------------------------------------------------------
 class TransferFunctionMakerConf(_Conf, frozen = True):
     '''
     Configuration controlling how transfer function is built
@@ -325,7 +386,7 @@ class TransferFunctionMakerConf(_Conf, frozen = True):
         log.info(80 * '-')
         for key, val in d_data.items():
             log.info(f'{key:<30}{val:<50}')
-#-------------------------------------------------------------------
+# -------------------------------------------------------------------
 class CCbarRatioCalculatorConf(_Conf, frozen = True):
     '''
     Class meant to configure CCbarRatioCalculator
@@ -334,6 +395,10 @@ class CCbarRatioCalculatorConf(_Conf, frozen = True):
     '''
     Mass cut on DTF mass, needed to isolate part reco candidates
     in muon dataset
+    '''
+    parameters : ParamConf
+    '''
+    Configuration for parameters in fits to J/psi and psi2S bins
     '''
     # ----------------------------------
     @classmethod
