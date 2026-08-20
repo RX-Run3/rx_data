@@ -9,42 +9,51 @@ from typing         import Final, TypeAlias
 from pydantic       import BaseModel
 from rx_common      import Block, Channel, Component, Project, Trigger
 from dmu            import LogStore
+from dmu.generic    import Serializable
 from dmu.stats      import FitResult, Fitter, Model, ModelFactory
 from dmu.stats      import ZFitPlotter, zfit
-
-from hqm.config     import TransferFunctionMakerConf
+from hqm.config     import TransferFunctionMakerConf, ObsConf
 
 log=LogStore.add_logger('rx_hqm:trfc')
-
+_FLOAT          : Final[list[str]] = []
 _SHARED         : Final[list[str]] = ['mu', 'sg'] # Shared parameters in transfer functions
 _SOURCE_CHANNEL : Final[Channel  ] = Channel.mm
 _TARGET_CHANNEL : Final[Channel  ] = Channel.ee
-_MU_TRF_VALS    : Final[tuple[int,int,int]]= 0, -1000, 1000 # Value and range for observable of transffer function
+
+mu_vals = 0., -500., 500. # Value and range for observable of transffer function
+_TRF_VALS : Final[dict[str,tuple[float,float,float]]] = {'mu' : mu_vals}
 
 zpdf = zfit.pdf.BasePDF
 kpdf : TypeAlias = zfit.pdf.KDE1DimFFT
 #---------------------------------
-class TransferFunction(BaseModel, frozen = True):
+class TransferFunction(BaseModel, Serializable, frozen = True):
     '''
     Class meant to represent a transfer function
     '''
+    name       : str
+    observable : ObsConf
     fit_result : FitResult
     models     : list[Model]
     #----------------------
-    @classmethod
-    def from_json(cls, path : Path) -> 'TransferFunction':
+    @property
+    def pdf(self) -> zpdf:
         '''
-        Parameters
-        ----------------
-        path: Path to JSON file holding transfer function
-
-        Returns
-        ----------------
-        Transfer function instance
+        PDF representing transfer function
         '''
-        string = path.read_text()
+        fac = ModelFactory(
+            obs      = self.observable.trn_obs,
+            preffix  = self.name,
+            l_pdf    = self.models,
+            l_float  = _FLOAT,
+            l_shared = _SHARED,
+            values   = _TRF_VALS)
 
-        return cls.model_validate_json(json_data = string)
+        pdf  = fac.get_pdf()
+        pars = pdf.get_params()
+
+        self.fit_result.set_pars(pars = pars)
+
+        return pdf
 #---------------------------------
 class TransferFunctionMaker:
     '''
@@ -240,13 +249,13 @@ class TransferFunctionMaker:
             obs      = obs,
             l_pdf    = self._cfg.models,
             l_shared = _SHARED,
-            l_float  = [],
-            values   = {'mu' : _MU_TRF_VALS},
+            l_float  = _FLOAT,
+            values   = _TRF_VALS,
         )
 
         pdf = fac.get_pdf()
 
-        _, lower, higher = _MU_TRF_VALS
+        lower, higher = self._cfg.observable.tran_range 
         xs  = numpy.linspace(lower, higher, self._cfg.fft_npt)
         ys  = pdf.pdf(xs)
 
@@ -267,13 +276,19 @@ class TransferFunctionMaker:
             project = self._project,
             fname   = f'block_{self._block}_{self._cfg.name}.json')
 
-        pdf_trf = self.__get_trf_pdf(path = json_path)
         if json_path.exists():
             log.info(f'Transfer function found in {json_path}')
             return TransferFunction.from_json(path = json_path)
 
         log.info('Transfer function not found')
-        res = self.__get_fit_result(pdf_trf, json_path)
+        pdf_trf = self.__get_trf_pdf(path = json_path)
+        res     = self.__get_fit_result(pdf_trf, json_path)
 
-        return TransferFunction(fit_result = res, models = self._cfg.models) 
+        trf            = TransferFunction(
+            name       = pdf_trf.name,
+            fit_result = res, 
+            observable = self._cfg.observable,
+            models     = self._cfg.models) 
+
+        return trf
 #---------------------------------
