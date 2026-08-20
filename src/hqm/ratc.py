@@ -1,19 +1,15 @@
-from hqm.data_store     import data_store
-from hqm.config         import Conf
-from hqm.pdfmc          import pdfmc
-from hqm.trfc           import TransferFunctionMaker
-
-from zutils.plot         import plot      as zfp
-from log_store           import log_store
-
 import os
 import zfit
 import numpy
-import utils_noroot as utnr
-import zutils.utils as zut
 import matplotlib.pyplot as plt
 
-log=log_store.add_logger('rx_hqm2:ratc')
+from hqm.data_store   import data_store
+from hqm.config       import Conf
+from hqm.pdfmc        import pdfmc
+from hqm.trfc         import TransferFunctionMaker
+from dmu              import LogStore
+
+log=LogStore.add_logger('hqm:ratc')
 #-----------------------------
 class CCbarRatioCalculator:
     '''
