@@ -23,10 +23,7 @@ from .zfit_models    import FermiDirac
 
 log=LogStore.add_logger('dmu:stats:model_factory')
 
-_FIX_CORRECTION : ContextVar[bool] = ContextVar('_FIX_CORRECTION' , default = True)
-# If True will allow PDFs in allow_same_parameters context to have the same parameter names
-# as existing PDFs
-_ALLOW_SAME_PARS: ContextVar[bool] = ContextVar('_ALLOW_SAME_PARS', default = False)
+_FIX_CORRECTION : ContextVar[bool] = ContextVar('_FIX_CORRECTION', default = True)
 # ------------------------------
 class ModelFactoryConf(BaseModel, frozen = True):
     '''
@@ -713,23 +710,6 @@ class ModelFactory:
                 yield
             finally:
                 _FIX_CORRECTION.reset(token)
-
-        return _context()
-    #-----------------------------------------
-    @classmethod
-    def allow_same_parameters(cls):
-        '''
-        In this context, will not add `_i` suffix to parameters of PDFs
-        already made with same name
-        '''
-        @contextmanager
-        def _context():
-            token = _ALLOW_SAME_PARS.set(True)
-
-            try:
-                yield
-            finally:
-                _ALLOW_SAME_PARS.reset(token)
 
         return _context()
 #-----------------------------------------
