@@ -10,7 +10,7 @@ from pydantic       import BaseModel
 from rx_common      import Block, Channel, Component, Project, Trigger
 from dmu            import LogStore
 from dmu.stats      import FitResult, Fitter, Model, ModelFactory
-from dmu.stats      import ZFitPlotter, zfit, utilities as gut
+from dmu.stats      import ZFitPlotter, zfit
 
 from hqm.config     import TransferFunctionMakerConf
 
