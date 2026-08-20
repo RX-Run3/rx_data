@@ -12,7 +12,7 @@ from rx_common   import Block, Component, Project, Qsq
 from hqm.trfc    import TransferFunctionMaker, TransferFunction
 from hqm.config  import TransferFunctionMakerConf
 from dmu         import LogStore
-from dmu.stats   import ModelFactory, utilities as sut
+from dmu.stats   import utilities as sut
 
 log=LogStore.add_logger('rx_hqm:test_trfc')
 obs : Final[zfit.Space] = zfit.Space("B_M", limits=(0, 7000))
@@ -60,7 +60,6 @@ def test_psi2_high_brem(monkeypatch, tmp_path : Path):
     path = tmp_path / 'transfer_function.json'
     trf.to_json(path = path)
 
-    with ModelFactory.allow_same_parameters():
-        trf = TransferFunction.from_json(path)
-        sut.print_pdf(trf.pdf)
+    trf = TransferFunction.from_json(path)
+    sut.print_pdf(trf.pdf)
 #--------------------------------------
