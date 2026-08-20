@@ -238,6 +238,28 @@ class TransferFunctionMakerConf(_Conf, frozen = True):
         return f'{self.source}_{self.target}_{binning}'
     # -----------------------------------------------
     @classmethod
+    def load_bin_cfg(
+        cls, 
+        bin     : int,
+        variable: str,
+        source  : Qsq,
+        target  : Qsq) -> 'TransferFunctionMakerConf':
+
+        cfgs = cls.load(
+            source   = source,
+            target   = target,
+            variable = variable)
+
+        try:
+            [cfg] = [ cfg for cfg in cfgs if cfg.binning.bin == bin ]
+        except Exception:
+            for cfg in cfgs:
+                log.info(cfg.binning.bin)
+            raise ValueError(f'No configuration found for bin: {bin}')
+
+        return cfg
+    # -----------------------------------------------
+    @classmethod
     def load(
         cls, 
         variable: str,

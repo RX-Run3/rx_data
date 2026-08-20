@@ -7,6 +7,8 @@ from hqm.config import TransferFunctionMakerConf
 from hqm.config import CCbarRatioCalculatorConf 
 
 #----------------------------------
+# Transfer function calculator
+#----------------------------------
 def test_unbinned_trfc():
     '''
     Test configuration loader for unbinned case
@@ -33,6 +35,22 @@ def test_binned_trfc():
 
     for cfg in cfgs:
         print(cfg)
+#----------------------------------
+def test_per_bin_trfc():
+    '''
+    Test configuration loader for single bin 
+    '''
+    cfg          = TransferFunctionMakerConf.load_bin_cfg(
+        bin      = 1,
+        variable = 'nbrem',
+        source   = Qsq.psi2,
+        target   = Qsq.high)
+
+    assert cfg.binning.bin == 1
+
+    print(cfg)
+#----------------------------------
+# Ratio calculator
 #----------------------------------
 def test_unbinned_ratio():
     '''
