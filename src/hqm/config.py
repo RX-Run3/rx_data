@@ -101,7 +101,7 @@ class BinningConf(BaseModel, frozen = True):
 
         return f'{self.name}_{self.bin:03d}'
 #-------------------------------------------------------------------
-class Conf(BaseModel, frozen = True):
+class TransferFunctionMakerConf(BaseModel, frozen = True):
     '''
     Configuration controlling how transfer function is built
     '''
@@ -159,7 +159,7 @@ class Conf(BaseModel, frozen = True):
         cls, 
         binning: str,
         source : Qsq,
-        target : Qsq) -> list['Conf']:
+        target : Qsq) -> list['TransferFunctionMakerConf']:
         '''
         Parameters
         ---------------
@@ -197,7 +197,7 @@ class Conf(BaseModel, frozen = True):
 
         nbin = len(bin_data[binning]['cuts'])
 
-        confs : list['Conf'] = []
+        confs : list['TransferFunctionMakerConf'] = []
         for ibin in range(nbin):
             this_cfg = copy.deepcopy(cfg)
             this_cfg['binning']['bin'] = ibin
@@ -208,11 +208,11 @@ class Conf(BaseModel, frozen = True):
     # -----------------------------------------------
     @staticmethod
     def print_config(name) -> None:
-        if not hasattr(Conf, name):
+        if not hasattr(TransferFunctionMakerConf, name):
             log.error(f'Cannot find {name} in configuration')
             raise
 
-        d_data = getattr(Conf, name)
+        d_data = getattr(TransferFunctionMakerConf, name)
         log.info(80 * '-')
         log.info(f'{"Setting":<30}{"Value":<50}')
         log.info(80 * '-')

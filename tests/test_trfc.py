@@ -10,7 +10,7 @@ from pathlib     import Path
 from typing      import Final
 from rx_common   import Block, Component, Project, Qsq
 from hqm.trfc    import TransferFunctionMaker 
-from hqm.config  import Conf
+from hqm.config  import TransferFunctionMakerConf
 from dmu         import LogStore
 
 log=LogStore.add_logger('rx_hqm:test_trfc')
@@ -43,7 +43,7 @@ def test_psi2_high_brem(monkeypatch, tmp_path : Path):
     '''
     monkeypatch.setenv('ANADIR', str(tmp_path))
 
-    cfgs        = Conf.load(
+    cfgs        = TransferFunctionMakerConf.load(
         binning = 'none', 
         source  = Qsq.psi2,
         target  = Qsq.high) 

@@ -3,14 +3,14 @@ Module with tests for Config class
 '''
 
 from rx_common  import Qsq
-from hqm.config import Conf
+from hqm.config import TransferFunctionMakerConf
 
 #----------------------------------
 def test_unbinned():
     '''
     Test configuration loader for unbinned case
     '''
-    cfgs = Conf.load(
+    cfgs = TransferFunctionMakerConf.load(
         binning= 'none',
         source = Qsq.psi2,
         target = Qsq.high)
@@ -23,7 +23,7 @@ def test_binned():
     '''
     Test configuration loader for binned case
     '''
-    cfgs = Conf.load(
+    cfgs = TransferFunctionMakerConf.load(
         binning= 'brem',
         source = Qsq.psi2,
         target = Qsq.high)

@@ -12,7 +12,7 @@ from dmu            import LogStore
 from dmu.stats      import FitResult, Fitter, Model, ModelFactory
 from dmu.stats      import ZFitPlotter, zfit, utilities as gut
 
-from hqm.config     import Conf
+from hqm.config     import TransferFunctionMakerConf
 
 log=LogStore.add_logger('rx_hqm:trfc')
 
@@ -59,7 +59,7 @@ class TransferFunctionMaker:
     #---------------------------------
     def __init__(
         self, 
-        cfg    : Conf,
+        cfg    : TransferFunctionMakerConf,
         sample : Component, 
         project: Project, 
         block  : Block):
