@@ -285,7 +285,7 @@ class TransferFunctionMaker:
         res     = self.__get_fit_result(pdf_trf, json_path)
 
         trf            = TransferFunction(
-            name       = pdf_trf.name,
+            name       = self._cfg.name,
             fit_result = res, 
             observable = self._cfg.observable,
             models     = self._cfg.models) 
