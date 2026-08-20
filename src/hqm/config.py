@@ -111,6 +111,11 @@ class _Conf(BaseModel, frozen = True):
     bandwidth  : int
     observable : ObsConf
     binning    : BinningConf
+    fft_npt    : int
+    '''
+    Number of points used to sample KDE before doing convolution with 
+    Fast Fourier Transform
+    '''
     # ----------------------------------
     def __str__(self):
         return f'''
@@ -191,7 +196,6 @@ class TransferFunctionMakerConf(_Conf, frozen = True):
     '''
     Configuration controlling how transfer function is built
     '''
-    fft_npt   : int
     fits      : FitConf
     plots     : ZFitPlotterConf
     source    : Qsq

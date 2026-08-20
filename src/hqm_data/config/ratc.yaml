@@ -1,5 +1,6 @@
 bandwidth : 20
 sb_mass   : 5180
+fft_npt   : 1000
 fits:
   strategy:
     ntries : 15
