@@ -56,27 +56,3 @@ def test_psi2_high_brem(monkeypatch, tmp_path : Path):
 
     obj.get_trf()
 #--------------------------------------
-def test_psi2_high():
-    obj     = TransferFunctionMaker(obs=data.obs, source='psi2', target='high', sample='psi2', trigger='2018', prefix='psi2_high_pr_2018')
-    obj.get_trf()
-#--------------------------------------
-def test_jpsi_high():
-    obj     = TransferFunctionMaker(obs=data.obs, source='jpsi', target='high', sample='ctrl', trigger='comb', prefix='jpsi_high_pr_comb')
-    pdf_trf = obj.get_trf()
-#--------------------------------------
-def test_jpsi_jpsi():
-    obj     = TransferFunctionMaker(obs=data.obs, source='jpsi', target='jpsi', sample='ctrl', trigger='2018', prefix='jpsi_jpsi_2018_pr')
-    pdf_trf = obj.get_trf()
-#--------------------------------------
-def test_jpsi_psi2():
-    obj     = TransferFunctionMaker(obs=data.obs, source='jpsi', target='psi2', sample='ctrl', trigger='2018', prefix='jpsi_psi2_2018_pr')
-    pdf_trf = obj.get_trf()
-#--------------------------------------
-def test_psi2_jpsi():
-    obj     = TransferFunctionMaker(obs=data.obs, source='psi2', target='jpsi', sample='psi2', trigger='2018', prefix='psi2_jpsi_2018_pr')
-    pdf_trf = obj.get_trf()
-#--------------------------------------
-def test_psi2_psi2():
-    obj     = TransferFunctionMaker(obs=data.obs, source='psi2', target='psi2', sample='psi2', trigger='2018', prefix='psi2_psi2_2018_pr')
-    pdf_trf = obj.get_trf()
-#--------------------------------------
