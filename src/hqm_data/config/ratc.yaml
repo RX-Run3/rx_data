@@ -6,3 +6,10 @@ fits:
     ntries : 15
     pvalue : 0.05
 # ------------------
+parameters:
+  rat_psi2: [0.1, 0.0, 1.0]
+  rat_jpsi: [0.1, 0.0, 1.0]
+  npr_jj  : [1000, 0,  4e5]
+  npr_jp  : [1000, 0,  4e5]
+  npr_pj  : [1000, 0,  4e5]
+  npr_pp  : [1000, 0,  4e5]
