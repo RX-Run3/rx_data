@@ -1,7 +1,5 @@
 
 import zfit
-import mplhep
-import matplotlib.pyplot as plt
 
 from hqm.ratc import CCbarRatioCalculator
 from dmu      import LogStore
@@ -20,14 +18,3 @@ def test_proc(proc):
     obj=CCbarRatioCalculator(obs=data.obs, dset='2018', proc=proc)
     rat=obj.get_ratio()
 #-------------------------------------
-def main():
-    log_store.set_level('scripts:zutils/utils', 30)
-    plt.style.use(mplhep.style.LHCb2)
-    set_logs()
-
-    test_proc('psi2')
-    test_proc('ctrl')
-#-------------------------------------
-if __name__ == '__main__': 
-    main()
-
