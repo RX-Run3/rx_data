@@ -3,23 +3,40 @@ Module holding useful mixings for pydantic models
 '''
 from gvar                import gvar
 from pathlib             import Path
-from typing              import Sequence
+from typing              import Sequence, TypeVar
 from dmu                 import LogStore
 
 from .pydantic_protocols import NodeProtocol
-from .pydantic_protocols import SupportsModelDumpJson 
+from .pydantic_protocols import SerializableProtocol 
 from .regular_graph      import RegularGraphMaker, LinkedNode
 
 log=LogStore.add_logger('dmu::generic::pydantic_mixins')
+TSerializable = TypeVar('TSerializable', bound=SerializableProtocol)
 # ---------------------------
 class Serializable:
     '''
     Implements:
 
     to_json
+    from_json
     '''
     # ---------------------------
-    def to_json(self : SupportsModelDumpJson, path : Path) -> None:
+    @classmethod
+    def from_json(cls : type[TSerializable], path : Path) -> TSerializable:
+        '''
+        Parameters
+        ----------------
+        path: Path to JSON file holding object data
+
+        Returns
+        ----------------
+        Instance of serializable object
+        '''
+        string = path.read_text()
+
+        return cls.model_validate_json(json_data = string)
+    # ---------------------------
+    def to_json(self : SerializableProtocol, path : Path) -> None:
         '''
         Parameters
         ---------------

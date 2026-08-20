@@ -16,8 +16,10 @@ class _RootModelProtocol(Protocol[T_co]):
     @property
     def root(self) -> T_co: ...
 # ---------------------------
-class SupportsModelDumpJson(Protocol):
+class SerializableProtocol(Protocol):
     def model_dump_json(self, *, indent: int) -> str: ...
+    @classmethod
+    def model_validate_json(cls, *, json_data : str) -> Self: ...
 # ---------------------------
 class NodeLocProtocol(_RootModelProtocol[Sequence], Protocol):
     '''
