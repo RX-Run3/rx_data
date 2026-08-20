@@ -1,16 +1,35 @@
-import os
+'''
+File holding CCbarRatioCalculator and CCbarRatio classes
+'''
+
 import zfit
 import numpy
 import matplotlib.pyplot as plt
 
-from hqm.data_store   import data_store
-from hqm.config       import CCbarRatioCalculatorConf 
-from hqm.pdfmc        import pdfmc
-from hqm.trfc         import TransferFunctionMaker
-from rx_common        import Block, Project
-from dmu              import LogStore
+from typing         import Final
+from pydantic       import BaseModel
+from dmu.stats      import FitResult
+from dmu.generic    import Serializable
+from hqm.data_store import data_store
+from hqm.config     import CCbarRatioCalculatorConf, TransferFunctionMakerConf 
+from hqm.pdfmc      import pdfmc
+from hqm.trfc       import TransferFunctionMaker
+from rx_common      import Block, Channel, Component, Project, Qsq, Trigger
+from dmu            import LogStore
 
 log=LogStore.add_logger('hqm:ratc')
+
+Loss = zfit.loss.ExtendedUnbinnedNLL
+zpdf = zfit.pdf.BasePDF
+
+_SOURCE_CHANNEL : Final[Channel] = Channel.mm # Channel used to get original part reco distribution
+_TARGET_CHANNEL : Final[Channel] = Channel.ee # Channel where ratio will be extracted
+#-----------------------------
+class CCbarRatio(BaseModel, Serializable, frozen = True):
+    '''
+    Class representing ratio between fully and partly reconstructed charmonium
+    '''
+    res : FitResult
 #-----------------------------
 class CCbarRatioCalculator:
     '''
@@ -30,46 +49,26 @@ class CCbarRatioCalculator:
         '''
         Parameters
         ------------------
-        block: E.g. 1..8 
-        cfg  : Object holding configuration
+        cfg    : Object holding configuration
+        block  : E.g. 1..8 
+        project: E.g. rk or rkst
         '''
         self._cfg      = cfg
+        self._project  = project
         self._block    = block 
-        self._d_pdf_dat= dict() 
-
-        self._rat_psi2 = zfit.param.Parameter('rat_psi2', 0.1, 0, 1)
-        self._rat_ctrl = zfit.param.Parameter('rat_ctrl', 0.1, 0, 1)
-
-        #npr_xy Yiels of sample x in bin y, p=psi2, c=ctrl
-        self._npr_cc= zfit.param.Parameter('npr_cc', 1e3, 0, 4e5)
-        self._npr_cp= zfit.param.Parameter('npr_cp', 1e3, 0, 4e5)
-        self._npr_pc= zfit.param.Parameter('npr_pc', 1e3, 0, 4e5)
-        self._npr_pp= zfit.param.Parameter('npr_pp', 1e3, 0, 4e5)
-
-        self._out_dir = self._cfg.make_path(kind='ratios', project = project)
+        self._out_dir  = self._cfg.make_path(kind='ratios', project = project)
     #-----------------------------
-    def get_ratio(self):
-        self._initialize()
+    def __get_ratio(self) -> CCbarRatio:
+        '''
+        Returns
+        -------------
+        Object representing CCbarRatio
+        '''
+        nll_jpsi= self._get_nll(qsq = Qsq.jpsi)
+        nll_psi2= self._get_nll(qsq = Qsq.psi2)
 
-        json_path = f'{self._out_dir}/parameters.json'
-        if os.path.isfile(json_path):
-            log.info(f'Parameters file found: {json_path}')
-            d_par = utnr.load_json(json_path)
-
-            return d_par[f'rat_{self._proc}']
-
-        log.info('Parameters file not found, recalculating ratio')
-
-        rat = self._get_ratio(json_path)
-
-        return rat
-    #-----------------------------
-    def _get_ratio(self, json_path):
-        nll_psi2= self._get_nll('psi2')
-        nll_ctrl= self._get_nll('ctrl')
-
-        nll     = nll_psi2 + nll_ctrl
-        res     = self._sim_fit(nll)
+        nll     = nll_jpsi + nll_psi2
+        res     = self._sim_fit(nll = nll)
 
         log.info('Plotting')
         self._plot_fit('psi2')
@@ -78,107 +77,169 @@ class CCbarRatioCalculator:
         self._save_figs()
 
         log.info('Saving parameters')
-        d_par = zut.fit_result_to_dict(res)
-        utnr.dump_json(d_par, json_path)
 
-        return d_par['rat_psi2']
+        return CCbarRatio(res = res) 
     #-----------------------------
-    def _get_nll(self, proc):
-        qsq     = {'ctrl' : 'jpsi', 'psi2' : 'psi2'}[proc]
+    def _get_nll(self, qsq : Qsq) -> Loss:
+        '''
+        Returns NLL for given q2 bin
+        '''
+        pdf   = self._get_model(qsq= qsq)
+        array = self._get_data(qsq = qsq)
+        zdat  = zfit.Data.from_numpy(obs=self._cfg.observable.fit_obs, array=array)
 
-        pdf     = self._get_model(qsq=qsq)
-        ds      = data_store(qsq=qsq, dset=self._block, trig='ETOS', proc='data')
-        arr_dat = ds.get_array()
-        zdat    = zfit.Data.from_numpy(obs=self._obs, array=arr_dat)
-        nll     = zfit.loss.ExtendedUnbinnedNLL(model=pdf, data=zdat)
+        if not isinstance(zdat, zfit.Data):
+            raise ValueError('Dataset is not unbinned')
 
-        self._d_pdf_dat[proc] = arr_dat, pdf
+        nll = zfit.loss.ExtendedUnbinnedNLL(model=pdf, data=zdat)
 
         return nll
     #-----------------------------
-    def _get_model(self, qsq=None):
+    def _get_data(self, qsq : Qsq) -> numpy.ndarray:
         '''
-        qsq (str): Want to model in this q2 bin
-        '''
-        pdf_prps = self._get_pr_pdf(proc='psi2', qsq=qsq)
-        pdf_prjp = self._get_pr_pdf(proc='ctrl', qsq=qsq)
+        Parameters
+        -----------------
+        qsq: q2-bin
 
-        pdf_psi2 = self._get_mc_pdf(proc='psi2', qsq=qsq) 
-        pdf_ctrl = self._get_mc_pdf(proc='ctrl', qsq=qsq) 
+        Returns
+        -----------------
+        Array of masses for given q2-bin in real data
+        '''
+        trigger = Trigger.get_main_trigger(project = self._project, channel = _TARGET_CHANNEL)
+        ds      = data_store(qsq=qsq, dset=self._block, trig=trigger, proc='data')
+        array   = ds.get_array()
+
+        return array
+    #-----------------------------
+    def _get_model(self, qsq : Qsq) -> zfit.pdf.SumPDF:
+        r'''
+        Parameters
+        ---------------
+        qsq: $q^2$ bin for which model is needed 
+
+        Returns
+        ---------------
+        PDF with:
+
+        - Part reco candidates with $J/\psi$ and $\psi(2S)$ decays
+        - Fully reco candidates with same decays
+        '''
+        pdf_prjp = self._get_pr_pdf(comp = Component.bpkpjpsiee, qsq_tgt=qsq)
+        pdf_prps = self._get_pr_pdf(comp = Component.bpkppsi2ee, qsq_tgt=qsq)
+
+        pdf_psi2 = self._get_mc_pdf(comp = Component.bpkpjpsiee, qsq=qsq) 
+        pdf_ctrl = self._get_mc_pdf(comp = Component.bpkppsi2ee, qsq=qsq) 
 
         pdf = zfit.pdf.SumPDF([
-                    pdf_prps,
-                    pdf_prjp, 
-                    pdf_psi2,
-                    pdf_ctrl, 
-                    ])
+            pdf_prps,
+            pdf_prjp, 
+            pdf_psi2,
+            pdf_ctrl, 
+        ])
 
         return pdf
     #-----------------------------
-    def _sim_fit(self, nll):
+    def _sim_fit(self, nll : Loss) -> FitResult:
+        '''
+        Parameters
+        --------------
+        nll: Negative log likelihood
+
+        Returns
+        --------------
+        Result of fit
+        '''
         log.info('Fitting')
         minimizer = zfit.minimize.Minuit()
         res       = minimizer.minimize(nll)
         res.hesse(method='minuit_hesse')
 
-        print(res)
+        obj = FitResult.from_zfit(res = res) 
 
-        return res
+        return obj 
     #-----------------------------
-    def _get_mc_pdf(self, proc=None, qsq=None):
-        obj = pdfmc(obs=self._obs, dset=self._block, proc=proc, qsq=qsq)
+    def _get_mc_pdf(self, qsq_comp : Qsq, qsq_bin : Qsq) -> zpdf:
+        comp= self._component_from_qsq(qsq = qsq_comp)
+        obj = pdfmc(obs=self._cfg.observable.fit_obs, dset=self._block, comp=comp, qsq=qsq)
         pdf = obj.get_pdf()
 
-        rat = {'ctrl' : self._rat_ctrl, 'psi2' : self._rat_psi2}[proc]
-        npr = self._get_pr_yield(proc=proc, qsq=qsq) 
-        nfr = zfit.ComposedParameter(f'nfr_{proc}_{qsq}', func=lambda d_par : d_par['p1'] / d_par['p2'], params={'p1' : npr, 'p2' : rat} )
+        rat = self._cfg.parameters.get_ratio(qsq = qsq_bin)
+        npr = self._cfg.parameters.get_part_reco_yield(qsq_comp = qsq_comp, qsq_bin = qsq_bin) 
 
-        pdf = pdf.create_extended(nfr, name= self._get_pdf_name(proc=proc, kind='fr'))
+        # nfully_reco = npart_reco / ratio
+        nfr = zfit.ComposedParameter(f'nfr_{qsq_comp}_{qsq_bin}', func=lambda d_par : d_par['p1'] / d_par['p2'], params={'p1' : npr, 'p2' : rat} )
+
+        pdf = pdf.create_extended(nfr, name= self._get_pdf_name(comp=comp, kind='fr'))
 
         return pdf
     #-----------------------------
-    def _get_pdf_name(self, proc=None, kind=None):
+    def _get_pdf_name(self, comp : Component, kind=None):
         d_fr_name = {
-                'psi2' : r'$B^+\to \psi(2S)(\to e^+e^-) K^+$',
-                'ctrl' : r'$B^+\to J/\psi(\to e^+e^-) K^+$',
-                }
+            'psi2' : r'$B^+\to \psi(2S)(\to e^+e^-) K^+$',
+            'ctrl' : r'$B^+\to J/\psi(\to e^+e^-) K^+$',
+        }
         d_pr_name = { 
-                'psi2' : r'$B^+\to \psi(2S)(\to e^+e^-) X$',
-                'ctrl' : r'$B^+\to J/\psi(\to e^+e^-) X$',
-                }
+            'psi2' : r'$B^+\to \psi(2S)(\to e^+e^-) X$',
+            'ctrl' : r'$B^+\to J/\psi(\to e^+e^-) X$',
+        }
 
         d_name = {
-                'fr' : d_fr_name,
-                'pr' : d_pr_name,
-                }
+            'fr' : d_fr_name,
+            'pr' : d_pr_name,
+        }
 
-        return d_name[kind][proc]
+        return d_name[kind][comp]
     #-----------------------------
-    def _get_pr_pdf(self, proc=None, qsq=None):
+    def _get_pr_pdf(self, comp : Component, qsq_tgt : Qsq) -> zpdf:
         '''
-        proc(str): Component that has to be modelled, provides muon MC sample and source q2 bin for transfer function.
-        qsq (str): q2 bin where PDF lives, target q2.
+        Parameters
+        ------------------
+        comp    : Component that has to be modelled, provides muon MC sample and source q2 bin for transfer function.
+        qsq_tgt : q2 bin where PDF lives, target q2.
+
+        Returns
+        ------------------
+        
         '''
 
-        mas_cns   = {'psi2' : 'B_const_mass_psi2S_M', 'ctrl' : 'B_const_mass_M'}[proc]
-        qsq_src   = {'psi2' :                 'psi2', 'ctrl' :           'jpsi'}[proc]
+        mas_cns   = {'psi2' : 'B_const_mass_psi2S_M', 'ctrl' : 'B_const_mass_M'}[comp]
+        qsq_src   = {Component.bpkppsi2ee : Qsq.psi2, Component.bpkpjpsiee : Qsq.jpsi}[comp]
 
-        obj       = TransferFunctionMaker(obs=self._obs, source=qsq_src, target=qsq, sample=proc, trigger=self._block, prefix=f'{qsq_src}_{qsq}_{self._block}_pr')
-        pdf_trf   = obj.get_trf()
+        cfg          = TransferFunctionMakerConf.load_bin_cfg(
+            source   = qsq_src,
+            target   = qsq_tgt,
+            bin      = self._cfg.binning.bin,
+            variable = self._cfg.binning.variable)
 
-        obj       = data_store(qsq=qsq_src, dset=self._block, trig='MTOS', proc='data')
-        arr_dt_mm = obj.get_array(variable='B_M', d_cut={'sb_mass' : f'{mas_cns} < {self._sb_mass}'})
+        obj       = TransferFunctionMaker(
+            cfg    = cfg, 
+            sample = comp,
+            project= self._project, 
+            block  = self._block)
+        trf = obj.get_trf()
 
-        self._book_histogram(name=f'mm_{qsq}', label=qsq_src, binning=numpy.linspace(3500, 5300, 100), arr_val=arr_dt_mm)
+        trig      = Trigger.get_main_trigger(project = self._project, channel = _SOURCE_CHANNEL)
+        obj       = data_store(qsq=qsq_src, dset=self._block, trig=trig, proc='data')
+        arr_dt_mm = obj.get_array(variable='B_M', d_cut={'sb_mass' : f'{mas_cns} < {self._cfg.sb_mass}'})
 
-        zdata     = zfit.Data.from_numpy(self._obs, array=arr_dt_mm)
-        pdf_mm    = zfit.pdf.KDE1DimFFT(obs=self._obs, data=zdata, bandwidth=self._bandwidth, name='PRec')
-        pdf_ee    = zfit.pdf.FFTConvPDFV1(func=pdf_mm, kernel=pdf_trf, name=self._get_pdf_name(proc=proc, kind='pr') , n=self._fft_npt)
-        nevt      = self._get_pr_yield(proc=proc, qsq=qsq)
+        obs       = self._cfg.observable.fit_obs
+        zdata     = zfit.Data.from_numpy(obs, array=arr_dt_mm)
+        pdf_mm    = zfit.pdf.KDE1DimFFT(
+            obs=obs, 
+            data=zdata, 
+            bandwidth=self._cfg.bandwidth, 
+            name='PRec')
 
-        self._book_pdf(name=f'pdf_{proc}_{qsq}', pdf=pdf_mm, label='Muon'   , minx=3500, maxx=6000)
-        self._book_pdf(name=f'pdf_{proc}_{qsq}', pdf=pdf_ee, label='Smeared', minx=3500, maxx=6000)
-        plt.title(f'Source $q^2$: {qsq_src}; Target $q^2$: {qsq}')
+        name      = self._get_pdf_name(comp=comp, kind='pr')
+        pdf_ee    = zfit.pdf.FFTConvPDFV1(
+            func  = pdf_mm, 
+            kernel= trf.pdf, 
+            name  = name, 
+            n     = self._cfg.fft_npt)
+
+        nevt      = self._get_pr_yield(proc=comp, qsq=qsq_tgt)
+
+        plt.title(f'Source $q^2$: {qsq_src}; Target $q^2$: {qsq_tgt}')
 
         pdf_ee.set_yield(nevt)
 
@@ -196,16 +257,6 @@ class CCbarRatioCalculator:
 
         label = f'{label}; nev={arr_val.size}'
         plt.hist(arr_val, bins=binning, label=label, histtype='step', density=True)
-    #-----------------------------
-    def _get_pr_yield(self, proc=None, qsq=None):
-        nevt = {
-                'ctrl_jpsi' : self._npr_cc, 
-                'ctrl_psi2' : self._npr_cp, 
-                'psi2_jpsi' : self._npr_pc, 
-                'psi2_psi2' : self._npr_pp, 
-                }[f'{proc}_{qsq}']
-
-        return nevt
     #-----------------------------
     def _plot_fit(self, proc):
         dat, pdf = self._d_pdf_dat[proc]
@@ -233,4 +284,24 @@ class CCbarRatioCalculator:
             plt.figure(fig_name, self._figsize)
             plt.legend()
             plt.savefig(f'{self._out_dir}/{fig_name}.png')
+    #-----------------------------
+    def get_ratio(self) -> CCbarRatio:
+        '''
+        Returns
+        -----------------
+        Ratio of part reco over fully reco components
+        '''
+        json_path = self._out_dir / 'parameters.json'
+        if json_path.exists():
+            log.info(f'Parameters file found: {json_path}')
+            rat = CCbarRatio.from_json(path = json_path)
+
+            return rat 
+
+        log.info('Parameters file not found, recalculating ratio')
+
+        rat = self.__get_ratio()
+        rat.to_json(path = json_path)
+
+        return rat
 #-----------------------------
