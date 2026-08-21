@@ -2,7 +2,8 @@ bandwidth : 3
 fft_npt   : 1000
 observable:
   name       : B_Mass
-  mass_range : [ 4500, 6000]
+  kdem_range : [ 3500, 6500]
+  mass_range : [ 4500, 6500]
   tran_range : [ -500,  500] # This range has to be narrower than the `mass_range`
 fits:
   run_gof   : false
