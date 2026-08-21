@@ -2,6 +2,10 @@
   "name": "jpsi_psi2",
   "observable": {
     "name": "B_Mass",
+    "kdem_range": [
+      3500.0,
+      6500.0
+    ],
     "mass_range": [
       4500.0,
       6000.0
