@@ -220,12 +220,10 @@ class FitParameter(BaseModel, frozen = True):
 
         return _context()
 # -------------------------------------
-class FitResult(BaseModel):
+class FitResult(BaseModel, frozen = True):
     '''
     Class meant to represent fit result
     '''
-    model_config = ConfigDict(frozen=True)
-
     valid      : bool
     status     : int
     gof        : GoodnessOfFit | None = None
