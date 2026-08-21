@@ -49,7 +49,8 @@ class Mass(StrEnum):
     bd_kk        = 'B_Mass_hdkk'
     bd_pipi      = 'B_Mass_hdpipi'
     # ------------------------------
-    def dtf_from_qsq(self, qsq : Qsq, project : Project) -> 'Mass':
+    @classmethod
+    def dtf_from_qsq(cls, qsq : Qsq, project : Project) -> 'Mass':
         '''
         Parameters
         -----------------
@@ -61,16 +62,16 @@ class Mass(StrEnum):
         DTF mass type for given q2-bin
         '''
         if project == Project.rk   and qsq == Qsq.jpsi:
-            return self.bp_dtf_jpsi
+            return Mass.bp_dtf_jpsi
 
         if project == Project.rk   and qsq == Qsq.psi2:
-            return self.bp_dtf_psi2
+            return Mass.bp_dtf_psi2
 
         if project == Project.rkst and qsq == Qsq.jpsi:
-            return self.bd_dtf_jpsi
+            return Mass.bd_dtf_jpsi
 
         if project == Project.rkst and qsq == Qsq.psi2:
-            return self.bd_dtf_psi2
+            return Mass.bd_dtf_psi2
 
         raise ValueError(f'Invalid project/q2-bin: {project}/{qsq}')
     # ------------------------------
