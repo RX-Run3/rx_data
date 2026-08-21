@@ -5,6 +5,9 @@ from enum      import StrEnum
 from dmu.stats import zfit
 from functools import cached_property
 
+from .qsq      import Qsq
+from .project  import Project
+
 zobs = zfit.Space
 # -----------------------------------
 class Mass(StrEnum):
@@ -45,6 +48,31 @@ class Mass(StrEnum):
     bd_bcor_smr  = 'B_Mass_smr'
     bd_kk        = 'B_Mass_hdkk'
     bd_pipi      = 'B_Mass_hdpipi'
+    # ------------------------------
+    def dtf_from_qsq(self, qsq : Qsq, project : Project) -> 'Mass':
+        '''
+        Parameters
+        -----------------
+        qsq    : q2-bin
+        project: E.g. rk or rkst
+
+        Returns
+        -----------------
+        DTF mass type for given q2-bin
+        '''
+        if project == Project.rk   and qsq == Qsq.jpsi:
+            return self.bp_dtf_jpsi
+
+        if project == Project.rk   and qsq == Qsq.psi2:
+            return self.bp_dtf_psi2
+
+        if project == Project.rkst and qsq == Qsq.jpsi:
+            return self.bd_dtf_jpsi
+
+        if project == Project.rkst and qsq == Qsq.psi2:
+            return self.bd_dtf_psi2
+
+        raise ValueError(f'Invalid project/q2-bin: {project}/{qsq}')
     # ------------------------------
     @property
     def is_dtf(self) -> bool:
