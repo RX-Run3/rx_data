@@ -159,36 +159,46 @@ class CCbarRatioCalculator:
         return obj 
     #-----------------------------
     def _get_mc_pdf(self, qsq_comp : Qsq, qsq_bin : Qsq) -> zpdf:
-        comp= self._component_from_qsq(qsq = qsq_comp)
-        obj = pdfmc(obs=self._cfg.observable.fit_obs, dset=self._block, comp=comp, qsq=qsq)
+        comp = self._component_from_qsq(
+            qsq          = qsq_comp, 
+            is_part_reco = False)
+
+        obj = pdfmc(obs=self._cfg.observable.fit_obs, dset=self._block, comp=comp, qsq=qsq_bin)
         pdf = obj.get_pdf()
 
+        # nfully_reco = npart_reco / ratio
         rat = self._cfg.parameters.get_ratio(qsq = qsq_bin)
         npr = self._cfg.parameters.get_part_reco_yield(qsq_comp = qsq_comp, qsq_bin = qsq_bin) 
-
-        # nfully_reco = npart_reco / ratio
         nfr = zfit.ComposedParameter(f'nfr_{qsq_comp}_{qsq_bin}', func=lambda d_par : d_par['p1'] / d_par['p2'], params={'p1' : npr, 'p2' : rat} )
 
-        pdf = pdf.create_extended(nfr, name= self._get_pdf_name(comp=comp, kind='fr'))
+        pdf = pdf.create_extended(nfr, name= comp.latex)
 
         return pdf
     #-----------------------------
-    def _get_pdf_name(self, comp : Component, kind=None):
-        d_fr_name = {
-            'psi2' : r'$B^+\to \psi(2S)(\to e^+e^-) K^+$',
-            'ctrl' : r'$B^+\to J/\psi(\to e^+e^-) K^+$',
-        }
-        d_pr_name = { 
-            'psi2' : r'$B^+\to \psi(2S)(\to e^+e^-) X$',
-            'ctrl' : r'$B^+\to J/\psi(\to e^+e^-) X$',
-        }
+    def _component_from_qsq(self, qsq : Qsq, is_part_reco : bool) -> Component:
+        '''
+        Parameters
+        -------------
+        qsq         : q2-bin for which component is needed
+        is_part_reco: If True will return part reco component
 
-        d_name = {
-            'fr' : d_fr_name,
-            'pr' : d_pr_name,
-        }
+        Returns
+        -------------
+        Object representing decay
+        '''
+        if qsq == Qsq.jpsi and is_part_reco:
+            return Component.bpjpsixee  if self._project == Project.rk else Component.bdjpsixee
 
-        return d_name[kind][comp]
+        if qsq == Qsq.psi2 and is_part_reco:
+            return Component.bppsi2xee  if self._project == Project.rk else Component.bdpsi2xee
+
+        if qsq == Qsq.jpsi and not is_part_reco:
+            return Component.bpkpjpsiee if self._project == Project.rk else Component.bdkstkpijpsiee
+
+        if qsq == Qsq.psi2 and not is_part_reco:
+            return Component.bpkppsi2ee if self._project == Project.rk else Component.bdkstkpipsi2ee
+
+        raise ValueError(f'Cannot find component for: {qsq}/{is_part_reco}')
     #-----------------------------
     def _get_pr_pdf(self, comp : Component, qsq_tgt : Qsq) -> zpdf:
         '''
