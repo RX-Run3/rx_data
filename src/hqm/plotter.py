@@ -64,15 +64,18 @@ class Plotter:
         name : Used to build path, i.e. {PATH_DIR}/{name}.png
         Loss : Likelihood
         '''
+        pdf = nll.model[0]
+        dat = nll.data[0]
+
+        self.plot_fit(name = name, pdf = pdf, data = dat)
+    #-----------------------------
+    def plot_fit(self, name : str, pdf : zpdf, data : numpy.ndarray | zfit.Data) -> None:
         plt_dir = _PLOT_DIR.get()
         if plt_dir is None:
             return
 
-        pdf = nll.model[0]
-        dat = nll.data[0]
-
         cfg = ZFitPlotterConf.default()
-        ptr = ZFitPlotter(data = dat, model = pdf)
+        ptr = ZFitPlotter(data = data, model = pdf)
         ptr.run(cfg = cfg)
 
         plt.savefig(plt_dir / f'{name}.png')
