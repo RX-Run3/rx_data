@@ -35,12 +35,6 @@ def initialize():
     '''
     LogStore.set_level('dmu:zfit_plotter', 10)
 #--------------------------------
-def _make_dir_path(name : str) -> str:
-    path = f'/tmp/tests/dmu/fit_plotter/{name}'
-    os.makedirs(path, exist_ok=True)
-
-    return path
-#--------------------------------
 def test_simple(tmp_path : Path):
     '''
     Simplest test of plotting class
@@ -110,7 +104,7 @@ def test_run(tmp_path : Path):
 
     plt.savefig(tmp_path / 'fit.png', bbox_inches='tight')
 #--------------------------------
-def test_title():
+def test_title(tmp_path : Path):
     '''
     Testing adding title in plot
     '''
@@ -129,10 +123,9 @@ def test_title():
     obj.plot(title='title here', nbins=50, d_leg=d_leg, plot_range=(-10, 10), ext_text='Extra text here')
     obj.axs[1].set_ylim(-5, 5)
 
-    plt_dir = _make_dir_path(name = 'title')
-    plt.savefig(f'{plt_dir}/fit.png', bbox_inches='tight')
+    plt.savefig(tmp_path / 'fit.png', bbox_inches='tight')
 #--------------------------------
-def test_legend():
+def test_legend(tmp_path : Path):
     '''
     Tests overriding of PDF name in legend
     '''
@@ -158,14 +151,12 @@ def test_legend():
 
     # add a line to pull hist
     obj.axs[1].plot([0, 10], [0, 0], linestyle='--', color='black')
-
-    plt_dir = _make_dir_path(name = 'legend')
-    plt.savefig(f'{plt_dir}/fit_lin.png', bbox_inches='tight')
+    plt.savefig(tmp_path / 'fit_lin.png', bbox_inches='tight')
 
     obj.axs[0].set_yscale('log')
-    plt.savefig(f'{plt_dir}/fit_log.png', bbox_inches='tight')
+    plt.savefig(tmp_path / 'fit_log.png', bbox_inches='tight')
 #--------------------------------
-def test_size():
+def test_size(tmp_path : Path):
     '''
     Tests use of figsize argument
     '''
@@ -184,8 +175,7 @@ def test_size():
     obj.plot(nbins=50, d_leg=d_leg, plot_range=(-10, 10), ext_text='Extra text here', figsize=(30, 10))
     obj.axs[1].set_ylim(-5, 5)
 
-    plt_dir = _make_dir_path(name = 'size')
-    plt.savefig(f'{plt_dir}/fit.png', bbox_inches='tight')
+    plt.savefig(tmp_path / 'fit.png', bbox_inches='tight')
 #--------------------------------
 def test_leg_loc():
     '''
