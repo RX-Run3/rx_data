@@ -250,8 +250,9 @@ class CCbarRatioCalculator:
         nevt = self._cfg.parameters.get_part_reco_yield(qsq_comp = qsq_src, qsq_bin = qsq_tgt)
         pdf_tgt.set_yield(nevt)
 
-        self._plotter.plot_array(name = f'src_data_{qsq_src}', array = arr_src)
         self._plotter.plot_model(name = f'trf_{qsq_src}_{qsq_tgt}', pdf = trf.pdf)
+        self._plotter.plot_model(name = f'prc_{qsq_src}_{qsq_tgt}', pdf = pdf_tgt)
+        self._plotter.plot_fit(name = f'kde_{qsq_src}_{qsq_tgt}', data= arr_src, pdf = pdf_src)
 
         return pdf_tgt
     #-----------------------------
