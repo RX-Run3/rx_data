@@ -177,7 +177,7 @@ def test_size(tmp_path : Path):
 
     plt.savefig(tmp_path / 'fit.png', bbox_inches='tight')
 #--------------------------------
-def test_leg_loc():
+def test_leg_loc(tmp_path : Path):
     '''
     Test usage of leg_loc argument, to place legend
     '''
@@ -196,10 +196,9 @@ def test_leg_loc():
     obj.plot(nbins=50, d_leg=d_leg, plot_range=(-10, 10), ext_text='Extra text here', leg_loc='upper left')
     obj.axs[1].set_ylim(-5, 5)
 
-    plt_dir = _make_dir_path(name = 'leg_loc')
-    plt.savefig(f'{plt_dir}/fit.png', bbox_inches='tight')
+    plt.savefig(tmp_path / 'fit.png', bbox_inches='tight')
 #--------------------------------
-def test_weights():
+def test_weights(tmp_path : Path):
     '''
     Tests plotting of weighted zfit data
     '''
@@ -241,10 +240,9 @@ def test_weights():
     [[lower]], [[upper]] = obs.limits
     obj.axs[1].plot([lower, upper], [0, 0], linestyle='--', color='black')
 
-    plt_dir = _make_dir_path(name = 'weights')
-    plt.savefig(f'{plt_dir}/fit_lin.png', bbox_inches='tight')
+    plt.savefig(tmp_path / 'fit_lin.png', bbox_inches='tight')
 #--------------------------------
-def test_low_stat():
+def test_low_stat(tmp_path : Path):
     '''
     Testing fit plots with low statistics data
     '''
@@ -276,13 +274,12 @@ def test_low_stat():
     lower, upper = dat.data_range.limit1d
     obj.axs[1].plot([lower, upper], [0, 0], linestyle='--', color='black')
 
-    plt_dir = _make_dir_path(name = 'low_stat')
-    plt.savefig(f'{plt_dir}/fit_lin.png', bbox_inches='tight')
+    plt.savefig(tmp_path / 'fit_lin.png', bbox_inches='tight')
 
     obj.axs[0].set_yscale('log')
-    plt.savefig(f'{plt_dir}/fit_log.png', bbox_inches='tight')
+    plt.savefig(tmp_path / 'fit_log.png', bbox_inches='tight')
 #--------------------------------
-def test_skip_pulls():
+def test_skip_pulls(tmp_path : Path):
     '''
     Test usage of skip_pulls=True arg
     '''
@@ -308,10 +305,9 @@ def test_skip_pulls():
     obj   = ZFitPlotter(data=arr, model=pdf, result=res)
     obj.plot(plot_range=(0, 10), skip_pulls=True)
 
-    plt_dir = _make_dir_path(name = 'skip_pulls')
-    plt.savefig(f'{plt_dir}/fit_lin.png', bbox_inches='tight')
+    plt.savefig(tmp_path / 'fit_lin.png', bbox_inches='tight')
 #--------------------------------
-def test_nodata():
+def test_nodata(tmp_path : Path):
     '''
     Tests usage of no_data=True arg, to remove data from plot
     '''
@@ -335,10 +331,9 @@ def test_nodata():
     obj = ZFitPlotter(data=arr, model=pdf, result=res)
     obj.plot(nbins=50, plot_range=(0, 10), no_data=True)
 
-    plt_dir = _make_dir_path(name = 'no_data')
-    plt.savefig(f'{plt_dir}/fit_lin.png', bbox_inches='tight')
+    plt.savefig(tmp_path / 'fit_lin.png', bbox_inches='tight')
 #--------------------------------
-def test_empty_region():
+def test_empty_region(tmp_path : Path):
     '''
     Tests fit with empty regions, no data
     '''
@@ -364,10 +359,9 @@ def test_empty_region():
     obj = ZFitPlotter(data=arr, model=pdf, result=res, weights=wgt)
     obj.plot(nbins=50, plot_range=(0, 10))
 
-    plt_dir = _make_dir_path(name = 'empty_region')
-    plt.savefig(f'{plt_dir}/fit.png')
+    plt.savefig(tmp_path / 'fit.png')
 #--------------------------------
-def test_axs():
+def test_axs(tmp_path : Path):
     '''
     Tests overlaying axes, i.e. overlaying plots
     '''
@@ -390,10 +384,9 @@ def test_axs():
     obj.axs[1].set_ylim(-5, 5)
     obj.axs[1].plot(linestyle='--', color='black')
 
-    plt_dir = _make_dir_path(name = 'axes')
-    plt.savefig(f'{plt_dir}/fit_lin.png', bbox_inches='tight')
+    plt.savefig(tmp_path / 'fit_lin.png', bbox_inches='tight')
 #--------------------------------
-def test_stacked():
+def test_stacked(tmp_path : Path):
     '''
     Testing stacked PDF plots
     '''
@@ -426,13 +419,12 @@ def test_stacked():
     # add a line to pull hist
     obj.axs[1].plot([0, 10], [0, 0], linestyle='--', color='black')
 
-    plt_dir = _make_dir_path('stacked')
-    plt.savefig(f'{plt_dir}/fit_lin.png', bbox_inches='tight')
+    plt.savefig(tmp_path / 'fit_lin.png', bbox_inches='tight')
 
     obj.axs[0].set_yscale('log')
-    plt.savefig(f'{plt_dir}/fit_log.png', bbox_inches='tight')
+    plt.savefig(tmp_path / 'fit_log.png', bbox_inches='tight')
 #--------------------------------
-def test_composed():
+def test_composed(tmp_path : Path):
     '''
     Testing plot of SumPDF (?)
     '''
@@ -459,13 +451,12 @@ def test_composed():
     # add a line to pull hist
     obj.axs[1].plot([0, 10], [0, 0], linestyle='--', color='black')
 
-    plt_dir = _make_dir_path('composed')
-    plt.savefig(f'{plt_dir}/fit_lin.png', bbox_inches='tight')
+    plt.savefig(tmp_path / 'fit_lin.png', bbox_inches='tight')
 
     obj.axs[0].set_yscale('log')
-    plt.savefig(f'{plt_dir}/fit_log.png', bbox_inches='tight')
+    plt.savefig(tmp_path / 'fit_log.png', bbox_inches='tight')
 #--------------------------------
-def test_composed_nonextended():
+def test_composed_nonextended(tmp_path : Path):
     '''
     Testing plot of sum of PDFs with fractions, non-extended
     '''
@@ -488,10 +479,9 @@ def test_composed_nonextended():
     obj = ZFitPlotter(data=dat, model=pdf)
     obj.plot(nbins=50, plot_range=(0, 10), stacked=True)
 
-    plt_dir = _make_dir_path('composed_nonextended')
-    plt.savefig(f'{plt_dir}/fit.png', bbox_inches='tight')
+    plt.savefig(tmp_path / 'fit.png', bbox_inches='tight')
 #--------------------------------
-def test_composed_blind():
+def test_composed_blind(tmp_path : Path):
     '''
     Test of blindind of a component
     '''
@@ -527,13 +517,12 @@ def test_composed_blind():
     # add a line to pull hist
     obj.axs[1].plot([0, 10], [0, 0], linestyle='--', color='black')
 
-    plt_dir = _make_dir_path('composed_blind')
-    plt.savefig(f'{plt_dir}/fit_lin.png', bbox_inches='tight')
+    plt.savefig(tmp_path / 'fit_lin.png', bbox_inches='tight')
 
     obj.axs[0].set_yscale('log')
-    plt.savefig(f'{plt_dir}/fit_log.png', bbox_inches='tight')
+    plt.savefig(tmp_path / 'fit_log.png', bbox_inches='tight')
 #--------------------------------
-def test_composed_ranges():
+def test_composed_ranges(tmp_path : Path):
     '''
     Testing plot in ranges of composed PDF
     '''
@@ -573,13 +562,12 @@ def test_composed_ranges():
     obj.plot(nbins=50, ranges=[(0, 4), (6, 10)], stacked=False)
     obj.axs[1].set_ylim(-5, 5)
 
-    plt_dir = _make_dir_path('composed_ranges')
-    plt.savefig(f'{plt_dir}/fit_lin.png', bbox_inches='tight')
+    plt.savefig(tmp_path / 'fit_lin.png', bbox_inches='tight')
 
     obj.axs[0].set_yscale('log')
-    plt.savefig(f'{plt_dir}/fit_log.png', bbox_inches='tight')
+    plt.savefig(tmp_path / 'fit_log.png', bbox_inches='tight')
 #--------------------------------
-def test_plot_pars():
+def test_plot_pars(tmp_path : Path):
     '''
     Testing plotting of parameters alongside fit
     '''
@@ -596,15 +584,13 @@ def test_plot_pars():
     mnm = zfit.minimize.Minuit()
     res = mnm.minimize(nll)
 
-    plt_dir = _make_dir_path('plot_pars')
-
-    plt_path= f'{plt_dir}/fit_all.png'
+    plt_path= tmp_path / 'fit_all.png'
     obj_1=ZFitPlotter(model=pdf, data=dat, result=res)
     obj_1.plot(add_pars='all')
     log.info(f'Saving to: {plt_path}')
     plt.savefig(f'{plt_path}')
 
-    plt_path= f'{plt_dir}/fit_some.png'
+    plt_path= tmp_path / 'fit_some.png'
     obj_2=ZFitPlotter(model=pdf, data=dat, result=res)
     obj_2.plot(add_pars=['mu', 'sg'])
     log.info(f'Saving to: {plt_path}')
@@ -612,7 +598,7 @@ def test_plot_pars():
 
     plt.close('all')
 #--------------------------------
-def test_blind():
+def test_blind(tmp_path : Path):
     '''
     Testing blind argument
     '''
@@ -649,13 +635,12 @@ def test_blind():
     lower, upper = dat.data_range.limit1d
     obj.axs[1].plot([lower, upper], [0, 0], linestyle='--', color='black')
 
-    plt_dir = _make_dir_path('blind')
-    plt.savefig(f'{plt_dir}/fit_lin.png', bbox_inches='tight')
+    plt.savefig(tmp_path / 'fit_lin.png', bbox_inches='tight')
 
     obj.axs[0].set_yscale('log')
-    plt.savefig(f'{plt_dir}/fit_log.png', bbox_inches='tight')
+    plt.savefig(tmp_path / 'fit_log.png', bbox_inches='tight')
 #--------------------------------
-def test_show_components():
+def test_show_components(tmp_path : Path):
     '''
     Tests plot_components argument, which shows subcomponents of PDF
     '''
@@ -686,6 +671,5 @@ def test_show_components():
     obj.plot(stacked=True, nbins=50, d_leg=d_leg, plot_range=(-10, 10), plot_components=['bkg'], ext_text='Extra text here')
     obj.axs[1].set_ylim(-5, 5)
 
-    plt_dir = _make_dir_path('show_components')
-    plt.savefig(f'{plt_dir}/fit.png', bbox_inches='tight')
+    plt.savefig(tmp_path / 'fit.png', bbox_inches='tight')
 #--------------------------------
