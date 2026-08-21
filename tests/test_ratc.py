@@ -20,6 +20,8 @@ zpdf = zfit.pdf.BasePDF
 
 _MASS_RANGE : Final[tuple[float,float]] = 4500, 6000
 _TRAN_RANGE : Final[tuple[float,float]] = -500,  500
+
+log=LogStore.add_logger('hqm:test_ratc')
 #-------------------------------------
 def _get_mu_sg(qsq_src: Qsq, qsq_tgt: Qsq) -> tuple[float, float]:
     if   qsq_src == Qsq.jpsi and qsq_tgt == Qsq.jpsi:
@@ -45,16 +47,19 @@ def _get_source_data(self, qsq : Qsq) -> numpy.ndarray:
         return numpy.random.uniform(3700, 5100, size = 10_000)
 
     if qsq == Qsq.psi2:
-        return numpy.random.uniform(3500, 4900, size =  2_000)
+        return numpy.random.uniform(3500, 4900, size = 10_000)
 
     raise ValueError(f'Invalid q2 bin: {qsq}')
 #--------------------------------------
 def _get_pr(qsq_src : Qsq, qsq_tgt : Qsq) -> numpy.ndarray:
     arr_src = _get_source_data(self = 1, qsq = qsq_src)
-    dmu,sg  = _get_mu_sg(qsq_src = qsq_src, qsq_tgt = qsq_tgt)
-    arr_scl = arr_src + dmu 
+    if qsq_src != qsq_tgt:
+        size    = 0.2 * len(arr_src)
+        arr_src = numpy.random.choice(arr_src, size = int(size), replace = False)
 
-    return ndimage.gaussian_filter1d(arr_scl, sigma = sg)
+    dmu, sg = _get_mu_sg(qsq_src = qsq_src, qsq_tgt = qsq_tgt)
+
+    return arr_src + numpy.random.normal(dmu, sg, len(arr_src))
 #--------------------------------------
 def _get_target_data(self, qsq : Qsq) -> numpy.ndarray:
     if   qsq == Qsq.jpsi:
@@ -64,15 +69,17 @@ def _get_target_data(self, qsq : Qsq) -> numpy.ndarray:
         jpsi_pr = _get_pr(qsq_src = Qsq.jpsi, qsq_tgt = qsq)
         psi2_pr = _get_pr(qsq_src = Qsq.psi2, qsq_tgt = qsq)
     elif qsq == Qsq.psi2:
-        psi2_fr = numpy.random.normal(5280, 100, size = 1_000)
-        jpsi_fr = numpy.random.normal(5300, 100, size = 1_000)
+        psi2_fr = numpy.random.normal(5280, 100, size = 5_000)
+        jpsi_fr = numpy.random.normal(6000, 150, size = 3_000)
 
         jpsi_pr = _get_pr(qsq_src = Qsq.jpsi, qsq_tgt = qsq)
         psi2_pr = _get_pr(qsq_src = Qsq.psi2, qsq_tgt = qsq)
     else:
         raise ValueError(f'Invalid q2 bin: {qsq}')
 
-    return numpy.concatenate([jpsi_fr, psi2_fr, jpsi_pr, psi2_pr])
+    datasets = [jpsi_fr, psi2_fr, jpsi_pr, psi2_pr]
+
+    return numpy.concatenate(datasets)
 #--------------------------------------
 def _get_trfc(self, qsq_src : Qsq, qsq_tgt : Qsq) -> TransferFunction:
     data = gut.load_data(
