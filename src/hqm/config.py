@@ -88,13 +88,25 @@ class ObsConf(BaseModel, frozen = True):
     transfer function calculation
     '''
     name       : str
+    kdem_range : tuple[float,float]
+    '''
+    Range used to build KDE PDFs, wider than fit/normalization observable
+    needed to use all information available in dataset and avoid edge effects
+    '''
     mass_range : tuple[float,float]
     tran_range : tuple[float,float]
     #---------------------------------
     @property
+    def kde_obs(self) -> zfit.Space:
+        '''
+        Observable that will be fitted for source datasets
+        '''
+        return zfit.Space(self.name, limits = self.kdem_range)
+    #---------------------------------
+    @property
     def fit_obs(self) -> zfit.Space:
         '''
-        Observable that will be fitted for source and target datasets
+        Observable that will be fitted for target datasets
         '''
         return zfit.Space(self.name, limits = self.mass_range)
     #---------------------------------
