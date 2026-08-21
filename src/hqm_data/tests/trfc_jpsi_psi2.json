@@ -1,5 +1,5 @@
 {
-  "name": "test",
+  "name": "jpsi_psi2",
   "observable": {
     "name": "B_Mass",
     "mass_range": [
@@ -18,22 +18,22 @@
     "extra_pars": [],
     "parameters": [
       {
-        "name": "mu_test",
-        "value": -79.44838550504711,
+        "name": "mu_jpsi_psi2",
+        "value": 20.44838550504711,
         "error": 0.672702061186718
       },
       {
-        "name": "sg_test",
-        "value": 22.159281352681518,
+        "name": "sg_jpsi_psi2",
+        "value": 40.159281352681518,
         "error": 0.6524095187076359
       },
       {
-        "name": "al_cbl_test_1",
+        "name": "al_cbl_jpsi_psi2_1",
         "value": 4.530879577432229,
         "error": 6.7371863556585625
       },
       {
-        "name": "nl_cbl_test_1",
+        "name": "nl_cbl_jpsi_psi2_1",
         "value": 3.7893012243458783,
         "error": 58.965131548481125
       }
