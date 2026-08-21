@@ -7,14 +7,14 @@ import numpy
 from typing      import Final
 from pathlib     import Path
 from scipy       import ndimage
-from dmu.stats   import FitResult, Model, zfit
+from dmu         import LogStore
+from dmu.stats   import zfit
 from dmu.generic import utilities as gut
 from rx_common   import Block, Component, Project, Qsq
 from hqm.config  import CCbarRatioCalculatorConf
 from hqm.ratc    import CCbarRatioCalculator
-from dmu         import LogStore
-
-from hqm.trfc import TransferFunction
+from hqm.plotter import Plotter
+from hqm.trfc    import TransferFunction
 
 zpdf = zfit.pdf.BasePDF
 
@@ -138,10 +138,11 @@ def test_unbinned(monkeypatch, tmp_path : Path):
     cfg   = cfgs[0]
     block = Block(value = 1)
 
-    cal         = CCbarRatioCalculator(
-        cfg     = cfg,
-        block   = block, 
-        project = Project.rk)
+    with Plotter.plot(path = tmp_path / 'plots'):
+        cal         = CCbarRatioCalculator(
+            cfg     = cfg,
+            block   = block, 
+            project = Project.rk)
 
-    ratio = cal.get_ratio()
+        ratio = cal.get_ratio()
 #-------------------------------------
