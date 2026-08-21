@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 
 from pathlib        import Path
 from dmu.stats      import zfit
+from dmu.stats      import utilities as sut
+from dmu.stats      import ZFitPlotterConf, ZFitPlotter
 from contextlib     import contextmanager
 from contextvars    import ContextVar
 
@@ -65,6 +67,16 @@ class Plotter:
         plt_dir = _PLOT_DIR.get()
         if plt_dir is None:
             return
+
+        pdf = nll.model[0]
+        dat = nll.data[0]
+
+        cfg = ZFitPlotterConf.default()
+        ptr = ZFitPlotter(data = dat, model = pdf)
+        ptr.run(cfg = cfg)
+
+        plt.savefig(plt_dir / f'{name}.png')
+        plt.close()
     #-----------------------------
     def plot_model(self, name : str, pdf : zpdf) -> None:
         '''
@@ -76,4 +88,13 @@ class Plotter:
         plt_dir = _PLOT_DIR.get()
         if plt_dir is None:
             return
+
+        lower, upper = sut.range_from_obs(obs = pdf.space)
+
+        xs = numpy.linspace(lower, upper, 1000)
+        ys = pdf.pdf(xs)
+
+        plt.scatter(xs, ys, s=2)
+        plt.savefig(plt_dir / f'{name}.png')
+        plt.close()
 #-----------------------------
