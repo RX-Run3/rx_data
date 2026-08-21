@@ -1,9 +1,11 @@
 import os
 import copy
 
+from functools   import lru_cache
 from dmu         import LogStore
 from dmu.stats   import Model, ZFitPlotterConf, zfit
 from dmu.generic import utilities as gut
+from dmu.generic import hashing
 from typing      import Final, Self
 from pathlib     import Path
 from dmu.stats   import FitConf
@@ -15,11 +17,12 @@ log = LogStore.add_logger('rx_hqm:config')
 _NONE_VAR : Final[str] = 'none' # Name of variable when not binning
 zpar = zfit.Parameter
 # -------------------------------------------------------------------
-class ParamConf(RootModel[dict[str,tuple[float,float,float]]]):
+class ParamConf(RootModel[dict[str,tuple[float,float,float]]], frozen = True):
     '''
     Configuration for parameters used in fits to J/psi and psi2S bins
     '''
     # -------------------
+    @lru_cache(maxsize = 5)
     def get_ratio(self, qsq : Qsq) -> zpar:
         '''
         Parameters
@@ -38,6 +41,7 @@ class ParamConf(RootModel[dict[str,tuple[float,float,float]]]):
             case _:
                 raise ValueError(f'Invalid bin: {qsq}')
     # -------------------
+    @lru_cache(maxsize = 5)
     def get_part_reco_yield(
         self, 
         qsq_comp : Qsq, 
@@ -66,6 +70,9 @@ class ParamConf(RootModel[dict[str,tuple[float,float,float]]]):
             return self._get_parameter(name = 'npr_pp')
 
         raise ValueError(f'Invalid q2-bins: {qsq_comp}/{qsq_bin}')
+    # -------------------
+    def __hash__(self) -> int:
+        return hashing.hash_object(obj = self.root, as_int = True)
     # -------------------
     def _get_parameter(self, name : str) -> zpar:
         '''

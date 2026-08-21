@@ -72,3 +72,26 @@ def test_binned_ratio():
     for cfg in cfgs:
         print(cfg)
 #----------------------------------
+def test_pars():
+    '''
+    Test configuration loader for binned case
+    '''
+    cfgs = CCbarRatioCalculatorConf.load(variable = 'nbrem')
+    cfg  = cfgs[0]
+
+    for qsq in [Qsq.jpsi, Qsq.psi2]:
+        obj_1 = cfg.parameters.get_ratio(qsq = qsq)
+        obj_2 = cfg.parameters.get_ratio(qsq = qsq)
+
+        assert obj_1 is obj_2
+
+        obj_3 = cfg.parameters.get_part_reco_yield(qsq_comp = Qsq.jpsi, qsq_bin = qsq)
+        obj_4 = cfg.parameters.get_part_reco_yield(qsq_comp = Qsq.jpsi, qsq_bin = qsq)
+
+        assert obj_3 is obj_4
+
+        obj_5 = cfg.parameters.get_part_reco_yield(qsq_comp = Qsq.psi2, qsq_bin = qsq)
+        obj_6 = cfg.parameters.get_part_reco_yield(qsq_comp = Qsq.psi2, qsq_bin = qsq)
+
+        assert obj_5 is obj_6
+#----------------------------------
