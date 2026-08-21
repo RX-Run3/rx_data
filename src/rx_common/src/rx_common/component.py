@@ -87,9 +87,17 @@ class Component(StrEnum):
     bdjpsixee      = auto()
     bsjpsixee      = auto()
     # -----
+    bppsi2xee      = auto()
+    bdpsi2xee      = auto()
+    bspsi2xee      = auto()
+    # -----
     bpjpsixmm      = auto()
     bdjpsixmm      = auto()
     bsjpsixmm      = auto()
+    # -----
+    bppsi2xmm      = auto()
+    bdpsi2xmm      = auto()
+    bspsi2xmm      = auto()
     # -----
     bsphijpsimm    = auto()
     bsphijpsiee    = auto()
@@ -605,18 +613,35 @@ class Component(StrEnum):
                 return r'$B_d\to K^*(\to K^+\pi^-)\mu^+\mu^-$'
             case Component.bdkstkpiee:
                 return r'$B_d\to K^*(\to K^+\pi^-)e^+e^-$'
+            # --------------
             case Component.bpjpsixee:
                 return r'$B^+\to J/\psi(\to e^+e^-)X$'
             case Component.bdjpsixee:
                 return r'$B_d\to J/\psi(\to e^+e^-)X$'
             case Component.bsjpsixee:
                 return r'$B_s\to J/\psi(\to e^+e^-)X$'
+            # --------------
+            case Component.bppsi2xee:
+                return r'$B^+\to \psi(2S)(\to e^+e^-)X$'
+            case Component.bdpsi2xee:
+                return r'$B_d\to \psi(2S)(\to e^+e^-)X$'
+            case Component.bspsi2xee:
+                return r'$B_s\to \psi(2S)(\to e^+e^-)X$'
+            # --------------
             case Component.bpjpsixmm:
                 return r'$B^+\to J/\psi(\to \mu^+\mu^-)X$'
             case Component.bdjpsixmm:
                 return r'$B_d\to J/\psi(\to \mu^+\mu^-)X$'
             case Component.bsjpsixmm:
                 return r'$B_s\to J/\psi(\to \mu^+\mu^-)X$'
+            # --------------
+            case Component.bppsi2xmm:
+                return r'$B^+\to \psi(2S)(\to \mu^+\mu^-)X$'
+            case Component.bdpsi2xmm:
+                return r'$B_d\to \psi(2S)(\to \mu^+\mu^-)X$'
+            case Component.bspsi2xmm:
+                return r'$B_s\to \psi(2S)(\to \mu^+\mu^-)X$'
+            # --------------
             case Component.bdkstkpijpsiee:
                 return r'$B_d\to K^*(\to K^+\pi^-) J/\psi(\to e^+e^-)$'
             case Component.bdkstkpijpsimm:
