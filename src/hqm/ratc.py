@@ -140,7 +140,7 @@ class CCbarRatioCalculator:
             pdf_prjp, 
             pdf_psi2,
             pdf_ctrl, 
-        ])
+        ], obs = self._cfg.observable.fit_obs)
 
         return pdf
     #-----------------------------
@@ -229,10 +229,12 @@ class CCbarRatioCalculator:
         trf       = self.__get_trfc(qsq_src = qsq_src, qsq_tgt = qsq_tgt)
         arr_src   = self.__get_source_data(qsq = qsq_src)
 
-        obs       = self._cfg.observable.fit_obs
-        zdata     = zfit.Data.from_numpy(obs, array=arr_src)
+        kde_obs   = self._cfg.observable.kde_obs
+        fit_obs   = self._cfg.observable.fit_obs
+        zdata     = zfit.Data.from_numpy(kde_obs, array=arr_src)
         pdf_src   = zfit.pdf.KDE1DimFFT(
-            obs      = obs, 
+            obs      = kde_obs, 
+            norm     = fit_obs,
             data     = zdata, 
             bandwidth= self._cfg.bandwidth, 
             name     = 'PRec')
