@@ -14,6 +14,8 @@ from hqm.trfc       import TransferFunction, TransferFunctionMaker
 from rx_common      import Block, Channel, Component, Mass, Project, Qsq, Trigger
 from dmu            import LogStore
 
+from .plotter       import Plotter
+
 log=LogStore.add_logger('hqm:ratc')
 
 Loss = zfit.loss.ExtendedUnbinnedNLL
@@ -54,6 +56,7 @@ class CCbarRatioCalculator:
         self._project  = project
         self._block    = block 
         self._out_dir  = self._cfg.make_path(kind='ratios', project = project)
+        self._plotter  = Plotter()
     #-----------------------------
     def __get_ratio(self) -> CCbarRatio:
         '''
@@ -71,6 +74,9 @@ class CCbarRatioCalculator:
         res.hesse(method='minuit_hesse')
 
         res = FitResult.from_zfit(res = res) 
+        
+        self._plotter.plot_nll(name = 'jpsi', nll = nll_jpsi)
+        self._plotter.plot_nll(name = 'psi2', nll = nll_psi2)
 
         return CCbarRatio(res = res) 
     #-----------------------------
@@ -86,6 +92,8 @@ class CCbarRatioCalculator:
             raise ValueError('Dataset is not unbinned')
 
         nll = zfit.loss.ExtendedUnbinnedNLL(model=pdf, data=zdat)
+
+        self._plotter.plot_array(name = f'fit_data_{qsq}', array = array)
 
         return nll
     #-----------------------------
@@ -240,6 +248,9 @@ class CCbarRatioCalculator:
 
         nevt = self._cfg.parameters.get_part_reco_yield(qsq_comp = qsq_src, qsq_bin = qsq_tgt)
         pdf_tgt.set_yield(nevt)
+
+        self._plotter.plot_array(name = f'src_data_{qsq_src}', array = arr_src)
+        self._plotter.plot_model(name = f'trf_{qsq_src}_{qsq_tgt}', pdf = trf.pdf)
 
         return pdf_tgt
     #-----------------------------
