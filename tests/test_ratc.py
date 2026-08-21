@@ -6,7 +6,6 @@ import numpy
 
 from typing      import Final
 from pathlib     import Path
-from scipy       import ndimage
 from dmu         import LogStore
 from dmu.stats   import zfit
 from dmu.generic import utilities as gut
@@ -22,6 +21,28 @@ _MASS_RANGE : Final[tuple[float,float]] = 4500, 6000
 _TRAN_RANGE : Final[tuple[float,float]] = -500,  500
 
 log=LogStore.add_logger('hqm:test_ratc')
+
+#-------------------------------------
+def _get_peak(self, comp : Component, qsq : Qsq) -> tuple[float,float]:
+    jj = comp == Component.bpkpjpsiee and qsq == Qsq.jpsi
+    pp = comp == Component.bpkppsi2ee and qsq == Qsq.psi2
+
+    jp = comp == Component.bpkpjpsiee and qsq == Qsq.psi2
+    pj = comp == Component.bpkppsi2ee and qsq == Qsq.jpsi
+
+    if jj or pp: 
+        mu = 5280
+        sg = 100
+    elif jp:
+        mu = 6000
+        sg = 150
+    elif pj:
+        mu = 5100
+        sg = 150
+    else:
+        raise ValueError(f'Invalid component/qsq: {comp}/{qsq}')
+
+    return mu, sg
 #-------------------------------------
 def _get_mu_sg(qsq_src: Qsq, qsq_tgt: Qsq) -> tuple[float, float]:
     if   qsq_src == Qsq.jpsi and qsq_tgt == Qsq.jpsi:
@@ -62,15 +83,21 @@ def _get_pr(qsq_src : Qsq, qsq_tgt : Qsq) -> numpy.ndarray:
     return arr_src + numpy.random.normal(dmu, sg, len(arr_src))
 #--------------------------------------
 def _get_target_data(self, qsq : Qsq) -> numpy.ndarray:
+    mu_jj, sg_jj = _get_peak(self = 1, comp=Component.bpkpjpsiee, qsq=Qsq.jpsi)
+    mu_jp, sg_jp = _get_peak(self = 1, comp=Component.bpkpjpsiee, qsq=Qsq.psi2)
+
+    mu_pj, sg_pj = _get_peak(self = 1, comp=Component.bpkppsi2ee, qsq=Qsq.jpsi)
+    mu_pp, sg_pp = _get_peak(self = 1, comp=Component.bpkppsi2ee, qsq=Qsq.psi2)
+
     if   qsq == Qsq.jpsi:
-        jpsi_fr = numpy.random.normal(5280, 100, size = 10_000)
-        psi2_fr = numpy.random.normal(5100, 100, size =  1_000)
+        jpsi_fr = numpy.random.normal(mu_jj, sg_jj, size = 10_000)
+        psi2_fr = numpy.random.normal(mu_pj, sg_pj, size =  1_000)
 
         jpsi_pr = _get_pr(qsq_src = Qsq.jpsi, qsq_tgt = qsq)
         psi2_pr = _get_pr(qsq_src = Qsq.psi2, qsq_tgt = qsq)
     elif qsq == Qsq.psi2:
-        psi2_fr = numpy.random.normal(5280, 100, size = 5_000)
-        jpsi_fr = numpy.random.normal(6000, 150, size = 3_000)
+        psi2_fr = numpy.random.normal(mu_pp, sg_pp, size = 5_000)
+        jpsi_fr = numpy.random.normal(mu_jp, sg_jp, size = 3_000)
 
         jpsi_pr = _get_pr(qsq_src = Qsq.jpsi, qsq_tgt = qsq)
         psi2_pr = _get_pr(qsq_src = Qsq.psi2, qsq_tgt = qsq)
@@ -89,27 +116,14 @@ def _get_trfc(self, qsq_src : Qsq, qsq_tgt : Qsq) -> TransferFunction:
     return TransferFunction(**data)
 #--------------------------------------
 def _get_mc_pdf(self, comp : Component, qsq : Qsq) -> zpdf:
-    jj = comp == Component.bpkpjpsiee and qsq == Qsq.jpsi
-    pp = comp == Component.bpkppsi2ee and qsq == Qsq.psi2
-
-    jp = comp == Component.bpkpjpsiee and qsq == Qsq.psi2
-    pj = comp == Component.bpkppsi2ee and qsq == Qsq.jpsi
-
-    if jj or pp: 
-        mu = 5280
-        sg = 100
-    elif jp:
-        mu = 5300
-        sg = 150
-    elif pj:
-        mu = 5100
-        sg = 150
-    else:
-        raise ValueError(f'Invalid component/qsq: {comp}/{qsq}')
+    mu, sg = _get_peak(self = 1, comp = comp, qsq = qsq)
 
     obs = zfit.Space('B_Mass', limits = (4500, 6000))
-    mu  = zfit.Parameter(f'mu_{comp}_{qsq}', mu, 5000, 5400)
+    mu  = zfit.Parameter(f'mu_{comp}_{qsq}', mu, 4800, 6200)
     sg  = zfit.Parameter(f'sg_{comp}_{qsq}', sg,    0, 300)
+
+    mu.floating = False
+    sg.floating = False
 
     return zfit.pdf.Gauss(mu = mu, sigma = sg, obs = obs)
 #--------------------------------------
