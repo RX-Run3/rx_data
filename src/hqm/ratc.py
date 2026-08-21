@@ -75,8 +75,8 @@ class CCbarRatioCalculator:
 
         res = FitResult.from_zfit(res = res) 
         
-        self._plotter.plot_nll(name = 'jpsi', nll = nll_jpsi)
-        self._plotter.plot_nll(name = 'psi2', nll = nll_psi2)
+        self._plotter.plot_nll(name = 'fit_jpsi', nll = nll_jpsi)
+        self._plotter.plot_nll(name = 'fit_psi2', nll = nll_psi2)
 
         return CCbarRatio(res = res) 
     #-----------------------------
@@ -84,6 +84,7 @@ class CCbarRatioCalculator:
         '''
         Returns NLL for given q2 bin
         '''
+        log.info(f'Building NLL in {qsq} bin')
         pdf   = self.__get_model(qsq= qsq)
         array = self.__get_target_data(qsq = qsq)
         zdat  = zfit.Data.from_numpy(obs=self._cfg.observable.fit_obs, array=array)
@@ -184,7 +185,7 @@ class CCbarRatioCalculator:
         rat = self._cfg.parameters.get_ratio(qsq = qsq_tgt)
         npr = self._cfg.parameters.get_part_reco_yield(qsq_comp = qsq_src, qsq_bin = qsq_tgt) 
         nfr = zfit.ComposedParameter(f'nfr_{qsq_src}_{qsq_tgt}', func=lambda d_par : d_par['p1'] / d_par['p2'], params={'p1' : npr, 'p2' : rat} )
-        pdf = pdf.create_extended(nfr, name = f'n_{comp}')
+        pdf = pdf.create_extended(nfr, name = comp)
 
         return pdf
     #-----------------------------
