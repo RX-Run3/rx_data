@@ -1,11 +1,37 @@
+'''
+Module with tests for CCbarRatioCalculator class
+'''
+import pytest
+import numpy
 
-import zfit
+from typing      import Final
+from pathlib     import Path
+from scipy       import ndimage
+from dmu.stats   import FitResult, Model, zfit
+from dmu.generic import utilities as gut
+from rx_common   import Block, Component, Project, Qsq
+from hqm.config  import CCbarRatioCalculatorConf
+from hqm.ratc    import CCbarRatioCalculator
+from dmu         import LogStore
 
-from hqm.ratc import CCbarRatioCalculator
-from dmu      import LogStore
+from hqm.trfc import TransferFunction
+
+zpdf = zfit.pdf.BasePDF
+
+_MASS_RANGE : Final[tuple[float,float]] = 4500, 6000
+_TRAN_RANGE : Final[tuple[float,float]] = -500,  500
 #-------------------------------------
-class data:
-    obs = zfit.Space('B_M', limits=(0, 7000))
+def _get_mu_sg(qsq_src: Qsq, qsq_tgt: Qsq) -> tuple[float, float]:
+    if   qsq_src == Qsq.jpsi and qsq_tgt == Qsq.jpsi:
+        return -80, 20
+    elif qsq_src == Qsq.jpsi and qsq_tgt == Qsq.psi2:
+        return 20, 40
+    elif qsq_src == Qsq.psi2 and qsq_tgt == Qsq.jpsi:
+        return -120, 40
+    elif qsq_src == Qsq.psi2 and qsq_tgt == Qsq.psi2:
+        return -80, 20
+    else:
+        raise ValueError(f"Invalid qsq combination: {qsq_src=}, {qsq_tgt=}")
 #-------------------------------------
 def set_logs():
     LogStore.set_level('scripts:zutils/utils'    , 30)
@@ -13,8 +39,109 @@ def set_logs():
     LogStore.set_level('rx_scripts:storage/cache', 30)
     LogStore.set_level('rx_scripts:atr_mgr:mgr'  , 30)
     LogStore.set_level('tools:calc_utility'      , 40)
+#--------------------------------------
+def _get_source_data(self, qsq : Qsq) -> numpy.ndarray:
+    if qsq == Qsq.jpsi:
+        return numpy.random.uniform(3700, 5100, size = 10_000)
+
+    if qsq == Qsq.psi2:
+        return numpy.random.uniform(3500, 4900, size =  2_000)
+
+    raise ValueError(f'Invalid q2 bin: {qsq}')
+#--------------------------------------
+def _get_pr(qsq_src : Qsq, qsq_tgt : Qsq) -> numpy.ndarray:
+    arr_src = _get_source_data(self = 1, qsq = qsq_src)
+    dmu,sg  = _get_mu_sg(qsq_src = qsq_src, qsq_tgt = qsq_tgt)
+    arr_scl = arr_src + dmu 
+
+    return ndimage.gaussian_filter1d(arr_scl, sigma = sg)
+#--------------------------------------
+def _get_target_data(self, qsq : Qsq) -> numpy.ndarray:
+    if   qsq == Qsq.jpsi:
+        jpsi_fr = numpy.random.normal(5280, 100, size = 10_000)
+        psi2_fr = numpy.random.normal(5100, 100, size =  1_000)
+
+        jpsi_pr = _get_pr(qsq_src = Qsq.jpsi, qsq_tgt = qsq)
+        psi2_pr = _get_pr(qsq_src = Qsq.psi2, qsq_tgt = qsq)
+    elif qsq == Qsq.psi2:
+        psi2_fr = numpy.random.normal(5280, 100, size = 1_000)
+        jpsi_fr = numpy.random.normal(5300, 100, size = 1_000)
+
+        jpsi_pr = _get_pr(qsq_src = Qsq.jpsi, qsq_tgt = qsq)
+        psi2_pr = _get_pr(qsq_src = Qsq.psi2, qsq_tgt = qsq)
+    else:
+        raise ValueError(f'Invalid q2 bin: {qsq}')
+
+    return numpy.concatenate([jpsi_fr, psi2_fr, jpsi_pr, psi2_pr])
+#--------------------------------------
+def _get_trfc(self, qsq_src : Qsq, qsq_tgt : Qsq) -> TransferFunction:
+    data = gut.load_data(
+        package = 'hqm_data', 
+        fpath   =f'tests/trfc_{qsq_src}_{qsq_tgt}.json')
+
+    return TransferFunction(**data)
+#--------------------------------------
+def _get_mc_pdf(self, comp : Component, qsq : Qsq) -> zpdf:
+    jj = comp == Component.bpkpjpsiee and qsq == Qsq.jpsi
+    pp = comp == Component.bpkppsi2ee and qsq == Qsq.psi2
+
+    jp = comp == Component.bpkpjpsiee and qsq == Qsq.psi2
+    pj = comp == Component.bpkppsi2ee and qsq == Qsq.jpsi
+
+    if jj or pp: 
+        mu = 5280
+        sg = 100
+    elif jp:
+        mu = 5300
+        sg = 150
+    elif pj:
+        mu = 5100
+        sg = 150
+    else:
+        raise ValueError(f'Invalid component/qsq: {comp}/{qsq}')
+
+    obs = zfit.Space('B_Mass', limits = (4500, 6000))
+    mu  = zfit.Parameter(f'mu_{comp}_{qsq}', mu, 5000, 5400)
+    sg  = zfit.Parameter(f'sg_{comp}_{qsq}', sg,    0, 300)
+
+    return zfit.pdf.Gauss(mu = mu, sigma = sg, obs = obs)
+#--------------------------------------
+@pytest.fixture(autouse = True)
+def _use_fake_masses(monkeypatch):
+    monkeypatch.setattr(
+        CCbarRatioCalculator,
+        '_CCbarRatioCalculator__get_source_data',
+        _get_source_data)
+
+    monkeypatch.setattr(
+        CCbarRatioCalculator,
+        '_CCbarRatioCalculator__get_target_data',
+        _get_target_data)
+    
+    monkeypatch.setattr(
+        CCbarRatioCalculator,
+        '_CCbarRatioCalculator__get_mc_pdf',
+        _get_mc_pdf)
+
+    monkeypatch.setattr(
+        CCbarRatioCalculator,
+        '_CCbarRatioCalculator__get_trfc',
+        _get_trfc)
 #-------------------------------------
-def test_proc(proc):
-    obj=CCbarRatioCalculator(obs=data.obs, dset='2018', proc=proc)
-    rat=obj.get_ratio()
+def test_unbinned(monkeypatch, tmp_path : Path):
+    '''
+    Test in unbinned case
+    '''
+    monkeypatch.setenv('ANADIR', str(tmp_path))
+
+    cfgs  = CCbarRatioCalculatorConf.load(variable = 'none')
+    cfg   = cfgs[0]
+    block = Block(value = 1)
+
+    cal         = CCbarRatioCalculator(
+        cfg     = cfg,
+        block   = block, 
+        project = Project.rk)
+
+    ratio = cal.get_ratio()
 #-------------------------------------
