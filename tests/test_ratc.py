@@ -20,8 +20,14 @@ zpdf = zfit.pdf.BasePDF
 _MASS_RANGE : Final[tuple[float,float]] = 4500, 6000
 _TRAN_RANGE : Final[tuple[float,float]] = -500,  500
 
-log=LogStore.add_logger('hqm:test_ratc')
+# Part reco / Fully reco
+_RJPSI : Final[float] = 0.5
+_RPSI2 : Final[float] = 0.5
 
+# Size of all arrays
+_SIZE  : Final[float] = 10_000
+
+log=LogStore.add_logger('hqm:test_ratc')
 #-------------------------------------
 def _get_peak(self, comp : Component, qsq : Qsq) -> tuple[float,float]:
     jj = comp == Component.bpkpjpsiee and qsq == Qsq.jpsi
@@ -37,7 +43,7 @@ def _get_peak(self, comp : Component, qsq : Qsq) -> tuple[float,float]:
         mu = 6000
         sg = 150
     elif pj:
-        mu = 5100
+        mu = 4900
         sg = 150
     else:
         raise ValueError(f'Invalid component/qsq: {comp}/{qsq}')
@@ -64,23 +70,26 @@ def set_logs():
     LogStore.set_level('tools:calc_utility'      , 40)
 #--------------------------------------
 def _get_source_data(self, qsq : Qsq) -> numpy.ndarray:
+    gaus = numpy.random.normal(0, 50, size = _SIZE)
+
     if qsq == Qsq.jpsi:
-        return numpy.random.uniform(3700, 5100, size = 10_000)
+        return numpy.random.uniform(3700, 5100, size = _SIZE) + gaus
 
     if qsq == Qsq.psi2:
-        return numpy.random.uniform(3500, 4900, size = 10_000)
+        return numpy.random.uniform(3900, 4900, size = _SIZE) + gaus
 
     raise ValueError(f'Invalid q2 bin: {qsq}')
 #--------------------------------------
-def _get_pr(qsq_src : Qsq, qsq_tgt : Qsq) -> numpy.ndarray:
+def _get_pr(qsq_src : Qsq, qsq_tgt : Qsq, frac : float) -> numpy.ndarray:
     arr_src = _get_source_data(self = 1, qsq = qsq_src)
-    if qsq_src != qsq_tgt:
-        size    = 0.2 * len(arr_src)
-        arr_src = numpy.random.choice(arr_src, size = int(size), replace = False)
-
     dmu, sg = _get_mu_sg(qsq_src = qsq_src, qsq_tgt = qsq_tgt)
+    arr_smr = numpy.random.normal(dmu, sg, len(arr_src))
+    arr_tgt = arr_src + arr_smr
 
-    return arr_src + numpy.random.normal(dmu, sg, len(arr_src))
+    new_size= int(len(arr_tgt) * frac)
+    arr_flt = numpy.random.choice(arr_tgt, size = new_size, replace = True)
+
+    return arr_flt
 #--------------------------------------
 def _get_target_data(self, qsq : Qsq) -> numpy.ndarray:
     mu_jj, sg_jj = _get_peak(self = 1, comp=Component.bpkpjpsiee, qsq=Qsq.jpsi)
@@ -90,17 +99,17 @@ def _get_target_data(self, qsq : Qsq) -> numpy.ndarray:
     mu_pp, sg_pp = _get_peak(self = 1, comp=Component.bpkppsi2ee, qsq=Qsq.psi2)
 
     if   qsq == Qsq.jpsi:
-        jpsi_fr = numpy.random.normal(mu_jj, sg_jj, size = 10_000)
-        psi2_fr = numpy.random.normal(mu_pj, sg_pj, size =  1_000)
+        jpsi_fr = numpy.random.normal(mu_jj, sg_jj, size = _SIZE)
+        psi2_fr = numpy.random.normal(mu_pj, sg_pj, size = _SIZE)
 
-        jpsi_pr = _get_pr(qsq_src = Qsq.jpsi, qsq_tgt = qsq)
-        psi2_pr = _get_pr(qsq_src = Qsq.psi2, qsq_tgt = qsq)
+        jpsi_pr = _get_pr(qsq_src = Qsq.jpsi, qsq_tgt = qsq, frac = _RJPSI)
+        psi2_pr = _get_pr(qsq_src = Qsq.psi2, qsq_tgt = qsq, frac = _RPSI2)
     elif qsq == Qsq.psi2:
-        psi2_fr = numpy.random.normal(mu_pp, sg_pp, size = 5_000)
-        jpsi_fr = numpy.random.normal(mu_jp, sg_jp, size = 3_000)
+        psi2_fr = numpy.random.normal(mu_pp, sg_pp, size = _SIZE)
+        jpsi_fr = numpy.random.normal(mu_jp, sg_jp, size = _SIZE)
 
-        jpsi_pr = _get_pr(qsq_src = Qsq.jpsi, qsq_tgt = qsq)
-        psi2_pr = _get_pr(qsq_src = Qsq.psi2, qsq_tgt = qsq)
+        jpsi_pr = _get_pr(qsq_src = Qsq.jpsi, qsq_tgt = qsq, frac = _RJPSI)
+        psi2_pr = _get_pr(qsq_src = Qsq.psi2, qsq_tgt = qsq, frac = _RPSI2)
     else:
         raise ValueError(f'Invalid q2 bin: {qsq}')
 
@@ -118,7 +127,7 @@ def _get_trfc(self, qsq_src : Qsq, qsq_tgt : Qsq) -> TransferFunction:
 def _get_mc_pdf(self, comp : Component, qsq : Qsq) -> zpdf:
     mu, sg = _get_peak(self = 1, comp = comp, qsq = qsq)
 
-    obs = zfit.Space('B_Mass', limits = (4500, 6000))
+    obs = zfit.Space('B_Mass', limits = (4500, 7000))
     mu  = zfit.Parameter(f'mu_{comp}_{qsq}', mu, 4800, 6200)
     sg  = zfit.Parameter(f'sg_{comp}_{qsq}', sg,    0, 300)
 
