@@ -79,8 +79,13 @@ class CCbarRatioCalculator:
 
         res = FitResult.from_zfit(res = res) 
 
-        self._plotter.plot_nll(name = 'fit_jpsi', nll = nll_jpsi)
-        self._plotter.plot_nll(name = 'fit_psi2', nll = nll_psi2)
+        self._plotter.plot_nll(
+            name = 'fit_jpsi', 
+            nll  = nll_jpsi)
+
+        self._plotter.plot_nll(
+            name = 'fit_psi2', 
+            nll  = nll_psi2)
 
         return CCbarRatio(res = res) 
     #-----------------------------
@@ -91,7 +96,9 @@ class CCbarRatioCalculator:
         log.info(f'Building NLL in {qsq} bin')
         pdf   = self.__get_model(qsq= qsq)
         array = self.__get_target_data(qsq = qsq)
-        zdat  = zfit.Data.from_numpy(obs=self._cfg.observable.kde_obs, array=array)
+        zdat  = zfit.Data.from_numpy(
+            obs  =self._cfg.observable.fit_obs, 
+            array=array)
 
         if not isinstance(zdat, zfit.Data):
             raise ValueError('Dataset is not unbinned')
@@ -140,12 +147,10 @@ class CCbarRatioCalculator:
         pdf_psi2 = self.__get_fr_pdf(qsq_src = Qsq.psi2, qsq_tgt = qsq) 
         pdf_ctrl = self.__get_fr_pdf(qsq_src = Qsq.jpsi, qsq_tgt = qsq) 
 
-        pdf = zfit.pdf.SumPDF([
-            pdf_prps,
-            pdf_prjp, 
-            pdf_psi2,
-            pdf_ctrl,
-        ], obs = self._cfg.observable.kde_obs)
+        pdf  = zfit.pdf.SumPDF([pdf_prps, pdf_prjp, pdf_psi2, pdf_ctrl], 
+        obs  = self._cfg.observable.fit_obs)
+
+        self._plotter.plot_model(name = f'model_{qsq}', pdf = pdf)
 
         return pdf
     #-----------------------------
@@ -249,6 +254,8 @@ class CCbarRatioCalculator:
             func  = pdf_src, 
             kernel= trf.pdf, 
             name  = comp, 
+            norm  = self._cfg.observable.kde_obs,
+            obs   = self._cfg.observable.fit_obs,
             n     = self._cfg.fft_npt)
 
         nevt = self._cfg.parameters.get_part_reco_yield(qsq_comp = qsq_src, qsq_bin = qsq_tgt)
