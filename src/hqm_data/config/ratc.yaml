@@ -1,4 +1,4 @@
-bandwidth : 20
+bandwidth : 30
 sb_mass   : 5180
 fft_npt   : 1000
 fits:
@@ -7,8 +7,8 @@ fits:
     pvalue : 0.05
 # ------------------
 parameters:
-  rat_psi2: [0.1, 0.0, 1.0]
-  rat_jpsi: [0.1, 0.0, 1.0]
+  rat_psi2: [0.1, 0.0, 10.]
+  rat_jpsi: [0.1, 0.0, 10.]
   npr_jj  : [1000, 0,  4e5]
   npr_jp  : [1000, 0,  4e5]
   npr_pj  : [1000, 0,  4e5]
