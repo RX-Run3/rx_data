@@ -54,6 +54,9 @@ class Plotter:
         path = plt_dir / f'{name}.png'
 
         plt.hist(array, bins = 100)
+
+        size = len(array)
+        plt.title(f'Entries: {size}')
         plt.savefig(path)
         plt.close()
     #-----------------------------
@@ -74,7 +77,14 @@ class Plotter:
         if plt_dir is None:
             return
 
+        if isinstance(data, numpy.ndarray):
+            size = len(data)
+        else:
+            size = data.nevents
+
         cfg = ZFitPlotterConf.default()
+        cfg = cfg.model_copy(update = {'title' : f'Entries = {size}'})
+
         ptr = ZFitPlotter(data = data, model = pdf)
         ptr.run(cfg = cfg)
 
