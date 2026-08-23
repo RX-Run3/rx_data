@@ -64,17 +64,21 @@ class CCbarRatioCalculator:
         -------------
         Object representing CCbarRatio
         '''
-        nll_jpsi= self.__get_nll(qsq = Qsq.jpsi)
-        nll_psi2= self.__get_nll(qsq = Qsq.psi2)
-        nll     = nll_jpsi + nll_psi2
+        nll_jpsi  = self.__get_nll(qsq = Qsq.jpsi)
+        nll_psi2  = self.__get_nll(qsq = Qsq.psi2)
+        nll       = nll_jpsi + nll_psi2
 
         log.info('Fitting')
         minimizer = zfit.minimize.Minuit()
         res       = minimizer.minimize(nll)
-        res.hesse(method='minuit_hesse')
+        res.hesse(
+            name  ='minuit_hesse',
+            method='minuit_hesse')
+        
+        print(res)
 
         res = FitResult.from_zfit(res = res) 
-        
+
         self._plotter.plot_nll(name = 'fit_jpsi', nll = nll_jpsi)
         self._plotter.plot_nll(name = 'fit_psi2', nll = nll_psi2)
 
@@ -87,7 +91,7 @@ class CCbarRatioCalculator:
         log.info(f'Building NLL in {qsq} bin')
         pdf   = self.__get_model(qsq= qsq)
         array = self.__get_target_data(qsq = qsq)
-        zdat  = zfit.Data.from_numpy(obs=self._cfg.observable.fit_obs, array=array)
+        zdat  = zfit.Data.from_numpy(obs=self._cfg.observable.kde_obs, array=array)
 
         if not isinstance(zdat, zfit.Data):
             raise ValueError('Dataset is not unbinned')
@@ -139,8 +143,8 @@ class CCbarRatioCalculator:
             pdf_prps,
             pdf_prjp, 
             pdf_psi2,
-            pdf_ctrl, 
-        ], obs = self._cfg.observable.fit_obs)
+            pdf_ctrl,
+        ], obs = self._cfg.observable.kde_obs)
 
         return pdf
     #-----------------------------
@@ -230,13 +234,10 @@ class CCbarRatioCalculator:
         arr_src   = self.__get_source_data(qsq = qsq_src)
 
         kde_obs   = self._cfg.observable.kde_obs
-        fit_obs   = self._cfg.observable.fit_obs
         zdata     = zfit.Data.from_numpy(kde_obs, array=arr_src)
-        pdf_src   = zfit.pdf.KDE1DimFFT(
+        pdf_src   = zfit.pdf.KDE1DimISJ(
             obs      = kde_obs, 
-            norm     = fit_obs,
             data     = zdata, 
-            bandwidth= self._cfg.bandwidth, 
             name     = 'PRec')
 
         comp             = self.__component_from_qsq(

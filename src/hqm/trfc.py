@@ -53,6 +53,9 @@ class TransferFunction(BaseModel, Serializable, frozen = True):
 
         self.fit_result.set_pars(pars = pars)
 
+        for par in pars:
+            par.floating = False
+
         return pdf
 #---------------------------------
 class TransferFunctionMaker:
