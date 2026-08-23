@@ -98,7 +98,8 @@ class CCbarRatioCalculator:
 
         nll = zfit.loss.ExtendedUnbinnedNLL(model=pdf, data=zdat)
 
-        self._plotter.plot_array(name = f'fit_data_{qsq}', array = array)
+        self._plotter.plot_array(name = f'data_arr_{qsq}', array = array)
+        self._plotter.plot_data( name = f'dataset_{qsq}' , data  =  zdat)
 
         return nll
     #-----------------------------

@@ -40,6 +40,17 @@ class Plotter:
 
         return _context()
     #-----------------------------
+    def plot_data(self, name : str, data : zfit.Data) -> None:
+        '''
+        Parameters
+        -------------
+        name : Used to build path, i.e. {PATH_DIR}/{name}.png
+        data : Zfit data object 
+        '''
+        array = data.to_numpy()
+
+        self.plot_array(name = name, array = array)
+    #-----------------------------
     def plot_array(self, name : str, array : numpy.ndarray) -> None:
         '''
         Parameters
