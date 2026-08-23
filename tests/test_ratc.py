@@ -23,11 +23,24 @@ _TRAN_RANGE : Final[tuple[float,float]] = -500,  500
 # Part reco / Fully reco
 _RJPSI : Final[float] = 0.5
 _RPSI2 : Final[float] = 0.5
-
-# Size of all arrays
-_SIZE  : Final[float] = 10_000
+_SIZE_FULL : Final[int] = 20_000
 
 log=LogStore.add_logger('hqm:test_ratc')
+#-------------------------------------
+def _get_fr_entries(qsq_src : Qsq, qsq_tgt : Qsq) -> int:
+    if qsq_src == Qsq.jpsi and qsq_tgt == Qsq.jpsi:
+        return 10_000
+
+    if qsq_src == Qsq.jpsi and qsq_tgt == Qsq.psi2:
+        return  2_000
+
+    if qsq_src == Qsq.psi2 and qsq_tgt == Qsq.jpsi:
+        return  1_000
+
+    if qsq_src == Qsq.psi2 and qsq_tgt == Qsq.psi2:
+        return  2_000
+
+    raise ValueError('Invalid q2')
 #-------------------------------------
 def _get_peak(self, comp : Component, qsq : Qsq) -> tuple[float,float]:
     jj = comp == Component.bpkpjpsiee and qsq == Qsq.jpsi
@@ -70,13 +83,13 @@ def set_logs():
     LogStore.set_level('tools:calc_utility'      , 40)
 #--------------------------------------
 def _get_source_data(self, qsq : Qsq) -> numpy.ndarray:
-    gaus = numpy.random.normal(0, 50, size = _SIZE)
+    gaus = numpy.random.normal(0, 50, size = _SIZE_FULL)
 
     if qsq == Qsq.jpsi:
-        return numpy.random.uniform(3700, 5100, size = _SIZE) + gaus
+        return numpy.random.uniform(3700, 5100, size = _SIZE_FULL) + gaus
 
     if qsq == Qsq.psi2:
-        return numpy.random.uniform(3900, 4900, size = _SIZE) + gaus
+        return numpy.random.uniform(3900, 4900, size = _SIZE_FULL) + gaus
 
     raise ValueError(f'Invalid q2 bin: {qsq}')
 #--------------------------------------
@@ -86,7 +99,8 @@ def _get_pr(qsq_src : Qsq, qsq_tgt : Qsq, frac : float) -> numpy.ndarray:
     arr_smr = numpy.random.normal(dmu, sg, len(arr_src))
     arr_tgt = arr_src + arr_smr
 
-    new_size= int(len(arr_tgt) * frac)
+    size    = _get_fr_entries(qsq_src = qsq_src, qsq_tgt = qsq_tgt)
+    new_size= int(size * frac)
     arr_flt = numpy.random.choice(arr_tgt, size = new_size, replace = True)
 
     return arr_flt
@@ -98,15 +112,18 @@ def _get_target_data(self, qsq : Qsq) -> numpy.ndarray:
     mu_pj, sg_pj = _get_peak(self = 1, comp=Component.bpkppsi2ee, qsq=Qsq.jpsi)
     mu_pp, sg_pp = _get_peak(self = 1, comp=Component.bpkppsi2ee, qsq=Qsq.psi2)
 
+    size_jx = _get_fr_entries(qsq_src=Qsq.jpsi, qsq_tgt=qsq)
+    size_px = _get_fr_entries(qsq_src=Qsq.psi2, qsq_tgt=qsq)
+
     if   qsq == Qsq.jpsi:
-        jpsi_fr = numpy.random.normal(mu_jj, sg_jj, size = _SIZE)
-        psi2_fr = numpy.random.normal(mu_pj, sg_pj, size = _SIZE)
+        jpsi_fr = numpy.random.normal(mu_jj, sg_jj, size = size_jx)
+        psi2_fr = numpy.random.normal(mu_pj, sg_pj, size = size_px)
 
         jpsi_pr = _get_pr(qsq_src = Qsq.jpsi, qsq_tgt = qsq, frac = _RJPSI)
         psi2_pr = _get_pr(qsq_src = Qsq.psi2, qsq_tgt = qsq, frac = _RPSI2)
     elif qsq == Qsq.psi2:
-        psi2_fr = numpy.random.normal(mu_pp, sg_pp, size = _SIZE)
-        jpsi_fr = numpy.random.normal(mu_jp, sg_jp, size = _SIZE)
+        psi2_fr = numpy.random.normal(mu_pp, sg_pp, size = size_jx)
+        jpsi_fr = numpy.random.normal(mu_jp, sg_jp, size = size_px)
 
         jpsi_pr = _get_pr(qsq_src = Qsq.jpsi, qsq_tgt = qsq, frac = _RJPSI)
         psi2_pr = _get_pr(qsq_src = Qsq.psi2, qsq_tgt = qsq, frac = _RPSI2)
