@@ -241,7 +241,7 @@ class CCbarRatioCalculator:
             name     = 'PRec')
 
         comp             = self.__component_from_qsq(
-            qsq          = qsq_tgt, 
+            qsq          = qsq_src, 
             is_part_reco = True)
 
         pdf_tgt   = zfit.pdf.FFTConvPDFV1(
