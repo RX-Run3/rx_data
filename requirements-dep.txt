@@ -291,11 +291,8 @@ matplotlib==3.10.8
     # via
     #   -r requirements-dep.in
     #   hist
-    #   matplotlib-stubs
     #   mplhep
     #   seaborn
-matplotlib-stubs==0.3.11
-    # via -r requirements-dep.in
 mdit-py-plugins==0.6.1
     # via textual
 mdurl==0.1.2
@@ -350,7 +347,6 @@ numpy==2.3.5
     #   jacobi
     #   keras
     #   matplotlib
-    #   matplotlib-stubs
     #   ml-dtypes
     #   mplhep
     #   numba
@@ -414,7 +410,6 @@ pandas==2.3.3
     #   bokeh
     #   dask
     #   hepstats
-    #   matplotlib-stubs
     #   seaborn
     #   zfit
 pandas-stubs==2.3.3.251219
