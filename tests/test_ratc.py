@@ -26,6 +26,14 @@ _RPSI2 : Final[float] = 0.5
 _SIZE_FULL : Final[int] = 20_000
 
 log=LogStore.add_logger('hqm:test_ratc')
+# ----------------------
+@pytest.fixture(scope='session', autouse=True)
+def initialize():
+    '''
+    This will run before any test
+    '''
+    LogStore.set_level('rx_hqm2:data_store', 30)
+    LogStore.set_level('rx_hqm:config'     , 10)
 #-------------------------------------
 def _get_fr_entries(qsq_src : Qsq, qsq_tgt : Qsq) -> int:
     if qsq_src == Qsq.jpsi and qsq_tgt == Qsq.jpsi:
@@ -75,13 +83,6 @@ def _get_mu_sg(qsq_src: Qsq, qsq_tgt: Qsq) -> tuple[float, float]:
     else:
         raise ValueError(f"Invalid qsq combination: {qsq_src=}, {qsq_tgt=}")
 #-------------------------------------
-def set_logs():
-    LogStore.set_level('scripts:zutils/utils'    , 30)
-    LogStore.set_level('rx_hqm2:data_store'      , 30)
-    LogStore.set_level('rx_scripts:storage/cache', 30)
-    LogStore.set_level('rx_scripts:atr_mgr:mgr'  , 30)
-    LogStore.set_level('tools:calc_utility'      , 40)
-#--------------------------------------
 def _get_source_data(self, qsq : Qsq) -> numpy.ndarray:
     gaus = numpy.random.normal(0, 50, size = _SIZE_FULL)
 
