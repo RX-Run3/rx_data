@@ -4,6 +4,7 @@ import copy
 from functools   import lru_cache
 from dmu         import LogStore
 from dmu.stats   import Model, ZFitPlotterConf, zfit
+from dmu.stats   import utilities as sut
 from dmu.generic import utilities as gut
 from dmu.generic import hashing
 from typing      import Final, Self
@@ -16,11 +17,76 @@ log = LogStore.add_logger('rx_hqm:config')
 
 _NONE_VAR : Final[str] = 'none' # Name of variable when not binning
 zpar = zfit.Parameter
+zpdf = zfit.pdf.BasePDF
 # -------------------------------------------------------------------
 class ParamConf(RootModel[dict[str,tuple[float,float,float]]], frozen = True):
     '''
     Configuration for parameters used in fits to J/psi and psi2S bins
     '''
+    # -------------------
+    def set_scale(self, fr : zpdf, pr : zpdf, qsq : Qsq) -> None:
+        '''
+        Calculates ratio of fully reco / part reco efficiencies due to
+        mass window and uses it to set the scale value
+
+        Parameters
+        -----------------
+        fr/pr: PDF for fully/(part) reco fit component
+        qsq  : q2-bin where components will be used
+        '''
+        eff_fr = self.__get_eff(pdf = fr, is_part_reco = False)
+        eff_pr = self.__get_eff(pdf = pr, is_part_reco =  True)
+        value  = eff_fr / eff_pr
+
+        log.debug(f'Scale for {qsq} bin: {value:.3f}')
+
+        scale= self.get_scale(qsq = qsq)
+        scale.set_value(value)
+        scale.floating = False
+    # -------------------
+    def __get_eff(self, pdf : zpdf, is_part_reco : bool) -> float:
+        '''
+        Parameters
+        ---------------
+        pdf         : PDF
+        is_part_reco: True if part reco, false if fully reco
+
+        Returns
+        ---------------
+        Efficiency due to mass cut associated to normalization range
+        with respect to observable range
+        '''
+        obs = pdf.space
+        nrm = pdf.norm
+
+        if not isinstance(nrm, zfit.Space):
+            raise ValueError(f'No normalization found for: {pdf.name}')
+
+        lower_all, upper_all = sut.range_from_obs(obs = obs)
+        lower_cut, upper_cut = sut.range_from_obs(obs = nrm)
+
+        if lower_all >= lower_cut:
+            log.error(obs)
+            log.error(nrm)
+            raise ValueError(f'For {pdf.name}, all lower range is not lower than fit lower: {lower_all} >= {lower_cut}')
+
+        if upper_all <  upper_cut:
+            log.error(obs)
+            log.error(nrm)
+            raise ValueError(f'For {pdf.name}, all upper range is lower than fit upper: {upper_all} < {upper_cut}')
+
+        integral = pdf.integrate(limits = (lower_all, upper_all)).numpy()
+        area     = float(integral)
+        eff      = 1 / area
+
+        log.debug(f'Efficiency for {pdf.name}: {eff:.3f}')
+        if eff == 1 and not is_part_reco:
+            return eff
+
+        if eff >= 1:
+            raise ValueError(f'Efficiency of mass cut for {pdf.name} is above unity: {eff:.3f}')
+
+        return eff
     # -------------------
     @lru_cache(maxsize = 5)
     def get_ratio(self, qsq : Qsq) -> zpar:
@@ -38,6 +104,25 @@ class ParamConf(RootModel[dict[str,tuple[float,float,float]]], frozen = True):
                 return self._get_parameter(name = 'rat_jpsi')
             case Qsq.psi2:
                 return self._get_parameter(name = 'rat_psi2')
+            case _:
+                raise ValueError(f'Invalid bin: {qsq}')
+    # -------------------
+    @lru_cache(maxsize = 5)
+    def get_scale(self, qsq : Qsq) -> zpar:
+        '''
+        Parameters
+        --------------
+        qsq: q2-bin
+
+        Returns
+        --------------
+        Parameter meant to symbolize ratio of efficiencies
+        '''
+        match qsq:
+            case Qsq.jpsi:
+                return self._get_parameter(name = 'scl_jpsi')
+            case Qsq.psi2:
+                return self._get_parameter(name = 'scl_psi2')
             case _:
                 raise ValueError(f'Invalid bin: {qsq}')
     # -------------------
