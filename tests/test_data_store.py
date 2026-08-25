@@ -23,14 +23,14 @@ def _load_df(self) -> pnd.DataFrame:
 
     return pnd.DataFrame(data)
 #--------------------------------------
-@pytest.fixture(autouse = True)
-def _use_fake_masses(monkeypatch):
+@pytest.fixture(autouse = False)
+def _patch_loader(monkeypatch):
     monkeypatch.setattr(
         DataStore,
         '_load_df',
         _load_df)
 #--------------------------------------
-def test_simple(monkeypatch, tmp_path : Path):
+def test_data_retrieval(_patch_loader, tmp_path : Path):
     '''
     Test retrieving data
     '''
@@ -52,4 +52,24 @@ def test_simple(monkeypatch, tmp_path : Path):
     assert len(arr_raw     ) == _SIZE
     assert len(arr_dtf_jpsi) == _SIZE
     assert len(arr_dtf_psi2) == _SIZE
+#--------------------------------------
+def test_data_load(monkeypatch, tmp_path : Path):
+    monkeypatch.setenv('ANADIR', str(tmp_path))
+
+    comp = Component.bpkpjpsiee
+    trig = Trigger.rk_ee_os
+    qsq  = Qsq.high
+
+    df   = _load_df(self = None)
+    path = tmp_path / f'DB/hqm/{comp}_{trig}_{qsq}.parquet'
+    path.parent.mkdir(parents = True)
+    df.to_parquet(path = path)
+
+    obj = DataStore(
+        trig= trig,
+        comp= comp,
+        qsq = qsq)
+
+    arr_raw = obj.get_array(mass = Mass.bp_bcor)
+    assert len(arr_raw) == _SIZE
 #--------------------------------------

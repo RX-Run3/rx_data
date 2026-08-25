@@ -1,10 +1,12 @@
 '''
 Module with DataStore class
 '''
+import os
 import numpy
 import numpy.typing as npt
 import pandas       as pnd
 
+from pathlib   import Path
 from dmu       import LogStore
 from rx_common import Qsq, Trigger, Component, Mass
 
@@ -40,7 +42,15 @@ class DataStore:
         -------------
         Pandas dataframe with data
         '''
-        pass
+        anadir = Path(os.environ['ANADIR'])
+        path   = anadir / f'DB/hqm/{self._comp}_{self._trig}_{self._qsq}.parquet'
+
+        if not path.exists():
+            raise ValueError(f'No path found: {path}')
+
+        log.debug(f'Loading data from: {path}')
+
+        return pnd.read_parquet(path = path)
     # ----------------------------------
     def get_array(self, mass : Mass) -> NpFltArr:
         '''
