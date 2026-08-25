@@ -7,10 +7,11 @@ import pytest
 import numpy
 import pandas as pnd
 
-from typing         import Final
-from rx_common      import Component, Mass, Qsq, Trigger
-from hqm.data_store import DataStore
-from hqm.plotter    import Plotter
+from typing            import Final
+from rx_common         import Component, Mass, Qsq, Trigger
+from hqm.data_store    import DataStore
+from hqm.plotter       import Plotter
+from hqm.database_conf import DatabaseConf
 
 _SIZE : Final[int] = 10_000
 #--------------------------------------
@@ -61,8 +62,8 @@ def test_data_load(monkeypatch, tmp_path : Path):
     qsq  = Qsq.high
 
     df   = _load_df(self = None)
-    path = tmp_path / f'DB/hqm/{comp}_{trig}_{qsq}.parquet'
-    path.parent.mkdir(parents = True)
+    cfg  = DatabaseConf.load()
+    path = cfg.get_path(comp = comp, trig = trig)
     df.to_parquet(path = path)
 
     obj = DataStore(

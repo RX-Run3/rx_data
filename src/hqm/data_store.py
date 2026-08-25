@@ -1,14 +1,13 @@
 '''
 Module with DataStore class
 '''
-import os
 import numpy
 import numpy.typing as npt
 import pandas       as pnd
 
-from pathlib   import Path
-from dmu       import LogStore
-from rx_common import Qsq, Trigger, Component, Mass
+from dmu            import LogStore
+from rx_common      import Qsq, Trigger, Component, Mass
+from .database_conf import DatabaseConf
 
 log      = LogStore.add_logger('rx_hqm:data_store')
 NpFltArr = npt.NDArray[numpy.float64]
@@ -42,8 +41,8 @@ class DataStore:
         -------------
         Pandas dataframe with data
         '''
-        anadir = Path(os.environ['ANADIR'])
-        path   = anadir / f'DB/hqm/{self._comp}_{self._trig}_{self._qsq}.parquet'
+        cfg  = DatabaseConf.load()
+        path = cfg.get_path(comp = self._comp, trig = self._trig)
 
         if not path.exists():
             raise ValueError(f'No path found: {path}')
