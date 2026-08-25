@@ -75,6 +75,25 @@ class Mass(StrEnum):
 
         raise ValueError(f'Invalid project/q2-bin: {project}/{qsq}')
     # ------------------------------
+    @classmethod
+    def raw_from_project(cls, project : Project) -> 'Mass':
+        '''
+        Parameters
+        -----------------
+        project: E.g. rk or rkst
+
+        Returns
+        -----------------
+        Raw mass type for given project 
+        '''
+        if project == Project.rk  :
+            return Mass.bp_bcor
+
+        if project == Project.rkst:
+            return Mass.bd_bcor
+
+        raise ValueError(f'Invalid project: {project}')
+    # ------------------------------
     @property
     def is_dtf(self) -> bool:
         '''
