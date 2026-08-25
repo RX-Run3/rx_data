@@ -65,7 +65,7 @@ definitions:
     # ----------------
     ll_angle          : ROOT::Math::XYZVector l1(L1_PX, L1_PY, L1_PZ);
                         ROOT::Math::XYZVector l2(L2_PX, L2_PY, L2_PZ);
-                        return ROOT.Math.VectorUtil.Angle(l1, l2);
+                        return ROOT::Math::VectorUtil::Angle(l1, l2);
     ll_max_PT         : TMath::Max(L1_PT, L2_PT);
     # ----------------
   DATA:
