@@ -1,12 +1,13 @@
 '''
 Module with tests for DataStore class
 '''
-from pathlib import Path
 
 import pytest
 import numpy
-import pandas as pnd
+import numpy.typing  as npt
+import pandas        as pnd
 
+from pathlib           import Path
 from typing            import Final
 from rx_common         import Component, Mass, Qsq, Trigger
 from hqm.data_store    import DataStore
@@ -14,13 +15,27 @@ from hqm.plotter       import Plotter
 from hqm.database_conf import DatabaseConf
 
 _SIZE : Final[int] = 10_000
+
+NpFltArray = npt.NDArray[numpy.float64]
 #--------------------------------------
 def _load_df(self) -> pnd.DataFrame:
-    data = {
-        Mass.bp_bcor     : numpy.random.uniform(3000, 5100, _SIZE),
-        Mass.bp_dtf_jpsi : numpy.random.normal(loc = 5200, scale = 20, size = _SIZE),
-        Mass.bp_dtf_psi2 : numpy.random.normal(loc = 5200, scale = 20, size = _SIZE),
+    rng = numpy.random.default_rng()
+
+    data : dict[str,NpFltArray] = {
+        Mass.bp_bcor.value     : rng.uniform(3000, 5100, _SIZE),
+        Mass.bp_dtf_jpsi.value : rng.normal(loc = 5200, scale = 20, size = _SIZE),
+        Mass.bp_dtf_psi2.value : rng.normal(loc = 5200, scale = 20, size = _SIZE),
     }
+
+    data['B_PT' ]     = rng.poisson(lam = 5_000, size = _SIZE).astype(numpy.float64)
+    data['block'    ] = rng.integers(low = 1, high = 9, size = _SIZE).astype(numpy.float64)
+    data['nTracks'  ] = rng.poisson(lam = 3, size = _SIZE).astype(numpy.float64)
+
+    data['B_ETA']     = rng.normal(loc = 0.0, scale = 1.0, size = _SIZE)
+    data['ll_angle' ] = rng.normal(loc = 0.5, scale = 0.1, size = _SIZE)
+    data['ll_max_PT'] = rng.normal(loc = 20_000, scale = 5_000, size = _SIZE)
+    data['q2'       ] = rng.uniform(6e6, 22e6, size = _SIZE)
+    data['q2_dtf'   ] = rng.uniform(6e6, 22e6, size = _SIZE)
 
     return pnd.DataFrame(data)
 #--------------------------------------
@@ -65,6 +80,8 @@ def test_data_load(monkeypatch, tmp_path : Path):
     cfg  = DatabaseConf.load()
     path = cfg.get_path(comp = comp, trig = trig)
     df.to_parquet(path = path)
+
+    print(df)
 
     obj = DataStore(
         trig= trig,
