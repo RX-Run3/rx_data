@@ -29,7 +29,7 @@ class DatabaseConf(BaseModel, frozen = True):
         Path to parquet file with data
         '''
         anadir = Path(os.environ['ANADIR'])
-        path   = anadir / self.db_dir / f'{comp}_{trig}.parquet'
+        path   = anadir / self.db_dir / f'{comp}_{trig}' / 'data.parquet'
         path.parent.mkdir(parents = True, exist_ok = True)
 
         return path
