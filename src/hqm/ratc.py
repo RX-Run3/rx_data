@@ -141,13 +141,21 @@ class CCbarRatioCalculator:
         - Part reco candidates with $J/\psi$ and $\psi(2S)$ decays
         - Fully reco candidates with same decays
         '''
-        pdf_prjp = self.__get_pr_pdf(qsq_src = Qsq.psi2, qsq_tgt = qsq)
-        pdf_prps = self.__get_pr_pdf(qsq_src = Qsq.jpsi, qsq_tgt = qsq)
+        pdf_prjp = self.__get_pr_pdf(qsq_src = Qsq.jpsi, qsq_tgt = qsq)
+        pdf_frjp = self.__get_fr_pdf(qsq_src = Qsq.jpsi, qsq_tgt = qsq) 
+        self._cfg.parameters.set_scale(
+            fr  = pdf_frjp, 
+            pr  = pdf_prjp, 
+            qsq = qsq)
 
-        pdf_psi2 = self.__get_fr_pdf(qsq_src = Qsq.psi2, qsq_tgt = qsq) 
-        pdf_ctrl = self.__get_fr_pdf(qsq_src = Qsq.jpsi, qsq_tgt = qsq) 
+        pdf_prps = self.__get_pr_pdf(qsq_src = Qsq.psi2, qsq_tgt = qsq)
+        pdf_frps = self.__get_fr_pdf(qsq_src = Qsq.psi2, qsq_tgt = qsq) 
+        self._cfg.parameters.set_scale(
+            fr  = pdf_frps, 
+            pr  = pdf_prps, 
+            qsq = qsq)
 
-        pdf  = zfit.pdf.SumPDF([pdf_prps, pdf_prjp, pdf_psi2, pdf_ctrl], 
+        pdf  = zfit.pdf.SumPDF([pdf_prps, pdf_prjp, pdf_frps, pdf_frjp], 
         obs  = self._cfg.observable.fit_obs)
 
         self._plotter.plot_model(name = f'model_{qsq}', pdf = pdf)
