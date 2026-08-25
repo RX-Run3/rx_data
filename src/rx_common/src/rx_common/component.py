@@ -289,7 +289,21 @@ class Component(StrEnum):
         '''
         True if there is a sample, MC or Data, associated to component
         '''
-        if self in {Component.undefined, Component.comb, Component.ccbar, Component.mc}:
+        components = {
+            Component.bppsi2xee,
+            Component.bdpsi2xee,
+            Component.bspsi2xee,
+            # ---------------
+            Component.bppsi2xmm,
+            Component.bdpsi2xmm,
+            Component.bspsi2xmm,
+            # ---------------
+            Component.undefined, 
+            Component.comb, 
+            Component.ccbar, 
+            Component.mc}
+
+        if self in components:
             return False
 
         return True
