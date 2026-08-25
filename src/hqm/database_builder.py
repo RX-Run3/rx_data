@@ -1,53 +1,20 @@
 '''
 Module holding DatabaseBuilder and its config
 '''
-import os
 import pandas as pnd
 
-from typing       import Final
-from rx_selection import selection as sel
-from pathlib      import Path
-from ROOT         import RDF # type: ignore 
-from pydantic     import BaseModel
-from rx_common    import Cuts, Trigger, Component, Qsq
-from dmu          import LogStore
-from dmu.generic  import utilities as gut
-from rx_data      import RDFGetter
+from typing         import Final
+from rx_selection   import selection as sel
+from ROOT           import RDF # type: ignore 
+from rx_common      import Trigger, Component, Qsq
+from dmu            import LogStore
+from rx_data        import RDFGetter
+
+from .database_conf import DatabaseConf
 
 log=LogStore.add_logger('hqm:database_builder')
 
 _DUMMY_QSQ : Final[Qsq] = Qsq.jpsi # Won't apply q2 cut, need placeholder
-# ----------------------
-class DatabaseBuilderConf(BaseModel):
-    '''
-    Class meant to hold configuration for DatabaseBuilder
-    '''
-    selection: dict[Cuts, str]
-    columns  : list[str]
-    db_dir   : Path
-    # ----------------------
-    def get_path(self, comp : Component, trig : Trigger) -> Path:
-        '''
-        Parameters
-        --------------
-        comp: Denotes sample where path will go/be read
-        trig: Hlt2 trigger
-
-        Returns
-        --------------
-        Path to parquet file with data
-        '''
-        anadir = Path(os.environ['ANADIR'])
-        path   = anadir / self.db_dir / f'{comp}_{trig}.parquet'
-        path.parent.mkdir(parents = True, exist_ok = True)
-
-        return path
-    # ----------------------
-    @classmethod
-    def load(cls) -> 'DatabaseBuilderConf':
-        data = gut.load_data(package = 'hqm_data', fpath = 'config/database_builder.yaml')
-
-        return cls(**data)
 # ----------------------
 class DatabaseBuilder:
     '''
@@ -57,7 +24,7 @@ class DatabaseBuilder:
     # ----------------------------------
     def __init__(
         self, 
-        cfg : DatabaseBuilderConf,
+        cfg : DatabaseConf,
         trig: Trigger,
         comp: Component):
         '''
