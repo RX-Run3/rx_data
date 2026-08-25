@@ -2,25 +2,29 @@
 Module holding DatabaseBuilder and its config
 '''
 import os
-from pathlib import Path
-
 import pandas as pnd
 
-from ROOT        import RDF # type: ignore 
-from pydantic    import BaseModel
-from rx_common   import Trigger, Component
-from dmu         import LogStore
-from dmu.generic import utilities as gut
-from rx_data     import RDFGetter
+from typing       import Final
+from rx_selection import selection as sel
+from pathlib      import Path
+from ROOT         import RDF # type: ignore 
+from pydantic     import BaseModel
+from rx_common    import Cuts, Trigger, Component, Qsq
+from dmu          import LogStore
+from dmu.generic  import utilities as gut
+from rx_data      import RDFGetter
 
 log=LogStore.add_logger('hqm:database_builder')
+
+_DUMMY_QSQ : Final[Qsq] = Qsq.jpsi # Won't apply q2 cut, need placeholder
 # ----------------------
 class DatabaseBuilderConf(BaseModel):
     '''
     Class meant to hold configuration for DatabaseBuilder
     '''
-    columns : list[str]
-    db_dir  : Path
+    selection: dict[Cuts, str]
+    columns  : list[str]
+    db_dir   : Path
     # ----------------------
     def get_path(self, comp : Component, trig : Trigger) -> Path:
         '''
@@ -77,7 +81,18 @@ class DatabaseBuilder:
             trigger= self._trig,
             sample = self._comp)
 
-        rdf = gtr.get_rdf(per_file = False)
+        rdf  = gtr.get_rdf(per_file = False)
+        path = self._cfg.get_path(
+            comp = self._comp, 
+            trig = self._trig)
+
+        with sel.custom_selection(d_sel = self._cfg.selection):
+            rdf = sel.apply_full_selection(
+                rdf     = rdf,
+                q2bin   = _DUMMY_QSQ,
+                process = self._comp,
+                trigger = self._trig,
+                out_path= path.parent)
 
         return rdf
     # ----------------------------------

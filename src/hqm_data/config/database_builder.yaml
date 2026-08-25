@@ -1,3 +1,5 @@
+selection:
+  q2 : 'true'
 db_dir : DB/hqm
 columns:
   - B_Mass
