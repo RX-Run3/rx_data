@@ -9,7 +9,7 @@ from dmu.generic  import utilities as gut
 from rx_common    import Cuts, Trigger, Component
 
 # ----------------------
-class DatabaseConf(BaseModel):
+class DatabaseConf(BaseModel, frozen = True):
     '''
     Class meant to hold configuration for DatabaseBuilder
     '''
@@ -39,4 +39,4 @@ class DatabaseConf(BaseModel):
         data = gut.load_data(package = 'hqm_data', fpath = 'config/database_builder.yaml')
 
         return cls(**data)
-
+# ----------------------

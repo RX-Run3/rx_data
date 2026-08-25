@@ -8,7 +8,8 @@ from typing               import Final
 from ROOT                 import RDF  # type: ignore
 from pathlib              import Path
 from rx_common            import Component, Trigger, Mass
-from hqm.database_builder import DatabaseBuilder, DatabaseBuilderConf
+from hqm.database_builder import DatabaseBuilder
+from hqm.database_conf    import DatabaseConf
 
 _SIZE : Final[int] = 10_000
 # ------------------------------------
@@ -37,7 +38,7 @@ def test_simple(
 
     trig = Trigger.rk_ee_os
     comp = Component.bpkpjpsimm
-    cfg  = DatabaseBuilderConf.load()
+    cfg  = DatabaseConf.load()
 
     obj = DatabaseBuilder(
         trig = trig,
