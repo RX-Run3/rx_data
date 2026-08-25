@@ -60,6 +60,14 @@ definitions:
                         ROOT::Math::PtEtaPhiMVector l2(L2_TRACK_PT, L2_TRACK_ETA, L2_TRACK_PHI, 0.511);
                         auto ll = l1 + l2;
                         return ll.M2();
+    # ----------------
+    # For binning in cross checks, etc
+    # ----------------
+    ll_angle          : ROOT::Math::XYZVector l1(L1_PX, L1_PY, L1_PZ);
+                        ROOT::Math::XYZVector l2(L2_PX, L2_PY, L2_PZ);
+                        return ROOT.Math.VectorUtil.Angle(l1, l2);
+    ll_max_PT         : TMath::Max(L1_PT, L2_PT);
+    # ----------------
   DATA:
     L1_TRACK_PT       : ROOT::Math::XYZVector lep(L1_TRACK_PX, L1_TRACK_PY, L1_TRACK_PZ); return lep.rho();
     L2_TRACK_PT       : ROOT::Math::XYZVector lep(L2_TRACK_PX, L2_TRACK_PY, L2_TRACK_PZ); return lep.rho();
