@@ -1,20 +1,49 @@
 '''
 Module holding DatabaseBuilder and its config
 '''
-from rx_common import Qsq, Trigger, Component
+import os
+from pathlib import Path
 
-from dmu import LogStore
+import pandas as pnd
+
+from ROOT        import RDF # type: ignore 
+from pydantic    import BaseModel
+from rx_common   import Trigger, Component
+from dmu         import LogStore
+from dmu.generic import utilities as gut
+from rx_data     import RDFGetter
 
 log=LogStore.add_logger('hqm:database_builder')
 # ----------------------
-class DatabaseBuilderConf:
+class DatabaseBuilderConf(BaseModel):
     '''
     Class meant to hold configuration for DatabaseBuilder
     '''
+    columns : list[str]
+    db_dir  : Path
+    # ----------------------
+    def get_path(self, comp : Component, trig : Trigger) -> Path:
+        '''
+        Parameters
+        --------------
+        comp: Denotes sample where path will go/be read
+        trig: Hlt2 trigger
+
+        Returns
+        --------------
+        Path to parquet file with data
+        '''
+        anadir = Path(os.environ['ANADIR'])
+        path   = anadir / self.db_dir / f'{comp}_{trig}.parquet'
+        path.parent.mkdir(parents = True, exist_ok = True)
+
+        return path
     # ----------------------
     @classmethod
     def load(cls) -> 'DatabaseBuilderConf':
-        return cls()
+        data = gut.load_data(package = 'hqm_data', fpath = 'config/database_builder.yaml')
+
+        return cls(**data)
 # ----------------------
 class DatabaseBuilder:
     '''
@@ -24,24 +53,62 @@ class DatabaseBuilder:
     # ----------------------------------
     def __init__(
         self, 
-        qsq   : Qsq, 
-        trig  : Trigger,
-        comp  : Component):
+        cfg : DatabaseBuilderConf,
+        trig: Trigger,
+        comp: Component):
         '''
         Parameters
         ----------------
-        qsq : q2-bin where data will be picked up
+        cfg : Config object
         trig: Hlt2 trigger
         comp: Sample used to read data from
         '''
-        self._qsq = qsq
+        self._cfg = cfg
         self._trig= trig
         self._comp= comp
     # ----------------------------------
-    def run(self, cfg : DatabaseBuilderConf) -> None:
+    def __get_rdf(self) -> RDF.RNode:
         '''
-        Parameters
-        ----------------
-        cfg: Config object
+        Returns ROOT dataframe
         '''
+        log.debug(f'Picking up dataframe for: {self._trig}/{self._comp}')
+
+        gtr        = RDFGetter(
+            trigger= self._trig,
+            sample = self._comp)
+
+        rdf = gtr.get_rdf(per_file = False)
+
+        return rdf
+    # ----------------------------------
+    def __validate_columns(self, rdf : RDF.RNode) -> None:
+        cols = rdf.GetColumnNames()
+        fail = False
+        for col in self._cfg.columns:
+            if col not in cols:
+                fail = True
+                log.error(col)
+
+        if fail:
+            raise ValueError('At least one column was not found in dataframe')
+
+        log.debug('ROOT dataframe validated')
+    # ----------------------------------
+    def run(self) -> None:
+        '''
+        Execute building of database
+        '''
+        rdf = self.__get_rdf()
+        self.__validate_columns(rdf = rdf)
+
+        data = rdf.AsNumpy(self._cfg.columns)
+
+        df = pnd.DataFrame(data)
+
+        path = self._cfg.get_path(
+            trig = self._trig, 
+            comp = self._comp)
+
+        log.info(f'Saving to: {path}')
+        df.to_parquet(path = path)
 # ----------------------
