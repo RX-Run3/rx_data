@@ -145,14 +145,22 @@ def _get_trfc(self, qsq_src : Qsq, qsq_tgt : Qsq) -> TransferFunction:
 def _get_mc_pdf(self, comp : Component, qsq : Qsq) -> zpdf:
     mu, sg = _get_peak(self = 1, comp = comp, qsq = qsq)
 
-    obs = zfit.Space('B_Mass', limits = (4500, 7000))
+    obs = zfit.Space('B_Mass', limits = (3000, 7000))
+    nrm = zfit.Space('B_Mass', limits = (4500, 7000))
     mu  = zfit.Parameter(f'mu_{comp}_{qsq}', mu, 4800, 6200)
     sg  = zfit.Parameter(f'sg_{comp}_{qsq}', sg,    0, 300)
 
     mu.floating = False
     sg.floating = False
 
-    return zfit.pdf.Gauss(mu = mu, sigma = sg, obs = obs)
+    pdf = zfit.pdf.Gauss(
+        name  = comp,
+        mu    = mu, 
+        sigma = sg, 
+        obs   = obs, 
+        norm  = nrm)
+
+    return pdf
 #--------------------------------------
 @pytest.fixture(autouse = True)
 def _use_fake_masses(monkeypatch):
