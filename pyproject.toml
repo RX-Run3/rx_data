@@ -11,6 +11,7 @@ dependencies = [
     'jacobi',
     'numpy',
     'zfit',
+    'typer',
 ]
 
 [tool.setuptools]
@@ -24,3 +25,6 @@ hqm_data = [
     'tests/*.json',
     'config/*.yaml',
 ]
+
+[project.scripts]
+hqm = 'hqm.cli.main:main'
