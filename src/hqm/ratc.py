@@ -192,18 +192,36 @@ class CCbarRatioCalculator:
 
         Returns
         ------------------
-        Fully reconstructed component's PDF
+        Fully reconstructed component's PDF, with following parametrization
+
+        ```math
+        ratio       = (npart_reco / nfully_reco) * (eff_fully_reco / eff_part_reco)
+        ratio       = (npart_reco / nfully_reco) * scale
+        nfully_reco = (npart_reco / ratio) * scale
+        nfully_reco = npart_reco  * (scale / ratio)
+        nfully_reco = npart_reco  * fac 
+        ```
         '''
         comp = self.__component_from_qsq(
             qsq          = qsq_src, 
             is_part_reco = False)
 
-        # nfully_reco = npart_reco / ratio
         pdf = self.__get_mc_pdf(comp = comp, qsq = qsq_tgt)
         rat = self._cfg.parameters.get_ratio(qsq = qsq_tgt)
+        scl = self._cfg.parameters.get_scale(qsq = qsq_tgt)
+
+        fac = zfit.ComposedParameter(
+            f'fac_{qsq_src}_{qsq_tgt}', 
+            func  = lambda d_par : d_par['scl'] / d_par['rat'], 
+            params= {'scl' : scl, 'rat' : rat} )
+
         npr = self._cfg.parameters.get_part_reco_yield(qsq_comp = qsq_src, qsq_bin = qsq_tgt) 
-        nfr = zfit.ComposedParameter(f'nfr_{qsq_src}_{qsq_tgt}', func=lambda d_par : d_par['p1'] / d_par['p2'], params={'p1' : npr, 'p2' : rat} )
-        pdf = pdf.create_extended(nfr, name = comp)
+        nfr = zfit.ComposedParameter(
+            f'nfr_{qsq_src}_{qsq_tgt}', 
+            func  = lambda d_par : d_par['npr'] * d_par['fac'], 
+            params= {'npr' : npr, 'fac' : fac} )
+
+        pdf.set_yield(nfr)
 
         return pdf
     #-----------------------------
@@ -251,6 +269,7 @@ class CCbarRatioCalculator:
         zdata     = zfit.Data.from_numpy(kde_obs, array=arr_src)
         pdf_src   = zfit.pdf.KDE1DimISJ(
             obs      = kde_obs, 
+            norm     = self._cfg.observable.fit_obs,
             data     = zdata, 
             name     = 'PRec')
 
@@ -262,8 +281,8 @@ class CCbarRatioCalculator:
             func  = pdf_src, 
             kernel= trf.pdf, 
             name  = comp, 
-            norm  = self._cfg.observable.kde_obs,
-            obs   = self._cfg.observable.fit_obs,
+            obs   = self._cfg.observable.kde_obs,
+            norm  = self._cfg.observable.fit_obs,
             n     = self._cfg.fft_npt)
 
         nevt = self._cfg.parameters.get_part_reco_yield(qsq_comp = qsq_src, qsq_bin = qsq_tgt)
