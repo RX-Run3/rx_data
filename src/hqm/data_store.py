@@ -13,11 +13,9 @@ from storage.cache       import cache       as scache
 from log_store           import log_store
 from hqm2.config         import Conf
 
-log = log_store.add_logger('rx_hqm2:data_store')
-
-
+log = log_store.add_logger('rx_hqm:data_store')
 # ----------------------------------
-class data_store:
+class DataStore:
     '''
     Class used to provide data, simulated or real after full selection
     '''

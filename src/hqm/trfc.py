@@ -98,13 +98,13 @@ class TransferFunctionMaker:
         ----------------
         Numpy array with masses
         '''
-        from hqm.data_store import data_store
+        from hqm.data_store import DataStore
 
         trigger     = Trigger.get_main_trigger(
             channel = _TARGET_CHANNEL, 
             project = self._project)
 
-        obj     = data_store(
+        obj     = DataStore(
             qsq = self._cfg.target, 
             dset= self._block, 
             trig= trigger, 

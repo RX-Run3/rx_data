@@ -120,10 +120,10 @@ class CCbarRatioCalculator:
         -----------------
         Array of masses for given q2-bin in real data
         '''
-        from hqm.data_store import data_store
+        from hqm.data_store import DataStore
 
         trigger = Trigger.get_main_trigger(project = self._project, channel = _TARGET_CHANNEL)
-        ds      = data_store(qsq=qsq, dset=self._block, trig=trigger, proc='data')
+        ds      = DataStore(qsq=qsq, dset=self._block, trig=trigger, proc='data')
         array   = ds.get_array()
 
         return array
@@ -304,12 +304,12 @@ class CCbarRatioCalculator:
         -------------
         Array with muon channel data to be smeared
         '''
-        from hqm.data_store import data_store
+        from hqm.data_store import DataStore
 
         mas_cns = Mass.dtf_from_qsq(qsq = qsq, project = self._project)
         trig    = Trigger.get_main_trigger(project = self._project, channel = _SOURCE_CHANNEL)
 
-        obj     = data_store(qsq=qsq, dset=self._block, trig=trig, proc='data')
+        obj     = DataStore(qsq=qsq, dset=self._block, trig=trig, proc='data')
         array   = obj.get_array(variable='B_M', d_cut={'sb_mass' : f'{mas_cns} < {self._cfg.sb_mass}'})
 
         return array
