@@ -2,23 +2,17 @@
 Module with tests for DatabaseBuilder class
 '''
 import pytest
-import numpy
 
-from typing               import Final
 from ROOT                 import RDF  # type: ignore
 from pathlib              import Path
-from rx_common            import Component, Trigger, Mass
+from rx_common            import Component, Trigger
 from hqm.database_builder import DatabaseBuilder
 from hqm.database_conf    import DatabaseConf
 
-_SIZE : Final[int] = 10_000
+from .utilities           import get_data
 # ------------------------------------
 def _get_rdf(self) -> RDF.RNode:
-    data = {
-        Mass.bp_bcor.value     : numpy.random.uniform(3000, 5100, _SIZE),
-        Mass.bp_dtf_jpsi.value : numpy.random.normal(loc = 5200, scale = 20, size = _SIZE),
-        Mass.bp_dtf_psi2.value : numpy.random.normal(loc = 5200, scale = 20, size = _SIZE),
-    }
+    data = get_data()
 
     return RDF.FromNumpy(data)
 # ------------------------------------

@@ -8,34 +8,17 @@ import numpy.typing  as npt
 import pandas        as pnd
 
 from pathlib           import Path
-from typing            import Final
 from rx_common         import Component, Mass, Qsq, Trigger
 from hqm.data_store    import DataStore
 from hqm.plotter       import Plotter
 from hqm.database_conf import DatabaseConf
 
-_SIZE : Final[int] = 10_000
+from .utilities        import get_data, SIZE
 
 NpFltArray = npt.NDArray[numpy.float64]
 #--------------------------------------
 def _load_df(self) -> pnd.DataFrame:
-    rng = numpy.random.default_rng()
-
-    data : dict[str,NpFltArray] = {
-        Mass.bp_bcor.value     : rng.uniform(3000, 5100, _SIZE),
-        Mass.bp_dtf_jpsi.value : rng.normal(loc = 5200, scale = 20, size = _SIZE),
-        Mass.bp_dtf_psi2.value : rng.normal(loc = 5200, scale = 20, size = _SIZE),
-    }
-
-    data['B_PT' ]     = rng.poisson(lam = 5_000, size = _SIZE).astype(numpy.float64)
-    data['block'    ] = rng.integers(low = 1, high = 9, size = _SIZE).astype(numpy.float64)
-    data['nTracks'  ] = rng.poisson(lam = 3, size = _SIZE).astype(numpy.float64)
-
-    data['B_ETA']     = rng.normal(loc = 0.0, scale = 1.0, size = _SIZE)
-    data['ll_angle' ] = rng.normal(loc = 0.5, scale = 0.1, size = _SIZE)
-    data['ll_max_PT'] = rng.normal(loc = 20_000, scale = 5_000, size = _SIZE)
-    data['q2'       ] = rng.uniform(6e6, 22e6, size = _SIZE)
-    data['q2_dtf'   ] = rng.uniform(6e6, 22e6, size = _SIZE)
+    data = get_data()
 
     return pnd.DataFrame(data)
 #--------------------------------------
@@ -65,9 +48,9 @@ def test_data_retrieval(_patch_loader, tmp_path : Path):
         ptr.plot_array(name = 'dtf_mass_jpsi', array = arr_dtf_jpsi)
         ptr.plot_array(name = 'dtf_mass_psi2', array = arr_dtf_psi2)
 
-    assert len(arr_raw     ) == _SIZE
-    assert len(arr_dtf_jpsi) == _SIZE
-    assert len(arr_dtf_psi2) == _SIZE
+    assert len(arr_raw     ) == SIZE
+    assert len(arr_dtf_jpsi) == SIZE
+    assert len(arr_dtf_psi2) == SIZE
 #--------------------------------------
 def test_data_load(monkeypatch, tmp_path : Path):
     monkeypatch.setenv('ANADIR', str(tmp_path))
@@ -89,5 +72,5 @@ def test_data_load(monkeypatch, tmp_path : Path):
         qsq = qsq)
 
     arr_raw = obj.get_array(mass = Mass.bp_bcor)
-    assert len(arr_raw) == _SIZE
+    assert len(arr_raw) == SIZE
 #--------------------------------------
