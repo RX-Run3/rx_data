@@ -9,6 +9,7 @@ from typing         import Final
 from pydantic       import BaseModel
 from dmu.stats      import FitResult
 from dmu.generic    import Serializable
+from hqm.data_store import DataStore
 from hqm.config     import CCbarRatioCalculatorConf, TransferFunctionMakerConf 
 from hqm.trfc       import TransferFunction, TransferFunctionMaker
 from rx_common      import Block, Channel, Component, Mass, Project, Qsq, Trigger
@@ -304,15 +305,24 @@ class CCbarRatioCalculator:
         -------------
         Array with muon channel data to be smeared
         '''
-        from hqm.data_store import DataStore
+        mass_cns = Mass.dtf_from_qsq(qsq = qsq, project = self._project)
+        mass_raw = Mass.raw_from_project(project = self._project)
+        trig     = Trigger.get_main_trigger(
+            project = self._project, 
+            channel = _SOURCE_CHANNEL)
 
-        mas_cns = Mass.dtf_from_qsq(qsq = qsq, project = self._project)
-        trig    = Trigger.get_main_trigger(project = self._project, channel = _SOURCE_CHANNEL)
+        obj     = DataStore(
+            qsq = qsq, 
+            trig= trig, 
+            comp= Component.data_24)
 
-        obj     = DataStore(qsq=qsq, dset=self._block, trig=trig, proc='data')
-        array   = obj.get_array(variable='B_M', d_cut={'sb_mass' : f'{mas_cns} < {self._cfg.sb_mass}'})
+        arr_raw = obj.get_array(mass = mass_raw)
+        arr_dtf = obj.get_array(mass = mass_cns)
 
-        return array
+        mask         = arr_dtf < self._cfg.sb_mass
+        arr_sideband = arr_raw[mask]
+
+        return arr_sideband
     #-----------------------------
     def __get_trfc(self, qsq_src : Qsq, qsq_tgt : Qsq) -> TransferFunction:
         '''
