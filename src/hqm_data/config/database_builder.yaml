@@ -1,0 +1,5 @@
+db_dir : DB/hqm
+columns:
+  - B_Mass
+  - B_const_mass_M
+  - B_const_mass_psi2S_M
