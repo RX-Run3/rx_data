@@ -307,6 +307,9 @@ def _get_selection(
             continue
 
         if q2_bin not in d_q2bin:
+            for val in d_q2bin:
+                log.error(val)
+
             raise ValueError(f'Cannot find q2 bin {q2_bin} in {cut_name} section')
 
         cut_val = d_q2bin[q2_bin]
