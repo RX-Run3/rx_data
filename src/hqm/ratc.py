@@ -129,7 +129,7 @@ class CCbarRatioCalculator:
             qsq =qsq, 
             trig=trigger, 
             comp=Component.data_24)
-        array   = ds.get_array(mass = mass)
+        array, _= ds.get_array(mass = mass)
 
         return array
     #-----------------------------
