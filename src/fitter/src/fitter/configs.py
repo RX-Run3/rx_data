@@ -88,12 +88,10 @@ class ObservableConf(BaseModel):
 # ------------------------------
 # Constraints
 # ------------------------------
-class ConstraintsCfg(UnpackerModel):
+class ConstraintsCfg(UnpackerModel, frozen = True):
     '''
     Class meant to configure constraints
     '''
-    model_config = ConfigDict(frozen=True)
-
     signal_fraction : list[Component]
     combinatorial   : bool
     signal_shape    : bool
@@ -135,7 +133,7 @@ class CategoryConf(BaseModel):  # Tested
     selection : dict[Cuts,str]
     model     : ModelFactoryConf
 # ------------------------------
-class ComponentConf(UnpackerModel):         # Tested
+class ComponentConf(UnpackerModel, frozen = True):
     '''
     Class meant to configure the fit for different components
 
@@ -144,8 +142,6 @@ class ComponentConf(UnpackerModel):         # Tested
     mass      : Mass used to build PDF, e.g. bp, bp_dtf_jpsi, etc
     norm_range: Range where PDF is normalized to 1
     '''
-    model_config = ConfigDict(frozen=True)
-
     cfg_obs : ObservableConf | None = None
     # ----------------------------------
     @property
@@ -174,12 +170,10 @@ class ComponentConf(UnpackerModel):         # Tested
 
         return self.cfg_obs.obs
 # ------------------------------
-class CCbarConf(ComponentConf):         # Tested
+class CCbarConf(ComponentConf, frozen = True):
     '''
     Class mean to control configuration to fit ccbar components
     '''
-    model_config = ConfigDict(frozen=True)
-
     samples : list[CCbarComponent]
     weights : dict[CCbarWeight,bool]
     merged  : dict[Qsq,bool]
@@ -235,7 +229,7 @@ Plot
             plots   = ZFitPlotterConf.default(),
         )
 # ------------------------------
-class ParametricConf(ComponentConf):  # Tested
+class ParametricConf(ComponentConf, frozen = True):
     '''
     Class mean to control configuration of fit to parametric models
     '''
@@ -361,7 +355,7 @@ class ParametricConf(ComponentConf):  # Tested
 
         return self.model_copy(update = {'categories' : new_categories})
 # ------------------------------
-class NonParametricConf(ComponentConf): # Tested
+class NonParametricConf(ComponentConf, frozen = True):
     '''
     Class mean to control configuration of fit to non parametric models
 
@@ -446,24 +440,20 @@ class CmbConstraintConf(BaseModel):
 
         return self.model_copy(update = {'mod_cfg' : mod_cfg})
 # ------------------------------
-class CombinatorialConfUnconstrained(ComponentConf): # Tested
+class CombinatorialConfUnconstrained(ComponentConf, frozen = True):
     '''
     Class mean to control configuration of fit to combinatorial
     for fits to control region, used to get constraints. I.e. 
     this fit has no constraints for the combinatorial, because
     here is where the constraints come from
     '''
-    model_config = ConfigDict(frozen=True)
-
     models      : dict[Qsq, ModelFactoryConf ]
     constraints : Literal[None] 
 # ------------------------------
-class CombinatorialConf(ComponentConf): # Tested
+class CombinatorialConf(ComponentConf, frozen = True):
     '''
     Class mean to control configuration of fit to combinatorial
     '''
-    model_config = ConfigDict(frozen=True)
-
     models      : dict[Qsq, ModelFactoryConf ]
     constraints : CmbConstraintConf
     # --------------------------------------
@@ -481,7 +471,7 @@ class CombinatorialConf(ComponentConf): # Tested
 
         return self.model_copy(update = {'constraints' : constraints})
 # ------------------------------
-class MisIDConf(NonParametricConf): # Tested
+class MisIDConf(NonParametricConf, frozen = True):
     '''
     Configuration needed to build MisID components
     '''
@@ -511,7 +501,7 @@ class PlotConf(BaseModel):
 # ------------------------------
 # Fits
 # ------------------------------
-class FitModelConf(UnpackerModel):
+class FitModelConf(UnpackerModel, frozen = True):
     '''
     Class representing fitting model
 
@@ -520,8 +510,6 @@ class FitModelConf(UnpackerModel):
     yields   : Contains configurations to build yields for a fitting region/PDF, etc
     selection: Dictionary mapping signal region with selection used to create it
     '''
-    model_config = ConfigDict(frozen = True)
-
     trigger    : Trigger
     yields     : YieldsConf
     selection  : dict[Qsq, dict[Cuts,str]]
