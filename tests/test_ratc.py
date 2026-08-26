@@ -9,7 +9,7 @@ from pathlib     import Path
 from dmu         import LogStore
 from dmu.stats   import zfit
 from dmu.generic import utilities as gut
-from rx_common   import Block, Component, Project, Qsq
+from rx_common   import Block, Channel, Component, Project, Qsq
 from hqm.config  import CCbarRatioCalculatorConf
 from hqm.ratc    import CCbarRatioCalculator
 from hqm.plotter import Plotter
@@ -142,7 +142,7 @@ def _get_trfc(self, qsq_src : Qsq, qsq_tgt : Qsq) -> TransferFunction:
 
     return TransferFunction(**data)
 #--------------------------------------
-def _get_mc_pdf(self, comp : Component, qsq : Qsq) -> zpdf:
+def _get_mc_pdf(self, comp : Component, qsq : Qsq, channel : Channel) -> zpdf:
     mu, sg = _get_peak(self = 1, comp = comp, qsq = qsq)
 
     obs = zfit.Space('B_Mass', limits = (3000, 7000))
