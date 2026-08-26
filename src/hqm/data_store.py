@@ -81,8 +81,10 @@ class DataStore:
         masses = self.__df[mass].to_numpy()
 
         if not self._comp.is_mc:
+            log.debug('Using ones as weights')
             weights = numpy.ones_like(masses)
         else:
+            log.debug('Calculating MC weights')
             weights = self._get_mc_weights()
 
         return masses, weights
