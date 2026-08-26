@@ -13,6 +13,7 @@ class DatabaseConf(BaseModel, frozen = True):
     '''
     Class meant to hold configuration for DatabaseBuilder
     '''
+    weight   : str
     selection: dict[Cuts, str]
     columns  : list[str]
     db_dir   : Path

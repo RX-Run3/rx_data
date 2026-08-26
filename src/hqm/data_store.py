@@ -33,6 +33,7 @@ class DataStore:
         self._trig= trig
         self._comp= comp
 
+        self.__cfg= DatabaseConf.load()
         self.__df = self._load_df()
     # ----------------------------------
     def _load_df(self) -> pnd.DataFrame:
@@ -41,8 +42,7 @@ class DataStore:
         -------------
         Pandas dataframe with data
         '''
-        cfg  = DatabaseConf.load()
-        path = cfg.get_path(comp = self._comp, trig = self._trig)
+        path = self.__cfg.get_path(comp = self._comp, trig = self._trig)
 
         if not path.exists():
             raise ValueError(f'No path found: {path}')
@@ -51,7 +51,18 @@ class DataStore:
 
         return pnd.read_parquet(path = path)
     # ----------------------------------
-    def get_array(self, mass : Mass) -> NpFltArr:
+    def _get_mc_weights(self) -> NpFltArr:
+        '''
+        Returns
+        ------------
+        Array of weights needed to correct simulation
+        '''
+        result = self.__df.eval(self.__cfg.weight)
+        weights= numpy.asarray(result, dtype = numpy.float64)
+
+        return weights
+    # ----------------------------------
+    def get_array(self, mass : Mass) -> tuple[NpFltArr, NpFltArr]:
         '''
         Parameters
         ----------------
@@ -59,10 +70,20 @@ class DataStore:
 
         Returns
         ----------------
-        Array of floats representing masses
+        Tuple with array of floats:
+
+        - Representing masses
+        - Representing weights
         '''
         if mass not in self.__df.columns:
             raise ValueError(f'Mass column {mass} not found')
 
-        return self.__df[mass].to_numpy()
+        masses = self.__df[mass].to_numpy()
+
+        if not self._comp.is_mc:
+            weights = numpy.ones_like(masses)
+        else:
+            weights = self._get_mc_weights()
+
+        return masses, weights
 # ----------------------------------
