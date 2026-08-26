@@ -34,6 +34,14 @@ class DatabaseConf(BaseModel, frozen = True):
 
         return path
     # ----------------------
+    def has_output(self, comp : Component,trig : Trigger) -> bool:
+        '''
+        True if an output is already present
+        '''
+        path = self.get_path(comp = comp, trig = trig)
+
+        return path.exists()
+    # ----------------------
     @classmethod
     def load(cls) -> 'DatabaseConf':
         data = gut.load_data(package = 'hqm_data', fpath = 'config/database_builder.yaml')
