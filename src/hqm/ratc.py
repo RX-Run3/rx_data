@@ -10,6 +10,7 @@ from pydantic       import BaseModel
 from dmu.stats      import FitResult
 from dmu.generic    import Serializable
 from hqm.data_store import DataStore
+from hqm.pdf_mc     import PdfBuilder 
 from hqm.config     import CCbarRatioCalculatorConf, TransferFunctionMakerConf 
 from hqm.trfc       import TransferFunction, TransferFunctionMaker
 from rx_common      import Block, Channel, Component, Mass, Project, Qsq, Trigger
@@ -166,7 +167,7 @@ class CCbarRatioCalculator:
 
         return pdf
     #-----------------------------
-    def __get_mc_pdf(self, comp : Component, qsq : Qsq) -> zpdf:
+    def __get_mc_pdf(self, comp : Component, qsq : Qsq, channel : Channel) -> zpdf:
         '''
         Parameters
         ---------------
@@ -177,13 +178,13 @@ class CCbarRatioCalculator:
         ---------------
         zfit PDF
         '''
-        from hqm.pdfmc      import pdfmc
+        trigger = Trigger.get_main_trigger(project = self._project, channel = channel)
 
-        obj = pdfmc(
-            obs =self._cfg.observable.fit_obs, 
-            dset=self._block, 
-            comp=comp, 
-            qsq =qsq)
+        obj = PdfBuilder(
+            obs     = self._cfg.observable.fit_obs, 
+            comp    = comp, 
+            trigger = trigger,
+            qsq     = qsq)
 
         return obj.get_pdf()
     #-----------------------------
@@ -210,7 +211,7 @@ class CCbarRatioCalculator:
             qsq          = qsq_src, 
             is_part_reco = False)
 
-        pdf = self.__get_mc_pdf(comp = comp, qsq = qsq_tgt)
+        pdf = self.__get_mc_pdf(comp = comp, qsq = qsq_tgt, channel = _TARGET_CHANNEL)
         rat = self._cfg.parameters.get_ratio(qsq = qsq_tgt)
         scl = self._cfg.parameters.get_scale(qsq = qsq_tgt)
 
