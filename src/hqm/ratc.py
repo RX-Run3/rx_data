@@ -121,11 +121,14 @@ class CCbarRatioCalculator:
         -----------------
         Array of masses for given q2-bin in real data
         '''
-        from hqm.data_store import DataStore
-
         trigger = Trigger.get_main_trigger(project = self._project, channel = _TARGET_CHANNEL)
-        ds      = DataStore(qsq=qsq, dset=self._block, trig=trigger, proc='data')
-        array   = ds.get_array()
+        mass    = Mass.raw_from_project(project = self._project)
+
+        ds      = DataStore(
+            qsq =qsq, 
+            trig=trigger, 
+            comp=Component.data_24)
+        array   = ds.get_array(mass = mass)
 
         return array
     #-----------------------------
