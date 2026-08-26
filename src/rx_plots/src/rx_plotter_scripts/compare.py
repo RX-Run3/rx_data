@@ -65,7 +65,7 @@ def _get_plot_cfg(cfg : Config) -> DictConfig:
         brem  = 'all' if cfg.brem == -1 else str(cfg.brem)
         block = 'all' if cfg.block== -1 else str(cfg.block)
 
-        d_setting['title'] = f'Brem {brem}; Block {block}; {cfg.sample}'
+        d_setting['title'] = f'Brem {brem}; Block {block}; {cfg.sample.latex}'
 
     # If user does not request emulation
     # Drop these plots
