@@ -1,0 +1,35 @@
+# Used to compare q2 distribution for charmoniunm samples for different q2 definitions
+general:
+  size : [15, 10]
+selection: {}
+comparison:
+  Original:
+    vars:
+      qsq : qsq
+  DTF:
+    vars:
+      qsq : qsq_dtf
+saving:
+  plt_dir : plots/ccbar_qsq
+plots:
+  qsq:
+    binning    : [6e6, 22e6, 100]
+    yscale     : linear
+    labels     : ['$q^2$[MeV]', 'Entries']
+    name       : ccbar_qsq 
+    normalized : false 
+    styling:
+      Original:
+        histtype : fill
+        alpha    : 0.7
+        color    : gray
+      DTF:
+        histtype : step
+        linestyle: '-'
+        color    : blue
+    vline   :
+      x     : 15e6 
+      label : High $q^2$ 
+      ls    : --
+      c     : black
+      lw    : 1
