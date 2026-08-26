@@ -17,7 +17,7 @@ from dmu.rdataframe         import utilities          as rut
 from dmu.generic            import utilities          as gut
 from rx_selection           import truth_matching     as tm
 from rx_selection           import version_management as vman
-from rx_common              import Channel, Component, Project, Qsq, Trigger, info, Cuts
+from rx_common              import Channel, Component, Project, Qsq, Trigger, Cuts
 
 log=LogStore.add_logger('rx_selection:selection')
 #-----------------------
@@ -234,7 +234,7 @@ def _use_smeared_masses(
         # correct smearing factors here
         log.warning(f'Not overriding with smeared version q2 cut: {cut_org}')
 
-    if info.is_reso(q2bin):
+    if not q2bin.is_rare:
         log.debug(f'Not overriding mass cut for resonant bin: {q2bin}')
         return cuts
 
