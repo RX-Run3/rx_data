@@ -20,12 +20,16 @@ def get_data() -> dict[str,NpFltArray]:
     data['B_PT' ]     = rng.poisson(lam = 5_000, size = SIZE).astype(numpy.float64)
     data['block'    ] = rng.integers(low = 1, high = 9, size = SIZE).astype(numpy.float64)
     data['nTracks'  ] = rng.poisson(lam = 3, size = SIZE).astype(numpy.float64)
+    data['nbrem'    ] = rng.integers(low = 0, high = 3, size = SIZE).astype(numpy.float64)
 
     data['B_ETA']     = rng.normal(loc = 0.0, scale = 1.0, size = SIZE)
     data['ll_angle' ] = rng.normal(loc = 0.5, scale = 0.1, size = SIZE)
     data['ll_max_PT'] = rng.normal(loc = 20_000, scale = 5_000, size = SIZE)
     data['q2'       ] = rng.uniform(6e6, 22e6, size = SIZE)
     data['q2_dtf'   ] = rng.uniform(6e6, 22e6, size = SIZE)
+
+    data['mva_cmb'  ] = rng.uniform(0, 1, size = SIZE)
+    data['mva_prc'  ] = rng.uniform(0, 1, size = SIZE)
 
     return data
 # ------------------------------------------------
