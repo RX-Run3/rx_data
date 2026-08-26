@@ -13,20 +13,19 @@ from dmu                 import LogStore
 from dmu.generic         import hashing
 from typing              import Self
 from pathlib             import Path
-from pydantic            import BaseModel, model_validator, ConfigDict
+from pydantic            import BaseModel, model_validator
 
 log=LogStore.add_logger('dmu:generic:models')
 
 _PACKAGE = ContextVar('_PACKAGE', default = '') 
 # --------------------------------------------------
-class UnpackerModel(BaseModel):
+class UnpackerModel(BaseModel, frozen = True):
     '''
     Class meant to allow derived classes to:
 
     - Load models from paths when the value is a string or path ending with '.yaml'
     - Load data directly from path to file
     '''
-    model_config = ConfigDict(frozen=True)
     # --------------
     @staticmethod
     def _update_path(path : Path) -> Path:
