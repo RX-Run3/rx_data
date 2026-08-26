@@ -20,7 +20,7 @@ log  = LogStore.add_logger('fitter:category')
 
 _CATEGORY_REGEX : Final[str] = r'brem_([x\d]{3})_b(\d+|all)'
 # -----------------------------------
-class Category(BaseModel):
+class Category(BaseModel, frozen = True):
     '''
     Class meant to represent a fit category, i.e. a fit for a given
     dataset when splitting in e.g. blocks and/or Brem categories
@@ -33,7 +33,7 @@ class Category(BaseModel):
     model    : List of model names used for category
     selection: Selection that was used to get category, on top of nominal
     '''
-    model_config = ConfigDict(frozen=True, arbitrary_types_allowed=True)
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     name      : str 
     pdf       : zpdf 
@@ -101,7 +101,7 @@ class Category(BaseModel):
 
         return value
 # -----------------------------------
-class FitCategory(Category):
+class FitCategory(Category, frozen = True):
     '''
     Same as Category but with fitting specific
     attributes added
@@ -110,7 +110,5 @@ class FitCategory(Category):
     ----------------
     res: Result of fit, optional
     '''
-    model_config = ConfigDict(frozen=True)
-
     res : FitResult
 # -----------------------------------
