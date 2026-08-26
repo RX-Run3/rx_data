@@ -76,6 +76,15 @@ class DatabaseBuilder:
 
         log.debug('ROOT dataframe validated')
     # ----------------------------------
+    def _rename_variable(self, var : str) -> str:
+        '''
+        Renames variables like `mva.mva_cmb` to `mva_cmb`
+        '''
+        if '.' not in var:
+            return var
+
+        return var.split('.')[-1]
+    # ----------------------------------
     def run(self) -> None:
         '''
         Execute building of database
@@ -84,12 +93,16 @@ class DatabaseBuilder:
         self.__validate_columns(rdf = rdf)
 
         data = rdf.AsNumpy(self._cfg.columns)
-
-        df = pnd.DataFrame(data)
+        data = { self._rename_variable(var) : val for var, val in data.items() }
+        df   = pnd.DataFrame(data)
 
         path = self._cfg.get_path(
             trig = self._trig, 
             comp = self._comp)
+
+        log.debug('Using columns:')
+        for name in df.columns:
+            log.debug(name)
 
         log.info(f'Saving to: {path}')
         df.to_parquet(path = path)
