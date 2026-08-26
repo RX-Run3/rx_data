@@ -2,18 +2,21 @@
 general:
   size : [15, 10]
 selection: {}
+definitions:
+  qsq_gev     : q2 / 1e6
+  qsq_dtf_gev : q2_dtf / 1e6
 comparison:
   Original:
     vars:
-      qsq : qsq
+      qsq : qsq_gev
   DTF:
     vars:
-      qsq : qsq_dtf
+      qsq : qsq_dtf_gev
 saving:
   plt_dir : plots/ccbar_qsq
 plots:
   qsq:
-    binning    : [6e6, 22e6, 100]
+    binning    : [6, 22, 100]
     yscale     : linear
     labels     : ['$q^2$[MeV]', 'Entries']
     name       : ccbar_qsq 
@@ -28,7 +31,7 @@ plots:
         linestyle: '-'
         color    : blue
     vline   :
-      x     : 15e6 
+      x     : 15
       label : High $q^2$ 
       ls    : --
       c     : black
