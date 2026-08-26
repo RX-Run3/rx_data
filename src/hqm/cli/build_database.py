@@ -17,5 +17,8 @@ def build_database(
     Build database
     '''
     cfg = DatabaseConf.load()
+    if cfg.has_output(comp = comp, trig = trigger):
+        return
+
     obj = DatabaseBuilder(trig = trigger, comp = comp, cfg = cfg)
     obj.run()
