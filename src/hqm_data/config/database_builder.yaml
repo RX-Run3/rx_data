@@ -1,6 +1,6 @@
 selection:
   q2 : 'true'
-db_dir : DB/hqm
+db_dir : DB/hqm/latest
 columns:
   # --------------
   # Binning
@@ -10,6 +10,9 @@ columns:
   - ll_angle
   - ll_max_PT
   - nTracks
+  - nbrem
+  - mva.mva_cmb
+  - mva.mva_prc
   # --------------
   # Categorization
   # --------------
