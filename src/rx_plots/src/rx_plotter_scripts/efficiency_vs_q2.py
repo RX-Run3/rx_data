@@ -313,7 +313,7 @@ def main(args : dict[str,str] | None = None) -> None:
     log.debug('Loading configuration')
 
     for q2bin in Qsq: 
-        if q2bin in {Qsq.none, Qsq.all}:
+        if q2bin == Qsq.none:
             continue
 
         df = _get_data(q2bin = q2bin, cfg = cfg)

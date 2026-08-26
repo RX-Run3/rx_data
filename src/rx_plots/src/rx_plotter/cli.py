@@ -247,7 +247,7 @@ def _calculate_stats(
 
     true_yield = rdf_true.Count()
     for block, q2bin in entries:
-        if q2bin == Qsq.all:
+        if q2bin == Qsq.none:
             continue
 
         q2_cut     = sel.get_q2_cut(q2bin = q2bin)

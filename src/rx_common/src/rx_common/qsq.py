@@ -10,7 +10,6 @@ class Qsq(StrEnum):
     This class represents different q2 bins
     '''
     none    = auto()
-    all     = auto()
     low     = auto()
     central = auto()
     jpsi    = auto()
@@ -83,8 +82,6 @@ class Qsq(StrEnum):
                 return r'$\psi(2S)$'
             case Qsq.high:
                 return 'High'
-            case Qsq.all:
-                return 'All'
             case Qsq.none:
                 return 'None'
     # --------------------------
