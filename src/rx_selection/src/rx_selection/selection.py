@@ -336,11 +336,11 @@ def _save_cutflow(
     log.info(f'Saving cutflow to: {cf_path}')
     df.to_markdown(cf_path)
 
-    ct_path = path / 'cuts.yaml'
+    ct_path = path / 'cuts.json'
     log.info(f'Saving cuts to: {ct_path}')
     gut.dump_json(data = cuts, path = ct_path, exists_ok=True)
 #-----------------------
-def apply_full_selection(
+def apply_full_selection( # noqa: PLR0913
     rdf      : RDF.RNode,
     q2bin    : Qsq,
     process  : Component,
