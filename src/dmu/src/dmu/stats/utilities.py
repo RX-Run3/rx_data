@@ -653,12 +653,13 @@ def _df_from_lines(l_line : list[str]) -> pnd.DataFrame:
 
         par, low, high, floating, cons = info
 
-        df.loc[len(df)] = {'Parameter' : par,
-                           'Low'       : low,
-                           'High'      : high,
-                           'Floating'  : floating,
-                           'Constraint': cons,
-                           }
+        df.loc[len(df)] = {
+            'Parameter' : par,
+            'Low'       : low,
+            'High'      : high,
+            'Floating'  : floating,
+            'Constraint': cons,
+            }
 
     return df
 #-------------------------------------------------------
