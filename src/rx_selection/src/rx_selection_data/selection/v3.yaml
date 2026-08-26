@@ -6,6 +6,7 @@ cascade_common : &cascade_common
   jpsi    : (swp_cascade_mass_swp != swp_cascade_mass_swp) || (swp_cascade_mass_swp > 1900)
   psi2    : (swp_cascade_mass_swp != swp_cascade_mass_swp) || (swp_cascade_mass_swp > 1900)
   high    : (swp_cascade_mass_swp != swp_cascade_mass_swp) || (swp_cascade_mass_swp > 1900) || (swp_cascade_mass_swp < 1800)
+  none    : (swp_cascade_mass_swp != swp_cascade_mass_swp) || (swp_cascade_mass_swp > 1900) || (swp_cascade_mass_swp < 1800)
 
 cmb_common: &cmb_common
   low     : mva_cmb > 0.60
@@ -15,6 +16,7 @@ cmb_common: &cmb_common
   jpsi    : mva_cmb > 0.60
   psi2    : mva_cmb > 0.60
   high    : mva_cmb > 0.60
+  none    : mva_cmb > 0.60
 
 prc_common: &prc_common
   low     : mva_prc > 0.80
@@ -24,6 +26,7 @@ prc_common: &prc_common
   jpsi    : mva_prc > 0.80
   psi2    : mva_prc > 0.80
   high    : mva_prc > 0.80
+  none    : mva_prc > 0.80
 
 q2_common: &q2_common
   low     : (q2       >   100000) && (q2 <  1100000)
@@ -43,25 +46,28 @@ hop_common: &hop_common
   jpsi    : hop_mass > 4500
   psi2    : hop_mass > 4500
   high    : hop_mass > 3000
+  none    : hop_mass > 3000
 
 # B_Mass, as defined in rx_data config.yaml, should be the brem corrected mass
 mass_ee   : &mass_ee
-  low     : B_M > 0
-  central : B_M > 0
-  cen_low : B_M > 0
-  cen_high: B_M > 0
-  jpsi    : B_M > 0
-  psi2    : B_M > 0
-  high    : B_M > 0
+  low     : 'true'
+  central : 'true'
+  cen_low : 'true'
+  cen_high: 'true'
+  jpsi    : 'true'
+  psi2    : 'true'
+  high    : 'true'
+  none    : 'true'
 
 mass_mm  : &mass_mm
-  low     : B_M > 0
-  central : B_M > 0
-  cen_low : B_M > 0
-  cen_high: B_M > 0
-  jpsi    : B_M > 0
-  psi2    : B_M > 0
-  high    : B_M > 0
+  low     : 'true'
+  central : 'true'
+  cen_low : 'true'
+  cen_high: 'true'
+  jpsi    : 'true'
+  psi2    : 'true'
+  high    : 'true'
+  none    : 'true'
 # --------------------
 rkst: &rkst
   ee:
