@@ -320,8 +320,8 @@ class CCbarRatioCalculator:
             trig= trig, 
             comp= Component.data_24)
 
-        arr_raw = obj.get_array(mass = mass_raw)
-        arr_dtf = obj.get_array(mass = mass_cns)
+        arr_raw, _   = obj.get_array(mass = mass_raw)
+        arr_dtf, _   = obj.get_array(mass = mass_cns)
 
         mask         = arr_dtf < self._cfg.sb_mass
         arr_sideband = arr_raw[mask]
