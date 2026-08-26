@@ -49,7 +49,10 @@ class DataStore:
 
         log.debug(f'Loading data from: {path}')
 
-        return pnd.read_parquet(path = path)
+        df = pnd.read_parquet(path = path)
+        df = self._select_data(df = df)
+
+        return df
     # ----------------------------------
     def _get_mc_weights(self) -> NpFltArr:
         '''
@@ -61,6 +64,9 @@ class DataStore:
         weights= numpy.asarray(result, dtype = numpy.float64)
 
         return weights
+    # ----------------------------------
+    def _select_data(self, df : pnd.DataFrame) -> pnd.DataFrame:
+        return df
     # ----------------------------------
     def get_array(self, mass : Mass) -> tuple[NpFltArr, NpFltArr]:
         '''
