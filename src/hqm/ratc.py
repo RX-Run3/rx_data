@@ -176,7 +176,7 @@ class CCbarRatioCalculator:
 
         Returns
         ---------------
-        zfit PDF
+        Zfit PDF from MC fit plus scaling 
         '''
         trigger = Trigger.get_main_trigger(project = self._project, channel = channel)
 
