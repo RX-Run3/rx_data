@@ -18,7 +18,7 @@ plots:
   qsq:
     binning    : [6, 22, 100]
     yscale     : linear
-    labels     : ['$q^2$[MeV]', 'Entries']
+    labels     : ['$q^2$[GeV]', 'Entries']
     name       : ccbar_qsq 
     normalized : false 
     styling:
