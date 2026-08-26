@@ -1,5 +1,7 @@
 selection:
   q2 : 'true'
+  cmb: 'true'
+  prc: 'true'
 db_dir : DB/hqm/latest
 columns:
   # --------------
