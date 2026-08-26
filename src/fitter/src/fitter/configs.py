@@ -47,12 +47,10 @@ def _validate_mod_cfg(value) -> 'FitModelConf | None':
 
     raise ValueError('Invalid value for mod_cfg field')
 # ------------------------------
-class ObservableConf(BaseModel):
+class ObservableConf(BaseModel, frozen = True):
     '''
     Class representing configuration for observable
     '''
-    model_config = ConfigDict(frozen=True)
-
     name : Mass
     range: tuple[int,int]
     # ------------------------
