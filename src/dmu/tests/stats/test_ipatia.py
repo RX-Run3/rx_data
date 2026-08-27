@@ -1,18 +1,21 @@
 '''
 Module with tests for Ipatia class
 '''
-
 import numpy
 import pytest
 import matplotlib.pyplot as plt
 
 from pathlib     import Path
 from functools   import cache
+from dmu         import LogStore
 from dmu.generic import utilities as gut
 from dmu.stats   import ZFitPlotter, ZFitPlotterConf, zfit
 from dmu.stats   import Ipatia
+from dmu.stats   import pdf_utilities as put
 
 zfit.run.set_graph_mode(False)
+
+log=LogStore.add_logger('dmu:test_ipatia')
 # ----------------------
 @pytest.fixture(scope='session', autouse=True)
 def initialize():
@@ -20,6 +23,8 @@ def initialize():
     This will run before any test
     '''
     gut.TIMER_ON = True
+
+    LogStore.set_level('dmu:pdf_utilities', 10)
 # ----------------------------------------------------------
 @cache
 @gut.timeit
@@ -63,4 +68,8 @@ def test_plot(tmp_path : Path):
     zfp.run(cfg = cfg)
 
     plt.savefig(tmp_path / 'plot.png')
+# ----------------------------------------------------------
+def test_gradient():
+    model  = __get_pdf()
+    assert put.has_gradient(pdf = model)
 # ----------------------------------------------------------
