@@ -8,7 +8,7 @@ import numpy.typing  as npt
 import pandas        as pnd
 
 from pathlib           import Path
-from rx_common         import Component, Mass, Qsq, Trigger
+from rx_common         import Component, Cuts, Mass, Qsq, Trigger
 from hqm.data_store    import DataStore
 from hqm.plotter       import Plotter
 from hqm.database_conf import DatabaseConf
@@ -45,7 +45,7 @@ def test_data_retrieval(
     comp     : Component,
     tmp_path : Path):
     '''
-    Test retrieving data
+    Test initialized object with fake data
     '''
     obj = DataStore(
         comp= comp,
@@ -71,6 +71,9 @@ def test_data_retrieval(
     assert len(arr_dtf_psi2) == SIZE
 #--------------------------------------
 def test_data_load(monkeypatch, tmp_path : Path):
+    '''
+    Test actually loading data from database
+    '''
     monkeypatch.setenv('ANADIR', str(tmp_path))
 
     comp = Component.bpkpjpsiee
@@ -84,13 +87,45 @@ def test_data_load(monkeypatch, tmp_path : Path):
 
     print(df)
 
-    obj = DataStore(
-        trig= trig,
-        comp= comp,
-        qsq = qsq)
+    with DataStore.selection(sel = {}):
+        obj = DataStore(
+            trig= trig,
+            comp= comp,
+            qsq = qsq)
 
     arr_raw, arr_wgt = obj.get_array(mass = Mass.bp_bcor)
 
     assert len(arr_raw) == SIZE
     assert len(arr_wgt) == SIZE
+#--------------------------------------
+def test_selection(monkeypatch, tmp_path : Path):
+    '''
+    Test with database data and selection
+    '''
+    monkeypatch.setenv('ANADIR', str(tmp_path))
+
+    comp = Component.bpkpjpsiee
+    trig = Trigger.rk_ee_os
+    qsq  = Qsq.high
+
+    df   = _load_df(self = None)
+    cfg  = DatabaseConf.load()
+    path = cfg.get_path(comp = comp, trig = trig)
+    df.to_parquet(path = path)
+
+    print(df)
+
+    sel = dict()
+    sel[Cuts.q2]    = 'q2_dtf > 11e6'
+    sel[Cuts.block] = 'block == 1'
+    with DataStore.selection(sel = sel):
+        obj = DataStore(
+            trig= trig,
+            comp= comp,
+            qsq = qsq)
+
+    arr_raw, arr_wgt = obj.get_array(mass = Mass.bp_bcor)
+
+    assert len(arr_raw) < SIZE
+    assert len(arr_wgt) < SIZE
 #--------------------------------------
