@@ -16,6 +16,6 @@ It adds:
 
 None of these requirements have been optimized yet.
 
-## v3
+## latest
 
 Cut on both leptons $p_T$ at 250 MeV
