@@ -376,7 +376,8 @@ def _calculate_errors(res : zres, cfg : FitConf, nll : Loss) -> zres:
             log.warning(exc)
             log.debug(res)
 
-    sut.save_nll(loss = nll)
+    path = sut.save_nll(loss = nll)
+    log.error(f'Saving NLL to: {path}')
 
     raise MinimizerFailError('Fit error could not be found')
 # ------------------------
