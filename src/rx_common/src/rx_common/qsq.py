@@ -1,9 +1,16 @@
 '''
 Module containing Qsq enum
 '''
-from pathlib import Path
-from enum    import StrEnum, auto
+import re
 
+from functools   import cache
+from pathlib     import Path
+from enum        import StrEnum, auto
+from typing      import Final
+from dmu.generic import utilities as gut
+
+_MAX_QSQ : Final[float] = 100e6 # Largest q2 value that makes sense
+_REGEX   : Final[str  ] = r'\(q2\s+>\s+(\d+)\)\s+&&\s+\(q2\s+<\s+(\d+)\)' # Used to extract bounds from q2 cut strings
 # -----------------------
 class Qsq(StrEnum):
     '''
@@ -15,6 +22,24 @@ class Qsq(StrEnum):
     jpsi    = auto()
     psi2    = auto()
     high    = auto()
+    # --------------------------
+    @property
+    def upper_bound(self) -> float:
+        '''
+        Lower value of current q2-bin
+        '''
+        data = _load_data()
+
+        return data[f'{self}_upper']
+    # --------------------------
+    @property
+    def lower_bound(self) -> float:
+        '''
+        Lower value of current q2-bin
+        '''
+        data = _load_data()
+
+        return data[f'{self}_lower']
     # --------------------------
     @classmethod
     def from_path(cls, path : Path) -> 'Qsq':
@@ -134,4 +159,37 @@ class QsqDef(StrEnum):
                 return '$q_{DTF}^{2}$'
             case QsqDef.true:
                 return '$q_{True}^{2}$'
+# -----------------------
+@cache
+def _load_data() -> dict[str,float]:
+    '''
+    Returns
+    -----------------
+    dictionary mapping quantity with value, e.g.
+
+    low_lower -> 1e5
+    '''
+    data    = gut.load_data(package = 'rx_selection_data', fpath = 'selection/latest.yaml')
+    q2_data = data['q2_common']
+
+    result : dict[str,float] = dict()
+    for qsq in Qsq:
+        if qsq == Qsq.none:
+            result[f'{qsq}_lower'] = 0.0 
+            result[f'{qsq}_upper'] = _MAX_QSQ 
+
+            continue
+
+        expr = q2_data[qsq]
+        mtch = re.match(_REGEX, expr)
+        if not mtch:
+            raise ValueError(f'Cannot match {expr} with {_REGEX}')
+
+        lower_val = float(mtch.group(1))
+        upper_val = float(mtch.group(2))
+
+        result[f'{qsq}_lower'] = lower_val
+        result[f'{qsq}_upper'] = upper_val
+
+    return result
 # -----------------------
