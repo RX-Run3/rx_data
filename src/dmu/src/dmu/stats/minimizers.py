@@ -224,7 +224,7 @@ class AnealingMinimizer:
                 continue
 
             try:
-                obj = _calculate_errors(res = obj, cfg = self._cfg)
+                obj = _calculate_errors(res = obj, cfg = self._cfg, nll = loss)
             except MinimizerFailError as exc:
                 log.warning(f'Could not calculate error: {exc}')
                 continue
@@ -336,11 +336,13 @@ class ContextMinimizer:
 
         return frs
 # ------------------------
-def _calculate_errors(res : zres, cfg : FitConf) -> zres:
+def _calculate_errors(res : zres, cfg : FitConf, nll : Loss) -> zres:
     '''
     Parameters
     -------------
+    nll: Likelihood, will save it if failure
     res: Result of fit, before error calculation
+    cfg: Configuration for fit
 
     Returns
     -------------
@@ -373,6 +375,8 @@ def _calculate_errors(res : zres, cfg : FitConf) -> zres:
             log.warning(f'Failed error calculation with: {method}')
             log.warning(exc)
             log.debug(res)
+
+    sut.save_nll(loss = nll)
 
     raise MinimizerFailError('Fit error could not be found')
 # ------------------------
@@ -416,7 +420,7 @@ def minimize(
         gof = gcl.get_gof()
 
     if isinstance(obj, zres):
-        obj = _calculate_errors(res = obj, cfg = cfg)
+        obj = _calculate_errors(res = obj, cfg = cfg, nll = nll)
         res = FitResult.from_zfit(
             res          = obj, 
             gof          = gof,
