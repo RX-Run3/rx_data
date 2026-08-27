@@ -39,6 +39,12 @@ def _patch_loader(monkeypatch):
         '_load_df',
         _load_df)
 #--------------------------------------
+@pytest.fixture(autouse = False)
+def _block_selection():
+    sel = {Cuts.block : 'block == 1'}
+    with DataStore.selection(sel = sel, update = False):
+        yield
+#--------------------------------------
 @pytest.mark.parametrize('comp', [Component.data_24, Component.bpkpjpsiee])
 def test_data_retrieval(
     _patch_loader, 
@@ -87,7 +93,7 @@ def test_data_load(monkeypatch, tmp_path : Path):
 
     print(df)
 
-    with DataStore.selection(sel = {}):
+    with DataStore.selection(sel = {}, update = False):
         obj = DataStore(
             trig= trig,
             comp= comp,
@@ -98,9 +104,9 @@ def test_data_load(monkeypatch, tmp_path : Path):
     assert len(arr_raw) == SIZE
     assert len(arr_wgt) == SIZE
 #--------------------------------------
-def test_selection(monkeypatch, tmp_path : Path):
+def test_new_selection(monkeypatch, tmp_path : Path):
     '''
-    Test with database data and selection
+    Test with database data and selection from zero
     '''
     monkeypatch.setenv('ANADIR', str(tmp_path))
 
@@ -118,7 +124,48 @@ def test_selection(monkeypatch, tmp_path : Path):
     sel = dict()
     sel[Cuts.q2]    = 'q2_dtf > 11e6'
     sel[Cuts.block] = 'block == 1'
-    with DataStore.selection(sel = sel):
+    with DataStore.selection(sel = sel, update = False):
+        obj = DataStore(
+            trig= trig,
+            comp= comp,
+            qsq = qsq)
+
+    arr_raw, arr_wgt = obj.get_array(mass = Mass.bp_bcor)
+
+    assert len(arr_raw) < SIZE
+    assert len(arr_wgt) < SIZE
+#--------------------------------------
+def test_update_selection(
+    monkeypatch, 
+    _block_selection,
+    tmp_path : Path):
+    '''
+    Test with database data and selection from zero
+    '''
+    monkeypatch.setenv('ANADIR', str(tmp_path))
+
+    comp = Component.bpkpjpsiee
+    trig = Trigger.rk_ee_os
+    qsq  = Qsq.high
+
+    df   = _load_df(self = None)
+    cfg  = DatabaseConf.load()
+    path = cfg.get_path(comp = comp, trig = trig)
+    df.to_parquet(path = path)
+
+    print(df)
+
+    sel          = dict()
+    sel[Cuts.q2] = 'q2_dtf > 11e6'
+
+    with pytest.raises(ValueError):
+        with DataStore.selection(sel = sel, update = False):
+            obj = DataStore(
+                trig= trig,
+                comp= comp,
+                qsq = qsq)
+
+    with DataStore.selection(sel = sel, update = True):
         obj = DataStore(
             trig= trig,
             comp= comp,
