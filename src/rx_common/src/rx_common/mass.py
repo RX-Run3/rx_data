@@ -231,3 +231,4 @@ class Mass(StrEnum):
                 return Mass.bd_kk.limits
             case _:
                 raise ValueError(f'Cannot determine mass range for: {self}')
+# ------------------------------
