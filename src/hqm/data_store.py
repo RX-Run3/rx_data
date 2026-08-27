@@ -5,12 +5,16 @@ import numpy
 import numpy.typing as npt
 import pandas       as pnd
 
+from contextlib     import contextmanager
+from contextvars    import ContextVar
 from dmu            import LogStore
-from rx_common      import Qsq, Trigger, Component, Mass
+from rx_common      import Cuts, Qsq, Trigger, Component, Mass
 from .database_conf import DatabaseConf
 
 log      = LogStore.add_logger('rx_hqm:data_store')
 NpFltArr = npt.NDArray[numpy.float64]
+
+_SELECTION : ContextVar[dict[Cuts,str] | None] = ContextVar('_SELECTION', default = None) 
 # ----------------------------------
 class DataStore:
     '''
@@ -66,7 +70,33 @@ class DataStore:
         return weights
     # ----------------------------------
     def _select_data(self, df : pnd.DataFrame) -> pnd.DataFrame:
+        sel = _SELECTION.get()
+        if sel is None:
+            raise ValueError('No selection used')
+
+        log.debug('Applying selection')
+        for name, expr in sel.items():
+            log.debug(f'{name:<20}{expr}')
+            df = df.query(expr)
+
         return df
+    # ----------------------------------
+    @classmethod
+    def selection(cls, sel : dict[Cuts,str]):
+        '''
+        Parameters
+        -------------
+        sel: Dictionary mapping cut object (label) to cut expression
+        '''
+        @contextmanager
+        def _context():
+            token = _SELECTION.set(sel)
+            try:
+                yield
+            finally:
+                _SELECTION.reset(token)
+
+        return _context()
     # ----------------------------------
     def get_array(self, mass : Mass) -> tuple[NpFltArr, NpFltArr]:
         '''
