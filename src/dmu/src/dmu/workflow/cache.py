@@ -227,6 +227,16 @@ class Cache:
 
         return True
     # ---------------------------
+    @classmethod
+    def get_cache_dir(cls) -> Path:
+        '''
+        Returns path to directory where outputs are stored
+        '''
+        if cls._cache_root is None:
+            raise ValueError('Cache directory is not set')
+
+        return cls._cache_root
+    # ---------------------------
     @property
     def path(self) -> Path:
         '''
