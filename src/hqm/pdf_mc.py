@@ -3,16 +3,9 @@ Module holding PdfBuilder
 '''
 import matplotlib.pyplot as plt
 
-from dmu.workflow import Cache
-from fitter      import ObservableConf
-from rx_common   import Component, Mass, Trigger, Qsq
-from dmu.stats   import Fitter, Model, ModelFactory, ZFitPlotter, ZFitPlotterConf, zfit
-from dmu.generic import utilities as gut
-
-# Use direct imports to avoid circular imports
-from fitter.sim_fitter import SimFitter
-from fitter.configs    import ParametricConf
-
+from dmu.workflow   import Cache
+from rx_common      import Component, Mass, Trigger, Qsq
+from dmu.stats      import Fitter, Model, ModelFactory, ZFitPlotter, ZFitPlotterConf, zfit
 from hqm.data_store import DataStore 
 
 zpdf = zfit.pdf.BasePDF
@@ -44,6 +37,19 @@ class PdfBuilder:
     # ----------------------------
     def _get_mc_pdf(self) -> zpdf:
         mass = Mass.raw_from_project(project = self.__trig.project)
+        if self.__trig.is_electron:
+            values = {
+                'sg': ( 100.,   10.,  500.),
+                'mu': (5280., 4500., 6500.)}
+            obs    = mass.obs 
+            models = [Model.dscb]
+        else:
+            values = {
+                'sg': ( 15.,   10.,    20.),
+                'mu': (5280., 5270., 5310.)}
+            obs    = zfit.Space('mass', limits = (5000, 5500))
+            models = [Model.dscb, Model.gauss]
+
         obj  = DataStore(
             comp= self.__comp,
             trig= self.__trig,
@@ -51,7 +57,7 @@ class PdfBuilder:
         masses, weights = obj.get_array(mass = mass)
 
         data = zfit.Data.from_numpy(
-            obs     = mass.obs, 
+            obs     = obs, 
             array   = masses, 
             weights = weights)
         if not isinstance(data, zfit.Data):
@@ -59,10 +65,11 @@ class PdfBuilder:
 
         fac = ModelFactory(
             preffix  = 'prf',
-            obs      = mass.obs,
-            l_shared = [],
+            obs      = obs,
+            l_shared = ['mu', 'sg'],
             l_float  = [],
-            l_pdf    = [Model.dscb])
+            values   = values,
+            l_pdf    = models)
 
         pdf = fac.get_pdf()
 
@@ -70,7 +77,14 @@ class PdfBuilder:
         res = ftr.fit()
         print(res)
 
-        cfg = ZFitPlotterConf.default()
+        plot_range = (4600, 6500) if self.__trig.is_electron else (5000, 5500)
+        cfg        = ZFitPlotterConf.default()
+
+        settings   = {
+            'title'      : f'{self.__comp.latex}; {self.__trig.value} trigger; {self.__qsq.latex} bin',
+            'plot_range' : plot_range}
+        cfg        = cfg.model_copy(update = settings)
+
         ptr = ZFitPlotter(data = data, model = pdf)
         ptr.run(cfg = cfg)
 
