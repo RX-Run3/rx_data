@@ -2,8 +2,6 @@
 Module with utility functions for PDFs
 '''
 from typing   import cast
-
-import numpy
 from dmu      import LogStore
 
 from .imports import zfit
