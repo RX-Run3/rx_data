@@ -10,6 +10,7 @@ import matplotlib.pyplot   as plt
 
 from pathlib     import Path
 from functools   import cache
+
 from dmu         import LogStore
 from dmu.stats   import Constraint1D
 from dmu.stats   import Retries
@@ -26,6 +27,8 @@ from ROOT        import RDF, gInterpreter # type: ignore
 _NSAMPLE : int = 10_000
 
 log = LogStore.add_logger('dmu:logging:test_fitter')
+
+SamplerData = zfit.data.SamplerData
 # ----------------------
 @cache
 def _get_data() -> numpy.ndarray:
@@ -65,7 +68,7 @@ def initialize():
 #-------------------------------------
 @cache
 def _get_weighted_data():
-    gInterpreter.ProcessLine('TRandom3 r(1);')
+    gInterpreter.ProcessLine('TRandom3 r(1);') # type: ignore
 
     d_val      = {}
     d_val['x'] = numpy.random.uniform(-1, 4, size=_NSAMPLE)
@@ -210,6 +213,9 @@ def test_profiling_minimizer() -> None:
     ntoys = 30
     nll   = get_nll(kind='s+b')
     sam   = nll.data[0]
+    if not isinstance(sam, SamplerData):
+        raise ValueError('Data object is not a sampler')
+
     for _ in tqdm.trange(ntoys, ascii=' -'):
         sam.resample()
         minimizers.minimize(nll=nll)

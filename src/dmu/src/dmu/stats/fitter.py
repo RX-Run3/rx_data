@@ -21,6 +21,7 @@ from .fit_conf       import FitConf, Retries
 from .fit_result     import FitResult
 from .zfit_plotter   import ZFitPlotter
 from .minimizers     import AnealingMinimizer
+from .pdf_utilities  import has_gradient
 
 log = LogStore.add_logger('dmu:stats:fitter')
 Loss= ExtendedUnbinnedNLL | UnbinnedNLL
@@ -54,6 +55,9 @@ class Fitter:
         pdf : PDF to fit
         data: Datasets to fit, either zfit data object, or numpy array
         '''
+        if not has_gradient(pdf = pdf):
+            raise ValueError(f'PDF {pdf.name} has no gradient')
+
         self._data_in = data
         self._pdf     = pdf
         self._nll     : Loss | None = None
