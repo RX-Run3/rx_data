@@ -1,14 +1,19 @@
 '''
 Module holding PdfBuilder
 '''
-from fitter import ObservableConf
-from rx_common   import Component, Trigger, Qsq
-from dmu.stats   import zfit
+import matplotlib.pyplot as plt
+
+from dmu.workflow import Cache
+from fitter      import ObservableConf
+from rx_common   import Component, Mass, Trigger, Qsq
+from dmu.stats   import Fitter, Model, ModelFactory, ZFitPlotter, ZFitPlotterConf, zfit
 from dmu.generic import utilities as gut
 
 # Use direct imports to avoid circular imports
 from fitter.sim_fitter import SimFitter
-from fitter.configs    import ParametricConf 
+from fitter.configs    import ParametricConf
+
+from hqm.data_store import DataStore 
 
 zpdf = zfit.pdf.BasePDF
 # ----------------------------
@@ -38,29 +43,40 @@ class PdfBuilder:
         self.__qsq  = qsq
     # ----------------------------
     def _get_mc_pdf(self) -> zpdf:
-        '''
-        Returns
-        -----------
-        PDF from fit to MC sample
-        '''
-        data = gut.load_data(
-            package='fitter_data', 
-            fpath  =f'reso/{self.__trig.project}/{self.__trig.channel}/{self.__comp}_no_dtf.yaml')
+        mass = Mass.raw_from_project(project = self.__trig.project)
+        obj  = DataStore(
+            comp= self.__comp,
+            trig= self.__trig,
+            qsq = self.__qsq,)
+        masses, weights = obj.get_array(mass = mass)
 
-        cfg     = ParametricConf(**data)
-        cfg_obs = ObservableConf.default()
-        cfg     = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
+        data = zfit.Data.from_numpy(
+            obs     = mass.obs, 
+            array   = masses, 
+            weights = weights)
+        if not isinstance(data, zfit.Data):
+            raise ValueError('Invalid data')
 
-        ftr = SimFitter(
-            name     = 'main',
-            cfg      = cfg,
-            component= self.__comp,
-            trigger  = self.__trig,
-            q2bin    = self.__qsq)
-        pdf = ftr.get_model()
+        fac = ModelFactory(
+            preffix  = 'prf',
+            obs      = mass.obs,
+            l_shared = [],
+            l_float  = [],
+            l_pdf    = [Model.dscb])
 
-        if pdf is None:
-            raise ValueError('PDF not built')
+        pdf = fac.get_pdf()
+
+        ftr = Fitter(pdf = pdf, data = data)
+        res = ftr.fit()
+        print(res)
+
+        cfg = ZFitPlotterConf.default()
+        ptr = ZFitPlotter(data = data, model = pdf)
+        ptr.run(cfg = cfg)
+
+        cache_dir = Cache.get_cache_dir()
+        plt.savefig(cache_dir / 'fit.png')
+        plt.close()
 
         return pdf
     # ----------------------------
