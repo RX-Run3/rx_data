@@ -82,12 +82,25 @@ class DataStore:
         return df
     # ----------------------------------
     @classmethod
-    def selection(cls, sel : dict[Cuts,str]):
+    def selection(
+        cls, 
+        update : bool,
+        sel    : dict[Cuts,str]):
         '''
         Parameters
         -------------
-        sel: Dictionary mapping cut object (label) to cut expression
+        sel   : Dictionary mapping cut object (label) to cut expression
+        update: If True it will add this selection to existing one
+                If False will use this selection as the only selection
+                If False and selection already exists will raise exception
         '''
+        old_sel = _SELECTION.get()
+        if old_sel and not update:
+            raise ValueError('Selection already found')
+
+        if old_sel and update:
+            sel = {**old_sel, **sel}
+
         @contextmanager
         def _context():
             token = _SELECTION.set(sel)
