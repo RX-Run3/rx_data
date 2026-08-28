@@ -8,7 +8,6 @@ shape_ee_lo: &sh_ee_lo
     - 10
     - 500
   rn:
-   - null
    - 4600
    - 5200
 shape_ee_cn: &sh_ee_cn
@@ -21,7 +20,6 @@ shape_ee_cn: &sh_ee_cn
     - 10
     - 500
   rn:
-    - null
     - 4500
     - 6500
 shape_ee_up: &sh_ee_up
@@ -34,7 +32,6 @@ shape_ee_up: &sh_ee_up
     - 10
     - 500
   rn:
-    - null
     - 5200
     - 6600
 shape_ee_UP: &sh_ee_UP
@@ -47,7 +44,6 @@ shape_ee_UP: &sh_ee_UP
     - 10
     - 500
   rn:
-    - null
     - 5800
     - 7000
 # --------------------
@@ -61,7 +57,6 @@ shape_mm_cn: &sh_mm_cn
     - 10
     - 20
   rn:
-    - null
     - 5000
     - 5400
 # --------------------
