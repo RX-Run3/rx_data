@@ -7,12 +7,13 @@ import matplotlib.pyplot as plt
 from pathlib        import Path
 from typing         import Final, TypeAlias
 from pydantic       import BaseModel
-from rx_common      import Block, Channel, Component, Project, Trigger
+from rx_common      import Block, Channel, Component, Mass, Project, Trigger
 from dmu            import LogStore
 from dmu.generic    import Serializable
 from dmu.stats      import FitResult, Fitter, Model, ModelFactory
 from dmu.stats      import ZFitPlotter, zfit
 from hqm.config     import TransferFunctionMakerConf, ObsConf
+from hqm.data_store import DataStore
 
 log=LogStore.add_logger('rx_hqm:trfc')
 _FLOAT          : Final[list[str]] = []
@@ -98,19 +99,19 @@ class TransferFunctionMaker:
         ----------------
         Numpy array with masses
         '''
-        from hqm.data_store import DataStore
-
         trigger     = Trigger.get_main_trigger(
             channel = _TARGET_CHANNEL, 
             project = self._project)
 
-        obj     = DataStore(
-            qsq = self._cfg.target, 
-            dset= self._block, 
-            trig= trigger, 
-            proc= self._sample)
+        obj      = DataStore(
+            qsq  = self._cfg.target, 
+            trig = trigger, 
+            comp = self._sample)
 
-        return obj.get_array()
+        mass      = Mass.raw_from_project(project = trigger.project)
+        masses, _ = obj.get_array(mass = mass)
+
+        return masses
     #---------------------------------
     def __get_source_pdf(self, path : Path) -> tuple[kpdf,numpy.ndarray]:
         '''
