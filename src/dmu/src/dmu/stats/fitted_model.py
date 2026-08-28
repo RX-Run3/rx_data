@@ -53,18 +53,20 @@ class FittedModel(BaseModel, Serializable, frozen = True):
     @classmethod
     def from_fit(
         cls,
+        name: str,
         cfg : ModelFactoryConf,
         pdf : zpdf,
         res : FitResult) -> 'FittedModel':
         '''
         Parameters
         -----------------
+        name: Name of object, needed to name PDF parameters, etc
         mfc : Model factory configuration 
         pdf : PDF used in the fit
         res : Result of fit
         '''
         return cls(
-            name       = pdf.name,
+            name       = name,
             obs_conf   = ObsConf.from_obs(obs = pdf.space),
             model_conf = cfg,
             fit_result = res)
