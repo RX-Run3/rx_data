@@ -32,15 +32,11 @@ _SAMPLES_RKST_EE : Final[list[tuple[Component,Trigger,Qsq,bool]]] = [
 
 _SAMPLES_RK_MM : Final[list[tuple[Component,Trigger,Qsq]]] = [
     (Component.bpkpjpsimm, Trigger.rk_mm_os, Qsq.jpsi),
-    (Component.bpkpjpsimm, Trigger.rk_mm_os, Qsq.psi2),
-    (Component.bpkppsi2mm, Trigger.rk_mm_os, Qsq.jpsi),
     (Component.bpkppsi2mm, Trigger.rk_mm_os, Qsq.psi2),
 ] 
 
 _SAMPLES_RKST_MM : Final[list[tuple[Component,Trigger,Qsq]]] = [
     (Component.bdkstkpijpsimm, Trigger.rkst_mm_os, Qsq.jpsi),
-    (Component.bdkstkpijpsimm, Trigger.rkst_mm_os, Qsq.psi2),
-    (Component.bdkstkpipsi2mm, Trigger.rkst_mm_os, Qsq.jpsi),
     (Component.bdkstkpipsi2mm, Trigger.rkst_mm_os, Qsq.psi2),
 ] 
 # --------------------
