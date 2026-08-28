@@ -380,3 +380,16 @@ def test_from_conf():
 
     assert isinstance(pdf, zpdf)
 #--------------------------
+def test_to_conf():
+    '''
+    Test building ModelFactory from configuration
+    '''
+    obs = zfit.Space('mass', limits=(4500, 7000))
+    cfg = ModelFactoryConf.default(pdfs = [Model.gauss])
+    obj = ModelFactory.from_conf(
+        prefix = 'test',
+        cfg    = cfg,
+        obs    = obs)
+
+    assert obj.cfg == cfg
+#--------------------------
