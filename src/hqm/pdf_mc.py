@@ -7,10 +7,13 @@ from dmu.workflow   import Cache
 from dmu.generic    import utilities as gut
 from pydantic       import BaseModel
 from rx_common      import Channel, Component, Mass, Trigger, Qsq
-from dmu.stats      import Fitter, Model, ModelFactory, ZFitPlotter, ZFitPlotterConf, zfit
+from dmu.stats      import Fitter, Model, ModelFactory, FittedModel
+from dmu.stats      import ZFitPlotter, ZFitPlotterConf, zfit
 from hqm.data_store import DataStore 
 
 zpdf = zfit.pdf.BasePDF
+zdat = zfit.data.Data
+zobs = zfit.Space
 
 _MODELS : dict[Channel,list[Model]] = {
     Channel.ee : [Model.dscb], 
@@ -113,7 +116,17 @@ class PdfBuilder:
         self.__cfg  = PdfBuilderConf.load()
     # ----------------------------
     def _get_mc_pdf(self) -> zpdf:
-        mass     = Mass.raw_from_project(project = self.__trig.project)
+        '''
+        Returns
+        ---------------
+        PDF associated to MC
+        '''
+        cache_dir  = Cache.get_cache_dir()
+        model_path = cache_dir / 'model.json'
+        if model_path.exists():
+            fmod = FittedModel.from_json(path = model_path)
+            return fmod.pdf
+
         cfg_par  = self.__cfg.read_conf(
             comp = self.__comp, 
             trig = self.__trig,
@@ -122,10 +135,36 @@ class PdfBuilder:
         values = {
             'mu': cfg_par.mu,
             'sg': cfg_par.sg}
+
+        mass   = Mass.raw_from_project(project = self.__trig.project)
         obs    = mass.obs 
 
         models = _MODELS[self.__trig.channel] 
         obs    = zfit.Space('mass', limits = cfg_par.rn)
+
+        name = 'pdf_mc'
+        fac  = ModelFactory(
+            preffix  = name,
+            obs      = obs,
+            l_shared = ['mu', 'sg'],
+            l_float  = [],
+            values   = values,
+            l_pdf    = models)
+        pdf = fac.get_pdf()
+
+        data= self._get_data(obs = obs, mass = mass)
+        ftr = Fitter(pdf = pdf, data = data)
+        res = ftr.fit()
+        print(res)
+
+        self._plot_fit(cfg_par = cfg_par, data = data, pdf = pdf)
+
+        fmod      = FittedModel.from_fit(cfg = fac.cfg, pdf = pdf, res = res)
+        fmod.to_json(path = model_path)
+
+        return pdf
+    # ----------------------------
+    def _get_data(self, obs : zobs, mass : Mass) -> zdat:
         obj    = DataStore(
             comp= self.__comp,
             trig= self.__trig,
@@ -139,20 +178,13 @@ class PdfBuilder:
         if not isinstance(data, zfit.Data):
             raise ValueError('Invalid data')
 
-        fac = ModelFactory(
-            preffix  = 'prf',
-            obs      = obs,
-            l_shared = ['mu', 'sg'],
-            l_float  = [],
-            values   = values,
-            l_pdf    = models)
-
-        pdf = fac.get_pdf()
-
-        ftr = Fitter(pdf = pdf, data = data)
-        res = ftr.fit()
-        print(res)
-
+        return data
+    # ----------------------------
+    def _plot_fit(
+        self, 
+        cfg_par : RangesConf, 
+        data    : zdat, 
+        pdf     : zpdf) -> None:
         cfg_plt    = ZFitPlotterConf.default()
         settings   = {
             'title'      : f'{self.__comp.latex}; {self.__trig.value} trigger; {self.__qsq.latex} bin',
@@ -165,8 +197,6 @@ class PdfBuilder:
         cache_dir = Cache.get_cache_dir()
         plt.savefig(cache_dir / 'fit.png')
         plt.close()
-
-        return pdf
     # ----------------------------
     def _scale_pdf(self, pdf : zpdf) -> zpdf:
         '''
