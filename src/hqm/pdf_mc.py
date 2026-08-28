@@ -1,10 +1,10 @@
 '''
 Module holding PdfBuilder
 '''
+import os
 import matplotlib.pyplot as plt
 
 from pathlib        import Path
-from dmu.workflow   import Cache
 from dmu.generic    import utilities as gut
 from pydantic       import BaseModel
 from rx_common      import Channel, Component, Mass, Trigger, Qsq
@@ -34,6 +34,7 @@ class PdfBuilderConf(BaseModel, frozen = True):
     '''
     electron : dict[Qsq,dict[Qsq,RangesConf]]
     muon     : dict[Qsq,dict[Qsq,RangesConf]]
+    out_dir  : Path
     # ----------------------------
     def __qsq_from_component(self, comp : Component) -> Qsq:
         '''
@@ -80,6 +81,15 @@ class PdfBuilderConf(BaseModel, frozen = True):
         data      = self.electron if trig.is_electron else self.muon
 
         return data[qsq][inner_qsq]
+    # ----------------------------
+    @property
+    def out_path(self) -> Path:
+        '''
+        Path to directory where outputs will go
+        '''
+        ana_dir = Path(os.environ['ANADIR'])
+
+        return ana_dir / self.out_dir
     # ----------------------------
     @classmethod
     def load(cls) -> 'PdfBuilderConf':
@@ -196,8 +206,7 @@ class PdfBuilder:
         ptr = ZFitPlotter(data = data, model = pdf)
         ptr.run(cfg = cfg_plt)
 
-        cache_dir = Cache.get_cache_dir()
-        plt.savefig(cache_dir / 'fit.png')
+        plt.savefig(self.__cfg.out_path / 'fit.png')
         plt.close()
     # ----------------------------
     def _scale_pdf(self, pdf : zpdf) -> zpdf:
@@ -217,9 +226,7 @@ class PdfBuilder:
         '''
         Path to JSON file with model
         '''
-        cache_dir = Cache.get_cache_dir()
-
-        return cache_dir / 'model.json'
+        return self.__cfg.out_path / 'model.json'
     # ----------------------------
     def get_model(self) -> FittedModel:
         '''

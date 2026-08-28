@@ -88,3 +88,5 @@ muon:
   psi2:
     psi2:
       <<: *sh_mm_cn
+# --------------------
+out_dir : DB/hqm/models
