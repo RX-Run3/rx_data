@@ -87,9 +87,10 @@ class PdfBuilderConf(BaseModel, frozen = True):
         '''
         Path to directory where outputs will go
         '''
-        ana_dir = Path(os.environ['ANADIR'])
+        ana_dir  = Path(os.environ['ANADIR'])
+        out_path = ana_dir / self.out_dir / 'latest'
 
-        return ana_dir / self.out_dir
+        return out_path
     # ----------------------------
     @classmethod
     def load(cls) -> 'PdfBuilderConf':
@@ -125,6 +126,9 @@ class PdfBuilder:
         self.__trig = trigger
         self.__qsq  = qsq
         self.__cfg  = PdfBuilderConf.load()
+
+        self.__out_path = self.__cfg.out_path / f'{comp}_{trigger}_{qsq}'
+        self.__out_path.mkdir(parents = True, exist_ok = True)
     # ----------------------------
     def _get_model(self) -> FittedModel:
         '''
@@ -206,7 +210,7 @@ class PdfBuilder:
         ptr = ZFitPlotter(data = data, model = pdf)
         ptr.run(cfg = cfg_plt)
 
-        plt.savefig(self.__cfg.out_path / 'fit.png')
+        plt.savefig(self.__out_path / 'fit.png')
         plt.close()
     # ----------------------------
     def _scale_pdf(self, pdf : zpdf) -> zpdf:
@@ -226,7 +230,7 @@ class PdfBuilder:
         '''
         Path to JSON file with model
         '''
-        return self.__cfg.out_path / 'model.json'
+        return self.__out_path / 'model.json'
     # ----------------------------
     def get_model(self) -> FittedModel:
         '''
