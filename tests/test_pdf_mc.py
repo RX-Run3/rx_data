@@ -66,22 +66,23 @@ def test_simple_mm(
 
         print_pdf(pdf = mod.pdf)
 # --------------------
+
 @pytest.mark.parametrize('comp,trig,qsq,use_dtf', _SAMPLES_RK_EE + _SAMPLES_RKST_EE)
+@pytest.mark.parametrize('block', range(1,9))
 def test_simple_ee(
     comp     : Component,
     trig     : Trigger,
     qsq      : Qsq,
     use_dtf  : bool,
+    block    : int,
     tmp_path : Path):
     '''
     Simplest test
     '''
-    qsq_name = 'q2_dtf' if use_dtf else 'q2'
-    block    = 1
-
+    qsq_name        = 'q2_dtf' if use_dtf else 'q2'
     sel             = {}
     sel[Cuts.q2   ] = f'({qsq_name} > {qsq.lower_bound}) & ({qsq_name} < {qsq.upper_bound})'
-    sel[Cuts.block] = 'block == {block}'
+    sel[Cuts.block] = f'block == {block}'
 
     ctx2 = DataStore.selection(sel = sel, update = True)
 
