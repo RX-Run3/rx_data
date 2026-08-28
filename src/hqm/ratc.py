@@ -7,7 +7,7 @@ import numpy
 
 from typing         import Final
 from pydantic       import BaseModel
-from dmu.stats      import FitResult
+from dmu.stats      import FitResult, FittedModel
 from dmu.generic    import Serializable
 from hqm.data_store import DataStore
 from hqm.pdf_mc     import PdfBuilder 
@@ -167,7 +167,7 @@ class CCbarRatioCalculator:
 
         return pdf
     #-----------------------------
-    def __get_mc_pdf(self, comp : Component, qsq : Qsq, channel : Channel) -> zpdf:
+    def __get_mc_pdf(self, comp : Component, qsq : Qsq, channel : Channel) -> FittedModel:
         '''
         Parameters
         ---------------
@@ -181,12 +181,11 @@ class CCbarRatioCalculator:
         trigger = Trigger.get_main_trigger(project = self._project, channel = channel)
 
         obj = PdfBuilder(
-            obs     = self._cfg.observable.fit_obs, 
             comp    = comp, 
             trigger = trigger,
             qsq     = qsq)
 
-        return obj.get_pdf()
+        return obj.get_model()
     #-----------------------------
     def __get_fr_pdf(self, qsq_src : Qsq, qsq_tgt : Qsq) -> zpdf:
         '''
@@ -211,7 +210,7 @@ class CCbarRatioCalculator:
             qsq          = qsq_src, 
             is_part_reco = False)
 
-        pdf = self.__get_mc_pdf(comp = comp, qsq = qsq_tgt, channel = _TARGET_CHANNEL)
+        mod = self.__get_mc_pdf(comp = comp, qsq = qsq_tgt, channel = _TARGET_CHANNEL)
         rat = self._cfg.parameters.get_ratio(qsq = qsq_tgt)
         scl = self._cfg.parameters.get_scale(qsq = qsq_tgt)
 
@@ -226,9 +225,10 @@ class CCbarRatioCalculator:
             func  = lambda d_par : d_par['npr'] * d_par['fac'], 
             params= {'npr' : npr, 'fac' : fac} )
 
+        pdf = mod.pdf
         pdf.set_yield(nfr)
 
-        return pdf
+        return pdf 
     #-----------------------------
     def __component_from_qsq(self, qsq : Qsq, is_part_reco : bool) -> Component:
         '''
