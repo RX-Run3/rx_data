@@ -213,18 +213,6 @@ class PdfBuilder:
         plt.savefig(self.__out_path / 'fit.png')
         plt.close()
     # ----------------------------
-    def _scale_pdf(self, pdf : zpdf) -> zpdf:
-        '''
-        Parameters
-        ----------------
-        pdf: PDF from fit to MC
-
-        Returns
-        ----------------
-        PDF with parameters scales for data/MC differences
-        '''
-        return pdf
-    # ----------------------------
     @property
     def model_path(self) -> Path:
         '''
