@@ -5,6 +5,7 @@ import pytest
 
 from contextlib     import ExitStack
 from dmu.stats      import print_pdf
+from dmu.stats      import FittedModel
 from dmu.workflow   import Cache
 from pathlib        import Path
 from typing         import Final
@@ -98,6 +99,11 @@ def test_simple_ee(
             qsq     = qsq)
 
         pdf = obj.get_pdf()
+        path= obj.model_path
 
-        print_pdf(pdf = pdf)
+        assert path.exists()
+
+    print_pdf(pdf = pdf)
+    fmo = FittedModel.from_json(path = path)
+    print_pdf(pdf = fmo.pdf)
 # --------------------
