@@ -2,6 +2,7 @@
 Module storing ZModel class
 '''
 
+from functools       import cached_property
 from typing          import Self
 from contextlib      import contextmanager
 from contextvars     import ContextVar
@@ -692,6 +693,24 @@ class ModelFactory:
             l_shared= cfg.shared,
             l_float = cfg.floating,
             l_reuse = cfg.reuse)
+    #-----------------------------------------
+    @cached_property
+    def cfg(self) -> ModelFactoryConf:
+        '''
+        Configuration that can be used to make this model factory
+        '''
+        reused_pars   = [ par for par in self._d_reuse.values() ]
+        reparametrize = dict() if self._d_rep is None else self._d_rep
+        fixed         = dict() if self._d_fix is None else self._d_fix
+
+        return ModelFactoryConf(
+            pdfs         = self._l_pdf,
+            shared       = self._l_shr,
+            floating     = self._l_flt,
+            values       = self._values,
+            fix          = fixed,
+            reparametrize= reparametrize,
+            reuse        = reused_pars)
     #-----------------------------------------
     @classmethod
     def correction(cls, fixed : bool):
