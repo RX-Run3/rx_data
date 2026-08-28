@@ -6,11 +6,15 @@ import matplotlib.pyplot as plt
 from dmu.workflow   import Cache
 from dmu.generic    import utilities as gut
 from pydantic       import BaseModel
-from rx_common      import Component, Mass, Trigger, Qsq
+from rx_common      import Channel, Component, Mass, Trigger, Qsq
 from dmu.stats      import Fitter, Model, ModelFactory, ZFitPlotter, ZFitPlotterConf, zfit
 from hqm.data_store import DataStore 
 
 zpdf = zfit.pdf.BasePDF
+
+_MODELS : dict[Channel,list[Model]] = {
+    Channel.ee : [Model.dscb], 
+    Channel.mm : [Model.dscb, Model.gauss]}
 # ----------------------------
 class RangesConf(BaseModel, frozen = True):
     '''
@@ -26,6 +30,52 @@ class PdfBuilderConf(BaseModel, frozen = True):
     '''
     electron : dict[Qsq,dict[Qsq,RangesConf]]
     muon     : dict[Qsq,dict[Qsq,RangesConf]]
+    # ----------------------------
+    def __qsq_from_component(self, comp : Component) -> Qsq:
+        '''
+        Parameters
+        -----------------
+        comp: Component to be fitted
+
+        Returns
+        -----------------
+        q2-bin associated to component, i.e. where this component exists
+        '''
+        jpsi_comp = [
+            Component.bpkpjpsiee, Component.bdkstkpijpsiee,
+            Component.bpkpjpsimm, Component.bdkstkpijpsimm]
+
+        psi2_comp = [
+            Component.bpkppsi2ee, Component.bdkstkpipsi2ee,
+            Component.bpkppsi2mm, Component.bdkstkpipsi2mm]
+
+        high_comp = [Component.bpkpee, Component.bdkstkpiee]
+
+        if comp in jpsi_comp:
+            return Qsq.jpsi
+
+        if comp in psi2_comp:
+            return Qsq.psi2
+
+        if comp in high_comp:
+            return Qsq.high
+
+        raise ValueError(f'Invalid component: {comp}')
+    # ----------------------------
+    def read_conf(
+        self, 
+        comp : Component, 
+        trig : Trigger, 
+        qsq  : Qsq) -> RangesConf:
+        '''
+        Returns
+        -------------
+        Configuration object storing range information
+        '''
+        inner_qsq = self.__qsq_from_component(comp = comp)
+        data      = self.electron if trig.is_electron else self.muon
+
+        return data[qsq][inner_qsq]
     # ----------------------------
     @classmethod
     def load(cls) -> 'PdfBuilderConf':
@@ -63,21 +113,20 @@ class PdfBuilder:
         self.__cfg  = PdfBuilderConf.load()
     # ----------------------------
     def _get_mc_pdf(self) -> zpdf:
-        mass = Mass.raw_from_project(project = self.__trig.project)
-        if self.__trig.is_electron:
-            values = {
-                'sg': ( 100.,   10.,  500.),
-                'mu': (5280., 4500., 6500.)}
-            obs    = mass.obs 
-            models = [Model.dscb]
-        else:
-            values = {
-                'sg': ( 15.,   10.,    20.),
-                'mu': (5280., 5270., 5310.)}
-            obs    = zfit.Space('mass', limits = (5000, 5500))
-            models = [Model.dscb, Model.gauss]
+        mass     = Mass.raw_from_project(project = self.__trig.project)
+        cfg_par  = self.__cfg.read_conf(
+            comp = self.__comp, 
+            trig = self.__trig,
+            qsq  = self.__qsq )
 
-        obj  = DataStore(
+        values = {
+            'mu': cfg_par.mu,
+            'sg': cfg_par.sg}
+        obs    = mass.obs 
+
+        models = _MODELS[self.__trig.channel] 
+        obs    = zfit.Space('mass', limits = cfg_par.rn)
+        obj    = DataStore(
             comp= self.__comp,
             trig= self.__trig,
             qsq = self.__qsq,)
@@ -104,16 +153,14 @@ class PdfBuilder:
         res = ftr.fit()
         print(res)
 
-        plot_range = (4600, 6500) if self.__trig.is_electron else (5000, 5500)
-        cfg        = ZFitPlotterConf.default()
-
+        cfg_plt    = ZFitPlotterConf.default()
         settings   = {
             'title'      : f'{self.__comp.latex}; {self.__trig.value} trigger; {self.__qsq.latex} bin',
-            'plot_range' : plot_range}
-        cfg        = cfg.model_copy(update = settings)
+            'plot_range' : cfg_par.rn}
+        cfg_plt = cfg_plt.model_copy(update = settings)
 
         ptr = ZFitPlotter(data = data, model = pdf)
-        ptr.run(cfg = cfg)
+        ptr.run(cfg = cfg_plt)
 
         cache_dir = Cache.get_cache_dir()
         plt.savefig(cache_dir / 'fit.png')
