@@ -6,7 +6,6 @@ import pytest
 from contextlib     import ExitStack
 from dmu.stats      import print_pdf
 from dmu.stats      import FittedModel
-from dmu.workflow   import Cache
 from pathlib        import Path
 from typing         import Final
 from rx_common      import Component, Qsq, Trigger, Cuts
@@ -54,11 +53,8 @@ def test_simple_mm(
     sel[Cuts.q2   ] = f'(q2 > {qsq.lower_bound}) & (q2 < {qsq.upper_bound})'
     sel[Cuts.block] = 'block == 1'
 
-    ctx1 = Cache.cache_root(path = tmp_path)
     ctx2 = DataStore.selection(sel = sel, update = True)
-
     with ExitStack() as stack:
-        stack.enter_context(ctx1)
         stack.enter_context(ctx2)
 
         obj = PdfBuilder(
@@ -66,9 +62,9 @@ def test_simple_mm(
             trigger = trig,
             qsq     = qsq)
 
-        pdf = obj.get_pdf()
+        mod = obj.get_model()
 
-        print_pdf(pdf = pdf)
+        print_pdf(pdf = mod.pdf)
 # --------------------
 @pytest.mark.parametrize('comp,trig,qsq,use_dtf', _SAMPLES_RK_EE + _SAMPLES_RKST_EE)
 def test_simple_ee(
@@ -86,11 +82,9 @@ def test_simple_ee(
     sel[Cuts.q2   ] = f'({qsq_name} > {qsq.lower_bound}) & ({qsq_name} < {qsq.upper_bound})'
     sel[Cuts.block] = 'block == 1'
 
-    ctx1 = Cache.cache_root(path = tmp_path)
     ctx2 = DataStore.selection(sel = sel, update = True)
 
     with ExitStack() as stack:
-        stack.enter_context(ctx1)
         stack.enter_context(ctx2)
 
         obj = PdfBuilder(
