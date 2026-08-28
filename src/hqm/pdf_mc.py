@@ -158,7 +158,11 @@ class PdfBuilder:
 
         self._plot_fit(cfg_par = cfg_par, data = data, pdf = pdf)
 
-        fmod      = FittedModel.from_fit(cfg = fac.cfg, pdf = pdf, res = res)
+        fmod = FittedModel.from_fit(
+            name= name,
+            cfg = fac.cfg, 
+            pdf = pdf, 
+            res = res)
         fmod.to_json(path = self.model_path)
 
         return pdf
