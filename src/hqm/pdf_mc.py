@@ -112,12 +112,14 @@ class PdfBuilder:
     # ----------------------------
     def __init__(
         self, 
+        name   : str,
         comp   : Component,
         trigger: Trigger,
         qsq    : Qsq):
         '''
         Parameters
         ------------------
+        name   : Identifier for current PDF
         qsq    : q2-bin
         comp   : Describes sample used for fit
         trigger: E.g. rk_ee_os
@@ -127,7 +129,7 @@ class PdfBuilder:
         self.__qsq  = qsq
         self.__cfg  = PdfBuilderConf.load()
 
-        self.__out_path = self.__cfg.out_path / f'{comp}_{trigger}_{qsq}'
+        self.__out_path = self.__cfg.out_path / name / f'{comp}_{trigger}_{qsq}'
         self.__out_path.mkdir(parents = True, exist_ok = True)
     # ----------------------------
     def _get_model(self) -> FittedModel:

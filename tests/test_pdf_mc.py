@@ -77,10 +77,11 @@ def test_simple_ee(
     Simplest test
     '''
     qsq_name = 'q2_dtf' if use_dtf else 'q2'
+    block    = 1
 
     sel             = {}
     sel[Cuts.q2   ] = f'({qsq_name} > {qsq.lower_bound}) & ({qsq_name} < {qsq.upper_bound})'
-    sel[Cuts.block] = 'block == 1'
+    sel[Cuts.block] = 'block == {block}'
 
     ctx2 = DataStore.selection(sel = sel, update = True)
 
@@ -88,6 +89,7 @@ def test_simple_ee(
         stack.enter_context(ctx2)
 
         obj = PdfBuilder(
+            name    = f'block_{block:03d}',
             comp    = comp,
             trigger = trig,
             qsq     = qsq)
