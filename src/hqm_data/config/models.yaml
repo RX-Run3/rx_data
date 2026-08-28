@@ -1,0 +1,95 @@
+shape_ee_lo: &sh_ee_lo
+  mu:
+    - 4800
+    - 4600
+    - 5000
+  sg:
+    - 100
+    - 10
+    - 500
+  rn:
+   - null
+   - 4600
+   - 5200
+shape_ee_cn: &sh_ee_cn
+  mu:
+    - 5280
+    - 5200
+    - 5300
+  sg:
+    - 100
+    - 10
+    - 500
+  rn:
+    - null
+    - 4500
+    - 6500
+shape_ee_up: &sh_ee_up
+  mu:
+    - 5500
+    - 5400
+    - 5700
+  sg:
+    - 100
+    - 10
+    - 500
+  rn:
+    - null
+    - 5200
+    - 6600
+shape_ee_UP: &sh_ee_UP
+  mu:
+    - 6300
+    - 6000
+    - 6500
+  sg:
+    - 100
+    - 10
+    - 500
+  rn:
+    - null
+    - 5800
+    - 7000
+# --------------------
+shape_mm_cn: &sh_mm_cn
+  mu:
+    - 5280
+    - 5270
+    - 5310 
+  sg:
+    - 15
+    - 10
+    - 20
+  rn:
+    - null
+    - 5000
+    - 5400
+# --------------------
+# Outer key: Bin
+# Inner key: Process
+# --------------------
+electron:
+  jpsi:
+    jpsi:
+      <<: *sh_ee_cn
+    psi2:
+      <<: *sh_ee_lo
+  psi2:
+    jpsi:
+      <<: *sh_ee_up
+    psi2:
+      <<: *sh_ee_cn
+  high:
+    jpsi:
+      <<: *sh_ee_UP
+    psi2:
+      <<: *sh_ee_up
+    high:
+      <<: *sh_ee_cn
+muon:
+  jpsi:
+    jpsi:
+      <<: *sh_mm_cn
+  psi2:
+    psi2:
+      <<: *sh_mm_cn
