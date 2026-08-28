@@ -26,7 +26,7 @@ def test_simple():
     res  = ftr.fit()
 
     fmo     = FittedModel.from_fit(
-        cfg = mfc.conf, 
+        cfg = mfc.cfg, 
         pdf = pdf,
         res = res)
 
