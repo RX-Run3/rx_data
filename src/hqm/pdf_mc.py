@@ -116,15 +116,14 @@ class PdfBuilder:
         self.__qsq  = qsq
         self.__cfg  = PdfBuilderConf.load()
     # ----------------------------
-    def _get_mc_pdf(self) -> zpdf:
+    def _get_model(self) -> FittedModel:
         '''
         Returns
         ---------------
         PDF associated to MC
         '''
         if self.model_path.exists():
-            fmod = FittedModel.from_json(path = self.model_path)
-            return fmod.pdf
+            return FittedModel.from_json(path = self.model_path)
 
         cfg_par  = self.__cfg.read_conf(
             comp = self.__comp, 
@@ -165,7 +164,7 @@ class PdfBuilder:
             res = res)
         fmod.to_json(path = self.model_path)
 
-        return pdf
+        return fmod 
     # ----------------------------
     def _get_data(self, obs : zobs, mass : Mass) -> zdat:
         obj    = DataStore(
@@ -222,15 +221,11 @@ class PdfBuilder:
 
         return cache_dir / 'model.json'
     # ----------------------------
-    def get_pdf(self) -> zpdf:
+    def get_model(self) -> FittedModel:
         '''
         Returns
         --------------
-        zfit PDF representing MC after
-        scaling for data/mc differences
+        Fitted model
         '''
-        pdf = self._get_mc_pdf()
-        pdf = self._scale_pdf(pdf = pdf)
-
-        return pdf
+        return self._get_model()
 # ----------------------------
