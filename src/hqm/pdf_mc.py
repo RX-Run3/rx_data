@@ -4,11 +4,37 @@ Module holding PdfBuilder
 import matplotlib.pyplot as plt
 
 from dmu.workflow   import Cache
+from dmu.generic    import utilities as gut
+from pydantic       import BaseModel
 from rx_common      import Component, Mass, Trigger, Qsq
 from dmu.stats      import Fitter, Model, ModelFactory, ZFitPlotter, ZFitPlotterConf, zfit
 from hqm.data_store import DataStore 
 
 zpdf = zfit.pdf.BasePDF
+# ----------------------------
+class RangesConf(BaseModel, frozen = True):
+    '''
+    Object meant to configure how parameter and plotting ranges are set
+    '''
+    mu : tuple[float,float,float]
+    sg : tuple[float,float,float]
+    rn : tuple[float,float]
+# ----------------------------
+class PdfBuilderConf(BaseModel, frozen = True):
+    '''
+    Class meant to configure PDF building
+    '''
+    electron : dict[Qsq,dict[Qsq,RangesConf]]
+    muon     : dict[Qsq,dict[Qsq,RangesConf]]
+    # ----------------------------
+    @classmethod
+    def load(cls) -> 'PdfBuilderConf':
+        '''
+        Returns config object from YAML file
+        '''
+        data = gut.load_data(package = 'hqm_data', fpath = 'config/models.yaml')
+
+        return cls(**data)
 # ----------------------------
 class PdfBuilder:
     '''
@@ -34,6 +60,7 @@ class PdfBuilder:
         self.__comp = comp
         self.__trig = trigger
         self.__qsq  = qsq
+        self.__cfg  = PdfBuilderConf.load()
     # ----------------------------
     def _get_mc_pdf(self) -> zpdf:
         mass = Mass.raw_from_project(project = self.__trig.project)
