@@ -98,12 +98,12 @@ def test_simple_ee(
             trigger = trig,
             qsq     = qsq)
 
-        pdf = obj.get_pdf()
+        mod = obj.get_model()
         path= obj.model_path
 
         assert path.exists()
 
-    print_pdf(pdf = pdf)
+    print_pdf(pdf = mod.pdf)
     fmo = FittedModel.from_json(path = path)
     print_pdf(pdf = fmo.pdf)
 # --------------------
