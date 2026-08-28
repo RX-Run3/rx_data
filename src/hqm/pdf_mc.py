@@ -3,6 +3,7 @@ Module holding PdfBuilder
 '''
 import matplotlib.pyplot as plt
 
+from pathlib        import Path
 from dmu.workflow   import Cache
 from dmu.generic    import utilities as gut
 from pydantic       import BaseModel
@@ -121,10 +122,8 @@ class PdfBuilder:
         ---------------
         PDF associated to MC
         '''
-        cache_dir  = Cache.get_cache_dir()
-        model_path = cache_dir / 'model.json'
-        if model_path.exists():
-            fmod = FittedModel.from_json(path = model_path)
+        if self.model_path.exists():
+            fmod = FittedModel.from_json(path = self.model_path)
             return fmod.pdf
 
         cfg_par  = self.__cfg.read_conf(
@@ -160,7 +159,7 @@ class PdfBuilder:
         self._plot_fit(cfg_par = cfg_par, data = data, pdf = pdf)
 
         fmod      = FittedModel.from_fit(cfg = fac.cfg, pdf = pdf, res = res)
-        fmod.to_json(path = model_path)
+        fmod.to_json(path = self.model_path)
 
         return pdf
     # ----------------------------
@@ -209,6 +208,15 @@ class PdfBuilder:
         PDF with parameters scales for data/MC differences
         '''
         return pdf
+    # ----------------------------
+    @property
+    def model_path(self) -> Path:
+        '''
+        Path to JSON file with model
+        '''
+        cache_dir = Cache.get_cache_dir()
+
+        return cache_dir / 'model.json'
     # ----------------------------
     def get_pdf(self) -> zpdf:
         '''
