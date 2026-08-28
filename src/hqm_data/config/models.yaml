@@ -20,7 +20,7 @@ shape_ee_cn: &sh_ee_cn
     - 10
     - 500
   rn:
-    - 4500
+    - 4600
     - 6500
 shape_ee_up: &sh_ee_up
   mu:
