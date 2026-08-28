@@ -4,7 +4,7 @@ selection:
   q2 : 'true'
   cmb: 'true'
   prc: 'true'
-db_dir : DB/hqm/latest
+db_dir : DB/hqm/data/latest
 columns:
   # --------------
   # Binning
