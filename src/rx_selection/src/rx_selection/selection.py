@@ -254,19 +254,11 @@ def _load_selection_config() -> dict:
     '''
     Returns dictionary with the latest selection config
     '''
-    sel_wc = files('rx_selection_data').joinpath('selection/*.yaml')
-    sel_wc = str(sel_wc)
-    sel_dir= os.path.dirname(sel_wc)
+    path = files('rx_selection_data').joinpath('selection/latest.yaml')
+    path = str(path)
+    log.info(f'Loading selection from: {path}')
 
-    yaml_path = vman.get_last_version(
-        dir_path     = sel_dir,
-        extension    = 'yaml',
-        version_only = False ,
-        main_only    = False)
-
-    log.info(f'Loading selection from: {yaml_path}')
-
-    with open(yaml_path, encoding='utf-8') as ifile:
+    with open(path, encoding='utf-8') as ifile:
         d_sel = yaml.safe_load(ifile)
 
     return d_sel
@@ -293,6 +285,8 @@ def _get_selection(
     cfg = _load_selection_config()
 
     if proj not in cfg:
+        for key in cfg:
+            log.error(key)
         raise ValueError(f'Cannot find {proj} in config')
 
     if chan not in cfg[proj]:
