@@ -111,7 +111,7 @@ class PdfBuilderConf(BaseModel, frozen = True):
         Path to directory where outputs will go
         '''
         ana_dir  = Path(os.environ['ANADIR'])
-        out_path = ana_dir / self.out_dir / 'latest'
+        out_path = ana_dir / self.out_dir / 'unbinned/latest'
 
         return out_path
     # ----------------------------
