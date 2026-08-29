@@ -91,9 +91,12 @@ muon:
 # --------------------
 out_dir : DB/hqm/models
 mod_cfg :
-  100   : 
-    - suj
-  10000 : 
-    - dscb 
-  100000: 
-    - dscb 
+  low_stats:
+    stats : [   100,   10000]
+    models: [ suj ]
+  mid_stats: 
+    stats : [ 10000,  100000]
+    models: [ dscb ]
+  high_stats:
+    stats : [100000, 1000000]
+    models: [ dscb, gauss ]
