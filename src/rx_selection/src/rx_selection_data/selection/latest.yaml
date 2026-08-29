@@ -115,13 +115,7 @@ rkst: &rkst
     acceptance: L1_INMUON && L2_INMUON
     jpsi_misid: (swp_jpsi_misid_mass_swp != swp_jpsi_misid_mass_swp) || (swp_jpsi_misid_mass_swp < 3050) || (swp_jpsi_misid_mass_swp > 3150)
     cascade   :
-      low     : (1)
-      central : (1)
-      cen_low : (1)
-      cen_high: (1)
-      jpsi    : (1)
-      psi2    : (1)
-      high    : (1)
+      <<: *cascade_common
     hop       :
       <<: *hop_common
     cmb       :
@@ -172,13 +166,7 @@ rk: &rk
     acceptance: L1_INMUON && L2_INMUON
     jpsi_misid: (swp_jpsi_misid_mass_swp != swp_jpsi_misid_mass_swp) || (swp_jpsi_misid_mass_swp < 3050) || (swp_jpsi_misid_mass_swp > 3150)
     cascade   :
-      low     : (1)
-      central : (1)
-      cen_low : (1)
-      cen_high: (1)
-      jpsi    : (1)
-      psi2    : (1)
-      high    : (1)
+      <<: *cascade_common
     hop       :
       <<: *hop_common
     cmb       :

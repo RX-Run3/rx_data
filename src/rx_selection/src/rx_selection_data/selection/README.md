@@ -16,6 +16,10 @@ It adds:
 
 None of these requirements have been optimized yet.
 
-## latest
+## v3 
 
 Cut on both leptons $p_T$ at 250 MeV
+
+## v4 (latest)
+
+Apply cascade veto also on muons
