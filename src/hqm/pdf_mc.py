@@ -155,6 +155,13 @@ class PdfBuilder:
         self.__out_path = self.__cfg.out_path / name / f'{comp}_{trigger}_{qsq}'
         self.__out_path.mkdir(parents = True, exist_ok = True)
     # ----------------------------
+    @cached_property
+    def name(self) -> str:
+        '''
+        Identifier for current instance
+        '''
+        return f'{self.__comp}_{self.__trig}_{self.__qsq}'
+    # ----------------------------
     def _get_model(self) -> FittedModel:
         '''
         Returns
@@ -162,7 +169,12 @@ class PdfBuilder:
         PDF associated to MC
         '''
         if self.model_path.exists():
-            return FittedModel.from_json(path = self.model_path)
+            try:
+                model = FittedModel.from_json(path = self.model_path)
+                return model
+            except Exception:
+                log.warning(f'Removing and remaking broken model at {self.model_path}')
+                self.model_path.unlink()
 
         cfg_par  = self.__cfg.read_conf(
             comp = self.__comp, 
