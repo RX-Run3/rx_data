@@ -217,7 +217,17 @@ class PdfBuilder:
 
         return fmod 
     # ----------------------------
-    def _get_data(self, obs : zobs, mass : Mass) -> zdat:
+    def _get_data(self, obs : zobs, mass : Mass, can_merge : bool) -> zdat:
+        '''
+        Parameters
+        ------------------
+        mass     : Used to build observable for data and get array of masses
+        can_merge: If true, it is possible to merge blocks to get data in case of low statistics
+
+        Returns
+        ------------------
+        zfit data object
+        '''
         obj    = DataStore(
             comp= self.__comp,
             trig= self.__trig,
@@ -225,11 +235,14 @@ class PdfBuilder:
         masses, weights = obj.get_array(mass = mass)
 
         models = self.__cfg.mod_cfg.get_model(nentries = len(masses))
-        if models is None:
+        if models is None and not can_merge:
+            raise ValueError(f'Models cannot be found for unmergeable dataset at {self.name}')
+
+        if models is None and can_merge:
             log.warning(f'Low statistics found for {self.name}, merging blocks')
             sel = {Cuts.block : 'block == block'}
             with DataStore.selection(sel = sel, update = True):
-                return self._get_data(obs = obs, mass = mass)
+                return self._get_data(obs = obs, mass = mass, can_merge = False)
 
         data = zfit.Data.from_numpy(
             obs     = obs, 
