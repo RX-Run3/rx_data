@@ -181,27 +181,42 @@ class PdfBuilder:
             trig = self.__trig,
             qsq  = self.__qsq )
 
+        mass   = Mass.raw_from_project(project = self.__trig.project)
+        obs    = zfit.Space('mass', limits = cfg_par.rn)
+        data   = self._get_data(obs = obs, mass = mass, can_merge = True)
+        models = self.__cfg.mod_cfg.get_model(nentries = data.num_entries)
+
+        if models is None:
+            raise ValueError('No model found')
+
+        fmod = self._fit_models(
+            data    = data,
+            cfg_par = cfg_par, 
+            models  = models)
+
+        fmod.to_json(path = self.model_path)
+
+        return fmod 
+    # ----------------------------
+    def _fit_models(
+        self, 
+        data    : zdat,
+        models  : list[Model],
+        cfg_par : RangesConf) -> FittedModel:
         values = {
             'mu': cfg_par.mu,
             'sg': cfg_par.sg}
 
-        mass   = Mass.raw_from_project(project = self.__trig.project)
-        obs    = mass.obs 
-
-        models = _MODELS[self.__trig.channel] 
-        obs    = zfit.Space('mass', limits = cfg_par.rn)
-
         name = 'pdf_mc'
         fac  = ModelFactory(
             preffix  = name,
-            obs      = obs,
+            obs      = data.space,
             l_shared = ['mu', 'sg'],
             l_float  = [],
             values   = values,
             l_pdf    = models)
         pdf = fac.get_pdf()
 
-        data= self._get_data(obs = obs, mass = mass)
         ftr = Fitter(pdf = pdf, data = data)
         res = ftr.fit()
         print(res)
@@ -213,7 +228,6 @@ class PdfBuilder:
             cfg = fac.cfg, 
             pdf = pdf, 
             res = res)
-        fmod.to_json(path = self.model_path)
 
         return fmod 
     # ----------------------------
