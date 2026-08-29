@@ -90,7 +90,7 @@ muon:
       <<: *sh_mm_cn
 # --------------------
 out_dir : DB/hqm/models
-models:
+mod_cfg :
   50    : 
     - gauss
   10000 : 
