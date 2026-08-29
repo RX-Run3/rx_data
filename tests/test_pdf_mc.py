@@ -41,23 +41,26 @@ _SAMPLES_RKST_MM : Final[list[tuple[Component,Trigger,Qsq]]] = [
 ] 
 # --------------------
 @pytest.mark.parametrize('comp,trig,qsq', _SAMPLES_RK_MM + _SAMPLES_RKST_MM)
+@pytest.mark.parametrize('block', range(1,9))
 def test_simple_mm(
     comp     : Component,
     trig     : Trigger,
     qsq      : Qsq,
+    block    : int,
     tmp_path : Path):
     '''
     Simplest test
     '''
     sel             = {}
     sel[Cuts.q2   ] = f'(q2 > {qsq.lower_bound}) & (q2 < {qsq.upper_bound})'
-    sel[Cuts.block] = 'block == 1'
+    sel[Cuts.block] = f'block == {block}'
 
     ctx2 = DataStore.selection(sel = sel, update = True)
     with ExitStack() as stack:
         stack.enter_context(ctx2)
 
         obj = PdfBuilder(
+            name    = f'block_{block:03d}',
             comp    = comp,
             trigger = trig,
             qsq     = qsq)
@@ -66,7 +69,6 @@ def test_simple_mm(
 
         print_pdf(pdf = mod.pdf)
 # --------------------
-
 @pytest.mark.parametrize('comp,trig,qsq,use_dtf', _SAMPLES_RK_EE + _SAMPLES_RKST_EE)
 @pytest.mark.parametrize('block', range(1,9))
 def test_simple_ee(
