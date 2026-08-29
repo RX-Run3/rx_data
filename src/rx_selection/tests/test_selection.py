@@ -6,7 +6,7 @@ from pathlib      import Path
 from dmu          import LogStore
 from rx_common    import Component, Cuts, Qsq, Trigger
 from rx_selection import selection as sel
-from rx_data      import RDFGetter 
+from rx_data      import RDFGetter
 
 log=LogStore.add_logger('rx_selection:test_selection')
 # --------------------------
@@ -21,7 +21,7 @@ def initialize():
 @pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rk_mm_os, Trigger.rkst_ee_os, Trigger.rkst_mm_os])
 @pytest.mark.parametrize('q2bin'  , Qsq.for_physics())
 def test_read_selection(
-    trigger : Trigger, 
+    trigger : Trigger,
     q2bin   : Qsq):
     '''
     Test reading the selection
@@ -30,8 +30,8 @@ def test_read_selection(
     component = Component.data_24
 
     d_sel = sel.selection(
-        trigger=trigger, 
-        q2bin  =q2bin, 
+        trigger=trigger,
+        q2bin  =q2bin,
         process=component)
     for cut_name, cut_value in d_sel.items():
         log.info(f'{cut_name:<20}{cut_value}')
@@ -47,8 +47,8 @@ def test_custom_selection(sample : Component, q2bin : Qsq):
 
     with sel.custom_selection(d_sel={Cuts.extra : 'val'}):
         d_cut = sel.selection(
-            process=sample, 
-            q2bin  =q2bin, 
+            process=sample,
+            q2bin  =q2bin,
             trigger=trigger)
 
     assert Cuts.extra in d_cut
@@ -71,15 +71,15 @@ def test_multiple_custom_selection_override():
     '''
     Tests calling custom_selection with overriding flag
     '''
-    sample = Component.bpkpee 
+    sample = Component.bpkpee
     q2bin  = Qsq.central
-    trigger= Trigger.rk_ee_os 
+    trigger= Trigger.rk_ee_os
     cut    = Cuts.extra
 
     with sel.custom_selection(d_sel={Cuts.extra : 'val'}, force_override=True):
         d_cut_1 = sel.selection(
-            process= sample, 
-            q2bin  = q2bin, 
+            process= sample,
+            q2bin  = q2bin,
             trigger= trigger)
         assert d_cut_1[Cuts.extra] == 'val'
         with sel.custom_selection(d_sel={Cuts.extra : 'vol'}, force_override=True):
@@ -154,13 +154,13 @@ def test_update_selection():
     assert id(isel_001) != id(osel_002)
 # --------------------------
 @pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rkst_ee_os])
-def test_no_truth(trigger : Trigger): 
+def test_no_truth(trigger : Trigger):
     '''
     Test reading the selection
     '''
-    sample  = Component.bdkstkpiee 
+    sample  = Component.bdkstkpiee
     d_sel   = sel.selection(
-        trigger   = trigger, 
+        trigger   = trigger,
         q2bin     = Qsq.central,
         skip_truth= True,
         process   = sample)
@@ -172,20 +172,20 @@ def test_apply_full_selection(tmp_path : Path):
     Tests application of selection
     '''
     q2bin  = Qsq.jpsi
-    sample = Component.data_24 
-    trigger= Trigger.rk_ee_os 
+    sample = Component.data_24
+    trigger= Trigger.rk_ee_os
 
     with RDFGetter.max_entries(10_000):
         gtr = RDFGetter(
-            sample =sample, 
+            sample =sample,
             trigger=trigger)
         rdf = gtr.get_rdf(per_file=False)
 
     out_path = tmp_path / f'{q2bin}_{sample}_{trigger}'
 
     rdf =sel.apply_full_selection(
-        rdf     =rdf, 
-        q2bin   =q2bin, 
+        rdf     =rdf,
+        q2bin   =q2bin,
         process =sample,
         trigger =trigger,
         out_path=out_path)
@@ -195,12 +195,12 @@ def test_apply_selection(tmp_path : Path):
     Tests application of selection
     '''
     q2bin  = Qsq.jpsi
-    sample = Component.data_24 
-    trigger= Trigger.rk_ee_os 
+    sample = Component.data_24
+    trigger= Trigger.rk_ee_os
 
     with RDFGetter.max_entries(10_000):
         gtr = RDFGetter(
-            sample =sample, 
+            sample =sample,
             trigger=trigger)
         rdf = gtr.get_rdf(per_file=False)
 
@@ -213,7 +213,7 @@ def test_apply_selection(tmp_path : Path):
     )
 
     rdf =sel.apply_selection(
-        rdf     =rdf, 
+        rdf     =rdf,
         cuts    =cuts,
         uid     =gtr.get_uid(),
         out_path=out_path)
