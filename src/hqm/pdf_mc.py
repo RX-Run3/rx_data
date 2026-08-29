@@ -274,8 +274,10 @@ class PdfBuilder:
         data    : zdat, 
         pdf     : zpdf) -> None:
         cfg_plt    = ZFitPlotterConf.default()
+
         settings   = {
-            'title'      : f'{self.__comp.latex}; {self.__trig.value} trigger; {self.__qsq.latex} bin',
+            'ext_text'   : f'{self.__comp.latex}\n {self.__qsq.latex} bin',
+            'title'      : f'Entries: {data.n_events}; {self.__trig.value} trigger',
             'plot_range' : cfg_par.rn}
         cfg_plt = cfg_plt.model_copy(update = settings)
 
