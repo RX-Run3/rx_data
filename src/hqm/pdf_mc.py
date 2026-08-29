@@ -4,21 +4,43 @@ Module holding PdfBuilder
 import os
 import matplotlib.pyplot as plt
 
+from functools      import cached_property
 from pathlib        import Path
 from dmu.generic    import utilities as gut
-from pydantic       import BaseModel
-from rx_common      import Channel, Component, Mass, Trigger, Qsq
+from pydantic       import BaseModel, RootModel
+from rx_common      import Component, Cuts, Mass, Trigger, Qsq
+from dmu            import LogStore
 from dmu.stats      import Fitter, Model, ModelFactory, FittedModel
 from dmu.stats      import ZFitPlotter, ZFitPlotterConf, zfit
 from hqm.data_store import DataStore 
 
+log=LogStore.add_logger('hqm:pdf_md')
+
 zpdf = zfit.pdf.BasePDF
 zdat = zfit.data.Data
 zobs = zfit.Space
+# ----------------------------
+class ModelsConf(RootModel[dict[int,list[Model]]], frozen = True):
+    '''
+    Class meant to configue model choice
+    '''
+    # ----------------------------
+    def get_model(self, nentries : int) -> list[Model] | None:
+        '''
+        Parameters
+        ----------------
+        nentries: Size of dataset
 
-_MODELS : dict[Channel,list[Model]] = {
-    Channel.ee : [Model.dscb], 
-    Channel.mm : [Model.dscb, Model.gauss]}
+        Returns
+        ----------------
+        List of models whose sum is used to fit data
+        or None if dataset is too small
+        '''
+        for size, models in self.root.items():
+            if nentries > size:
+                return models
+
+        return
 # ----------------------------
 class RangesConf(BaseModel, frozen = True):
     '''
@@ -35,6 +57,7 @@ class PdfBuilderConf(BaseModel, frozen = True):
     electron : dict[Qsq,dict[Qsq,RangesConf]]
     muon     : dict[Qsq,dict[Qsq,RangesConf]]
     out_dir  : Path
+    mod_cfg  : ModelsConf
     # ----------------------------
     def __qsq_from_component(self, comp : Component) -> Qsq:
         '''
