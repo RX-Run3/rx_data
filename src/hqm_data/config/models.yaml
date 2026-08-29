@@ -44,8 +44,8 @@ shape_ee_UP: &sh_ee_UP
     - 10
     - 500
   rn:
-    - 5800
-    - 7000
+    - 5600
+    - 7300
 # --------------------
 shape_mm_cn: &sh_mm_cn
   mu:
@@ -92,7 +92,7 @@ muon:
 out_dir : DB/hqm/models
 mod_cfg :
   50    : 
-    - gauss
+    - suj
   10000 : 
     - dscb 
   100000: 
