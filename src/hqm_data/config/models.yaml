@@ -91,7 +91,7 @@ muon:
 # --------------------
 out_dir : DB/hqm/models
 mod_cfg :
-  50    : 
+  100   : 
     - suj
   10000 : 
     - dscb 
