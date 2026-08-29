@@ -231,7 +231,11 @@ class PdfBuilder:
 
         return fmod 
     # ----------------------------
-    def _get_data(self, obs : zobs, mass : Mass, can_merge : bool) -> zdat:
+    def _get_data(
+        self, 
+        obs       : zobs, 
+        mass      : Mass, 
+        can_merge : bool) -> zdat:
         '''
         Parameters
         ------------------
