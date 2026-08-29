@@ -224,10 +224,18 @@ class PdfBuilder:
             qsq = self.__qsq,)
         masses, weights = obj.get_array(mass = mass)
 
+        models = self.__cfg.mod_cfg.get_model(nentries = len(masses))
+        if models is None:
+            log.warning(f'Low statistics found for {self.name}, merging blocks')
+            sel = {Cuts.block : 'block == block'}
+            with DataStore.selection(sel = sel, update = True):
+                return self._get_data(obs = obs, mass = mass)
+
         data = zfit.Data.from_numpy(
             obs     = obs, 
             array   = masses, 
             weights = weights)
+
         if not isinstance(data, zfit.Data):
             raise ValueError('Invalid data')
 
