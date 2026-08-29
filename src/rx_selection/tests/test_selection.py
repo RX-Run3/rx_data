@@ -18,7 +18,7 @@ def initialize():
     LogStore.set_level('rx_selection:selection'     , 10)
     LogStore.set_level('rx_selection:test_selection', 10)
 # --------------------------
-@pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rk_mm_os])
+@pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rk_mm_os, Trigger.rkst_ee_os, Trigger.rkst_mm_os])
 @pytest.mark.parametrize('q2bin'  , Qsq.for_physics())
 def test_read_selection(
     trigger : Trigger, 
