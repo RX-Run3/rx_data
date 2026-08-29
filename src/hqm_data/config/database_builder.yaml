@@ -1,9 +1,10 @@
 # Boost nbrem = 2 by 2.5% in MC WRT nbrem = 1
 weight   : '0.0125 * nbrem * nbrem - 0.0125 * nbrem + 1'
 selection:
-  q2 : 'true'
-  cmb: 'true'
-  prc: 'true'
+  jpsi_misid: 'true'
+  q2        : 'true'
+  cmb       : 'true'
+  prc       : 'true'
 db_dir : DB/hqm/data/latest
 columns:
   # --------------
