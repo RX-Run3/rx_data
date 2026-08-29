@@ -20,7 +20,11 @@ zpdf = zfit.pdf.BasePDF
 zdat = zfit.data.Data
 zobs = zfit.Space
 # ----------------------------
-class ModelsConf(RootModel[dict[int,list[Model]]], frozen = True):
+class StatsConf(BaseModel, frozen = True):
+    stats : tuple[int,int]
+    models: list[Model]
+# ----------------------------
+class ModelsConf(RootModel[dict[str,StatsConf]], frozen = True):
     '''
     Class meant to configue model choice
     '''
@@ -36,9 +40,12 @@ class ModelsConf(RootModel[dict[int,list[Model]]], frozen = True):
         List of models whose sum is used to fit data
         or None if dataset is too small
         '''
-        for size, models in self.root.items():
-            if nentries > size:
-                return models
+        for stats in self.root.values():
+            min_size = stats.stats[0]
+            max_size = stats.stats[1]
+
+            if min_size < nentries <= max_size:
+                return stats.models
 
         return
 # ----------------------------
