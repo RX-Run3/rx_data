@@ -33,7 +33,7 @@ shape_ee_up: &sh_ee_up
     - 500
   rn:
     - 5200
-    - 6600
+    - 7000
 shape_ee_UP: &sh_ee_UP
   mu:
     - 6300
@@ -90,3 +90,10 @@ muon:
       <<: *sh_mm_cn
 # --------------------
 out_dir : DB/hqm/models
+models:
+  50    : 
+    - gauss
+  10000 : 
+    - dscb 
+  100000: 
+    - dscb 
