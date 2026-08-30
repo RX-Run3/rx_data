@@ -14,6 +14,7 @@ from dmu.stats      import FitResult, Fitter, Model, ModelFactory
 from dmu.stats      import ZFitPlotter, zfit
 from hqm.config     import TransferFunctionMakerConf, ObsConf
 from hqm.data_store import DataStore
+from hqm.pdf_mc     import PdfBuilder
 
 log=LogStore.add_logger('rx_hqm:trfc')
 _FLOAT          : Final[list[str]] = []
@@ -73,31 +74,24 @@ class TransferFunctionMaker:
     def __init__(
         self, 
         cfg    : TransferFunctionMakerConf,
-        sample : Component, 
         project: Project, 
         block  : Block):
         '''
         Parameters
         ----------------
         cfg    : Configuration controling the building of TransferFunction
-        sample : Describes simulated sample needed to make function
         project: E.g. rk or rkst 
         block  : E.g. 1 to 8
         '''
         self._cfg      = cfg
         self._project  = project 
-        self._sample   = sample
         self._block    = block
     #---------------------------------
-    def __get_masses(self, is_source : bool) -> numpy.ndarray:
+    def __get_target_masses(self) -> numpy.ndarray:
         '''
-        Parameters
-        ----------------
-        is_source: True if dataset is from the starting distribution, e.g. muon
-
         Returns
         ----------------
-        Numpy array with masses
+        Numpy array with masses associated to the target distribution
         '''
         trigger     = Trigger.get_main_trigger(
             channel = _TARGET_CHANNEL, 
@@ -106,14 +100,14 @@ class TransferFunctionMaker:
         obj      = DataStore(
             qsq  = self._cfg.target, 
             trig = trigger, 
-            comp = self._sample)
+            comp = self._cfg.target_component)
 
         mass      = Mass.raw_from_project(project = trigger.project)
         masses, _ = obj.get_array(mass = mass)
 
         return masses
     #---------------------------------
-    def __get_source_pdf(self, path : Path) -> tuple[kpdf,numpy.ndarray]:
+    def __get_source_pdf(self, path : Path) -> zpdf:
         '''
         Parameters
         -----------------------
@@ -123,24 +117,19 @@ class TransferFunctionMaker:
         -----------------------
         Zfit PDF built from source dataset, e.g. muon psi2S data
         '''
-        obs   = self._cfg.observable.fit_obs
-        array = self.__get_masses(is_source = True)
-        zdata = zfit.Data.from_numpy(obs, array=array)
+        trig = Trigger.get_main_trigger(
+            channel = _SOURCE_CHANNEL, 
+            project = self._project)
 
-        pdf          = zfit.pdf.KDE1DimFFT(
-            data     = zdata, 
-            obs      = obs, 
-            bandwidth= self._cfg.bandwidth, 
-            name     = 'source_pdf')
+        iblock = self._block.to_int()
+        obj    = PdfBuilder(
+            name    = f'block_{iblock:03d}',
+            trigger = trig,
+            comp    = self._cfg.source_component,
+            qsq     = self._cfg.source)
+        fmod = obj.get_model()
 
-        ptr = ZFitPlotter(data = array, model = pdf)
-        ptr.run(cfg = self._cfg.plots)
-
-        fit_path = path.with_name(f'{path.stem}_source.png')
-        plt.savefig(fit_path)
-        plt.close()
-
-        return pdf, array
+        return fmod.fixed_pdf
     #---------------------------------
     def __get_fit_result(self, pdf_trf : zpdf, json_path : Path) -> FitResult:
         '''
@@ -153,16 +142,10 @@ class TransferFunctionMaker:
         ------------------------
         FitResult with transfer function parameters
         '''
-        arr_tgt          = self.__get_masses(is_source = False)
-        pdf_src, arr_src = self.__get_source_pdf(path = json_path)
+        arr_tgt = self.__get_target_masses()
+        pdf_src = self.__get_source_pdf(path = json_path)
 
-        plot_path = json_path.with_name(f'{json_path.stem}_data.png')
-        self.__plot_datasets(
-            source = arr_src, 
-            target = arr_tgt, 
-            path   = plot_path)
-
-        pdf_tgt    = zfit.pdf.FFTConvPDFV1(
+        pdf_tgt = zfit.pdf.FFTConvPDFV1(
             name   = 'target_pdf', 
             func   = pdf_src, 
             kernel = pdf_trf, 
@@ -181,6 +164,14 @@ class TransferFunctionMaker:
         ys  = pdf_tgt.pdf(xs)
         plt.scatter(xs, ys, s = 1)
         path= json_path.with_name(f'{json_path.stem}_conv_postfit.png')
+        plt.savefig(path)
+        plt.close()
+
+        lower, upper = self._cfg.observable.tran_range
+        xs  = numpy.linspace(lower, upper, self._cfg.fft_npt)
+        ys  = pdf_trf.pdf(xs)
+        plt.scatter(xs, ys, s = 1)
+        path= json_path.with_name(f'{json_path.stem}_trf_postfit.png')
         plt.savefig(path)
         plt.close()
 
@@ -230,7 +221,7 @@ class TransferFunctionMaker:
         plt.hist(source, bins=100, density=True, histtype='step', label=rf'$\mu\mu\in${self._cfg.source}')
         plt.hist(target, bins=100, density=True, histtype='step', label=rf'$e^+e^-\in${self._cfg.target}')
         plt.legend()
-        plt.title(rf'Process: {self._sample}; Trigger: {self._project}; $\mu$:{source.shape[0]}; $e$:{target.shape[0]}; {self._cfg.binning.variable}')
+        plt.title(rf'Trigger: {self._project}; $\mu$:{source.shape[0]}; $e$:{target.shape[0]}; {self._cfg.binning.variable}')
 
         log.info(f'Saving to: {path}')
         plt.savefig(path)
@@ -265,7 +256,7 @@ class TransferFunctionMaker:
 
         plt.scatter(xs, ys, s=2)
 
-        path = path.with_name(f'{path.stem}_trf.png')
+        path = path.with_name(f'{path.stem}_trf_prefit.png')
         plt.savefig(path)
         plt.close()
 
