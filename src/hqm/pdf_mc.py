@@ -189,7 +189,7 @@ class PdfBuilder:
             qsq  = self.__qsq )
 
         mass   = Mass.raw_from_project(project = self.__trig.project)
-        obs    = zfit.Space('mass', limits = cfg_par.rn)
+        obs    = zfit.Space(mass, limits = cfg_par.rn)
         data   = self._get_data(obs = obs, mass = mass, can_merge = True)
         models = self.__cfg.mod_cfg.get_model(nentries = data.num_entries)
 
