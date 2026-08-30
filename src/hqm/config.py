@@ -414,6 +414,17 @@ class TransferFunctionMakerConf(_Conf, frozen = True):
         '''
     # -----------------------------------------------
     @property
+    def out_dir(self) -> Path:
+        '''
+        Path to directory where tranfer function goes 
+        '''
+        ana_dir = Path(os.environ['ANADIR'])
+        out_dir = ana_dir / 'DB/hqm/trfc/'
+        out_dir.mkdir(parents = True, exist_ok = True)
+
+        return out_dir
+    # -----------------------------------------------
+    @property
     def name(self) -> str:
         '''
         String meant to be used to identify PDFs, etc
