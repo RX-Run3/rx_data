@@ -12,16 +12,6 @@ plots :
   stacked : false # Do not stack if using only one component
   nbins   : 100
 qsq:
-  - source     : psi2
-    target     : high
-    models     : [cbl]
-    plots      : 
-      plot_range : [5100, 5500]
-  - source     : jpsi
-    target     : high
-    models     : [cbl]
-    plots      : 
-      plot_range : [5500, 7000]
   - source     : jpsi
     target     : jpsi
     models     : [cbl, cbr]
@@ -32,6 +22,11 @@ qsq:
     models     : [suj, cbl]
     plots      : 
       plot_range : [5000, 6000]
+  - source     : jpsi
+    target     : high
+    models     : [cbl]
+    plots      : 
+      plot_range : [5500, 7000]
   - source     : psi2
     target     : jpsi
     models     : [suj, cbl]
@@ -42,3 +37,8 @@ qsq:
     models     : [suj, cbl]
     plots      : 
       plot_range : [4500, 6000]
+  - source     : psi2
+    target     : high
+    models     : [cbl]
+    plots      : 
+      plot_range : [5100, 5500]
