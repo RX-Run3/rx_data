@@ -31,27 +31,30 @@ def _get_masses(self, is_source : bool) -> numpy.ndarray:
 
     return numpy.random.normal(loc = 5200, scale = 30, size = 2000)
 #--------------------------------------
-@pytest.fixture(autouse = True)
+@pytest.fixture(autouse = False)
 def _use_fake_masses(monkeypatch):
     monkeypatch.setattr(
         TransferFunctionMaker,
         '_TransferFunctionMaker__get_masses',
         _get_masses)
 #--------------------------------------
-def test_psi2_high_brem(monkeypatch, tmp_path : Path):
+def test_psi2_high_brem(
+    monkeypatch,
+    _use_fake_masses,
+    tmp_path : Path):
     '''
-    Basic test
+    Basic test with fake data
     '''
     monkeypatch.setenv('ANADIR', str(tmp_path))
 
     cfgs        = TransferFunctionMakerConf.load(
-        variable= 'none', 
+        variable= 'none',
         source  = Qsq.psi2,
-        target  = Qsq.high) 
+        target  = Qsq.high)
 
     obj         = TransferFunctionMaker(
         cfg     = cfgs[0],
-        sample  = Component.bpkpjpsimm, 
+        sample  = Component.bpkpjpsimm,
         project = Project.rk,
         block   = Block(value = 1) )
 
