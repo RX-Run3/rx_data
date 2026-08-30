@@ -19,7 +19,7 @@ _SAMPLES_RK_EE : Final[list[tuple[Component,Trigger,Qsq,bool]]] = [
     (Component.bpkpjpsiee, Trigger.rk_ee_os, Qsq.high, False),
     (Component.bpkppsi2ee, Trigger.rk_ee_os, Qsq.psi2, True ),
     (Component.bpkpjpsiee, Trigger.rk_ee_os, Qsq.jpsi, True ),
-] 
+]
 
 _SAMPLES_RKST_EE : Final[list[tuple[Component,Trigger,Qsq,bool]]] = [
     (Component.bdkstkpipsi2ee, Trigger.rkst_ee_os, Qsq.jpsi, False),
@@ -28,17 +28,17 @@ _SAMPLES_RKST_EE : Final[list[tuple[Component,Trigger,Qsq,bool]]] = [
     (Component.bdkstkpijpsiee, Trigger.rkst_ee_os, Qsq.high, False),
     (Component.bdkstkpipsi2ee, Trigger.rkst_ee_os, Qsq.psi2, True ),
     (Component.bdkstkpijpsiee, Trigger.rkst_ee_os, Qsq.jpsi, True ),
-] 
+]
 
 _SAMPLES_RK_MM : Final[list[tuple[Component,Trigger,Qsq]]] = [
     (Component.bpkpjpsimm, Trigger.rk_mm_os, Qsq.jpsi),
     (Component.bpkppsi2mm, Trigger.rk_mm_os, Qsq.psi2),
-] 
+]
 
 _SAMPLES_RKST_MM : Final[list[tuple[Component,Trigger,Qsq]]] = [
     (Component.bdkstkpijpsimm, Trigger.rkst_mm_os, Qsq.jpsi),
     (Component.bdkstkpipsi2mm, Trigger.rkst_mm_os, Qsq.psi2),
-] 
+]
 # --------------------
 @pytest.mark.parametrize('comp,trig,qsq', _SAMPLES_RK_MM + _SAMPLES_RKST_MM)
 @pytest.mark.parametrize('block', range(1,9))
