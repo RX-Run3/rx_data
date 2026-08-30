@@ -1,20 +1,23 @@
 '''
 Module with tests for Config class
 '''
+import pytest
 
-from rx_common  import Qsq
+from rx_common  import Project, Qsq
 from hqm.config import TransferFunctionMakerConf
 from hqm.config import CCbarRatioCalculatorConf 
 
 #----------------------------------
 # Transfer function calculator
 #----------------------------------
-def test_unbinned_trfc():
+@pytest.mark.parametrize('project', [Project.rk, Project.rkst])
+def test_unbinned_trfc(project : Project):
     '''
     Test configuration loader for unbinned case
     '''
     cfgs = TransferFunctionMakerConf.load(
         variable = 'none',
+        project  = project,
         source   = Qsq.psi2,
         target   = Qsq.high)
 
@@ -22,12 +25,14 @@ def test_unbinned_trfc():
 
     print(cfgs[0])
 #----------------------------------
-def test_binned_trfc():
+@pytest.mark.parametrize('project', [Project.rk, Project.rkst])
+def test_binned_trfc(project : Project):
     '''
     Test configuration loader for binned case
     '''
     cfgs = TransferFunctionMakerConf.load(
         variable = 'nbrem',
+        project  = project,
         source   = Qsq.psi2,
         target   = Qsq.high)
 
@@ -36,13 +41,15 @@ def test_binned_trfc():
     for cfg in cfgs:
         print(cfg)
 #----------------------------------
-def test_per_bin_trfc():
+@pytest.mark.parametrize('project', [Project.rk, Project.rkst])
+def test_per_bin_trfc(project : Project):
     '''
     Test configuration loader for single bin 
     '''
     cfg          = TransferFunctionMakerConf.load_bin_cfg(
         bin      = 1,
         variable = 'nbrem',
+        project  = project,
         source   = Qsq.psi2,
         target   = Qsq.high)
 

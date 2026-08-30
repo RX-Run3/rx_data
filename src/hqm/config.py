@@ -11,7 +11,7 @@ from typing      import Final, Self
 from pathlib     import Path
 from dmu.stats   import FitConf
 from pydantic    import BaseModel, RootModel, model_validator
-from rx_common   import Project, Qsq
+from rx_common   import Component, Project, Qsq
 
 log = LogStore.add_logger('rx_hqm:config')
 
@@ -366,6 +366,7 @@ class TransferFunctionMakerConf(_Conf, frozen = True):
     source    : Qsq
     target    : Qsq
     models    : list[Model]
+    components: tuple[Component, Component]
     # -----------------------------------------------
     def __str__(self):
         return f'''
@@ -411,10 +412,12 @@ class TransferFunctionMakerConf(_Conf, frozen = True):
         cls, 
         bin     : int,
         variable: str,
+        project : Project,
         source  : Qsq,
         target  : Qsq) -> 'TransferFunctionMakerConf':
 
         cfgs = cls.load(
+            project  = project,
             source   = source,
             target   = target,
             variable = variable)
@@ -432,12 +435,14 @@ class TransferFunctionMakerConf(_Conf, frozen = True):
     def load(
         cls, 
         variable: str,
+        project : Project,
         source  : Qsq,
         target  : Qsq) -> list['TransferFunctionMakerConf']:
         '''
         Parameters
         ---------------
         variable : Variable to bin, none for unbinned 
+        project  : I.e. rk or rkst
         source   : Origin (muon) q2 bin 
         target   : Needed (electron) q2 bin
 
@@ -462,6 +467,7 @@ class TransferFunctionMakerConf(_Conf, frozen = True):
         cfg['observable'] = trf_data['observable' ]
         cfg['fft_npt'   ] = trf_data['fft_npt'    ]
         cfg['bandwidth' ] = trf_data['bandwidth'  ]
+        cfg['components'] = trf_data['models'][project][source]
 
         cfg['plots'].update(trf_data['plots'])
         if cfg is None:
