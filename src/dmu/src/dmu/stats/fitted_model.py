@@ -32,7 +32,12 @@ class ObsConf(BaseModel, frozen = True):
         '''
         lower, upper = sut.range_from_obs(obs = obs)
 
-        return cls(name = obs.name, lower = lower, upper = upper)
+        if obs.obs is None:
+            raise ValueError(f'Invalid observable: {obs}')
+
+        name, = obs.obs
+
+        return cls(name = name, lower = lower, upper = upper)
     #---------------------------------
     @property
     def obs(self) -> zfit.Space:
