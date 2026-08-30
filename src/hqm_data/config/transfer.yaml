@@ -42,3 +42,10 @@ qsq:
     models     : [cbl]
     plots      : 
       plot_range : [5100, 5500]
+models:
+  rk:
+    jpsi: [bpkpjpsimm    , bpkpjpsiee    ]
+    psi2: [bpkppsi2mm    , bpkppsi2ee    ]
+  rkst:
+    jpsi: [bdkstkpijpsimm, bdkstkpijpsiee]
+    psi2: [bdkstkpipsi2mm, bdkstkpipsi2ee]
