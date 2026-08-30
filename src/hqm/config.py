@@ -1,7 +1,7 @@
 import os
 import copy
 
-from functools   import lru_cache
+from functools   import cached_property, lru_cache
 from dmu         import LogStore
 from dmu.stats   import Model, ZFitPlotterConf, zfit
 from dmu.stats   import utilities as sut
@@ -367,6 +367,24 @@ class TransferFunctionMakerConf(_Conf, frozen = True):
     target    : Qsq
     models    : list[Model]
     components: tuple[Component, Component]
+    # -----------------------------------------------
+    @cached_property
+    def source_component(self) -> Component:
+        '''
+        Component needed as starting point of transfer function
+        '''
+        value, _ = self.components
+
+        return value
+    # -----------------------------------------------
+    @cached_property
+    def target_component(self) -> Component:
+        '''
+        Component needed as ending point of transfer function
+        '''
+        _, value = self.components
+
+        return value
     # -----------------------------------------------
     def __str__(self):
         return f'''
