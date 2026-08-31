@@ -41,7 +41,7 @@ class DataStore:
 
         self.__cfg= DatabaseConf.load()
 
-        self._full_sel : list[tuple[Cuts,str]] = []
+        self.__full_sel : list[tuple[Cuts,str]] = []
 
         df        = self._load_df()
         self.__df = self._select_data(df = df)
@@ -79,7 +79,7 @@ class DataStore:
         if sel is None:
             raise ValueError('No selection used')
 
-        self._full_sel.extend(sel.items())
+        self.__full_sel.extend(sel.items())
         log.debug('Applying selection')
         for name, expr in sel.items():
             log.debug(f'{name:<20}{expr}')
@@ -126,7 +126,7 @@ class DataStore:
         sut.dump_json(
             exists_ok = True,
             path      = path,
-            data      = self._full_sel)
+            data      = self.__full_sel)
     # ----------------------------------
     def get_array(self, mass : Mass) -> tuple[NpFltArr, NpFltArr]:
         '''
