@@ -55,6 +55,20 @@ class FittedModel(BaseModel, Serializable, frozen = True):
     model_conf : ModelFactoryConf
     fit_result : FitResult
     #----------------------
+    def with_obs(self, obs : zobs) -> Self:
+        '''
+        Parameters
+        -------------------
+        obs: Observable for which model is needed
+
+        Returns
+        -------------------
+        Instance with observable overriden
+        '''
+        obs_conf = ObsConf.from_obs(obs = obs)
+
+        return self.model_copy(update = {'obs_conf' : obs_conf})
+    #----------------------
     @classmethod
     def from_fit(
         cls,
