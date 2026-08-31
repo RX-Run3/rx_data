@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from pathlib        import Path
 from typing         import Final
 from pydantic       import BaseModel
-from rx_common      import Block, Channel, Mass, Project, Trigger
+from rx_common      import Block, Channel, Cuts, Mass, Project, Trigger
 from dmu            import LogStore
 from dmu.generic    import Serializable
 from dmu.stats      import FitResult, Fitter, Model, ModelFactory
@@ -21,9 +21,11 @@ _FLOAT          : Final[list[str]] = []
 _SHARED         : Final[list[str]] = ['mu', 'sg'] # Shared parameters in transfer functions
 _SOURCE_CHANNEL : Final[Channel  ] = Channel.mm
 _TARGET_CHANNEL : Final[Channel  ] = Channel.ee
+_RAW_QSQ        : Final[str      ] = 'q2'         # Used to switch between q2 cuts for rare
+_DTF_QSQ        : Final[str      ] = 'q2_dtf'     # and resonant target shapes
 
-mu_vals = -100., -200.,   0. # Value and range for observable of transffer function
-sg_vals =   50.,   10., 200.
+mu_vals = -0., -1500., 1500. # Value and range for observable of transffer function
+sg_vals =   50.,   10., 500.
 _TRF_VALS : Final[dict[str,tuple[float,float,float]]] = {
     'mu' : mu_vals,
     'sg' : sg_vals}
@@ -101,13 +103,20 @@ class TransferFunctionMaker:
             channel = _TARGET_CHANNEL, 
             project = self._project)
 
-        obj      = DataStore(
-            qsq  = self._cfg.target, 
-            trig = trigger, 
-            comp = self._cfg.target_component)
+        lo  = self._cfg.target.lower_bound
+        hi  = self._cfg.target.upper_bound
+        qsq = _RAW_QSQ if self._cfg.target.is_rare else _DTF_QSQ
+
+        with DataStore.selection(sel = {Cuts.q2 : f'({qsq} > {lo}) & ({qsq} < {hi})'}, update = True):
+            obj      = DataStore(
+                qsq  = self._cfg.target, 
+                trig = trigger, 
+                comp = self._cfg.target_component)
 
         mass      = Mass.raw_from_project(project = trigger.project)
         masses, _ = obj.get_array(mass = mass)
+
+        obj.save_selection(path = path / 'target_selection.json')
 
         return masses
     #---------------------------------
