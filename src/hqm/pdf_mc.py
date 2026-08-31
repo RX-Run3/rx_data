@@ -169,42 +169,6 @@ class PdfBuilder:
         '''
         return f'{self.__comp}_{self.__trig}_{self.__qsq}'
     # ----------------------------
-    def _get_model(self) -> FittedModel:
-        '''
-        Returns
-        ---------------
-        PDF associated to MC
-        '''
-        if self.model_path.exists():
-            try:
-                model = FittedModel.from_json(path = self.model_path)
-                return model
-            except Exception:
-                log.warning(f'Removing and remaking broken model at {self.model_path}')
-                self.model_path.unlink()
-
-        cfg_par  = self.__cfg.read_conf(
-            comp = self.__comp, 
-            trig = self.__trig,
-            qsq  = self.__qsq )
-
-        mass   = Mass.raw_from_project(project = self.__trig.project)
-        obs    = zfit.Space(mass, limits = cfg_par.rn)
-        data   = self._get_data(obs = obs, mass = mass, can_merge = True)
-        models = self.__cfg.mod_cfg.get_model(nentries = data.num_entries)
-
-        if models is None:
-            raise ValueError(f'No model found for {data.num_entries} entries')
-
-        fmod = self._fit_models(
-            data    = data,
-            cfg_par = cfg_par, 
-            models  = models)
-
-        fmod.to_json(path = self.model_path)
-
-        return fmod 
-    # ----------------------------
     def _fit_models(
         self, 
         data    : zdat,
@@ -309,11 +273,39 @@ class PdfBuilder:
         '''
         return self.__out_path / 'model.json'
     # ----------------------------
-    def get_model(self) -> FittedModel:
+    def get_model(self, obs : zobs | None = None) -> FittedModel:
         '''
         Returns
-        --------------
-        Fitted model
+        ---------------
+        PDF associated to MC
         '''
-        return self._get_model()
+        if self.model_path.exists():
+            try:
+                model = FittedModel.from_json(path = self.model_path)
+                return model.with_obs(obs = obs)
+            except Exception:
+                log.warning(f'Removing and remaking broken model at {self.model_path}')
+                self.model_path.unlink()
+
+        cfg_par  = self.__cfg.read_conf(
+            comp = self.__comp, 
+            trig = self.__trig,
+            qsq  = self.__qsq )
+
+        mass   = Mass.raw_from_project(project = self.__trig.project)
+        obs    = zfit.Space(mass, limits = cfg_par.rn)
+        data   = self._get_data(obs = obs, mass = mass, can_merge = True)
+        models = self.__cfg.mod_cfg.get_model(nentries = data.num_entries)
+
+        if models is None:
+            raise ValueError(f'No model found for {data.num_entries} entries')
+
+        fmod = self._fit_models(
+            data    = data,
+            cfg_par = cfg_par, 
+            models  = models)
+
+        fmod.to_json(path = self.model_path)
+
+        return fmod 
 # ----------------------------
