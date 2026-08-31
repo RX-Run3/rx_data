@@ -237,8 +237,12 @@ class TransferFunctionMaker:
 
         log.info(res)
 
+        src     = self._cfg.source
+        tgt     = self._cfg.target
+        title   = fr'{src.latex} $\to$ {tgt.latex}'
+        cfg_plt = self._cfg.plots.model_copy(update = {'title' : title})
         ptr = ZFitPlotter(data = data, model = pdf)
-        ptr.run(cfg = self._cfg.plots)
+        ptr.run(cfg = cfg_plt)
 
         fit_path = path / 'fit.png'
         log.info(f'Saving: {fit_path}')
