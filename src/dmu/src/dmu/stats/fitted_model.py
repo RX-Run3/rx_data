@@ -1,7 +1,7 @@
 '''
 Module holding the FittedModel class
 '''
-
+from typing         import Self
 from pydantic       import BaseModel
 from dmu.generic    import Serializable
 from dmu.stats      import utilities as sut
@@ -11,8 +11,8 @@ from .model_factory import ModelFactoryConf
 from .imports       import zfit
 from .model_factory import ModelFactory
 
-zpdf = zfit.pdf.BasePDF
-zobs = zfit.Space
+type zpdf = zfit.pdf.BasePDF
+type zobs = zfit.Space
 # -------------------------------------------------------------------
 class ObsConf(BaseModel, frozen = True):
     name  : str
