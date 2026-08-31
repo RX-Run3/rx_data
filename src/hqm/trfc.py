@@ -156,6 +156,7 @@ class TransferFunctionMaker:
         ys  = pdf_tgt.pdf(xs)
         plt.scatter(xs, ys, s = 1)
         path= json_path.with_name(f'{json_path.stem}_conv_prefit.png')
+        log.info(f'Saving: {path}')
         plt.savefig(path)
         plt.close()
 
@@ -164,6 +165,7 @@ class TransferFunctionMaker:
         ys  = pdf_tgt.pdf(xs)
         plt.scatter(xs, ys, s = 1)
         path= json_path.with_name(f'{json_path.stem}_conv_postfit.png')
+        log.info(f'Saving: {path}')
         plt.savefig(path)
         plt.close()
 
@@ -172,6 +174,7 @@ class TransferFunctionMaker:
         ys  = pdf_trf.pdf(xs)
         plt.scatter(xs, ys, s = 1)
         path= json_path.with_name(f'{json_path.stem}_trf_postfit.png')
+        log.info(f'Saving: {path}')
         plt.savefig(path)
         plt.close()
 
@@ -200,6 +203,7 @@ class TransferFunctionMaker:
         ptr.run(cfg = self._cfg.plots)
 
         fit_path = path.with_name(f'{path.stem}_fit.png')
+        log.info(f'Saving: {fit_path}')
         plt.savefig(fit_path)
         plt.close()
 
