@@ -63,4 +63,3 @@ hqm make-trfc -b 1 -p rkst -s jpsi -t high
 
 For block `1` and for each of the other 7 blocks.
 
-
