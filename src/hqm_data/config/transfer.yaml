@@ -3,8 +3,8 @@ fft_npt   : 1000
 observable:
   name       : B_Mass
   kdem_range : [ 3500, 7000]
-  mass_range : [ 4600, 7000]
-  tran_range : [-1200, 1000] # This range has to be narrower than the `mass_range`
+  mass_range : [ 4600, 9000]
+  tran_range : [-1000, 2500] # This range has to be narrower than the `mass_range`
 fits:
   run_gof   : false
   do_errors : true 
@@ -24,9 +24,9 @@ qsq:
       plot_range : [5000, 6000]
   - source     : jpsi
     target     : high
-    models     : [cbl, cbr]
+    models     : [suj]
     plots      : 
-      plot_range : [4600, 7000]
+      plot_range : [5500, 7500]
   - source     : psi2
     target     : jpsi
     models     : [suj, cbl]
