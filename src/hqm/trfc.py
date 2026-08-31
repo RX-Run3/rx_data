@@ -5,9 +5,9 @@ import numpy
 import matplotlib.pyplot as plt
 
 from pathlib        import Path
-from typing         import Final, TypeAlias
+from typing         import Final
 from pydantic       import BaseModel
-from rx_common      import Block, Channel, Component, Mass, Project, Trigger
+from rx_common      import Block, Channel, Mass, Project, Trigger
 from dmu            import LogStore
 from dmu.generic    import Serializable
 from dmu.stats      import FitResult, Fitter, Model, ModelFactory
@@ -22,11 +22,14 @@ _SHARED         : Final[list[str]] = ['mu', 'sg'] # Shared parameters in transfe
 _SOURCE_CHANNEL : Final[Channel  ] = Channel.mm
 _TARGET_CHANNEL : Final[Channel  ] = Channel.ee
 
-mu_vals = 0., -500., 500. # Value and range for observable of transffer function
-_TRF_VALS : Final[dict[str,tuple[float,float,float]]] = {'mu' : mu_vals}
+mu_vals = -100., -200.,   0. # Value and range for observable of transffer function
+sg_vals =   50.,   10., 200.
+_TRF_VALS : Final[dict[str,tuple[float,float,float]]] = {
+    'mu' : mu_vals,
+    'sg' : sg_vals}
 
-zpdf = zfit.pdf.BasePDF
-kpdf : TypeAlias = zfit.pdf.KDE1DimFFT
+type zpdf = zfit.pdf.BasePDF
+type kpdf = zfit.pdf.KDE1DimFFT
 #---------------------------------
 class TransferFunction(BaseModel, Serializable, frozen = True):
     '''
@@ -276,9 +279,6 @@ class TransferFunctionMaker:
             fname   = f'block_{self._block}_{self._cfg.name}.json')
 
         if json_path.exists() and not update:
-            return TransferFunction.from_json(path = json_path)
-
-        if json_path.exists():
             log.info(f'Transfer function found in {json_path}')
             return TransferFunction.from_json(path = json_path)
 
