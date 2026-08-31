@@ -78,19 +78,19 @@ class TransferFunctionMaker:
     '''
     #---------------------------------
     def __init__(
-        self, 
+        self,
         cfg    : TransferFunctionMakerConf,
-        project: Project, 
+        project: Project,
         block  : Block):
         '''
         Parameters
         ----------------
         cfg    : Configuration controling the building of TransferFunction
-        project: E.g. rk or rkst 
+        project: E.g. rk or rkst
         block  : E.g. 1 to 8
         '''
         self._cfg      = cfg
-        self._project  = project 
+        self._project  = project
         self._block    = block
     #---------------------------------
     @property
@@ -102,14 +102,14 @@ class TransferFunctionMaker:
         '''
         # Rare regions will use raw q2
         if self._cfg.target.is_rare:
-            return _RAW_QSQ 
+            return _RAW_QSQ
 
         # There is no leakage with DTF q2
         if self._cfg.target != self._cfg.source:
             return _RAW_QSQ
 
         # No leakage and resonant mode -> Use DTF q2 to avoid
-        # tail shaping distortion 
+        # tail shaping distortion
         return _DTF_QSQ
     #---------------------------------
     def __get_target_masses(self, path : Path) -> numpy.ndarray:
@@ -123,7 +123,7 @@ class TransferFunctionMaker:
         Numpy array with masses associated to the target distribution
         '''
         trigger     = Trigger.get_main_trigger(
-            channel = _TARGET_CHANNEL, 
+            channel = _TARGET_CHANNEL,
             project = self._project)
 
         lo  = self._cfg.target.lower_bound
@@ -131,8 +131,8 @@ class TransferFunctionMaker:
 
         with DataStore.selection(sel = {Cuts.q2 : f'({self._qsq_var} > {lo}) & ({self._qsq_var} < {hi})'}, update = True):
             obj      = DataStore(
-                qsq  = self._cfg.target, 
-                trig = trigger, 
+                qsq  = self._cfg.target,
+                trig = trigger,
                 comp = self._cfg.target_component)
 
         mass      = Mass.raw_from_project(project = trigger.project)
@@ -154,7 +154,7 @@ class TransferFunctionMaker:
         Zfit PDF built from source dataset, e.g. muon psi2S data
         '''
         trig = Trigger.get_main_trigger(
-            channel = _SOURCE_CHANNEL, 
+            channel = _SOURCE_CHANNEL,
             project = self._project)
 
         iblock = self._block.to_int()
@@ -172,7 +172,7 @@ class TransferFunctionMaker:
         Parameters
         ------------------------
         pdf_trf: PDF used as the transfer function
-        out_dir: Path to directory with outputs 
+        out_dir: Path to directory with outputs
 
         Returns
         ------------------------
@@ -184,9 +184,9 @@ class TransferFunctionMaker:
 
         pdf_tgt    = zfit.pdf.FFTConvPDFV1(
             obs    = obs,
-            name   = 'target_pdf', 
-            func   = pdf_src, 
-            kernel = pdf_trf, 
+            name   = 'target_pdf',
+            func   = pdf_src,
+            kernel = pdf_trf,
             n      = self._cfg.fft_npt)
 
         lower, upper = self._cfg.observable.mass_range
@@ -219,9 +219,9 @@ class TransferFunctionMaker:
         return res
     #---------------------------------
     def _fit_trf(
-        self, 
+        self,
         path : Path,
-        data : numpy.ndarray, 
+        data : numpy.ndarray,
         pdf  : zpdf) -> FitResult:
         '''
         Parameters
@@ -247,9 +247,9 @@ class TransferFunctionMaker:
 
         return res
     #---------------------------------
-    def __plot_datasets(self, 
-        source : numpy.ndarray, 
-        target : numpy.ndarray, 
+    def __plot_datasets(self,
+        source : numpy.ndarray,
+        target : numpy.ndarray,
         path   : Path) -> None:
         '''
         Parameters:
@@ -273,7 +273,7 @@ class TransferFunctionMaker:
         '''
         Parameters
         --------------
-        out_dir: Path to directory where outputs are saved 
+        out_dir: Path to directory where outputs are saved
 
         Returns
         --------------
@@ -292,7 +292,7 @@ class TransferFunctionMaker:
 
         pdf = fac.get_pdf()
 
-        lower, higher = self._cfg.observable.tran_range 
+        lower, higher = self._cfg.observable.tran_range
         xs  = numpy.linspace(lower, higher, self._cfg.fft_npt)
         ys  = pdf.pdf(xs)
 
@@ -306,7 +306,7 @@ class TransferFunctionMaker:
     #---------------------------------
     def get_trf(self, update : bool) -> TransferFunction:
         '''
-        Will return transfer function 
+        Will return transfer function
         '''
         json_path = self._cfg.make_path(
             kind    = 'trfc',
@@ -323,10 +323,10 @@ class TransferFunctionMaker:
         res     = self.__get_fit_result(pdf_trf = pdf_trf, out_dir = json_path.parent)
 
         trf            = TransferFunction(
-            fit_result = res, 
+            fit_result = res,
             name       = self._cfg.name,
             observable = self._cfg.observable,
-            models     = self._cfg.models) 
+            models     = self._cfg.models)
 
         trf.to_json(path = json_path)
 
