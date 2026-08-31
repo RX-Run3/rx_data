@@ -4,7 +4,7 @@ observable:
   name       : B_Mass
   kdem_range : [ 3500, 7000]
   mass_range : [ 4500, 7000]
-  tran_range : [ -500,  500] # This range has to be narrower than the `mass_range`
+  tran_range : [ -800, 1500] # This range has to be narrower than the `mass_range`
 fits:
   run_gof   : false
   do_errors : true 
