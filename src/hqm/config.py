@@ -128,8 +128,8 @@ class ParamConf(RootModel[dict[str,tuple[float,float,float]]], frozen = True):
     # -------------------
     @lru_cache(maxsize = 5)
     def get_part_reco_yield(
-        self, 
-        qsq_comp : Qsq, 
+        self,
+        qsq_comp : Qsq,
         qsq_bin  : Qsq) -> zpar:
         '''
         Parameters
@@ -198,13 +198,13 @@ class ObsConf(BaseModel, frozen = True):
     @property
     def trn_obs(self) -> zfit.Space:
         '''
-        Observable for transfer function 
+        Observable for transfer function
         '''
         return zfit.Space(self.name, limits = self.tran_range)
 # -------------------------------------------------------------------
 class BinningConf(BaseModel, frozen = True):
     '''
-    Config describing 
+    Config describing
     '''
     variable : str
     '''
@@ -278,7 +278,7 @@ class _Conf(BaseModel, frozen = True):
     binning    : BinningConf
     fft_npt    : int
     '''
-    Number of points used to sample KDE before doing convolution with 
+    Number of points used to sample KDE before doing convolution with
     Fast Fourier Transform
     '''
     # ----------------------------------
@@ -290,7 +290,7 @@ class _Conf(BaseModel, frozen = True):
         {self.observable}
 
         -----------------
-        Binning 
+        Binning
         -----------------
         {self.binning}
         '''
@@ -314,7 +314,7 @@ class _Conf(BaseModel, frozen = True):
         bin_cfgs : list[dict] = []
         for ibin in range(nbin):
             cfg_bin             = dict()
-            cfg_bin['variable'] = variable 
+            cfg_bin['variable'] = variable
             cfg_bin['bin'     ] = ibin
             cfg_bin['bins'    ] = bin_data[variable]
 
@@ -325,14 +325,14 @@ class _Conf(BaseModel, frozen = True):
     def make_path(
         self,
         *,
-        kind    : str, 
+        kind    : str,
         project : Project,
         subdir  : str | None = None,
         fname   : str | None = None) -> Path:
         '''
-        Function will make a path and return it. 
+        Function will make a path and return it.
 
-        Parameters 
+        Parameters
         -----------------
         kind   : Name of directory meant to sybolize what data will be stored there, e.g. fits, trfc
         project: E.g. rk, rkst
@@ -360,7 +360,7 @@ class _Conf(BaseModel, frozen = True):
         if fname is None:
             return dir_path
 
-        return dir_path / fname 
+        return dir_path / fname
 # -------------------------------------------------------------------
 class TransferFunctionMakerConf(_Conf, frozen = True):
     '''
@@ -432,7 +432,7 @@ class TransferFunctionMakerConf(_Conf, frozen = True):
     # -----------------------------------------------
     @classmethod
     def load_bin_cfg(
-        cls, 
+        cls,
         bin     : int,
         variable: str,
         project : Project,
@@ -456,7 +456,7 @@ class TransferFunctionMakerConf(_Conf, frozen = True):
     # -----------------------------------------------
     @classmethod
     def load(
-        cls, 
+        cls,
         variable: str,
         project : Project,
         source  : Qsq,
@@ -464,9 +464,9 @@ class TransferFunctionMakerConf(_Conf, frozen = True):
         '''
         Parameters
         ---------------
-        variable : Variable to bin, none for unbinned 
+        variable : Variable to bin, none for unbinned
         project  : I.e. rk or rkst
-        source   : Origin (muon) q2 bin 
+        source   : Origin (muon) q2 bin
         target   : Needed (electron) q2 bin
 
         Returns
@@ -475,7 +475,7 @@ class TransferFunctionMakerConf(_Conf, frozen = True):
         '''
         trf_data = gut.load_data(package = 'hqm_data', fpath = 'config/transfer.yaml')
         qsq_data = trf_data['qsq']
-        cfg      = dict() 
+        cfg      = dict()
 
         for q2_cfg in qsq_data:
             if q2_cfg['source'] != source:

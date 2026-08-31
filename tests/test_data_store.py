@@ -47,7 +47,7 @@ def _block_selection():
 #--------------------------------------
 @pytest.mark.parametrize('comp', [Component.data_24, Component.bpkpjpsiee])
 def test_data_retrieval(
-    _patch_loader, 
+    _patch_loader,
     comp     : Component,
     tmp_path : Path):
     '''
@@ -139,7 +139,7 @@ def test_new_selection(monkeypatch, tmp_path : Path):
     assert len(arr_wgt) < SIZE
 #--------------------------------------
 def test_update_selection(
-    monkeypatch, 
+    monkeypatch,
     _block_selection,
     tmp_path : Path):
     '''
