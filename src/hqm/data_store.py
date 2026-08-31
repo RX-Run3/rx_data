@@ -41,7 +41,7 @@ class DataStore:
 
         self.__cfg= DatabaseConf.load()
 
-        self.__full_sel : list[tuple[Cuts,str]] = []
+        self.__full_sel : dict[str,int] = dict()
 
         df        = self._load_df()
         self.__df = self._select_data(df = df)
@@ -79,11 +79,16 @@ class DataStore:
         if sel is None:
             raise ValueError('No selection used')
 
-        self.__full_sel.extend(sel.items())
         log.debug('Applying selection')
+        cutflow : dict[str,int] = dict()
+        cutflow['none'] = len(df)
         for name, expr in sel.items():
             log.debug(f'{name:<20}{expr}')
             df = df.query(expr)
+
+            cutflow[expr] = len(df)
+
+        self.__full_sel.update(cutflow)
 
         return df
     # ----------------------------------
