@@ -349,7 +349,7 @@ class _Conf(BaseModel, frozen = True):
         anadir = Path(os.environ['ANADIR'])
         log.debug(f'Using ANADIR: {anadir}')
 
-        dir_path = anadir / f'{kind}/{binning}/{project}'
+        dir_path = anadir / f'DB/hqm/{kind}/{project}/{binning}'
         dir_path.mkdir(parents = True, exist_ok = True)
 
         if fname is None:
@@ -412,17 +412,6 @@ class TransferFunctionMakerConf(_Conf, frozen = True):
         ----------
         {self.binning}
         '''
-    # -----------------------------------------------
-    @property
-    def out_dir(self) -> Path:
-        '''
-        Path to directory where tranfer function goes 
-        '''
-        ana_dir = Path(os.environ['ANADIR'])
-        out_dir = ana_dir / 'DB/hqm/trfc/'
-        out_dir.mkdir(parents = True, exist_ok = True)
-
-        return out_dir
     # -----------------------------------------------
     @property
     def name(self) -> str:
