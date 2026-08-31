@@ -351,7 +351,7 @@ class _Conf(BaseModel, frozen = True):
         anadir = Path(os.environ['ANADIR'])
         log.debug(f'Using ANADIR: {anadir}')
 
-        dir_path = anadir / f'DB/hqm/{kind}/{project}/{binning}'
+        dir_path = anadir / f'DB/hqm/{kind}/latest/{binning}/{project}'
         if subdir:
             dir_path = dir_path / subdir
 
