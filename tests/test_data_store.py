@@ -16,7 +16,7 @@ from dmu               import LogStore
 
 from .utilities        import get_data, SIZE
 
-NpFltArray = npt.NDArray[numpy.float64]
+type NpFltArray = npt.NDArray[numpy.float64]
 
 log=LogStore.add_logger('hqm:test_data_store')
 # ----------------------
