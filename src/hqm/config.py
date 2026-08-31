@@ -327,6 +327,7 @@ class _Conf(BaseModel, frozen = True):
         *,
         kind    : str, 
         project : Project,
+        subdir  : str | None = None,
         fname   : str | None = None) -> Path:
         '''
         Function will make a path and return it. 
@@ -336,6 +337,7 @@ class _Conf(BaseModel, frozen = True):
         kind   : Name of directory meant to sybolize what data will be stored there, e.g. fits, trfc
         project: E.g. rk, rkst
         fname  : Optional, file name, e.g. data.json
+        subdir : Optional, subirectory path, e.g. block_1/
 
         Returns
         -----------------
@@ -350,6 +352,9 @@ class _Conf(BaseModel, frozen = True):
         log.debug(f'Using ANADIR: {anadir}')
 
         dir_path = anadir / f'DB/hqm/{kind}/{project}/{binning}'
+        if subdir:
+            dir_path = dir_path / subdir
+
         dir_path.mkdir(parents = True, exist_ok = True)
 
         if fname is None:
