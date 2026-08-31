@@ -5,9 +5,11 @@ import numpy
 import numpy.typing as npt
 import pandas       as pnd
 
+from pathlib        import Path
 from contextlib     import contextmanager
 from contextvars    import ContextVar
 from dmu            import LogStore
+from dmu.generic    import utilities as sut
 from rx_common      import Cuts, Qsq, Trigger, Component, Mass
 from .database_conf import DatabaseConf
 
@@ -38,7 +40,11 @@ class DataStore:
         self._comp= comp
 
         self.__cfg= DatabaseConf.load()
-        self.__df = self._load_df()
+
+        self._full_sel : list[tuple[Cuts,str]] = []
+
+        df        = self._load_df()
+        self.__df = self._select_data(df = df)
     # ----------------------------------
     def _load_df(self) -> pnd.DataFrame:
         '''
@@ -54,7 +60,6 @@ class DataStore:
         log.debug(f'Loading data from: {path}')
 
         df = pnd.read_parquet(path = path)
-        df = self._select_data(df = df)
 
         return df
     # ----------------------------------
@@ -74,6 +79,7 @@ class DataStore:
         if sel is None:
             raise ValueError('No selection used')
 
+        self._full_sel.extend(sel.items())
         log.debug('Applying selection')
         for name, expr in sel.items():
             log.debug(f'{name:<20}{expr}')
@@ -110,6 +116,17 @@ class DataStore:
                 _SELECTION.reset(token)
 
         return _context()
+    # ----------------------------------
+    def save_selection(self, path : Path) -> None:
+        '''
+        Parameters
+        ----------------
+        path: Path to directory where output will go
+        '''
+        sut.dump_json(
+            exists_ok = True,
+            path      = path,
+            data      = self._full_sel)
     # ----------------------------------
     def get_array(self, mass : Mass) -> tuple[NpFltArr, NpFltArr]:
         '''
