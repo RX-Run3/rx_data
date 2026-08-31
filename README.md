@@ -40,3 +40,24 @@ hqm -t rk_ee_os   -c data_24
 ```
 
 for different processes and triggers
+
+## Make transfer functions
+
+After building the databases and fitting the shapes, the transfer functios are made with:
+
+```bash
+hqm make-trfc -b 1 -p rk   -s jpsi -t jpsi
+hqm make-trfc -b 1 -p rk   -s jpsi -t psi2
+hqm make-trfc -b 1 -p rk   -s psi2 -t jpsi
+hqm make-trfc -b 1 -p rk   -s psi2 -t high 
+hqm make-trfc -b 1 -p rk   -s jpsi -t high 
+
+hqm make-trfc -b 1 -p rkst -s jpsi -t jpsi
+hqm make-trfc -b 1 -p rkst -s jpsi -t psi2
+hqm make-trfc -b 1 -p rkst -s psi2 -t jpsi
+hqm make-trfc -b 1 -p rkst -s psi2 -t high 
+hqm make-trfc -b 1 -p rkst -s jpsi -t high 
+```
+
+For block `1` and for each of the other 7 blocks.
+
