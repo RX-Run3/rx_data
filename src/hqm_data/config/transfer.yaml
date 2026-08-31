@@ -1,4 +1,4 @@
-bandwidth : 3 
+bandwidth : 3
 fft_npt   : 1000
 observable:
   name       : B_Mass
@@ -7,7 +7,7 @@ observable:
   tran_range : [-1000, 2500] # This range has to be narrower than the `mass_range`
 fits:
   run_gof   : false
-  do_errors : true 
+  do_errors : true
 plots :
   stacked : false # Do not stack if using only one component
   nbins   : 100
@@ -15,32 +15,32 @@ qsq:
   - source     : jpsi
     target     : jpsi
     models     : [cbl, cbr]
-    plots      : 
+    plots      :
       plot_range : [4600, 6000]
   - source     : jpsi
     target     : psi2
     models     : [suj]
-    plots      : 
+    plots      :
       plot_range : [5200, 6200]
   - source     : jpsi
     target     : high
     models     : [suj]
-    plots      : 
+    plots      :
       plot_range : [5500, 7500]
   - source     : psi2
     target     : jpsi
     models     : [cbl]
-    plots      : 
+    plots      :
       plot_range : [4600, 5300]
   - source     : psi2
     target     : psi2
-    models     : [suj, cbl]
-    plots      : 
+    models     : [suj]
+    plots      :
       plot_range : [4600, 6000]
   - source     : psi2
     target     : high
     models     : [suj]
-    plots      : 
+    plots      :
       plot_range : [5000, 6500]
 models:
   rk:
