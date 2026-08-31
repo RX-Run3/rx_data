@@ -29,9 +29,9 @@ qsq:
       plot_range : [5500, 7500]
   - source     : psi2
     target     : jpsi
-    models     : [suj, cbl]
+    models     : [cbl]
     plots      : 
-      plot_range : [4600, 5800]
+      plot_range : [4600, 5300]
   - source     : psi2
     target     : psi2
     models     : [suj, cbl]
@@ -39,9 +39,9 @@ qsq:
       plot_range : [4600, 6000]
   - source     : psi2
     target     : high
-    models     : [cbl, cbr]
+    models     : [suj]
     plots      : 
-      plot_range : [4600, 5500]
+      plot_range : [5000, 6500]
 models:
   rk:
     jpsi: [bpkpjpsimm    , bpkpjpsiee    ]
