@@ -131,7 +131,10 @@ def test_new_selection(monkeypatch, tmp_path : Path):
             qsq = qsq)
 
     arr_raw, arr_wgt = obj.get_array(mass = Mass.bp_bcor)
+    selection_path   = tmp_path / 'selection.json'
+    obj.save_selection(path = selection_path)
 
+    assert selection_path.exists()
     assert len(arr_raw) < SIZE
     assert len(arr_wgt) < SIZE
 #--------------------------------------
@@ -172,7 +175,10 @@ def test_update_selection(
             qsq = qsq)
 
     arr_raw, arr_wgt = obj.get_array(mass = Mass.bp_bcor)
+    selection_path   = tmp_path / 'selection.json'
+    obj.save_selection(path = selection_path)
 
+    assert selection_path.exists()
     assert len(arr_raw) < SIZE
     assert len(arr_wgt) < SIZE
 #--------------------------------------
