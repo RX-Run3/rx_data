@@ -262,7 +262,7 @@ class TransferFunctionMaker:
 
         return pdf
     #---------------------------------
-    def get_trf(self) -> TransferFunction:
+    def get_trf(self, update : bool) -> TransferFunction:
         '''
         Will return transfer function 
         '''
@@ -270,6 +270,9 @@ class TransferFunctionMaker:
             kind    = 'trfc',
             project = self._project,
             fname   = f'block_{self._block}_{self._cfg.name}.json')
+
+        if json_path.exists() and not update:
+            return TransferFunction.from_json(path = json_path)
 
         if json_path.exists():
             log.info(f'Transfer function found in {json_path}')
@@ -284,6 +287,8 @@ class TransferFunctionMaker:
             fit_result = res, 
             observable = self._cfg.observable,
             models     = self._cfg.models) 
+
+        trf.to_json(path = json_path)
 
         return trf
 #---------------------------------
