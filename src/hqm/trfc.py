@@ -30,6 +30,7 @@ _TRF_VALS : Final[dict[str,tuple[float,float,float]]] = {
 
 type zpdf = zfit.pdf.BasePDF
 type kpdf = zfit.pdf.KDE1DimFFT
+type zobs = zfit.Space
 #---------------------------------
 class TransferFunction(BaseModel, Serializable, frozen = True):
     '''
@@ -110,10 +111,11 @@ class TransferFunctionMaker:
 
         return masses
     #---------------------------------
-    def __get_source_pdf(self, path : Path) -> zpdf:
+    def __get_source_pdf(self, path : Path, obs : zobs) -> zpdf:
         '''
         Parameters
         -----------------------
+        obs : Observable to use with this PDF
         path: Path to JSON file with parameters, to be repurposed for fit
 
         Returns
@@ -130,7 +132,7 @@ class TransferFunctionMaker:
             trigger = trig,
             comp    = self._cfg.source_component,
             qsq     = self._cfg.source)
-        fmod = obj.get_model()
+        fmod = obj.get_model(obs = obs)
 
         return fmod.fixed_pdf
     #---------------------------------
@@ -145,10 +147,12 @@ class TransferFunctionMaker:
         ------------------------
         FitResult with transfer function parameters
         '''
+        obs     = zfit.Space('B_Mass', limits = (4600, 7000))
         arr_tgt = self.__get_target_masses()
-        pdf_src = self.__get_source_pdf(path = json_path)
+        pdf_src = self.__get_source_pdf(path = json_path, obs = obs)
 
-        pdf_tgt = zfit.pdf.FFTConvPDFV1(
+        pdf_tgt    = zfit.pdf.FFTConvPDFV1(
+            obs    = obs,
             name   = 'target_pdf', 
             func   = pdf_src, 
             kernel = pdf_trf, 
