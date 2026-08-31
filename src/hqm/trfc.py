@@ -93,8 +93,12 @@ class TransferFunctionMaker:
         self._project  = project 
         self._block    = block
     #---------------------------------
-    def __get_target_masses(self) -> numpy.ndarray:
+    def __get_target_masses(self, path : Path) -> numpy.ndarray:
         '''
+        Parameters
+        ----------------
+        path: Path to directory with outputs
+
         Returns
         ----------------
         Numpy array with masses associated to the target distribution
@@ -145,20 +149,20 @@ class TransferFunctionMaker:
 
         return fmod.fixed_pdf
     #---------------------------------
-    def __get_fit_result(self, pdf_trf : zpdf, json_path : Path) -> FitResult:
+    def __get_fit_result(self, pdf_trf : zpdf, out_dir : Path) -> FitResult:
         '''
         Parameters
         ------------------------
-        pdf_trf  : PDF used as the transfer function
-        json_path: Path to JSON where transfer function will be saved
+        pdf_trf: PDF used as the transfer function
+        out_dir: Path to directory with outputs 
 
         Returns
         ------------------------
         FitResult with transfer function parameters
         '''
         obs     = self._cfg.observable.fit_obs
-        arr_tgt = self.__get_target_masses()
-        pdf_src = self.__get_source_pdf(path = json_path, obs = obs)
+        arr_tgt = self.__get_target_masses(path = out_dir)
+        pdf_src = self.__get_source_pdf(path = out_dir, obs = obs)
 
         pdf_tgt    = zfit.pdf.FFTConvPDFV1(
             obs    = obs,
@@ -171,16 +175,16 @@ class TransferFunctionMaker:
         xs  = numpy.linspace(lower, upper, self._cfg.fft_npt)
         ys  = pdf_tgt.pdf(xs)
         plt.scatter(xs, ys, s = 1)
-        path= json_path.parent / 'conv_prefit.png'
+        path = out_dir / 'conv_prefit.png'
         log.info(f'Saving: {path}')
         plt.savefig(path)
         plt.close()
 
-        res = self._fit_trf(data = arr_tgt, pdf = pdf_tgt, path = json_path)
+        res = self._fit_trf(data = arr_tgt, pdf = pdf_tgt, path = out_dir)
 
         ys  = pdf_tgt.pdf(xs)
         plt.scatter(xs, ys, s = 1)
-        path= json_path.parent / 'conv_postfit.png'
+        path = out_dir / 'conv_postfit.png'
         log.info(f'Saving: {path}')
         plt.savefig(path)
         plt.close()
@@ -189,7 +193,7 @@ class TransferFunctionMaker:
         xs  = numpy.linspace(lower, upper, self._cfg.fft_npt)
         ys  = pdf_trf.pdf(xs)
         plt.scatter(xs, ys, s = 1)
-        path= json_path.parent / 'trfc_postfit.png'
+        path= out_dir / 'trfc_postfit.png'
         log.info(f'Saving: {path}')
         plt.savefig(path)
         plt.close()
@@ -218,7 +222,7 @@ class TransferFunctionMaker:
         ptr = ZFitPlotter(data = data, model = pdf)
         ptr.run(cfg = self._cfg.plots)
 
-        fit_path = path.parent / 'fit.png'
+        fit_path = path / 'fit.png'
         log.info(f'Saving: {fit_path}')
         plt.savefig(fit_path)
         plt.close()
@@ -247,11 +251,11 @@ class TransferFunctionMaker:
         plt.savefig(path)
         plt.close('sim_dset')
     #---------------------------------
-    def __get_trf_pdf(self, path : Path) -> zpdf:
+    def __get_trf_pdf(self, out_dir : Path) -> zpdf:
         '''
         Parameters
         --------------
-        path : Path to JSON file, needed to save plot after overriding ending
+        out_dir: Path to directory where outputs are saved 
 
         Returns
         --------------
@@ -276,8 +280,8 @@ class TransferFunctionMaker:
 
         plt.scatter(xs, ys, s=2)
 
-        path = path.parent / 'trfc_prefit.png'
-        plt.savefig(path)
+        out_dir = out_dir / 'trfc_prefit.png'
+        plt.savefig(out_dir)
         plt.close()
 
         return pdf
@@ -297,12 +301,12 @@ class TransferFunctionMaker:
             return TransferFunction.from_json(path = json_path)
 
         log.info('Transfer function not found')
-        pdf_trf = self.__get_trf_pdf(path = json_path)
-        res     = self.__get_fit_result(pdf_trf, json_path)
+        pdf_trf = self.__get_trf_pdf(out_dir = json_path.parent)
+        res     = self.__get_fit_result(pdf_trf = pdf_trf, out_dir = json_path.parent)
 
         trf            = TransferFunction(
-            name       = self._cfg.name,
             fit_result = res, 
+            name       = self._cfg.name,
             observable = self._cfg.observable,
             models     = self._cfg.models) 
 
