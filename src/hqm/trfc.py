@@ -93,6 +93,25 @@ class TransferFunctionMaker:
         self._project  = project 
         self._block    = block
     #---------------------------------
+    @property
+    def _qsq_var(self) -> str:
+        '''
+        Returns
+        -------------
+        q2 cut used to select data in target q2-bin
+        '''
+        # Rare regions will use raw q2
+        if self._cfg.target.is_rare:
+            return _RAW_QSQ 
+
+        # There is no leakage with DTF q2
+        if self._cfg.target != self._cfg.source:
+            return _RAW_QSQ
+
+        # No leakage and resonant mode -> Use DTF q2 to avoid
+        # tail shaping distortion 
+        return _DTF_QSQ
+    #---------------------------------
     def __get_target_masses(self, path : Path) -> numpy.ndarray:
         '''
         Parameters
@@ -109,9 +128,8 @@ class TransferFunctionMaker:
 
         lo  = self._cfg.target.lower_bound
         hi  = self._cfg.target.upper_bound
-        qsq = _RAW_QSQ if self._cfg.target.is_rare else _DTF_QSQ
 
-        with DataStore.selection(sel = {Cuts.q2 : f'({qsq} > {lo}) & ({qsq} < {hi})'}, update = True):
+        with DataStore.selection(sel = {Cuts.q2 : f'({self._qsq_var} > {lo}) & ({self._qsq_var} < {hi})'}, update = True):
             obj      = DataStore(
                 qsq  = self._cfg.target, 
                 trig = trigger, 
