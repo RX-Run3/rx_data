@@ -147,7 +147,7 @@ class TransferFunctionMaker:
         ------------------------
         FitResult with transfer function parameters
         '''
-        obs     = zfit.Space('B_Mass', limits = (4600, 7000))
+        obs     = self._cfg.observable.fit_obs
         arr_tgt = self.__get_target_masses()
         pdf_src = self.__get_source_pdf(path = json_path, obs = obs)
 
@@ -162,7 +162,7 @@ class TransferFunctionMaker:
         xs  = numpy.linspace(lower, upper, self._cfg.fft_npt)
         ys  = pdf_tgt.pdf(xs)
         plt.scatter(xs, ys, s = 1)
-        path= json_path.with_name(f'{json_path.stem}_conv_prefit.png')
+        path= json_path.parent / 'conv_prefit.png'
         log.info(f'Saving: {path}')
         plt.savefig(path)
         plt.close()
@@ -171,7 +171,7 @@ class TransferFunctionMaker:
 
         ys  = pdf_tgt.pdf(xs)
         plt.scatter(xs, ys, s = 1)
-        path= json_path.with_name(f'{json_path.stem}_conv_postfit.png')
+        path= json_path.parent / 'conv_postfit.png'
         log.info(f'Saving: {path}')
         plt.savefig(path)
         plt.close()
@@ -180,7 +180,7 @@ class TransferFunctionMaker:
         xs  = numpy.linspace(lower, upper, self._cfg.fft_npt)
         ys  = pdf_trf.pdf(xs)
         plt.scatter(xs, ys, s = 1)
-        path= json_path.with_name(f'{json_path.stem}_trf_postfit.png')
+        path= json_path.parent / 'trfc_postfit.png'
         log.info(f'Saving: {path}')
         plt.savefig(path)
         plt.close()
@@ -209,7 +209,7 @@ class TransferFunctionMaker:
         ptr = ZFitPlotter(data = data, model = pdf)
         ptr.run(cfg = self._cfg.plots)
 
-        fit_path = path.with_name(f'{path.stem}_fit.png')
+        fit_path = path.parent / 'fit.png'
         log.info(f'Saving: {fit_path}')
         plt.savefig(fit_path)
         plt.close()
@@ -267,7 +267,7 @@ class TransferFunctionMaker:
 
         plt.scatter(xs, ys, s=2)
 
-        path = path.with_name(f'{path.stem}_trf_prefit.png')
+        path = path.parent / 'trfc_prefit.png'
         plt.savefig(path)
         plt.close()
 
@@ -280,7 +280,8 @@ class TransferFunctionMaker:
         json_path = self._cfg.make_path(
             kind    = 'trfc',
             project = self._project,
-            fname   = f'block_{self._block}_{self._cfg.name}.json')
+            subdir  = f'block_{self._block}/{self._cfg.source}_to_{self._cfg.target}',
+            fname   = 'trfc.json')
 
         if json_path.exists() and not update:
             log.info(f'Transfer function found in {json_path}')
