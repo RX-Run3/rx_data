@@ -204,7 +204,7 @@ class TransferFunctionMaker:
         ftr = Fitter(pdf = pdf, data = data)
         res = ftr.fit(cfg = self._cfg.fits)
 
-        print(res)
+        log.info(res)
 
         ptr = ZFitPlotter(data = data, model = pdf)
         ptr.run(cfg = self._cfg.plots)

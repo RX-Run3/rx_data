@@ -16,7 +16,7 @@ qsq:
     target     : jpsi
     models     : [cbl, cbr]
     plots      : 
-      plot_range : [4500, 5800]
+      plot_range : [4600, 6000]
   - source     : jpsi
     target     : psi2
     models     : [suj, cbl]
