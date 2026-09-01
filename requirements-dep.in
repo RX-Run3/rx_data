@@ -55,6 +55,7 @@ scipy
 seaborn
 tabulate2
 tensorflow
+tensorflow-graphics
 toml
 tqdm
 typer
