@@ -37,6 +37,8 @@ from .configs             import CompositeYieldConf
 from .configs             import YieldConf
 from .configs             import YieldsConf
 
+from .regular_interpolator import RegularInterpolator
+
 __all__ = [
     'Function',
     'CorrectionImplementation',
@@ -71,6 +73,7 @@ __all__ = [
     'Constraint',
     'ModelFactory',
     'ModelFactoryConf',
+    'RegularInterpolator',
     # ---------------------
     'FermiDirac',
     'ModExp',
