@@ -1,13 +1,20 @@
+'''
+Module holding RegularInterpolator
+'''
+
 import numpy             as np
 import numpy.typing      as npt
 import tensorflow        as tf
 
+from dmu                                    import LogStore
 from tensorflow_graphics.math.interpolation import bspline
 from tensorflow                             import Tensor
 
 type NpFltArr = npt.NDArray[np.float64]
+
+log=LogStore.add_logger('dmu:stats:regular_interpolator')
 # ------------------------------
-class RegularInterpolator[T]:
+class RegularInterpolator[T : (NpFltArr,Tensor)]:
     '''
     Class meant to interpolate regular grids of points
     '''
@@ -25,9 +32,29 @@ class RegularInterpolator[T]:
         int: Interpolation degree
         '''
         self.__xs     = xs
-        self.__ys     = tf.constant(ys, dtype=tf.float32)
+        self.__ys     = tf.constant(ys, dtype=tf.float64)
         self.__degree = degree
         self.__dx     = xs[1] - xs[0]
+    # ------------------------------
+    def __get_positions(self, xs : T) -> T:
+        min_ind   = 0.0
+        max_ind   = len(self.__xs) - self.__degree - 1.0
+        positions = (xs - self.__xs[0]) / self.__dx - 1.0
+
+        if isinstance(positions, tf.Tensor):
+            log.debug('Clipping tensor')
+            positions = tf.clip_by_value(
+                t              = positions,
+                clip_value_min = min_ind,
+                clip_value_max = max_ind)
+        else:
+            log.debug('Clipping array')
+            positions = np.clip(
+                a     = positions,
+                a_min = min_ind,
+                a_max = max_ind)
+
+        return positions
     # ------------------------------
     def interpolate(self, xs : T) -> T:
         '''
@@ -39,17 +66,7 @@ class RegularInterpolator[T]:
         -------------
         Interpolated values, Tensor or numpy array
         '''
-        min_ind   = 0.0
-        max_ind   = len(self.__xs) - self.__degree - 1.0
-        positions = (xs - self.__xs[0]) / self.__dx - 1.0
-
-        positions = np.clip(
-            a     = positions,
-            a_min = min_ind,
-            a_max = max_ind)
-
-        positions = tf.constant(positions, dtype=tf.float32)
-
+        positions    = self.__get_positions(xs = xs)
         result       = bspline.interpolate(
             positions= positions,
             knots    = self.__ys,
