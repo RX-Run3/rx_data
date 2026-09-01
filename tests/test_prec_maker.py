@@ -12,7 +12,7 @@ from rx_common      import Block, Cuts, Trigger, Qsq
 
 @pytest.mark.parametrize('source', [Qsq.jpsi, Qsq.psi2])
 @pytest.mark.parametrize('target', [Qsq.jpsi, Qsq.psi2])
-def test_simple(tmp_path : Path, source : Qsq, target : Qsq):
+def test_resonant(tmp_path : Path, source : Qsq, target : Qsq):
     '''
     Simplest test
     '''
@@ -24,6 +24,34 @@ def test_simple(tmp_path : Path, source : Qsq, target : Qsq):
         project  = trig.project,
         source   = source,
         target   = target)
+
+    sel  = {Cuts.block : f'block == {block.value}'}
+    ctx1 = DataStore.selection(sel = sel, update = False)
+    ctx2 = PrecMaker.diagnostics(path = tmp_path)
+
+    with ExitStack() as stack:
+        stack.enter_context(ctx1)
+        stack.enter_context(ctx2)
+
+        obj = PrecMaker(
+            cfg     = cfg[0], 
+            block   = block,
+            trigger = trig)
+        obj.get_pdf()
+
+@pytest.mark.parametrize('source', [Qsq.jpsi, Qsq.psi2])
+def test_rare(tmp_path : Path, source : Qsq):
+    '''
+    Simplest test
+    '''
+    trig  = Trigger.rk_ee_os
+    block = Block(value = 5)
+
+    cfg = TransferFunctionMakerConf.load(
+        variable = 'none',
+        project  = trig.project,
+        source   = source,
+        target   = Qsq.high)
 
     sel  = {Cuts.block : f'block == {block.value}'}
     ctx1 = DataStore.selection(sel = sel, update = False)
