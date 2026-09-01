@@ -27,11 +27,9 @@ def test_resonant(tmp_path : Path, source : Qsq, target : Qsq):
 
     sel  = {Cuts.block : f'block == {block.value}'}
     ctx1 = DataStore.selection(sel = sel, update = False)
-    ctx2 = PrecMaker.diagnostics(path = tmp_path)
 
     with ExitStack() as stack:
         stack.enter_context(ctx1)
-        stack.enter_context(ctx2)
 
         obj = PrecMaker(
             cfg     = cfg[0], 
