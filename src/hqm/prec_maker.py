@@ -33,7 +33,7 @@ class PrecMaker:
     '''
     # -------------------------
     def __init__(
-        self, 
+        self,
         block   : Block,
         trigger : Trigger,
         cfg     : TransferFunctionMakerConf):
@@ -41,10 +41,10 @@ class PrecMaker:
         Parameters
         ----------------
         block: Determines part of the data been processed
-        cfg  : Configuration for transfer function 
+        cfg  : Configuration for transfer function
         '''
         self.__trig = trigger
-        self.__cfg  = cfg 
+        self.__cfg  = cfg
         self.__block= block
     # -------------------------
     def __get_masses(self, out_dir : Path) -> NpFltArr:
@@ -55,7 +55,7 @@ class PrecMaker:
 
         Returns
         -----------
-        Numpy array with floats representing masses 
+        Numpy array with floats representing masses
         from low sideband in muon channel
         '''
         qsq  = self.__cfg.source
@@ -138,7 +138,7 @@ class PrecMaker:
             fname   = 'part-reco.json')
     # -------------------------
     def get_pdf(
-        self, 
+        self,
         update: bool,
         name  : str = 'prec') -> SplinePDF:
         '''
