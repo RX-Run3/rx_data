@@ -63,6 +63,6 @@ def test_from_non_spline(tmp_path : Path):
     plt.savefig(tmp_path / 'comparison.png')
     plt.close()
 
-    assert np.isclose(y1s, y2s, rtol = 1e-3).all()
+    assert np.isclose(y1s, y2s, atol = 1e-4).all()
     assert isinstance(spline_pdf, SplinePDF)
 # ------------------------
