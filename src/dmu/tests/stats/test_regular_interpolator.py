@@ -21,7 +21,7 @@ def test_numpy(tmp_path : Path):
     ys  = itp.interpolate(xs = xs)
 
     plt.scatter(xs    , ys      , s = 1)
-    plt.scatter(x_grid, y_grid  , s = 1)
+    plt.scatter(x_grid, y_grid  , s = 2)
     plt.savefig(tmp_path / 'interpolation.png')
     plt.close()
 # ---------------------------------------
@@ -41,6 +41,7 @@ def test_tensor(tmp_path : Path):
     ys  = ys.numpy()
 
     plt.scatter(xs    , ys      , s = 1)
-    plt.scatter(x_grid, y_grid  , s = 1)
+    plt.scatter(x_grid, y_grid  , s = 2)
     plt.savefig(tmp_path / 'interpolation.png')
     plt.close()
+# ---------------------------------------
