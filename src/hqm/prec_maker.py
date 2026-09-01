@@ -5,8 +5,6 @@ import numpy
 import numpy.typing      as npt
 import matplotlib.pyplot as plt
 
-from contextlib     import contextmanager
-from contextvars    import ContextVar
 from pathlib        import Path
 from dmu.stats      import ZFitPlotter, ZFitPlotterConf, zfit
 from typing         import Final
@@ -26,7 +24,6 @@ log=LogStore.add_logger('hqm:prec_maker')
 
 _FFT_NPT         : Final[int]              = 2000
 _DATA_SAMPLE     : Final[Component]        = Component.data_24
-_DIAGNOSTICS_DIR : ContextVar[Path | None] = ContextVar('_DIAGNOSTICS_DIR', default = None)
 # -----------------------------------
 class PrecMaker:
     '''
@@ -76,8 +73,12 @@ class PrecMaker:
 
         return arr_raw
     # -------------------------
-    def __get_muon_pdf(self) -> zpdf:
+    def __get_muon_pdf(self, out_dir : Path) -> zpdf:
         '''
+        Parameters
+        -------------
+        out_dir: Directory where outputs will go
+
         Returns
         -------------
         KDE representing muon part reco
@@ -87,14 +88,13 @@ class PrecMaker:
             obs  = self.__cfg.observable.kde_obs,
             data = arr_mass)
 
-        out_dir = _DIAGNOSTICS_DIR.get()
-        if out_dir is None:
-            return pdf
+        out_path = out_dir / 'fit.png'
+        log.info(f'Saving to: {out_path}')
 
         cfg = ZFitPlotterConf.default()
         ptr = ZFitPlotter(data = arr_mass, model = pdf)
         ptr.run(cfg)
-        plt.savefig(out_dir / 'fit.png')
+        plt.savefig(out_path)
         plt.close()
 
         return pdf
@@ -125,24 +125,6 @@ class PrecMaker:
             subdir  = f'block_{self.__block}/{self.__cfg.source}_to_{self.__cfg.target}',
             fname   = 'part-reco.json')
     # -------------------------
-    @classmethod
-    def diagnostics(cls, path : Path):
-        '''
-        Parameters
-        ---------------
-        path: Directory path where diagnostics plots will go 
-        '''
-        token = _DIAGNOSTICS_DIR.set(path)
-
-        @contextmanager
-        def _context():
-            try:
-                yield
-            finally:
-                _DIAGNOSTICS_DIR.reset(token)
-
-        return _context()
-    # -------------------------
     def get_pdf(self, name : str = 'prec') -> SplinePDF:
         '''
         Return
@@ -153,7 +135,7 @@ class PrecMaker:
         if path.exists():
             return SplinePDF.from_json(path = path)
 
-        pdf_mm = self.__get_muon_pdf()
+        pdf_mm = self.__get_muon_pdf(out_dir = path.parent)
         trf    = self.__get_trfc()
 
         pdf_ee = zfit.pdf.FFTConvPDFV1(
@@ -166,20 +148,18 @@ class PrecMaker:
         pdf = SplinePDF.from_non_spline(pdf = pdf_ee)
         pdf.to_json(path = path)
 
-        out_dir = _DIAGNOSTICS_DIR.get()
-        if out_dir is None:
-            return pdf
-
-        xs    = numpy.linspace(3000, 6000, num = 1000)
+        xs    = numpy.linspace(3500, 7000, num = 1000)
         ys_mm = pdf_mm.pdf(xs)
         ys_ee = pdf_ee.pdf(xs)
 
+        out_path = path.parent / 'pdf.png'
+        log.info(f'Saving to: {out_path}')
         plt.scatter(xs, ys_mm, s=1, label = 'Muon')
         plt.scatter(xs, ys_ee, s=1, label = 'Electron')
         plt.title(f'{self.__cfg.source.latex} to {self.__cfg.target.latex}')
         plt.legend()
         plt.grid()
-        plt.savefig(out_dir / 'pdf.png')
+        plt.savefig(out_path)
         plt.close()
 
         return pdf
