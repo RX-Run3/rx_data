@@ -6,6 +6,7 @@ import numpy        as np
 import numpy.typing as npt
 
 from pathlib               import Path
+from tensorflow            import Tensor
 from pydantic              import BaseModel
 from dmu.generic           import Serializable
 
@@ -91,6 +92,9 @@ class SplinePDF(zfit.pdf.ZPDF):
         lower, upper = range_from_obs(obs = pdf.space)
         xs = np.linspace(lower, upper, npoints)
         ys = pdf.pdf(xs)
+
+        if isinstance(ys, Tensor):
+            ys = ys.numpy()
 
         return cls(obs = pdf.space, xs = xs, ys = ys)
     # ------------------------------
