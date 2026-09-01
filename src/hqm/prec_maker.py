@@ -157,6 +157,7 @@ class PrecMaker:
         plt.scatter(xs, ys_ee, s=1, label = 'Electron')
         plt.title(f'{self.__cfg.source.latex} to {self.__cfg.target.latex}')
         plt.legend()
+        plt.grid()
         plt.savefig(out_dir / 'pdf.png')
         plt.close()
 
