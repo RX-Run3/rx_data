@@ -47,8 +47,12 @@ class PrecMaker:
         self.__cfg  = cfg 
         self.__block= block
     # -------------------------
-    def __get_masses(self) -> NpFltArr:
+    def __get_masses(self, out_dir : Path) -> NpFltArr:
         '''
+        Parameters
+        -----------
+        out_dir: Directory where outputs go
+
         Returns
         -----------
         Numpy array with floats representing masses 
@@ -75,6 +79,8 @@ class PrecMaker:
                 comp= _DATA_SAMPLE,
                 qsq = qsq)
 
+            obj.save_selection(path = out_dir / 'muon_selection.json')
+
         arr_raw, _ = obj.get_array(mass = Mass.bp_bcor)
 
         return arr_raw
@@ -89,7 +95,7 @@ class PrecMaker:
         -------------
         KDE representing muon part reco
         '''
-        arr_mass = self.__get_masses()
+        arr_mass = self.__get_masses(out_dir = out_dir)
         pdf      = zfit.pdf.KDE1DimISJ(
             obs  = self.__cfg.observable.kde_obs,
             data = arr_mass)
