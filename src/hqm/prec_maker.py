@@ -22,8 +22,10 @@ type NpFltArr = npt.NDArray[numpy.float64]
 
 log=LogStore.add_logger('hqm:prec_maker')
 
-_FFT_NPT         : Final[int]              = 2000
-_DATA_SAMPLE     : Final[Component]        = Component.data_24
+_FFT_NPT         : Final[int]       = 2000
+_DATA_SAMPLE     : Final[Component] = Component.data_24
+_MISSING_BLOCKS  : Final[set[int]]  = {4,3,2,1}   # blocks for which muon mass does not go all the way to 3.5 GeV
+_PATCHING_BLOCK  : Final[int]       = 5           # will use this block instead of missing blocks
 # -----------------------------------
 class PrecMaker:
     '''
@@ -58,6 +60,10 @@ class PrecMaker:
         sel            = dict()
         sel[Cuts.q2]   = f'(q2 > {qsq.lower_bound}) & (q2 < {qsq.upper_bound})'
         sel[Cuts.mass] = f'{mass} < 5180'
+
+        if self.__block.to_int() in _MISSING_BLOCKS:
+            log.warning(f'Using {_PATCHING_BLOCK} instead of {self.__block} block')
+            sel[Cuts.block] = f'block == {_PATCHING_BLOCK}'
 
         trig        = Trigger.get_main_trigger(
             channel = Channel.mm,
