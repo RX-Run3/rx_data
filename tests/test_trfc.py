@@ -72,7 +72,7 @@ def test_psi2_high_brem(
         project = Project.rk,
         block   = Block(value = 1) )
 
-    trf = obj.get_trf()
+    trf = obj.get_trf(update = True)
 
     path = tmp_path / 'transfer_function.json'
     trf.to_json(path = path)
