@@ -16,11 +16,16 @@ from .utilities           import save_fit
 from .utilities           import pdf_to_tex
 from .utilities           import is_pdf_usable
 from .zfit_plotter        import ZFitPlotter, ZFitPlotterConf
+# ----------------------------------------------
+# PDFs
+# ----------------------------------------------
 from .zfit_models         import ModExp
 from .zfit_models         import HypExp
 from .function            import Function
 from .zfit_models         import FermiDirac 
 from .ipatia              import Ipatia 
+from .spline              import SplinePDF
+# ----------------------------------------------
 from .fit_conf            import FitConf, KDEConf, PaddingConf
 from .imports             import zfit
 from .imports             import tensorflow
@@ -79,6 +84,7 @@ __all__ = [
     'ModExp',
     'HypExp',
     'Ipatia',
+    'SplinePDF',
     # ---------------------
     'MethodRegistry',
     'Constraint1D',
