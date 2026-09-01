@@ -13,6 +13,7 @@ from .utilities            import range_from_obs
 from .regular_interpolator import RegularInterpolator
 
 type zobs     = zfit.Space
+type zpdf     = zfit.pdf.BasePDF
 type NpFltArr = npt.NDArray[np.float64]
 # ------------------------------
 class _SplineRepr(BaseModel, Serializable):
@@ -78,6 +79,20 @@ class SplinePDF(zfit.pdf.ZPDF):
         )
 
         repr.to_json(path = path)
+    # ------------------------------
+    @classmethod
+    def from_non_spline(cls, pdf : zpdf, npoints : int = 400) -> 'SplinePDF':
+        '''
+        Parameters
+        --------------
+        pdf    : zfit PDF
+        npoints: Number of points needed to scan PDF
+        '''
+        lower, upper = range_from_obs(obs = pdf.space)
+        xs = np.linspace(lower, upper, npoints)
+        ys = pdf.pdf(xs)
+
+        return cls(obs = pdf.space, xs = xs, ys = ys)
     # ------------------------------
     @classmethod
     def from_json(cls, path : Path) -> 'SplinePDF':
