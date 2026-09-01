@@ -63,3 +63,27 @@ hqm make-trfc -b 1 -p rkst -s jpsi -t high
 
 For block `1` and for each of the other 7 blocks.
 
+## Make part reco PDFs
+
+With the transfer functions and the data in the low sideband in the muon mode
+one can calculate the expected partially reconstructed electron charmonium shapes with:
+
+```bash
+hqm make-prec -T rk_ee_os   -s jpsi -t jpsi -b 5
+hqm make-prec -T rk_ee_os   -s jpsi -t psi2 -b 5
+hqm make-prec -T rk_ee_os   -s jpsi -t high -b 5
+
+hqm make-prec -T rk_ee_os   -s psi2 -t jpsi -b 5
+hqm make-prec -T rk_ee_os   -s psi2 -t psi2 -b 5
+hqm make-prec -T rk_ee_os   -s psi2 -t high -b 5
+
+hqm make-prec -T rkst_ee_os -s jpsi -t jpsi -b 5
+hqm make-prec -T rkst_ee_os -s jpsi -t psi2 -b 5
+hqm make-prec -T rkst_ee_os -s jpsi -t high -b 5
+
+hqm make-prec -T rkst_ee_os -s psi2 -t jpsi -b 5
+hqm make-prec -T rkst_ee_os -s psi2 -t psi2 -b 5
+hqm make-prec -T rkst_ee_os -s psi2 -t high -b 5
+```
+
+For e.g. block 5.

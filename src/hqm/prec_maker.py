@@ -137,14 +137,22 @@ class PrecMaker:
             subdir  = f'block_{self.__block}/{self.__cfg.source}_to_{self.__cfg.target}',
             fname   = 'part-reco.json')
     # -------------------------
-    def get_pdf(self, name : str = 'prec') -> SplinePDF:
+    def get_pdf(
+        self, 
+        update: bool,
+        name  : str = 'prec') -> SplinePDF:
         '''
+        Parameters
+        ------------------
+        update: If True will remake PDF fits, even if found already
+        name  : Name of PDF
+
         Return
         -----------
         Zfit PDF for electron channel representing part reco background
         '''
         path = self.__get_path()
-        if path.exists():
+        if path.exists() and not update:
             return SplinePDF.from_json(path = path)
 
         pdf_mm = self.__get_muon_pdf(out_dir = path.parent)
