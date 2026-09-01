@@ -11,6 +11,7 @@ from pathlib        import Path
 from dmu.stats      import ZFitPlotter, ZFitPlotterConf, zfit
 from typing         import Final
 from dmu            import LogStore
+from dmu.stats      import SplinePDF
 from hqm.config     import TransferFunctionMakerConf
 from hqm.data_store import DataStore
 from rx_common      import Block, Channel, Component, Mass, Cuts, Trigger
@@ -18,6 +19,7 @@ from hqm.trfc       import TransferFunction
 
 type zobs     = zfit.Space
 type zpdf     = zfit.pdf.BasePDF
+type zcnv     = zfit.pdf.FFTConvPDFV1
 type NpFltArr = npt.NDArray[numpy.float64]
 
 log=LogStore.add_logger('hqm:prec_maker')
@@ -111,6 +113,18 @@ class PrecMaker:
 
         return TransferFunction.from_json(path = path)
     # -------------------------
+    def __get_path(self) -> Path:
+        '''
+        Returns
+        --------------
+        Path to JSON file where PDF should be stored
+        '''
+        return self.__cfg.make_path(
+            kind    = 'part-reco',
+            project = self.__trig.project,
+            subdir  = f'block_{self.__block}/{self.__cfg.source}_to_{self.__cfg.target}',
+            fname   = 'part-reco.json')
+    # -------------------------
     @classmethod
     def diagnostics(cls, path : Path):
         '''
@@ -129,12 +143,16 @@ class PrecMaker:
 
         return _context()
     # -------------------------
-    def get_pdf(self, name : str = 'prec') -> zpdf:
+    def get_pdf(self, name : str = 'prec') -> SplinePDF:
         '''
         Return
         -----------
         Zfit PDF for electron channel representing part reco background
         '''
+        path = self.__get_path()
+        if path.exists():
+            return SplinePDF.from_json(path = path)
+
         pdf_mm = self.__get_muon_pdf()
         trf    = self.__get_trfc()
 
@@ -145,9 +163,12 @@ class PrecMaker:
             name  = name,
             n     = _FFT_NPT)
 
+        pdf = SplinePDF.from_non_spline(pdf = pdf_ee)
+        pdf.to_json(path = path)
+
         out_dir = _DIAGNOSTICS_DIR.get()
         if out_dir is None:
-            return pdf_ee
+            return pdf
 
         xs    = numpy.linspace(3000, 6000, num = 1000)
         ys_mm = pdf_mm.pdf(xs)
@@ -161,5 +182,5 @@ class PrecMaker:
         plt.savefig(out_dir / 'pdf.png')
         plt.close()
 
-        return pdf_ee
+        return pdf
 # -----------------------------------
