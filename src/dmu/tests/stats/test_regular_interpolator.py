@@ -1,13 +1,22 @@
 '''
 Module with tests for RegularIterpolator class
 '''
+import pytest
 import numpy             as np
 import matplotlib.pyplot as plt
 import tensorflow        as tf
 
 from pathlib   import Path
 from dmu.stats import RegularInterpolator
+from dmu       import LogStore
 
+# ----------------------
+@pytest.fixture(scope='session', autouse=True)
+def initialize():
+    '''
+    This will run before any test
+    '''    
+    LogStore.set_level('dmu:stats:regular_interpolator', 10)
 # ---------------------------------------
 def test_numpy(tmp_path : Path):
     '''
