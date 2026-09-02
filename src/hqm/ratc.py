@@ -10,6 +10,7 @@ from pydantic       import BaseModel
 from dmu.stats      import FitResult
 from dmu.generic    import Serializable
 from hqm.data_store import DataStore
+from hqm.prec_maker import PrecMaker
 from hqm.pdf_mc     import PdfBuilder
 from hqm.config     import CCbarRatioCalculatorConf, TransferFunctionMakerConf
 from hqm.trfc       import TransferFunction, TransferFunctionMaker
@@ -274,37 +275,18 @@ class CCbarRatioCalculator:
         Extended PDF from partially reconstructed component in `qsq_tgt` bin for component associated to `qsq_src`.
         E.g. $B -> \psi(2S) X$ PDF in high-q2 bin for `qsq_comp=psi2` and `qsq_tgt=high`
         '''
-        trf       = self.__get_trfc(qsq_src = qsq_src, qsq_tgt = qsq_tgt)
-        arr_src   = self.__get_source_data(qsq = qsq_src)
+        cfg = TransferFunctionMakerConf.load(
+            variable = 'none',
+            project  = self._project,
+            source   = qsq_src,
+            target   = qsq_tgt)
 
-        kde_obs   = self._cfg.observable.kde_obs
-        zdata     = zfit.Data.from_numpy(kde_obs, array=arr_src)
-        pdf_src   = zfit.pdf.KDE1DimISJ(
-            obs      = kde_obs,
-            norm     = self._cfg.observable.fit_obs,
-            data     = zdata,
-            name     = 'PRec')
+        obj = PrecMaker(
+            cfg     = cfg[0], 
+            block   = self._block,
+            project = self._project)
 
-        comp             = self.__component_from_qsq(
-            qsq          = qsq_src,
-            is_part_reco = True)
-
-        pdf_tgt   = zfit.pdf.FFTConvPDFV1(
-            func  = pdf_src,
-            kernel= trf.pdf,
-            name  = comp,
-            obs   = self._cfg.observable.kde_obs,
-            norm  = self._cfg.observable.fit_obs,
-            n     = self._cfg.fft_npt)
-
-        nevt = self._cfg.parameters.get_part_reco_yield(qsq_comp = qsq_src, qsq_bin = qsq_tgt)
-        pdf_tgt.set_yield(nevt)
-
-        self._plotter.plot_model(name = f'trf_{qsq_src}_{qsq_tgt}', pdf = trf.pdf)
-        self._plotter.plot_model(name = f'prc_{qsq_src}_{qsq_tgt}', pdf = pdf_tgt)
-        self._plotter.plot_fit(name = f'kde_{qsq_src}_{qsq_tgt}', data= arr_src, pdf = pdf_src)
-
-        return pdf_tgt
+        return obj.get_pdf(update = True)
     #-----------------------------
     def __get_source_data(self, qsq : Qsq) -> numpy.ndarray:
         '''
