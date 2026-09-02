@@ -17,10 +17,9 @@ log       = LogStore.add_logger('rx_hqm:config')
 type zpar = zfit.Parameter
 type zpdf = zfit.pdf.BasePDF
 
-_LOWER_ALL     : Final[float] = 3000
-_UPPER_ALL     : Final[float] = 7000
-_NCACHE        : Final[int]   = 50     # Number used with lru_cache, for e.g. yield retrieval
-_NONE_VAR      : Final[str]   = 'none' # Name of variable when not binning
+_LOWER_ALL     : Final[float]    = 3000
+_UPPER_ALL     : Final[float]    = 7500
+_NONE_VAR      : Final[str]      = 'none' # Name of variable when not binning
 _CACHED_PARAMS : dict[str, zpar] = dict()
 # -------------------------------------------------------------------
 class ParamConf(RootModel[dict[str,tuple[float,float,float]]], frozen = True):
