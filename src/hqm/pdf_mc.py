@@ -12,7 +12,7 @@ from rx_common      import Component, Cuts, Mass, Trigger, Qsq
 from dmu            import LogStore
 from dmu.stats      import Fitter, Model, ModelFactory, FittedModel
 from dmu.stats      import ZFitPlotter, ZFitPlotterConf, zfit
-from hqm.data_store import DataStore 
+from hqm.data_store import DataStore
 
 log=LogStore.add_logger('hqm:pdf_md')
 
@@ -98,9 +98,9 @@ class PdfBuilderConf(BaseModel, frozen = True):
         raise ValueError(f'Invalid component: {comp}')
     # ----------------------------
     def read_conf(
-        self, 
-        comp : Component, 
-        trig : Trigger, 
+        self,
+        comp : Component,
+        trig : Trigger,
         qsq  : Qsq) -> RangesConf:
         '''
         Returns
@@ -141,7 +141,7 @@ class PdfBuilder:
     '''
     # ----------------------------
     def __init__(
-        self, 
+        self,
         name   : str,
         comp   : Component,
         trigger: Trigger,
@@ -170,7 +170,7 @@ class PdfBuilder:
         return f'{self.__comp}_{self.__trig}_{self.__qsq}'
     # ----------------------------
     def _fit_models(
-        self, 
+        self,
         data    : zdat,
         models  : list[Model],
         cfg_par : RangesConf) -> FittedModel:
@@ -196,16 +196,16 @@ class PdfBuilder:
 
         fmod = FittedModel.from_fit(
             name= name,
-            cfg = fac.cfg, 
-            pdf = pdf, 
+            cfg = fac.cfg,
+            pdf = pdf,
             res = res)
 
-        return fmod 
+        return fmod
     # ----------------------------
     def _get_data(
-        self, 
-        obs       : zobs, 
-        mass      : Mass, 
+        self,
+        obs       : zobs,
+        mass      : Mass,
         can_merge : bool) -> zdat:
         '''
         Parameters
@@ -224,14 +224,14 @@ class PdfBuilder:
         masses, weights = obj.get_array(mass = mass)
 
         data        = zfit.Data.from_numpy(
-            obs     = obs, 
-            array   = masses, 
+            obs     = obs,
+            array   = masses,
             weights = weights)
 
         if not isinstance(data, zfit.Data):
             raise ValueError('Invalid data')
 
-        nentries = data.num_entries 
+        nentries = data.num_entries
         models   = self.__cfg.mod_cfg.get_model(nentries = nentries)
         if models:
             log.info(f'Not merging, model found with {nentries} entries: {models}')
@@ -248,9 +248,9 @@ class PdfBuilder:
         return data
     # ----------------------------
     def _plot_fit(
-        self, 
-        cfg_par : RangesConf, 
-        data    : zdat, 
+        self,
+        cfg_par : RangesConf,
+        data    : zdat,
         pdf     : zpdf) -> None:
         cfg_plt    = ZFitPlotterConf.default()
 
@@ -288,7 +288,7 @@ class PdfBuilder:
                 self.model_path.unlink()
 
         cfg_par  = self.__cfg.read_conf(
-            comp = self.__comp, 
+            comp = self.__comp,
             trig = self.__trig,
             qsq  = self.__qsq )
 
@@ -302,10 +302,10 @@ class PdfBuilder:
 
         fmod = self._fit_models(
             data    = data,
-            cfg_par = cfg_par, 
+            cfg_par = cfg_par,
             models  = models)
 
         fmod.to_json(path = self.model_path)
 
-        return fmod 
+        return fmod
 # ----------------------------
