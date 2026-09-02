@@ -15,8 +15,11 @@ from rx_common   import Component, Project, Qsq
 
 log = LogStore.add_logger('rx_hqm:config')
 
-_NCACHE   : Final[int] = 50     # Number used with lru_cache, for e.g. yield retrieval
-_NONE_VAR : Final[str] = 'none' # Name of variable when not binning
+_LOWER_ALL : Final[float] = 3000
+_UPPER_ALL : Final[float] = 7000
+_NCACHE    : Final[int]   = 50     # Number used with lru_cache, for e.g. yield retrieval
+_NONE_VAR  : Final[str]   = 'none' # Name of variable when not binning
+
 zpar = zfit.Parameter
 zpdf = zfit.pdf.BasePDF
 # -------------------------------------------------------------------
@@ -57,26 +60,18 @@ class ParamConf(RootModel[dict[str,tuple[float,float,float]]], frozen = True):
         Efficiency due to mass cut associated to normalization range
         with respect to observable range
         '''
-        obs = pdf.space
-        nrm = pdf.norm
+        obs                  = pdf.space
+        lower_cut, upper_cut = sut.range_from_obs(obs = obs)
 
-        if not isinstance(nrm, zfit.Space):
-            raise ValueError(f'No normalization found for: {pdf.name}')
-
-        lower_all, upper_all = sut.range_from_obs(obs = obs)
-        lower_cut, upper_cut = sut.range_from_obs(obs = nrm)
-
-        if lower_all >= lower_cut:
+        if _LOWER_ALL >= lower_cut:
             log.error(obs)
-            log.error(nrm)
-            raise ValueError(f'For {pdf.name}, all lower range is not lower than fit lower: {lower_all} >= {lower_cut}')
+            raise ValueError(f'For {pdf.name}, all lower range is not lower than fit lower: {_LOWER_ALL} >= {lower_cut}')
 
-        if upper_all <  upper_cut:
+        if _UPPER_ALL <  upper_cut:
             log.error(f'Observable   : {obs}')
-            log.error(f'Normalization: {nrm}')
-            raise ValueError(f'For {pdf.name}, all upper range is lower than fit upper: {upper_all} < {upper_cut}')
+            raise ValueError(f'For {pdf.name}, all upper range is lower than fit upper: {_UPPER_ALL} < {upper_cut}')
 
-        integral = pdf.integrate(limits = (lower_all, upper_all)).numpy()
+        integral = pdf.integrate(limits = (_LOWER_ALL, _UPPER_ALL)).numpy()
         area     = float(integral)
         eff      = 1 / area
 
