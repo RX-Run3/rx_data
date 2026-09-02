@@ -15,8 +15,8 @@ from hqm.ratc    import CCbarRatioCalculator
 type zpdf = zfit.pdf.BasePDF
 
 # Part reco / Fully reco
-_RJPSI      : Final[float]              = 0.5
-_RPSI2      : Final[float]              = 0.5
+_RJPSI      : Final[float]              = 0.8
+_RPSI2      : Final[float]              = 0.3
 _REAL_FACTOR: Final[int  ]              = 1000 # Scale factor for synthetic version of real data
 _OBS_RANGE  : Final[tuple[float,float]] = 4600, 7000
 
@@ -35,13 +35,13 @@ def _get_fr_entries(qsq_src : Qsq, qsq_tgt : Qsq) -> int:
         return  20 * _REAL_FACTOR
 
     if qsq_src == Qsq.psi2 and qsq_tgt == Qsq.jpsi:
-        return  20 * _REAL_FACTOR
+        return   2 * _REAL_FACTOR
 
     if qsq_src == Qsq.jpsi and qsq_tgt == Qsq.psi2:
-        return  20 * _REAL_FACTOR
+        return   5 * _REAL_FACTOR
 
     if qsq_src == Qsq.psi2 and qsq_tgt == Qsq.psi2:
-        return  20 * _REAL_FACTOR
+        return   5 * _REAL_FACTOR
 
     raise ValueError('Invalid q2')
 #-------------------------------------
@@ -54,29 +54,29 @@ def _get_pr_shape(self, qsq_src : Qsq, qsq_tgt : Qsq) -> tuple[float,float]:
         return 4700, 50 
 
     if qsq_src == Qsq.psi2 and qsq_tgt == Qsq.psi2:
-        return 4700, 50 
+        return 5000, 50 
 
     if qsq_src == Qsq.jpsi and qsq_tgt == Qsq.psi2:
-        return 5000, 50 
+        return 4700, 50 
 
     raise ValueError(f'Invalid q2 bin: {qsq_src}')
 #-------------------------------------
 def _get_fr_shape(self, comp : Component, qsq : Qsq) -> tuple[float,float]:
     _  = self
     jj = comp == Component.bpkpjpsiee and qsq == Qsq.jpsi
-    pp = comp == Component.bpkppsi2ee and qsq == Qsq.psi2
+    pj = comp == Component.bpkppsi2ee and qsq == Qsq.jpsi
 
     jp = comp == Component.bpkpjpsiee and qsq == Qsq.psi2
-    pj = comp == Component.bpkppsi2ee and qsq == Qsq.jpsi
+    pp = comp == Component.bpkppsi2ee and qsq == Qsq.psi2
 
     if jj or pp:
         mu = 5300
         sg = 50
-    elif jp:
-        mu = 6000
-        sg = 50
     elif pj:
         mu = 4900
+        sg = 50
+    elif jp:
+        mu = 6000
         sg = 50
     else:
         raise ValueError(f'Invalid component/qsq: {comp}/{qsq}')
