@@ -58,7 +58,7 @@ class CCbarRatioCalculator:
         self._project  = project
         self._block    = block
         self._out_dir  = self._cfg.make_path(kind='ratios', project = project)
-        self._plotter  = Plotter()
+        self._plotter  = Plotter(out_dir = self._out_dir)
     #-----------------------------
     def __get_ratio(self) -> CCbarRatio:
         '''
