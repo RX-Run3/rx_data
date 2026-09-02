@@ -194,11 +194,10 @@ def test_unbinned(monkeypatch, tmp_path : Path):
     cfg   = cfgs[0]
     block = Block(value = 1)
 
-    with Plotter.plot(path = tmp_path / 'plots'):
-        cal         = CCbarRatioCalculator(
-            cfg     = cfg,
-            block   = block,
-            project = Project.rk)
+    cal         = CCbarRatioCalculator(
+        cfg     = cfg,
+        block   = block,
+        project = Project.rk)
 
-        cal.get_ratio()
+    cal.get_ratio()
 #-------------------------------------

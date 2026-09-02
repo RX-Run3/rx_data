@@ -9,10 +9,6 @@ from pathlib        import Path
 from dmu.stats      import zfit
 from dmu.stats      import utilities as sut
 from dmu.stats      import ZFitPlotterConf, ZFitPlotter
-from contextlib     import contextmanager
-from contextvars    import ContextVar
-
-_PLOT_DIR : ContextVar[Path|None] = ContextVar('_PLOT_DIR', default = None)
 
 type Loss     = zfit.loss.ExtendedUnbinnedNLL
 type zpdf     = zfit.pdf.BasePDF
@@ -23,6 +19,14 @@ class Plotter:
     '''
     Class meant to hold plotting functionality 
     '''
+    #-----------------------------
+    def __init__(self, out_dir : Path):
+        '''
+        Parameters
+        ----------------
+        out_dir: Directory where all the plots will go
+        '''
+        self.__out_dir = out_dir
     #-----------------------------
     def __get_plot_range(self, pdf : zpdf, data : zdat | NpFltArr) -> tuple[float,float]:
         '''
@@ -40,25 +44,6 @@ class Plotter:
         upper = array.max() 
 
         return lower, upper
-    #-----------------------------
-    @classmethod
-    def plot(cls, path : Path):
-        '''
-        Parameters
-        -----------------
-        path: Path to directory where plots will be saved in this context
-        '''
-        path.mkdir(parents = True, exist_ok = True)
-
-        @contextmanager
-        def _context():
-            token = _PLOT_DIR.set(path)
-            try:
-                yield
-            finally:
-                _PLOT_DIR.reset(token)
-
-        return _context()
     #-----------------------------
     def plot_data(self, name : str, data : zfit.Data) -> None:
         '''
@@ -78,11 +63,7 @@ class Plotter:
         name : Used to build path, i.e. {PATH_DIR}/{name}.png
         array: Data to plot
         '''
-        plt_dir = _PLOT_DIR.get()
-        if plt_dir is None:
-            return
-
-        path = plt_dir / f'{name}.png'
+        path = self.__out_dir / f'{name}.png'
 
         plt.hist(array, bins = 100)
 
@@ -103,10 +84,11 @@ class Plotter:
 
         self.plot_fit(name = name, pdf = pdf, data = dat)
     #-----------------------------
-    def plot_fit(self, name : str, pdf : zpdf, data : numpy.ndarray | zfit.Data) -> None:
-        plt_dir = _PLOT_DIR.get()
-        if plt_dir is None:
-            return
+    def plot_fit(
+        self, 
+        name : str, 
+        pdf  : zpdf, 
+        data : numpy.ndarray | zfit.Data) -> None:
 
         if isinstance(data, numpy.ndarray):
             size = len(data)
@@ -123,7 +105,7 @@ class Plotter:
         ptr = ZFitPlotter(data = data, model = pdf)
         ptr.run(cfg = cfg)
 
-        plt.savefig(plt_dir / f'{name}.png')
+        plt.savefig(self.__out_dir / f'{name}.png')
         plt.close()
     #-----------------------------
     def plot_model(self, name : str, pdf : zpdf) -> None:
@@ -133,16 +115,12 @@ class Plotter:
         name : Used to build path, i.e. {PATH_DIR}/{name}.png
         pdf  : PDF 
         '''
-        plt_dir = _PLOT_DIR.get()
-        if plt_dir is None:
-            return
-
         lower, upper = sut.range_from_obs(obs = pdf.space)
 
         xs = numpy.linspace(lower, upper, 1000)
         ys = pdf.pdf(xs)
 
         plt.scatter(xs, ys, s=2)
-        plt.savefig(plt_dir / f'{name}.png')
+        plt.savefig(self.__out_dir / f'{name}.png')
         plt.close()
 #-----------------------------
