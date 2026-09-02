@@ -116,7 +116,7 @@ def _get_target_data(self, qsq : Qsq) -> numpy.ndarray:
 
     return numpy.concatenate(datasets)
 #--------------------------------------
-def _get_mc_pdf(self, comp : Component, qsq : Qsq, channel : Channel) -> zpdf:
+def _get_mc_pdf(self, comp : Component, qsq : Qsq) -> zpdf:
     mu, sg = _get_fr_shape(self = 1, comp = comp, qsq = qsq)
 
     obs = zfit.Space('B_Mass', limits = (3000, 7000))
