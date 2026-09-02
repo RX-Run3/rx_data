@@ -295,35 +295,6 @@ class CCbarRatioCalculator:
 
         return pdf
     #-----------------------------
-    def __get_source_data(self, qsq : Qsq) -> numpy.ndarray:
-        '''
-        Parameters
-        -------------
-        qsq: q2-bin from which the data meant to be smeared will be taken
-
-        Returns
-        -------------
-        Array with muon channel data to be smeared
-        '''
-        mass_cns = Mass.dtf_from_qsq(qsq = qsq, project = self._project)
-        mass_raw = Mass.raw_from_project(project = self._project)
-        trig     = Trigger.get_main_trigger(
-            project = self._project,
-            channel = _SOURCE_CHANNEL)
-
-        obj     = DataStore(
-            qsq = qsq,
-            trig= trig,
-            comp= Component.data_24)
-
-        arr_raw, _   = obj.get_array(mass = mass_raw)
-        arr_dtf, _   = obj.get_array(mass = mass_cns)
-
-        mask         = arr_dtf < self._cfg.sb_mass
-        arr_sideband = arr_raw[mask]
-
-        return arr_sideband
-    #-----------------------------
     def __get_trfc(self, qsq_src : Qsq, qsq_tgt : Qsq) -> TransferFunction:
         '''
         Parameters
