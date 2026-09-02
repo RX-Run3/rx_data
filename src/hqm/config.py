@@ -1,7 +1,7 @@
 import os
 import copy
 
-from functools   import cached_property, lru_cache
+from functools   import cached_property
 from dmu         import LogStore
 from dmu.stats   import Model, ZFitPlotterConf, zfit
 from dmu.stats   import utilities as sut
@@ -13,15 +13,15 @@ from dmu.stats   import FitConf
 from pydantic    import BaseModel, RootModel, model_validator
 from rx_common   import Component, Project, Qsq
 
-log = LogStore.add_logger('rx_hqm:config')
+log       = LogStore.add_logger('rx_hqm:config')
+type zpar = zfit.Parameter
+type zpdf = zfit.pdf.BasePDF
 
-_LOWER_ALL : Final[float] = 3000
-_UPPER_ALL : Final[float] = 7000
-_NCACHE    : Final[int]   = 50     # Number used with lru_cache, for e.g. yield retrieval
-_NONE_VAR  : Final[str]   = 'none' # Name of variable when not binning
-
-zpar = zfit.Parameter
-zpdf = zfit.pdf.BasePDF
+_LOWER_ALL     : Final[float] = 3000
+_UPPER_ALL     : Final[float] = 7000
+_NCACHE        : Final[int]   = 50     # Number used with lru_cache, for e.g. yield retrieval
+_NONE_VAR      : Final[str]   = 'none' # Name of variable when not binning
+_CACHED_PARAMS : dict[str, zpar] = dict()
 # -------------------------------------------------------------------
 class ParamConf(RootModel[dict[str,tuple[float,float,float]]], frozen = True):
     '''
@@ -84,7 +84,6 @@ class ParamConf(RootModel[dict[str,tuple[float,float,float]]], frozen = True):
 
         return eff
     # -------------------
-    @lru_cache(maxsize = _NCACHE)
     def get_ratio(self, qsq : Qsq) -> zpar:
         '''
         Parameters
@@ -103,7 +102,6 @@ class ParamConf(RootModel[dict[str,tuple[float,float,float]]], frozen = True):
             case _:
                 raise ValueError(f'Invalid bin: {qsq}')
     # -------------------
-    @lru_cache(maxsize = _NCACHE)
     def get_scale(self, qsq : Qsq) -> zpar:
         '''
         Parameters
@@ -122,7 +120,6 @@ class ParamConf(RootModel[dict[str,tuple[float,float,float]]], frozen = True):
             case _:
                 raise ValueError(f'Invalid bin: {qsq}')
     # -------------------
-    @lru_cache(maxsize = _NCACHE)
     def get_part_reco_yield(
         self,
         qsq_comp : Qsq,
@@ -159,9 +156,15 @@ class ParamConf(RootModel[dict[str,tuple[float,float,float]]], frozen = True):
         '''
         Retturns zfit parameter given name
         '''
+        if name in _CACHED_PARAMS:
+            return _CACHED_PARAMS[name]
+
         val, lower, upper = self.root[name]
 
-        return zfit.param.Parameter(name, val, lower, upper)
+        param                = zfit.param.Parameter(name, val, lower, upper)
+        _CACHED_PARAMS[name] = param
+
+        return param
 # -------------------------------------------------------------------
 class ObsConf(BaseModel, frozen = True):
     '''
