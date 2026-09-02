@@ -7,7 +7,7 @@ import numpy
 
 from typing         import Final
 from pydantic       import BaseModel
-from dmu.stats      import FitResult
+from dmu.stats      import FitResult, print_pdf
 from dmu.generic    import Serializable
 from hqm.data_store import DataStore
 from hqm.prec_maker import PrecMaker
@@ -90,6 +90,8 @@ class CCbarRatioCalculator:
             method='minuit_hesse')
 
         print(res)
+        print_pdf(nll_jpsi.model[0])
+        print_pdf(nll_psi2.model[0])
 
         res = FitResult.from_zfit(res = res)
 
