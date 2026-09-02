@@ -8,7 +8,7 @@ from contextlib     import ExitStack
 from hqm.config     import TransferFunctionMakerConf
 from hqm.data_store import DataStore
 from hqm.prec_maker import PrecMaker
-from rx_common      import Block, Cuts, Trigger, Qsq
+from rx_common      import Block, Cuts, Project, Qsq
 
 @pytest.mark.parametrize('source', [Qsq.jpsi, Qsq.psi2])
 @pytest.mark.parametrize('target', [Qsq.jpsi, Qsq.psi2])
@@ -16,12 +16,12 @@ def test_resonant(tmp_path : Path, source : Qsq, target : Qsq):
     '''
     Simplest test
     '''
-    trig  = Trigger.rk_ee_os
+    proj  = Project.rk 
     block = Block(value = 5)
 
     cfg = TransferFunctionMakerConf.load(
         variable = 'none',
-        project  = trig.project,
+        project  = proj,
         source   = source,
         target   = target)
 
@@ -34,20 +34,20 @@ def test_resonant(tmp_path : Path, source : Qsq, target : Qsq):
         obj = PrecMaker(
             cfg     = cfg[0], 
             block   = block,
-            trigger = trig)
-        obj.get_pdf()
+            project = proj)
+        obj.get_pdf(update = True)
 
 @pytest.mark.parametrize('source', [Qsq.jpsi, Qsq.psi2])
 def test_rare(tmp_path : Path, source : Qsq):
     '''
     Simplest test
     '''
-    trig  = Trigger.rk_ee_os
+    proj  = Project.rk 
     block = Block(value = 5)
 
     cfg = TransferFunctionMakerConf.load(
         variable = 'none',
-        project  = trig.project,
+        project  = proj,
         source   = source,
         target   = Qsq.high)
 
@@ -60,5 +60,5 @@ def test_rare(tmp_path : Path, source : Qsq):
         obj = PrecMaker(
             cfg     = cfg[0], 
             block   = block,
-            trigger = trig)
-        obj.get_pdf()
+            project = proj)
+        obj.get_pdf(update = True)

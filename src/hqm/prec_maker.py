@@ -12,7 +12,7 @@ from dmu            import LogStore
 from dmu.stats      import SplinePDF
 from hqm.config     import TransferFunctionMakerConf
 from hqm.data_store import DataStore
-from rx_common      import Block, Channel, Component, Mass, Cuts, Trigger
+from rx_common      import Block, Channel, Component, Mass, Cuts, Project, Trigger
 from hqm.trfc       import TransferFunction
 
 type zobs     = zfit.Space
@@ -35,15 +35,16 @@ class PrecMaker:
     def __init__(
         self,
         block   : Block,
-        trigger : Trigger,
+        project : Project,
         cfg     : TransferFunctionMakerConf):
         '''
         Parameters
         ----------------
-        block: Determines part of the data been processed
-        cfg  : Configuration for transfer function
+        block  : Determines part of the data been processed
+        cfg    : Configuration for transfer function
+        project: E.g. rk or rkst, needed to extract masses,
         '''
-        self.__trig = trigger
+        self.__proj = project 
         self.__cfg  = cfg
         self.__block= block
     # -------------------------
@@ -59,7 +60,7 @@ class PrecMaker:
         from low sideband in muon channel
         '''
         qsq  = self.__cfg.source
-        mass = Mass.raw_from_project(project = self.__trig.project)
+        mass = Mass.raw_from_project(project = self.__proj)
 
         sel            = dict()
         sel[Cuts.q2]   = f'(q2 > {qsq.lower_bound}) & (q2 < {qsq.upper_bound})'
@@ -71,7 +72,7 @@ class PrecMaker:
 
         trig        = Trigger.get_main_trigger(
             channel = Channel.mm,
-            project = self.__trig.project)
+            project = self.__proj)
 
         with DataStore.selection(sel = sel, update = True):
             obj = DataStore(
@@ -119,7 +120,7 @@ class PrecMaker:
         '''
         path = self.__cfg.make_path(
             kind    = 'trfc',
-            project = self.__trig.project,
+            project = self.__proj,
             subdir  = f'block_{self.__block}/{self.__cfg.source}_to_{self.__cfg.target}',
             fname   = 'trfc.json')
 
@@ -133,7 +134,7 @@ class PrecMaker:
         '''
         return self.__cfg.make_path(
             kind    = 'part-reco',
-            project = self.__trig.project,
+            project = self.__proj,
             subdir  = f'block_{self.__block}/{self.__cfg.source}_to_{self.__cfg.target}',
             fname   = 'part-reco.json')
     # -------------------------
