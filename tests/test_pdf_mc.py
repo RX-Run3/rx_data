@@ -4,7 +4,7 @@ Module with tests for PdfBuilder class
 import pytest
 
 from contextlib     import ExitStack
-from dmu.stats      import print_pdf
+from dmu.stats      import print_pdf, zfit
 from dmu.stats      import FittedModel
 from pathlib        import Path
 from typing         import Final
@@ -55,6 +55,8 @@ def test_simple_mm(
     sel[Cuts.q2   ] = f'(q2 > {qsq.lower_bound}) & (q2 < {qsq.upper_bound})'
     sel[Cuts.block] = f'block == {block}'
 
+    obs  = zfit.Space('B_Mass', limits = (4500, 6000))
+
     ctx2 = DataStore.selection(sel = sel, update = True)
     with ExitStack() as stack:
         stack.enter_context(ctx2)
@@ -65,7 +67,7 @@ def test_simple_mm(
             trigger = trig,
             qsq     = qsq)
 
-        mod = obj.get_model()
+        mod = obj.get_model(obs = obs)
 
         print_pdf(pdf = mod.pdf)
 # --------------------
@@ -87,7 +89,7 @@ def test_simple_ee(
     sel[Cuts.block] = f'block == {block}'
 
     ctx2 = DataStore.selection(sel = sel, update = True)
-
+    obs  = zfit.Space('B_Mass', limits = (4500, 6000))
     with ExitStack() as stack:
         stack.enter_context(ctx2)
 
@@ -97,7 +99,7 @@ def test_simple_ee(
             trigger = trig,
             qsq     = qsq)
 
-        mod = obj.get_model()
+        mod = obj.get_model(obs = obs)
         path= obj.model_path
 
         assert path.exists()

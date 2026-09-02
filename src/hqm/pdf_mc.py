@@ -273,8 +273,12 @@ class PdfBuilder:
         '''
         return self.__out_path / 'model.json'
     # ----------------------------
-    def get_model(self, obs : zobs | None = None) -> FittedModel:
+    def get_model(self, obs : zobs) -> FittedModel:
         '''
+        Parameters
+        ---------------
+        obs: Observable that this model's PDF will use
+
         Returns
         ---------------
         PDF associated to MC

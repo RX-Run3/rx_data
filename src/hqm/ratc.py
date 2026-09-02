@@ -179,13 +179,15 @@ class CCbarRatioCalculator:
         Zfit PDF from MC fit plus scaling
         '''
         trigger = Trigger.get_main_trigger(project = self._project, channel = channel)
+        obs     = self._cfg.observable.fit_obs
 
         obj = PdfBuilder(
+            name    = 'pdf_mc',
             comp    = comp,
             trigger = trigger,
             qsq     = qsq)
 
-        return obj.get_model()
+        return obj.get_model(obs = obs)
     #-----------------------------
     def __get_fr_pdf(self, qsq_src : Qsq, qsq_tgt : Qsq) -> zpdf:
         '''
