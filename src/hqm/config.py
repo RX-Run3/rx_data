@@ -15,6 +15,7 @@ from rx_common   import Component, Project, Qsq
 
 log = LogStore.add_logger('rx_hqm:config')
 
+_NCACHE   : Final[int] = 50     # Number used with lru_cache, for e.g. yield retrieval
 _NONE_VAR : Final[str] = 'none' # Name of variable when not binning
 zpar = zfit.Parameter
 zpdf = zfit.pdf.BasePDF
@@ -88,7 +89,7 @@ class ParamConf(RootModel[dict[str,tuple[float,float,float]]], frozen = True):
 
         return eff
     # -------------------
-    @lru_cache(maxsize = 5)
+    @lru_cache(maxsize = _NCACHE)
     def get_ratio(self, qsq : Qsq) -> zpar:
         '''
         Parameters
@@ -107,7 +108,7 @@ class ParamConf(RootModel[dict[str,tuple[float,float,float]]], frozen = True):
             case _:
                 raise ValueError(f'Invalid bin: {qsq}')
     # -------------------
-    @lru_cache(maxsize = 5)
+    @lru_cache(maxsize = _NCACHE)
     def get_scale(self, qsq : Qsq) -> zpar:
         '''
         Parameters
@@ -126,7 +127,7 @@ class ParamConf(RootModel[dict[str,tuple[float,float,float]]], frozen = True):
             case _:
                 raise ValueError(f'Invalid bin: {qsq}')
     # -------------------
-    @lru_cache(maxsize = 5)
+    @lru_cache(maxsize = _NCACHE)
     def get_part_reco_yield(
         self,
         qsq_comp : Qsq,
