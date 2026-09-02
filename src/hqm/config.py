@@ -71,8 +71,8 @@ class ParamConf(RootModel[dict[str,tuple[float,float,float]]], frozen = True):
             raise ValueError(f'For {pdf.name}, all lower range is not lower than fit lower: {lower_all} >= {lower_cut}')
 
         if upper_all <  upper_cut:
-            log.error(obs)
-            log.error(nrm)
+            log.error(f'Observable   : {obs}')
+            log.error(f'Normalization: {nrm}')
             raise ValueError(f'For {pdf.name}, all upper range is lower than fit upper: {upper_all} < {upper_cut}')
 
         integral = pdf.integrate(limits = (lower_all, upper_all)).numpy()
