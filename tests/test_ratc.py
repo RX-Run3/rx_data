@@ -48,16 +48,16 @@ def _get_fr_entries(qsq_src : Qsq, qsq_tgt : Qsq) -> int:
 def _get_pr_shape(self, qsq_src : Qsq, qsq_tgt : Qsq) -> tuple[float,float]:
     _  = self
     if qsq_src == Qsq.jpsi and qsq_tgt == Qsq.jpsi:
-        return 4900, 50 
-
-    if qsq_src == Qsq.jpsi and qsq_tgt == Qsq.psi2:
-        return 5100,100 
+        return 5100, 50 
 
     if qsq_src == Qsq.psi2 and qsq_tgt == Qsq.jpsi:
-        return 4500,100 
+        return 4700, 50 
 
     if qsq_src == Qsq.psi2 and qsq_tgt == Qsq.psi2:
-        return 4900, 50 
+        return 4700, 50 
+
+    if qsq_src == Qsq.jpsi and qsq_tgt == Qsq.psi2:
+        return 5000, 50 
 
     raise ValueError(f'Invalid q2 bin: {qsq_src}')
 #-------------------------------------
@@ -70,14 +70,14 @@ def _get_fr_shape(self, comp : Component, qsq : Qsq) -> tuple[float,float]:
     pj = comp == Component.bpkppsi2ee and qsq == Qsq.jpsi
 
     if jj or pp:
-        mu = 5280
-        sg = 100
+        mu = 5300
+        sg = 50
     elif jp:
         mu = 6000
-        sg = 150
+        sg = 50
     elif pj:
         mu = 4900
-        sg = 150
+        sg = 50
     else:
         raise ValueError(f'Invalid component/qsq: {comp}/{qsq}')
 
@@ -88,7 +88,7 @@ def _get_mc_pdf(self, comp : Component, qsq : Qsq) -> zpdf:
     mu, sg = _get_fr_shape(self = 1, comp = comp, qsq = qsq)
 
     obs = zfit.Space('B_Mass', limits = _OBS_RANGE)
-    mu  = zfit.Parameter(f'mu_{comp}_{qsq}', mu, 4800, 6200)
+    mu  = zfit.Parameter(f'mu_{comp}_{qsq}', mu, 4000, 7000)
     sg  = zfit.Parameter(f'sg_{comp}_{qsq}', sg,    0, 300)
 
     mu.floating = False
@@ -148,7 +148,7 @@ def _get_pr_pdf(self, qsq_src : Qsq, qsq_tgt : Qsq) -> zpdf:
         qsq_tgt = qsq_tgt)
 
     obs = zfit.Space('B_Mass', limits = _OBS_RANGE)
-    mu  = zfit.Parameter(f'mu_{qsq_src}_{qsq_tgt}', mu, 4000, 6200)
+    mu  = zfit.Parameter(f'mu_{qsq_src}_{qsq_tgt}', mu, 4000, 7000)
     sg  = zfit.Parameter(f'sg_{qsq_src}_{qsq_tgt}', sg,    0, 300)
 
     mu.floating = False
