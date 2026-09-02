@@ -208,8 +208,11 @@ class CCbarRatioCalculator:
         Fully reconstructed component's PDF, with following parametrization
 
         ```math
+        ratio       = npart_reco_total             / nfully_reco_total
+        ratio       = (npart_reco / eff_part_reco) / (nfully_reco / eff_fully_reco)
         ratio       = (npart_reco / nfully_reco) * (eff_fully_reco / eff_part_reco)
         ratio       = (npart_reco / nfully_reco) * scale
+
         nfully_reco = (npart_reco / ratio) * scale
         nfully_reco = npart_reco  * (scale / ratio)
         nfully_reco = npart_reco  * fac
@@ -286,7 +289,11 @@ class CCbarRatioCalculator:
             block   = self._block,
             project = self._project)
 
-        return obj.get_pdf(update = True)
+        pdf = obj.get_pdf(update = False)
+        npr = self._cfg.parameters.get_part_reco_yield(qsq_comp = qsq_src, qsq_bin = qsq_tgt)
+        pdf.set_yield(npr)
+
+        return pdf
     #-----------------------------
     def __get_source_data(self, qsq : Qsq) -> numpy.ndarray:
         '''
@@ -341,14 +348,18 @@ class CCbarRatioCalculator:
 
         return obj.get_trf(update = False)
     #-----------------------------
-    def get_ratio(self) -> CCbarRatio:
+    def get_ratio(self, update : bool) -> CCbarRatio:
         '''
+        Parameters
+        -----------------
+        update: If True will remake fits, etc even if outputs already exist
+
         Returns
         -----------------
         Ratio of part reco over fully reco components
         '''
         json_path = self._out_dir / 'parameters.json'
-        if json_path.exists():
+        if json_path.exists() and not update:
             log.info(f'Parameters file found: {json_path}')
             rat = CCbarRatio.from_json(path = json_path)
 
