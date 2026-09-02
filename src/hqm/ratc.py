@@ -148,6 +148,7 @@ class CCbarRatioCalculator:
         - Fully reco candidates with same decays
         '''
         pdf_prjp = self.__get_pr_pdf(qsq_src = Qsq.jpsi, qsq_tgt = qsq)
+        pdf_prjp = self.__extend_prc(qsq_src = Qsq.jpsi, qsq_tgt = qsq, pdf = pdf_prjp)
         pdf_frjp = self.__get_fr_pdf(qsq_src = Qsq.jpsi, qsq_tgt = qsq)
         self._cfg.parameters.set_scale(
             fr  = pdf_frjp,
@@ -155,6 +156,7 @@ class CCbarRatioCalculator:
             qsq = qsq)
 
         pdf_prps = self.__get_pr_pdf(qsq_src = Qsq.psi2, qsq_tgt = qsq)
+        pdf_prps = self.__extend_prc(qsq_src = Qsq.jpsi, qsq_tgt = qsq, pdf = pdf_prps)
         pdf_frps = self.__get_fr_pdf(qsq_src = Qsq.psi2, qsq_tgt = qsq)
         self._cfg.parameters.set_scale(
             fr  = pdf_frps,
@@ -165,6 +167,23 @@ class CCbarRatioCalculator:
         obs  = self._cfg.observable.fit_obs)
 
         self._plotter.plot_model(name = f'model_{qsq}', pdf = pdf)
+
+        return pdf
+    #-----------------------------
+    def __extend_prc(self, qsq_src : Qsq, qsq_tgt : Qsq, pdf : zpdf) -> zpdf:
+        '''
+        Parameters
+        ------------------
+        qsq_src : q2-bin where data is taken
+        qsq_tgt : q2-bin meant to be modelled
+        pdf     : PDF to extend
+
+        Returns
+        ------------------
+        PDF with yield set
+        '''
+        npr = self._cfg.parameters.get_part_reco_yield(qsq_comp = qsq_src, qsq_bin = qsq_tgt)
+        pdf.set_yield(npr)
 
         return pdf
     #-----------------------------
@@ -289,11 +308,7 @@ class CCbarRatioCalculator:
             block   = self._block,
             project = self._project)
 
-        pdf = obj.get_pdf(update = False)
-        npr = self._cfg.parameters.get_part_reco_yield(qsq_comp = qsq_src, qsq_bin = qsq_tgt)
-        pdf.set_yield(npr)
-
-        return pdf
+        return obj.get_pdf(update = False)
     #-----------------------------
     def __get_trfc(self, qsq_src : Qsq, qsq_tgt : Qsq) -> TransferFunction:
         '''
