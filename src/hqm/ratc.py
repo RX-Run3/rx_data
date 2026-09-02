@@ -108,8 +108,8 @@ class CCbarRatioCalculator:
 
         nll = zfit.loss.ExtendedUnbinnedNLL(model=pdf, data=zdat)
 
-        self._plotter.plot_array(name = f'data_arr_{qsq}', array = array)
-        self._plotter.plot_data( name = f'dataset_{qsq}' , data  =  zdat)
+        self._plotter.plot_array(name = f'all_data_{qsq}', array = array)
+        self._plotter.plot_data( name = f'fit_data_{qsq}', data  =  zdat)
 
         return nll
     #-----------------------------
@@ -189,9 +189,8 @@ class CCbarRatioCalculator:
     #-----------------------------
     def __get_mc_pdf(
         self, 
-        comp    : Component, 
-        qsq     : Qsq, 
-        channel : Channel) -> zpdf:
+        comp : Component, 
+        qsq  : Qsq) -> zpdf:
         '''
         Parameters
         ---------------
@@ -202,7 +201,7 @@ class CCbarRatioCalculator:
         ---------------
         Zfit PDF from MC fit
         '''
-        trigger = Trigger.get_main_trigger(project = self._project, channel = channel)
+        trigger = Trigger.get_main_trigger(project = self._project, channel = _TARGET_CHANNEL)
         obs     = self._cfg.observable.fit_obs
 
         obj = PdfBuilder(
@@ -243,7 +242,7 @@ class CCbarRatioCalculator:
             qsq          = qsq_src,
             is_part_reco = False)
 
-        pdf = self.__get_mc_pdf(comp = comp, qsq = qsq_tgt, channel = _TARGET_CHANNEL)
+        pdf = self.__get_mc_pdf(comp = comp, qsq = qsq_tgt)
         rat = self._cfg.parameters.get_ratio(qsq = qsq_tgt)
         scl = self._cfg.parameters.get_scale(qsq = qsq_tgt)
 
