@@ -18,7 +18,7 @@ type zpdf = zfit.pdf.BasePDF
 _RJPSI      : Final[float]              = 0.5
 _RPSI2      : Final[float]              = 0.5
 _REAL_FACTOR: Final[int  ]              = 1000 # Scale factor for synthetic version of real data
-_OBS_RANGE  : Final[tuple[float,float]] = 4000, 7000
+_OBS_RANGE  : Final[tuple[float,float]] = 4600, 7000
 
 log=LogStore.add_logger('hqm:test_ratc')
 # ----------------------
@@ -116,7 +116,7 @@ def _get_mu_sg(qsq_src: Qsq, qsq_tgt: Qsq) -> tuple[float, float]:
 #-------------------------------------
 def _get_target_data(self, qsq : Qsq) -> numpy.ndarray:
     _  = self
-    obs       = zfit.Space('B_Mass', limits = (3000, 8000))
+    obs       = zfit.Space('B_Mass', limits = _OBS_RANGE)
     size_jx   = _get_fr_entries(qsq_src=Qsq.jpsi, qsq_tgt=qsq)
     size_px   = _get_fr_entries(qsq_src=Qsq.psi2, qsq_tgt=qsq)
     # ------
