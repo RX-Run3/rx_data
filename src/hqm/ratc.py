@@ -7,7 +7,7 @@ import numpy
 
 from typing         import Final
 from pydantic       import BaseModel
-from dmu.stats      import FitResult, FittedModel
+from dmu.stats      import FitResult
 from dmu.generic    import Serializable
 from hqm.data_store import DataStore
 from hqm.pdf_mc     import PdfBuilder
@@ -96,7 +96,7 @@ class CCbarRatioCalculator:
         Returns NLL for given q2 bin
         '''
         log.info(f'Building NLL in {qsq} bin')
-        pdf   = self.__get_model(qsq= qsq)
+        pdf   = self.__get_model(qsq = qsq)
         array = self.__get_target_data(qsq = qsq)
         zdat  = zfit.Data.from_numpy(
             obs  =self._cfg.observable.fit_obs,
