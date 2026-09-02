@@ -2,6 +2,7 @@
 Module with Plotter class
 '''
 import numpy
+import numpy.typing      as npt
 import matplotlib.pyplot as plt
 
 from pathlib        import Path
@@ -13,13 +14,32 @@ from contextvars    import ContextVar
 
 _PLOT_DIR : ContextVar[Path|None] = ContextVar('_PLOT_DIR', default = None)
 
-Loss = zfit.loss.ExtendedUnbinnedNLL
-zpdf = zfit.pdf.BasePDF
+type Loss     = zfit.loss.ExtendedUnbinnedNLL
+type zpdf     = zfit.pdf.BasePDF
+type zdat     = zfit.data.Data
+type NpFltArr = npt.NDArray[numpy.float64]
 #-----------------------------
 class Plotter:
     '''
     Class meant to hold plotting functionality 
     '''
+    #-----------------------------
+    def __get_plot_range(self, pdf : zpdf, data : zdat | NpFltArr) -> tuple[float,float]:
+        '''
+        Parameters
+        ---------------
+        pdf : Model PDF
+        data: Data to fit
+        '''
+        lower, _ = sut.range_from_obs(obs = pdf.space)
+        if isinstance(data, zfit.Data):
+            array = data.numpy()
+        else:
+            array = data
+
+        upper = array.max() 
+
+        return lower, upper
     #-----------------------------
     @classmethod
     def plot(cls, path : Path):
@@ -93,8 +113,12 @@ class Plotter:
         else:
             size = data.nevents
 
+        settings = {
+            'plot_range' : self.__get_plot_range(pdf = pdf, data = data),
+            'title'      : f'Entries = {size}'}
+
         cfg = ZFitPlotterConf.default()
-        cfg = cfg.model_copy(update = {'title' : f'Entries = {size}'})
+        cfg = cfg.model_copy(update = settings)
 
         ptr = ZFitPlotter(data = data, model = pdf)
         ptr.run(cfg = cfg)
