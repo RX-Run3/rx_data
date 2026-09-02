@@ -167,7 +167,11 @@ class CCbarRatioCalculator:
 
         return pdf
     #-----------------------------
-    def __get_mc_pdf(self, comp : Component, qsq : Qsq, channel : Channel) -> FittedModel:
+    def __get_mc_pdf(
+        self, 
+        comp    : Component, 
+        qsq     : Qsq, 
+        channel : Channel) -> zpdf:
         '''
         Parameters
         ---------------
@@ -176,7 +180,7 @@ class CCbarRatioCalculator:
 
         Returns
         ---------------
-        Zfit PDF from MC fit plus scaling
+        Zfit PDF from MC fit
         '''
         trigger = Trigger.get_main_trigger(project = self._project, channel = channel)
         obs     = self._cfg.observable.fit_obs
@@ -187,7 +191,9 @@ class CCbarRatioCalculator:
             trigger = trigger,
             qsq     = qsq)
 
-        return obj.get_model(obs = obs)
+        mod = obj.get_model(obs = obs)
+
+        return mod.pdf
     #-----------------------------
     def __get_fr_pdf(self, qsq_src : Qsq, qsq_tgt : Qsq) -> zpdf:
         '''
@@ -212,7 +218,7 @@ class CCbarRatioCalculator:
             qsq          = qsq_src,
             is_part_reco = False)
 
-        mod = self.__get_mc_pdf(comp = comp, qsq = qsq_tgt, channel = _TARGET_CHANNEL)
+        pdf = self.__get_mc_pdf(comp = comp, qsq = qsq_tgt, channel = _TARGET_CHANNEL)
         rat = self._cfg.parameters.get_ratio(qsq = qsq_tgt)
         scl = self._cfg.parameters.get_scale(qsq = qsq_tgt)
 
@@ -227,7 +233,6 @@ class CCbarRatioCalculator:
             func  = lambda d_par : d_par['npr'] * d_par['fac'],
             params= {'npr' : npr, 'fac' : fac} )
 
-        pdf = mod.pdf
         pdf.set_yield(nfr)
 
         return pdf
