@@ -20,9 +20,10 @@ _MASS_RANGE : Final[tuple[float,float]] = 4500, 6000
 _TRAN_RANGE : Final[tuple[float,float]] = -500,  500
 
 # Part reco / Fully reco
-_RJPSI : Final[float] = 0.5
-_RPSI2 : Final[float] = 0.5
-_SIZE_FULL : Final[int] = 20_000
+_RJPSI      : Final[float] = 0.5
+_RPSI2      : Final[float] = 0.5
+_SIZE_FULL  : Final[int  ] = 20_000 # Size for synthetic data for muon part reco
+_REAL_FACTOR: Final[int  ] = 10_000 # Scale factor for synthetic version of real data
 
 log=LogStore.add_logger('hqm:test_ratc')
 # ----------------------
@@ -36,20 +37,20 @@ def initialize():
 #-------------------------------------
 def _get_fr_entries(qsq_src : Qsq, qsq_tgt : Qsq) -> int:
     if qsq_src == Qsq.jpsi and qsq_tgt == Qsq.jpsi:
-        return 10_000
+        return 10 * _REAL_FACTOR
 
     if qsq_src == Qsq.jpsi and qsq_tgt == Qsq.psi2:
-        return  2_000
+        return  2 * _REAL_FACTOR
 
     if qsq_src == Qsq.psi2 and qsq_tgt == Qsq.jpsi:
-        return  1_000
+        return  1 * _REAL_FACTOR
 
     if qsq_src == Qsq.psi2 and qsq_tgt == Qsq.psi2:
-        return  2_000
+        return  2 * _REAL_FACTOR
 
     raise ValueError('Invalid q2')
 #-------------------------------------
-def _get_peak(self, comp : Component, qsq : Qsq) -> tuple[float,float]:
+def _get_fr_shape(self, comp : Component, qsq : Qsq) -> tuple[float,float]:
     jj = comp == Component.bpkpjpsiee and qsq == Qsq.jpsi
     pp = comp == Component.bpkppsi2ee and qsq == Qsq.psi2
 
@@ -70,6 +71,15 @@ def _get_peak(self, comp : Component, qsq : Qsq) -> tuple[float,float]:
 
     return mu, sg
 #-------------------------------------
+def _get_pr_shape(self, qsq : Qsq) -> tuple[float,float]:
+    if qsq == Qsq.jpsi:
+        return 4500,  50 
+
+    if qsq == Qsq.psi2:
+        return 5000, 150 
+
+    raise ValueError(f'Invalid q2 bin: {qsq}')
+#-------------------------------------
 def _get_mu_sg(qsq_src: Qsq, qsq_tgt: Qsq) -> tuple[float, float]:
     if   qsq_src == Qsq.jpsi and qsq_tgt == Qsq.jpsi:
         return -80, 20
@@ -82,67 +92,34 @@ def _get_mu_sg(qsq_src: Qsq, qsq_tgt: Qsq) -> tuple[float, float]:
     else:
         raise ValueError(f"Invalid qsq combination: {qsq_src=}, {qsq_tgt=}")
 #-------------------------------------
-def _get_source_data(self, qsq : Qsq) -> numpy.ndarray:
-    gaus = numpy.random.normal(0, 50, size = _SIZE_FULL)
+def _get_pr_data(self, qsq : Qsq, size : float) -> numpy.ndarray:
+    size = int(size)
+    mu, sg = _get_pr_shape(self = 1, qsq = qsq)
 
-    if qsq == Qsq.jpsi:
-        return numpy.random.uniform(3700, 5100, size = _SIZE_FULL) + gaus
-
-    if qsq == Qsq.psi2:
-        return numpy.random.uniform(3900, 4900, size = _SIZE_FULL) + gaus
-
-    raise ValueError(f'Invalid q2 bin: {qsq}')
-#--------------------------------------
-def _get_pr(qsq_src : Qsq, qsq_tgt : Qsq, frac : float) -> numpy.ndarray:
-    arr_src = _get_source_data(self = 1, qsq = qsq_src)
-    dmu, sg = _get_mu_sg(qsq_src = qsq_src, qsq_tgt = qsq_tgt)
-    arr_smr = numpy.random.normal(dmu, sg, len(arr_src))
-    arr_tgt = arr_src + arr_smr
-
-    size    = _get_fr_entries(qsq_src = qsq_src, qsq_tgt = qsq_tgt)
-    new_size= int(size * frac)
-    arr_flt = numpy.random.choice(arr_tgt, size = new_size, replace = True)
-
-    return arr_flt
+    return numpy.random.normal(loc = mu, scale = 50, size = size)
 #--------------------------------------
 def _get_target_data(self, qsq : Qsq) -> numpy.ndarray:
-    mu_jj, sg_jj = _get_peak(self = 1, comp=Component.bpkpjpsiee, qsq=Qsq.jpsi)
-    mu_jp, sg_jp = _get_peak(self = 1, comp=Component.bpkpjpsiee, qsq=Qsq.psi2)
+    mu_jj, sg_jj = _get_fr_shape(self = 1, comp=Component.bpkpjpsiee, qsq=Qsq.jpsi)
+    mu_jp, sg_jp = _get_fr_shape(self = 1, comp=Component.bpkpjpsiee, qsq=Qsq.psi2)
 
-    mu_pj, sg_pj = _get_peak(self = 1, comp=Component.bpkppsi2ee, qsq=Qsq.jpsi)
-    mu_pp, sg_pp = _get_peak(self = 1, comp=Component.bpkppsi2ee, qsq=Qsq.psi2)
+    mu_pj, sg_pj = _get_fr_shape(self = 1, comp=Component.bpkppsi2ee, qsq=Qsq.jpsi)
+    mu_pp, sg_pp = _get_fr_shape(self = 1, comp=Component.bpkppsi2ee, qsq=Qsq.psi2)
 
     size_jx = _get_fr_entries(qsq_src=Qsq.jpsi, qsq_tgt=qsq)
     size_px = _get_fr_entries(qsq_src=Qsq.psi2, qsq_tgt=qsq)
 
-    if   qsq == Qsq.jpsi:
-        jpsi_fr = numpy.random.normal(mu_jj, sg_jj, size = size_jx)
-        psi2_fr = numpy.random.normal(mu_pj, sg_pj, size = size_px)
+    jpsi_fr = numpy.random.normal(mu_jj, sg_jj, size = size_jx)
+    psi2_fr = numpy.random.normal(mu_pj, sg_pj, size = size_px)
 
-        jpsi_pr = _get_pr(qsq_src = Qsq.jpsi, qsq_tgt = qsq, frac = _RJPSI)
-        psi2_pr = _get_pr(qsq_src = Qsq.psi2, qsq_tgt = qsq, frac = _RPSI2)
-    elif qsq == Qsq.psi2:
-        psi2_fr = numpy.random.normal(mu_pp, sg_pp, size = size_jx)
-        jpsi_fr = numpy.random.normal(mu_jp, sg_jp, size = size_px)
-
-        jpsi_pr = _get_pr(qsq_src = Qsq.jpsi, qsq_tgt = qsq, frac = _RJPSI)
-        psi2_pr = _get_pr(qsq_src = Qsq.psi2, qsq_tgt = qsq, frac = _RPSI2)
-    else:
-        raise ValueError(f'Invalid q2 bin: {qsq}')
+    jpsi_pr = _get_pr_data(self = 1, qsq = Qsq.jpsi, size = size_jx * _RJPSI)
+    psi2_pr = _get_pr_data(self = 1, qsq = Qsq.psi2, size = size_px * _RPSI2)
 
     datasets = [jpsi_fr, psi2_fr, jpsi_pr, psi2_pr]
 
     return numpy.concatenate(datasets)
 #--------------------------------------
-def _get_trfc(self, qsq_src : Qsq, qsq_tgt : Qsq) -> TransferFunction:
-    data = gut.load_data(
-        package = 'hqm_data',
-        fpath   =f'tests/trfc_{qsq_src}_{qsq_tgt}.json')
-
-    return TransferFunction(**data)
-#--------------------------------------
 def _get_mc_pdf(self, comp : Component, qsq : Qsq, channel : Channel) -> zpdf:
-    mu, sg = _get_peak(self = 1, comp = comp, qsq = qsq)
+    mu, sg = _get_fr_shape(self = 1, comp = comp, qsq = qsq)
 
     obs = zfit.Space('B_Mass', limits = (3000, 7000))
     nrm = zfit.Space('B_Mass', limits = (4500, 7000))
@@ -161,13 +138,28 @@ def _get_mc_pdf(self, comp : Component, qsq : Qsq, channel : Channel) -> zpdf:
 
     return pdf
 #--------------------------------------
+def _get_pr_pdf(self, qsq_src : Qsq, qsq_tgt : Qsq) -> zpdf:
+    mu, sg = _get_pr_shape(self = 1, qsq = qsq_src)
+
+    obs = zfit.Space('B_Mass', limits = (3000, 7000))
+    nrm = zfit.Space('B_Mass', limits = (4500, 7000))
+    mu  = zfit.Parameter(f'mu_{qsq_src}_{qsq_tgt}', mu, 4000, 6200)
+    sg  = zfit.Parameter(f'sg_{qsq_src}_{qsq_tgt}', sg,    0, 300)
+
+    mu.floating = False
+    sg.floating = False
+
+    pdf = zfit.pdf.Gauss(
+        name  = f'{qsq_src}_{qsq_tgt}',
+        mu    = mu,
+        sigma = sg,
+        obs   = obs,
+        norm  = nrm)
+
+    return pdf
+#--------------------------------------
 @pytest.fixture(autouse = True)
 def _use_fake_masses(monkeypatch):
-    monkeypatch.setattr(
-        CCbarRatioCalculator,
-        '_CCbarRatioCalculator__get_source_data',
-        _get_source_data)
-
     monkeypatch.setattr(
         CCbarRatioCalculator,
         '_CCbarRatioCalculator__get_target_data',
@@ -180,8 +172,8 @@ def _use_fake_masses(monkeypatch):
 
     monkeypatch.setattr(
         CCbarRatioCalculator,
-        '_CCbarRatioCalculator__get_trfc',
-        _get_trfc)
+        '_CCbarRatioCalculator__get_pr_pdf',
+        _get_pr_pdf)
 #-------------------------------------
 def test_unbinned(monkeypatch, tmp_path : Path):
     '''
@@ -198,5 +190,5 @@ def test_unbinned(monkeypatch, tmp_path : Path):
         block   = block,
         project = Project.rk)
 
-    cal.get_ratio()
+    cal.get_ratio(update = True)
 #-------------------------------------
