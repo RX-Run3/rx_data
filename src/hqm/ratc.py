@@ -21,8 +21,8 @@ from .plotter       import Plotter
 
 log=LogStore.add_logger('hqm:ratc')
 
-Loss = zfit.loss.ExtendedUnbinnedNLL
-zpdf = zfit.pdf.BasePDF
+type Loss = zfit.loss.ExtendedUnbinnedNLL
+type zpdf = zfit.pdf.BasePDF
 
 _SOURCE_CHANNEL : Final[Channel] = Channel.mm # Channel used to get original part reco distribution
 _TARGET_CHANNEL : Final[Channel] = Channel.ee # Channel where ratio will be extracted
@@ -235,6 +235,8 @@ class CCbarRatioCalculator:
         nfully_reco = (npart_reco / ratio) * scale
         nfully_reco = npart_reco  * (scale / ratio)
         nfully_reco = npart_reco  * fac
+
+        scale = eff_fully_reco / eff_part_reco
         ```
         '''
         comp = self.__component_from_qsq(

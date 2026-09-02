@@ -8,13 +8,11 @@ from typing      import Final
 from pathlib     import Path
 from dmu         import LogStore
 from dmu.stats   import zfit
-from dmu.generic import utilities as gut
 from rx_common   import Block, Channel, Component, Project, Qsq
 from hqm.config  import CCbarRatioCalculatorConf
 from hqm.ratc    import CCbarRatioCalculator
-from hqm.trfc    import TransferFunction
 
-zpdf = zfit.pdf.BasePDF
+type zpdf = zfit.pdf.BasePDF
 
 _MASS_RANGE : Final[tuple[float,float]] = 4500, 6000
 _TRAN_RANGE : Final[tuple[float,float]] = -500,  500
