@@ -11,6 +11,7 @@ import tensorflow            as tf
 import pandas                as pd
 import numpy                 as np
 import matplotlib.pyplot     as plt
+import matplotlib.colors     as mcolors
 
 from typing                 import Final, Self
 from pydantic               import BaseModel, Field
@@ -108,10 +109,6 @@ class ZFitPlotter:
 
         # zfit.settings.advanced_warnings['extend_wrapped_extended'] = False
         warnings.filterwarnings("ignore")
-    #----------------------------------------
-    def _initialize(self):
-        import matplotlib.colors as mcolors
-
         self._l_def_col = list(mcolors.TABLEAU_COLORS.keys())
     #----------------------------------------
     def _data_to_zdata(
@@ -362,7 +359,7 @@ class ZFitPlotter:
         if not self._result or not hasattr(self._result, 'gof'):
             return None
 
-        chi2, ndof, pval = getattr(self._result, 'gof')
+        chi2, ndof, pval = getattr(self._result, 'gof') # noqa: B009
 
         rchi2 = chi2/ndof
 
@@ -453,7 +450,7 @@ class ZFitPlotter:
             fig       = plt.figure()
             gs        = fig.add_gridspec(nrows=2, ncols=1, hspace=0.1, height_ratios=[4, 1])
             axs       = gs.subplots(sharex=True)
-            taxs      = tuple(axs.flat)
+            taxs      = tuple(axs.flat) # type: ignore
 
             return taxs
 
@@ -593,7 +590,11 @@ class ZFitPlotter:
     #----------------------------------------
     def _get_labels(self, xlabel, ylabel, unit, nbins):
         if xlabel == "":
-            xlabel = f"{self.obs.obs[0]} [{unit}]"
+            if not self.obs.obs:
+                raise ValueError(f'Cannot find observable: {self.obs}')
+
+            obs_name, = self.obs.obs
+            xlabel    = f"{obs_name} [{unit}]"
 
         if ylabel == "":
             width  = (self.upper-self.lower)/nbins
@@ -625,7 +626,7 @@ class ZFitPlotter:
         return arr_wgt.sum()
     #----------------------------------------
     @gut.timeit
-    def plot(
+    def plot( # noqa: PLR0913
         self,
         title             = None,
         stacked           = False,
@@ -676,14 +677,12 @@ class ZFitPlotter:
         d_col           = {} if           d_col is None else d_col
         plot_components = [] if plot_components is None else plot_components
 
-        if not hasattr(self.total_model, 'pdfs'):
+        if not isinstance(self.total_model, zfit.pdf.SumPDF):
             #if it's not a sum of PDFs, do not stack
             stacked=False
 
         self._figsize = figsize
         self._leg_loc = leg_loc
-
-        self._initialize()
 
         self._l_plot_components = plot_components
 
