@@ -17,7 +17,7 @@ type zpdf = zfit.pdf.BasePDF
 # Part reco / Fully reco
 _RJPSI      : Final[float]              = 0.5
 _RPSI2      : Final[float]              = 0.5
-_REAL_FACTOR: Final[int  ]              = 10_000 # Scale factor for synthetic version of real data
+_REAL_FACTOR: Final[int  ]              = 1000 # Scale factor for synthetic version of real data
 _OBS_RANGE  : Final[tuple[float,float]] = 4000, 7000
 
 log=LogStore.add_logger('hqm:test_ratc')
@@ -32,20 +32,21 @@ def initialize():
 #-------------------------------------
 def _get_fr_entries(qsq_src : Qsq, qsq_tgt : Qsq) -> int:
     if qsq_src == Qsq.jpsi and qsq_tgt == Qsq.jpsi:
-        return 10 * _REAL_FACTOR
+        return  20 * _REAL_FACTOR
 
     if qsq_src == Qsq.psi2 and qsq_tgt == Qsq.jpsi:
-        return  1 * _REAL_FACTOR
+        return  20 * _REAL_FACTOR
 
     if qsq_src == Qsq.jpsi and qsq_tgt == Qsq.psi2:
-        return  2 * _REAL_FACTOR
+        return  20 * _REAL_FACTOR
 
     if qsq_src == Qsq.psi2 and qsq_tgt == Qsq.psi2:
-        return  2 * _REAL_FACTOR
+        return  20 * _REAL_FACTOR
 
     raise ValueError('Invalid q2')
 #-------------------------------------
 def _get_fr_shape(self, comp : Component, qsq : Qsq) -> tuple[float,float]:
+    _  = self
     jj = comp == Component.bpkpjpsiee and qsq == Qsq.jpsi
     pp = comp == Component.bpkppsi2ee and qsq == Qsq.psi2
 
@@ -67,6 +68,7 @@ def _get_fr_shape(self, comp : Component, qsq : Qsq) -> tuple[float,float]:
     return mu, sg
 #--------------------------------------
 def _get_mc_pdf(self, comp : Component, qsq : Qsq) -> zpdf:
+    _  = self
     mu, sg = _get_fr_shape(self = 1, comp = comp, qsq = qsq)
 
     obs = zfit.Space('B_Mass', limits = _OBS_RANGE)
@@ -106,6 +108,7 @@ def _get_mu_sg(qsq_src: Qsq, qsq_tgt: Qsq) -> tuple[float, float]:
         raise ValueError(f"Invalid qsq combination: {qsq_src=}, {qsq_tgt=}")
 #-------------------------------------
 def _get_target_data(self, qsq : Qsq) -> numpy.ndarray:
+    _  = self
     obs       = zfit.Space('B_Mass', limits = (3000, 8000))
     size_jx   = _get_fr_entries(qsq_src=Qsq.jpsi, qsq_tgt=qsq)
     size_px   = _get_fr_entries(qsq_src=Qsq.psi2, qsq_tgt=qsq)
@@ -132,6 +135,7 @@ def _get_target_data(self, qsq : Qsq) -> numpy.ndarray:
 #--------------------------------------
 def _get_pr_pdf(self, qsq_src : Qsq, qsq_tgt : Qsq) -> zpdf:
     mu, sg = _get_pr_shape(self = 1, qsq = qsq_src)
+    _  = self
 
     obs = zfit.Space('B_Mass', limits = _OBS_RANGE)
     mu  = zfit.Parameter(f'mu_{qsq_src}_{qsq_tgt}', mu, 4000, 6200)
