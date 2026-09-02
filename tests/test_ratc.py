@@ -8,20 +8,17 @@ from typing      import Final
 from pathlib     import Path
 from dmu         import LogStore
 from dmu.stats   import zfit
-from rx_common   import Block, Channel, Component, Project, Qsq
+from rx_common   import Block, Component, Project, Qsq
 from hqm.config  import CCbarRatioCalculatorConf
 from hqm.ratc    import CCbarRatioCalculator
 
 type zpdf = zfit.pdf.BasePDF
 
-_MASS_RANGE : Final[tuple[float,float]] = 4500, 6000
-_TRAN_RANGE : Final[tuple[float,float]] = -500,  500
-
 # Part reco / Fully reco
-_RJPSI      : Final[float] = 0.5
-_RPSI2      : Final[float] = 0.5
-_SIZE_FULL  : Final[int  ] = 20_000 # Size for synthetic data for muon part reco
-_REAL_FACTOR: Final[int  ] = 10_000 # Scale factor for synthetic version of real data
+_RJPSI      : Final[float]              = 0.5
+_RPSI2      : Final[float]              = 0.5
+_REAL_FACTOR: Final[int  ]              = 10_000 # Scale factor for synthetic version of real data
+_OBS_RANGE  : Final[tuple[float,float]] = 4000, 7000
 
 log=LogStore.add_logger('hqm:test_ratc')
 # ----------------------
@@ -37,11 +34,11 @@ def _get_fr_entries(qsq_src : Qsq, qsq_tgt : Qsq) -> int:
     if qsq_src == Qsq.jpsi and qsq_tgt == Qsq.jpsi:
         return 10 * _REAL_FACTOR
 
-    if qsq_src == Qsq.jpsi and qsq_tgt == Qsq.psi2:
-        return  2 * _REAL_FACTOR
-
     if qsq_src == Qsq.psi2 and qsq_tgt == Qsq.jpsi:
         return  1 * _REAL_FACTOR
+
+    if qsq_src == Qsq.jpsi and qsq_tgt == Qsq.psi2:
+        return  2 * _REAL_FACTOR
 
     if qsq_src == Qsq.psi2 and qsq_tgt == Qsq.psi2:
         return  2 * _REAL_FACTOR
@@ -68,10 +65,28 @@ def _get_fr_shape(self, comp : Component, qsq : Qsq) -> tuple[float,float]:
         raise ValueError(f'Invalid component/qsq: {comp}/{qsq}')
 
     return mu, sg
+#--------------------------------------
+def _get_mc_pdf(self, comp : Component, qsq : Qsq) -> zpdf:
+    mu, sg = _get_fr_shape(self = 1, comp = comp, qsq = qsq)
+
+    obs = zfit.Space('B_Mass', limits = _OBS_RANGE)
+    mu  = zfit.Parameter(f'mu_{comp}_{qsq}', mu, 4800, 6200)
+    sg  = zfit.Parameter(f'sg_{comp}_{qsq}', sg,    0, 300)
+
+    mu.floating = False
+    sg.floating = False
+
+    pdf = zfit.pdf.Gauss(
+        name  = comp,
+        mu    = mu,
+        sigma = sg,
+        obs   = obs)
+
+    return pdf
 #-------------------------------------
 def _get_pr_shape(self, qsq : Qsq) -> tuple[float,float]:
     if qsq == Qsq.jpsi:
-        return 4500,  50 
+        return 4700,  50 
 
     if qsq == Qsq.psi2:
         return 5000, 150 
@@ -90,57 +105,35 @@ def _get_mu_sg(qsq_src: Qsq, qsq_tgt: Qsq) -> tuple[float, float]:
     else:
         raise ValueError(f"Invalid qsq combination: {qsq_src=}, {qsq_tgt=}")
 #-------------------------------------
-def _get_pr_data(self, qsq : Qsq, size : float) -> numpy.ndarray:
-    size = int(size)
-    mu, sg = _get_pr_shape(self = 1, qsq = qsq)
-
-    return numpy.random.normal(loc = mu, scale = 50, size = size)
-#--------------------------------------
 def _get_target_data(self, qsq : Qsq) -> numpy.ndarray:
-    mu_jj, sg_jj = _get_fr_shape(self = 1, comp=Component.bpkpjpsiee, qsq=Qsq.jpsi)
-    mu_jp, sg_jp = _get_fr_shape(self = 1, comp=Component.bpkpjpsiee, qsq=Qsq.psi2)
+    obs       = zfit.Space('B_Mass', limits = (3000, 8000))
+    size_jx   = _get_fr_entries(qsq_src=Qsq.jpsi, qsq_tgt=qsq)
+    size_px   = _get_fr_entries(qsq_src=Qsq.psi2, qsq_tgt=qsq)
+    # ------
+    pdf_fr_jp = _get_mc_pdf(self = 1, comp=Component.bpkpjpsiee, qsq=qsq)
+    pdf_fr_ps = _get_mc_pdf(self = 1, comp=Component.bpkppsi2ee, qsq=qsq)
 
-    mu_pj, sg_pj = _get_fr_shape(self = 1, comp=Component.bpkppsi2ee, qsq=Qsq.jpsi)
-    mu_pp, sg_pp = _get_fr_shape(self = 1, comp=Component.bpkppsi2ee, qsq=Qsq.psi2)
+    jpsi_fr   = pdf_fr_jp.create_sampler(n = size_jx, limits = obs).numpy()
+    psi2_fr   = pdf_fr_ps.create_sampler(n = size_px, limits = obs).numpy()
+    # ------
+    pdf_pr_jp = _get_pr_pdf(self = 1, qsq_src = Qsq.jpsi, qsq_tgt = qsq)
+    pdf_pr_ps = _get_pr_pdf(self = 1, qsq_src = Qsq.psi2, qsq_tgt = qsq)
 
-    size_jx = _get_fr_entries(qsq_src=Qsq.jpsi, qsq_tgt=qsq)
-    size_px = _get_fr_entries(qsq_src=Qsq.psi2, qsq_tgt=qsq)
+    jpsi_pr   = pdf_pr_jp.create_sampler(n = size_jx * _RJPSI, limits = obs).numpy()
+    psi2_pr   = pdf_pr_ps.create_sampler(n = size_px * _RPSI2, limits = obs).numpy()
+    # ------
+    datasets  = [jpsi_fr, jpsi_pr, psi2_fr, psi2_pr]
 
-    jpsi_fr = numpy.random.normal(mu_jj, sg_jj, size = size_jx)
-    psi2_fr = numpy.random.normal(mu_pj, sg_pj, size = size_px)
-
-    jpsi_pr = _get_pr_data(self = 1, qsq = Qsq.jpsi, size = size_jx * _RJPSI)
-    psi2_pr = _get_pr_data(self = 1, qsq = Qsq.psi2, size = size_px * _RPSI2)
-
-    datasets = [jpsi_fr, psi2_fr, jpsi_pr, psi2_pr]
+    log.info(f'Sizes for {qsq}:')
+    for array in datasets:
+        log.info(f'{len(array)}')
 
     return numpy.concatenate(datasets)
-#--------------------------------------
-def _get_mc_pdf(self, comp : Component, qsq : Qsq) -> zpdf:
-    mu, sg = _get_fr_shape(self = 1, comp = comp, qsq = qsq)
-
-    obs = zfit.Space('B_Mass', limits = (3000, 7000))
-    nrm = zfit.Space('B_Mass', limits = (4500, 7000))
-    mu  = zfit.Parameter(f'mu_{comp}_{qsq}', mu, 4800, 6200)
-    sg  = zfit.Parameter(f'sg_{comp}_{qsq}', sg,    0, 300)
-
-    mu.floating = False
-    sg.floating = False
-
-    pdf = zfit.pdf.Gauss(
-        name  = comp,
-        mu    = mu,
-        sigma = sg,
-        obs   = obs,
-        norm  = nrm)
-
-    return pdf
 #--------------------------------------
 def _get_pr_pdf(self, qsq_src : Qsq, qsq_tgt : Qsq) -> zpdf:
     mu, sg = _get_pr_shape(self = 1, qsq = qsq_src)
 
-    obs = zfit.Space('B_Mass', limits = (3000, 7000))
-    nrm = zfit.Space('B_Mass', limits = (4500, 7000))
+    obs = zfit.Space('B_Mass', limits = _OBS_RANGE)
     mu  = zfit.Parameter(f'mu_{qsq_src}_{qsq_tgt}', mu, 4000, 6200)
     sg  = zfit.Parameter(f'sg_{qsq_src}_{qsq_tgt}', sg,    0, 300)
 
@@ -151,8 +144,7 @@ def _get_pr_pdf(self, qsq_src : Qsq, qsq_tgt : Qsq) -> zpdf:
         name  = f'{qsq_src}_{qsq_tgt}',
         mu    = mu,
         sigma = sg,
-        obs   = obs,
-        norm  = nrm)
+        obs   = obs)
 
     return pdf
 #--------------------------------------
