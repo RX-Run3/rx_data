@@ -87,7 +87,7 @@ class ZFitPlotter:
         self.obs               = model.norm 
         self._obs_name         = sut.name_from_obs(obs = self.obs) 
 
-        self.data              = self._data_to_zdata(self.obs, data, weights)
+        self.data              = self._data_to_zdata(data, weights)
         min, max               = self.obs.limits
         self.lower, self.upper = min[0][0], max[0][0]
         self.total_model       = model
@@ -113,13 +113,11 @@ class ZFitPlotter:
     #----------------------------------------
     def _data_to_zdata(
         self, 
-        obs     : zfit.Space, 
         data    : np.ndarray | zfit.Data | pd.Series | pd.DataFrame, 
         weights : np.ndarray | None) -> zfit.Data:
         '''
         Parameters
         -----------------
-        obs    : Observable where data is needed
         data   : Original data
         weights: Weights or None for unweighted case
 
@@ -129,13 +127,13 @@ class ZFitPlotter:
         '''
 
         if   isinstance(data, zfit.Data):
-            out_data = data.with_obs(obs)
+            out_data = data.with_obs(self.obs)
         elif isinstance(data, np.ndarray):
-            out_data = zfit.Data.from_numpy (obs=obs, array=data           , weights=weights)
+            out_data = zfit.Data.from_numpy (obs=self.obs, array=data           , weights=weights)
         elif isinstance(data, pd.Series):
-            out_data = zfit.Data.from_pandas(obs=obs, df=pd.DataFrame(data), weights=weights)
+            out_data = zfit.Data.from_pandas(obs=self.obs, df=pd.DataFrame(data), weights=weights)
         elif isinstance(data, pd.DataFrame):
-            out_data = zfit.Data.from_pandas(obs=obs, df=data              , weights=weights)
+            out_data = zfit.Data.from_pandas(obs=self.obs, df=data              , weights=weights)
         else:
             raise ValueError(f'Passed data is of usupported type {type(data)}')
 
