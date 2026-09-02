@@ -57,7 +57,7 @@ def _get_peak(self, comp : Component, qsq : Qsq) -> tuple[float,float]:
     jp = comp == Component.bpkpjpsiee and qsq == Qsq.psi2
     pj = comp == Component.bpkppsi2ee and qsq == Qsq.jpsi
 
-    if jj or pp: 
+    if jj or pp:
         mu = 5280
         sg = 100
     elif jp:
@@ -137,7 +137,7 @@ def _get_target_data(self, qsq : Qsq) -> numpy.ndarray:
 #--------------------------------------
 def _get_trfc(self, qsq_src : Qsq, qsq_tgt : Qsq) -> TransferFunction:
     data = gut.load_data(
-        package = 'hqm_data', 
+        package = 'hqm_data',
         fpath   =f'tests/trfc_{qsq_src}_{qsq_tgt}.json')
 
     return TransferFunction(**data)
@@ -155,9 +155,9 @@ def _get_mc_pdf(self, comp : Component, qsq : Qsq, channel : Channel) -> zpdf:
 
     pdf = zfit.pdf.Gauss(
         name  = comp,
-        mu    = mu, 
-        sigma = sg, 
-        obs   = obs, 
+        mu    = mu,
+        sigma = sg,
+        obs   = obs,
         norm  = nrm)
 
     return pdf
@@ -173,7 +173,7 @@ def _use_fake_masses(monkeypatch):
         CCbarRatioCalculator,
         '_CCbarRatioCalculator__get_target_data',
         _get_target_data)
-    
+
     monkeypatch.setattr(
         CCbarRatioCalculator,
         '_CCbarRatioCalculator__get_mc_pdf',
@@ -197,8 +197,8 @@ def test_unbinned(monkeypatch, tmp_path : Path):
     with Plotter.plot(path = tmp_path / 'plots'):
         cal         = CCbarRatioCalculator(
             cfg     = cfg,
-            block   = block, 
+            block   = block,
             project = Project.rk)
 
-        ratio = cal.get_ratio()
+        cal.get_ratio()
 #-------------------------------------
