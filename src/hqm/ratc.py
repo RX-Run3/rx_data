@@ -26,6 +26,17 @@ type zpdf = zfit.pdf.BasePDF
 
 _SOURCE_CHANNEL : Final[Channel] = Channel.mm # Channel used to get original part reco distribution
 _TARGET_CHANNEL : Final[Channel] = Channel.ee # Channel where ratio will be extracted
+
+_LEGS : Final[dict[str,str]] = {
+    'jpsi_jpsi'                    : r'$B \to J/\psi(\to e^+e^-) H_s + X$',
+    'psi2_jpsi'                    : r'$B \to \psi(2S)(\to e^+e^-) H_s + X$',
+    'jpsi_psi2'                    : r'$B \to J/\psi(\to e^+e^-) H_s + X$',
+    'psi2_psi2'                    : r'$B \to \psi(2S)(\to e^+e^-) H_s + X$',
+    Component.bpkpjpsiee.value     : Component.bpkpjpsiee.latex,
+    Component.bpkppsi2ee.value     : Component.bpkppsi2ee.latex,
+    Component.bdkstkpijpsiee.value : Component.bdkstkpijpsiee.latex,
+    Component.bdkstkpipsi2ee.value : Component.bdkstkpipsi2ee.latex,
+}
 #-----------------------------
 class CCbarRatio(BaseModel, Serializable, frozen = True):
     '''
@@ -83,10 +94,12 @@ class CCbarRatioCalculator:
         res = FitResult.from_zfit(res = res)
 
         self._plotter.plot_nll(
+            legs = _LEGS,
             name = 'fit_jpsi',
             nll  = nll_jpsi)
 
         self._plotter.plot_nll(
+            legs = _LEGS,
             name = 'fit_psi2',
             nll  = nll_psi2)
 

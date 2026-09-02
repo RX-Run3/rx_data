@@ -72,22 +72,28 @@ class Plotter:
         plt.savefig(path)
         plt.close()
     #-----------------------------
-    def plot_nll(self, name : str, nll : Loss) -> None:
+    def plot_nll(
+        self, 
+        name : str, 
+        nll  : Loss, 
+        legs : dict[str,str]) -> None:
         '''
         Parameters
         -------------
         name : Used to build path, i.e. {PATH_DIR}/{name}.png
         Loss : Likelihood
+        legs : Dictionary defining legend renaming
         '''
         pdf = nll.model[0]
         dat = nll.data[0]
 
-        self.plot_fit(name = name, pdf = pdf, data = dat)
+        self.plot_fit(name = name, pdf = pdf, data = dat, legs = legs)
     #-----------------------------
     def plot_fit(
         self, 
         name : str, 
         pdf  : zpdf, 
+        legs : dict[str,str],
         data : numpy.ndarray | zfit.Data) -> None:
 
         if isinstance(data, numpy.ndarray):
@@ -96,6 +102,7 @@ class Plotter:
             size = data.nevents
 
         settings = {
+            'd_leg'      : legs,
             'plot_range' : self.__get_plot_range(pdf = pdf, data = data),
             'title'      : f'Entries = {size}'}
 
