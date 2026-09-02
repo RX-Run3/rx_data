@@ -27,7 +27,12 @@ class ParamConf(RootModel[dict[str,tuple[float,float,float]]], frozen = True):
     Configuration for parameters used in fits to J/psi and psi2S bins
     '''
     # -------------------
-    def set_scale(self, fr : zpdf, pr : zpdf, qsq : Qsq) -> None:
+    def set_scale(
+        self, 
+        fr      : zpdf, 
+        pr      : zpdf, 
+        qsq_src : Qsq,
+        qsq_tgt : Qsq) -> None:
         '''
         Calculates ratio of fully reco / part reco efficiencies due to
         mass window and uses it to set the scale value
@@ -41,9 +46,9 @@ class ParamConf(RootModel[dict[str,tuple[float,float,float]]], frozen = True):
         eff_pr = self.__get_eff(pdf = pr, is_part_reco =  True)
         value  = eff_fr / eff_pr
 
-        log.debug(f'Scale for {qsq} bin: {value:.3f}')
+        log.debug(f'Scale for {qsq_src}-{qsq_tgt} bin: {value:.3f}')
 
-        scale= self.get_scale(qsq = qsq)
+        scale= self.get_scale(qsq_src = qsq_src, qsq_tgt = qsq_tgt)
         scale.set_value(value)
         scale.floating = False
     # -------------------
@@ -83,41 +88,31 @@ class ParamConf(RootModel[dict[str,tuple[float,float,float]]], frozen = True):
 
         return eff
     # -------------------
-    def get_ratio(self, qsq : Qsq) -> zpar:
+    def get_ratio(self, qsq_src : Qsq) -> zpar:
         '''
         Parameters
         --------------
-        qsq: q2-bin
+        qsq: q2 associated to decays, e.g. Jpsi -> ee => jpsi
 
         Returns
         --------------
         Ratio of part reconstructed and fully reconstructed candidates in passed bin
         '''
-        match qsq:
-            case Qsq.jpsi:
-                return self._get_parameter(name = 'rat_jpsi')
-            case Qsq.psi2:
-                return self._get_parameter(name = 'rat_psi2')
-            case _:
-                raise ValueError(f'Invalid bin: {qsq}')
+        return self._get_parameter(name = f'rat_{qsq_src}')
     # -------------------
-    def get_scale(self, qsq : Qsq) -> zpar:
+    def get_scale(self, qsq_src : Qsq, qsq_tgt : Qsq) -> zpar:
         '''
         Parameters
         --------------
-        qsq: q2-bin
+        qsq_src/tgt: q2-bin/q2 decay to which scale is associated. 
+        E.g. Ratio of efficiencies in {qsq_tgt} bin of {qsq_src} decays
 
         Returns
         --------------
         Parameter meant to symbolize ratio of efficiencies
         '''
-        match qsq:
-            case Qsq.jpsi:
-                return self._get_parameter(name = 'scl_jpsi')
-            case Qsq.psi2:
-                return self._get_parameter(name = 'scl_psi2')
-            case _:
-                raise ValueError(f'Invalid bin: {qsq}')
+        name = f'scl_{qsq_src}_{qsq_tgt}'
+        return self._get_parameter(name = name)
     # -------------------
     def get_part_reco_yield(
         self,
