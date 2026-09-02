@@ -166,17 +166,19 @@ class CCbarRatioCalculator:
         pdf_prjp = self.__extend_prc(qsq_src = Qsq.jpsi, qsq_tgt = qsq, pdf = pdf_prjp)
         pdf_frjp = self.__get_fr_pdf(qsq_src = Qsq.jpsi, qsq_tgt = qsq)
         self._cfg.parameters.set_scale(
-            fr  = pdf_frjp,
-            pr  = pdf_prjp,
-            qsq = qsq)
+            fr      = pdf_frjp,
+            pr      = pdf_prjp,
+            qsq_src = Qsq.jpsi,
+            qsq_tgt = qsq)
 
         pdf_prps = self.__get_pr_pdf(qsq_src = Qsq.psi2, qsq_tgt = qsq)
-        pdf_prps = self.__extend_prc(qsq_src = Qsq.jpsi, qsq_tgt = qsq, pdf = pdf_prps)
+        pdf_prps = self.__extend_prc(qsq_src = Qsq.psi2, qsq_tgt = qsq, pdf = pdf_prps)
         pdf_frps = self.__get_fr_pdf(qsq_src = Qsq.psi2, qsq_tgt = qsq)
         self._cfg.parameters.set_scale(
-            fr  = pdf_frps,
-            pr  = pdf_prps,
-            qsq = qsq)
+            fr      = pdf_frps,
+            pr      = pdf_prps,
+            qsq_src = Qsq.psi2,
+            qsq_tgt = qsq)
 
         pdf  = zfit.pdf.SumPDF([pdf_prps, pdf_prjp, pdf_frps, pdf_frjp],
         obs  = self._cfg.observable.fit_obs)
@@ -258,8 +260,10 @@ class CCbarRatioCalculator:
             is_part_reco = False)
 
         pdf = self.__get_mc_pdf(comp = comp, qsq = qsq_tgt)
-        rat = self._cfg.parameters.get_ratio(qsq = qsq_tgt)
-        scl = self._cfg.parameters.get_scale(qsq = qsq_tgt)
+        rat = self._cfg.parameters.get_ratio(qsq_src = qsq_src)
+        scl = self._cfg.parameters.get_scale(
+            qsq_src = qsq_src,
+            qsq_tgt = qsq_tgt)
 
         fac = zfit.ComposedParameter(
             f'fac_{qsq_src}_{qsq_tgt}',
