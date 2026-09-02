@@ -100,8 +100,8 @@ class ZFitPlotter:
         self._suffix           = suffix
         self._leg              = {}
         self._col              = {}
-        self._l_blind          = None
-        self._l_plot_components= None
+        self._l_blind          = [] 
+        self._l_plot_components= [] 
         self.axs               : tuple[Axes,...]
         self._figsize          = None
         self._leg_loc          = None
@@ -482,8 +482,8 @@ class ZFitPlotter:
 
         return frac * nevs
     #----------------------------------------
-    def _plot_model_components(self, nbins, stacked):
-        if not hasattr(self.total_model, 'pdfs'):
+    def _plot_model_components(self, nbins, stacked): # noqa: PLR0912
+        if not isinstance(self.total_model, zfit.pdf.SumPDF):
             return
 
         if self._l_blind is not None:
@@ -494,7 +494,7 @@ class ZFitPlotter:
         y           = None
         l_y         = []
         was_blinded = False
-        for model, par in zip(self.total_model.pdfs, self.total_model.params.values()):
+        for model, par in zip(self.total_model.pdfs, self.total_model.params.values(), strict = True):
             if model.name == blind_name:
                 was_blinded = True
                 log.debug(f'Skipping blinded PDF: {blind_name}')
@@ -502,9 +502,9 @@ class ZFitPlotter:
 
             nevt = self._get_component_yield(model, par)
 
-            if   model.name in self._l_plot_components and     hasattr(model, 'pdfs'):
-                l_model = [ (frc, pdf) for pdf, frc in zip(model.pdfs, model.params.values()) ]
-            elif model.name in self._l_plot_components and not hasattr(model, 'pdfs'):
+            if   model.name in self._l_plot_components and     isinstance(model, zfit.pdf.SumPDF):
+                l_model = [ (frc, pdf) for pdf, frc in zip(model.pdfs, model.params.values(), strict = True) ]
+            elif model.name in self._l_plot_components and not isinstance(model, zfit.pdf.SumPDF):
                 log.warning(f'Cannot plot {model.name} as separate components, despite it was requested')
                 l_model = [ (1, model)]
             else:
