@@ -343,17 +343,16 @@ class CCbarRatioCalculator:
         cfg          = TransferFunctionMakerConf.load_bin_cfg(
             source   = qsq_src,
             target   = qsq_tgt,
+            project  = self._project,
             bin      = self._cfg.binning.bin,
             variable = self._cfg.binning.variable)
 
-        comp         = self.__component_from_qsq(qsq = qsq_src, is_part_reco = False)
         obj          = TransferFunctionMaker(
             cfg      = cfg,
-            sample   = comp,
             project  = self._project,
             block    = self._block)
 
-        return obj.get_trf()
+        return obj.get_trf(update = False)
     #-----------------------------
     def get_ratio(self) -> CCbarRatio:
         '''
