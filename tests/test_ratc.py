@@ -27,37 +27,38 @@ def initialize():
     '''
     This will run before any test
     '''
-    LogStore.set_level('rx_hqm2:data_store', 30)
-    LogStore.set_level('rx_hqm:config'     , 10)
+    LogStore.set_level('hqm:data_store', 30)
+    LogStore.set_level('hqm:ratc'      , 10)
+    LogStore.set_level('hqm:config'    , 10)
 #-------------------------------------
 def _get_fr_entries(qsq_src : Qsq, qsq_tgt : Qsq) -> int:
     if qsq_src == Qsq.jpsi and qsq_tgt == Qsq.jpsi:
-        return  20 * _REAL_FACTOR
+        return  40 * _REAL_FACTOR
 
     if qsq_src == Qsq.psi2 and qsq_tgt == Qsq.jpsi:
-        return   2 * _REAL_FACTOR
+        return   5 * _REAL_FACTOR
 
     if qsq_src == Qsq.jpsi and qsq_tgt == Qsq.psi2:
-        return   5 * _REAL_FACTOR
+        return  10 * _REAL_FACTOR
 
     if qsq_src == Qsq.psi2 and qsq_tgt == Qsq.psi2:
-        return   5 * _REAL_FACTOR
+        return  10 * _REAL_FACTOR
 
     raise ValueError('Invalid q2')
 #-------------------------------------
 def _get_pr_shape(self, qsq_src : Qsq, qsq_tgt : Qsq) -> tuple[float,float]:
     _  = self
     if qsq_src == Qsq.jpsi and qsq_tgt == Qsq.jpsi:
-        return 5100, 50 
+        return 5100, 150 
 
     if qsq_src == Qsq.psi2 and qsq_tgt == Qsq.jpsi:
-        return 4700, 50 
+        return 4700, 150 
 
     if qsq_src == Qsq.psi2 and qsq_tgt == Qsq.psi2:
-        return 5000, 50 
+        return 5000, 150 
 
     if qsq_src == Qsq.jpsi and qsq_tgt == Qsq.psi2:
-        return 4700, 50 
+        return 4700, 150 
 
     raise ValueError(f'Invalid q2 bin: {qsq_src}')
 #-------------------------------------
@@ -77,7 +78,7 @@ def _get_fr_shape(self, comp : Component, qsq : Qsq) -> tuple[float,float]:
         sg = 50
     elif jp:
         mu = 6000
-        sg = 50
+        sg =150
     else:
         raise ValueError(f'Invalid component/qsq: {comp}/{qsq}')
 
