@@ -27,31 +27,6 @@ class ParamConf(RootModel[dict[str,tuple[float,float,float]]], frozen = True):
     Configuration for parameters used in fits to J/psi and psi2S bins
     '''
     # -------------------
-    def set_scale(
-        self, 
-        fr      : zpdf, 
-        pr      : zpdf, 
-        qsq_src : Qsq,
-        qsq_tgt : Qsq) -> None:
-        '''
-        Calculates ratio of fully reco / part reco efficiencies due to
-        mass window and uses it to set the scale value
-
-        Parameters
-        -----------------
-        fr/pr: PDF for fully/(part) reco fit component
-        qsq  : q2-bin where components will be used
-        '''
-        eff_fr = self.__get_eff(pdf = fr, is_part_reco = False)
-        eff_pr = self.__get_eff(pdf = pr, is_part_reco =  True)
-        value  = eff_fr / eff_pr
-
-        log.debug(f'Scale for {qsq_src}-{qsq_tgt} bin: {value:.3f}')
-
-        scale= self.get_scale(qsq_src = qsq_src, qsq_tgt = qsq_tgt)
-        scale.set_value(value)
-        scale.floating = False
-    # -------------------
     def __get_eff(self, pdf : zpdf, is_part_reco : bool) -> float:
         '''
         Parameters
@@ -88,31 +63,58 @@ class ParamConf(RootModel[dict[str,tuple[float,float,float]]], frozen = True):
 
         return eff
     # -------------------
-    def get_ratio(self, qsq_src : Qsq) -> zpar:
+    def get_factor(
+        self, 
+        pdf_fr  : zpdf,
+        pdf_pr  : zpdf,
+        qsq_src : Qsq,
+        qsq_tgt : Qsq) -> zpar:
         '''
         Parameters
         --------------
-        qsq: q2 associated to decays, e.g. Jpsi -> ee => jpsi
+        pdf_fr/pr: PDF for the part-reco/fully-reco component
+        qsq_src  : q2 associated to decays, e.g. Jpsi -> ee => jpsi
+        qsq_tgt  : q2 bin 
 
         Returns
         --------------
-        Ratio of part reconstructed and fully reconstructed candidates in passed bin
-        '''
-        return self._get_parameter(name = f'rat_{qsq_src}')
-    # -------------------
-    def get_scale(self, qsq_src : Qsq, qsq_tgt : Qsq) -> zpar:
-        '''
-        Parameters
-        --------------
-        qsq_src/tgt: q2-bin/q2 decay to which scale is associated. 
-        E.g. Ratio of efficiencies in {qsq_tgt} bin of {qsq_src} decays
+        Factor between part reco and fully reco yields
 
-        Returns
-        --------------
-        Parameter meant to symbolize ratio of efficiencies
+        math::
+        ratio       = npart_reco_total             / nfully_reco_total
+        ratio       = (npart_reco / eff_part_reco) / (nfully_reco / eff_fully_reco)
+        ratio       = (npart_reco / nfully_reco) * (eff_fully_reco / eff_part_reco)
+        ratio       = (npart_reco / nfully_reco) * scale
+
+        nfully_reco = (npart_reco / ratio) * scale
+        nfully_reco = npart_reco  * (scale / ratio)
+        nfully_reco = npart_reco  * fac
+
+        fac = (eff_fully_reco / eff_part_reco) / ratio
+        :::
         '''
-        name = f'scl_{qsq_src}_{qsq_tgt}'
-        return self._get_parameter(name = name)
+        ratio = self._get_parameter(name = f'rat_{qsq_src}')
+        lims  = _LOWER_ALL, _UPPER_ALL
+
+        fr_eff = 1. / pdf_fr.integrate(limits = lims)[0]
+        pr_eff = 1. / pdf_pr.integrate(limits = lims)[0]
+        scale  = float(fr_eff / pr_eff)
+
+        log.debug('-----------------------')
+        log.debug(f'{qsq_src} -> {qsq_tgt}')
+        log.debug('-----------------------')
+        log.debug(f'Fully reco fraction: {fr_eff:g}')
+        log.debug(f'Part  reco fraction: {pr_eff:g}')
+        log.debug(f'Scale: {scale:g}')
+        log.debug('-----------------------')
+
+        scale = zfit.param.ConstantParameter(name = f'scl_{qsq_src}_{qsq_tgt}', value = scale)
+        fac   = zfit.ComposedParameter(
+            f'fac_{qsq_src}_{qsq_tgt}', 
+            lambda params : params['scale'] / params['ratio'],
+            params = {'scale' : scale, 'ratio' : ratio})
+
+        return fac 
     # -------------------
     def get_part_reco_yield(
         self,
