@@ -3,10 +3,22 @@ Module with tests for Config class
 '''
 import pytest
 
+from dmu.stats  import zfit
 from rx_common  import Project, Qsq
 from hqm.config import TransferFunctionMakerConf
 from hqm.config import CCbarRatioCalculatorConf 
 
+type zpdf = zfit.pdf.BasePDF
+#----------------------------------
+def _get_simple_pdf() -> zpdf:
+    '''
+    Returns simple PDF for tests
+    '''
+    mu = zfit.Parameter('mu', 5280)
+    sg = zfit.Parameter('sg', 1000)
+    obs = zfit.Space('mass', limits = (4500, 6000))
+
+    return zfit.pdf.Gauss(name = 'pdf', mu = mu, sigma = sg, obs = obs)
 #----------------------------------
 # Transfer function calculator
 #----------------------------------
@@ -85,10 +97,20 @@ def test_pars():
     '''
     cfgs = CCbarRatioCalculatorConf.load(variable = 'nbrem')
     cfg  = cfgs[0]
+    pdf  = _get_simple_pdf()
 
     for qsq in [Qsq.jpsi, Qsq.psi2]:
-        obj_1 = cfg.parameters.get_ratio(qsq = qsq)
-        obj_2 = cfg.parameters.get_ratio(qsq = qsq)
+        obj_1 = cfg.parameters.get_factor(
+            pdf_fr  = pdf,
+            pdf_pr  = pdf,
+            qsq_tgt = qsq,
+            qsq_src = qsq)
+
+        obj_2 = cfg.parameters.get_factor(
+            pdf_fr  = pdf,
+            pdf_pr  = pdf,
+            qsq_tgt = qsq,
+            qsq_src = qsq)
 
         assert obj_1 is obj_2
 
