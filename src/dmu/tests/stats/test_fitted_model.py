@@ -26,6 +26,7 @@ def _get_fit_model() -> FittedModel:
     res  = ftr.fit()
 
     fmo     = FittedModel.from_fit(
+        name= 'test',
         cfg = mfc.cfg, 
         pdf = pdf,
         res = res)
@@ -51,9 +52,12 @@ def test_from_fit():
     res  = ftr.fit()
 
     fmo     = FittedModel.from_fit(
+        name= 'test',
         cfg = mfc.cfg, 
         pdf = pdf,
         res = res)
+
+    assert isinstance(fmo, FittedModel)
 # -----------------------------
 def test_serialize(tmp_path : Path):
     '''
