@@ -93,6 +93,10 @@ class ParamConf(RootModel[dict[str,tuple[float,float,float]]], frozen = True):
         fac = (eff_fully_reco / eff_part_reco) / ratio
         :::
         '''
+        name  = f'fac_{qsq_src}_{qsq_tgt}'
+        if name in _CACHED_PARAMS:
+            return _CACHED_PARAMS[name]
+
         ratio = self._get_parameter(name = f'rat_{qsq_src}')
         lims  = _LOWER_ALL, _UPPER_ALL
 
@@ -110,9 +114,11 @@ class ParamConf(RootModel[dict[str,tuple[float,float,float]]], frozen = True):
 
         scale = zfit.param.ConstantParameter(name = f'scl_{qsq_src}_{qsq_tgt}', value = scale)
         fac   = zfit.ComposedParameter(
-            f'fac_{qsq_src}_{qsq_tgt}', 
+            name, 
             lambda params : params['scale'] / params['ratio'],
             params = {'scale' : scale, 'ratio' : ratio})
+
+        _CACHED_PARAMS[name] = fac
 
         return fac 
     # -------------------
