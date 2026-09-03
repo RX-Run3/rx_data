@@ -10,6 +10,7 @@ import numpy
 import pprint
 import pandas as pnd
 
+from functools   import cached_property
 from gvar        import gvar
 from typing      import Self, Sequence
 from contextvars import ContextVar
@@ -26,15 +27,15 @@ zpar = zfit.param.Parameter
 log  = LogStore.add_logger('rx_stats:fit_result')
 
 # Relative tolerance used to validate chi2
-CHI2_RTOL: Final[float] = 1e-3
+_CHI2_RTOL: Final[float] = 1e-3
 # Relative tolerance used to validate pvalue
-PVAL_RTOL: Final[float] = 1e-7
+_PVAL_RTOL: Final[float] = 1e-7
 # If pvalue is smaller than this, do not validate
-PVAL_MIN : Final[float] = 1e-7
+_PVAL_MIN : Final[float] = 1e-7
 
-MIN_NDOF : Final[int  ] =  9
-MAX_NDOF : Final[int  ] = 41
-PAR_REGX : Final[str  ] = r'\w+_\w+_\w+_\d+'
+_MIN_NDOF : Final[int  ] =  9
+_MAX_NDOF : Final[int  ] = 41
+_PAR_REGX : Final[str  ] = r'\w+_\w+_\w+_\d+'
 
 _VALIDATE_PAR_NAME : ContextVar[bool] = ContextVar('_validate_par_name', default = False)
 # -------------------------------------
@@ -59,7 +60,7 @@ class GoodnessOfFit(BaseModel):
         pval = data.get('pval', math.nan) 
         ndof = data['ndof']
 
-        if not (MIN_NDOF < ndof < MAX_NDOF):
+        if not (_MIN_NDOF < ndof < _MAX_NDOF):
             raise ValueError(f'Invalid Ndof: {ndof}')
 
         if math.isnan(chi2) and math.isnan(pval):
@@ -70,14 +71,14 @@ class GoodnessOfFit(BaseModel):
         # ----------------
         # Good input values
         # ----------------
-        if not math.isnan(pval) and math.isclose(pval, 0.0, rel_tol = PVAL_RTOL):
+        if not math.isnan(pval) and math.isclose(pval, 0.0, rel_tol = _PVAL_RTOL):
             log.debug(f'Input pvalue is zero: {pval:.3e}')
             data['chi2'] = 999
             return data
         # ----------------
         # Good computed values
         # ----------------
-        if not math.isnan(computed_pval) and math.isclose(computed_pval, 0.0, rel_tol = PVAL_RTOL):
+        if not math.isnan(computed_pval) and math.isclose(computed_pval, 0.0, rel_tol = _PVAL_RTOL):
             log.debug(f'Computed p-value is zero: {computed_pval:.3e}')
 
         if not math.isnan(computed_chi2) and math.isinf(computed_chi2):
@@ -101,18 +102,18 @@ class GoodnessOfFit(BaseModel):
         # ----------------
         # Pvalue too small to be validated, return
         # ----------------
-        if          pval < PVAL_MIN:
+        if          pval < _PVAL_MIN:
             return data
 
-        if computed_pval < PVAL_MIN:
+        if computed_pval < _PVAL_MIN:
             return data
         # ----------------
         # Got chi2 and pvalue, validate
         # ----------------
-        if not math.isnan(chi2) and not numpy.isclose(chi2, computed_chi2, rtol = CHI2_RTOL):
+        if not math.isnan(chi2) and not numpy.isclose(chi2, computed_chi2, rtol = _CHI2_RTOL):
             raise ValueError(f'Inconsistent chi2 values: {chi2:.3} vs {computed_chi2:.3}')
 
-        if not math.isnan(pval) and not numpy.isclose(pval, computed_pval, rtol = PVAL_RTOL):
+        if not math.isnan(pval) and not numpy.isclose(pval, computed_pval, rtol = _PVAL_RTOL):
             raise ValueError(f'Inconsistent pvalue values: {pval:.7} vs {computed_pval:.7}')
         # ----------------
 
@@ -163,13 +164,13 @@ class FitParameter(BaseModel, frozen = True):
         if not _VALIDATE_PAR_NAME.get():
             return
 
-        mtch = re.match(PAR_REGX, self.name)
+        mtch = re.match(_PAR_REGX, self.name)
 
         if not mtch:
-            log.error(f'Parameters should follow naming: {PAR_REGX}')
+            log.error(f'Parameters should follow naming: {_PAR_REGX}')
             raise ValueError(f'Invalid parameter name: {self.name}')
     # ----------------------
-    @property
+    @cached_property
     def prefix(self) -> str:
         '''
         Parameters are meant to be called as
