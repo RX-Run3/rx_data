@@ -1,6 +1,7 @@
 '''
 Module with tests for PdfBuilder class
 '''
+import numpy
 import pytest
 
 from contextlib     import ExitStack
@@ -8,7 +9,7 @@ from dmu.stats      import print_pdf, zfit
 from dmu.stats      import FittedModel
 from pathlib        import Path
 from typing         import Final
-from rx_common      import Component, Qsq, Trigger, Cuts
+from rx_common      import Component, Qsq, Trigger, Cuts, Mass
 from hqm.data_store import DataStore
 from hqm.pdf_mc     import PdfBuilder
 
@@ -39,6 +40,27 @@ _SAMPLES_RKST_MM : Final[list[tuple[Component,Trigger,Qsq]]] = [
     (Component.bdkstkpijpsimm, Trigger.rkst_mm_os, Qsq.jpsi),
     (Component.bdkstkpipsi2mm, Trigger.rkst_mm_os, Qsq.psi2),
 ]
+
+type zobs = zfit.Space
+type zdat = zfit.data.Data
+# --------------------
+def _get_data(
+    self,
+    obs       : zobs,
+    mass      : Mass,
+    can_merge : bool) -> zdat:
+
+    _ = mass
+    _ = can_merge 
+    _ = self
+
+    array = numpy.random.normal(5280, 100, size = 10_000)
+    data  = zfit.Data.from_numpy(array = array, obs = obs)
+
+    if not isinstance(data, zfit.Data):
+        raise ValueError('Invalid kind of data')
+
+    return data
 # --------------------
 @pytest.mark.parametrize('comp,trig,qsq', _SAMPLES_RK_MM + _SAMPLES_RKST_MM)
 @pytest.mark.parametrize('block', range(1,9))
@@ -46,8 +68,7 @@ def test_simple_mm(
     comp     : Component,
     trig     : Trigger,
     qsq      : Qsq,
-    block    : int,
-    tmp_path : Path):
+    block    : int):
     '''
     Simplest test
     '''
@@ -78,8 +99,7 @@ def test_simple_ee(
     trig     : Trigger,
     qsq      : Qsq,
     use_dtf  : bool,
-    block    : int,
-    tmp_path : Path):
+    block    : int):
     '''
     Simplest test
     '''
@@ -107,4 +127,36 @@ def test_simple_ee(
     print_pdf(pdf = mod.pdf)
     fmo = FittedModel.from_json(path = path)
     print_pdf(pdf = fmo.pdf)
+# --------------------
+def test_load_renamed(monkeypatch, tmp_path):
+    '''
+    Simplest test
+    '''
+    monkeypatch.setenv('ANADIR', str(tmp_path))
+    monkeypatch.setattr(
+        PdfBuilder,
+        '_get_data',
+        _get_data)
+
+    qsq   = Qsq.jpsi
+    block = 5
+    comp  = Component.bpkpjpsiee
+    trig  = Trigger.rk_ee_os
+
+    sel             = {}
+    sel[Cuts.q2   ] = f'(q2_dtf > {qsq.lower_bound}) & (q2_dtf < {qsq.upper_bound})'
+    sel[Cuts.block] = f'block == {block}'
+
+    ctx2 = DataStore.selection(sel = sel, update = True)
+    obs  = zfit.Space('B_Mass', limits = (4500, 6000))
+    with ExitStack() as stack:
+        stack.enter_context(ctx2)
+
+        obj = PdfBuilder(
+            name    = f'block_{block:03d}',
+            comp    = comp,
+            trigger = trig,
+            qsq     = qsq)
+
+        mod = obj.get_model(obs = obs)
 # --------------------
