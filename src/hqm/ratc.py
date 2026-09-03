@@ -114,17 +114,17 @@ class CCbarRatioCalculator:
         log.info(f'Building NLL in {qsq} bin')
         pdf   = self.__get_model(qsq = qsq)
         array = self.__get_target_data(qsq = qsq)
-        zdat  = zfit.Data.from_numpy(
+        data  = zfit.Data.from_numpy(
             obs  =self._cfg.observable.fit_obs,
             array=array)
 
-        if not isinstance(zdat, zfit.Data):
+        if not isinstance(data, zfit.Data):
             raise ValueError('Dataset is not unbinned')
 
-        nll = zfit.loss.ExtendedUnbinnedNLL(model=pdf, data=zdat)
+        nll = zfit.loss.ExtendedUnbinnedNLL(model = pdf, data = data)
 
         self._plotter.plot_array(name = f'all_data_{qsq}', array = array)
-        self._plotter.plot_data( name = f'fit_data_{qsq}', data  =  zdat)
+        self._plotter.plot_data( name = f'fit_data_{qsq}', data  =  data)
 
         return nll
     #-----------------------------
