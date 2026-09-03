@@ -8,6 +8,7 @@ from dmu.stats import ModelFactory
 from dmu.stats import zfit, Model
 from dmu.stats import Fitter
 from dmu.stats import FittedModel
+from dmu.stats import utilities as sut
 
 # -----------------------------
 def _get_fit_model() -> FittedModel:
@@ -68,4 +69,10 @@ def test_serialize(tmp_path : Path):
     fmo.to_json(path = path)
 
     FittedModel.from_json(path = path)
+# -----------------------------
+def test_renamed():
+    fmo = _get_fit_model()
+    pdf = fmo.get_pdf(name = 'renamed')
+
+    sut.print_pdf(pdf = pdf)
 # -----------------------------

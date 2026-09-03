@@ -106,15 +106,34 @@ class FittedModel(BaseModel, Serializable, frozen = True):
         '''
         PDF representing transfer function
         '''
+        return self.get_pdf(name = self.name)
+    #----------------------
+    def get_pdf(self, name : str) -> zpdf:
+        '''
+        Parameters
+        ----------------
+        name: Used to rename PDF paramenters
+
+        Returns
+        ----------------
+        zfit PDF
+        '''
         fac = ModelFactory.from_conf(
-            prefix = self.name,
+            prefix = name,
             obs    = self.obs_conf.obs,
             cfg    = self.model_conf)
 
         pdf  = fac.get_pdf()
         pars = pdf.get_params()
 
-        self.fit_result.set_pars(pars = pars)
+        if name != self.name:
+            fit_result = self.fit_result.rename(
+                original = self.name,
+                new      = name)
+        else:
+            fit_result = self.fit_result
+
+        fit_result.set_pars(pars = pars)
 
         return pdf
 #---------------------------------
