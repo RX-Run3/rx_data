@@ -115,32 +115,6 @@ def _get_mu_sg(qsq_src: Qsq, qsq_tgt: Qsq) -> tuple[float, float]:
     else:
         raise ValueError(f"Invalid qsq combination: {qsq_src=}, {qsq_tgt=}")
 #-------------------------------------
-def _get_target_data(self, qsq : Qsq) -> numpy.ndarray:
-    _  = self
-    obs       = zfit.Space('B_Mass', limits = _OBS_RANGE)
-    size_jx   = _get_fr_entries(qsq_src=Qsq.jpsi, qsq_tgt=qsq)
-    size_px   = _get_fr_entries(qsq_src=Qsq.psi2, qsq_tgt=qsq)
-    # ------
-    pdf_fr_jp = _get_mc_pdf(self = 1, comp=Component.bpkpjpsiee, qsq=qsq)
-    pdf_fr_ps = _get_mc_pdf(self = 1, comp=Component.bpkppsi2ee, qsq=qsq)
-
-    jpsi_fr   = pdf_fr_jp.create_sampler(n = size_jx, limits = obs).numpy()
-    psi2_fr   = pdf_fr_ps.create_sampler(n = size_px, limits = obs).numpy()
-    # ------
-    pdf_pr_jp = _get_pr_pdf(self = 1, qsq_src = Qsq.jpsi, qsq_tgt = qsq)
-    pdf_pr_ps = _get_pr_pdf(self = 1, qsq_src = Qsq.psi2, qsq_tgt = qsq)
-
-    jpsi_pr   = pdf_pr_jp.create_sampler(n = size_jx * _RJPSI, limits = obs).numpy()
-    psi2_pr   = pdf_pr_ps.create_sampler(n = size_px * _RPSI2, limits = obs).numpy()
-    # ------
-    datasets  = [jpsi_fr, jpsi_pr, psi2_fr, psi2_pr]
-
-    log.info(f'Sizes for {qsq}:')
-    for array in datasets:
-        log.info(f'{len(array)}')
-
-    return numpy.concatenate(datasets)
-#--------------------------------------
 def _get_pr_pdf(self, qsq_src : Qsq, qsq_tgt : Qsq) -> zpdf:
     _  = self
     mu, sg      = _get_pr_shape(
@@ -165,11 +139,6 @@ def _get_pr_pdf(self, qsq_src : Qsq, qsq_tgt : Qsq) -> zpdf:
 #--------------------------------------
 @pytest.fixture(autouse = True)
 def _use_fake_masses(monkeypatch):
-    monkeypatch.setattr(
-        CCbarRatioCalculator,
-        '_CCbarRatioCalculator__get_target_data',
-        _get_target_data)
-
     monkeypatch.setattr(
         CCbarRatioCalculator,
         '_CCbarRatioCalculator__get_mc_pdf',
