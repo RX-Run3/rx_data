@@ -1,10 +1,10 @@
 '''
 File holding CCbarRatioCalculator and CCbarRatio classes
 '''
-
 import zfit
 import numpy
 
+from functools      import lru_cache
 from typing         import Final
 from pydantic       import BaseModel
 from dmu.stats      import FitResult, print_pdf
@@ -58,19 +58,22 @@ class CCbarRatioCalculator:
         self,
         cfg     : CCbarRatioCalculatorConf,
         project : Project,
-        block   : Block):
+        block   : Block,
+        ntoys   : int | None = None):
         '''
         Parameters
         ------------------
         cfg    : Object holding configuration
         block  : E.g. 1..8
         project: E.g. rk or rkst
+        ntoys  : If running tests an integer, with None (default) will use real data
         '''
         self._cfg      = cfg
         self._project  = project
         self._block    = block
         self._out_dir  = self._cfg.make_path(kind='ratios', project = project)
         self._plotter  = Plotter(out_dir = self._out_dir)
+        self._ntoys    = ntoys
     #-----------------------------
     def __get_ratio(self) -> CCbarRatio:
         '''
@@ -90,8 +93,6 @@ class CCbarRatioCalculator:
             method='minuit_hesse')
 
         print(res)
-        print_pdf(nll_jpsi.model[0])
-        print_pdf(nll_psi2.model[0])
 
         res = FitResult.from_zfit(res = res)
 
@@ -121,6 +122,9 @@ class CCbarRatioCalculator:
         if not isinstance(data, zfit.Data):
             raise ValueError('Dataset is not unbinned')
 
+        log.debug(f'Data  obs: {data.space}')
+        log.debug(f'Model obs: {pdf.space}')
+
         nll = zfit.loss.ExtendedUnbinnedNLL(model = pdf, data = data)
 
         self._plotter.plot_array(name = f'all_data_{qsq}', array = array)
@@ -138,6 +142,9 @@ class CCbarRatioCalculator:
         -----------------
         Array of masses for given q2-bin in real data
         '''
+        if self._ntoys:
+            return self.__get_toy_data(qsq = qsq)
+
         trigger = Trigger.get_main_trigger(project = self._project, channel = _TARGET_CHANNEL)
         mass    = Mass.raw_from_project(project = self._project)
 
@@ -149,6 +156,23 @@ class CCbarRatioCalculator:
 
         return array
     #-----------------------------
+    def __get_toy_data(self, qsq : Qsq) -> numpy.ndarray:
+        '''
+        Parameters
+        ------------------
+        qsq: q2-bin for which toy data is needed
+
+        Returns
+        ------------------
+        Data produced from current model
+        '''
+        log.warning(f'Getting toy sample with {self._ntoys} entries')
+        pdf = self.__get_model(qsq = qsq)
+        data= pdf.create_sampler(n = self._ntoys)
+
+        return data.numpy()
+    #-----------------------------
+    @lru_cache(maxsize = 5)
     def __get_model(self, qsq : Qsq) -> zfit.pdf.SumPDF:
         r'''
         Parameters
@@ -164,28 +188,70 @@ class CCbarRatioCalculator:
         '''
         pdf_prjp = self.__get_pr_pdf(qsq_src = Qsq.jpsi, qsq_tgt = qsq)
         pdf_prjp = self.__extend_prc(qsq_src = Qsq.jpsi, qsq_tgt = qsq, pdf = pdf_prjp)
+
         pdf_frjp = self.__get_fr_pdf(qsq_src = Qsq.jpsi, qsq_tgt = qsq)
-        self._cfg.parameters.set_scale(
-            fr      = pdf_frjp,
-            pr      = pdf_prjp,
+        pdf_frjp = self.__extend_fr(
+            pdf_fr  = pdf_frjp,
+            pdf_pr  = pdf_prjp,
             qsq_src = Qsq.jpsi,
             qsq_tgt = qsq)
 
         pdf_prps = self.__get_pr_pdf(qsq_src = Qsq.psi2, qsq_tgt = qsq)
         pdf_prps = self.__extend_prc(qsq_src = Qsq.psi2, qsq_tgt = qsq, pdf = pdf_prps)
+
         pdf_frps = self.__get_fr_pdf(qsq_src = Qsq.psi2, qsq_tgt = qsq)
-        self._cfg.parameters.set_scale(
-            fr      = pdf_frps,
-            pr      = pdf_prps,
+        pdf_frps = self.__extend_fr(
+            pdf_fr  = pdf_frps,
+            pdf_pr  = pdf_prps,
             qsq_src = Qsq.psi2,
             qsq_tgt = qsq)
 
-        pdf  = zfit.pdf.SumPDF([pdf_prps, pdf_prjp, pdf_frps, pdf_frjp],
+        pdfs = [pdf_prps, pdf_prjp, pdf_frps, pdf_frjp]
+        for pdf in pdfs:
+            log.debug(f'{pdf.name:<10}{pdf.space}')
+
+        pdf  = zfit.pdf.SumPDF(pdfs,
         obs  = self._cfg.observable.fit_obs)
 
+        print_pdf(pdf = pdf)
         self._plotter.plot_model(name = f'model_{qsq}', pdf = pdf)
 
         return pdf
+    #-----------------------------
+    def __extend_fr(
+        self, 
+        pdf_fr  : zpdf, 
+        pdf_pr  : zpdf, 
+        qsq_src : Qsq, 
+        qsq_tgt : Qsq) -> zpdf:
+        '''
+        ```math
+        ratio       = npart_reco_total             / nfully_reco_total
+        ratio       = (npart_reco / eff_part_reco) / (nfully_reco / eff_fully_reco)
+        ratio       = (npart_reco / nfully_reco) * (eff_fully_reco / eff_part_reco)
+        ratio       = (npart_reco / nfully_reco) * scale
+
+        nfully_reco = (npart_reco / ratio) * scale
+        nfully_reco = npart_reco  * (scale / ratio)
+        nfully_reco = npart_reco  * fac
+
+        scale = eff_fully_reco / eff_part_reco
+        ```
+        '''
+        fac = self._cfg.parameters.get_factor(
+            pdf_fr  = pdf_fr,
+            pdf_pr  = pdf_pr,
+            qsq_src = qsq_src,
+            qsq_tgt = qsq_tgt)
+        npr = self._cfg.parameters.get_part_reco_yield(qsq_comp = qsq_src, qsq_bin = qsq_tgt)
+        nfr = zfit.ComposedParameter(
+            f'nfr_{qsq_src}_{qsq_tgt}',
+            func  = lambda d_par : d_par['npr'] * d_par['fac'],
+            params= {'npr' : npr, 'fac' : fac} )
+
+        pdf_fr.set_yield(nfr)
+
+        return pdf_fr
     #-----------------------------
     def __extend_prc(self, qsq_src : Qsq, qsq_tgt : Qsq, pdf : zpdf) -> zpdf:
         '''
@@ -240,43 +306,13 @@ class CCbarRatioCalculator:
 
         Returns
         ------------------
-        Fully reconstructed component's PDF, with following parametrization
-
-        ```math
-        ratio       = npart_reco_total             / nfully_reco_total
-        ratio       = (npart_reco / eff_part_reco) / (nfully_reco / eff_fully_reco)
-        ratio       = (npart_reco / nfully_reco) * (eff_fully_reco / eff_part_reco)
-        ratio       = (npart_reco / nfully_reco) * scale
-
-        nfully_reco = (npart_reco / ratio) * scale
-        nfully_reco = npart_reco  * (scale / ratio)
-        nfully_reco = npart_reco  * fac
-
-        scale = eff_fully_reco / eff_part_reco
-        ```
+        Fully reconstructed component's PDF, not extended 
         '''
         comp = self.__component_from_qsq(
             qsq          = qsq_src,
             is_part_reco = False)
 
         pdf = self.__get_mc_pdf(comp = comp, qsq = qsq_tgt)
-        rat = self._cfg.parameters.get_ratio(qsq_src = qsq_src)
-        scl = self._cfg.parameters.get_scale(
-            qsq_src = qsq_src,
-            qsq_tgt = qsq_tgt)
-
-        fac = zfit.ComposedParameter(
-            f'fac_{qsq_src}_{qsq_tgt}',
-            func  = lambda d_par : d_par['scl'] / d_par['rat'],
-            params= {'scl' : scl, 'rat' : rat} )
-
-        npr = self._cfg.parameters.get_part_reco_yield(qsq_comp = qsq_src, qsq_bin = qsq_tgt)
-        nfr = zfit.ComposedParameter(
-            f'nfr_{qsq_src}_{qsq_tgt}',
-            func  = lambda d_par : d_par['npr'] * d_par['fac'],
-            params= {'npr' : npr, 'fac' : fac} )
-
-        pdf.set_yield(nfr)
 
         return pdf
     #-----------------------------
