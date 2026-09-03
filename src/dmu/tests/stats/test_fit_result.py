@@ -198,3 +198,22 @@ def test_prefix(prefix : str | None):
     val = FitResult.from_zfit(res = res)
     print(val)
 # -----------------------------
+def test_rename():
+    '''
+    Test renaming of parameters 
+    '''
+    nll = get_nll(kind = 's+b', suffix = '_old_name')
+    min = zfit.minimize.Minuit()
+
+    res = min.minimize(loss = nll)
+    res.hesse(name = 'minuit_hesse')
+
+    old_res = FitResult.from_zfit(res = res)
+    print(old_res)
+
+    new_res = old_res.rename(
+        original = 'old_name',
+        new      = 'new_name')
+
+    print(new_res)
+# -----------------------------

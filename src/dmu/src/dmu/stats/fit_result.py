@@ -144,6 +144,31 @@ class FitParameter(BaseModel, frozen = True):
     value: float 
     error: float
     # ----------------------
+    def rename(self, original : str, new : str) -> Self:
+        '''
+        Returns renamed parameter where:
+
+        {SOMETHING}_{original}...
+
+        --->
+
+        {SOMETHING}_{new}...
+
+        i.e. will replace substring starting with leading '_'
+        '''
+        if f'_{original }' not in self.name: 
+            raise ValueError(f'In renaming, {original} not found in {self.name}')
+
+        new_name = self.name.replace(f'_{original}', f'_{new}')
+
+        if self.name == new_name:
+            log.error(f'{self.name:<40}{new_name:<40}')
+            raise ValueError('Renaming failed')
+        else:
+            log.debug(f'{self.name:<40}{new_name:<40}')
+
+        return self.model_copy(update = {'name' : new_name})
+    # ----------------------
     @property
     def data(self) -> tuple[float,float]:
         '''
@@ -521,6 +546,22 @@ class FitResult(BaseModel, frozen = True):
             raise ValueError(f'Not found one and only one parameter matching prefix: {prefix}')
 
         return pars[0]
+    # ----------------------
+    def rename(self, original : str, new : str) -> Self:
+        '''
+        Parameters
+        ----------------
+        original: Original name of parameters
+        new     : New name of parametes
+        '''
+        new_pars = [ old_par.rename(original, new) for old_par in self.parameters ]
+        ext_pars = [ ext_par.rename(original, new) for ext_par in self.extra_pars ]
+
+        data = {
+            'extra_pars' : ext_pars,
+            'parameters' : new_pars}
+
+        return self.model_copy(update = data)
     # ----------------------
     @classmethod
     def _par_from_zfit(
