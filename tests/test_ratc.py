@@ -162,6 +162,7 @@ def test_unbinned(monkeypatch, tmp_path : Path):
     cal         = CCbarRatioCalculator(
         cfg     = cfg,
         block   = block,
+        ntoys   = 50_000,
         project = Project.rk)
 
     cal.get_ratio(update = True)
