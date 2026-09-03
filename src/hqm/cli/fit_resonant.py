@@ -23,7 +23,10 @@ def fit_resonant(
     cfg   = cfgs[0]
     block = Block(value = blk)
 
-    sel : dict[Cuts,str] = {Cuts.block : f'block == {blk}'}
+    sel : dict[Cuts,str] = {
+        Cuts.prc  : f'mva_prc > 0.6',
+        Cuts.cmb  : f'mva_cmb > 0.9',
+        Cuts.block: f'block == {blk}'}
 
     with DataStore.selection(sel = sel, update = False):
         cal         = CCbarRatioCalculator(
