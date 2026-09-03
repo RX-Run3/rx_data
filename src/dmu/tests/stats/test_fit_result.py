@@ -19,6 +19,8 @@ def initialize():
     '''
     This will run before any test
     '''
+    LogStore.set_level('rx_stats:fit_result', 10)
+
     with rxran.seed(value = 42):
         yield
 # -----------------------------
