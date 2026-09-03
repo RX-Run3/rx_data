@@ -14,7 +14,7 @@ from hqm.prec_maker import PrecMaker
 from hqm.pdf_mc     import PdfBuilder
 from hqm.config     import CCbarRatioCalculatorConf, TransferFunctionMakerConf
 from hqm.trfc       import TransferFunction, TransferFunctionMaker
-from rx_common      import Block, Channel, Component, Mass, Project, Qsq, Trigger
+from rx_common      import Block, Channel, Component, Mass, Project, Qsq, Trigger, Cuts
 from dmu            import LogStore
 
 from .plotter       import Plotter
@@ -148,11 +148,15 @@ class CCbarRatioCalculator:
         trigger = Trigger.get_main_trigger(project = self._project, channel = _TARGET_CHANNEL)
         mass    = Mass.raw_from_project(project = self._project)
 
-        ds      = DataStore(
-            qsq =qsq,
-            trig=trigger,
-            comp=Component.data_24)
-        array, _= ds.get_array(mass = mass)
+        qsq_cut = f'(q2_dtf > {qsq.lower_bound}) & (q2_dtf < {qsq.upper_bound})'
+        with DataStore.selection(sel = {Cuts.q2 : qsq_cut}, update = True):
+            ds      = DataStore(
+                qsq =qsq,
+                trig=trigger,
+                comp=Component.data_24)
+            array, _= ds.get_array(mass = mass)
+
+        ds.save_selection(path = self._out_dir / 'selection.json')
 
         return array
     #-----------------------------
@@ -295,8 +299,12 @@ class CCbarRatioCalculator:
             qsq     = qsq)
 
         mod = obj.get_model(obs = obs)
+        pdf = mod.get_pdf(name = f'{comp}_{qsq}')
 
-        return mod.pdf
+        for par in pdf.get_params():
+            par.floating = False
+
+        return pdf
     #-----------------------------
     def __get_fr_pdf(self, qsq_src : Qsq, qsq_tgt : Qsq) -> zpdf:
         '''
