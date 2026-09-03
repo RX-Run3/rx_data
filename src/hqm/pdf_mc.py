@@ -284,12 +284,15 @@ class PdfBuilder:
         PDF associated to MC
         '''
         if self.model_path.exists():
+            log.info(f'Loading model at: {self.model_path}')
             try:
                 model = FittedModel.from_json(path = self.model_path)
                 return model.with_obs(obs = obs)
             except Exception:
                 log.warning(f'Removing and remaking broken model at {self.model_path}')
                 self.model_path.unlink()
+        else:
+            log.info(f'Model not found at: {self.model_path}')
 
         cfg_par  = self.__cfg.read_conf(
             comp = self.__comp,
