@@ -287,8 +287,9 @@ class CCbarRatioCalculator:
         trigger = Trigger.get_main_trigger(project = self._project, channel = _TARGET_CHANNEL)
         obs     = self._cfg.observable.fit_obs
 
+        name= f'block_{self._block.to_int():03d}'
         obj = PdfBuilder(
-            name    = 'pdf_mc',
+            name    = name,
             comp    = comp,
             trigger = trigger,
             qsq     = qsq)
