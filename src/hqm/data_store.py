@@ -126,7 +126,7 @@ class DataStore:
         '''
         Parameters
         ----------------
-        path: Path to directory where output will go
+        path: Path to JSON file where output will go
         '''
         sut.dump_json(
             exists_ok = True,
