@@ -13,7 +13,7 @@ from dmu.generic    import utilities as sut
 from rx_common      import Cuts, Qsq, Trigger, Component, Mass
 from .database_conf import DatabaseConf
 
-log           = LogStore.add_logger('rx_hqm:data_store')
+log           = LogStore.add_logger('hqm:data_store')
 type NpFltArr = npt.NDArray[numpy.float64]
 
 _SELECTION : ContextVar[dict[Cuts,str] | None] = ContextVar('_SELECTION', default = None) 

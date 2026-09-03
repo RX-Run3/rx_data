@@ -13,7 +13,7 @@ from dmu.stats   import FitConf
 from pydantic    import BaseModel, RootModel, model_validator
 from rx_common   import Component, Project, Qsq
 
-log       = LogStore.add_logger('rx_hqm:config')
+log       = LogStore.add_logger('hqm:config')
 type zpar = zfit.Parameter
 type zpdf = zfit.pdf.BasePDF
 
