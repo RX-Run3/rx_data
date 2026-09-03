@@ -128,35 +128,3 @@ def test_simple_ee(
     fmo = FittedModel.from_json(path = path)
     print_pdf(pdf = fmo.pdf)
 # --------------------
-def test_load_renamed(monkeypatch, tmp_path):
-    '''
-    Simplest test
-    '''
-    monkeypatch.setenv('ANADIR', str(tmp_path))
-    monkeypatch.setattr(
-        PdfBuilder,
-        '_get_data',
-        _get_data)
-
-    qsq   = Qsq.jpsi
-    block = 5
-    comp  = Component.bpkpjpsiee
-    trig  = Trigger.rk_ee_os
-
-    sel             = {}
-    sel[Cuts.q2   ] = f'(q2_dtf > {qsq.lower_bound}) & (q2_dtf < {qsq.upper_bound})'
-    sel[Cuts.block] = f'block == {block}'
-
-    ctx2 = DataStore.selection(sel = sel, update = True)
-    obs  = zfit.Space('B_Mass', limits = (4500, 6000))
-    with ExitStack() as stack:
-        stack.enter_context(ctx2)
-
-        obj = PdfBuilder(
-            name    = f'block_{block:03d}',
-            comp    = comp,
-            trigger = trig,
-            qsq     = qsq)
-
-        mod = obj.get_model(obs = obs)
-# --------------------
