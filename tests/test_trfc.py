@@ -27,9 +27,12 @@ def set_log():
     LogStore.set_level('tools:calc_utility'           , 30)
 #--------------------------------------
 def _get_target_masses(self) -> numpy.ndarray:
+    _ = self
     return numpy.random.normal(loc = 5200, scale = 30, size = 2000)
 #--------------------------------------
 def _get_source_pdf(self, path : Path) -> zpdf:
+    _  = self
+    _  = path 
     mu = zfit.Parameter('mu', 5280, 5200, 5300)
     sg = zfit.Parameter('sg',   20,   10,   30)
 
@@ -59,6 +62,7 @@ def test_psi2_high_brem(
     '''
     Basic test with fake data
     '''
+    _ = _use_source_target
     monkeypatch.setenv('ANADIR', str(tmp_path))
 
     cfgs        = TransferFunctionMakerConf.load(
