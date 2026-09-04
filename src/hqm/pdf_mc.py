@@ -222,6 +222,7 @@ class PdfBuilder:
             trig= self.__trig,
             qsq = self.__qsq,)
         masses, weights = obj.get_array(mass = mass)
+        obj.save_selection(path = self.__out_path / 'selection.json')
 
         data        = zfit.Data.from_numpy(
             obs     = obs,
@@ -273,17 +274,21 @@ class PdfBuilder:
         '''
         return self.__out_path / 'model.json'
     # ----------------------------
-    def get_model(self, obs : zobs) -> FittedModel:
+    def get_model(
+        self, 
+        update : bool,
+        obs    : zobs) -> FittedModel:
         '''
         Parameters
         ---------------
-        obs: Observable that this model's PDF will use
+        obs   : Observable that this model's PDF will use
+        update: If true will remake fit even if JSON file exists
 
         Returns
         ---------------
         PDF associated to MC
         '''
-        if self.model_path.exists():
+        if self.model_path.exists() and not update:
             log.info(f'Loading model at: {self.model_path}')
             try:
                 model = FittedModel.from_json(path = self.model_path)
