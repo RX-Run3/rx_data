@@ -2,23 +2,30 @@
 Module holding PdfBuilder
 '''
 import os
+import numpy
+import numpy.typing      as npt
 import matplotlib.pyplot as plt
 
+from typing         import Final, Literal, overload
 from functools      import cached_property
 from pathlib        import Path
 from dmu.generic    import utilities as gut
 from pydantic       import BaseModel, RootModel
 from rx_common      import Component, Cuts, Mass, Trigger, Qsq
 from dmu            import LogStore
-from dmu.stats      import Fitter, Model, ModelFactory, FittedModel
+from dmu.stats      import FitResult, Fitter, Model, ModelFactory
+from dmu.stats      import FittedModel, ModelFactoryConf, NonParametricModel
 from dmu.stats      import ZFitPlotter, ZFitPlotterConf, zfit
 from hqm.data_store import DataStore
 
 log=LogStore.add_logger('hqm:pdf_md')
 
-zpdf = zfit.pdf.BasePDF
-zdat = zfit.data.Data
-zobs = zfit.Space
+_PDF_NAME : Final[str] = 'pdf_mc'
+
+type NpFltArr = npt.NDArray[numpy.float64]
+type zpdf     = zfit.pdf.BasePDF
+type zdat     = zfit.data.Data
+type zobs     = zfit.Space
 # ----------------------------
 class StatsConf(BaseModel, frozen = True):
     stats : tuple[int,int]
@@ -169,18 +176,60 @@ class PdfBuilder:
         '''
         return f'{self.__comp}_{self.__trig}_{self.__qsq}'
     # ----------------------------
-    def _fit_models(
+    @overload
+    def _get_model(
+        self,
+        data    : zdat,
+        models  : None,
+        cfg_par : RangesConf) -> NonParametricModel: ...
+    @overload
+    def _get_model(
         self,
         data    : zdat,
         models  : list[Model],
-        cfg_par : RangesConf) -> FittedModel:
-        values = {
-            'mu': cfg_par.mu,
-            'sg': cfg_par.sg}
+        cfg_par : RangesConf) -> FittedModel: ...
+    def _get_model(
+        self,
+        data    : zdat,
+        models  : list[Model] | None,
+        cfg_par : RangesConf) -> FittedModel | NonParametricModel:
 
-        name = 'pdf_mc'
-        fac  = ModelFactory(
-            preffix  = name,
+        if models:
+            mod = self.__run_parametric_fit(
+                models = models, 
+                cfg    = cfg_par, 
+                data   = data)
+        else:
+            mod = NonParametricModel.from_data(
+                name = 'Model',
+                data = data)
+
+        self._plot_fit(cfg_par = cfg_par, data = data, pdf = mod.pdf)
+
+        return mod
+    # ----------------------------
+    def __run_parametric_fit(
+        self, 
+        models : list[Model],
+        cfg    : RangesConf,
+        data   : zdat) -> FittedModel:
+        '''
+        Parameters
+        --------------
+        models: List of models needed for fit
+        cfg   : Configuration describing ranges 
+        data  : Zfit data
+
+        Returns
+        --------------
+        Object holding information on fit
+        '''
+        values = {
+            'mu': cfg.mu,
+            'sg': cfg.sg}
+
+        fac = ModelFactory(
+            preffix  = _PDF_NAME,
             obs      = data.space,
             l_shared = ['mu', 'sg'],
             l_float  = [],
@@ -192,15 +241,13 @@ class PdfBuilder:
         res = ftr.fit()
         print(res)
 
-        self._plot_fit(cfg_par = cfg_par, data = data, pdf = pdf)
-
         fmod = FittedModel.from_fit(
-            name= name,
+            name= _PDF_NAME,
             cfg = fac.cfg,
             pdf = pdf,
             res = res)
 
-        return fmod
+        return fmod 
     # ----------------------------
     def _get_data(
         self,
@@ -217,14 +264,8 @@ class PdfBuilder:
         ------------------
         zfit data object
         '''
-        obj    = DataStore(
-            comp= self.__comp,
-            trig= self.__trig,
-            qsq = self.__qsq,)
-        masses, weights = obj.get_array(mass = mass)
-        obj.save_selection(path = self.__out_path / 'selection.json')
-
-        data        = zfit.Data.from_numpy(
+        masses, weights = self.__get_arrays(mass = mass)
+        data            = zfit.Data.from_numpy(
             obs     = obs,
             array   = masses,
             weights = weights)
@@ -247,6 +288,25 @@ class PdfBuilder:
             return self._get_data(obs = obs, mass = mass, can_merge = False)
 
         return data
+    # ----------------------------
+    def __get_arrays(self, mass : Mass) -> tuple[NpFltArr, NpFltArr]:
+        '''
+        Parameters
+        ------------------
+        mass: Mass type, used to read database column
+
+        Returns
+        ------------------
+        Tuple with numpy arrays with masses and weights
+        '''
+        obj    = DataStore(
+            comp= self.__comp,
+            trig= self.__trig,
+            qsq = self.__qsq,)
+        masses, weights = obj.get_array(mass = mass)
+        obj.save_selection(path = self.__out_path / 'selection.json')
+
+        return masses, weights
     # ----------------------------
     def _plot_fit(
         self,
@@ -274,15 +334,29 @@ class PdfBuilder:
         '''
         return self.__out_path / 'model.json'
     # ----------------------------
+    @overload
     def get_model(
         self, 
         update : bool,
-        obs    : zobs) -> FittedModel:
+        obs    : zobs,
+        use_kde: Literal[False] = ...) -> FittedModel:...
+    @overload
+    def get_model(
+        self, 
+        update : bool,
+        obs    : zobs,
+        use_kde: Literal[True]) -> NonParametricModel:...
+    def get_model(
+        self, 
+        update : bool,
+        obs    : zobs,
+        use_kde: bool = False) -> FittedModel | NonParametricModel:
         '''
         Parameters
         ---------------
-        obs   : Observable that this model's PDF will use
-        update: If true will remake fit even if JSON file exists
+        obs    : Observable that this model's PDF will use
+        update : If true will remake fit even if JSON file exists
+        use_kde: If true won't try to fit to parametric model, default False
 
         Returns
         ---------------
@@ -307,12 +381,12 @@ class PdfBuilder:
         mass   = Mass.raw_from_project(project = self.__trig.project)
         obs    = zfit.Space(mass, limits = cfg_par.rn)
         data   = self._get_data(obs = obs, mass = mass, can_merge = True)
-        models = self.__cfg.mod_cfg.get_model(nentries = data.num_entries)
+        models = None if use_kde else self.__cfg.mod_cfg.get_model(nentries = data.num_entries)
 
-        if models is None:
+        if models is None and not use_kde:
             raise ValueError(f'No model found for {data.num_entries} entries')
 
-        fmod = self._fit_models(
+        fmod = self._get_model(
             data    = data,
             cfg_par = cfg_par,
             models  = models)
