@@ -46,37 +46,37 @@ for different processes and triggers
 With the data above already made run:
 
 ```bash
-hqm fit-mc -c bpkpjpsiee     -d -t rk_ee_os   -b 1 -q jpsi
-hqm fit-mc -c bpkpjpsiee     -d -t rk_ee_os   -b 1 -q psi2
-hqm fit-mc -c bpkpjpsiee     -d -t rk_ee_os   -b 1 -q high
+hqm fit-mc -c bpkpjpsiee     -t rk_ee_os   -b 1 -q jpsi   -d 
+hqm fit-mc -c bpkpjpsiee     -t rk_ee_os   -b 1 -q psi2   -d -k
+hqm fit-mc -c bpkpjpsiee     -t rk_ee_os   -b 1 -q high   -d 
+                                                             
+hqm fit-mc -c bpkppsi2ee     -t rk_ee_os   -b 1 -q jpsi   -d 
+hqm fit-mc -c bpkppsi2ee     -t rk_ee_os   -b 1 -q psi2   -d 
+hqm fit-mc -c bpkppsi2ee     -t rk_ee_os   -b 1 -q high   -d 
+                                                             
+hqm fit-mc -c bpkpjpsimm     -t rk_mm_os   -b 1 -q jpsi      
+hqm fit-mc -c bpkpjpsimm     -t rk_mm_os   -b 1 -q psi2      
+hqm fit-mc -c bpkpjpsimm     -t rk_mm_os   -b 1 -q high      
+                                                             
+hqm fit-mc -c bpkppsi2mm     -t rk_mm_os   -b 1 -q jpsi      
+hqm fit-mc -c bpkppsi2mm     -t rk_mm_os   -b 1 -q psi2      
+hqm fit-mc -c bpkppsi2mm     -t rk_mm_os   -b 1 -q high      
+                                                             
+hqm fit-mc -c bdkstkpijpsiee -t rkst_ee_os -b 1 -q jpsi   -d 
+hqm fit-mc -c bdkstkpijpsiee -t rkst_ee_os -b 1 -q psi2   -d -k
+hqm fit-mc -c bdkstkpijpsiee -t rkst_ee_os -b 1 -q high   -d 
+                                                             
+hqm fit-mc -c bdkstkpipsi2ee -t rkst_ee_os -b 1 -q jpsi   -d 
+hqm fit-mc -c bdkstkpipsi2ee -t rkst_ee_os -b 1 -q psi2   -d 
+hqm fit-mc -c bdkstkpipsi2ee -t rkst_ee_os -b 1 -q high   -d 
 
-hqm fit-mc -c bpkppsi2ee     -d -t rk_ee_os   -b 1 -q jpsi
-hqm fit-mc -c bpkppsi2ee     -d -t rk_ee_os   -b 1 -q psi2
-hqm fit-mc -c bpkppsi2ee     -d -t rk_ee_os   -b 1 -q high
+hqm fit-mc -c bdkstkpijpsimm -t rkst_mm_os -b 1 -q jpsi
+hqm fit-mc -c bdkstkpijpsimm -t rkst_mm_os -b 1 -q psi2
+hqm fit-mc -c bdkstkpijpsimm -t rkst_mm_os -b 1 -q high
 
-hqm fit-mc -c bpkpjpsimm        -t rk_mm_os   -b 1 -q jpsi
-hqm fit-mc -c bpkpjpsimm        -t rk_mm_os   -b 1 -q psi2
-hqm fit-mc -c bpkpjpsimm        -t rk_mm_os   -b 1 -q high
-
-hqm fit-mc -c bpkppsi2mm        -t rk_mm_os   -b 1 -q jpsi
-hqm fit-mc -c bpkppsi2mm        -t rk_mm_os   -b 1 -q psi2
-hqm fit-mc -c bpkppsi2mm        -t rk_mm_os   -b 1 -q high
-
-hqm fit-mc -c bdkstkpijpsiee -d -t rkst_ee_os -b 1 -q jpsi
-hqm fit-mc -c bdkstkpijpsiee -d -t rkst_ee_os -b 1 -q psi2
-hqm fit-mc -c bdkstkpijpsiee -d -t rkst_ee_os -b 1 -q high
-
-hqm fit-mc -c bdkstkpipsi2ee -d -t rkst_ee_os -b 1 -q jpsi
-hqm fit-mc -c bdkstkpipsi2ee -d -t rkst_ee_os -b 1 -q psi2
-hqm fit-mc -c bdkstkpipsi2ee -d -t rkst_ee_os -b 1 -q high
-
-hqm fit-mc -c bdkstkpijpsimm    -t rkst_mm_os -b 1 -q jpsi
-hqm fit-mc -c bdkstkpijpsimm    -t rkst_mm_os -b 1 -q psi2
-hqm fit-mc -c bdkstkpijpsimm    -t rkst_mm_os -b 1 -q high
-
-hqm fit-mc -c bdkstkpipsi2mm    -t rkst_mm_os -b 1 -q jpsi
-hqm fit-mc -c bdkstkpipsi2mm    -t rkst_mm_os -b 1 -q psi2
-hqm fit-mc -c bdkstkpipsi2mm    -t rkst_mm_os -b 1 -q high
+hqm fit-mc -c bdkstkpipsi2mm -t rkst_mm_os -b 1 -q jpsi
+hqm fit-mc -c bdkstkpipsi2mm -t rkst_mm_os -b 1 -q psi2
+hqm fit-mc -c bdkstkpipsi2mm -t rkst_mm_os -b 1 -q high
 ```
 
 where `-d` requires the `q2` cut to be on the DTF variable.
