@@ -23,15 +23,20 @@ class NonParametricModel(BaseModel, Serializable, frozen = True):
     '''
     Class representing non-parametric PDF
     '''
+    obs : str
     name: str
     xs  : list[float]
     ys  : list[float]
     # ------------------------
     @classmethod
-    def from_data(cls, data : zdat) -> 'NonParametricModel':
+    def from_data(
+        cls, 
+        name : str,
+        data : zdat) -> 'NonParametricModel':
         '''
         Parameters
         ----------------
+        name: Name of PDF
         data: Zfit data object
         
         Returns
@@ -39,7 +44,7 @@ class NonParametricModel(BaseModel, Serializable, frozen = True):
         Instance of NonParametricModel
         '''
         pdf          = KDE(data = data)
-        name,        = pdf.obs
+        obs_name,    = pdf.obs
         lower, upper = range_from_obs(obs = pdf.space)
 
         xs = numpy.linspace(lower, upper, _NPOINTS).tolist()
@@ -48,6 +53,7 @@ class NonParametricModel(BaseModel, Serializable, frozen = True):
         return cls(
             xs   = xs, 
             ys   = ys, 
+            obs  = obs_name,
             name = name)
     # ------------------------
     @cached_property

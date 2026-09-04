@@ -20,7 +20,9 @@ def test_from_data(tmp_path : Path):
     if not isinstance(data, zfit.Data):
         raise ValueError('Invalid data type')
 
-    model = NonParametricModel.from_data(data = data)
+    model = NonParametricModel.from_data(
+        name = 'Model',
+        data = data)
 
     cfg = ZFitPlotterConf.default()
     ptr = ZFitPlotter(data = data, model = model.pdf)
@@ -38,5 +40,11 @@ def test_get_pdf(tmp_path : Path):
     if not isinstance(data, zfit.Data):
         raise ValueError('Invalid data type')
 
-    model = NonParametricModel.from_data(data = data)
+    model = NonParametricModel.from_data(name = 'Model', data = data)
     pdf   = model.get_pdf(name = 'renamed')
+
+    cfg = ZFitPlotterConf.default()
+    ptr = ZFitPlotter(data = data, model = pdf)
+    ptr.run(cfg = cfg)
+    plt.savefig(tmp_path / 'fit.png')
+    plt.close()
