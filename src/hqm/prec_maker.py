@@ -154,7 +154,7 @@ class PrecMaker:
         '''
         path = self.__get_path()
         if path.exists() and not update:
-            return SplinePDF.from_json(path = path)
+            return SplinePDF.from_json(path = path, name = name)
 
         pdf_mm = self.__get_muon_pdf(out_dir = path.parent)
         trf    = self.__get_trfc()
