@@ -12,6 +12,7 @@ from hqm.config     import TransferFunctionMakerConf
 
 update_opt = typer.Option(False, '-u', help = 'If used, will remake function even if already exists')
 use_dtf_opt= typer.Option(False, '-d', help = 'If used, will use q2_dtf in selection of data')
+use_kde_opt= typer.Option(False, '-k', help = 'If used, will use KDE for fit')
 trig_opt   = typer.Option(...  , '-t', help = 'Trigger, e.g. rk_ee_os')
 comp_opt   = typer.Option(...  , '-c', help = 'Component, e.g. bpkpjpsiee')
 qsq_opt    = typer.Option(...  , '-q', help = 'q2-bin fitted')
@@ -21,6 +22,7 @@ def fit_mc(
     component : str     = comp_opt,
     update    : bool    = update_opt,
     use_dtf   : bool    = use_dtf_opt,
+    use_kde   : bool    = use_kde_opt,
     trigger   : Trigger = trig_opt,
     qsq       : Qsq     = qsq_opt,
     blk       : int     = block_opt):
@@ -44,5 +46,8 @@ def fit_mc(
             trigger = trigger,
             qsq     = qsq)
 
-        mod = obj.get_model(obs = obs, update = update)
+        mod = obj.get_model(
+            obs    = obs, 
+            use_kde= use_kde,
+            update = update)
 # ----------------------------------------------------------------------
