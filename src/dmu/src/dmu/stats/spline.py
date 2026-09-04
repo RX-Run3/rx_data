@@ -99,19 +99,26 @@ class SplinePDF(zfit.pdf.ZPDF):
         return cls(obs = pdf.space, xs = xs, ys = ys)
     # ------------------------------
     @classmethod
-    def from_json(cls, path : Path) -> 'SplinePDF':
+    def from_json(
+        cls, 
+        path : Path,
+        name : str | None = None) -> 'SplinePDF':
         '''
         Parameters
         ---------------
         path: Path to JSON file where PDF is stored 
+        name: If specified, will name the PDF like this, otherwise will pick name from JSON file
         '''
         cfg = _SplineRepr.from_json(path = path)
+
+        if not name:
+            name = cfg.name
 
         return cls(
             obs = cfg.obs,
             xs  = np.array(cfg.xs),
             ys  = np.array(cfg.ys),
-            name= cfg.name)
+            name= name)
     # ------------------------------
     def _unnormalized_pdf(self, x):
         x = zfit.z.unstack_x(value = x)

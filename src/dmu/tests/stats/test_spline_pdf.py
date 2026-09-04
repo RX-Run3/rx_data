@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from pathlib     import Path
 from dmu.stats   import ZFitPlotterConf, ZFitPlotter
 from dmu.stats   import SplinePDF, zfit
+from dmu.stats   import utilities as sut 
 
 # ------------------------
 def test_simple(tmp_path : Path):
@@ -65,4 +66,21 @@ def test_from_non_spline(tmp_path : Path):
 
     assert np.isclose(y1s, y2s, atol = 1e-4).all()
     assert isinstance(spline_pdf, SplinePDF)
+# ------------------------
+def test_name(tmp_path : Path):
+    '''
+    Test dumping and loading to JSON
+    '''
+    n_points = 400
+    x_grid   = np.linspace(0, 10, n_points)
+    y_grid   = (x_grid - 2)**2 * (x_grid - 5)**2 * (x_grid - 8)**2 + 1
+
+    obs  = zfit.Space("x", limits=(1, 10))
+    pdf  = SplinePDF(obs = obs, xs = x_grid, ys = y_grid)
+    path = tmp_path / 'spline.json'
+
+    pdf.to_json(path = path)
+    pdf = SplinePDF.from_json(path = path, name = 'renamed_pdf')
+
+    sut.print_pdf(pdf = pdf)
 # ------------------------
