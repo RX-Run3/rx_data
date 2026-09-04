@@ -28,6 +28,7 @@ def initialize():
     LogStore.set_level('rx_hqm:data_store', 10)
 #--------------------------------------
 def _load_df(self) -> pnd.DataFrame:
+    _    = self
     data = get_data()
 
     return pnd.DataFrame(data)
@@ -53,21 +54,22 @@ def test_data_retrieval(
     '''
     Test initialized object with fake data
     '''
-    obj = DataStore(
-        comp= comp,
-        trig= Trigger.rk_ee_os,
-        qsq = Qsq.jpsi)
+    _   = _patch_loader
+    with DataStore.selection(sel = {Cuts.block : 'true'}, update = False):
+        obj = DataStore(
+            comp= comp,
+            trig= Trigger.rk_ee_os,
+            qsq = Qsq.jpsi)
 
     arr_raw     , _   = obj.get_array(mass = Mass.bp_bcor)
     arr_dtf_jpsi, _   = obj.get_array(mass = Mass.bp_dtf_jpsi)
     arr_dtf_psi2, wgt = obj.get_array(mass = Mass.bp_dtf_psi2)
 
-    with Plotter.plot(path = tmp_path):
-        ptr = Plotter()
-        ptr.plot_array(name = 'raw_mass'     , array = arr_raw)
-        ptr.plot_array(name = 'dtf_mass_jpsi', array = arr_dtf_jpsi)
-        ptr.plot_array(name = 'dtf_mass_psi2', array = arr_dtf_psi2)
-        ptr.plot_array(name = 'weights'      , array = wgt)
+    ptr = Plotter(out_dir = tmp_path)
+    ptr.plot_array(name = 'raw_mass'     , array = arr_raw)
+    ptr.plot_array(name = 'dtf_mass_jpsi', array = arr_dtf_jpsi)
+    ptr.plot_array(name = 'dtf_mass_psi2', array = arr_dtf_psi2)
+    ptr.plot_array(name = 'weights'      , array = wgt)
 
     if not comp.is_mc:
         assert numpy.isclose(wgt, 1.0).all()
@@ -145,6 +147,7 @@ def test_update_selection(
     '''
     Test with database data and selection from zero
     '''
+    _ = _block_selection
     monkeypatch.setenv('ANADIR', str(tmp_path))
 
     comp = Component.bpkpjpsiee

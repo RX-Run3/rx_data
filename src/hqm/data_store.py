@@ -84,7 +84,9 @@ class DataStore:
         cutflow['none'] = len(df)
         for name, expr in sel.items():
             log.debug(f'{name:<20}{expr}')
-            df = df.query(expr)
+
+            if expr != 'true':
+                df = df.query(expr)
 
             cutflow[expr] = len(df)
 
@@ -100,7 +102,7 @@ class DataStore:
         '''
         Parameters
         -------------
-        sel   : Dictionary mapping cut object (label) to cut expression
+        sel   : Dictionary mapping cut object (label) to cut expression, use 'true' to skip cut
         update: If True it will add this selection to existing one
                 If False will use this selection as the only selection
                 If False and selection already exists will raise exception
