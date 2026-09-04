@@ -156,7 +156,7 @@ class CCbarRatioCalculator:
                 comp=Component.data_24)
             array, _= ds.get_array(mass = mass)
 
-        ds.save_selection(path = self._out_dir / 'selection.json')
+        ds.save_selection(path = self._out_dir / f'selection_{qsq}.json')
 
         return array
     #-----------------------------
