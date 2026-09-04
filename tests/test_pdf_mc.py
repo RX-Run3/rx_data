@@ -88,7 +88,7 @@ def test_simple_mm(
             trigger = trig,
             qsq     = qsq)
 
-        mod = obj.get_model(obs = obs)
+        mod = obj.get_model(obs = obs, update = True)
 
         print_pdf(pdf = mod.pdf)
 # --------------------
@@ -119,7 +119,7 @@ def test_simple_ee(
             trigger = trig,
             qsq     = qsq)
 
-        mod = obj.get_model(obs = obs)
+        mod = obj.get_model(obs = obs, update = True)
         path= obj.model_path
 
         assert path.exists()

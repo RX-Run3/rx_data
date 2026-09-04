@@ -163,7 +163,7 @@ class TransferFunctionMaker:
             trigger = trig,
             comp    = self._cfg.source_component,
             qsq     = self._cfg.source)
-        fmod = obj.get_model(obs = obs)
+        fmod = obj.get_model(obs = obs, update = False)
 
         return fmod.fixed_pdf
     #---------------------------------
