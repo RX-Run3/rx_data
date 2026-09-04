@@ -373,7 +373,11 @@ class CCbarRatioCalculator:
             block   = self._block,
             project = self._project)
 
-        return obj.get_pdf(update = False)
+        pdf = obj.get_pdf(
+            name   = f'prc_{qsq_src}_{qsq_tgt}',
+            update = False)
+
+        return pdf
     #-----------------------------
     def __get_trfc(self, qsq_src : Qsq, qsq_tgt : Qsq) -> TransferFunction:
         '''
