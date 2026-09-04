@@ -55,6 +55,25 @@ class NonParametricModel(BaseModel, Serializable, frozen = True):
         '''
         Underlying zfit PDF
         '''
+        return self.get_pdf(name = self.name)
+    # ------------------------
+    @cached_property
+    def fixed_pdf(self) ->  zpdf:
+        '''
+        Underlying zfit PDF
+        '''
+        return self.pdf
+    # ------------------------
+    def get_pdf(self, name : str) -> zpdf:
+        '''
+        Parameters
+        --------------
+        name: New PDF name
+
+        Returns
+        --------------
+        Renamed zfit pdf
+        '''
         obs = zfit.Space(self.name, limits = (min(self.xs), max(self.xs)))
         xs  = numpy.array(self.xs)
         ys  = numpy.array(self.ys)
@@ -63,7 +82,7 @@ class NonParametricModel(BaseModel, Serializable, frozen = True):
             obs  = obs, 
             xs   = xs,
             ys   = ys,
-            name = self.name)
+            name = name)
 
         return pdf
 # ----------------------------------------
