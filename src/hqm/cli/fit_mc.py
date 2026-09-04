@@ -1,0 +1,48 @@
+'''
+Module used to expose build_database function to CLI
+'''
+import typer
+
+from contextlib     import ExitStack
+from rx_common      import Block, Component, Project, Qsq, Cuts, Trigger
+from dmu.stats      import zfit
+from hqm.pdf_mc     import PdfBuilder
+from hqm.data_store import DataStore
+from hqm.config     import TransferFunctionMakerConf
+
+update_opt = typer.Option(False, '-u', help = 'If used, will remake function even if already exists')
+use_dtf_opt= typer.Option(False, '-d', help = 'If used, will use q2_dtf in selection of data')
+trig_opt   = typer.Option(...  , '-t', help = 'Trigger, e.g. rk_ee_os')
+comp_opt   = typer.Option(...  , '-c', help = 'Component, e.g. bpkpjpsiee')
+qsq_opt    = typer.Option(...  , '-q', help = 'q2-bin fitted')
+block_opt  = typer.Option(...  , '-b', help = 'E.g. 1')
+# ----------------------------------------------------------------------
+def fit_mc(
+    component : str     = comp_opt,
+    update    : bool    = update_opt,
+    use_dtf   : bool    = use_dtf_opt,
+    trigger   : Trigger = trig_opt,
+    qsq       : Qsq     = qsq_opt,
+    blk       : int     = block_opt):
+    '''
+    Make part reco PDF through transfer function and muon data 
+    '''
+    comp            = Component(component)
+    qsq_name        = 'q2_dtf' if use_dtf else 'q2'
+    sel             = {}
+    sel[Cuts.q2   ] = f'({qsq_name} > {qsq.lower_bound}) & ({qsq_name} < {qsq.upper_bound})'
+    sel[Cuts.block] = f'block == {blk}'
+
+    ctx2 = DataStore.selection(sel = sel, update = True)
+    obs  = zfit.Space('B_Mass', limits = (4500, 6000))
+    with ExitStack() as stack:
+        stack.enter_context(ctx2)
+
+        obj = PdfBuilder(
+            name    = f'{qsq_name}/block_{blk:03d}',
+            comp    = comp,
+            trigger = trigger,
+            qsq     = qsq)
+
+        mod = obj.get_model(obs = obs, update = update)
+# ----------------------------------------------------------------------
