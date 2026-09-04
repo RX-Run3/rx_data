@@ -2,10 +2,11 @@
 Module with tests for PdfBuilder class
 '''
 import numpy
+import numpy.typing as npt
 import pytest
 
 from contextlib     import ExitStack
-from dmu.stats      import print_pdf, zfit
+from dmu.stats      import ZFitPlotter, ZFitPlotterConf, print_pdf, zfit
 from dmu.stats      import FittedModel
 from pathlib        import Path
 from typing         import Final
@@ -41,8 +42,20 @@ _SAMPLES_RKST_MM : Final[list[tuple[Component,Trigger,Qsq]]] = [
     (Component.bdkstkpipsi2mm, Trigger.rkst_mm_os, Qsq.psi2),
 ]
 
-type zobs = zfit.Space
-type zdat = zfit.data.Data
+_SIZE : Final[int] = 10_000
+
+type NpFltArray = npt.NDArray[numpy.float64]
+type zobs       = zfit.Space
+type zdat       = zfit.data.Data
+# --------------------
+def _get_arrays(self, mass) -> tuple[NpFltArray, NpFltArray]:
+    _ = self
+    _ = mass 
+
+    masses  = numpy.random.normal(5280, 200, _SIZE)
+    weights = numpy.ones_like(masses)
+
+    return masses, weights
 # --------------------
 def _get_data(
     self,
@@ -127,4 +140,39 @@ def test_simple_ee(
     print_pdf(pdf = mod.pdf)
     fmo = FittedModel.from_json(path = path)
     print_pdf(pdf = fmo.pdf)
+# --------------------
+def test_use_kde(tmp_path : Path, monkeypatch):
+    '''
+    Test fitting with KDE
+    '''
+    monkeypatch.setenv('ANADIR', str(tmp_path))
+    monkeypatch.setattr(
+        PdfBuilder,
+        '_PdfBuilder__get_arrays',
+        _get_arrays)
+
+    comp = Component.bpkppsi2ee
+    trig = Trigger.rk_ee_os
+    qsq  = Qsq.psi2
+    block= 1
+
+    sel             = {}
+    sel[Cuts.q2   ] = f'(q2 > {qsq.lower_bound}) & (q2 < {qsq.upper_bound})'
+    sel[Cuts.block] = f'block == {block}'
+
+    ctx2 = DataStore.selection(sel = sel, update = True)
+    obs  = zfit.Space('B_Mass', limits = (4500, 6000))
+    with ExitStack() as stack:
+        stack.enter_context(ctx2)
+
+        obj = PdfBuilder(
+            name    = f'block_{block:03d}',
+            comp    = comp,
+            trigger = trig,
+            qsq     = qsq)
+
+        mod = obj.get_model(
+            obs    = obs, 
+            use_kde= True,
+            update = True)
 # --------------------
