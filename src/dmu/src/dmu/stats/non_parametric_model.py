@@ -1,0 +1,69 @@
+'''
+Module with NonParametricModel class
+'''
+import numpy
+
+from typing      import Final
+from pydantic    import BaseModel
+from dmu.generic import Serializable
+from functools   import cached_property
+
+from .imports   import zfit
+from .utilities import range_from_obs 
+from .spline    import SplinePDF 
+
+type zpdf = zfit.pdf.BasePDF
+type zdat = zfit.Data
+
+KDE  = zfit.pdf.KDE1DimISJ
+
+_NPOINTS : Final[int] = 300 # Number of points used to scan PDF
+# ----------------------------------------
+class NonParametricModel(BaseModel, Serializable, frozen = True):
+    '''
+    Class representing non-parametric PDF
+    '''
+    name: str
+    xs  : list[float]
+    ys  : list[float]
+    # ------------------------
+    @classmethod
+    def from_data(cls, data : zdat) -> 'NonParametricModel':
+        '''
+        Parameters
+        ----------------
+        data: Zfit data object
+        
+        Returns
+        ----------------
+        Instance of NonParametricModel
+        '''
+        pdf          = KDE(data = data)
+        name,        = pdf.obs
+        lower, upper = range_from_obs(obs = pdf.space)
+
+        xs = numpy.linspace(lower, upper, _NPOINTS).tolist()
+        ys = pdf.pdf(xs).numpy().tolist()
+
+        return cls(
+            xs   = xs, 
+            ys   = ys, 
+            name = name)
+    # ------------------------
+    @cached_property
+    def pdf(self) ->  zpdf:
+        '''
+        Underlying zfit PDF
+        '''
+        obs = zfit.Space(self.name, limits = (min(self.xs), max(self.xs)))
+        xs  = numpy.array(self.xs)
+        ys  = numpy.array(self.ys)
+
+        pdf = SplinePDF(
+            obs  = obs, 
+            xs   = xs,
+            ys   = ys,
+            name = self.name)
+
+        return pdf
+# ----------------------------------------

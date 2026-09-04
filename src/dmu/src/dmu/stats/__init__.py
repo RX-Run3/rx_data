@@ -19,12 +19,13 @@ from .zfit_plotter        import ZFitPlotter, ZFitPlotterConf
 # ----------------------------------------------
 # PDFs
 # ----------------------------------------------
-from .zfit_models         import ModExp
-from .zfit_models         import HypExp
-from .function            import Function
-from .zfit_models         import FermiDirac 
-from .ipatia              import Ipatia 
-from .spline              import SplinePDF
+from .zfit_models          import ModExp
+from .zfit_models          import HypExp
+from .function             import Function
+from .zfit_models          import FermiDirac 
+from .ipatia               import Ipatia 
+from .spline               import SplinePDF
+from .non_parametric_model import NonParametricModel
 # ----------------------------------------------
 from .fit_conf            import FitConf, KDEConf, PaddingConf
 from .imports             import zfit
@@ -80,6 +81,9 @@ __all__ = [
     'ModelFactoryConf',
     'RegularInterpolator',
     # ---------------------
+    # PDFs
+    # ---------------------
+    'NonParametricModel',
     'FermiDirac',
     'ModExp',
     'HypExp',
