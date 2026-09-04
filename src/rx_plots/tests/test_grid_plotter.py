@@ -1,11 +1,10 @@
 '''
 Module with tests for GridPlotter
 '''
-from functools import cached_property
-
 import numpy
 import pandas as pnd
 
+from functools  import cached_property
 from gvar       import GVar, gvar
 from pathlib    import Path
 from pydantic   import BaseModel, ConfigDict, RootModel
