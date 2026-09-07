@@ -214,8 +214,6 @@ def test_binning_selection(monkeypatch, tmp_path : Path):
     path = cfg.get_path(comp = comp, trig = trig)
     df.to_parquet(path = path)
 
-    print(df)
-
     binning         = Binning.load()
     bins            = binning.from_str('B_PT-3 ll_angle-2 nTracks-1')
     sel             = bins.selection
@@ -230,8 +228,10 @@ def test_binning_selection(monkeypatch, tmp_path : Path):
     selection_path   = tmp_path / 'selection.json'
     obj.save_selection(path = selection_path)
 
+    for col in obj.columns:
+        print(col)
+
     assert selection_path.exists()
     assert len(arr_raw) < SIZE
     assert len(arr_wgt) < SIZE
 #--------------------------------------
-

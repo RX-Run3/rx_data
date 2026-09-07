@@ -45,13 +45,20 @@ class DataStore:
         self.__full_sel : dict[str,int] = dict()
 
         df = self._load_df()
-        df = self._select_data(df = df)
 
         if self._comp.is_mc:
-            self.__df = self.__smear_masses(df = df) 
+            df = self.__smear_masses(df = df) 
         else:
             log.info(f'Not smearing masses for: {self._comp}')
-            self.__df = df
+
+        self.__df = self._select_data(df = df)
+    # ----------------------------------
+    @property
+    def columns(self) -> list[str]:
+        '''
+        List of columns in already preprocessed dataframe
+        '''
+        return self.__df.columns.to_numpy().tolist()
     # ----------------------------------
     def _load_df(self) -> pnd.DataFrame:
         '''
@@ -143,11 +150,24 @@ class DataStore:
             data      = self.__full_sel)
     # ----------------------------------
     def __smear_masses(self, df : pnd.DataFrame) -> pnd.DataFrame:
+        '''
+        Parameters
+        --------------
+        df: Dataframe with data to smear
+
+        Returns
+        --------------
+        DataFrame with smeared columns. 
+        q2 column is smeared and original kept around as `q2_org`
+        '''
         smr = Q2SmearCorrector(channel = self._trig.channel, add_original = True)
         log.info(f'Smearing masses for: {self._comp}')
         df  = smr.get_df(
             replace = True,
             df      = df)
+
+        df['q2_org'] = df['q2'].to_numpy()
+        df['q2'    ] = df['Jpsi_Mass'] * df['Jpsi_Mass']
 
         return df
     # ----------------------------------
