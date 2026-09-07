@@ -34,9 +34,10 @@ class ScaleReader:
         version: Version of scales
         '''
         self.__channel  = channel
-
         self._df_scales = self._get_dataframe(name = 'scales'    , version = version)
         self._df_params = self._get_dataframe(name = 'parameters', version = version)
+
+        self._cache : dict[str,tuple[float,float]] = dict()
     # ----------------------
     def _get_dataframe(self, name : str, version : str) -> pnd.DataFrame:
         '''
@@ -141,16 +142,24 @@ class ScaleReader:
         -------------
         Tuple with value and error of scale
         '''
+        key = f'{corr}-{block}-{brem}'
+        if key in self._cache:
+            return self._cache[key]
+
         df = self._df_scales
 
         if brem == Brem.brx12:
             return self._get_combined_entry(quantity = corr, block = block, df = df)
 
-        return self._query_entry(
+        val = self._query_entry(
             df       = df,
             quantity = corr,
             brem     = brem,
             block    = block)
+
+        self._cache[key] = val
+
+        return val
     # ----------------------
     def get_param(
         self,
@@ -170,15 +179,23 @@ class ScaleReader:
         -------------
         Tuple with value and error of parameter 
         '''
+        key = f'{is_mc}-{param}-{block}-{brem}'
+        if key in self._cache:
+            return self._cache[key]
+
         expr = f'sample != "{_DATA.value}"' if is_mc else f'sample == "{_DATA.value}"'
         df   = self._df_params.query(expr)
 
         if brem == Brem.brx12:
             return self._get_combined_entry(quantity = param, block = block, df = df)
 
-        return self._query_entry(
+        value = self._query_entry(
             df       = df,
             quantity = param,
             brem     = brem,
             block    = block)
+
+        self._cache[key] = value
+
+        return value
 # -------------------------------------
