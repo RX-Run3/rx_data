@@ -10,6 +10,7 @@ from contextlib     import contextmanager
 from contextvars    import ContextVar
 from dmu            import LogStore
 from dmu.generic    import utilities as sut
+from rx_q2          import Q2SmearCorrector
 from rx_common      import Cuts, Qsq, Trigger, Component, Mass
 from .database_conf import DatabaseConf
 
@@ -43,8 +44,14 @@ class DataStore:
 
         self.__full_sel : dict[str,int] = dict()
 
-        df        = self._load_df()
-        self.__df = self._select_data(df = df)
+        df = self._load_df()
+        df = self._select_data(df = df)
+
+        if self._comp.is_mc:
+            self.__df = self.__smear_masses(df = df) 
+        else:
+            log.info(f'Not smearing masses for: {self._comp}')
+            self.__df = df
     # ----------------------------------
     def _load_df(self) -> pnd.DataFrame:
         '''
@@ -134,6 +141,15 @@ class DataStore:
             exists_ok = True,
             path      = path,
             data      = self.__full_sel)
+    # ----------------------------------
+    def __smear_masses(self, df : pnd.DataFrame) -> pnd.DataFrame:
+        smr = Q2SmearCorrector(channel = self._trig.channel, add_original = True)
+        log.info(f'Smearing masses for: {self._comp}')
+        df  = smr.get_df(
+            replace = True,
+            df      = df)
+
+        return df
     # ----------------------------------
     def get_array(self, mass : Mass) -> tuple[NpFltArr, NpFltArr]:
         '''
