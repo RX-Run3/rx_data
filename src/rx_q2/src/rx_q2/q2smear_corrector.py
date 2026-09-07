@@ -15,7 +15,14 @@ from dmu.generic.version_management import get_last_version
 
 log = LogStore.add_logger('rx_q2:q2smear_corrector')
 
-_JPSI_PDG_MASS : Final[float] = 3096.9
+_JPSI_PDG_MASS : Final[float]     = 3096.9
+_EXTRA_COLUMNS : Final[list[str]] = ['EVENTNUMBER', 'RUNNUMBER']
+_PARTICLES     : Final[list[str]] = ['B', 'Jpsi']
+_COLUMNS       : Final[list[str]] = [
+    'B_Mass'   , 'Jpsi_Mass', 
+    'B_TRUEID' , 'Jpsi_TRUEID',
+    'B_TRUEM'  , 'Jpsi_TRUEM',
+    'nbrem'    , 'block']
 # ------------------------------------
 class Q2SmearCorrector:
     '''
@@ -40,14 +47,6 @@ class Q2SmearCorrector:
         '''
         log.debug(f'Using Jpsi PDG mass: {_JPSI_PDG_MASS:.2f}')
 
-        self._particles : Final[list[str]] = ['B', 'Jpsi']
-        self._columns   : Final[list[str]] = [
-            'B_Mass'   , 'Jpsi_Mass', 
-            'B_TRUEID' , 'Jpsi_TRUEID',
-            'B_TRUEM'  , 'Jpsi_TRUEM',
-            'nbrem'    , 'block']
-
-        self._extra_columns : Final[list[str]] = ['EVENTNUMBER', 'RUNNUMBER']
 
         if not add_original:
             _expected = ['Jpsi_Mass_smr', 'B_Mass_smr', 'q2_smr']
@@ -142,7 +141,7 @@ class Q2SmearCorrector:
         -------------
         ROOT dataframe with smeared variables, smearing is skipped
         '''
-        columns = [f'{particle}_M_brem_track_2' for particle in self._particles ]
+        columns = [f'{particle}_M_brem_track_2' for particle in _PARTICLES ]
         log.info(f'Using {columns} columns for unsmeared dataset')
 
         data    = rdf.AsNumpy(columns)
@@ -175,7 +174,7 @@ class Q2SmearCorrector:
         '''
         df['q2_smr'] = df['Jpsi_Mass_smr'] * df['Jpsi_Mass_smr']
 
-        data = rdf.AsNumpy(self._extra_columns)
+        data = rdf.AsNumpy(_EXTRA_COLUMNS)
         for name, values in data.items():
             df[name] = values
 
@@ -191,7 +190,7 @@ class Q2SmearCorrector:
         -------------
         Dataframe with only the needed columns
         '''
-        all_needed : Final[list[str]] = self._expected + self._extra_columns
+        all_needed : Final[list[str]] = self._expected + _EXTRA_COLUMNS 
 
         columns = df.columns
         for column in columns:
@@ -217,11 +216,11 @@ class Q2SmearCorrector:
             log.info('DataFrame from real data, will return unsmeared variables')
             return self._process_data(rdf=rdf)
 
-        data    = rdf.AsNumpy(self._columns)
+        data    = rdf.AsNumpy(_COLUMNS)
         df      = pnd.DataFrame(data)
 
         log.info('Smearing masses')
-        for particle in self._particles:
+        for particle in _PARTICLES:
             log.debug(particle)
             df[f'{particle}_Mass_smr'] = df.apply(self._smear_mass, args=(particle,), axis=1)
 
