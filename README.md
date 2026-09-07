@@ -20,23 +20,23 @@ a pandas dataframe with only a few columns (masses, MVA scores, etc) is created
 with:
 
 ```
-hqm -t rkst_mm_os -c bdkstkpipsi2mm
-hqm -t rkst_ee_os -c bdkstkpipsi2ee
+hqm build-database -t rkst_mm_os -c bdkstkpipsi2mm
+hqm build-database -t rkst_ee_os -c bdkstkpipsi2ee
 
-hqm -t rkst_mm_os -c bdkstkpijpsimm
-hqm -t rkst_ee_os -c bdkstkpijpsiee
+hqm build-database -t rkst_mm_os -c bdkstkpijpsimm
+hqm build-database -t rkst_ee_os -c bdkstkpijpsiee
 
-hqm -t rkst_mm_os -c data_24
-hqm -t rkst_ee_os -c data_24
+hqm build-database -t rkst_mm_os -c data_24
+hqm build-database -t rkst_ee_os -c data_24
 
-hqm -t rk_mm_os   -c bpkpjpsimm
-hqm -t rk_ee_os   -c bpkpjpsiee
+hqm build-database -t rk_mm_os   -c bpkpjpsimm
+hqm build-database -t rk_ee_os   -c bpkpjpsiee
 
-hqm -t rk_mm_os   -c bpkppsi2mm
-hqm -t rk_ee_os   -c bpkppsi2ee
+hqm build-database -t rk_mm_os   -c bpkppsi2mm
+hqm build-database -t rk_ee_os   -c bpkppsi2ee
 
-hqm -t rk_mm_os   -c data_24
-hqm -t rk_ee_os   -c data_24
+hqm build-database -t rk_mm_os   -c data_24
+hqm build-database -t rk_ee_os   -c data_24
 ```
 
 for different processes and triggers
