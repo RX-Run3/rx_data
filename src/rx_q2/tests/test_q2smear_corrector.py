@@ -167,3 +167,16 @@ def test_get_rdf(
     _plot_masses(rdf=rdf, is_data = is_data, particle='B'   , dir_path=tmp_path / sample)
     _plot_masses(rdf=rdf, is_data = is_data, particle='Jpsi', dir_path=tmp_path / sample)
 # -------------------------------------------
+@pytest.mark.parametrize('channel', _CHANNELS)
+@pytest.mark.parametrize('replace', [True,False])
+def test_get_df(channel : Channel, replace : bool):
+    '''
+    Checks if the input is wrong
+    '''
+    df  = _get_df(uniform = False, channel = channel, is_data = False)
+    obj = Q2SmearCorrector(channel=channel, add_original=True)
+    df  = obj.get_df(
+        df      = df, 
+        replace = replace)
+
+    print(df)

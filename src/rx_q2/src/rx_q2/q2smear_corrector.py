@@ -192,14 +192,26 @@ class Q2SmearCorrector:
 
         data = rdf.AsNumpy(_COLUMNS)
         df   = pnd.DataFrame(data)
+        df   = self.get_df(df = df)
+        df   = self._add_extra_columns(df=df, rdf=rdf)
+        df   = self._trim_columns(df=df)
 
+        return RDF.FromPandas(df) 
+    # ----------------------
+    def get_df(self, df : pnd.DataFrame, replace : bool = False) -> pnd.DataFrame:
+        '''
+        Parameters
+        ---------------
+        df: Pandas dataframe with event per row
+        replace: If true will override mass columns, false (default) will add new ones with `_smr` suffix
+        '''
         log.info('Smearing masses')
         for particle in _PARTICLES:
             log.debug(particle)
-            df[f'{particle}_Mass_smr'] = df.apply(self._smear_from_row, args=(particle,), axis=1)
+            if replace:
+                df[f'{particle}_Mass'    ] = df.apply(self._smear_from_row, args=(particle,), axis=1)
+            else:
+                df[f'{particle}_Mass_smr'] = df.apply(self._smear_from_row, args=(particle,), axis=1)
 
-        df = self._add_extra_columns(df=df, rdf=rdf)
-        df = self._trim_columns(df=df)
-
-        return RDF.FromPandas(df) 
+        return df
 # ------------------------------------
