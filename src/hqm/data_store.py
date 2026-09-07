@@ -16,7 +16,7 @@ from .database_conf import DatabaseConf
 log           = LogStore.add_logger('hqm:data_store')
 type NpFltArr = npt.NDArray[numpy.float64]
 
-_SELECTION : ContextVar[dict[Cuts,str] | None] = ContextVar('_SELECTION', default = None) 
+_SELECTION : ContextVar[dict[str,str] | None] = ContextVar('_SELECTION', default = None) 
 # ----------------------------------
 class DataStore:
     '''
@@ -98,7 +98,7 @@ class DataStore:
     def selection(
         cls, 
         update : bool,
-        sel    : dict[Cuts,str]):
+        sel    : dict[str,str]):
         '''
         Parameters
         -------------

@@ -42,7 +42,7 @@ def _patch_loader(monkeypatch):
 #--------------------------------------
 @pytest.fixture(autouse = False)
 def _block_selection():
-    sel = {Cuts.block : 'block == 1'}
+    sel : dict[str,str] = {Cuts.block.value : 'block == 1'}
     with DataStore.selection(sel = sel, update = False):
         yield
 #--------------------------------------
