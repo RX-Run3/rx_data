@@ -91,13 +91,13 @@ class SignalConstraints:
         Tuple with settings to find correction
         or None, if no correction (through constraint) is possible for parameter
         '''
-        name  = par.name
-        REGEX = f'fr_{self._comp}_{_RGXFR}' if name.startswith('fr') else f'.*{self._comp}_{_RGXPR}'
+        name   = par.name
+        _REGEX = f'fr_{self._comp}_{_RGXFR}' if name.startswith('fr') else f'.*{self._comp}_{_RGXPR}'
 
-        mtch = re.match(REGEX, name)
+        mtch = re.match(_REGEX, name)
         if not mtch:
             log.debug(f'Cannot extract, brem, block and kind from: {name}')
-            log.debug(f'Using regex: {REGEX}')
+            log.debug(f'Using regex: {_REGEX}')
             return
 
         if name.startswith('fr_'):
