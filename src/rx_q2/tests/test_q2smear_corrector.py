@@ -40,7 +40,7 @@ def _plot_masses(
     rng = {'B' : (5000, 6000), 'Jpsi' : (2000, 3500)}[particle]
 
     if is_data:
-        assert numpy.isclose(arr_reco, arr_smr)
+        assert numpy.isclose(arr_reco, arr_smr).all()
 
     plt.hist(arr_reco, range=rng, bins=60, alpha=0.3      )
     plt.hist(arr_smr , range=rng, bins=60, histtype='step')
