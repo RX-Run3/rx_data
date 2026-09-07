@@ -12,6 +12,33 @@ from dmu.generic           import typing_utilities   as tut
 
 log=LogStore.add_logger('dmu:pdataframe:utilities')
 # -------------------------------------
+def query(
+    *,
+    df          : pnd.DataFrame, 
+    expr        : str,
+    allow_empty : bool = False) -> pnd.DataFrame:
+    '''
+    Parameters
+    -------------------
+    df         : Dataframe
+    expr       : Selection applied to dataframe
+    allow_empty: If resulting dataframe is empty, will raise and show diagnostics
+
+    Returns
+    -------------------
+    Dataframe after filtering
+    '''
+    df_new = df.query(expr)
+    if not df_new.empty:
+        return df_new
+
+    log.error(f'Expression: {expr}')
+    log.error(f'Original:\n{df}')
+    log.error(f'Filtered:\n{df_new}')
+    log.error(f'{df.dtypes}')
+
+    raise ValueError('Empty dataframe found')
+# -------------------------------------
 def df_to_tex(
     df         : pnd.DataFrame,
     path       : str | Path,
