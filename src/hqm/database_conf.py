@@ -43,6 +43,21 @@ class DatabaseConf(BaseModel, frozen = True):
 
         return path.exists()
     # ----------------------
+    def update_columns(self, is_mc : bool) -> 'DatabaseConf':
+        '''
+        Parameters
+        ----------------
+        is_mc: Will drop branches based on wether sample is simulated or real data
+        '''
+        new_columns = []
+        for col in self.columns:
+            if not is_mc and col.endswith('_TRUEM'):
+                continue
+
+            new_columns.append(col)
+
+        return self.model_copy(update = {'columns' : new_columns})
+    # ----------------------
     @classmethod
     def load(cls) -> 'DatabaseConf':
         data = gut.load_data(package = 'hqm_data', fpath = 'config/database_builder.yaml')

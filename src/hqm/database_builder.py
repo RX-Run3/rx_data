@@ -34,7 +34,7 @@ class DatabaseBuilder:
         trig: Hlt2 trigger
         comp: Sample used to read data from
         '''
-        self._cfg = cfg
+        self._cfg = cfg.update_columns(is_mc = comp.is_mc)
         self._trig= trig
         self._comp= comp
     # ----------------------------------
