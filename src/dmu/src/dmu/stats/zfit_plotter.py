@@ -462,17 +462,7 @@ class ZFitPlotter:
         return ax1, ax2
     #----------------------------------------
     def _get_component_yield(self, model, par):
-        if model.is_extended:
-            par  = model.get_yield()
-            nevt = float(par.value())
-            return nevt
-
-        yild = self.total_model.get_yield()
-        if yild is None:
-            nevs = self.data_weight_np.sum()
-        else:
-            nevs = yild.value().numpy()
-
+        nevs = self.data_weight_np.sum()
         frac = par.value().numpy()
 
         return frac * nevs
