@@ -59,17 +59,19 @@ def _get_df(
     df['EVENTNUMBER'] = 1
     df['RUNNUMBER'  ] = 2
 
+    rng = numpy.random.default_rng(seed = 42)
+
     if   channel == 'ee':
-        df['nbrem'] = numpy.random.choice([1, 2], _NENTRIES)
+        df['nbrem'] = rng.choice([1, 2], _NENTRIES)
     elif channel == 'mm':
-        df['nbrem'] = numpy.random.choice([0]   , _NENTRIES)
+        df['nbrem'] = rng.choice([0]   , _NENTRIES)
     else:
         raise ValueError(f'Invalid channel: {channel}')
 
-    df['block']    = numpy.random.choice(range(1, 7) , _NENTRIES)
+    df['block']    = rng.choice(range(1, 7) , _NENTRIES)
 
-    df = _add_mass(df=df, particle='B'   , uniform=uniform)
-    df = _add_mass(df=df, particle='Jpsi', uniform=uniform)
+    df = _add_mass(df=df, rng = rng, particle='B'   , uniform=uniform)
+    df = _add_mass(df=df, rng = rng, particle='Jpsi', uniform=uniform)
 
     if not is_data:
         df['B_TRUEID'   ] = 521
@@ -81,6 +83,7 @@ def _get_df(
 # ----------------------
 def _add_mass(
     df       : pnd.DataFrame,
+    rng      : numpy.random.Generator,
     uniform  : bool,
     particle : str) -> pnd.DataFrame:
     '''
@@ -92,16 +95,16 @@ def _add_mass(
     -------------
     DataFrame with column added
     '''
-
     name = f'{particle}_Mass'
+
     if       uniform and particle == 'Jpsi':
-        df[name] = numpy.random.uniform(1800, 3700, _NENTRIES)
+        df[name] = rng.uniform(1800, 3700, _NENTRIES)
     elif not uniform and particle == 'Jpsi':
-        df[name] = numpy.random.normal(loc=3097, scale=100, size=_NENTRIES)
+        df[name] = rng.normal(loc=3097, scale=100, size=_NENTRIES)
     elif     uniform and particle == 'B':
-        df[name] = numpy.random.uniform(5000, 6000, _NENTRIES)
+        df[name] = rng.uniform(5000, 6000, _NENTRIES)
     elif not uniform and particle == 'B':
-        df[name] = numpy.random.normal(loc=5280, scale=100, size=_NENTRIES)
+        df[name] = rng.normal(loc=5280, scale=100, size=_NENTRIES)
     else:
         raise ValueError(f'Invalid particle: {particle}')
 
