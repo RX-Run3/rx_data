@@ -141,7 +141,7 @@ def _check_rdf(rdf : RDF.RNode) -> None:
 # -------------------------------------------
 @pytest.mark.parametrize('is_uniform', [True, False])
 @pytest.mark.parametrize('channel'   , _CHANNELS)
-@pytest.mark.parametrize('is_data'   , [False])
+@pytest.mark.parametrize('is_data'   , [True, False])
 def test_get_rdf(
     is_uniform : bool, 
     channel    : Channel,
