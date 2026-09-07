@@ -81,10 +81,10 @@ class ZFitPlotter:
         weights: 1D numpy array of weights
         model  : The final total fit model
         '''
-        if not isinstance(model.norm, zfit.Space):
-            raise ValueError('No normalization found in PDF')
+        if not isinstance(model.space, zfit.Space):
+            raise ValueError('No observable found in PDF')
 
-        self.obs               = model.norm 
+        self.obs               = model.space
         self._obs_name         = sut.name_from_obs(obs = self.obs) 
 
         self.data              = self._data_to_zdata(data, weights)
@@ -125,10 +125,10 @@ class ZFitPlotter:
         -----------------
         zfit data object
         '''
-
         if   isinstance(data, zfit.Data):
-            out_data = data.with_obs(self.obs)
-        elif isinstance(data, np.ndarray):
+            return data
+
+        if isinstance(data, np.ndarray):
             out_data = zfit.Data.from_numpy (obs=self.obs, array=data           , weights=weights)
         elif isinstance(data, pd.Series):
             out_data = zfit.Data.from_pandas(obs=self.obs, df=pd.DataFrame(data), weights=weights)
