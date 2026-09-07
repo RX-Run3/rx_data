@@ -141,14 +141,14 @@ class Q2SmearCorrector:
         -------------
         ROOT dataframe with smeared variables, smearing is skipped
         '''
-        columns = [f'{particle}_M_brem_track_2' for particle in _PARTICLES ]
+        columns = [f'{particle}_Mass' for particle in _PARTICLES ]
         log.info(f'Using {columns} columns for unsmeared dataset')
 
         data    = rdf.AsNumpy(columns)
 
         expanded= {}
         for name, array in data.items():
-            new_name           = name.replace('_M_brem_track_2', '_Mass_smr')
+            new_name           = name.replace('_Mass', '_Mass_smr')
             expanded[new_name] = array
             expanded[    name] = array
 
