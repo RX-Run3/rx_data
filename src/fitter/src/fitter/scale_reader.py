@@ -54,6 +54,7 @@ class ScaleReader:
         if not data_path.exists():
             raise FileNotFoundError(f'Cannot find scales file: {data_path}')
 
+        log.debug(f'Loading parameters from: {data_path}')
         df         = pnd.read_json(data_path)
         df['brem'] = df['brem'].apply(lambda x : str(Brem.from_int(value = x)))
 
