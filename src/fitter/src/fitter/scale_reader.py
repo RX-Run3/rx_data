@@ -9,12 +9,13 @@ import jacobi
 from dmu       import LogStore
 from typing    import Final
 from pathlib   import Path
-from rx_common import Block, Brem, Correction
+from rx_common import Block, Brem, Component, Correction
 
 log=LogStore.add_logger('fitter:scale_reader')
 
-_ANADIR : Final[Path] = Path(os.environ['ANADIR'])
-_FITDIR : Final[str]  = 'reso_no_dtf-latest' # Name of directory with fits providing scales
+_ANADIR : Final[Path]      = Path(os.environ['ANADIR'])
+_FITDIR : Final[str]       = 'reso_no_dtf-latest' # Name of directory with fits providing scales
+_DATA   : Final[Component] = Component.data_24    # Used to pick data or mc parameters
 # -------------------------------------
 class ScaleReader:
     '''
@@ -147,12 +148,14 @@ class ScaleReader:
     # ----------------------
     def get_param(
         self,
+        is_mc : bool,
         param : str,
         block : Block,
         brem  : Brem) -> tuple[float,float]:
         '''
         Parameters
         -------------
+        is_mc: If true will return MC parameters, otherwise data
         param: Parameter name, e.g. mu 
         block: E.g. 1...8
         brem : E.g. 1, 2
@@ -161,7 +164,8 @@ class ScaleReader:
         -------------
         Tuple with value and error of parameter 
         '''
-        df = self._df_params
+        expr = f'sample != "{_DATA.value}"' if is_mc else f'sample == "{_DATA.value}"'
+        df   = self._df_params.query(expr)
 
         if brem == Brem.brx12:
             return self._get_combined_entry(quantity = param, block = block, df = df)
