@@ -8,7 +8,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 from dmu       import LogStore
 from dmu.stats import CorrectionImplementation, Model, zfit
 from dmu.stats import ModelFactory
-from rx_common import Block, Brem, Component, Cuts
+from rx_common import Block, Brem, Channel, Component, Cuts
 from zfit.loss import ExtendedUnbinnedNLL
 from fitter    import SignalConstraints
 from fitter    import Category 
@@ -210,7 +210,10 @@ def test_full_model():
     dat = pdf.create_sampler()
     nll = ExtendedUnbinnedNLL(model = pdf, data = dat)
 
-    calc= SignalConstraints(nll = nll, comp = Component.bpkpee)
+    calc= SignalConstraints(
+        nll     = nll, 
+        channel = Channel.ee,
+        comp    = Component.bpkpee)
     constraints = calc.get_constraints()
 
     for cons in sorted(constraints):
@@ -228,7 +231,10 @@ def test_fractions(component :  Component):
     fractions = _FRACTIONS[component]
 
     nll = ParsHolder(pars = fractions)
-    calc= SignalConstraints(nll = nll, comp = component)
+    calc= SignalConstraints(
+        nll     = nll, 
+        channel = Channel.ee,
+        comp    = component)
     constraints = calc.get_constraints()
 
     for cons in sorted(constraints):
@@ -242,7 +248,10 @@ def test_rk_shape(shapes : list[str]):
     Test constraints to mu and sg
     '''
     nll   = ParsHolder(pars = shapes)
-    calc  = SignalConstraints(nll = nll, comp = Component.bpkpee)
+    calc  = SignalConstraints(
+        nll     = nll, 
+        channel = Channel.ee,
+        comp    = Component.bpkpee)
     constraints = calc.get_constraints()
 
     ncons = len(constraints)
@@ -262,7 +271,10 @@ def test_fractions_by_brem(component :  Component, brem : Brem):
     fractions = [ f'fr_{component}_{value}' for value in values ] 
 
     nll = ParsHolder(pars = fractions)
-    calc= SignalConstraints(nll = nll, comp = component)
+    calc= SignalConstraints(
+        nll     = nll, 
+        channel = Channel.ee,
+        comp    = component)
     constraints = calc.get_constraints()
 
     for cons in sorted(constraints):

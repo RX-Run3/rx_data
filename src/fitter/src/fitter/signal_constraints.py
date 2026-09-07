@@ -6,7 +6,7 @@ import re
 from typing        import Final
 from dmu           import LogStore
 from dmu.stats     import Constraint, Constraint1D, ConstraintType, ParsHolder
-from rx_common     import Block, Brem, Correction, Component
+from rx_common     import Block, Brem, Channel, Correction, Component
 from zfit.param    import Parameter as zpar
 
 from .scale_reader import ScaleReader
@@ -34,16 +34,19 @@ class SignalConstraints:
     # ----------------------
     def __init__(
         self, 
-        nll  : ParsHolder,
-        comp : Component):
+        channel : Channel,
+        nll     : ParsHolder,
+        comp    : Component):
         '''
         Parameters
         -------------
-        nll : Likelihood or any object with get_params implemented
+        nll    : Likelihood or any object with get_params implemented
+        comp   : Component that needs to be constrained
+        channel: Either ee or mm, needed to pick correct mass scales and resolutions
         '''
         self._nll   = nll
         self._comp  = comp
-        self._srd   = ScaleReader()
+        self._srd   = ScaleReader(channel = channel)
 
         self._constraint_kind : ConstraintType = ConstraintType.gauss
     # ----------------------
