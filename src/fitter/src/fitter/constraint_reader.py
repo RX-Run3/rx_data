@@ -138,8 +138,9 @@ class ConstraintReader:
             return
 
         calc = SignalConstraints(
-            comp= self._signal,
-            nll = self._nll)
+            channel = self._cfg.mod_cfg.trigger.channel,
+            comp    = self._signal,
+            nll     = self._nll)
 
         cons = calc.get_constraints()
 
