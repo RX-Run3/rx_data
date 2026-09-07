@@ -1,25 +1,23 @@
 '''
 Module containing Q2SmearCalculator class
 '''
-import os
 import math
 import pandas as pnd
 
-from typing                         import Final
-from functools                      import lru_cache
-from ROOT                           import RDF # type: ignore
-from rx_common                      import Channel, info
-from dmu.generic                    import typing_utilities as tut
-from dmu.logging.log_store          import LogStore
-from dmu.generic.version_management import get_last_version
+from fitter      import ScaleReader
+from typing      import Final
+from ROOT        import RDF # type: ignore
+from rx_common   import Block, Brem, Channel, Correction, info
+from dmu.generic import typing_utilities as tut
+from dmu         import LogStore
 
 log = LogStore.add_logger('rx_q2:q2smear_corrector')
 
-_JPSI_PDG_MASS : Final[float]     = 3096.9
+_BPLUS_PDG_MASS: Final[float]     = 5279.41
 _EXTRA_COLUMNS : Final[list[str]] = ['EVENTNUMBER', 'RUNNUMBER']
 _PARTICLES     : Final[list[str]] = ['B', 'Jpsi']
-_COLUMNS       : Final[list[str]] = [
-    'B_Mass'   , 'Jpsi_Mass', 
+_COLUMNS       : Final[list[str]] = [  # These are the expected columns in the 
+    'B_Mass'   , 'Jpsi_Mass',          # input ROOT dataframe 
     'B_TRUEID' , 'Jpsi_TRUEID',
     'B_TRUEM'  , 'Jpsi_TRUEM',
     'nbrem'    , 'block']
@@ -45,8 +43,7 @@ class Q2SmearCorrector:
         channel     : E.g. ee or mm, needed to pick up the JSON file with scales
         add_original: If true (default False), will add unsmeared masses
         '''
-        log.debug(f'Using Jpsi PDG mass: {_JPSI_PDG_MASS:.2f}')
-
+        log.debug(f'Using B+ PDG mass: {_BPLUS_PDG_MASS:.2f}')
 
         if not add_original:
             _expected = ['Jpsi_Mass_smr', 'B_Mass_smr', 'q2_smr']
@@ -55,44 +52,9 @@ class Q2SmearCorrector:
 
         self._expected : Final[list[str]] = _expected
         self._channel  = channel
-        self._df       = self._get_scales()
+        self._reader   = ScaleReader(channel = channel)
     # ------------------------------------
-    def _get_scales(self) -> pnd.DataFrame:
-        ana_dir = os.environ['ANADIR']
-        par_dir = get_last_version(f'{ana_dir}/q2/fits', version_only=False)
-        par_path= f'{par_dir}/parameters_{self._channel}.json'
-
-        log.info(f'Reading scales from: {par_path}')
-        df      = pnd.read_json(par_path)
-
-        return df
-    # ------------------------------------
-    @lru_cache(maxsize = 10)
-    def _read_quantity(self, nbrem : int, block : int, kind : str) -> float:
-        df = self._df.query(f'block == {block} and brem == {nbrem}')
-
-        if len(df) != 2:
-            log.info(df)
-            raise ValueError(f'Expected data and MC entries for brem/block: {nbrem}/{block}')
-
-        if kind == 'mu_mc':
-            mu_mc = df.loc[ (df['sample'] == 'sim'), 'mu_val' ].iloc[0]
-            return mu_mc
-
-        if kind == 'reso':
-            sg_dt = df.loc[ (df['sample'] == 'dat'), 'sg_val' ].iloc[0]
-            sg_mc = df.loc[ (df['sample'] == 'sim'), 'sg_val' ].iloc[0]
-            return sg_dt / sg_mc
-
-        if kind == 'scale':
-            mu_dt = df.loc[ (df['sample'] == 'dat'), 'mu_val' ].iloc[0]
-            mu_mc = df.loc[ (df['sample'] == 'sim'), 'mu_val' ].iloc[0]
-
-            return mu_dt - mu_mc
-
-        raise NotImplementedError(f'Invalid quantity: {kind}')
-    # ------------------------------------
-    def _smear_mass(
+    def _smear_from_row(
         self,
         row      : pnd.Series,
         particle : str) -> float:
@@ -105,31 +67,43 @@ class Q2SmearCorrector:
         ---------------
         Smeared mass
         '''
-        block = tut.numeric_from_series(row=row, name='block', numeric=int)
-        nbrem = tut.numeric_from_series(row=row, name='nbrem', numeric=int)
-        recom = tut.numeric_from_series(row=row, name=f'{particle}_Mass', numeric=float)
-        truem = tut.numeric_from_series(row=row, name=f'{particle}_TRUEM'         , numeric=float)
+        block = tut.numeric_from_series(row=row, name='block'            , numeric=int)
+        nbrem = tut.numeric_from_series(row=row, name='nbrem'            , numeric=int)
+        recom = tut.numeric_from_series(row=row, name=f'{particle}_Mass' , numeric=float)
+        truem = tut.numeric_from_series(row=row, name=f'{particle}_TRUEM', numeric=float)
 
-        mu_mc = self._read_quantity(nbrem=nbrem, block=block, kind='mu_mc')
-        reso  = self._read_quantity(nbrem=nbrem, block=block, kind= 'reso')
-        scale = self._read_quantity(nbrem=nbrem, block=block, kind='scale')
+        return self.__smear_mass(
+            recom = recom, 
+            truem = truem, 
+            nbrem = Brem.from_int(nbrem), 
+            block = Block(value = block))
+    # ----------------------
+    def __smear_mass(
+        self, 
+        recom : float, 
+        truem : float, 
+        nbrem : Brem, 
+        block : Block) -> float:
+        mu_mc, _ = self._reader.get_param(is_mc = True, param = 'mu', block = block, brem = nbrem)
+        reso , _ = self._reader.get_scale(corr  = Correction.mass_resolution, block = block, brem = nbrem)
+        scale, _ = self._reader.get_scale(corr  = Correction.mass_scale     , block = block, brem = nbrem)
 
-        mass  = truem + reso * (recom - truem) + scale + (1 - reso) * (mu_mc - _JPSI_PDG_MASS)
+        mass  = truem + reso * (recom - truem) + scale + (1 - reso) * (mu_mc - _BPLUS_PDG_MASS)
 
         log.verbose('')
-        log.verbose(f'{truem=:.0f}, {recom=:.0f}, {reso=:.3f}, {scale=:.3f}, {mu_mc=:.0f}, {_JPSI_PDG_MASS=:.0f}')
-        log.verbose(f'{(reso * (recom - truem))=:.0f}, {((1 - reso) * (mu_mc - _JPSI_PDG_MASS))=:.0f}')
+        log.verbose(f'{truem=:.0f}, {recom=:.0f}, {reso=:.3f}, {scale=:.3f}, {mu_mc=:.0f}, {_BPLUS_PDG_MASS=:.0f}')
+        log.verbose(f'{(reso * (recom - truem))=:.0f}, {((1 - reso) * (mu_mc - _BPLUS_PDG_MASS))=:.0f}')
         log.verbose(f'{recom:<20.0f}{"->":<20}{mass:<20.0f}')
 
         if not math.isnan(mass):
             return mass
 
         log.debug('')
-        log.debug(f'{truem=:.0f}, {recom=:.0f}, {reso=:.3f}, {scale=:.3f}, {mu_mc=:.0f}, {_JPSI_PDG_MASS=:.0f}')
-        log.debug(f'{(reso * (recom - truem))=:.0f}, {((1 - reso) * (mu_mc - _JPSI_PDG_MASS))=:.0f}')
+        log.debug(f'{truem=:.0f}, {recom=:.0f}, {reso=:.3f}, {scale=:.3f}, {mu_mc=:.0f}, {_BPLUS_PDG_MASS=:.0f}')
+        log.debug(f'{(reso * (recom - truem))=:.0f}, {((1 - reso) * (mu_mc - _BPLUS_PDG_MASS))=:.0f}')
         log.debug(f'{recom:<20.0f}{"->":<20}{mass:<20.0f}')
 
-        return recom 
+        return mass
     # ----------------------
     def _process_data(self, rdf : RDF.RNode) -> RDF.RNode:
         '''
@@ -216,13 +190,13 @@ class Q2SmearCorrector:
             log.info('DataFrame from real data, will return unsmeared variables')
             return self._process_data(rdf=rdf)
 
-        data    = rdf.AsNumpy(_COLUMNS)
-        df      = pnd.DataFrame(data)
+        data = rdf.AsNumpy(_COLUMNS)
+        df   = pnd.DataFrame(data)
 
         log.info('Smearing masses')
         for particle in _PARTICLES:
             log.debug(particle)
-            df[f'{particle}_Mass_smr'] = df.apply(self._smear_mass, args=(particle,), axis=1)
+            df[f'{particle}_Mass_smr'] = df.apply(self._smear_from_row, args=(particle,), axis=1)
 
         df = self._add_extra_columns(df=df, rdf=rdf)
         df = self._trim_columns(df=df)
