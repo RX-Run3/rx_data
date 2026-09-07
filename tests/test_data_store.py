@@ -8,7 +8,7 @@ import numpy.typing  as npt
 import pandas        as pnd
 
 from pathlib           import Path
-from rx_common         import Component, Cuts, Mass, Qsq, Trigger
+from rx_common         import Channel, Component, Cuts, Mass, Qsq, Trigger
 from hqm.binning       import Binning
 from hqm.data_store    import DataStore
 from hqm.plotter       import Plotter
@@ -28,18 +28,31 @@ def initialize():
     '''
     LogStore.set_level('rx_hqm:data_store', 10)
 #--------------------------------------
-def _load_df(self) -> pnd.DataFrame:
+def _load_df_ee(self) -> pnd.DataFrame:
     _    = self
-    data = get_data()
+    data = get_data(channel = Channel.ee)
+
+    return pnd.DataFrame(data)
+#--------------------------------------
+def _load_df_mm(self) -> pnd.DataFrame:
+    _    = self
+    data = get_data(channel = Channel.mm)
 
     return pnd.DataFrame(data)
 #--------------------------------------
 @pytest.fixture(autouse = False)
-def _patch_loader(monkeypatch):
+def _patch_loader_ee(monkeypatch):
     monkeypatch.setattr(
         DataStore,
         '_load_df',
-        _load_df)
+        _load_df_ee)
+#--------------------------------------
+@pytest.fixture(autouse = False)
+def _patch_loader_mm(monkeypatch):
+    monkeypatch.setattr(
+        DataStore,
+        '_load_df',
+        _load_df_mm)
 #--------------------------------------
 @pytest.fixture(autouse = False)
 def _block_selection():
@@ -49,13 +62,13 @@ def _block_selection():
 #--------------------------------------
 @pytest.mark.parametrize('comp', [Component.data_24, Component.bpkpjpsiee])
 def test_data_retrieval(
-    _patch_loader,
+    _patch_loader_ee,
     comp     : Component,
     tmp_path : Path):
     '''
     Test initialized object with fake data
     '''
-    _   = _patch_loader
+    _   = _patch_loader_ee
     with DataStore.selection(sel = {Cuts.block : 'true'}, update = False):
         obj = DataStore(
             comp= comp,
@@ -89,7 +102,7 @@ def test_data_load(monkeypatch, tmp_path : Path):
     trig = Trigger.rk_ee_os
     qsq  = Qsq.high
 
-    df   = _load_df(self = None)
+    df   = _load_df_ee(self = None)
     cfg  = DatabaseConf.load()
     path = cfg.get_path(comp = comp, trig = trig)
     df.to_parquet(path = path)
@@ -117,7 +130,7 @@ def test_new_selection(monkeypatch, tmp_path : Path):
     trig = Trigger.rk_ee_os
     qsq  = Qsq.high
 
-    df   = _load_df(self = None)
+    df   = _load_df_ee(self = None)
     cfg  = DatabaseConf.load()
     path = cfg.get_path(comp = comp, trig = trig)
     df.to_parquet(path = path)
@@ -155,7 +168,7 @@ def test_update_selection(
     trig = Trigger.rk_ee_os
     qsq  = Qsq.high
 
-    df   = _load_df(self = None)
+    df   = _load_df_ee(self = None)
     cfg  = DatabaseConf.load()
     path = cfg.get_path(comp = comp, trig = trig)
     df.to_parquet(path = path)
@@ -196,7 +209,7 @@ def test_binning_selection(monkeypatch, tmp_path : Path):
     trig = Trigger.rk_ee_os
     qsq  = Qsq.high
 
-    df   = _load_df(self = None)
+    df   = _load_df_ee(self = None)
     cfg  = DatabaseConf.load()
     path = cfg.get_path(comp = comp, trig = trig)
     df.to_parquet(path = path)
