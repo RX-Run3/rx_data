@@ -35,8 +35,8 @@ def get_data(channel : Channel) -> dict[str,NpFltArray]:
     data['q2'       ] = rng.uniform(6e6, 22e6, size = SIZE)
     data['q2_dtf'   ] = rng.uniform(6e6, 22e6, size = SIZE)
 
-    data['mva_cmb'  ] = rng.uniform(0, 1, size = SIZE)
-    data['mva_prc'  ] = rng.uniform(0, 1, size = SIZE)
+    data['mva.mva_cmb'] = rng.uniform(0, 1, size = SIZE)
+    data['mva.mva_prc'] = rng.uniform(0, 1, size = SIZE)
 
     return data
 # ------------------------------------------------
