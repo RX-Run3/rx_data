@@ -9,7 +9,7 @@ from dmu         import LogStore
 
 log=LogStore.add_logger('hqm:binning')
 # -------------------------------------------
-class Bins(RootModel[dict[str,tuple[float,float]]], frozen = True):
+class Bins(RootModel[dict[str,tuple[float,float,int]]], frozen = True):
     '''
     Class representing one bin per variable, e.g. 
 
@@ -22,7 +22,7 @@ class Bins(RootModel[dict[str,tuple[float,float]]], frozen = True):
         msg = 70 * '-' + '\n'
         msg+= f'{"Variable":<30}{"Lower":<20}{"Upper":<20}\n'
         msg+= 70 * '-' + '\n'
-        for var, (lower, upper) in self.root.items():
+        for var, (lower, upper, _) in self.root.items():
             msg += f'{var:<30}{lower:<20g}{upper:<20g}\n'
 
         return msg
@@ -34,7 +34,7 @@ class Bins(RootModel[dict[str,tuple[float,float]]], frozen = True):
         inclusive on lower bound and exclusive of upper one
         '''
         sel = dict()
-        for var, (lower, upper) in self.root.items():
+        for var, (lower, upper, _) in self.root.items():
             sel[var] = f'({var} < {upper}) & ({var} >= {lower})'
 
         return sel
@@ -44,10 +44,13 @@ class Bins(RootModel[dict[str,tuple[float,float]]], frozen = True):
         '''
         String representing path where output is saved
         '''
-        vars = list(self.root)
-        vars.sort()
+        parts = list()
+        for var, (_, _, ibin) in self.root.items():
+            parts.append(f'{var}_{ibin:03d}')
 
-        return '/'.join(vars)
+        parts.sort()
+
+        return '/'.join(parts)
 # -------------------------------------------
 class Binning(RootModel[dict[str,list[tuple[float,float]]]], frozen = True):
     '''
@@ -109,7 +112,11 @@ class Binning(RootModel[dict[str,list[tuple[float,float]]]], frozen = True):
         First bin is labeled with number 1
         '''
         bins = self.__bins_from_str(binning = binning)
-        data = { var : self.root[var][bin - 1] for var, bin in bins.items() }
+        data = dict()
+
+        for var, bin in bins.items():
+            lower, upper = self.root[var][bin - 1]
+            data[var]    = lower, upper, bin
 
         return Bins(root = data)
 # -------------------------------------------
