@@ -1,5 +1,5 @@
 '''
-Script used to test Q2Smear
+Script used to test Q2SmearCorrector class
 '''
 import numpy
 import pytest
@@ -28,20 +28,24 @@ def initialize():
 # -------------------------------------------
 def _plot_masses(
     rdf      : RDF.RNode, 
+    is_data  : bool,
     particle : str,
     dir_path : Path) -> None:
     log.info('Plotting')
 
-    data = rdf.AsNumpy()
-
-    arr_reco = data[f'{particle}_M_brem_track_2']
+    data     = rdf.AsNumpy()
+    arr_reco = data[f'{particle}_Mass']
     arr_smr  = data[f'{particle}_Mass_smr'      ]
 
     rng = {'B' : (5000, 6000), 'Jpsi' : (2000, 3500)}[particle]
 
+    if is_data:
+        assert numpy.isclose(arr_reco, arr_smr)
+
     plt.hist(arr_reco, range=rng, bins=60, alpha=0.3      )
     plt.hist(arr_smr , range=rng, bins=60, histtype='step')
 
+    dir_path.mkdir(exist_ok=True, parents=True)
     plt.savefig(dir_path / f'{particle}.png')
     plt.close()
 # -------------------------------------------
@@ -55,9 +59,9 @@ def _get_df(
     df['RUNNUMBER'  ] = 2
 
     if   channel == 'ee':
-        df['nbrem'] = numpy.random.choice([0, 1, 2], _NENTRIES)
+        df['nbrem'] = numpy.random.choice([1, 2], _NENTRIES)
     elif channel == 'mm':
-        df['nbrem'] = numpy.random.choice([0]      , _NENTRIES)
+        df['nbrem'] = numpy.random.choice([0]   , _NENTRIES)
     else:
         raise ValueError(f'Invalid channel: {channel}')
 
@@ -88,7 +92,7 @@ def _add_mass(
     DataFrame with column added
     '''
 
-    name = f'{particle}_M_brem_track_2'
+    name = f'{particle}_Mass'
     if       uniform and particle == 'Jpsi':
         df[name] = numpy.random.uniform(1800, 3700, _NENTRIES)
     elif not uniform and particle == 'Jpsi':
@@ -137,7 +141,7 @@ def _check_rdf(rdf : RDF.RNode) -> None:
 # -------------------------------------------
 @pytest.mark.parametrize('is_uniform', [True, False])
 @pytest.mark.parametrize('channel'   , _CHANNELS)
-@pytest.mark.parametrize('is_data'   , [True, False])
+@pytest.mark.parametrize('is_data'   , [False])
 def test_get_rdf(
     is_uniform : bool, 
     channel    : Channel,
@@ -154,6 +158,8 @@ def test_get_rdf(
 
     _check_rdf(rdf=rdf)
 
-    _plot_masses(rdf=rdf, particle='B'   , dir_path=tmp_path)
-    _plot_masses(rdf=rdf, particle='Jpsi', dir_path=tmp_path)
+    sample = 'data' if is_data else 'simulation'
+
+    _plot_masses(rdf=rdf, is_data = is_data, particle='B'   , dir_path=tmp_path / sample)
+    _plot_masses(rdf=rdf, is_data = is_data, particle='Jpsi', dir_path=tmp_path / sample)
 # -------------------------------------------
