@@ -1,7 +1,6 @@
 '''
 Module containing Q2SmearCalculator class
 '''
-
 import os
 import math
 import pandas as pnd
@@ -9,14 +8,14 @@ import pandas as pnd
 from typing                         import Final
 from functools                      import lru_cache
 from ROOT                           import RDF # type: ignore
-from rx_common                      import info
+from rx_common                      import Channel, info
 from dmu.generic                    import typing_utilities as tut
 from dmu.logging.log_store          import LogStore
 from dmu.generic.version_management import get_last_version
 
 log = LogStore.add_logger('rx_q2:q2smear_corrector')
 
-JPSI_PDG_MASS : Final[float] = 3096.9
+_JPSI_PDG_MASS : Final[float] = 3096.9
 # ------------------------------------
 class Q2SmearCorrector:
     '''
@@ -29,7 +28,7 @@ class Q2SmearCorrector:
     # ------------------------------------
     def __init__(
         self, 
-        channel      : str,
+        channel      : Channel,
         add_original : bool = False):
         '''
         No arguments needed, inputs will be passed to `get_mass`
@@ -39,7 +38,7 @@ class Q2SmearCorrector:
         channel     : E.g. ee or mm, needed to pick up the JSON file with scales
         add_original: If true (default False), will add unsmeared masses
         '''
-        log.debug(f'Using Jpsi PDG mass: {JPSI_PDG_MASS:.2f}')
+        log.debug(f'Using Jpsi PDG mass: {_JPSI_PDG_MASS:.2f}')
 
         self._particles : Final[list[str]] = ['B', 'Jpsi']
         self._columns   : Final[list[str]] = [
@@ -116,19 +115,19 @@ class Q2SmearCorrector:
         reso  = self._read_quantity(nbrem=nbrem, block=block, kind= 'reso')
         scale = self._read_quantity(nbrem=nbrem, block=block, kind='scale')
 
-        mass  = truem + reso * (recom - truem) + scale + (1 - reso) * (mu_mc - JPSI_PDG_MASS)
+        mass  = truem + reso * (recom - truem) + scale + (1 - reso) * (mu_mc - _JPSI_PDG_MASS)
 
         log.verbose('')
-        log.verbose(f'{truem=:.0f}, {recom=:.0f}, {reso=:.3f}, {scale=:.3f}, {mu_mc=:.0f}, {JPSI_PDG_MASS=:.0f}')
-        log.verbose(f'{(reso * (recom - truem))=:.0f}, {((1 - reso) * (mu_mc - JPSI_PDG_MASS))=:.0f}')
+        log.verbose(f'{truem=:.0f}, {recom=:.0f}, {reso=:.3f}, {scale=:.3f}, {mu_mc=:.0f}, {_JPSI_PDG_MASS=:.0f}')
+        log.verbose(f'{(reso * (recom - truem))=:.0f}, {((1 - reso) * (mu_mc - _JPSI_PDG_MASS))=:.0f}')
         log.verbose(f'{recom:<20.0f}{"->":<20}{mass:<20.0f}')
 
         if not math.isnan(mass):
             return mass
 
         log.debug('')
-        log.debug(f'{truem=:.0f}, {recom=:.0f}, {reso=:.3f}, {scale=:.3f}, {mu_mc=:.0f}, {JPSI_PDG_MASS=:.0f}')
-        log.debug(f'{(reso * (recom - truem))=:.0f}, {((1 - reso) * (mu_mc - JPSI_PDG_MASS))=:.0f}')
+        log.debug(f'{truem=:.0f}, {recom=:.0f}, {reso=:.3f}, {scale=:.3f}, {mu_mc=:.0f}, {_JPSI_PDG_MASS=:.0f}')
+        log.debug(f'{(reso * (recom - truem))=:.0f}, {((1 - reso) * (mu_mc - _JPSI_PDG_MASS))=:.0f}')
         log.debug(f'{recom:<20.0f}{"->":<20}{mass:<20.0f}')
 
         return recom 
