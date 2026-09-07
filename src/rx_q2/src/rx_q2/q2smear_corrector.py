@@ -202,13 +202,16 @@ class Q2SmearCorrector:
         '''
         Parameters
         ---------------
-        df: Pandas dataframe with event per row
-        replace: If true will override mass columns, false (default) will add new ones with `_smr` suffix
+        df     : Pandas dataframe with event per row
+        replace: 
+            True : will override mass columns, and keep original with `_org` suffix
+            Talse: (default) will add new ones with `_smr` suffix
         '''
         log.info('Smearing masses')
         for particle in _PARTICLES:
             log.debug(particle)
             if replace:
+                df[f'{particle}_Mass_org'] = df[f'{particle}_Mass'].to_numpy()
                 df[f'{particle}_Mass'    ] = df.apply(self._smear_from_row, args=(particle,), axis=1)
             else:
                 df[f'{particle}_Mass_smr'] = df.apply(self._smear_from_row, args=(particle,), axis=1)
