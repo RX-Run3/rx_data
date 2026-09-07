@@ -9,6 +9,7 @@ from dmu.stats      import zfit
 from hqm.pdf_mc     import PdfBuilder
 from hqm.data_store import DataStore
 from hqm.config     import TransferFunctionMakerConf
+from hqm.binning    import Binning
 
 update_opt = typer.Option(False, '-u', help = 'If used, will remake function even if already exists')
 use_dtf_opt= typer.Option(False, '-d', help = 'If used, will use q2_dtf in selection of data')
@@ -16,7 +17,7 @@ use_kde_opt= typer.Option(False, '-k', help = 'If used, will use KDE for fit')
 trig_opt   = typer.Option(...  , '-t', help = 'Trigger, e.g. rk_ee_os')
 comp_opt   = typer.Option(...  , '-c', help = 'Component, e.g. bpkpjpsiee')
 qsq_opt    = typer.Option(...  , '-q', help = 'q2-bin fitted')
-block_opt  = typer.Option(...  , '-b', help = 'E.g. 1')
+binning_opt= typer.Option(...  , '-b', help = 'Binning, e.g. block-3')
 # ----------------------------------------------------------------------
 def fit_mc(
     component : str     = comp_opt,
@@ -25,15 +26,18 @@ def fit_mc(
     use_kde   : bool    = use_kde_opt,
     trigger   : Trigger = trig_opt,
     qsq       : Qsq     = qsq_opt,
-    blk       : int     = block_opt):
+    binning   : str     = binning_opt):
     '''
-    Make part reco PDF through transfer function and muon data 
+    Make part reco PDF through transfer function and muon data
     '''
+    bin_obj         = Binning.load()
+    bins            = bin_obj.from_str(binning)
     comp            = Component(component)
+
     qsq_name        = 'q2_dtf' if use_dtf else 'q2'
-    sel             = {}
+
+    sel             = bins.selection
     sel[Cuts.q2   ] = f'({qsq_name} > {qsq.lower_bound}) & ({qsq_name} < {qsq.upper_bound})'
-    sel[Cuts.block] = f'block == {blk}'
 
     ctx2 = DataStore.selection(sel = sel, update = True)
     obs  = zfit.Space('B_Mass', limits = (4500, 6000))
@@ -41,13 +45,13 @@ def fit_mc(
         stack.enter_context(ctx2)
 
         obj = PdfBuilder(
-            name    = f'{qsq_name}/block_{blk:03d}',
+            name    = f'{qsq_name}/{bins.dir_path}',
             comp    = comp,
             trigger = trigger,
             qsq     = qsq)
 
         mod = obj.get_model(
-            obs    = obs, 
+            obs    = obs,
             use_kde= use_kde,
             update = update)
 # ----------------------------------------------------------------------
