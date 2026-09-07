@@ -6,7 +6,7 @@ import pytest
 
 from dmu       import LogStore
 from fitter    import ScaleReader
-from rx_common import Correction
+from rx_common import Channel, Correction
 from rx_common import Brem
 from rx_common import Block 
 
@@ -23,14 +23,43 @@ _BLOCKS = Block.blocks()
 @pytest.mark.parametrize('kind' , _CORRS)
 @pytest.mark.parametrize('block', _BLOCKS)
 @pytest.mark.parametrize('brem' , [Brem.one, Brem.two, Brem.brx12])
-def test_all_scales(
+def test_electron_scales(
     brem : Brem,
     block: Block,
     kind : Correction):
     '''
     Test all corrections
     '''
-    srd      = ScaleReader()
+    srd      = ScaleReader(channel = Channel.ee)
+    val, err = srd.get_scale(
+        corr  = kind, 
+        block = block, 
+        brem  = brem)
+
+    log.info('')
+    log.info('kind:  %s', kind)
+    log.info('val:   %s', val)
+    log.info('err:   %s', err)
+    log.info('block: %s', block)
+    log.info('brem:  %s', brem)
+    log.info('')
+
+    assert isinstance(val, float)
+    assert isinstance(err, float)
+
+    assert not math.isnan(val)
+    assert not math.isnan(err)
+# ----------------------
+@pytest.mark.parametrize('kind' , _CORRS)
+@pytest.mark.parametrize('block', _BLOCKS)
+def test_muon_scales(
+    block: Block,
+    kind : Correction):
+    '''
+    Test all corrections
+    '''
+    brem     = Brem.from_int(0)
+    srd      = ScaleReader(channel = Channel.mm)
     val, err = srd.get_scale(
         corr  = kind, 
         block = block, 
@@ -54,7 +83,7 @@ def test_all_scales(
 @pytest.mark.parametrize('kind'  , _PARS)
 @pytest.mark.parametrize('block' , _BLOCKS)
 @pytest.mark.parametrize('brem'  , [Brem.one, Brem.two, Brem.brx12])
-def test_all_pars(
+def test_electron_pars(
     is_mc: bool,
     brem : Brem,
     block: Block,
@@ -62,7 +91,39 @@ def test_all_pars(
     '''
     Test retrieval of parameters 
     '''
-    srd      = ScaleReader()
+    srd      = ScaleReader(channel = Channel.ee)
+    val, err = srd.get_param(
+        is_mc = is_mc,
+        param = kind, 
+        block = block, 
+        brem  = brem)
+
+    log.info('')
+    log.info('kind:  %s', kind)
+    log.info('val:   %s', val)
+    log.info('err:   %s', err)
+    log.info('block: %s', block)
+    log.info('brem:  %s', brem)
+    log.info('')
+
+    assert isinstance(val, float)
+    assert isinstance(err, float)
+
+    assert not math.isnan(val)
+    assert not math.isnan(err)
+# ----------------------
+@pytest.mark.parametrize('is_mc' , [True, False])
+@pytest.mark.parametrize('kind'  , _PARS)
+@pytest.mark.parametrize('block' , _BLOCKS)
+def test_muon_pars(
+    is_mc: bool,
+    block: Block,
+    kind : Correction):
+    '''
+    Test retrieval of parameters 
+    '''
+    brem     = Brem.from_int(0)
+    srd      = ScaleReader(channel = Channel.mm)
     val, err = srd.get_param(
         is_mc = is_mc,
         param = kind, 
@@ -91,7 +152,7 @@ def test_single_block_scales(
     '''
     Test block fraction correction
     '''
-    srd      = ScaleReader()
+    srd      = ScaleReader(channel = Channel.ee)
     val, err = srd.get_scale(
         corr  = Correction.blok_fraction, 
         block = block, 

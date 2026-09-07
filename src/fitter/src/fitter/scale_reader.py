@@ -6,10 +6,11 @@ import math
 import pandas as pnd
 import jacobi
 
-from dmu       import LogStore
-from typing    import Final
-from pathlib   import Path
-from rx_common import Block, Brem, Component, Correction
+from dmu            import LogStore
+from dmu.pdataframe import utilities as put
+from typing         import Final
+from pathlib        import Path
+from rx_common      import Block, Brem, Channel, Component, Correction
 
 log=LogStore.add_logger('fitter:scale_reader')
 
@@ -25,12 +26,15 @@ class ScaleReader:
     # ----------------------
     def __init__(
         self, 
+        channel : Channel,
         version : str = 'latest') -> None:
         '''
         Parameters
         ---------------
         version: Version of scales
         '''
+        self.__channel  = channel
+
         self._df_scales = self._get_dataframe(name = 'scales'    , version = version)
         self._df_params = self._get_dataframe(name = 'parameters', version = version)
     # ----------------------
@@ -45,7 +49,7 @@ class ScaleReader:
         ---------------
         Dataframe with contents of JSON file
         '''
-        data_path = _ANADIR / f'fits/data/{_FITDIR}/{version}/rk_ee/plots/{name}.json'
+        data_path = _ANADIR / f'fits/data/{_FITDIR}/{version}/rk_{self.__channel}/plots/{name}.json'
         if not data_path.exists():
             raise FileNotFoundError(f'Cannot find scales file: {data_path}')
 
@@ -98,15 +102,17 @@ class ScaleReader:
         block   : Block,
         brem    : Brem) -> tuple[float,float]:
 
+        df_org = df
         try:
-            df = df.query(f'block == {block}')
-            df = df.query(f'brem  == \"{str(brem)}\"')
+            df = put.query(df = df, expr = f'block == {block}')
+            df = put.query(df = df, expr = f'brem  == \"{str(brem)}\"')
         except Exception as exc:
             log.error(df)
             raise ValueError(f'Cannot filter by block/brem: {block}/{brem}') from exc
 
         if len(df) != 1:
-            log.error(df)
+            log.error(f'Original:\n{df_org}')
+            log.error(f'Result:\n{df}')
             raise ValueError(f'Not found one and only one row for block/brem: {block}/{brem}')
 
         try:
