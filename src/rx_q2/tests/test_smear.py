@@ -1,24 +1,22 @@
 '''
 Script used to test Q2Smear
 '''
-
 import numpy
 import pytest
 import pandas            as pnd
 import matplotlib.pyplot as plt
 
+from typing                   import Final
 from ROOT                     import RDF # type: ignore
 from pathlib                  import Path
 from dmu.logging.log_store    import LogStore
-from rx_q2.q2smear_corrector  import Q2SmearCorrector
+from rx_common                import Channel
+from rx_q2                    import Q2SmearCorrector
 
 log  = LogStore.add_logger('rx_q2:test_q2smear_corrector')
-# -------------------------------------------
-class Data:
-    '''
-    Data class
-    '''
-    nentries = 10_000
+
+_CHANNELS : Final[list[Channel]] = [Channel.ee, Channel.mm]
+_NENTRIES : Final[int] = 10_000
 # -------------------------------------------
 @pytest.fixture(scope='session', autouse=True)
 def initialize():
@@ -57,13 +55,13 @@ def _get_df(
     df['RUNNUMBER'  ] = 2
 
     if   channel == 'ee':
-        df['nbrem'] = numpy.random.choice([0, 1, 2], Data.nentries)
+        df['nbrem'] = numpy.random.choice([0, 1, 2], _NENTRIES)
     elif channel == 'mm':
-        df['nbrem'] = numpy.random.choice([0]      , Data.nentries)
+        df['nbrem'] = numpy.random.choice([0]      , _NENTRIES)
     else:
         raise ValueError(f'Invalid channel: {channel}')
 
-    df['block']    = numpy.random.choice(range(1, 7) , Data.nentries)
+    df['block']    = numpy.random.choice(range(1, 7) , _NENTRIES)
 
     df = _add_mass(df=df, particle='B'   , uniform=uniform)
     df = _add_mass(df=df, particle='Jpsi', uniform=uniform)
@@ -92,13 +90,13 @@ def _add_mass(
 
     name = f'{particle}_M_brem_track_2'
     if       uniform and particle == 'Jpsi':
-        df[name] = numpy.random.uniform(1800, 3700, Data.nentries)
+        df[name] = numpy.random.uniform(1800, 3700, _NENTRIES)
     elif not uniform and particle == 'Jpsi':
-        df[name] = numpy.random.normal(loc=3097, scale=100, size=Data.nentries)
+        df[name] = numpy.random.normal(loc=3097, scale=100, size=_NENTRIES)
     elif     uniform and particle == 'B':
-        df[name] = numpy.random.uniform(5000, 6000, Data.nentries)
+        df[name] = numpy.random.uniform(5000, 6000, _NENTRIES)
     elif not uniform and particle == 'B':
-        df[name] = numpy.random.normal(loc=5280, scale=100, size=Data.nentries)
+        df[name] = numpy.random.normal(loc=5280, scale=100, size=_NENTRIES)
     else:
         raise ValueError(f'Invalid particle: {particle}')
 
@@ -138,11 +136,11 @@ def _check_rdf(rdf : RDF.RNode) -> None:
     assert numpy.isclose(arr_q2, arr_jp ** 2, atol=1).all()
 # -------------------------------------------
 @pytest.mark.parametrize('is_uniform', [True, False])
-@pytest.mark.parametrize('channel'   , ['ee',  'mm'])
+@pytest.mark.parametrize('channel'   , _CHANNELS)
 @pytest.mark.parametrize('is_data'   , [True, False])
 def test_get_rdf(
     is_uniform : bool, 
-    channel    : str,
+    channel    : Channel,
     is_data    : bool,
     tmp_path):
     '''
