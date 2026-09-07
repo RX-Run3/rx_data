@@ -23,6 +23,7 @@ def initialize():
     '''
     This runs before any test
     '''
+    LogStore.set_level('fitter:scale_reader'         , 10)
     LogStore.set_level('rx_q2:q2smear_corrector'     , 10)
     LogStore.set_level('rx_q2:test_q2smear_corrector', 10)
 # -------------------------------------------
