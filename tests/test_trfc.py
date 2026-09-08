@@ -16,7 +16,8 @@ from dmu.stats   import utilities as sut
 log=LogStore.add_logger('rx_hqm:test_trfc')
 obs : Final[zfit.Space] = zfit.Space("B_M", limits=(0, 7000))
 
-zpdf = zfit.pdf.BasePDF
+type zpdf = zfit.pdf.BasePDF
+type zobs = zfit.Space
 #--------------------------------------
 def set_log():
     LogStore.set_level('rx_scripts:zfitter'           , 20)
@@ -26,20 +27,21 @@ def set_log():
     LogStore.set_level('rx_scripts:version_management', 30)
     LogStore.set_level('tools:calc_utility'           , 30)
 #--------------------------------------
-def _get_target_masses(self) -> numpy.ndarray:
+def _get_target_masses(self, path : Path) -> numpy.ndarray:
     _ = self
+    _ = path 
     return numpy.random.normal(loc = 5200, scale = 30, size = 2000)
 #--------------------------------------
-def _get_source_pdf(self, path : Path) -> zpdf:
+def _get_source_pdf(self, obs : zobs) -> zpdf:
     _  = self
-    _  = path 
+    _  = obs 
     mu = zfit.Parameter('mu', 5280, 5200, 5300)
     sg = zfit.Parameter('sg',   20,   10,   30)
 
     mu.floating = False
     sg.floating = False
 
-    obs = zfit.Space('B_Mass', limits = (4800, 5800))
+    obs = zfit.Space('B_Mass', limits = (4000, 7500))
 
     return zfit.pdf.Gauss(obs = obs, mu = mu, sigma = sg)
 #--------------------------------------
@@ -65,14 +67,14 @@ def test_psi2_high_brem(
     _ = _use_source_target
     monkeypatch.setenv('ANADIR', str(tmp_path))
 
-    cfgs        = TransferFunctionMakerConf.load(
-        variable= 'none',
+    cfg         = TransferFunctionMakerConf.load(
+        binning = 'block-1',
         project = Project.rk,
         source  = Qsq.psi2,
         target  = Qsq.high)
 
     obj         = TransferFunctionMaker(
-        cfg     = cfgs[0],
+        cfg     = cfg,
         project = Project.rk,
         block   = Block(value = 1) )
 
