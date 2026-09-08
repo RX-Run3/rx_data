@@ -17,7 +17,8 @@ from .database_conf import DatabaseConf
 log           = LogStore.add_logger('hqm:data_store')
 type NpFltArr = npt.NDArray[numpy.float64]
 
-_SELECTION : ContextVar[dict[str,str] | None] = ContextVar('_SELECTION', default = None) 
+_SELECTION    : ContextVar[dict[str,str] | None] = ContextVar('_SELECTION'   , default = None) 
+_SMEAR_MASSES : ContextVar[bool                ] = ContextVar('_SMEAR_MASSES', default = True) 
 # ----------------------------------
 class DataStore:
     '''
@@ -46,7 +47,7 @@ class DataStore:
 
         df = self._load_df()
 
-        if self._comp.is_mc:
+        if self._comp.is_mc and _SMEAR_MASSES.get():
             df = self.__smear_masses(df = df) 
         else:
             log.info(f'Not smearing masses for: {self._comp}')
@@ -135,6 +136,26 @@ class DataStore:
                 yield
             finally:
                 _SELECTION.reset(token)
+
+        return _context()
+    # ----------------------------------
+    @classmethod
+    def smear_masses(cls, value : bool):
+        '''
+        Parameters
+        -------------
+        value: If true (default) will run smearing of masses before selection
+        '''
+        if value is False:
+            log.warning('Turning off smearing')
+
+        @contextmanager
+        def _context():
+            token = _SMEAR_MASSES.set(value)
+            try:
+                yield
+            finally:
+                _SMEAR_MASSES.reset(token)
 
         return _context()
     # ----------------------------------
