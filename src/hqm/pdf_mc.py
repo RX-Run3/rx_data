@@ -283,7 +283,7 @@ class PdfBuilder:
             raise ValueError(f'Models cannot be found for unmergeable dataset at {self.name}')
 
         log.warning(f'Low statistics found for {self.name}, merging blocks')
-        sel = {Cuts.block : 'block == block'}
+        sel = {'block' : 'block == block'}
         with DataStore.selection(sel = sel, update = True):
             return self._get_data(obs = obs, mass = mass, can_merge = False)
 
