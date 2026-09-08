@@ -9,7 +9,7 @@ from dmu.stats      import zfit
 from hqm.pdf_mc     import PdfBuilder
 from hqm.data_store import DataStore
 from hqm.config     import TransferFunctionMakerConf
-from hqm.binning    import Binning
+from hqm.binning    import BinningConf
 
 update_opt = typer.Option(False, '-u', help = 'If used, will remake function even if already exists')
 use_dtf_opt= typer.Option(False, '-d', help = 'If used, will use q2_dtf in selection of data')
@@ -32,7 +32,7 @@ def fit_mc(
     '''
     Make part reco PDF through transfer function and muon data
     '''
-    bin_obj  = Binning.load()
+    bin_obj  = BinningConf.load()
     bins     = bin_obj.from_str(binning)
     comp     = Component(component)
 

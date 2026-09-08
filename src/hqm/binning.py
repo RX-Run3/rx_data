@@ -52,13 +52,13 @@ class Bins(RootModel[dict[str,tuple[float,float,int]]], frozen = True):
 
         return '/'.join(parts)
 # -------------------------------------------
-class Binning(RootModel[dict[str,list[tuple[float,float]]]], frozen = True):
+class BinningConf(RootModel[dict[str,list[tuple[float,float]]]], frozen = True):
     '''
     Class holding binning for variables 
     '''
     # ---------------------------------------------
     @classmethod
-    def load(cls) -> 'Binning':
+    def load(cls) -> 'BinningConf':
         '''
         Returns instance of binning, loaded from YAML file
         '''

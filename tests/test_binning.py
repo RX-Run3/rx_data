@@ -4,7 +4,7 @@ Module with tests for Binning class
 import pytest
 
 from typing      import Final
-from hqm.binning import Binning, Bins
+from hqm.binning import BinningConf, Bins
 from dmu         import LogStore
 
 log=LogStore.add_logger('hqm:test_binning')
@@ -15,16 +15,16 @@ def test_load():
     '''
     Load binning
     '''
-    obj = Binning.load()
+    obj = BinningConf.load()
 
-    assert isinstance(obj, Binning)
+    assert isinstance(obj, BinningConf)
 # ------------------------------------
 @pytest.mark.parametrize('binning', _BINNING)
 def test_from_str(binning : str):
     '''
     Load binning
     '''
-    obj = Binning.load()
+    obj = BinningConf.load()
     bin = obj.from_str(binning = binning)
     sel = bin.selection
 

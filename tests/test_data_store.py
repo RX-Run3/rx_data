@@ -9,7 +9,7 @@ import pandas        as pnd
 
 from pathlib           import Path
 from rx_common         import Channel, Component, Cuts, Mass, Qsq, Trigger
-from hqm.binning       import Binning
+from hqm.binning       import BinningConf
 from hqm.data_store    import DataStore
 from hqm.plotter       import Plotter
 from hqm.database_conf import DatabaseConf
@@ -214,7 +214,7 @@ def test_binning_selection(monkeypatch, tmp_path : Path):
     path = cfg.get_path(comp = comp, trig = trig)
     df.to_parquet(path = path)
 
-    binning         = Binning.load()
+    binning         = BinningConf.load()
     bins            = binning.from_str('B_PT-3 ll_angle-2 nTracks-1')
     sel             = bins.selection
     sel[Cuts.q2]    = 'q2_dtf > 11e6'
