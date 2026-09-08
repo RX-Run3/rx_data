@@ -131,7 +131,6 @@ class TransferFunctionMaker:
 
         with DataStore.selection(sel = {Cuts.q2 : f'({self._qsq_var} > {lo}) & ({self._qsq_var} < {hi})'}, update = True):
             obj      = DataStore(
-                qsq  = self._cfg.target,
                 trig = trigger,
                 comp = self._cfg.target_component)
 

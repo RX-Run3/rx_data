@@ -27,17 +27,14 @@ class DataStore:
     # ----------------------------------
     def __init__(
         self, 
-        qsq   : Qsq, 
         trig  : Trigger,
         comp  : Component):
         '''
         Parameters
         ----------------
-        qsq : q2-bin where data will be picked up
         trig: Hlt2 trigger
         comp: Sample used to read data from
         '''
-        self._qsq = qsq
         self._trig= trig
         self._comp= comp
 

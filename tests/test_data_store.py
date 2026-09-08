@@ -70,10 +70,7 @@ def test_data_retrieval(
     '''
     _   = _patch_loader_ee
     with DataStore.selection(sel = {Cuts.block : 'true'}, update = False):
-        obj = DataStore(
-            comp= comp,
-            trig= Trigger.rk_ee_os,
-            qsq = Qsq.jpsi)
+        obj = DataStore(comp= comp, trig= Trigger.rk_ee_os)
 
     arr_raw     , _   = obj.get_array(mass = Mass.bp_bcor)
     arr_dtf_jpsi, _   = obj.get_array(mass = Mass.bp_dtf_jpsi)
@@ -110,10 +107,7 @@ def test_data_load(monkeypatch, tmp_path : Path):
     print(df)
 
     with DataStore.selection(sel = {}, update = False):
-        obj = DataStore(
-            trig= trig,
-            comp= comp,
-            qsq = qsq)
+        obj = DataStore(trig= trig, comp= comp)
 
     arr_raw, arr_wgt = obj.get_array(mass = Mass.bp_bcor)
 
@@ -141,10 +135,7 @@ def test_new_selection(monkeypatch, tmp_path : Path):
     sel[Cuts.q2]    = 'q2_dtf > 11e6'
     sel[Cuts.block] = 'block == 1'
     with DataStore.selection(sel = sel, update = False):
-        obj = DataStore(
-            trig= trig,
-            comp= comp,
-            qsq = qsq)
+        obj = DataStore(trig= trig, comp= comp)
 
     arr_raw, arr_wgt = obj.get_array(mass = Mass.bp_bcor)
     selection_path   = tmp_path / 'selection.json'
@@ -180,16 +171,10 @@ def test_update_selection(
 
     with pytest.raises(ValueError):
         with DataStore.selection(sel = sel, update = False):
-            obj = DataStore(
-                trig= trig,
-                comp= comp,
-                qsq = qsq)
+            obj = DataStore(trig= trig, comp= comp)
 
     with DataStore.selection(sel = sel, update = True):
-        obj = DataStore(
-            trig= trig,
-            comp= comp,
-            qsq = qsq)
+        obj = DataStore(trig= trig, comp= comp)
 
     arr_raw, arr_wgt = obj.get_array(mass = Mass.bp_bcor)
     selection_path   = tmp_path / 'selection.json'
@@ -219,10 +204,7 @@ def test_binning_selection(monkeypatch, tmp_path : Path):
     sel             = bins.selection
     sel[Cuts.q2]    = 'q2_dtf > 11e6'
     with DataStore.selection(sel = sel, update = False):
-        obj = DataStore(
-            trig= trig,
-            comp= comp,
-            qsq = qsq)
+        obj = DataStore(trig= trig, comp= comp)
 
     arr_raw, arr_wgt = obj.get_array(mass = Mass.bp_bcor)
     selection_path   = tmp_path / 'selection.json'

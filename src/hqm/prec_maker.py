@@ -77,7 +77,6 @@ class PrecMaker:
         arr_raw     = self.__get_array(
             out_dir = out_dir,
             trig    = trig, 
-            qsq     = qsq, 
             sel     = sel)
 
         return arr_raw
@@ -86,14 +85,16 @@ class PrecMaker:
         self, 
         out_dir: Path,
         sel    : dict[str,str],
-        trig   : Trigger, 
-        qsq    : Qsq) -> NpFltArr:
+        trig   : Trigger) -> NpFltArr:
+        '''
+        Parameters
+        -------------
+        out_dir: Directory where JSON file with selection will be saved
+        sel    : Dictionary with selection
+        trig   : Trigger
+        '''
         with DataStore.selection(sel = sel, update = True):
-            obj = DataStore(
-                trig= trig,
-                comp= _DATA_SAMPLE,
-                qsq = qsq)
-
+            obj = DataStore(trig= trig, comp = _DATA_SAMPLE)
             obj.save_selection(path = out_dir / 'muon_selection.json')
 
         arr_raw, _ = obj.get_array(mass = Mass.bp_bcor)

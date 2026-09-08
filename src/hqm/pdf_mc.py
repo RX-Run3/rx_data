@@ -308,10 +308,10 @@ class PdfBuilder:
         ------------------
         Tuple with numpy arrays with masses and weights
         '''
-        obj    = DataStore(
+        obj     = DataStore(
             comp= self.__comp,
-            trig= self.__trig,
-            qsq = self.__qsq,)
+            trig= self.__trig)
+
         masses, weights = obj.get_array(mass = mass)
         obj.save_selection(path = self.__out_path / 'selection.json')
 

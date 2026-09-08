@@ -150,10 +150,7 @@ class CCbarRatioCalculator:
 
         qsq_cut = f'(q2_dtf > {qsq.lower_bound}) & (q2_dtf < {qsq.upper_bound})'
         with DataStore.selection(sel = {Cuts.q2 : qsq_cut}, update = True):
-            ds      = DataStore(
-                qsq =qsq,
-                trig=trigger,
-                comp=Component.data_24)
+            ds      = DataStore(trig=trigger, comp=Component.data_24)
             array, _= ds.get_array(mass = mass)
 
         ds.save_selection(path = self._out_dir / f'selection_{qsq}.json')
