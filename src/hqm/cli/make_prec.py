@@ -27,19 +27,17 @@ def make_prec(
     block = Block(value = blk)
 
     cfg = TransferFunctionMakerConf.load(
-        variable = 'none',
+        binning  = f'block-{blk}',
         project  = project,
         source   = source,
         target   = target)
 
-    sel  = {Cuts.block : f'block == {block.value}'}
-    ctx1 = DataStore.selection(sel = sel, update = False)
-
+    ctx1 = DataStore.selection(sel = cfg.binning.selection, update = False)
     with ExitStack() as stack:
         stack.enter_context(ctx1)
 
         obj = PrecMaker(
-            cfg     = cfg[0], 
+            cfg     = cfg, 
             block   = block,
             project = project)
         obj.get_pdf(update = update)

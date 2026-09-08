@@ -142,12 +142,11 @@ class TransferFunctionMaker:
 
         return masses
     #---------------------------------
-    def __get_source_pdf(self, path : Path, obs : zobs) -> zpdf:
+    def __get_source_pdf(self, obs : zobs) -> zpdf:
         '''
         Parameters
         -----------------------
         obs : Observable to use with this PDF
-        path: Path to JSON file with parameters, to be repurposed for fit
 
         Returns
         -----------------------
@@ -180,7 +179,7 @@ class TransferFunctionMaker:
         '''
         obs     = self._cfg.observable.fit_obs
         arr_tgt = self.__get_target_masses(path = out_dir)
-        pdf_src = self.__get_source_pdf(path = out_dir, obs = obs)
+        pdf_src = self.__get_source_pdf(obs = obs)
 
         pdf_tgt    = zfit.pdf.FFTConvPDFV1(
             obs    = obs,
@@ -267,7 +266,7 @@ class TransferFunctionMaker:
         plt.hist(source, bins=100, density=True, histtype='step', label=rf'$\mu\mu\in${self._cfg.source}')
         plt.hist(target, bins=100, density=True, histtype='step', label=rf'$e^+e^-\in${self._cfg.target}')
         plt.legend()
-        plt.title(rf'Trigger: {self._project}; $\mu$:{source.shape[0]}; $e$:{target.shape[0]}; {self._cfg.binning.variable}')
+        plt.title(rf'Trigger: {self._project}; $\mu$:{source.shape[0]}; $e$:{target.shape[0]}; {self._cfg.binning.to_str()}')
 
         log.info(f'Saving to: {path}')
         plt.savefig(path)

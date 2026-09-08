@@ -12,7 +12,7 @@ from dmu            import LogStore
 from dmu.stats      import SplinePDF
 from hqm.config     import TransferFunctionMakerConf
 from hqm.data_store import DataStore
-from rx_common      import Block, Channel, Component, Mass, Cuts, Project, Trigger
+from rx_common      import Block, Channel, Component, Mass, Cuts, Project, Qsq, Trigger
 from hqm.trfc       import TransferFunction
 
 type zobs     = zfit.Space
@@ -62,9 +62,9 @@ class PrecMaker:
         qsq  = self.__cfg.source
         mass = Mass.raw_from_project(project = self.__proj)
 
-        sel            = dict()
-        sel[Cuts.q2]   = f'(q2 > {qsq.lower_bound}) & (q2 < {qsq.upper_bound})'
-        sel[Cuts.mass] = f'{mass} < 5180'
+        sel         = dict()
+        sel['q2'  ] = f'(q2 > {qsq.lower_bound}) & (q2 < {qsq.upper_bound})'
+        sel['mass'] = f'{mass} < 5180'
 
         if self.__block.to_int() in _MISSING_BLOCKS:
             log.warning(f'Using {_PATCHING_BLOCK} instead of {self.__block} block')
@@ -74,6 +74,20 @@ class PrecMaker:
             channel = Channel.mm,
             project = self.__proj)
 
+        arr_raw     = self.__get_array(
+            out_dir = out_dir,
+            trig    = trig, 
+            qsq     = qsq, 
+            sel     = sel)
+
+        return arr_raw
+    # -------------------------
+    def __get_array(
+        self, 
+        out_dir: Path,
+        sel    : dict[str,str],
+        trig   : Trigger, 
+        qsq    : Qsq) -> NpFltArr:
         with DataStore.selection(sel = sel, update = True):
             obj = DataStore(
                 trig= trig,

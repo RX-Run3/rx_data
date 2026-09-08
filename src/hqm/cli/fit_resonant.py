@@ -19,14 +19,13 @@ def fit_resonant(
     '''
     Run simultaneous fit to resonant modes
     '''
-    cfgs  = CCbarRatioCalculatorConf.load(variable = 'none')
-    cfg   = cfgs[0]
+    cfg   = CCbarRatioCalculatorConf.load(binning = 'block-1')
     block = Block(value = blk)
 
-    sel : dict[Cuts,str] = {
-        Cuts.prc  : f'mva_prc > 0.6',
-        Cuts.cmb  : f'mva_cmb > 0.9',
-        Cuts.block: f'block == {blk}'}
+    sel : dict[str,str] = {
+        'prc'  : f'mva_prc > 0.6',
+        'cmb'  : f'mva_cmb > 0.9',
+        'block': f'block == {blk}'}
 
     with DataStore.selection(sel = sel, update = False):
         cal         = CCbarRatioCalculator(

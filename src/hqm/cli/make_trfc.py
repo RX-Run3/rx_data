@@ -25,19 +25,16 @@ def make_trfc(
     '''
     blk = Block(value = block)
 
-    cfgs        = TransferFunctionMakerConf.load(
-        variable= 'none',
+    cfg         = TransferFunctionMakerConf.load(
+        binning = f'block-{block}',
         project = project,
         source  = source,
         target  = target)
 
-    sel = {'block' : f'block == {blk}'}
-
-    for cfg in cfgs:
-        with DataStore.selection(sel = sel, update = False):
-            obj         = TransferFunctionMaker(
-                cfg     = cfg,
-                project = project,
-                block   = blk)
-            obj.get_trf(update = update)
+    with DataStore.selection(sel = cfg.binning.selection, update = False):
+        obj         = TransferFunctionMaker(
+            cfg     = cfg,
+            project = project,
+            block   = blk)
+        obj.get_trf(update = update)
 # ----------------------------------------------------------------------
