@@ -13,6 +13,8 @@ from dmu.stats   import FitConf
 from pydantic    import BaseModel, RootModel, model_validator
 from rx_common   import Component, Project, Qsq
 
+from .binning    import BinConf
+
 log       = LogStore.add_logger('hqm:config')
 type zpar = zfit.Parameter
 type zpdf = zfit.pdf.BasePDF
@@ -203,80 +205,13 @@ class ObsConf(BaseModel, frozen = True):
         '''
         return zfit.Space(self.name, limits = self.tran_range)
 # -------------------------------------------------------------------
-class BinningConf(BaseModel, frozen = True):
-    '''
-    Config describing
-    '''
-    variable : str
-    '''
-    Variable to cut on, e.g. B_PT
-    '''
-
-    bin   : int
-    '''
-    Index of bin, needed to pick up cut
-    '''
-
-    bins  : list[tuple[float,float]]
-    '''
-    Expression defining cut
-    '''
-    # ------------------------
-    @property
-    def cut(self) -> str:
-        '''
-        Cut associated to current bin, meant to be used
-        by RDataFrame::Filter, uses semi-open range [lower, upper)
-        '''
-        if self.variable == _NONE_VAR:
-            return 'true'
-
-        lower, upper = self.bins[self.bin]
-
-        return f'({self.variable} >= {lower}) && ({self.variable} < {upper})'
-    # ------------------------
-    @property
-    def is_unbinned(self) -> bool:
-        '''
-        True if unbinned
-        '''
-        return self.variable == _NONE_VAR
-    # ------------------------
-    @model_validator(mode = 'after')
-    def _validate(self) -> Self:
-        ncut = len(self.bins)
-        if self.bin < 0:
-            raise ValueError(f'Non-positive bin found: {self.bin}')
-
-        if ncut == 0:
-            raise ValueError('Found no cuts')
-
-        if self.variable == _NONE_VAR:
-            if ncut != 1:
-                raise ValueError('Unbinned case requires one bin')
-
-        if ncut <= self.bin:
-            raise ValueError(f'Bin index {self.bin} incompatible with number of bins {ncut}')
-
-        return self
-    # ------------------------
-    @property
-    def prefix(self) -> str:
-        '''
-        String used to identify transfer function, e.g. brem_001
-        '''
-        if self.is_unbinned:
-            return 'unbinned'
-
-        return f'{self.variable}_{self.bin:03d}'
-# -------------------------------------------------------------------
 class _Conf(BaseModel, frozen = True):
     '''
     Base class for all configuration classes
     '''
     bandwidth  : int
     observable : ObsConf
-    binning    : BinningConf
+    binning    : BinConf
     fft_npt    : int
     '''
     Number of points used to sample KDE before doing convolution with
@@ -344,15 +279,10 @@ class _Conf(BaseModel, frozen = True):
         -----------------
         Path to either file or directory
         '''
-        if self.binning.is_unbinned:
-            binning = 'unbinned'
-        else:
-            binning = f'{self.binning.variable}_{self.binning.bin:03d}'
-
         anadir = Path(os.environ['ANADIR'])
         log.debug(f'Using ANADIR: {anadir}')
 
-        dir_path = anadir / f'DB/hqm/{kind}/latest/{binning}/{project}'
+        dir_path = anadir / f'DB/hqm/{kind}/latest/{self.binning.dir_path}/{project}'
         if subdir:
             dir_path = dir_path / subdir
 
