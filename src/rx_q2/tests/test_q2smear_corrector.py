@@ -1,17 +1,19 @@
 '''
 Script used to test Q2SmearCorrector class
 '''
+
 import numpy
 import pytest
 import pandas            as pnd
 import matplotlib.pyplot as plt
 
-from typing                   import Final
-from ROOT                     import RDF # type: ignore
-from pathlib                  import Path
-from dmu.logging.log_store    import LogStore
-from rx_common                import Channel
-from rx_q2                    import Q2SmearCorrector
+from functools             import lru_cache
+from typing                import Final
+from ROOT                  import RDF # type: ignore
+from pathlib               import Path
+from dmu.logging.log_store import LogStore
+from rx_common             import Channel
+from rx_q2                 import Q2SmearCorrector
 
 log  = LogStore.add_logger('rx_q2:test_q2smear_corrector')
 
@@ -50,6 +52,7 @@ def _plot_masses(
     plt.savefig(dir_path / f'{particle}.png')
     plt.close()
 # -------------------------------------------
+@lru_cache(maxsize = 3)
 def _get_df(
     uniform : bool, 
     is_data : bool,
@@ -168,7 +171,7 @@ def test_get_rdf(
     _plot_masses(rdf=rdf, is_data = is_data, particle='Jpsi', dir_path=tmp_path / sample)
 # -------------------------------------------
 @pytest.mark.parametrize('channel', _CHANNELS)
-@pytest.mark.parametrize('replace', [True,False])
+@pytest.mark.parametrize('replace', [True, False])
 def test_get_df(channel : Channel, replace : bool):
     '''
     Checks if the input is wrong
