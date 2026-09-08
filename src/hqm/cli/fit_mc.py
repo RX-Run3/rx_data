@@ -35,6 +35,7 @@ def fit_mc(
     comp            = Component(component)
 
     qsq_name        = 'q2_dtf' if use_dtf else 'q2'
+    model           = 'kde'    if use_kde else 'parametric'
 
     sel             = bins.selection
     sel['brem'    ] = 'nbrem in [1, 2]'
@@ -46,7 +47,7 @@ def fit_mc(
         stack.enter_context(ctx2)
 
         obj = PdfBuilder(
-            name    = f'{qsq_name}/{bins.dir_path}',
+            name    = f'{qsq_name}/{bins.dir_path}/{model}',
             comp    = comp,
             trigger = trigger,
             qsq     = qsq)
