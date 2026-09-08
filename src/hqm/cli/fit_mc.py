@@ -44,7 +44,7 @@ def fit_mc(
         sel['brem'    ] = 'nbrem in [1, 2]'
     sel[Cuts.q2   ] = f'({qsq_name} > {qsq.lower_bound}) & ({qsq_name} < {qsq.upper_bound})'
 
-    ctx1  = DataStore.smear_masses(smear)
+    ctx1  = DataStore.smear_masses(value = smear)
     ctx2  = DataStore.selection(sel = sel, update = True)
     obs   = zfit.Space('B_Mass', limits = (4500, 6000))
     with ExitStack() as stack:
