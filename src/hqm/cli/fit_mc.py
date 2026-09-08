@@ -37,6 +37,7 @@ def fit_mc(
     qsq_name        = 'q2_dtf' if use_dtf else 'q2'
 
     sel             = bins.selection
+    sel['brem'    ] = 'nbrem in [1, 2]'
     sel[Cuts.q2   ] = f'({qsq_name} > {qsq.lower_bound}) & ({qsq_name} < {qsq.upper_bound})'
 
     ctx2 = DataStore.selection(sel = sel, update = True)
