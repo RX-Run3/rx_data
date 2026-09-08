@@ -121,7 +121,7 @@ class PrecMaker:
         path = self.__cfg.make_path(
             kind    = 'trfc',
             project = self.__proj,
-            subdir  = f'block_{self.__block}/{self.__cfg.source}_to_{self.__cfg.target}',
+            subdir  = f'{self.__cfg.source}_to_{self.__cfg.target}',
             fname   = 'trfc.json')
 
         return TransferFunction.from_json(path = path)
@@ -135,7 +135,7 @@ class PrecMaker:
         return self.__cfg.make_path(
             kind    = 'part-reco',
             project = self.__proj,
-            subdir  = f'block_{self.__block}/{self.__cfg.source}_to_{self.__cfg.target}',
+            subdir  = f'{self.__cfg.source}_to_{self.__cfg.target}',
             fname   = 'part-reco.json')
     # -------------------------
     def get_pdf(

@@ -315,7 +315,7 @@ class TransferFunctionMaker:
         json_path = self._cfg.make_path(
             kind    = 'trfc',
             project = self._project,
-            subdir  = f'block_{self._block}/{self._cfg.source}_to_{self._cfg.target}',
+            subdir  = f'{self._cfg.source}_to_{self._cfg.target}',
             fname   = 'trfc.json')
 
         if json_path.exists() and not update:
