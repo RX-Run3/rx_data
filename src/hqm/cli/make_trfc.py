@@ -31,7 +31,7 @@ def make_trfc(
         source  = source,
         target  = target)
 
-    sel = {Cuts.block : f'block == {blk}'}
+    sel = {'block' : f'block == {blk}'}
 
     for cfg in cfgs:
         with DataStore.selection(sel = sel, update = False):
