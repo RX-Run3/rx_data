@@ -60,11 +60,9 @@ pairs=(
 for pair in "${pairs[@]}"; do
   read -r component trigger <<< "$pair"
   for q2bin in jpsi psi2 high; do
-    hqm fit-mc -c "$component" -t "$trigger" -q "$q2bin" -d -k -b "block-1 mva_cmb-7 mva_prc-7"
-    hqm fit-mc -c "$component" -t "$trigger" -q "$q2bin" -d    -b "block-1 mva_cmb-7 mva_prc-7"
-
-    hqm fit-mc -c "$component" -t "$trigger" -q "$q2bin"    -k -b "block-1 mva_cmb-7 mva_prc-7"
-    hqm fit-mc -c "$component" -t "$trigger" -q "$q2bin"       -b "block-1 mva_cmb-7 mva_prc-7"
+    hqm fit-mc -c "$component" -t "$trigger" -q "$q2bin" -d -b "block-1 mva_cmb-7 mva_prc-7"
+    hqm fit-mc -c "$component" -t "$trigger" -q "$q2bin" -k -b "block-1 mva_cmb-7 mva_prc-7"
+    hqm fit-mc -c "$component" -t "$trigger" -q "$q2bin"    -b "block-1 mva_cmb-7 mva_prc-7"
   done
 done
 ```
