@@ -38,11 +38,11 @@ shape_ee_UP: &sh_ee_UP
   mu:
     - 6300
     - 6000
-    - 6500
+    - 7500
   sg:
     - 100
     - 10
-    - 500
+    - 800
   rn:
     - 5600
     - 7300
@@ -91,6 +91,9 @@ muon:
 # --------------------
 out_dir : DB/hqm/models
 mod_cfg :
+  very_low_stats:
+    stats : [   50,      100]
+    models: [ gauss ]
   low_stats:
     stats : [   100,   10000]
     models: [ suj ]
