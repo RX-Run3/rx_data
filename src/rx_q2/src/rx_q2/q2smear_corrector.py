@@ -145,6 +145,66 @@ class Q2SmearCorrector:
 
         return RDF.FromPandas(df) 
     # ----------------------
+    def __get_lookup(self, df : pnd.DataFrame) -> pnd.DataFrame:
+        '''
+        Parameters
+        --------------
+        df: Pandas dataframe with entries representing candidates
+
+        Returns
+        --------------
+        Dataframe with lookup table to associate input dataframe with scales
+        '''
+        combos  = df[['block', 'nbrem']].drop_duplicates()
+        records = []
+
+        # NOTE: Brem zero will be dropped anyway
+        log.warning('Using fake scales for brem zero in electron channel')
+        for _, row in combos.iterrows():
+            block = Block(value=int(row['block']))
+            brem  = Brem.from_int(int(row['nbrem']))
+
+            if self._channel == Channel.ee and brem == Brem.zero:
+                reso     = 1.0
+                scale    = 0.0
+                mu_mc    = 5280
+            else:
+                mu_mc, _ = self._reader.get_param(is_mc=True, param='mu', block=block, brem=brem)
+                reso , _ = self._reader.get_scale(corr=Correction.mass_resolution, block=block, brem=brem)
+                scale, _ = self._reader.get_scale(corr=Correction.mass_scale,     block=block, brem=brem)
+        
+            data = {
+                'block': row['block'], 
+                'nbrem': row['nbrem'],
+                'mu_mc': mu_mc, 
+                'reso' : reso, 
+                'scale': scale}
+
+            records.append(data)
+        
+        return pnd.DataFrame(records)
+    # ----------------------
+    def _mass_from_particle(self, particle : str, df : pnd.DataFrame) -> pnd.Series:
+        '''
+        Parameters
+        ------------------
+        particle: Particle identity, i.e. Jpsi, B
+
+        Returns
+        ------------------
+        Series with smeared arrays for given particle
+        '''
+        recom = df[f'{particle}_Mass']
+        truem = df[f'{particle}_TRUEM']
+            
+        masses= (
+                truem
+                + df['reso'] * (recom - truem)
+                + df['scale']
+                + (1 - df['reso']) * (df['mu_mc'] - _BPLUS_PDG_MASS))
+
+        return masses
+    # ----------------------
     def get_df(self, df : pnd.DataFrame, replace : bool = False) -> pnd.DataFrame:
         '''
         Parameters
@@ -154,14 +214,19 @@ class Q2SmearCorrector:
             True : will override mass columns, and keep original with `_org` suffix
             Talse: (default) will add new ones with `_smr` suffix
         '''
+        lookup = self.__get_lookup(df = df)
+        df     = df.merge(lookup, on=['block', 'nbrem'], how='left')
+
         log.info('Smearing masses')
         for particle in _PARTICLES:
             log.debug(particle)
             if replace:
                 df[f'{particle}_Mass_org'] = df[f'{particle}_Mass'].to_numpy()
-                df[f'{particle}_Mass'    ] = df.apply(self._smear_from_row, args=(particle,), axis=1)
+                df[f'{particle}_Mass'    ] = self._mass_from_particle(particle, df) 
             else:
-                df[f'{particle}_Mass_smr'] = df.apply(self._smear_from_row, args=(particle,), axis=1)
+                df[f'{particle}_Mass_smr'] = self._mass_from_particle(particle, df) 
+
+        df = df.drop(columns=['mu_mc', 'reso', 'scale'])
 
         return df
 # ------------------------------------
