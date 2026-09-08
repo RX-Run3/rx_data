@@ -335,6 +335,17 @@ class PdfBuilder:
         return self.__out_path / 'model.json'
     # ----------------------------
     @overload
+    def __load_model(self, use_kde : Literal[False], obs : zfit.Space) -> FittedModel           : ...
+    @overload
+    def __load_model(self, use_kde : Literal[True ], obs : zfit.Space) -> NonParametricModel    : ...
+    def __load_model(self, use_kde : bool          , obs : zfit.Space) -> FittedModel | NonParametricModel:
+        if use_kde:
+            return NonParametricModel.from_json(path = self.model_path)
+
+        model = FittedModel.from_json(path = self.model_path)
+        return model.with_obs(obs = obs)
+    # ----------------------------
+    @overload
     def get_model(
         self, 
         update : bool,
@@ -365,8 +376,7 @@ class PdfBuilder:
         if self.model_path.exists() and not update:
             log.info(f'Loading model at: {self.model_path}')
             try:
-                model = FittedModel.from_json(path = self.model_path)
-                return model.with_obs(obs = obs)
+                return self.__load_model(use_kde, obs)
             except Exception:
                 log.warning(f'Removing and remaking broken model at {self.model_path}')
                 self.model_path.unlink()
