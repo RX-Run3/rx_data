@@ -13,7 +13,7 @@ from dmu.stats   import FitConf
 from pydantic    import BaseModel, RootModel, model_validator
 from rx_common   import Component, Project, Qsq
 
-from .binning    import BinConf
+from .binning    import BinConf, BinningConf
 
 log       = LogStore.add_logger('hqm:config')
 type zpar = zfit.Parameter
@@ -231,33 +231,6 @@ class _Conf(BaseModel, frozen = True):
         {self.binning}
         '''
     # -----------------------------------------------
-    @classmethod
-    def _get_bin_cfgs(cls, variable : str) -> list[dict]:
-        '''
-        Parameters
-        ----------------
-        variable: Name of variable used for binning
-
-        Returns
-        ----------------
-        List of dictionaries with data used to build BinningConf
-        '''
-        bin_data = gut.load_data(package = 'hqm_data', fpath = 'config/binning.yaml')
-        nbin = len(bin_data[variable])
-        if nbin == 0:
-            raise ValueError(f'No bins found for variable: {variable}')
-
-        bin_cfgs : list[dict] = []
-        for ibin in range(nbin):
-            cfg_bin             = dict()
-            cfg_bin['variable'] = variable
-            cfg_bin['bin'     ] = ibin
-            cfg_bin['bins'    ] = bin_data[variable]
-
-            bin_cfgs.append(cfg_bin)
-
-        return bin_cfgs
-    # -----------------------------------------------
     def make_path(
         self,
         *,
@@ -354,48 +327,19 @@ class TransferFunctionMakerConf(_Conf, frozen = True):
         '''
         String meant to be used to identify PDFs, etc
         '''
-        if self.binning.is_unbinned:
-            binning = 'unbinned'
-        else:
-            binning = self.binning.prefix
-
-        return f'{self.source}_{self.target}_{binning}'
-    # -----------------------------------------------
-    @classmethod
-    def load_bin_cfg(
-        cls,
-        bin     : int,
-        variable: str,
-        project : Project,
-        source  : Qsq,
-        target  : Qsq) -> 'TransferFunctionMakerConf':
-
-        cfgs = cls.load(
-            project  = project,
-            source   = source,
-            target   = target,
-            variable = variable)
-
-        try:
-            [cfg] = [ cfg for cfg in cfgs if cfg.binning.bin == bin ]
-        except Exception:
-            for cfg in cfgs:
-                log.info(cfg.binning.bin)
-            raise ValueError(f'No configuration found for bin: {bin}')
-
-        return cfg
+        return f'{self.source}_{self.target}_{self.binning.label}'
     # -----------------------------------------------
     @classmethod
     def load(
         cls,
-        variable: str,
+        binning : str,
         project : Project,
         source  : Qsq,
-        target  : Qsq) -> list['TransferFunctionMakerConf']:
+        target  : Qsq) -> 'TransferFunctionMakerConf':
         '''
         Parameters
         ---------------
-        variable : Variable to bin, none for unbinned
+        binning  : Binning, e.g. "block-1 B_PT-2"
         project  : I.e. rk or rkst
         source   : Origin (muon) q2 bin
         target   : Needed (electron) q2 bin
@@ -406,7 +350,7 @@ class TransferFunctionMakerConf(_Conf, frozen = True):
         '''
         trf_data = gut.load_data(package = 'hqm_data', fpath = 'config/transfer.yaml')
         qsq_data = trf_data['qsq']
-        cfg      = dict()
+        data     = dict()
 
         for q2_cfg in qsq_data:
             if q2_cfg['source'] != source:
@@ -415,28 +359,19 @@ class TransferFunctionMakerConf(_Conf, frozen = True):
             if q2_cfg['target'] != target:
                 continue
 
-            cfg.update(q2_cfg)
+            data.update(q2_cfg)
 
-        cfg['fits'      ] = trf_data['fits'       ]
-        cfg['observable'] = trf_data['observable' ]
-        cfg['fft_npt'   ] = trf_data['fft_npt'    ]
-        cfg['bandwidth' ] = trf_data['bandwidth'  ]
-        cfg['components'] = trf_data['models'][project][source]
+        binning_conf = BinningConf.load()
 
-        cfg['plots'].update(trf_data['plots'])
-        if cfg is None:
-            raise ValueError(f'Missing configuration for {source}/{target}')
+        data['fits'      ] = trf_data['fits'       ]
+        data['observable'] = trf_data['observable' ]
+        data['fft_npt'   ] = trf_data['fft_npt'    ]
+        data['bandwidth' ] = trf_data['bandwidth'  ]
+        data['components'] = trf_data['models'][project][source]
+        data['plots'     ] = trf_data['plots']
+        data['binning'   ] = binning_conf.from_str(binning = binning)
 
-        bin_cfgs = cls._get_bin_cfgs(variable = variable)
-
-        confs : list['TransferFunctionMakerConf'] = []
-        for cfg_bin in bin_cfgs:
-            this_cfg = copy.deepcopy(cfg)
-            this_cfg['binning'] = cfg_bin
-
-            confs.append(cls(**this_cfg))
-
-        return confs
+        return cls(**data)
     # -----------------------------------------------
     @staticmethod
     def print_config(name) -> None:
@@ -466,7 +401,7 @@ class CCbarRatioCalculatorConf(_Conf, frozen = True):
     '''
     # ----------------------------------
     @classmethod
-    def load(cls, variable: str) -> list['CCbarRatioCalculatorConf']:
+    def load(cls, binning : str) -> 'CCbarRatioCalculatorConf':
         '''
         Parameters
         ----------------
@@ -479,15 +414,9 @@ class CCbarRatioCalculatorConf(_Conf, frozen = True):
         trf_data = gut.load_data(package = 'hqm_data', fpath = 'config/transfer.yaml')
         rtc_data = gut.load_data(package = 'hqm_data', fpath = 'config/ratc.yaml')
 
+        binning_conf           = BinningConf.load()
         rtc_data['observable'] = trf_data['observable']
-        bin_cfgs = cls._get_bin_cfgs(variable = variable)
+        rtc_data['binning'   ] = binning_conf.from_str(binning = binning) 
 
-        cfgs : list['CCbarRatioCalculatorConf'] = []
-        for bin_data in bin_cfgs:
-            this_data            = copy.deepcopy(rtc_data)
-            this_data['binning'] = bin_data
-
-            cfgs.append(cls(**this_data))
-
-        return cfgs
+        return cls(**rtc_data)
 #-------------------------------------------------------------------
