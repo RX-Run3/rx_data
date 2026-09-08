@@ -1,14 +1,12 @@
 '''
 Module containing Q2SmearCalculator class
 '''
-import math
 import pandas as pnd
 
 from fitter      import ScaleReader
 from typing      import Final
 from ROOT        import RDF # type: ignore
 from rx_common   import Block, Brem, Channel, Correction, info
-from dmu.generic import typing_utilities as tut
 from dmu         import LogStore
 
 log = LogStore.add_logger('rx_q2:q2smear_corrector')
@@ -54,57 +52,6 @@ class Q2SmearCorrector:
         self._channel  = channel
         self._reader   = ScaleReader(channel = channel)
     # ------------------------------------
-    def _smear_from_row(
-        self,
-        row      : pnd.Series,
-        particle : str) -> float:
-        '''
-        Parameters:
-        ---------------
-        row : DataFrame row representing candiate 
-
-        Returns:
-        ---------------
-        Smeared mass
-        '''
-        block = tut.numeric_from_series(row=row, name='block'            , numeric=int)
-        nbrem = tut.numeric_from_series(row=row, name='nbrem'            , numeric=int)
-        recom = tut.numeric_from_series(row=row, name=f'{particle}_Mass' , numeric=float)
-        truem = tut.numeric_from_series(row=row, name=f'{particle}_TRUEM', numeric=float)
-
-        return self.__smear_mass(
-            recom = recom, 
-            truem = truem, 
-            nbrem = Brem.from_int(nbrem), 
-            block = Block(value = block))
-    # ----------------------
-    def __smear_mass(
-        self, 
-        recom : float, 
-        truem : float, 
-        nbrem : Brem, 
-        block : Block) -> float:
-        mu_mc, _ = self._reader.get_param(is_mc = True, param = 'mu', block = block, brem = nbrem)
-        reso , _ = self._reader.get_scale(corr  = Correction.mass_resolution, block = block, brem = nbrem)
-        scale, _ = self._reader.get_scale(corr  = Correction.mass_scale     , block = block, brem = nbrem)
-
-        mass  = truem + reso * (recom - truem) + scale + (1 - reso) * (mu_mc - _BPLUS_PDG_MASS)
-
-        log.verbose('')
-        log.verbose(f'{truem=:.0f}, {recom=:.0f}, {reso=:.3f}, {scale=:.3f}, {mu_mc=:.0f}, {_BPLUS_PDG_MASS=:.0f}')
-        log.verbose(f'{(reso * (recom - truem))=:.0f}, {((1 - reso) * (mu_mc - _BPLUS_PDG_MASS))=:.0f}')
-        log.verbose(f'{recom:<20.0f}{"->":<20}{mass:<20.0f}')
-
-        if not math.isnan(mass):
-            return mass
-
-        log.debug('')
-        log.debug(f'{truem=:.0f}, {recom=:.0f}, {reso=:.3f}, {scale=:.3f}, {mu_mc=:.0f}, {_BPLUS_PDG_MASS=:.0f}')
-        log.debug(f'{(reso * (recom - truem))=:.0f}, {((1 - reso) * (mu_mc - _BPLUS_PDG_MASS))=:.0f}')
-        log.debug(f'{recom:<20.0f}{"->":<20}{mass:<20.0f}')
-
-        return mass
-    # ----------------------
     def _process_data(self, rdf : RDF.RNode) -> RDF.RNode:
         '''
         Parameters
