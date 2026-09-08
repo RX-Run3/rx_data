@@ -38,7 +38,8 @@ def fit_mc(
     model           = 'kde'    if use_kde else 'parametric'
 
     sel             = bins.selection
-    sel['brem'    ] = 'nbrem in [1, 2]'
+    if trigger.is_electron:
+        sel['brem'    ] = 'nbrem in [1, 2]'
     sel[Cuts.q2   ] = f'({qsq_name} > {qsq.lower_bound}) & ({qsq_name} < {qsq.upper_bound})'
 
     ctx2 = DataStore.selection(sel = sel, update = True)
