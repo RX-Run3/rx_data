@@ -4,7 +4,7 @@ Module with tests for Binning class
 import pytest
 
 from typing      import Final
-from hqm.binning import BinningConf, Bins
+from hqm.binning import BinningConf, BinConf
 from dmu         import LogStore
 
 log=LogStore.add_logger('hqm:test_binning')
@@ -28,7 +28,7 @@ def test_from_str(binning : str):
     bin = obj.from_str(binning = binning)
     sel = bin.selection
 
-    assert isinstance(bin, Bins)
+    assert isinstance(bin, BinConf)
 
     if binning == '':
         assert len(sel) == 0

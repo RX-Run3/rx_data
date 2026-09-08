@@ -9,7 +9,7 @@ from dmu         import LogStore
 
 log=LogStore.add_logger('hqm:binning')
 # -------------------------------------------
-class Bins(RootModel[dict[str,tuple[float,float,int]]], frozen = True):
+class BinConf(RootModel[dict[str,tuple[float,float,int]]], frozen = True):
     '''
     Class representing one bin per variable, e.g. 
 
@@ -100,7 +100,7 @@ class BinningConf(RootModel[dict[str,list[tuple[float,float]]]], frozen = True):
 
         return bins
     # ---------------------------------------------
-    def from_str(self, binning : str) -> 'Bins':
+    def from_str(self, binning : str) -> 'BinConf':
         '''
         Parameters
         ---------------
@@ -118,5 +118,5 @@ class BinningConf(RootModel[dict[str,list[tuple[float,float]]]], frozen = True):
             lower, upper = self.root[var][bin - 1]
             data[var]    = lower, upper, bin
 
-        return Bins(root = data)
+        return BinConf(root = data)
 # -------------------------------------------
