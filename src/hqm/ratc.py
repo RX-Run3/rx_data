@@ -363,13 +363,13 @@ class CCbarRatioCalculator:
         E.g. $B -> \psi(2S) X$ PDF in high-q2 bin for `qsq_comp=psi2` and `qsq_tgt=high`
         '''
         cfg = TransferFunctionMakerConf.load(
-            variable = 'none',
+            binning  = f'block-{self._block}',
             project  = self._project,
             source   = qsq_src,
             target   = qsq_tgt)
 
         obj = PrecMaker(
-            cfg     = cfg[0], 
+            cfg     = cfg, 
             block   = self._block,
             project = self._project)
 
@@ -389,12 +389,11 @@ class CCbarRatioCalculator:
         ------------------
         Transfer function
         '''
-        cfg          = TransferFunctionMakerConf.load_bin_cfg(
-            source   = qsq_src,
-            target   = qsq_tgt,
-            project  = self._project,
-            bin      = self._cfg.binning.bin,
-            variable = self._cfg.binning.variable)
+        cfg         = TransferFunctionMakerConf.load(
+            source  = qsq_src,
+            target  = qsq_tgt,
+            project = self._project,
+            binning = self._cfg.binning.to_str())
 
         obj          = TransferFunctionMaker(
             cfg      = cfg,
