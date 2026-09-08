@@ -32,14 +32,14 @@ def fit_mc(
     '''
     Make part reco PDF through transfer function and muon data
     '''
-    bin_obj         = Binning.load()
-    bins            = bin_obj.from_str(binning)
-    comp            = Component(component)
+    bin_obj  = Binning.load()
+    bins     = bin_obj.from_str(binning)
+    comp     = Component(component)
 
-    qsq_name        = 'q2_dtf' if use_dtf else 'q2'
-    model           = 'kde'    if use_kde else 'parametric'
+    qsq_name = 'q2_dtf' if use_dtf else 'q2'
+    model    = 'kde'    if use_kde else 'parametric'
 
-    sel             = bins.selection
+    sel      = bins.selection
     if trigger.is_electron:
         sel['brem'    ] = 'nbrem in [1, 2]'
     sel[Cuts.q2   ] = f'({qsq_name} > {qsq.lower_bound}) & ({qsq_name} < {qsq.upper_bound})'
