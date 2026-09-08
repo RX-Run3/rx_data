@@ -10,55 +10,30 @@ from hqm.data_store import DataStore
 from hqm.prec_maker import PrecMaker
 from rx_common      import Block, Cuts, Project, Qsq
 
+# ------------------------------------------------------------
 @pytest.mark.parametrize('source', [Qsq.jpsi, Qsq.psi2])
-@pytest.mark.parametrize('target', [Qsq.jpsi, Qsq.psi2])
-def test_resonant(tmp_path : Path, source : Qsq, target : Qsq):
+@pytest.mark.parametrize('target', [Qsq.jpsi, Qsq.psi2, Qsq.high])
+def test_resonant(source : Qsq, target : Qsq):
     '''
     Simplest test
     '''
     proj  = Project.rk 
-    block = Block(value = 5)
+    blk   = 5
+    block = Block(value = blk)
 
     cfg = TransferFunctionMakerConf.load(
-        variable = 'none',
+        binning  = f'block-{blk}',
         project  = proj,
         source   = source,
         target   = target)
 
-    sel  = {Cuts.block : f'block == {block.value}'}
-    ctx1 = DataStore.selection(sel = sel, update = False)
-
+    ctx1 = DataStore.selection(sel = cfg.binning.selection, update = False)
     with ExitStack() as stack:
         stack.enter_context(ctx1)
 
         obj = PrecMaker(
-            cfg     = cfg[0], 
+            cfg     = cfg, 
             block   = block,
             project = proj)
         obj.get_pdf(update = True)
-
-@pytest.mark.parametrize('source', [Qsq.jpsi, Qsq.psi2])
-def test_rare(tmp_path : Path, source : Qsq):
-    '''
-    Simplest test
-    '''
-    proj  = Project.rk 
-    block = Block(value = 5)
-
-    cfg = TransferFunctionMakerConf.load(
-        variable = 'none',
-        project  = proj,
-        source   = source,
-        target   = Qsq.high)
-
-    sel  = {Cuts.block : f'block == {block.value}'}
-    ctx1 = DataStore.selection(sel = sel, update = False)
-
-    with ExitStack() as stack:
-        stack.enter_context(ctx1)
-
-        obj = PrecMaker(
-            cfg     = cfg[0], 
-            block   = block,
-            project = proj)
-        obj.get_pdf(update = True)
+# ------------------------------------------------------------

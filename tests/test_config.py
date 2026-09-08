@@ -27,47 +27,22 @@ def test_unbinned_trfc(project : Project):
     '''
     Test configuration loader for unbinned case
     '''
-    cfgs = TransferFunctionMakerConf.load(
-        variable = 'none',
+    cfg = TransferFunctionMakerConf.load(
+        binning  = 'block-1',
         project  = project,
         source   = Qsq.psi2,
         target   = Qsq.high)
-
-    assert len(cfgs) == 1
-
-    print(cfgs[0])
 #----------------------------------
 @pytest.mark.parametrize('project', [Project.rk, Project.rkst])
 def test_binned_trfc(project : Project):
     '''
     Test configuration loader for binned case
     '''
-    cfgs = TransferFunctionMakerConf.load(
-        variable = 'nbrem',
+    cfg = TransferFunctionMakerConf.load(
+        binning  = 'nbrem-2',
         project  = project,
         source   = Qsq.psi2,
         target   = Qsq.high)
-
-    assert len(cfgs) > 1
-
-    for cfg in cfgs:
-        print(cfg)
-#----------------------------------
-@pytest.mark.parametrize('project', [Project.rk, Project.rkst])
-def test_per_bin_trfc(project : Project):
-    '''
-    Test configuration loader for single bin 
-    '''
-    cfg          = TransferFunctionMakerConf.load_bin_cfg(
-        bin      = 1,
-        variable = 'nbrem',
-        project  = project,
-        source   = Qsq.psi2,
-        target   = Qsq.high)
-
-    assert cfg.binning.bin == 1
-
-    print(cfg)
 #----------------------------------
 # Ratio calculator
 #----------------------------------
@@ -75,29 +50,14 @@ def test_unbinned_ratio():
     '''
     Test unbinned ratio calculator configuration
     '''
-    cfgs = CCbarRatioCalculatorConf.load(variable = 'none')
-
-    assert len(cfgs) == 1
-
-    print(cfgs[0])
-#----------------------------------
-def test_binned_ratio():
-    '''
-    Test configuration loader for binned case
-    '''
-    cfgs = CCbarRatioCalculatorConf.load(variable = 'nbrem')
-    assert len(cfgs) > 1
-
-    for cfg in cfgs:
-        print(cfg)
+    cfg = CCbarRatioCalculatorConf.load(binning = 'block-1')
 #----------------------------------
 def test_pars():
     '''
     Test configuration loader for binned case
     '''
-    cfgs = CCbarRatioCalculatorConf.load(variable = 'nbrem')
-    cfg  = cfgs[0]
-    pdf  = _get_simple_pdf()
+    cfg = CCbarRatioCalculatorConf.load(binning = 'nbrem-1')
+    pdf = _get_simple_pdf()
 
     for qsq in [Qsq.jpsi, Qsq.psi2]:
         obj_1 = cfg.parameters.get_factor(

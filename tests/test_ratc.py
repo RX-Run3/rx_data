@@ -155,8 +155,7 @@ def test_unbinned(monkeypatch, tmp_path : Path):
     '''
     monkeypatch.setenv('ANADIR', str(tmp_path))
 
-    cfgs  = CCbarRatioCalculatorConf.load(variable = 'none')
-    cfg   = cfgs[0]
+    cfg   = CCbarRatioCalculatorConf.load(binning = 'block-1')
     block = Block(value = 1)
 
     cal         = CCbarRatioCalculator(
