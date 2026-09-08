@@ -24,7 +24,7 @@ def in_resonant [q2bin: string, component: string] {
     let in_jpsi = ($q2bin == 'jpsi' and $component in $jpsi_ee)
     let in_psi2 = ($q2bin == 'psi2' and $component in $psi2_ee)
 
-    return ($in_jpsi and $in_psi2)
+    return ($in_jpsi or $in_psi2)
 }
 # -------------------------------
 def skip_fit [q2bin: string, component: string, trigger: string] {
@@ -56,13 +56,14 @@ for pair in $pairs {
             continue
         }
 
-        let in_reso = in_resonant $q2bin $pair.component
+        hqm fit-mc -c $pair.component -t $pair.trigger -q $q2bin -k -b 'block-1 mva_cmb-7 mva_prc-7'
+
+        let in_reso = (in_resonant $q2bin $pair.component)
         if $in_reso {
             hqm fit-mc -c $pair.component -t $pair.trigger -q $q2bin -d -b 'block-1 mva_cmb-7 mva_prc-7'
+        } else {
+            hqm fit-mc -c $pair.component -t $pair.trigger -q $q2bin    -b 'block-1 mva_cmb-7 mva_prc-7'
         }
-
-        hqm fit-mc -c $pair.component -t $pair.trigger -q $q2bin -k -b 'block-1 mva_cmb-7 mva_prc-7'
-        hqm fit-mc -c $pair.component -t $pair.trigger -q $q2bin    -b 'block-1 mva_cmb-7 mva_prc-7'
     }
 }
 # -------------------------------
