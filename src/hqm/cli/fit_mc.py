@@ -14,6 +14,7 @@ from hqm.binning    import Binning
 update_opt = typer.Option(False, '-u', help = 'If used, will remake function even if already exists')
 use_dtf_opt= typer.Option(False, '-d', help = 'If used, will use q2_dtf in selection of data')
 use_kde_opt= typer.Option(False, '-k', help = 'If used, will use KDE for fit')
+smear_opt  = typer.Option(False, '-s', help = 'If used, will smear masses before applying selection')
 trig_opt   = typer.Option(...  , '-t', help = 'Trigger, e.g. rk_ee_os')
 comp_opt   = typer.Option(...  , '-c', help = 'Component, e.g. bpkpjpsiee')
 qsq_opt    = typer.Option(...  , '-q', help = 'q2-bin fitted')
@@ -26,6 +27,7 @@ def fit_mc(
     use_kde   : bool    = use_kde_opt,
     trigger   : Trigger = trig_opt,
     qsq       : Qsq     = qsq_opt,
+    smear     : bool    = smear_opt,
     binning   : str     = binning_opt):
     '''
     Make part reco PDF through transfer function and muon data
@@ -42,9 +44,11 @@ def fit_mc(
         sel['brem'    ] = 'nbrem in [1, 2]'
     sel[Cuts.q2   ] = f'({qsq_name} > {qsq.lower_bound}) & ({qsq_name} < {qsq.upper_bound})'
 
-    ctx2 = DataStore.selection(sel = sel, update = True)
-    obs  = zfit.Space('B_Mass', limits = (4500, 6000))
+    ctx1  = DataStore.smear_masses(smear)
+    ctx2  = DataStore.selection(sel = sel, update = True)
+    obs   = zfit.Space('B_Mass', limits = (4500, 6000))
     with ExitStack() as stack:
+        stack.enter_context(ctx1)
         stack.enter_context(ctx2)
 
         obj = PdfBuilder(
