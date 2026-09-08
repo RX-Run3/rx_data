@@ -60,9 +60,9 @@ for pair in $pairs {
 
         let in_reso = (in_resonant $q2bin $pair.component)
         if $in_reso {
-            hqm fit-mc -c $pair.component -t $pair.trigger -q $q2bin -d -b 'block-1 mva_cmb-7 mva_prc-7'
+            hqm fit-mc -c $pair.component -t $pair.trigger -q $q2bin -d -s -b 'block-1 mva_cmb-7 mva_prc-7'
         } else {
-            hqm fit-mc -c $pair.component -t $pair.trigger -q $q2bin    -b 'block-1 mva_cmb-7 mva_prc-7'
+            hqm fit-mc -c $pair.component -t $pair.trigger -q $q2bin       -b 'block-1 mva_cmb-7 mva_prc-7'
         }
     }
 }
