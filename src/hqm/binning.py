@@ -2,6 +2,7 @@
 Module holding Binning class
 '''
 
+from pathlib     import Path
 from dmu.generic import utilities as gut 
 from pydantic    import BaseModel, RootModel
 from rx_common   import Cuts
@@ -27,6 +28,30 @@ class BinConf(RootModel[dict[str,tuple[float,float,int]]], frozen = True):
 
         return msg
     # ---------------------------------------------
+    def to_str(self) -> str:
+        '''
+        String representing binning, e.g.
+
+        var1-x var2-y var3-z...
+
+        where varX represents a variable and x,y,z, 
+        are the bin indexes
+        '''
+        parts = []
+        for var, (_,_,bin) in self.root.items():
+            parts.append(f'{var}-{bin}')
+
+        return ' '.join(parts)
+    # ---------------------------------------------
+    @property
+    def label(self) -> str:
+        '''
+        String representing current bin, used for naming PDFs, etc
+        '''
+        parts = self.__parts()
+
+        return '_'.join(parts)
+    # ---------------------------------------------
     @property
     def selection(self) -> dict[str,str]:
         '''
@@ -40,17 +65,22 @@ class BinConf(RootModel[dict[str,tuple[float,float,int]]], frozen = True):
         return sel
     # ---------------------------------------------
     @property
-    def dir_path(self) -> str:
+    def dir_path(self) -> Path:
         '''
-        String representing path where output is saved
+        Path object representing path where output is saved
         '''
+        path = '/'.join(self.__parts())
+
+        return Path(path)
+    # ---------------------------------------------
+    def __parts(self) -> list[str]:
         parts = list()
         for var, (_, _, ibin) in self.root.items():
             parts.append(f'{var}_{ibin:03d}')
 
         parts.sort()
-
-        return '/'.join(parts)
+        
+        return parts
 # -------------------------------------------
 class BinningConf(RootModel[dict[str,list[tuple[float,float]]]], frozen = True):
     '''
