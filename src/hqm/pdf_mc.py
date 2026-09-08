@@ -158,15 +158,18 @@ class PdfBuilder:
         name   : str,
         comp   : Component,
         trigger: Trigger,
-        qsq    : Qsq):
+        qsq    : Qsq,
+        label  : str = ''):
         '''
         Parameters
         ------------------
         name   : Identifier for current PDF
+        label  : Used in title of plots
         qsq    : q2-bin
         comp   : Describes sample used for fit
         trigger: E.g. rk_ee_os
         '''
+        self.__label= label
         self.__comp = comp
         self.__trig = trigger
         self.__qsq  = qsq
@@ -323,7 +326,7 @@ class PdfBuilder:
 
         settings   = {
             'ext_text'   : f'{self.__comp.latex}\n {self.__qsq.latex} bin',
-            'title'      : f'Entries: {data.n_events}; {self.__trig.value} trigger',
+            'title'      : f'Entries: {data.n_events}; {self.__trig.value} trigger; {self.__label}',
             'plot_range' : cfg_par.rn}
         cfg_plt = cfg_plt.model_copy(update = settings)
 
