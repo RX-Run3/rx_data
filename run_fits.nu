@@ -14,8 +14,11 @@ let pairs = [
 
 let jpsi_ee = [bpkpjpsiee, bdkstkpijpsiee]
 let psi2_ee = [bpkppsi2ee, bdkstkpipsi2ee]
+let high_ee = []
+
 let jpsi_mm = [bpkpjpsimm, bdkstkpijpsimm]
 let psi2_mm = [bpkppsi2mm, bdkstkpipsi2mm]
+let high_mm = []
 # -------------------------------
 def in_resonant [q2bin: string, component: string] {
     let in_jpsi = ($q2bin == 'jpsi' and $component in $jpsi_ee)
@@ -36,6 +39,10 @@ def skip_fit [q2bin: string, component: string, trigger: string] {
     }
 
     if ($q2bin == 'psi2') and ($component not-in $psi2_mm) {
+        return true
+    }
+
+    if ($q2bin == 'high') and ($component not-in $high_mm) {
         return true
     }
 
