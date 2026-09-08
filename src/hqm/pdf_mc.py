@@ -110,6 +110,12 @@ class PdfBuilderConf(BaseModel, frozen = True):
         trig : Trigger,
         qsq  : Qsq) -> RangesConf:
         '''
+        Parameters
+        -------------
+        comp : Component been fitted
+        trig : Trigger associated to data
+        qsq  : q2-bin in which component data will be fitted 
+
         Returns
         -------------
         Configuration object storing range information
