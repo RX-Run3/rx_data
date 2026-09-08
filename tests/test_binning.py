@@ -1,10 +1,15 @@
 '''
 Module with tests for Binning class
 '''
+import pytest
+
+from typing      import Final
 from hqm.binning import Binning, Bins
 from dmu         import LogStore
 
 log=LogStore.add_logger('hqm:test_binning')
+
+_BINNING : Final[list[str]] = ['nbrem-1 B_PT-3', '']
 # ------------------------------------
 def test_load():
     '''
@@ -14,15 +19,19 @@ def test_load():
 
     assert isinstance(obj, Binning)
 # ------------------------------------
-def test_from_str():
+@pytest.mark.parametrize('binning', _BINNING)
+def test_from_str(binning : str):
     '''
     Load binning
     '''
     obj = Binning.load()
-    bin = obj.from_str(binning = 'nbrem-1 B_PT-3')
+    bin = obj.from_str(binning = binning)
     sel = bin.selection
 
     assert isinstance(bin, Bins)
+
+    if binning == '':
+        assert len(sel) == 0
 
     print(bin)
     for key, val in sel.items():
