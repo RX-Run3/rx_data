@@ -46,40 +46,36 @@ for different processes and triggers
 With the data above already made run:
 
 ```bash
-hqm fit-mc -c bpkpjpsiee     -t rk_ee_os   -b 1 -q jpsi   -d 
-hqm fit-mc -c bpkpjpsiee     -t rk_ee_os   -b 1 -q psi2   -d -k
-hqm fit-mc -c bpkpjpsiee     -t rk_ee_os   -b 1 -q high   -d 
-                                                             
-hqm fit-mc -c bpkppsi2ee     -t rk_ee_os   -b 1 -q jpsi   -d 
-hqm fit-mc -c bpkppsi2ee     -t rk_ee_os   -b 1 -q psi2   -d 
-hqm fit-mc -c bpkppsi2ee     -t rk_ee_os   -b 1 -q high   -d 
-                                                             
-hqm fit-mc -c bpkpjpsimm     -t rk_mm_os   -b 1 -q jpsi      
-hqm fit-mc -c bpkpjpsimm     -t rk_mm_os   -b 1 -q psi2      
-hqm fit-mc -c bpkpjpsimm     -t rk_mm_os   -b 1 -q high      
-                                                             
-hqm fit-mc -c bpkppsi2mm     -t rk_mm_os   -b 1 -q jpsi      
-hqm fit-mc -c bpkppsi2mm     -t rk_mm_os   -b 1 -q psi2      
-hqm fit-mc -c bpkppsi2mm     -t rk_mm_os   -b 1 -q high      
-                                                             
-hqm fit-mc -c bdkstkpijpsiee -t rkst_ee_os -b 1 -q jpsi   -d 
-hqm fit-mc -c bdkstkpijpsiee -t rkst_ee_os -b 1 -q psi2   -d -k
-hqm fit-mc -c bdkstkpijpsiee -t rkst_ee_os -b 1 -q high   -d 
-                                                             
-hqm fit-mc -c bdkstkpipsi2ee -t rkst_ee_os -b 1 -q jpsi   -d 
-hqm fit-mc -c bdkstkpipsi2ee -t rkst_ee_os -b 1 -q psi2   -d 
-hqm fit-mc -c bdkstkpipsi2ee -t rkst_ee_os -b 1 -q high   -d 
+pairs=(
+  "bpkpjpsiee     rk_ee_os"
+  "bpkppsi2ee     rk_ee_os"
+  "bpkpjpsimm     rk_mm_os"
+  "bpkppsi2mm     rk_mm_os"
+  "bdkstkpijpsiee rkst_ee_os"
+  "bdkstkpipsi2ee rkst_ee_os"
+  "bdkstkpijpsimm rkst_mm_os"
+  "bdkstkpipsi2mm rkst_mm_os"
+)
 
-hqm fit-mc -c bdkstkpijpsimm -t rkst_mm_os -b 1 -q jpsi
-hqm fit-mc -c bdkstkpijpsimm -t rkst_mm_os -b 1 -q psi2
-hqm fit-mc -c bdkstkpijpsimm -t rkst_mm_os -b 1 -q high
+for pair in "${pairs[@]}"; do
+  read -r component trigger <<< "$pair"
+  for q2bin in jpsi psi2 high; do
+    hqm fit-mc -c "$component" -t "$trigger" -q "$q2bin" -d -k -b "block-1 mva_cmb-7 mva_prc-7"
+    hqm fit-mc -c "$component" -t "$trigger" -q "$q2bin" -d    -b "block-1 mva_cmb-7 mva_prc-7"
 
-hqm fit-mc -c bdkstkpipsi2mm -t rkst_mm_os -b 1 -q jpsi
-hqm fit-mc -c bdkstkpipsi2mm -t rkst_mm_os -b 1 -q psi2
-hqm fit-mc -c bdkstkpipsi2mm -t rkst_mm_os -b 1 -q high
+    hqm fit-mc -c "$component" -t "$trigger" -q "$q2bin"    -k -b "block-1 mva_cmb-7 mva_prc-7"
+    hqm fit-mc -c "$component" -t "$trigger" -q "$q2bin"       -b "block-1 mva_cmb-7 mva_prc-7"
+  done
+done
 ```
 
-where `-d` requires the `q2` cut to be on the DTF variable.
+where:
+
+- `-d` requires the `q2` cut to be on the DTF variable.
+- `-k` requires a KDE fit and without it will try a parametric fit
+- `-b` specifies the binning by using the variable and the bin index
+
+The binning is specified in `hqm_data/config/binning.yaml`.
 
 ## Make transfer functions
 
