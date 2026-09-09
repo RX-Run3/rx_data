@@ -24,14 +24,7 @@ _TARGET_CHANNEL : Final[Channel  ] = Channel.ee
 _RAW_QSQ        : Final[str      ] = 'q2'         # Used to switch between q2 cuts for rare
 _DTF_QSQ        : Final[str      ] = 'q2_dtf'     # and resonant target shapes
 
-mu_vals = -0., -1500., 1500. # Value and range for observable of transffer function
-sg_vals =   50.,   10., 500.
-_TRF_VALS : Final[dict[str,tuple[float,float,float]]] = {
-    'mu' : mu_vals,
-    'sg' : sg_vals}
-
 type zpdf = zfit.pdf.BasePDF
-type kpdf = zfit.pdf.KDE1DimFFT
 type zobs = zfit.Space
 #---------------------------------
 class TransferFunction(BaseModel, Serializable, frozen = True):
@@ -54,7 +47,7 @@ class TransferFunction(BaseModel, Serializable, frozen = True):
             l_pdf    = self.models,
             l_float  = _FLOAT,
             l_shared = _SHARED,
-            values   = _TRF_VALS)
+            values   = self.trfc_cfg.trn_vals)
 
         pdf  = fac.get_pdf()
         pars = pdf.get_params()
@@ -207,7 +200,7 @@ class TransferFunctionMaker:
         plt.savefig(path)
         plt.close()
 
-        lower, upper = self._cfg.observable.tran_range[self._cfg.source][self._cfg.target]
+        _, lower, upper = self._cfg.observable.tran_range[self._cfg.source][self._cfg.target]
         xs  = numpy.linspace(lower, upper, self._cfg.fft_npt)
         ys  = pdf_trf.pdf(xs)
         plt.scatter(xs, ys, s = 1)
@@ -289,12 +282,12 @@ class TransferFunctionMaker:
             l_pdf    = self._cfg.models,
             l_shared = _SHARED,
             l_float  = _FLOAT,
-            values   = _TRF_VALS,
+            values   = self._cfg.trn_vals,
         )
 
         pdf = fac.get_pdf()
 
-        lower, higher = self._cfg.observable.tran_range[self._cfg.source][self._cfg.target]
+        _, lower, higher = self._cfg.observable.tran_range[self._cfg.source][self._cfg.target]
         xs  = numpy.linspace(lower, higher, self._cfg.fft_npt)
         ys  = pdf.pdf(xs)
 
