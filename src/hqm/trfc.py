@@ -152,9 +152,15 @@ class TransferFunctionMaker:
             channel = _SOURCE_CHANNEL,
             project = self._project)
 
+        # NOTE: source PDF comes from muon channel
+        # It will always use standard q2
+        # It will always be a parametric fit
+        bins = self._cfg.binning
+        name = f'q2/{bins.dir_path}/parametric'
+
         obj         = PdfBuilder(
             trigger = trig,
-            name    = self._cfg.binning.label,
+            name    = name,
             comp    = self._cfg.source_component,
             qsq     = self._cfg.source)
         fmod = obj.get_model(obs = obs, update = False)
