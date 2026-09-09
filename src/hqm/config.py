@@ -407,8 +407,8 @@ class TransferFunctionMakerConf(_Conf, frozen = True):
         data['fft_npt'   ] = trf_data['fft_npt'    ]
         data['bandwidth' ] = trf_data['bandwidth'  ]
         data['components'] = trf_data['models'][project][source]
-        data['plots'     ] = trf_data['plots']
         data['binning'   ] = binning_conf.from_str(binning = binning)
+        data['plots'     ].update(trf_data['plots'])
 
         return cls(**data)
     # -----------------------------------------------
