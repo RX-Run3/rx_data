@@ -35,12 +35,14 @@ _SIZE : Final[int] = 10_000
 type NpFltArray = npt.NDArray[numpy.float64]
 type zobs       = zfit.Space
 type zdat       = zfit.data.Data
+
+_RNG = numpy.random.default_rng(seed = 42)
 # --------------------
 def _get_arrays_ee(self, mass) -> tuple[NpFltArray, NpFltArray]:
     _ = self
     _ = mass 
 
-    masses  = numpy.random.normal(5280, 200, _SIZE)
+    masses  = _RNG.normal(5280, 200, _SIZE)
     weights = numpy.ones_like(masses)
 
     return masses, weights
@@ -49,7 +51,7 @@ def _get_arrays_mm(self, mass) -> tuple[NpFltArray, NpFltArray]:
     _ = self
     _ = mass 
 
-    masses  = numpy.random.normal(5280, 11, 30_000)
+    masses  = _RNG.normal(5280, 8, 1_000)
     weights = numpy.ones_like(masses)
 
     return masses, weights
