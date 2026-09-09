@@ -8,6 +8,7 @@ import numpy.typing as npt
 from pathlib        import Path
 from contextlib     import ExitStack
 from dmu.generic    import utilities as gut
+from dmu.stats      import zfit
 from hqm.config     import TransferFunctionMakerConf
 from hqm.data_store import DataStore
 from hqm.prec_maker import PrecMaker
@@ -15,6 +16,16 @@ from hqm.trfc       import TransferFunction
 from rx_common      import Block, Cuts, Project, Qsq
 
 type NpFltArr = npt.NDArray[numpy.float64]
+type zpdf     = zfit.pdf.BasePDF
+#--------------------------------------
+class TransferFunctionTest:
+    @property
+    def pdf(self) -> zpdf:
+        obs = zfit.Space('B_Mass', limits = (-100, 100))
+        mu  = zfit.Parameter('mu', 0 , -20, 20)
+        sg  = zfit.Parameter('sg', 15,  10, 20)
+
+        return zfit.pdf.Gauss(obs = obs, mu = mu, sigma = sg)
 #--------------------------------------
 def _get_array(self, out_dir, sel, trig) -> NpFltArr:
     _ = self
@@ -24,13 +35,9 @@ def _get_array(self, out_dir, sel, trig) -> NpFltArr:
 
     return numpy.random.uniform(3500, 4800, size = 10_000)
 #--------------------------------------
-def _get_trfc(self) -> TransferFunction:
+def _get_trfc(self) -> TransferFunctionTest:
     _    = self
-    data = gut.load_data(
-        package = 'hqm_data', 
-        fpath   = 'tests/trfc_jpsi_jpsi.json')
-
-    return TransferFunction(**data)
+    return TransferFunctionTest()
 #--------------------------------------
 @pytest.fixture(autouse = True)
 def _use_fake_masses(monkeypatch):
