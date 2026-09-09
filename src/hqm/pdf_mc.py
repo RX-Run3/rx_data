@@ -412,5 +412,5 @@ class PdfBuilder:
 
         fmod.to_json(path = self.model_path)
 
-        return fmod
+        return self.__load_model(use_kde, obs)
 # ----------------------------
