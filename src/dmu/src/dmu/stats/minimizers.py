@@ -15,6 +15,7 @@ from zfit.loss                     import UnbinnedNLL
 from zfit.result                   import FitResult as zres
 from zfit.util                     import ztyping
 from zfit.pdf                      import BasePDF           as zpdf
+from zfit.minimizers.errors        import WeightCorr
 from zfit.minimizers.strategy      import FailMinimizeNaN
 
 from dmu                           import LogStore
@@ -336,6 +337,21 @@ class ContextMinimizer:
 
         return frs
 # ------------------------
+def _get_weight_corr(nll : Loss) -> WeightCorr:
+    has_weights = False
+    for data in nll.data:
+        if data.weights is None:
+            continue
+
+        weights = data.weights.numpy()
+        if not numpy.all(weights == 1):
+            has_weights = True
+
+    if has_weights:
+        return WeightCorr('assymptotic')
+
+    return WeightCorr(False)
+# ------------------------
 def _calculate_errors(res : zres, cfg : FitConf, nll : Loss) -> zres:
     '''
     Parameters
@@ -355,9 +371,17 @@ def _calculate_errors(res : zres, cfg : FitConf, nll : Loss) -> zres:
 
     log.debug('Calculating errors')
 
+    weight_corr = _get_weight_corr(nll = nll)
     for method in ['minuit_hesse', 'approx']:
         try:
-            res.hesse(name='minuit_hesse', method = method)
+            res.hesse(
+                weightcorr = weight_corr,
+                name       = 'minuit_hesse', 
+                method     = method)
+
+            cov = res.covariance(method = method, weightcorr = weight_corr)
+
+            setattr(res, 'cov', cov)
         except ValueError as exc:
             log.error(res)
             raise ValueError(f'Failed calculating error with method: {method}') from exc
