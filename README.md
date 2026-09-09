@@ -63,22 +63,11 @@ The binning is specified in `hqm_data/config/binning.yaml`.
 After building the databases and fitting the shapes, the transfer functios are made with:
 
 ```bash
-hqm make-trfc -b 1 -p rk   -s jpsi -t jpsi
-hqm make-trfc -b 1 -p rk   -s jpsi -t psi2
-hqm make-trfc -b 1 -p rk   -s psi2 -t jpsi
-hqm make-trfc -b 1 -p rk   -s psi2 -t psi2
-hqm make-trfc -b 1 -p rk   -s psi2 -t high
-hqm make-trfc -b 1 -p rk   -s jpsi -t high
-
-hqm make-trfc -b 1 -p rkst -s jpsi -t jpsi
-hqm make-trfc -b 1 -p rkst -s jpsi -t psi2
-hqm make-trfc -b 1 -p rkst -s psi2 -t jpsi
-hqm make-trfc -b 1 -p rkst -s psi2 -t psi2
-hqm make-trfc -b 1 -p rkst -s psi2 -t high
-hqm make-trfc -b 1 -p rkst -s jpsi -t high
+nu run_trfc.nu
 ```
 
-For block `1` and for each of the other 7 blocks.
+
+which will do the fits for all blocks and a given binning
 
 ## Make part reco PDFs
 
