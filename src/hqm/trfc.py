@@ -39,9 +39,9 @@ class TransferFunction(BaseModel, Serializable, frozen = True):
     Class meant to represent a transfer function
     '''
     name       : str
-    observable : ObsConf
     fit_result : FitResult
     models     : list[Model]
+    trfc_cfg   : TransferFunctionMakerConf 
     #----------------------
     @property
     def pdf(self) -> zpdf:
@@ -49,7 +49,7 @@ class TransferFunction(BaseModel, Serializable, frozen = True):
         PDF representing transfer function
         '''
         fac = ModelFactory(
-            obs      = self.observable.trn_obs,
+            obs      = self.trfc_cfg.trn_obs,
             preffix  = self.name,
             l_pdf    = self.models,
             l_float  = _FLOAT,
@@ -201,7 +201,7 @@ class TransferFunctionMaker:
         plt.savefig(path)
         plt.close()
 
-        lower, upper = self._cfg.observable.tran_range
+        lower, upper = self._cfg.observable.tran_range[self._cfg.source][self._cfg.target]
         xs  = numpy.linspace(lower, upper, self._cfg.fft_npt)
         ys  = pdf_trf.pdf(xs)
         plt.scatter(xs, ys, s = 1)
@@ -288,7 +288,7 @@ class TransferFunctionMaker:
 
         pdf = fac.get_pdf()
 
-        lower, higher = self._cfg.observable.tran_range
+        lower, higher = self._cfg.observable.tran_range[self._cfg.source][self._cfg.target]
         xs  = numpy.linspace(lower, higher, self._cfg.fft_npt)
         ys  = pdf.pdf(xs)
 
@@ -320,8 +320,8 @@ class TransferFunctionMaker:
 
         trf            = TransferFunction(
             fit_result = res,
+            trfc_cfg   = self._cfg,
             name       = self._cfg.name,
-            observable = self._cfg.observable,
             models     = self._cfg.models)
 
         trf.to_json(path = json_path)
