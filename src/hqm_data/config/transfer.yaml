@@ -7,7 +7,7 @@ observable:
   tran_range : 
     jpsi :
       jpsi :
-        [   0, -1000, 1000]
+        [   0, -1200, 1000]
       psi2 :
         [ 500,  -500, 1500]
       high :
