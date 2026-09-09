@@ -27,10 +27,15 @@ def set_log():
     LogStore.set_level('rx_scripts:version_management', 30)
     LogStore.set_level('tools:calc_utility'           , 30)
 #--------------------------------------
-def _get_target_masses(self, path : Path) -> numpy.ndarray:
+def _get_target_masses_low(self, path : Path) -> numpy.ndarray:
     _ = self
     _ = path 
-    return numpy.random.normal(loc = 5200, scale = 30, size = 2000)
+    return numpy.random.normal(loc = 4750, scale = 80, size = 2000)
+#--------------------------------------
+def _get_target_masses_high(self, path : Path) -> numpy.ndarray:
+    _ = self
+    _ = path 
+    return numpy.random.normal(loc = 5750, scale = 80, size = 2000)
 #--------------------------------------
 def _get_source_pdf(self, obs : zobs) -> zpdf:
     _  = self
@@ -49,29 +54,34 @@ def _get_source_pdf(self, obs : zobs) -> zpdf:
 def _use_source_target(monkeypatch):
     monkeypatch.setattr(
         TransferFunctionMaker,
-        '_TransferFunctionMaker__get_target_masses',
-        _get_target_masses)
-
-    monkeypatch.setattr(
-        TransferFunctionMaker,
         '_TransferFunctionMaker__get_source_pdf',
         _get_source_pdf)
 #--------------------------------------
-def test_psi2_high_brem(
+@pytest.mark.parametrize('upper', [True, False])
+def test_upper_lower(
     monkeypatch,
+    upper : bool,
     _use_source_target,
     tmp_path : Path):
     '''
-    Basic test with fake data
+    Test moving PDF upper or lower
     '''
-    _ = _use_source_target
+    _                  = _use_source_target
+    _get_target_masses = _get_target_masses_high if upper else _get_target_masses_low
+    source             = Qsq.jpsi if upper else Qsq.psi2
+    target             = Qsq.psi2 if upper else Qsq.jpsi
+
     monkeypatch.setenv('ANADIR', str(tmp_path))
+    monkeypatch.setattr(
+        TransferFunctionMaker,
+        '_TransferFunctionMaker__get_target_masses',
+        _get_target_masses)
 
     cfg         = TransferFunctionMakerConf.load(
         binning = 'block-1 mva_cmb-3 mva_prc-2',
         project = Project.rk,
-        source  = Qsq.psi2,
-        target  = Qsq.jpsi)
+        source  = source,
+        target  = target)
 
     obj         = TransferFunctionMaker(
         cfg     = cfg,
