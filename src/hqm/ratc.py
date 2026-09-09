@@ -116,7 +116,7 @@ class CCbarRatioCalculator:
         pdf   = self.__get_model(qsq = qsq)
         array = self.__get_target_data(qsq = qsq)
         data  = zfit.Data.from_numpy(
-            obs  =self._cfg.observable.fit_obs,
+            obs  =self._cfg.observable.mass_obs,
             array=array)
 
         if not isinstance(data, zfit.Data):
@@ -212,7 +212,7 @@ class CCbarRatioCalculator:
             log.debug(f'{pdf.name:<10}{pdf.space}')
 
         pdf  = zfit.pdf.SumPDF(pdfs,
-        obs  = self._cfg.observable.fit_obs)
+        obs  = self._cfg.observable.mass_obs)
 
         print_pdf(pdf = pdf)
         self._plotter.plot_model(name = f'model_{qsq}', pdf = pdf)
@@ -286,7 +286,7 @@ class CCbarRatioCalculator:
         Zfit PDF from MC fit
         '''
         trigger = Trigger.get_main_trigger(project = self._project, channel = _TARGET_CHANNEL)
-        obs     = self._cfg.observable.fit_obs
+        obs     = self._cfg.observable.mass_obs
 
         name= f'block_{self._block.to_int():03d}'
         obj = PdfBuilder(
