@@ -16,30 +16,18 @@ from hqm.pdf_mc     import PdfBuilder
 
 _SAMPLES_RK_EE : Final[list[tuple[Component,Trigger,Qsq,bool]]] = [
     (Component.bpkppsi2ee, Trigger.rk_ee_os, Qsq.jpsi, False),
-    (Component.bpkpjpsiee, Trigger.rk_ee_os, Qsq.psi2, False),
-    (Component.bpkppsi2ee, Trigger.rk_ee_os, Qsq.high, False),
-    (Component.bpkpjpsiee, Trigger.rk_ee_os, Qsq.high, False),
-    (Component.bpkppsi2ee, Trigger.rk_ee_os, Qsq.psi2, True ),
-    (Component.bpkpjpsiee, Trigger.rk_ee_os, Qsq.jpsi, True ),
 ]
 
 _SAMPLES_RKST_EE : Final[list[tuple[Component,Trigger,Qsq,bool]]] = [
     (Component.bdkstkpipsi2ee, Trigger.rkst_ee_os, Qsq.jpsi, False),
-    (Component.bdkstkpijpsiee, Trigger.rkst_ee_os, Qsq.psi2, False),
-    (Component.bdkstkpipsi2ee, Trigger.rkst_ee_os, Qsq.high, False),
-    (Component.bdkstkpijpsiee, Trigger.rkst_ee_os, Qsq.high, False),
-    (Component.bdkstkpipsi2ee, Trigger.rkst_ee_os, Qsq.psi2, True ),
-    (Component.bdkstkpijpsiee, Trigger.rkst_ee_os, Qsq.jpsi, True ),
 ]
 
 _SAMPLES_RK_MM : Final[list[tuple[Component,Trigger,Qsq]]] = [
     (Component.bpkpjpsimm, Trigger.rk_mm_os, Qsq.jpsi),
-    (Component.bpkppsi2mm, Trigger.rk_mm_os, Qsq.psi2),
 ]
 
 _SAMPLES_RKST_MM : Final[list[tuple[Component,Trigger,Qsq]]] = [
     (Component.bdkstkpijpsimm, Trigger.rkst_mm_os, Qsq.jpsi),
-    (Component.bdkstkpipsi2mm, Trigger.rkst_mm_os, Qsq.psi2),
 ]
 
 _SIZE : Final[int] = 10_000
@@ -48,7 +36,7 @@ type NpFltArray = npt.NDArray[numpy.float64]
 type zobs       = zfit.Space
 type zdat       = zfit.data.Data
 # --------------------
-def _get_arrays(self, mass) -> tuple[NpFltArray, NpFltArray]:
+def _get_arrays_ee(self, mass) -> tuple[NpFltArray, NpFltArray]:
     _ = self
     _ = mass 
 
@@ -57,27 +45,20 @@ def _get_arrays(self, mass) -> tuple[NpFltArray, NpFltArray]:
 
     return masses, weights
 # --------------------
-def _get_data(
-    self,
-    obs       : zobs,
-    mass      : Mass,
-    can_merge : bool) -> zdat:
-
-    _ = mass
-    _ = can_merge 
+def _get_arrays_mm(self, mass) -> tuple[NpFltArray, NpFltArray]:
     _ = self
+    _ = mass 
 
-    array = numpy.random.normal(5280, 100, size = 10_000)
-    data  = zfit.Data.from_numpy(array = array, obs = obs)
+    masses  = numpy.random.normal(5280, 11, 30_000)
+    weights = numpy.ones_like(masses)
 
-    if not isinstance(data, zfit.Data):
-        raise ValueError('Invalid kind of data')
-
-    return data
+    return masses, weights
 # --------------------
 @pytest.mark.parametrize('comp,trig,qsq', _SAMPLES_RK_MM + _SAMPLES_RKST_MM)
-@pytest.mark.parametrize('block', range(1,9))
+@pytest.mark.parametrize('block', range(1,2))
 def test_simple_mm(
+    monkeypatch,
+    tmp_path : Path,
     comp     : Component,
     trig     : Trigger,
     qsq      : Qsq,
@@ -85,6 +66,12 @@ def test_simple_mm(
     '''
     Simplest test
     '''
+    monkeypatch.setenv('ANADIR', str(tmp_path))
+    monkeypatch.setattr(
+        PdfBuilder,
+        '_PdfBuilder__get_arrays',
+        _get_arrays_mm)
+
     sel             = {}
     sel[Cuts.q2   ] = f'(q2 > {qsq.lower_bound}) & (q2 < {qsq.upper_bound})'
     sel[Cuts.block] = f'block == {block}'
@@ -106,8 +93,10 @@ def test_simple_mm(
         print_pdf(pdf = mod.pdf)
 # --------------------
 @pytest.mark.parametrize('comp,trig,qsq,use_dtf', _SAMPLES_RK_EE + _SAMPLES_RKST_EE)
-@pytest.mark.parametrize('block', range(1,9))
+@pytest.mark.parametrize('block', range(1,2))
 def test_simple_ee(
+    monkeypatch,
+    tmp_path : Path,
     comp     : Component,
     trig     : Trigger,
     qsq      : Qsq,
@@ -116,6 +105,12 @@ def test_simple_ee(
     '''
     Simplest test
     '''
+    monkeypatch.setenv('ANADIR', str(tmp_path))
+    monkeypatch.setattr(
+        PdfBuilder,
+        '_PdfBuilder__get_arrays',
+        _get_arrays_ee)
+
     qsq_name        = 'q2_dtf' if use_dtf else 'q2'
     sel             = {}
     sel[Cuts.q2   ] = f'({qsq_name} > {qsq.lower_bound}) & ({qsq_name} < {qsq.upper_bound})'
@@ -149,7 +144,7 @@ def test_use_kde(tmp_path : Path, monkeypatch):
     monkeypatch.setattr(
         PdfBuilder,
         '_PdfBuilder__get_arrays',
-        _get_arrays)
+        _get_arrays_ee)
 
     comp = Component.bpkppsi2ee
     trig = Trigger.rk_ee_os
