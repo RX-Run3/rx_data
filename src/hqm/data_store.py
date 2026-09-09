@@ -1,10 +1,12 @@
 '''
 Module with DataStore class
 '''
+import copy
 import numpy
 import numpy.typing as npt
 import pandas       as pnd
 
+from typing         import Final
 from pathlib        import Path
 from contextlib     import contextmanager
 from contextvars    import ContextVar
@@ -17,6 +19,7 @@ from .database_conf import DatabaseConf
 log           = LogStore.add_logger('hqm:data_store')
 type NpFltArr = npt.NDArray[numpy.float64]
 
+_BLOCK_CUT    : Final[str]                       = 'block'
 _SELECTION    : ContextVar[dict[str,str] | None] = ContextVar('_SELECTION'   , default = None) 
 _SMEAR_MASSES : ContextVar[bool                ] = ContextVar('_SMEAR_MASSES', default = True) 
 # ----------------------------------
@@ -27,16 +30,19 @@ class DataStore:
     # ----------------------------------
     def __init__(
         self, 
-        trig  : Trigger,
-        comp  : Component):
+        trig        : Trigger,
+        comp        : Component,
+        min_entries : int = 0):
         '''
         Parameters
         ----------------
-        trig: Hlt2 trigger
-        comp: Sample used to read data from
+        trig       : Hlt2 trigger
+        comp       : Sample used to read data from
+        min_entries: If dataset has fewer than this number of entries, `_BLOCK_CUT` will be removed
         '''
-        self._trig= trig
-        self._comp= comp
+        self._trig        = trig
+        self._comp        = comp
+        self._min_entries = min_entries
 
         self.__cfg= DatabaseConf.load()
 
@@ -49,7 +55,11 @@ class DataStore:
         else:
             log.info(f'Not smearing masses for: {self._comp}')
 
-        self.__df = self._select_data(df = df)
+        sel = _SELECTION.get()
+        if sel is None:
+            raise ValueError('No selection used')
+
+        self.__df = self._select_data(df = df, sel = sel)
     # ----------------------------------
     @property
     def columns(self) -> list[str]:
@@ -86,10 +96,12 @@ class DataStore:
 
         return weights
     # ----------------------------------
-    def _select_data(self, df : pnd.DataFrame) -> pnd.DataFrame:
-        sel = _SELECTION.get()
-        if sel is None:
-            raise ValueError('No selection used')
+    def _select_data(
+        self, 
+        df  : pnd.DataFrame, 
+        sel : dict[str,str]) -> pnd.DataFrame:
+
+        df_org = df
 
         log.debug('Applying selection')
         cutflow : dict[str,int] = dict()
@@ -102,7 +114,23 @@ class DataStore:
 
             cutflow[expr] = len(df)
 
-        self.__full_sel.update(cutflow)
+        if len(df) >= self._min_entries:
+            self.__full_sel.update(cutflow)
+            return df
+
+        if _BLOCK_CUT not in sel:
+            raise ValueError(f'Dataset has too few entries, ({len(df)})')
+
+        log.warning(f'Found too few entries ({len(df)} < {self._min_entries}), merging blocks')
+
+        new_sel = copy.deepcopy(sel)
+        del new_sel[_BLOCK_CUT]
+
+        df = self._select_data(
+            sel= new_sel,
+            df = df_org)
+
+        log.info(f'Merged dataset has {len(df)} entries')
 
         return df
     # ----------------------------------
@@ -156,16 +184,22 @@ class DataStore:
 
         return _context()
     # ----------------------------------
-    def save_selection(self, path : Path) -> None:
+    def save_selection(self, path : Path) -> dict[str,str]:
         '''
         Parameters
         ----------------
         path: Path to JSON file where output will go
+
+        Returns
+        ----------------
+        Selection dictionary
         '''
         sut.dump_json(
             exists_ok = True,
             path      = path,
             data      = self.__full_sel)
+
+        return self.__full_sel
     # ----------------------------------
     def __smear_masses(self, df : pnd.DataFrame) -> pnd.DataFrame:
         '''
