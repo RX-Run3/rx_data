@@ -358,23 +358,23 @@ class PdfBuilder:
     def get_model(
         self, 
         update : bool,
-        obs    : zobs,
+        obs_ext: zobs,
         use_kde: Literal[False] = ...) -> FittedModel:...
     @overload
     def get_model(
         self, 
         update : bool,
-        obs    : zobs,
+        obs_ext: zobs,
         use_kde: Literal[True]) -> NonParametricModel:...
     def get_model(
         self, 
         update : bool,
-        obs    : zobs,
+        obs_ext: zobs,
         use_kde: bool = False) -> FittedModel | NonParametricModel:
         '''
         Parameters
         ---------------
-        obs    : Observable that this model's PDF will use
+        obs_ext: Observable that this model's PDF will use
         update : If true will remake fit even if JSON file exists
         use_kde: If true won't try to fit to parametric model, default False
 
@@ -385,7 +385,7 @@ class PdfBuilder:
         if self.model_path.exists() and not update:
             log.info(f'Loading model at: {self.model_path}')
             try:
-                return self.__load_model(use_kde, obs)
+                return self.__load_model(use_kde, obs_ext)
             except Exception:
                 log.warning(f'Removing and remaking broken model at {self.model_path}')
                 self.model_path.unlink()
@@ -412,5 +412,5 @@ class PdfBuilder:
 
         fmod.to_json(path = self.model_path)
 
-        return self.__load_model(use_kde, obs)
+        return self.__load_model(use_kde, obs_ext)
 # ----------------------------
