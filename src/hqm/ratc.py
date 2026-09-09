@@ -394,8 +394,7 @@ class CCbarRatioCalculator:
 
         obj          = TransferFunctionMaker(
             cfg      = cfg,
-            project  = self._project,
-            block    = self._block)
+            project  = self._project)
 
         return obj.get_trf(update = False)
     #-----------------------------
