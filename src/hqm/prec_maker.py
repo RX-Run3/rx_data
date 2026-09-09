@@ -113,7 +113,7 @@ class PrecMaker:
         '''
         arr_mass = self.__get_masses(out_dir = out_dir)
         pdf      = zfit.pdf.KDE1DimISJ(
-            obs  = self.__cfg.observable.kde_obs,
+            obs  = self.__cfg.observable.wide_obs,
             data = arr_mass)
 
         out_path = out_dir / 'fit.png'
@@ -175,7 +175,7 @@ class PrecMaker:
         trf    = self.__get_trfc()
 
         pdf_ee = zfit.pdf.FFTConvPDFV1(
-            obs   = self.__cfg.observable.fit_obs,
+            obs   = self.__cfg.observable.mass_obs,
             func  = pdf_mm,
             kernel= trf.pdf,
             name  = name,
