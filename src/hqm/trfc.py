@@ -23,6 +23,7 @@ _SOURCE_CHANNEL : Final[Channel  ] = Channel.mm
 _TARGET_CHANNEL : Final[Channel  ] = Channel.ee
 _RAW_QSQ        : Final[str      ] = 'q2'         # Used to switch between q2 cuts for rare
 _DTF_QSQ        : Final[str      ] = 'q2_dtf'     # and resonant target shapes
+_MIN_ENTRIES    : Final[int      ] = 100          # Target dataset has to have at least this number of entries
 
 type zpdf = zfit.pdf.BasePDF
 type zobs = zfit.Space
@@ -102,11 +103,11 @@ class TransferFunctionMaker:
         # tail shaping distortion
         return _DTF_QSQ
     #---------------------------------
-    def __get_target_masses(self, path : Path) -> numpy.ndarray:
+    def __get_target_masses(self, out_dir : Path) -> numpy.ndarray:
         '''
         Parameters
         ----------------
-        path: Path to directory with outputs
+        out_dir: Path to directory with outputs
 
         Returns
         ----------------
@@ -119,23 +120,26 @@ class TransferFunctionMaker:
         lo  = self._cfg.target.lower_bound
         hi  = self._cfg.target.upper_bound
 
-        with DataStore.selection(sel = {Cuts.q2 : f'({self._qsq_var} > {lo}) & ({self._qsq_var} < {hi})'}, update = True):
-            obj      = DataStore(
-                trig = trigger,
-                comp = self._cfg.target_component)
+        sel = {'q2' : f'({self._qsq_var} > {lo}) & ({self._qsq_var} < {hi})'}
+        with DataStore.selection(sel = sel, update = True):
+            obj = DataStore(
+                trig        = trigger,
+                comp        = self._cfg.target_component,
+                min_entries = _MIN_ENTRIES)
 
         mass      = Mass.raw_from_project(project = trigger.project)
         masses, _ = obj.get_array(mass = mass)
 
-        obj.save_selection(path = path / 'target_selection.json')
+        obj.save_selection(path = out_dir / 'target_selection.json')
 
         return masses
     #---------------------------------
-    def __get_source_pdf(self, obs : zobs) -> zpdf:
+    def __get_source_pdf(self, obs : zobs, out_dir : Path) -> zpdf:
         '''
         Parameters
         -----------------------
-        obs : Observable to use with this PDF
+        obs    : Observable to use with this PDF
+        out_dir: Directory where outputs will be saved
 
         Returns
         -----------------------
@@ -158,7 +162,18 @@ class TransferFunctionMaker:
             qsq     = self._cfg.source)
         fmod = obj.get_model(obs = obs, update = False)
 
-        return fmod.fixed_pdf
+        pdf = fmod.fixed_pdf
+
+        lower, upper = self._cfg.observable.mass_range
+        xs  = numpy.linspace(lower, upper, self._cfg.fft_npt)
+        ys  = pdf.pdf(xs)
+        plt.scatter(xs, ys, s = 1)
+        path = out_dir / 'source_pdf.png'
+        log.info(f'Saving: {path}')
+        plt.savefig(path)
+        plt.close()
+
+        return pdf
     #---------------------------------
     def __get_fit_result(self, pdf_trf : zpdf, out_dir : Path) -> FitResult:
         '''
@@ -172,8 +187,8 @@ class TransferFunctionMaker:
         FitResult with transfer function parameters
         '''
         obs     = self._cfg.observable.fit_obs
-        arr_tgt = self.__get_target_masses(path = out_dir)
-        pdf_src = self.__get_source_pdf(obs = obs)
+        arr_tgt = self.__get_target_masses(out_dir = out_dir)
+        pdf_src = self.__get_source_pdf(obs = obs, out_dir = out_dir)
 
         pdf_tgt    = zfit.pdf.FFTConvPDFV1(
             obs    = obs,
