@@ -23,7 +23,7 @@ _SOURCE_CHANNEL : Final[Channel  ] = Channel.mm
 _TARGET_CHANNEL : Final[Channel  ] = Channel.ee
 _RAW_QSQ        : Final[str      ] = 'q2'         # Used to switch between q2 cuts for rare
 _DTF_QSQ        : Final[str      ] = 'q2_dtf'     # and resonant target shapes
-_MIN_ENTRIES    : Final[int      ] = 100          # Target dataset has to have at least this number of entries
+_MIN_ENTRIES    : Final[int      ] = 200          # Target dataset has to have at least this number of entries
 
 type zpdf = zfit.pdf.BasePDF
 type zobs = zfit.Space
@@ -186,12 +186,14 @@ class TransferFunctionMaker:
         ------------------------
         FitResult with transfer function parameters
         '''
-        obs     = self._cfg.observable.fit_obs
+        wide_obs= self._cfg.observable.wide_obs
+        mass_obs= self._cfg.observable.mass_obs
+
         arr_tgt = self.__get_target_masses(out_dir = out_dir)
-        pdf_src = self.__get_source_pdf(obs = obs, out_dir = out_dir)
+        pdf_src = self.__get_source_pdf(obs = wide_obs, out_dir = out_dir)
 
         pdf_tgt    = zfit.pdf.FFTConvPDFV1(
-            obs    = obs,
+            obs    = mass_obs,
             name   = 'target_pdf',
             func   = pdf_src,
             kernel = pdf_trf,

@@ -27,19 +27,21 @@ def set_log():
     LogStore.set_level('rx_scripts:version_management', 30)
     LogStore.set_level('tools:calc_utility'           , 30)
 #--------------------------------------
-def _get_target_masses_low(self, path : Path) -> numpy.ndarray:
+def _get_target_masses_low(self, out_dir : Path) -> numpy.ndarray:
     _ = self
-    _ = path 
+    _ = out_dir
     return numpy.random.normal(loc = 4750, scale = 80, size = 2000)
 #--------------------------------------
-def _get_target_masses_high(self, path : Path) -> numpy.ndarray:
+def _get_target_masses_high(self, out_dir : Path) -> numpy.ndarray:
     _ = self
-    _ = path 
+    _ = out_dir
     return numpy.random.normal(loc = 5750, scale = 80, size = 2000)
 #--------------------------------------
-def _get_source_pdf(self, obs : zobs) -> zpdf:
+def _get_source_pdf(self, obs : zobs, out_dir : Path) -> zpdf:
     _  = self
-    _  = obs 
+    _  = obs
+    _  = out_dir
+
     mu = zfit.Parameter('mu', 5280, 5200, 5300)
     sg = zfit.Parameter('sg',   20,   10,   30)
 
