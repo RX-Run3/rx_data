@@ -1,21 +1,28 @@
 #!/usr/bin/env nu
 
 mkdir logs
-let log_file = $"logs/trfc_run_(date now | format date '%Y%m%d_%H%M%S').log"
+let log_file     = $"logs/trfc_run_(date now | format date '%Y%m%d_%H%M%S').log"
+let blocks       = seq 1 8
+let projects     = ["rk", "rkst"]
+let combinations = [
+    {s: jpsi, t: jpsi},
+    {s: jpsi, t: psi2},
+    {s: psi2, t: jpsi},
+    {s: psi2, t: psi2},
+    {s: psi2, t: high}
+]
 
-def run-fit [] {
-    for block in 1..8 {
-        let b_arg = $"block-($block) mva_cmb-7 mva_prc-7"
-        for project in [rk, rkst] {
-            hqm make-trfc -b $b_arg -p $project -s jpsi -t jpsi
-            hqm make-trfc -b $b_arg -p $project -s jpsi -t psi2
-            hqm make-trfc -b $b_arg -p $project -s psi2 -t jpsi
-            hqm make-trfc -b $b_arg -p $project -s psi2 -t psi2
-            hqm make-trfc -b $b_arg -p $project -s psi2 -t high
-            hqm make-trfc -b $b_arg -p $project -s jpsi -t high
+let total = ($blocks | length) * ($projects | length) * ($combinations | length)
+mut index = 0
+
+for block in $blocks {
+    let b_arg = $"block-($block) mva_cmb-7 mva_prc-7"
+    for project in $projects {
+        for c in $combinations {
+            $index = $index + 1
+            print $"[Progress: ($index)/($total)] block: ($block), project: ($project), -s ($c.s) -t ($c.t)"
+            hqm make-trfc -b $b_arg -p $project -s $c.s -t $c.t out+err>> $log_file
         }
     }
 }
-
-run-fit out+err> $log_file
 
