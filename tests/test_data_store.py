@@ -217,3 +217,36 @@ def test_binning_selection(monkeypatch, tmp_path : Path):
     assert len(arr_raw) < SIZE
     assert len(arr_wgt) < SIZE
 #--------------------------------------
+def test_merge(monkeypatch, tmp_path : Path):
+    '''
+    Test with database data and selection from zero
+    '''
+    monkeypatch.setenv('ANADIR', str(tmp_path))
+    min_entries = 100
+
+    comp = Component.bpkpjpsiee
+    trig = Trigger.rk_ee_os
+    qsq  = Qsq.high
+
+    df   = _load_df_ee(self = None)
+    cfg  = DatabaseConf.load()
+    path = cfg.get_path(comp = comp, trig = trig)
+    df.to_parquet(path = path)
+
+    binning         = BinningConf.load()
+    bins            = binning.from_str('block-1 ll_angle-2')
+    sel             = bins.selection
+    sel[Cuts.q2]    = 'q2_dtf > 10e6'
+    with DataStore.selection(sel = sel, update = False):
+        obj = DataStore(
+            min_entries = min_entries,
+            trig        = trig, 
+            comp        = comp)
+
+    arr_raw, arr_wgt = obj.get_array(mass = Mass.bp_bcor)
+    selection_path   = tmp_path / 'selection.json'
+    sel = obj.save_selection(path = selection_path)
+
+    assert 'block' not in sel
+    assert len(arr_raw) >= min_entries 
+#--------------------------------------
