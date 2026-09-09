@@ -277,11 +277,9 @@ class TransferFunctionMaker:
         --------------
         zfit PDF used as transfer function
         '''
-        obs = self._cfg.observable.trn_obs
-
         fac = ModelFactory(
             preffix  = self._cfg.name,
-            obs      = obs,
+            obs      = self._cfg.trn_obs,
             l_pdf    = self._cfg.models,
             l_shared = _SHARED,
             l_float  = _FLOAT,

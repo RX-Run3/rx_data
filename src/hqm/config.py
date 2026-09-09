@@ -18,6 +18,7 @@ from .binning    import BinConf, BinningConf
 log       = LogStore.add_logger('hqm:config')
 type zpar = zfit.Parameter
 type zpdf = zfit.pdf.BasePDF
+type zobs = zfit.Space
 
 _LOWER_ALL     : Final[float]    = 3000
 _UPPER_ALL     : Final[float]    = 7500
@@ -182,7 +183,25 @@ class ObsConf(BaseModel, frozen = True):
     needed to use all information available in dataset and avoid edge effects
     '''
     mass_range : tuple[float,float]
-    tran_range : tuple[float,float]
+    tran_range : dict[Qsq,dict[Qsq,tuple[float,float]]] 
+    #---------------------------------
+    @model_validator(mode = 'after')
+    def _validate(self) -> Self:
+        for src, val in self.tran_range.items():
+            for tgt, (min_trn, max_trn) in val.items():
+                self._validate_range(min_trn, max_trn)
+
+        return self
+    #---------------------------------
+    def _validate_range(self, min_trn : float, max_trn : float) -> None: 
+        min_fit, max_fit = self.mass_range
+        fit_rng = max_fit - min_fit
+        trn_rng = max_trn - min_trn
+
+        if fit_rng <= trn_rng:
+            log.error(self.mass_range)
+            log.error(self.tran_range)
+            raise ValueError('Fit range is shorter than transfer function range')
     #---------------------------------
     @property
     def kde_obs(self) -> zfit.Space:
@@ -197,13 +216,6 @@ class ObsConf(BaseModel, frozen = True):
         Observable that will be fitted for target datasets
         '''
         return zfit.Space(self.name, limits = self.mass_range)
-    #---------------------------------
-    @property
-    def trn_obs(self) -> zfit.Space:
-        '''
-        Observable for transfer function
-        '''
-        return zfit.Space(self.name, limits = self.tran_range)
 # -------------------------------------------------------------------
 class _Conf(BaseModel, frozen = True):
     '''
@@ -276,6 +288,16 @@ class TransferFunctionMakerConf(_Conf, frozen = True):
     target    : Qsq
     models    : list[Model]
     components: tuple[Component, Component]
+    # -----------------------------------------------
+    @cached_property
+    def trn_obs(self) -> zobs:
+        '''
+        Observable used to build transfer function
+        '''
+        limits = self.observable.tran_range[self.source][self.target]
+        name   = self.observable.name
+
+        return zfit.Space(name, limits = limits)
     # -----------------------------------------------
     @cached_property
     def source_component(self) -> Component:

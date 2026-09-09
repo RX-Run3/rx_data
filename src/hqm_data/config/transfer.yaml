@@ -3,8 +3,22 @@ fft_npt   : 1000
 observable:
   name       : B_Mass
   kdem_range : [ 3500, 9000]
-  mass_range : [ 4600, 6500]
-  tran_range : [-1000, 2500] # This range has to be narrower than the `mass_range`
+  mass_range : [ 4600, 6700]
+  tran_range : 
+    jpsi :
+      jpsi :
+        - [-1000, 1000]
+      psi2 :
+        - [    0, 2000]
+      high :
+        - [  500, 2500]
+    psi2 :
+      jpsi :
+        - [-2000,    0]
+      psi2 :
+        - [-1200,  800]
+      high :
+        - [    0, 2000]
 fits:
   run_gof   : false
   do_errors : true
