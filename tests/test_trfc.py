@@ -71,7 +71,7 @@ def test_psi2_high_brem(
         binning = 'block-1 mva_cmb-3 mva_prc-2',
         project = Project.rk,
         source  = Qsq.psi2,
-        target  = Qsq.high)
+        target  = Qsq.jpsi)
 
     obj         = TransferFunctionMaker(
         cfg     = cfg,
