@@ -29,9 +29,9 @@ class TransferFunctionTest:
 #--------------------------------------
 def _get_array(self, out_dir, sel, trig) -> NpFltArr:
     _ = self
-    _ = out_dir 
-    _ = sel 
-    _ = trig 
+    _ = out_dir
+    _ = sel
+    _ = trig
 
     return numpy.random.uniform(3500, 4800, size = 10_000)
 #--------------------------------------
@@ -57,7 +57,7 @@ def test_resonant(
     _use_fake_masses,
     monkeypatch,
     tmp_path: Path,
-    source  : Qsq, 
+    source  : Qsq,
     target  : Qsq):
     '''
     Simplest test
@@ -65,7 +65,7 @@ def test_resonant(
     monkeypatch.setenv('ANADIR', str(tmp_path))
 
     _     = _use_fake_masses
-    proj  = Project.rk 
+    proj  = Project.rk
     blk   = 5
     block = Block(value = blk)
 
@@ -80,7 +80,7 @@ def test_resonant(
         stack.enter_context(ctx1)
 
         obj = PrecMaker(
-            cfg     = cfg, 
+            cfg     = cfg,
             block   = block,
             project = proj)
         obj.get_pdf(update = True)
