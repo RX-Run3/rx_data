@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from pathlib        import Path
 from typing         import Final
 from pydantic       import BaseModel
-from rx_common      import Block, Channel, Cuts, Mass, Project, Trigger
+from rx_common      import Channel, Cuts, Mass, Project, Trigger
 from dmu            import LogStore
 from dmu.generic    import Serializable
 from dmu.stats      import FitResult, Fitter, Model, ModelFactory
@@ -80,18 +80,15 @@ class TransferFunctionMaker:
     def __init__(
         self,
         cfg    : TransferFunctionMakerConf,
-        project: Project,
-        block  : Block):
+        project: Project):
         '''
         Parameters
         ----------------
         cfg    : Configuration controling the building of TransferFunction
         project: E.g. rk or rkst
-        block  : E.g. 1 to 8
         '''
         self._cfg      = cfg
         self._project  = project
-        self._block    = block
     #---------------------------------
     @property
     def _qsq_var(self) -> str:
@@ -155,10 +152,9 @@ class TransferFunctionMaker:
             channel = _SOURCE_CHANNEL,
             project = self._project)
 
-        iblock = self._block.to_int()
-        obj    = PdfBuilder(
-            name    = f'block_{iblock:03d}',
+        obj         = PdfBuilder(
             trigger = trig,
+            name    = self._cfg.binning.label,
             comp    = self._cfg.source_component,
             qsq     = self._cfg.source)
         fmod = obj.get_model(obs = obs, update = False)

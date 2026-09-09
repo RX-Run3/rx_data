@@ -68,15 +68,14 @@ def test_psi2_high_brem(
     monkeypatch.setenv('ANADIR', str(tmp_path))
 
     cfg         = TransferFunctionMakerConf.load(
-        binning = 'block-1',
+        binning = 'block-1 mva_cmb-3 mva_prc-2',
         project = Project.rk,
         source  = Qsq.psi2,
         target  = Qsq.high)
 
     obj         = TransferFunctionMaker(
         cfg     = cfg,
-        project = Project.rk,
-        block   = Block(value = 1) )
+        project = Project.rk)
 
     trf = obj.get_trf(update = True)
 

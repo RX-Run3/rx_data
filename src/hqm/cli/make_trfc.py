@@ -12,21 +12,19 @@ update_opt= typer.Option(False, '-u', help = 'If used, will remake function even
 proj_opt  = typer.Option(...  , '-p', help = 'Project, e.g. rk')
 src_opt   = typer.Option(...  , '-s', help = 'Source q2-bin')
 tgt_opt   = typer.Option(...  , '-t', help = 'Target q2-bin')
-block_opt = typer.Option(...  , '-b', help = 'E.g. 1')
+bin_opt   = typer.Option(...  , '-b', help = 'Binning, e.g. "block-1 B_PT-3"')
 # ----------------------------------------------------------------------
 def make_trfc(
     update  : bool    = update_opt,
-    block   : int     = block_opt,
+    binning : str     = bin_opt,
     project : Project = proj_opt,
     source  : Qsq     = src_opt,
     target  : Qsq     = tgt_opt):
     '''
     Make transfer function
     '''
-    blk = Block(value = block)
-
     cfg         = TransferFunctionMakerConf.load(
-        binning = f'block-{block}',
+        binning = binning, 
         project = project,
         source  = source,
         target  = target)
