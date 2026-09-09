@@ -2,23 +2,23 @@ bandwidth : 3
 fft_npt   : 1000
 observable:
   name       : B_Mass
-  kdem_range : [ 3500, 9000]
+  wide_range : [ 3000, 7000]
   mass_range : [ 4600, 6700]
   tran_range : 
     jpsi :
       jpsi :
         [   0, -1000, 1000]
       psi2 :
-        [1000,     0, 2000]
+        [ 500,  -500, 1500]
       high :
-        [1000,   300, 2300]
+        [ 500,     0, 2000]
     psi2 :
       jpsi :
         [-500, -2000,    0]
       psi2 :
         [   0, -1200,  800]
       high :
-        [ 500,     0, 2000]
+        [ 500,  -500, 1500]
 fits:
   run_gof   : false
   do_errors : true
@@ -33,12 +33,12 @@ qsq:
       plot_range : [4600, 6000]
   - source     : jpsi
     target     : psi2
-    models     : [suj]
+    models     : [cbr]
     plots      :
       plot_range : [5200, 6200]
   - source     : jpsi
     target     : high
-    models     : [suj]
+    models     : [cbr]
     plots      :
       plot_range : [5500, 7500]
   - source     : psi2
@@ -53,7 +53,7 @@ qsq:
       plot_range : [4600, 6000]
   - source     : psi2
     target     : high
-    models     : [suj]
+    models     : [cbr]
     plots      :
       plot_range : [5000, 6500]
 models:
