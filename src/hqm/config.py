@@ -177,7 +177,7 @@ class ObsConf(BaseModel, frozen = True):
     transfer function calculation
     '''
     name       : str
-    kdem_range : tuple[float,float]
+    wide_range : tuple[float,float]
     '''
     Range used to build KDE PDFs, wider than fit/normalization observable
     needed to use all information available in dataset and avoid edge effects
@@ -194,28 +194,31 @@ class ObsConf(BaseModel, frozen = True):
         return self
     #---------------------------------
     def _validate_range(self, min_trn : float, max_trn : float) -> None: 
-        min_fit, max_fit = self.mass_range
+        min_fit, max_fit = self.wide_range
         fit_rng = max_fit - min_fit
         trn_rng = max_trn - min_trn
 
         if fit_rng <= trn_rng:
-            log.error(self.mass_range)
+            log.error(self.wide_range)
             log.error(self.tran_range)
             raise ValueError('Fit range is shorter than transfer function range')
     #---------------------------------
     @property
-    def kde_obs(self) -> zfit.Space:
+    def mass_obs(self) -> zfit.Space:
         '''
-        Observable that will be fitted for source datasets
-        '''
-        return zfit.Space(self.name, limits = self.kdem_range)
-    #---------------------------------
-    @property
-    def fit_obs(self) -> zfit.Space:
-        '''
-        Observable that will be fitted for target datasets
+        Observable meant to agree with mass range in electron channel
         '''
         return zfit.Space(self.name, limits = self.mass_range)
+    #---------------------------------
+    @property
+    def wide_obs(self) -> zfit.Space:
+        '''
+        Observable using wide mass range used for:
+
+        - Fits to KDEs to avoid edge effects
+        - Fits to get PDFs meant to be convolved with wide transfer functions
+        '''
+        return zfit.Space(self.name, limits = self.wide_range)
 # -------------------------------------------------------------------
 class _Conf(BaseModel, frozen = True):
     '''
