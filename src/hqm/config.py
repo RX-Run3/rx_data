@@ -20,10 +20,10 @@ type zpar = zfit.Parameter
 type zpdf = zfit.pdf.BasePDF
 type zobs = zfit.Space
 
-_LOWER_ALL     : Final[float]    = 3000
-_UPPER_ALL     : Final[float]    = 7500
-_NONE_VAR      : Final[str]      = 'none' # Name of variable when not binning
-_CACHED_PARAMS : dict[str, zpar] = dict()
+_SG_VALS       : Final[tuple[float,float,float]] = 80, 10, 100 # Starting value and range for width of transfer functions
+_LOWER_ALL     : Final[float]                    = 3000
+_UPPER_ALL     : Final[float]                    = 7500
+_CACHED_PARAMS : dict[str, zpar]                 = dict()
 # -------------------------------------------------------------------
 class ParamConf(RootModel[dict[str,tuple[float,float,float]]], frozen = True):
     '''
@@ -183,12 +183,12 @@ class ObsConf(BaseModel, frozen = True):
     needed to use all information available in dataset and avoid edge effects
     '''
     mass_range : tuple[float,float]
-    tran_range : dict[Qsq,dict[Qsq,tuple[float,float]]] 
+    tran_range : dict[Qsq,dict[Qsq,tuple[float, float, float]]] 
     #---------------------------------
     @model_validator(mode = 'after')
     def _validate(self) -> Self:
         for src, val in self.tran_range.items():
-            for tgt, (min_trn, max_trn) in val.items():
+            for tgt, (_, min_trn, max_trn) in val.items():
                 self._validate_range(min_trn, max_trn)
 
         return self
@@ -294,10 +294,24 @@ class TransferFunctionMakerConf(_Conf, frozen = True):
         '''
         Observable used to build transfer function
         '''
-        limits = self.observable.tran_range[self.source][self.target]
-        name   = self.observable.name
+        _, min_val, max_val = self.observable.tran_range[self.source][self.target]
+        name                = self.observable.name
 
-        return zfit.Space(name, limits = limits)
+        return zfit.Space(name, limits = (min_val, max_val))
+    # -----------------------------------------------
+    @cached_property
+    def trn_vals(self) -> dict[str,tuple[float,float,float]]:
+        '''
+        Dictionary mapping name of parameter with values:
+        initial, lower bound, upper bound
+        '''
+        src     = self.source
+        tgt     = self.target
+        mu_vals = self.observable.tran_range[src][tgt]
+
+        return {
+            'sg' : _SG_VALS,
+            'mu' : mu_vals}
     # -----------------------------------------------
     @cached_property
     def source_component(self) -> Component:
