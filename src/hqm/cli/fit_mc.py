@@ -59,7 +59,7 @@ def fit_mc(
             qsq     = qsq)
 
         mod = obj.get_model(
-            obs    = obs,
+            obs_ext= obs,
             use_kde= use_kde,
             update = update)
 # ----------------------------------------------------------------------

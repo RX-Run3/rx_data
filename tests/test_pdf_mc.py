@@ -90,7 +90,7 @@ def test_simple_mm(
             trigger = trig,
             qsq     = qsq)
 
-        mod = obj.get_model(obs = obs, update = True)
+        mod = obj.get_model(obs_ext = obs, update = True)
 
         print_pdf(pdf = mod.pdf)
 # --------------------
@@ -129,7 +129,7 @@ def test_simple_ee(
             trigger = trig,
             qsq     = qsq)
 
-        mod = obj.get_model(obs = obs, update = True)
+        mod = obj.get_model(obs_ext = obs, update = True)
         path= obj.model_path
 
         assert path.exists()
@@ -169,7 +169,7 @@ def test_use_kde(tmp_path : Path, monkeypatch):
             qsq     = qsq)
 
         mod = obj.get_model(
-            obs    = obs, 
+            obs_ext= obs, 
             use_kde= True,
             update = True)
 # --------------------

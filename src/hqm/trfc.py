@@ -160,7 +160,7 @@ class TransferFunctionMaker:
             name    = name,
             comp    = self._cfg.source_component,
             qsq     = self._cfg.source)
-        fmod = obj.get_model(obs = obs, update = False)
+        fmod = obj.get_model(obs_ext = obs, update = False)
 
         pdf = fmod.fixed_pdf
 
