@@ -184,7 +184,7 @@ class DataStore:
 
         return _context()
     # ----------------------------------
-    def save_selection(self, path : Path) -> dict[str,str]:
+    def save_selection(self, path : Path) -> dict[str,int]:
         '''
         Parameters
         ----------------
@@ -192,7 +192,7 @@ class DataStore:
 
         Returns
         ----------------
-        Selection dictionary
+        Dictionary with cut name and number of entries passed
         '''
         sut.dump_json(
             exists_ok = True,
