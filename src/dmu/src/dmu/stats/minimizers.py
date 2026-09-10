@@ -439,6 +439,10 @@ def minimize(
             log.error(f'Saved NLL in: {path}')
             raise MinimizerFailError('Minimization failed') from exc
 
+    if not obj.valid:
+        log.error(obj)
+        raise ValueError('Fit result invalid')
+
     gof = None
     if cfg.run_gof:
         gcl = GofCalculator(nll = nll)
