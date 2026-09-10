@@ -32,6 +32,7 @@ class DataStore:
         self, 
         trig        : Trigger,
         comp        : Component,
+        max_entries : int = 10_000_000,
         min_entries : int = 0):
         '''
         Parameters
@@ -39,10 +40,12 @@ class DataStore:
         trig       : Hlt2 trigger
         comp       : Sample used to read data from
         min_entries: If dataset has fewer than this number of entries, `_BLOCK_CUT` will be removed
+        max_entries: If dataset has more than this number of entries, a random subset with `max_entries` will be used
         '''
         self._trig        = trig
         self._comp        = comp
         self._min_entries = min_entries
+        self._max_entries = max_entries
 
         self.__cfg= DatabaseConf.load()
 
@@ -132,6 +135,8 @@ class DataStore:
 
         log.info(f'Merged dataset has {len(df)} entries')
 
+        df = self.__limit_entries(df = df)
+
         return df
     # ----------------------------------
     @classmethod
@@ -200,6 +205,24 @@ class DataStore:
             data      = self.__full_sel)
 
         return self.__full_sel
+    # ----------------------------------
+    def __limit_entries(self, df : pnd.DataFrame) -> pnd.DataFrame:
+        '''
+        Parameters
+        ----------------
+        df: Dataframe with data after selection
+
+        Returns
+        ----------------
+        Dataframe with at most _max_entries selected randomly
+        '''
+        nentries = len(df)
+        if nentries <= self._max_entries:
+            return df
+
+        log.warning(f'Found {nentries}, limiting to {self._max_entries}')
+
+        return df.sample(n = self._max_entries)
     # ----------------------------------
     def __smear_masses(self, df : pnd.DataFrame) -> pnd.DataFrame:
         '''
