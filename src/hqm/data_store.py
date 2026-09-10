@@ -119,7 +119,7 @@ class DataStore:
 
         if len(df) >= self._min_entries:
             self.__full_sel.update(cutflow)
-            return df
+            return self.__limit_entries(df = df)
 
         if _BLOCK_CUT not in sel:
             raise ValueError(f'Dataset has too few entries, ({len(df)})')
@@ -135,9 +135,7 @@ class DataStore:
 
         log.info(f'Merged dataset has {len(df)} entries')
 
-        df = self.__limit_entries(df = df)
-
-        return df
+        return self.__limit_entries(df = df)
     # ----------------------------------
     @classmethod
     def selection(
@@ -220,9 +218,13 @@ class DataStore:
         if nentries <= self._max_entries:
             return df
 
-        log.warning(f'Found {nentries}, limiting to {self._max_entries}')
+        log.warning(f'Found {nentries:,}, limiting to {self._max_entries:,}')
 
-        return df.sample(n = self._max_entries)
+        df = df.sample(n = self._max_entries)
+
+        self.__full_sel['limit'] = len(df)
+
+        return df
     # ----------------------------------
     def __smear_masses(self, df : pnd.DataFrame) -> pnd.DataFrame:
         '''
