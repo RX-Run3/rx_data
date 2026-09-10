@@ -302,20 +302,6 @@ class PdfBuilder:
         if not isinstance(data, zfit.Data):
             raise ValueError('Invalid data')
 
-        nentries = data.num_entries
-        models   = self.__cfg.mod_cfg.get_model(nentries = nentries)
-        if models:
-            log.info(f'Not merging, model found with {nentries} entries: {models}')
-            return data
-
-        if not can_merge:
-            raise ValueError(f'Models cannot be found for unmergeable dataset at {self.name} of size {nentries}')
-
-        log.warning(f'Low statistics found for {self.name}, merging blocks')
-        sel = {'block' : 'block == block'}
-        with DataStore.selection(sel = sel, update = True):
-            return self._get_data(obs = obs, mass = mass, can_merge = False)
-
         return data
     # ----------------------------
     def __get_arrays(self, mass : Mass) -> tuple[NpFltArr, NpFltArr]:
@@ -328,23 +314,16 @@ class PdfBuilder:
         ------------------
         Tuple with numpy arrays with masses and weights
         '''
-        obj     = DataStore(
-            comp= self.__comp,
-            trig= self.__trig)
+        obj = DataStore(
+            comp        = self.__comp,
+            trig        = self.__trig,
+            min_entries = self.__cfg.mod_cfg.min_entries,
+            max_entries = _MAX_SIZE)
 
         masses, weights = obj.get_array(mass = mass)
         obj.save_selection(path = self.__out_path / 'selection.json')
 
-        init_size = len(masses)
-        if init_size < _MAX_SIZE:
-            return masses, weights
-
-        indices   = random.sample(range(len(masses)), _MAX_SIZE)
-        fnal_size = len(indices)
-
-        log.warning(f'Limiting dataset size {init_size:,} -> {fnal_size:,}')
-
-        return masses[indices], weights[indices]
+        return masses, weights
     # ----------------------------
     def _plot_fit(
         self,
