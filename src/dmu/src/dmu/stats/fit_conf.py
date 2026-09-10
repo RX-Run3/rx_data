@@ -28,12 +28,20 @@ class PaddingConf(BaseModel, frozen = True):
         if self.lowermirror < 0.0 or self.uppermirror < 0:
             raise ValueError('Either upper/lower mirror is negative')
 
-        if self.lowermirror ==0.0 and self.uppermirror ==0:
-            return self
-
-        self.flag = True
-
         return self
+    #------------------------------
+    @model_validator(mode = 'before')
+    @classmethod
+    def check_mirror(cls, data):
+        lowermirror = data['lowermirror']
+        uppermirror = data['uppermirror']
+
+        if lowermirror == 0.0 and uppermirror == 0:
+            return data 
+
+        data['flag'] = True
+
+        return data 
     #------------------------------
     @property
     def value(self) -> dict[str,float] | bool:
