@@ -20,7 +20,7 @@ type zpar = zfit.Parameter
 type zpdf = zfit.pdf.BasePDF
 type zobs = zfit.Space
 
-_SG_VALS       : Final[tuple[float,float,float]] = 80, 10, 150 # Starting value and range for width of transfer functions
+_SG_VALS       : Final[tuple[float,float,float]] = 80, 10, 200 # Starting value and range for width of transfer functions
 _LOWER_ALL     : Final[float]                    = 3000
 _UPPER_ALL     : Final[float]                    = 7500
 _CACHED_PARAMS : dict[str, zpar]                 = dict()
