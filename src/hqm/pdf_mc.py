@@ -3,6 +3,7 @@ Module holding PdfBuilder
 '''
 import os
 import numpy
+import random
 import numpy.typing      as npt
 import matplotlib.pyplot as plt
 
@@ -21,6 +22,7 @@ from hqm.data_store import DataStore
 log=LogStore.add_logger('hqm:pdf_md')
 
 _PDF_NAME : Final[str] = 'pdf_mc'
+_MAX_SIZE : Final[int] = 150_000 # If array is larger than this, limit it to this number
 
 type NpFltArr = npt.NDArray[numpy.float64]
 type zpdf     = zfit.pdf.BasePDF
@@ -289,7 +291,7 @@ class PdfBuilder:
             return data
 
         if not can_merge:
-            raise ValueError(f'Models cannot be found for unmergeable dataset at {self.name}')
+            raise ValueError(f'Models cannot be found for unmergeable dataset at {self.name} of size {nentries}')
 
         log.warning(f'Low statistics found for {self.name}, merging blocks')
         sel = {'block' : 'block == block'}
@@ -315,7 +317,16 @@ class PdfBuilder:
         masses, weights = obj.get_array(mass = mass)
         obj.save_selection(path = self.__out_path / 'selection.json')
 
-        return masses, weights
+        init_size = len(masses)
+        if init_size < _MAX_SIZE:
+            return masses, weights
+
+        indices   = random.sample(range(len(masses)), _MAX_SIZE)
+        fnal_size = len(indices)
+
+        log.warning(f'Limiting dataset size {init_size:,} -> {fnal_size:,}')
+
+        return masses[indices], weights[indices]
     # ----------------------------
     def _plot_fit(
         self,
