@@ -211,11 +211,11 @@ dscb:
   nr:
     val : 2
     min : 0.1
-    max : 150
+    max : 200
   nl:
     val : 2
     min : 0.1
-    max : 150
+    max : 200
 voigt:
   mu:
     val : 5280
