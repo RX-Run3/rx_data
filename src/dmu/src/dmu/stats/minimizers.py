@@ -441,7 +441,8 @@ def minimize(
 
     if not obj.valid:
         log.error(obj)
-        raise ValueError('Fit result invalid')
+        path = sut.save_nll(loss = nll)
+        raise ValueError(f'Fit result invalid, likelihood saved to: {path}')
 
     gof = None
     if cfg.run_gof:
