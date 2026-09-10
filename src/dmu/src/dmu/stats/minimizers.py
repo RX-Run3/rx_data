@@ -381,14 +381,14 @@ def _calculate_errors(res : zres, cfg : FitConf, nll : Loss) -> zres:
 
             cov = res.covariance(method = method, weightcorr = weight_corr)
 
-            setattr(res, 'cov', cov)
+            setattr(res, 'cov', cov) # noqa: B010
         except ValueError as exc:
             log.error(res)
             raise ValueError(f'Failed calculating error with method: {method}') from exc
 
         if not res.valid:
             log.warning('Result invalid after error calculation')
-            log.debug(res)
+            log.warning(res)
             continue
 
         try:
