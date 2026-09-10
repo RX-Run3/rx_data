@@ -29,7 +29,7 @@ plots :
 qsq:
   - source     : jpsi
     target     : jpsi
-    models     : [cbl, cbr]
+    models     : [dscb]
     plots      :
       plot_range : [4600, 6000]
   - source     : jpsi
