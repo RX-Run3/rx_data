@@ -36,12 +36,12 @@ zmin= zfit.minimize.Minuit
 
 # Should always be these values
 _HIDDEN_TF_LINES          : Final[list[str]] = [
-        'Loaded cuDNN version',
-        'abnormal_detected_host @',
-        'Skipping loop optimization for Merge',
-        'Creating GpuSolver handles for stream',
-        'Loaded cuDNN version',
-        'All log messages before absl::InitializeLog()']
+    'Loaded cuDNN version',
+    'abnormal_detected_host @',
+    'Skipping loop optimization for Merge',
+    'Creating GpuSolver handles for stream',
+    'Loaded cuDNN version',
+    'All log messages before absl::InitializeLog()']
 
 # Configurations
 _NDOF : Final[int] = 10
