@@ -32,11 +32,29 @@ type zobs     = zfit.Space
 class StatsConf(BaseModel, frozen = True):
     stats : tuple[int,int]
     models: list[Model]
+    # ----------------------------
+    @property
+    def min_entries(self) -> int:
+        '''
+        Minimum number of entries for current config
+        '''
+        minv, _ = self.stats
+
+        return minv
 # ----------------------------
 class ModelsConf(RootModel[dict[str,StatsConf]], frozen = True):
     '''
     Class meant to configue model choice
     '''
+    # ----------------------------
+    @property
+    def min_entries(self) -> int:
+        '''
+        Smallest number of entries usable for model building
+        '''
+        entries = [ cfg.min_entries for cfg in self.root.values() ]
+
+        return min(entries)
     # ----------------------------
     def get_model(self, nentries : int) -> list[Model] | None:
         '''
