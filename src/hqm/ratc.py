@@ -295,7 +295,7 @@ class CCbarRatioCalculator:
             trigger = trigger,
             qsq     = qsq)
 
-        mod = obj.get_model(obs = obs, update = False)
+        mod = obj.get_model(obs_ext = obs, update = False)
         pdf = mod.get_pdf(name = f'{comp}_{qsq}')
 
         for par in pdf.get_params():
