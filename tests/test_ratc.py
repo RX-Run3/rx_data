@@ -155,12 +155,12 @@ def test_unbinned(monkeypatch, tmp_path : Path):
     '''
     monkeypatch.setenv('ANADIR', str(tmp_path))
 
-    cfg   = CCbarRatioCalculatorConf.load(binning = 'block-1')
-    block = Block(value = 1)
+    binning= 'block-1 mva_cmb-7 mva_prc-7'
+    cfg    = CCbarRatioCalculatorConf.load(binning = 'block-1')
 
     cal         = CCbarRatioCalculator(
         cfg     = cfg,
-        block   = block,
+        binning = binning,
         ntoys   = 50_000,
         project = Project.rk)
 
