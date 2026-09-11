@@ -192,8 +192,8 @@ class PrecMaker:
 
         out_path = out_dir / 'pdf.png'
         log.info(f'Saving to: {out_path}')
-        plt.scatter(xs, ys_mm, s=1, label = 'Muon')
-        plt.scatter(xs, ys_ee, s=1, label = 'Electron')
+        plt.plot(xs, ys_mm, label = 'Muon')
+        plt.plot(xs, ys_ee, label = 'Electron')
         plt.title(f'{self.__cfg.source.latex} to {self.__cfg.target.latex}')
         plt.legend()
         plt.grid()
