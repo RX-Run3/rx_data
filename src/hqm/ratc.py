@@ -24,8 +24,13 @@ log=LogStore.add_logger('hqm:ratc')
 type Loss = zfit.loss.ExtendedUnbinnedNLL
 type zpdf = zfit.pdf.BasePDF
 
-_SOURCE_CHANNEL : Final[Channel] = Channel.mm # Channel used to get original part reco distribution
-_TARGET_CHANNEL : Final[Channel] = Channel.ee # Channel where ratio will be extracted
+_MODELS         : Final[dict[str,str]] = {
+    'q2'     : 'kde',        # For standard q2 cut, use kde fits
+    'q2_dtf' : 'parametric'} # For dtf-q2 cut, use parametric fits, due to no shaping of tails
+
+_QSQ_NAME       : Final[str          ] = 'q2'       # Name of q2 variable that cut is applied on to build signal regions in data
+_SOURCE_CHANNEL : Final[Channel      ] = Channel.mm # Channel used to get original part reco distribution
+_TARGET_CHANNEL : Final[Channel      ] = Channel.ee # Channel where ratio will be extracted
 
 _LEGS : Final[dict[str,str]] = {
     'jpsi_jpsi'                    : r'$B \to J/\psi(\to e^+e^-) H_s + X$',
@@ -147,8 +152,8 @@ class CCbarRatioCalculator:
 
         trigger = Trigger.get_main_trigger(project = self._project, channel = _TARGET_CHANNEL)
         mass    = Mass.raw_from_project(project = self._project)
+        qsq_cut = f'({_QSQ_NAME} > {qsq.lower_bound}) & ({_QSQ_NAME} < {qsq.upper_bound})'
 
-        qsq_cut = f'(q2_dtf > {qsq.lower_bound}) & (q2_dtf < {qsq.upper_bound})'
         with DataStore.selection(sel = {Cuts.q2 : qsq_cut}, update = True):
             ds      = DataStore(trig=trigger, comp=Component.data_24)
             array, _= ds.get_array(mass = mass)
