@@ -9,25 +9,23 @@ from hqm.prec_maker import PrecMaker
 from hqm.data_store import DataStore
 from hqm.config     import TransferFunctionMakerConf
 
-update_opt= typer.Option(False, '-u', help = 'If used, will remake function even if already exists')
-proj_opt  = typer.Option(...  , '-p', help = 'Project, e.g. rk')
-src_opt   = typer.Option(...  , '-s', help = 'Source q2-bin')
-tgt_opt   = typer.Option(...  , '-t', help = 'Target q2-bin')
-block_opt = typer.Option(...  , '-b', help = 'E.g. 1')
+update_opt  = typer.Option(False, '-u', help = 'If used, will remake function even if already exists')
+proj_opt    = typer.Option(...  , '-p', help = 'Project, e.g. rk')
+src_opt     = typer.Option(...  , '-s', help = 'Source q2-bin')
+tgt_opt     = typer.Option(...  , '-t', help = 'Target q2-bin')
+binning_opt = typer.Option(...  , '-b', help = 'String defining binning e.g. "block-1 mva_cmb-7 mva_prc-7"')
 # ----------------------------------------------------------------------
 def make_prec(
     update  : bool    = update_opt,
     project : Project = proj_opt,
     source  : Qsq     = src_opt,
     target  : Qsq     = tgt_opt,
-    blk     : int     = block_opt):
+    binning : str     = binning_opt):
     '''
     Make part reco PDF through transfer function and muon data 
     '''
-    block = Block(value = blk)
-
     cfg = TransferFunctionMakerConf.load(
-        binning  = f'block-{blk}',
+        binning  = binning, 
         project  = project,
         source   = source,
         target   = target)
@@ -38,7 +36,7 @@ def make_prec(
 
         obj = PrecMaker(
             cfg     = cfg, 
-            block   = block,
+            binning = binning,
             project = project)
         obj.get_pdf(update = update)
 # ----------------------------------------------------------------------
