@@ -292,16 +292,23 @@ class CCbarRatioCalculator:
         '''
         trigger = Trigger.get_main_trigger(project = self._project, channel = _TARGET_CHANNEL)
         obs     = self._cfg.observable.mass_obs
+        model   = _MODELS[_QSQ_NAME] 
 
-        name= f'block_{self._block.to_int():03d}'
-        obj = PdfBuilder(
-            name    = name,
-            comp    = comp,
-            trigger = trigger,
-            qsq     = qsq)
+        sel       = dict()
+        sel['q2'] = f'({_QSQ_NAME} > {qsq.lower_bound}) & ({_QSQ_NAME} < {qsq.upper_bound})'
+        with DataStore.selection(sel = sel, update = True):
+            obj = PdfBuilder(
+                name    = f'{_QSQ_NAME}/{self._cfg.binning.dir_path}/{model}',
+                comp    = comp,
+                trigger = trigger,
+                qsq     = qsq)
 
-        mod = obj.get_model(obs_ext = obs, update = False)
-        pdf = mod.get_pdf(name = f'{comp}_{qsq}')
+            mod = obj.get_model(
+                obs_ext = obs, 
+                use_kde = model == 'kde',
+                update  = False)
+
+            pdf = mod.get_pdf(name = f'{comp}_{qsq}')
 
         for par in pdf.get_params():
             par.floating = False
