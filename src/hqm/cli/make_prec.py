@@ -30,13 +30,9 @@ def make_prec(
         source   = source,
         target   = target)
 
-    ctx1 = DataStore.selection(sel = cfg.binning.selection, update = False)
-    with ExitStack() as stack:
-        stack.enter_context(ctx1)
-
-        obj = PrecMaker(
-            cfg     = cfg, 
-            binning = binning,
-            project = project)
-        obj.get_pdf(update = update)
+    obj = PrecMaker(
+        cfg     = cfg, 
+        binning = binning,
+        project = project)
+    obj.get_pdf(update = update)
 # ----------------------------------------------------------------------
