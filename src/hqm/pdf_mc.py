@@ -19,7 +19,7 @@ from dmu.stats      import FittedModel, ModelFactoryConf, NonParametricModel
 from dmu.stats      import ZFitPlotter, ZFitPlotterConf, zfit
 from hqm.data_store import DataStore
 
-log=LogStore.add_logger('hqm:pdf_md')
+log=LogStore.add_logger('hqm:pdf_mc')
 
 _PDF_NAME : Final[str] = 'pdf_mc'
 _MAX_SIZE : Final[int] = 150_000 # If array is larger than this, limit it to this number
@@ -280,14 +280,13 @@ class PdfBuilder:
     # ----------------------------
     def _get_data(
         self,
-        obs       : zobs,
-        mass      : Mass,
-        can_merge : bool) -> zdat:
+        obs : zobs,
+        mass: Mass) -> zdat:
         '''
         Parameters
         ------------------
-        mass     : Used to build observable for data and get array of masses
-        can_merge: If true, it is possible to merge blocks to get data in case of low statistics
+        mass: Used to build observable for data and get array of masses
+        obs : Observable used to build zfit data object 
 
         Returns
         ------------------
@@ -407,7 +406,7 @@ class PdfBuilder:
 
         mass   = Mass.raw_from_project(project = self.__trig.project)
         obs    = zfit.Space(mass, limits = cfg_par.rn)
-        data   = self._get_data(obs = obs, mass = mass, can_merge = True)
+        data   = self._get_data(obs = obs, mass = mass)
         models = None if use_kde else self.__cfg.mod_cfg.get_model(nentries = data.num_entries)
 
         if models is None and not use_kde:
