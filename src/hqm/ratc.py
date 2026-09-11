@@ -58,7 +58,7 @@ class CCbarRatioCalculator:
         self,
         cfg     : CCbarRatioCalculatorConf,
         project : Project,
-        block   : Block,
+        binning : str,
         ntoys   : int | None = None):
         '''
         Parameters
@@ -70,7 +70,7 @@ class CCbarRatioCalculator:
         '''
         self._cfg      = cfg
         self._project  = project
-        self._block    = block
+        self._binning  = binning 
         self._out_dir  = self._cfg.make_path(kind='ratios', project = project)
         self._plotter  = Plotter(out_dir = self._out_dir)
         self._ntoys    = ntoys
@@ -360,14 +360,14 @@ class CCbarRatioCalculator:
         E.g. $B -> \psi(2S) X$ PDF in high-q2 bin for `qsq_comp=psi2` and `qsq_tgt=high`
         '''
         cfg = TransferFunctionMakerConf.load(
-            binning  = f'block-{self._block}',
+            binning  = self._binning,
             project  = self._project,
             source   = qsq_src,
             target   = qsq_tgt)
 
         obj = PrecMaker(
             cfg     = cfg, 
-            block   = self._block,
+            binning = self._binning,
             project = self._project)
 
         pdf = obj.get_pdf(
