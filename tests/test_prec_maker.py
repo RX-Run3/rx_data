@@ -21,16 +21,15 @@ type zpdf     = zfit.pdf.BasePDF
 class TransferFunctionTest:
     @property
     def pdf(self) -> zpdf:
-        obs = zfit.Space('B_Mass', limits = (-100, 100))
-        mu  = zfit.Parameter('mu', 0 , -20, 20)
-        sg  = zfit.Parameter('sg', 15,  10, 20)
+        obs = zfit.Space('B_Mass', limits = (-1000, 1000))
+        mu  = zfit.Parameter('mu',200,  0, 300)
+        sg  = zfit.Parameter('sg',200, 10, 300)
 
         return zfit.pdf.Gauss(obs = obs, mu = mu, sigma = sg)
 #--------------------------------------
-def _get_array(self, out_dir, sel, trig) -> NpFltArr:
+def _get_array(self, out_dir, trig) -> NpFltArr:
     _ = self
     _ = out_dir
-    _ = sel
     _ = trig
 
     return numpy.random.uniform(3500, 4800, size = 10_000)
@@ -64,24 +63,19 @@ def test_resonant(
     '''
     monkeypatch.setenv('ANADIR', str(tmp_path))
 
-    _     = _use_fake_masses
-    proj  = Project.rk
-    blk   = 5
-    block = Block(value = blk)
+    _       = _use_fake_masses
+    proj    = Project.rk
+    binning = 'block-3 mva_cmb-3 mva_prc-2'
 
     cfg = TransferFunctionMakerConf.load(
-        binning  = f'block-{blk}',
+        binning  = binning,
         project  = proj,
         source   = source,
         target   = target)
 
-    ctx1 = DataStore.selection(sel = cfg.binning.selection, update = False)
-    with ExitStack() as stack:
-        stack.enter_context(ctx1)
-
-        obj = PrecMaker(
-            cfg     = cfg,
-            block   = block,
-            project = proj)
-        obj.get_pdf(update = True)
+    obj = PrecMaker(
+        cfg     = cfg,
+        binning = binning,
+        project = proj)
+    obj.get_pdf(update = True)
 # ------------------------------------------------------------
