@@ -28,6 +28,7 @@ _DATA_SAMPLE     : Final[Component] = Component.data_24
 _MISSING_BLOCKS  : Final[set[int]]  = {4,3,2,1}   # blocks for which muon mass does not go all the way to 3.5 GeV
 _PATCHING_BLOCK  : Final[int]       = 5           # will use this block instead of missing blocks
 _PREC_MASS       : Final[int]       = 5180        # Below this mass, everything in the muon channel is part-reco
+_MIN_ISJ         : Final[int]       = 1000        # Below this number of entries in the low muon sideband, will use KDE1DimExact
 # -----------------------------------
 class PrecMaker:
     '''
@@ -131,14 +132,23 @@ class PrecMaker:
         KDE representing muon part reco
         '''
         arr_mass = self.__get_masses(out_dir = out_dir)
-        pdf      = zfit.pdf.KDE1DimISJ(
-            obs  = self.__cfg.observable.wide_obs,
-            data = arr_mass)
+        nentries = len(arr_mass)
+
+        if nentries > _MIN_ISJ:
+            pdf      = zfit.pdf.KDE1DimISJ(
+                obs  = self.__cfg.observable.wide_obs,
+                data = arr_mass)
+        else:
+            pdf      = zfit.pdf.KDE1DimExact(
+                obs  = self.__cfg.observable.wide_obs,
+                data = arr_mass)
 
         out_path = out_dir / 'fit.png'
         log.info(f'Saving to: {out_path}')
 
         cfg = ZFitPlotterConf.default()
+        cfg = cfg.model_copy(update = {'title' : f'Entries: {nentries}'})
+
         ptr = ZFitPlotter(data = arr_mass, model = pdf)
         ptr.run(cfg)
         plt.savefig(out_path)
