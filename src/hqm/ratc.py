@@ -216,8 +216,15 @@ class CCbarRatioCalculator:
         for pdf in pdfs:
             log.debug(f'{pdf.name:<10}{pdf.space}')
 
-        pdf  = zfit.pdf.SumPDF(pdfs,
-        obs  = self._cfg.observable.mass_obs)
+        obs = self._cfg.observable.mass_obs
+        try:
+            pdf = zfit.pdf.SumPDF(pdfs, obs = obs)
+        except Exception as exc:
+            log.error(f'Full model observable: {obs}')
+            for model in pdfs:
+                log.error(f'{model.name:<30}{model.space}')
+
+            raise ValueError('Cannot build model') from exc
 
         print_pdf(pdf = pdf)
         self._plotter.plot_model(name = f'model_{qsq}', pdf = pdf)
