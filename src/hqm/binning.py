@@ -3,20 +3,22 @@ Module holding Binning class
 '''
 
 from pathlib     import Path
+from typing      import Final
 from dmu.generic import utilities as gut 
 from pydantic    import BaseModel, RootModel
-from rx_common   import Cuts
+from rx_common   import Block, Cuts
 from dmu         import LogStore
 
 log=LogStore.add_logger('hqm:binning')
+_BLOCK_NAME : Final[str] = 'block' # string used as key in block cut
 # -------------------------------------------
 class BinConf(RootModel[dict[str,tuple[float,float,int]]], frozen = True):
     '''
     Class representing one bin per variable, e.g. 
 
-    var1 -> bin 1
-    var2 -> bin 3
-    var3 -> bin 5
+    var1 -> lower, upper, bin index 
+    var2 -> lower, upper, bin index
+    var3 -> lower, upper, bin index
     '''
     # ---------------------------------------------
     def __str__(self):
@@ -42,6 +44,20 @@ class BinConf(RootModel[dict[str,tuple[float,float,int]]], frozen = True):
             parts.append(f'{var}-{bin}')
 
         return ' '.join(parts)
+    # ---------------------------------------------
+    @property
+    def block(self) -> Block:
+        '''
+        Block associated to this bin, if bin does not involve specific block
+        will raise ValueError
+        '''
+        values = self.root.get(_BLOCK_NAME)
+        if values is None:
+            raise ValueError(f'Cannot extract block for current bin:\n{self}')
+
+        _, _, iblock = values
+
+        return Block(value = iblock)
     # ---------------------------------------------
     @property
     def label(self) -> str:
