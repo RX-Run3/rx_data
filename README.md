@@ -19,24 +19,8 @@ In order to speed up fits, etc, a database with parquet files, each containing
 a pandas dataframe with only a few columns (masses, MVA scores, etc) is created
 with:
 
-```
-hqm build-database -t rkst_mm_os -c bdkstkpipsi2mm
-hqm build-database -t rkst_ee_os -c bdkstkpipsi2ee
-
-hqm build-database -t rkst_mm_os -c bdkstkpijpsimm
-hqm build-database -t rkst_ee_os -c bdkstkpijpsiee
-
-hqm build-database -t rkst_mm_os -c data_24
-hqm build-database -t rkst_ee_os -c data_24
-
-hqm build-database -t rk_mm_os   -c bpkpjpsimm
-hqm build-database -t rk_ee_os   -c bpkpjpsiee
-
-hqm build-database -t rk_mm_os   -c bpkppsi2mm
-hqm build-database -t rk_ee_os   -c bpkppsi2ee
-
-hqm build-database -t rk_mm_os   -c data_24
-hqm build-database -t rk_ee_os   -c data_24
+```bash
+nu run_databases.nu
 ```
 
 for different processes and triggers
@@ -46,7 +30,7 @@ for different processes and triggers
 With the data above already made run:
 
 ```bash
-./run_fits.nu
+nu run_fits.nu
 ```
 
 where inside the script:
@@ -75,21 +59,8 @@ With the transfer functions and the data in the low sideband in the muon mode
 one can calculate the expected partially reconstructed electron charmonium shapes with:
 
 ```bash
-hqm make-prec -T rk_ee_os   -s jpsi -t jpsi -b 5
-hqm make-prec -T rk_ee_os   -s jpsi -t psi2 -b 5
-hqm make-prec -T rk_ee_os   -s jpsi -t high -b 5
-
-hqm make-prec -T rk_ee_os   -s psi2 -t jpsi -b 5
-hqm make-prec -T rk_ee_os   -s psi2 -t psi2 -b 5
-hqm make-prec -T rk_ee_os   -s psi2 -t high -b 5
-
-hqm make-prec -T rkst_ee_os -s jpsi -t jpsi -b 5
-hqm make-prec -T rkst_ee_os -s jpsi -t psi2 -b 5
-hqm make-prec -T rkst_ee_os -s jpsi -t high -b 5
-
-hqm make-prec -T rkst_ee_os -s psi2 -t jpsi -b 5
-hqm make-prec -T rkst_ee_os -s psi2 -t psi2 -b 5
-hqm make-prec -T rkst_ee_os -s psi2 -t high -b 5
+nu run_prec.nu
 ```
 
-For e.g. block 5.
+## Calculate ratios
+
