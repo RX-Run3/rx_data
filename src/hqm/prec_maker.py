@@ -172,6 +172,34 @@ class PrecMaker:
             subdir  = f'{self.__cfg.source}_to_{self.__cfg.target}',
             fname   = 'part-reco.json')
     # -------------------------
+    def __plot_pdf(
+        self,
+        pdf_ee : zpdf,
+        pdf_mm : zpdf,
+        out_dir: Path) -> None:
+        '''
+        Parameters
+        -------------
+        pdf_ee/mm: PDF after/before transfer function
+        out_dir  : Directory where outputs will go
+        '''
+        xs    = numpy.linspace(3500, 7000, num = 1000)
+        ys_mm = pdf_mm.pdf(xs)
+        ys_ee = pdf_ee.pdf(xs)
+
+        ys_mm = ys_mm / ys_mm.numpy().sum()
+        ys_ee = ys_ee / ys_ee.numpy().sum()
+
+        out_path = out_dir / 'pdf.png'
+        log.info(f'Saving to: {out_path}')
+        plt.scatter(xs, ys_mm, s=1, label = 'Muon')
+        plt.scatter(xs, ys_ee, s=1, label = 'Electron')
+        plt.title(f'{self.__cfg.source.latex} to {self.__cfg.target.latex}')
+        plt.legend()
+        plt.grid()
+        plt.savefig(out_path)
+        plt.close()
+    # -------------------------
     def get_pdf(
         self,
         update: bool,
@@ -200,22 +228,13 @@ class PrecMaker:
             name  = name,
             n     = _FFT_NPT)
 
+        self.__plot_pdf(
+            pdf_mm = pdf_mm, 
+            pdf_ee = pdf_ee, 
+            out_dir= path.parent)
+
         pdf = SplinePDF.from_non_spline(pdf = pdf_ee)
         pdf.to_json(path = path)
-
-        xs    = numpy.linspace(3500, 7000, num = 1000)
-        ys_mm = pdf_mm.pdf(xs)
-        ys_ee = pdf_ee.pdf(xs)
-
-        out_path = path.parent / 'pdf.png'
-        log.info(f'Saving to: {out_path}')
-        plt.scatter(xs, ys_mm, s=1, label = 'Muon')
-        plt.scatter(xs, ys_ee, s=1, label = 'Electron')
-        plt.title(f'{self.__cfg.source.latex} to {self.__cfg.target.latex}')
-        plt.legend()
-        plt.grid()
-        plt.savefig(out_path)
-        plt.close()
 
         return pdf
 # -----------------------------------
