@@ -70,7 +70,7 @@ class PrecMaker:
         qsq     = self.__cfg.source
         mass    = Mass.raw_from_project(project = self.__proj)
 
-        sel         = dict()
+        sel         = bins.selection 
         sel['q2'  ] = f'(q2 > {qsq.lower_bound}) & (q2 < {qsq.upper_bound})'
         sel['mass'] = f'{mass} < {_PREC_MASS}'
 
