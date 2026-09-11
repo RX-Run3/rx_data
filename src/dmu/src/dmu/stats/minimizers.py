@@ -348,7 +348,7 @@ def _get_weight_corr(nll : Loss) -> WeightCorr:
             has_weights = True
 
     if has_weights:
-        return WeightCorr('assymptotic')
+        return WeightCorr('asymptotic')
 
     return WeightCorr(False)
 # ------------------------
