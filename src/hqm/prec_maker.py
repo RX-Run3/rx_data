@@ -10,6 +10,7 @@ from dmu.stats      import ZFitPlotter, ZFitPlotterConf, zfit
 from typing         import Final
 from dmu            import LogStore
 from dmu.stats      import SplinePDF
+from hqm.binning    import BinningConf
 from hqm.config     import TransferFunctionMakerConf
 from hqm.data_store import DataStore
 from rx_common      import Block, Channel, Component, Mass, Cuts, Project, Qsq, Trigger
@@ -26,6 +27,7 @@ _FFT_NPT         : Final[int]       = 2000
 _DATA_SAMPLE     : Final[Component] = Component.data_24
 _MISSING_BLOCKS  : Final[set[int]]  = {4,3,2,1}   # blocks for which muon mass does not go all the way to 3.5 GeV
 _PATCHING_BLOCK  : Final[int]       = 5           # will use this block instead of missing blocks
+_PREC_MASS       : Final[int]       = 5180        # Below this mass, everything in the muon channel is part-reco
 # -----------------------------------
 class PrecMaker:
     '''
@@ -34,19 +36,49 @@ class PrecMaker:
     # -------------------------
     def __init__(
         self,
-        block   : Block,
+        binning : str,
         project : Project,
         cfg     : TransferFunctionMakerConf):
         '''
         Parameters
         ----------------
-        block  : Determines part of the data been processed
+        binning: String defining binning 
         cfg    : Configuration for transfer function
         project: E.g. rk or rkst, needed to extract masses,
         '''
         self.__proj = project 
         self.__cfg  = cfg
-        self.__block= block
+        self.__sel  = self.__get_selection(binning = binning)
+    # -------------------------
+    def __get_selection(self, binning : str) -> dict[str,str]:
+        '''
+        Parameters
+        -------------
+        binning: String defining bin in which Prec template is needed
+
+        Returns
+        -------------
+        Selection dictionary with:
+
+        - q2 bin
+        - Lower sideband cut
+        - Overriding of block for blocks with missing low sideband
+        '''
+        bin_obj = BinningConf.load()
+        bins    = bin_obj.from_str(binning) 
+        block   = bins.block
+        qsq     = self.__cfg.source
+        mass    = Mass.raw_from_project(project = self.__proj)
+
+        sel         = dict()
+        sel['q2'  ] = f'(q2 > {qsq.lower_bound}) & (q2 < {qsq.upper_bound})'
+        sel['mass'] = f'{mass} < {_PREC_MASS}'
+
+        if block.to_int() in _MISSING_BLOCKS:
+            log.warning(f'Using {_PATCHING_BLOCK} instead of {block} block')
+            sel['block'] = f'block == {_PATCHING_BLOCK}'
+
+        return sel
     # -------------------------
     def __get_masses(self, out_dir : Path) -> NpFltArr:
         '''
@@ -59,16 +91,6 @@ class PrecMaker:
         Numpy array with floats representing masses
         from low sideband in muon channel
         '''
-        qsq  = self.__cfg.source
-        mass = Mass.raw_from_project(project = self.__proj)
-
-        sel         = dict()
-        sel['q2'  ] = f'(q2 > {qsq.lower_bound}) & (q2 < {qsq.upper_bound})'
-        sel['mass'] = f'{mass} < 5180'
-
-        if self.__block.to_int() in _MISSING_BLOCKS:
-            log.warning(f'Using {_PATCHING_BLOCK} instead of {self.__block} block')
-            sel[Cuts.block] = f'block == {_PATCHING_BLOCK}'
 
         trig        = Trigger.get_main_trigger(
             channel = Channel.mm,
@@ -76,24 +98,21 @@ class PrecMaker:
 
         arr_raw     = self.__get_array(
             out_dir = out_dir,
-            trig    = trig, 
-            sel     = sel)
+            trig    = trig)
 
         return arr_raw
     # -------------------------
     def __get_array(
         self, 
         out_dir: Path,
-        sel    : dict[str,str],
         trig   : Trigger) -> NpFltArr:
         '''
         Parameters
         -------------
         out_dir: Directory where JSON file with selection will be saved
-        sel    : Dictionary with selection
         trig   : Trigger
         '''
-        with DataStore.selection(sel = sel, update = True):
+        with DataStore.selection(sel = self.__sel, update = True):
             obj = DataStore(trig= trig, comp = _DATA_SAMPLE)
             obj.save_selection(path = out_dir / 'muon_selection.json')
 
