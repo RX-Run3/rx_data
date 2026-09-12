@@ -26,7 +26,7 @@ class Qsq(StrEnum):
     @property
     def upper_bound(self) -> float:
         '''
-        Lower value of current q2-bin
+        Upper bound of current q2-bin
         '''
         data = _load_data()
 
@@ -35,7 +35,7 @@ class Qsq(StrEnum):
     @property
     def lower_bound(self) -> float:
         '''
-        Lower value of current q2-bin
+        Lower bound of current q2-bin
         '''
         data = _load_data()
 
