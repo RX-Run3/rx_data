@@ -25,6 +25,7 @@ from .function             import Function
 from .zfit_models          import FermiDirac 
 from .ipatia               import Ipatia 
 from .spline               import SplinePDF
+from .spline               import SplineRepr
 from .non_parametric_model import NonParametricModel
 # ----------------------------------------------
 from .fit_conf            import FitConf, KDEConf, PaddingConf
@@ -89,6 +90,7 @@ __all__ = [
     'HypExp',
     'Ipatia',
     'SplinePDF',
+    'SplineRepr',
     # ---------------------
     'MethodRegistry',
     'Constraint1D',
