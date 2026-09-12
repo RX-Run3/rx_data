@@ -3,10 +3,12 @@ Module with tests for Config class
 '''
 import pytest
 
-from dmu.stats  import zfit
-from rx_common  import Project, Qsq
-from hqm.config import TransferFunctionMakerConf
-from hqm.config import CCbarRatioCalculatorConf 
+from pathlib     import Path
+from dmu.stats   import zfit
+from rx_common   import Project, Qsq
+from hqm.binning import BinningConf
+from hqm.config  import SerializationConf, TransferFunctionMakerConf
+from hqm.config  import CCbarRatioCalculatorConf 
 
 type zpdf = zfit.pdf.BasePDF
 #----------------------------------
@@ -83,4 +85,18 @@ def test_pars():
         obj_6 = cfg.parameters.get_part_reco_yield(qsq_comp = Qsq.psi2, qsq_bin = qsq)
 
         assert obj_5 is obj_6
+#----------------------------------
+def test_serialization_conf(tmp_path : Path, monkeypatch):
+    '''
+    Test SerializationConf class
+    '''
+    monkeypatch.setenv('ANADIR', str(tmp_path))
+
+    bins_conf = BinningConf.load()
+    bin       = bins_conf.from_str(binning = 'block-3 mva_cmb-3')
+
+    cfg  = SerializationConf(binning = bin)
+    path = cfg.make_path(kind = 'test', project = Project.rk)
+
+    assert path.exists()
 #----------------------------------

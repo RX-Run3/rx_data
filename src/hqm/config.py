@@ -220,32 +220,12 @@ class ObsConf(BaseModel, frozen = True):
         '''
         return zfit.Space(self.name, limits = self.wide_range)
 # -------------------------------------------------------------------
-class _Conf(BaseModel, frozen = True):
+class SerializationConf(BaseModel, frozen=True):
     '''
-    Base class for all configuration classes
+    Class configuring how an object should be serialized
     '''
-    bandwidth  : int
-    observable : ObsConf
     binning    : BinConf
-    fft_npt    : int
-    '''
-    Number of points used to sample KDE before doing convolution with
-    Fast Fourier Transform
-    '''
     # ----------------------------------
-    def __str__(self):
-        return f'''
-        -----------------
-        Observable
-        -----------------
-        {self.observable}
-
-        -----------------
-        Binning
-        -----------------
-        {self.binning}
-        '''
-    # -----------------------------------------------
     def make_path(
         self,
         *,
@@ -281,7 +261,32 @@ class _Conf(BaseModel, frozen = True):
 
         return dir_path / fname
 # -------------------------------------------------------------------
-class TransferFunctionMakerConf(_Conf, frozen = True):
+class PDFConf(SerializationConf, frozen = True):
+    '''
+    Class holding information needed to build PDF
+    '''
+    bandwidth  : int
+    observable : ObsConf
+    fft_npt    : int
+    '''
+    Number of points used to sample KDE before doing convolution with
+    Fast Fourier Transform
+    '''
+    # ----------------------------------
+    def __str__(self):
+        return f'''
+        -----------------
+        Observable
+        -----------------
+        {self.observable}
+
+        -----------------
+        Binning
+        -----------------
+        {self.binning}
+        '''
+# -------------------------------------------------------------------
+class TransferFunctionMakerConf(PDFConf, frozen = True):
     '''
     Configuration controlling how transfer function is built
     '''
@@ -425,7 +430,7 @@ class TransferFunctionMakerConf(_Conf, frozen = True):
         for key, val in d_data.items():
             log.info(f'{key:<30}{val:<50}')
 # -------------------------------------------------------------------
-class CCbarRatioCalculatorConf(_Conf, frozen = True):
+class CCbarRatioCalculatorConf(PDFConf, frozen = True):
     '''
     Class meant to configure CCbarRatioCalculator
     '''
