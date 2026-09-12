@@ -80,7 +80,7 @@ class NonParametricModel(BaseModel, Serializable, frozen = True):
         --------------
         Renamed zfit pdf
         '''
-        obs = zfit.Space(self.name, limits = (min(self.xs), max(self.xs)))
+        obs = zfit.Space(self.obs, limits = (min(self.xs), max(self.xs)))
         xs  = numpy.array(self.xs)
         ys  = numpy.array(self.ys)
 
