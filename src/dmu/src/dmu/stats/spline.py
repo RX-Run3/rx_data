@@ -17,7 +17,7 @@ type zobs     = zfit.Space
 type zpdf     = zfit.pdf.BasePDF
 type NpFltArr = npt.NDArray[np.float64]
 # ------------------------------
-class _SplineRepr(BaseModel, Serializable):
+class SplineRepr(BaseModel, Serializable):
     '''
     Pydantic representation of SplinePDF
     '''
@@ -70,7 +70,7 @@ class SplinePDF(zfit.pdf.ZPDF):
         '''
         name, = self.obs
 
-        repr = _SplineRepr(
+        repr = SplineRepr(
             obs_name = name,
             obs_range= range_from_obs(self.space),
             name = self.__name,
@@ -109,7 +109,7 @@ class SplinePDF(zfit.pdf.ZPDF):
         path: Path to JSON file where PDF is stored 
         name: If specified, will name the PDF like this, otherwise will pick name from JSON file
         '''
-        cfg = _SplineRepr.from_json(path = path)
+        cfg = SplineRepr.from_json(path = path)
 
         if not name:
             name = cfg.name
