@@ -9,7 +9,7 @@ from .measurement         import Measurement
 from .gof_calculator      import GofCalculator
 from .model_factory       import ModelFactory, MethodRegistry, ModelFactoryConf
 from .fitter              import Fitter
-from .fitted_model        import FittedModel
+from .fitted_model        import FittedModel, ObsConf
 from .protocols           import ParsHolder
 from .utilities           import print_pdf
 from .utilities           import save_fit
@@ -53,6 +53,7 @@ __all__ = [
     'SimpleYieldConf',
     'CompositeYieldConf',
     'FittedModel',
+    'ObsConf',
     'YieldConf',
     'YieldsConf',
     'pdf_to_tex',
