@@ -68,9 +68,13 @@ class SplinePDF(zfit.pdf.ZPDF):
         ----------------
         path: Path to JSON file where PDF will be saved
         '''
+        self.representation.to_json(path = path)
+    # ------------------------------
+    @property
+    def representation(self) -> SplineRepr:
         name, = self.obs
 
-        repr = SplineRepr(
+        return SplineRepr(
             obs_name = name,
             obs_range= range_from_obs(self.space),
             name = self.__name,
@@ -78,8 +82,6 @@ class SplinePDF(zfit.pdf.ZPDF):
             xs   = self.__xs.tolist(),
             ys   = self.__ys.tolist(),
         )
-
-        repr.to_json(path = path)
     # ------------------------------
     @classmethod
     def from_non_spline(cls, pdf : zpdf, npoints : int = 400) -> 'SplinePDF':

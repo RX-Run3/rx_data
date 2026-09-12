@@ -8,7 +8,8 @@ import matplotlib.pyplot as plt
 from pathlib     import Path
 from dmu.stats   import ZFitPlotterConf, ZFitPlotter
 from dmu.stats   import SplinePDF, zfit
-from dmu.stats   import utilities as sut 
+from dmu.stats   import utilities as sut
+from dmu.stats   import SplineRepr 
 
 # ------------------------
 def test_simple(tmp_path : Path):
@@ -83,4 +84,17 @@ def test_name(tmp_path : Path):
     pdf = SplinePDF.from_json(path = path, name = 'renamed_pdf')
 
     sut.print_pdf(pdf = pdf)
+# ------------------------
+def test_representation(tmp_path : Path):
+    '''
+    Test accessing class representation
+    '''
+    n_points = 400
+    x_grid   = np.linspace(0, 10, n_points)
+    y_grid   = (x_grid - 2)**2 * (x_grid - 5)**2 * (x_grid - 8)**2 + 1
+
+    obs  = zfit.Space("x", limits=(1, 10))
+    pdf  = SplinePDF(obs = obs, xs = x_grid, ys = y_grid)
+
+    assert isinstance(pdf.representation, SplineRepr)
 # ------------------------
