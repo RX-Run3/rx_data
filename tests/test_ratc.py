@@ -164,5 +164,9 @@ def test_unbinned(monkeypatch, tmp_path : Path):
         ntoys   = 50_000,
         project = Project.rk)
 
-    cal.get_ratio(update = True)
+    ratio    = cal.get_ratio(update = True)
+    val, err = ratio.get_value(name = 'rat_psi2')
+
+    assert isinstance(val, float)
+    assert isinstance(err, float)
 #-------------------------------------
