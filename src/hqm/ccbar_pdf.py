@@ -10,10 +10,11 @@ from rx_common      import Channel, Component, Project, Qsq, Trigger
 from dmu.stats      import SplineRepr
 from hqm.binning    import BinningConf
 from hqm.config     import CCbarRatioCalculatorConf, SerializationConf, TransferFunctionMakerConf
+
 from hqm.data_store import DataStore
-from hqm.pdf_mc import PdfBuilder
+from hqm.pdf_mc     import PdfBuilder
 from hqm.prec_maker import PrecMaker
-from hqm.ratc import CCbarRatioCalculator
+from hqm.ratc       import CCbarRatioCalculator
 
 type zpdf = zfit.pdf.BasePDF
 type zobs = zfit.Space
@@ -53,6 +54,7 @@ class CCbarPDF(BaseModel, Serializable, frozen = True):
 
         return cfg.make_path(
             project= project,
+            fname  = 'pdf.json',
             kind   = 'ccbar_pdf')
 # ---------------------------------
 class CCbarPDFMaker:
