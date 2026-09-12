@@ -48,6 +48,18 @@ class CCbarRatio(BaseModel, Serializable, frozen = True):
     Class representing ratio between fully and partly reconstructed charmonium
     '''
     res : FitResult
+    # ----------------------
+    def get_value(self, name : str) -> tuple[float,float]:
+        '''
+        Parameters
+        ---------------
+        name: Name of fit parameter
+
+        Returns
+        ---------------
+        Tuple with value and error
+        '''
+        return self.res[name]
 #-----------------------------
 class CCbarRatioCalculator:
     '''
