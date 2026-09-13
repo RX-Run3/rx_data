@@ -1,10 +1,12 @@
 '''
 Module holding CCbarPDF class
 '''
+import numpy
+
 from pathlib        import Path
 from typing         import Final
 from dmu.generic    import Serializable
-from dmu.stats      import FittedModel, zfit
+from dmu.stats      import FittedModel, zfit, SplinePDF
 from pydantic       import BaseModel
 from rx_common      import Channel, Component, Project, Qsq, Trigger
 from dmu.stats      import SplineRepr
@@ -16,6 +18,7 @@ from hqm.pdf_mc     import PdfBuilder
 from hqm.prec_maker import PrecMaker
 from hqm.ratc       import CCbarRatioCalculator
 
+type zsum = zfit.pdf.SumPDF
 type zpdf = zfit.pdf.BasePDF
 type zobs = zfit.Space
 
@@ -32,6 +35,23 @@ class CCbarPDF(BaseModel, Serializable, frozen = True):
     part_reco : SplineRepr
     full_reco : FittedModel
     ratio     : tuple[float,float]
+    # ---------------------------------
+    @property
+    def pdf(self) -> zsum:
+        '''
+        Sum of part reco and fully reco PDFs
+        '''
+        pdf_pr = SplinePDF(
+            obs = self.part_reco.obs,
+            xs  = numpy.array(self.part_reco.xs),
+            ys  = numpy.array(self.part_reco.ys),
+            name= 'part-reco')
+
+        pdf_fr = self.full_reco.pdf
+        val, _ = self.ratio
+        frac   = zfit.param.Parameter('frac', val, 0, 1)
+
+        return zfit.pdf.SumPDF([pdf_pr, pdf_fr], frac)
     # ---------------------------------
     @classmethod
     def get_path(
