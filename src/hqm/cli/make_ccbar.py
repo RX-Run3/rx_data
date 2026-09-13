@@ -4,13 +4,9 @@ Module used to expose build_database function to CLI
 import typer
 import matplotlib.pyplot as plt
 
-from dmu.stats      import zfit
-from rx_common      import Block, Project, Qsq, Cuts
-from hqm.data_store import DataStore
-from hqm.config     import TransferFunctionMakerConf
-from hqm.trfc       import TransferFunctionMaker 
-
-from dmu.stats     import ObsConf, ModelFactoryConf, SplinePDF, ZFitPlotter, ZFitPlotterConf, print_pdf, zfit
+from rx_common     import Project
+from dmu.stats     import zfit
+from dmu.stats     import ZFitPlotter, ZFitPlotterConf
 from hqm.ccbar_pdf import CCbarPDFMaker
 
 update_opt= typer.Option(False, '-u', help = 'If used, will remake function even if already exists')
