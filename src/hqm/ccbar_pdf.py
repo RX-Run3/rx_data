@@ -6,7 +6,7 @@ import numpy
 from pathlib        import Path
 from typing         import Final
 from dmu.generic    import Serializable
-from dmu.stats      import FittedModel, zfit, SplinePDF
+from dmu.stats      import FittedModel, ObsConf, zfit, SplinePDF
 from pydantic       import BaseModel
 from rx_common      import Channel, Component, Project, Qsq, Trigger
 from dmu.stats      import SplineRepr
@@ -32,6 +32,7 @@ class CCbarPDF(BaseModel, Serializable, frozen = True):
     '''
     Class representing charmonium PDF
     '''
+    obs       : ObsConf
     part_reco : SplineRepr
     full_reco : FittedModel
     ratio     : tuple[float,float]
@@ -51,7 +52,7 @@ class CCbarPDF(BaseModel, Serializable, frozen = True):
         val, _ = self.ratio
         frac   = zfit.param.Parameter('frac', val, 0, 1)
 
-        return zfit.pdf.SumPDF([pdf_pr, pdf_fr], frac)
+        return zfit.pdf.SumPDF([pdf_pr, pdf_fr], frac, obs = self.obs.obs)
     # ---------------------------------
     @classmethod
     def get_path(
@@ -203,6 +204,7 @@ class CCbarPDFMaker:
         ratio  = self.__get_ratio()
 
         model = CCbarPDF(
+            obs       = ObsConf.from_obs(obs = obs),
             part_reco = pdf_pr,
             full_reco = pdf_fr,
             ratio     = ratio)
