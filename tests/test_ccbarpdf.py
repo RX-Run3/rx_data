@@ -1,19 +1,21 @@
 '''
 Module holding tests for CCbarPDF
 '''
+import matplotlib.pyplot as plt
+
 from hqm           import ccbar_pdf 
 from contextlib    import contextmanager
 from pathlib       import Path
 from rx_common     import Project
 from hqm.ccbar_pdf import CCbarPDFMaker
-from dmu.stats     import FittedModel, Fitter, Model, ModelFactory, ModelFactoryConf, SplinePDF, zfit
+from dmu.stats     import FittedModel, Fitter, Model, ModelFactory, ModelFactoryConf, SplinePDF, ZFitPlotter, ZFitPlotterConf, print_pdf, zfit
 from dmu.stats     import ObsConf
 
 # ----------------------------
 class TestRatio:
     def get_value(self, name):
         _ = name
-        return 10, 1
+        return 0.3, 0.03
 # ----------------------------
 class TestCCbarRatioCalculator:
     def __init__(self, cfg, binning, project):
@@ -97,5 +99,14 @@ def test_simple(monkeypatch, tmp_path : Path):
         binning = binning,
         project = project)
 
-    pdf = ccb.get_pdf(obs = obs, update = False)
+    model= ccb.get_pdf(obs = obs, update = False)
+    data = model.pdf.create_sampler(n = 10_000)
+
+    cfg = ZFitPlotterConf.default()
+    ptr = ZFitPlotter(model = model.pdf, data = data)
+    ptr.run(cfg = cfg)
+    plt.savefig(tmp_path / 'fit.png')
+    plt.close()
+
+    print_pdf(model.pdf)
 # ----------------------------
