@@ -64,3 +64,24 @@ nu run_prec.nu
 
 ## Calculate ratios
 
+In order to calculate the part reco over fully reconstructed yields run
+
+```bash
+nu run_ratios.nu
+```
+
+this will run simultaneous fit and store the parameters in a JSON file.
+
+## Create $c\bar{c}$ templates
+
+The script below:
+
+```bash
+nu run_ccbar.nu 
+```
+
+will:
+
+- Put together fully and partially reconstructed templates with the ratio mentioned above
+- Save model to JSON
+
