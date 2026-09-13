@@ -147,7 +147,7 @@ class CCbarPDFMaker:
             return obj.get_model(
                 obs_ext= obs, 
                 use_kde= False,
-                update = True)
+                update = False)
     # ---------------------------------
     def __get_ratio(self) -> tuple[float,float]:
         '''
