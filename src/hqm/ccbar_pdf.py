@@ -166,6 +166,17 @@ class CCbarPDFMaker:
 
         return ratio.get_value(name = _RATIO_NAME)
     # ---------------------------------
+    @property
+    def out_dir(self) -> Path:
+        '''
+        Directory where outputs go
+        '''
+        json_path = CCbarPDF.get_path(
+            binning = self.__binning,
+            project = self.__project)
+
+        return json_path.parent
+    # ---------------------------------
     def get_pdf(
         self, 
         obs    : zobs,

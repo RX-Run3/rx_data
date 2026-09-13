@@ -8,8 +8,8 @@ from contextlib    import contextmanager
 from pathlib       import Path
 from rx_common     import Project
 from hqm.ccbar_pdf import CCbarPDFMaker
-from dmu.stats     import FittedModel, Fitter, Model, ModelFactory, ModelFactoryConf, SplinePDF, ZFitPlotter, ZFitPlotterConf, print_pdf, zfit
-from dmu.stats     import ObsConf
+from dmu.stats     import FittedModel, Fitter, Model, ModelFactory
+from dmu.stats     import ObsConf, ModelFactoryConf, SplinePDF, ZFitPlotter, ZFitPlotterConf, print_pdf, zfit
 
 # ----------------------------
 class TestRatio:
@@ -105,7 +105,7 @@ def test_simple(monkeypatch, tmp_path : Path):
     cfg = ZFitPlotterConf.default()
     ptr = ZFitPlotter(model = model.pdf, data = data)
     ptr.run(cfg = cfg)
-    plt.savefig(tmp_path / 'fit.png')
+    plt.savefig(ccb.out_dir / 'fit.png')
     plt.close()
 
     print_pdf(model.pdf)
