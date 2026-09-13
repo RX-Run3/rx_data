@@ -36,6 +36,32 @@ class Project(StrEnum):
     rkst_bad_ecal = auto()
     # --------------------------------------------
     @property
+    def color(self) -> str:
+        '''
+        Color associated to project, for plots
+        '''
+        match self:
+            case Project.rk:
+                return r'blue'
+            case Project.rkst:
+                return r'red'
+            case _:
+                raise ValueError(f'Color not implemented for {self}')
+    # --------------------------------------------
+    @property
+    def latex(self) -> str:
+        '''
+        Latex representation of project, for plots
+        '''
+        match self:
+            case Project.rk:
+                return r'$R_K$'
+            case Project.rkst:
+                return r'$R_{K^*}$'
+            case _:
+                raise ValueError(f'Latex not implemented for {self}')
+    # --------------------------------------------
+    @property
     def semileptonic(self) -> list[Component]:
         '''
         List of semileptonic components associated
