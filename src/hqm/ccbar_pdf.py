@@ -22,11 +22,14 @@ type zsum = zfit.pdf.SumPDF
 type zpdf = zfit.pdf.BasePDF
 type zobs = zfit.Space
 
-_SOURCE_QSQ     : Final[Qsq]       = Qsq.psi2
-_TARGET_QSQ     : Final[Qsq]       = Qsq.high
-_TARGET_CHANNEL : Final[Channel]   = Channel.ee
-_FULL_RECO_COMP : Final[Component] = Component.bpkppsi2ee
-_RATIO_NAME     : Final[str]       = 'rat_psi2' # Fraction used between part_reco and fully reco components
+_SOURCE_QSQ     : Final[Qsq]                     = Qsq.psi2
+_TARGET_QSQ     : Final[Qsq]                     = Qsq.high
+_TARGET_CHANNEL : Final[Channel]                 = Channel.ee
+_RATIO_NAME     : Final[str]                     = 'rat_psi2' # Fraction used between part_reco and fully reco components
+_FULL_RECO_COMP : Final[dict[Project,Component]] = { 
+         Project.rk   : Component.bpkppsi2ee,
+         Project.rkst : Component.bdkstkpipsi2ee,
+}
 # ---------------------------------
 class CCbarPDF(BaseModel, Serializable, frozen = True):
     '''
@@ -125,7 +128,7 @@ class CCbarPDFMaker:
         Object representing fully reconstructed component's fit
         '''
         qsq     = _TARGET_QSQ 
-        comp    = _FULL_RECO_COMP
+        comp    = _FULL_RECO_COMP[self.__project]
         channel = _TARGET_CHANNEL
 
         trig = Trigger.get_main_trigger(
