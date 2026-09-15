@@ -52,7 +52,7 @@ def test_unbinned_ratio():
     '''
     Test unbinned ratio calculator configuration
     '''
-    CCbarRatioCalculatorConf.load(binning = 'block-1')
+    CCbarRatioCalculatorConf.load(binning = 'block-1'
 #----------------------------------
 def test_pars():
     '''
