@@ -15,6 +15,7 @@ from dmu.stats      import ZFitPlotter, zfit
 from hqm.config     import TransferFunctionMakerConf, ObsConf
 from hqm.data_store import DataStore
 from hqm.pdf_mc     import PdfBuilder
+from hqm.types      import Mode
 
 log=LogStore.add_logger('rx_hqm:trfc')
 _FLOAT          : Final[list[str]] = []
@@ -162,7 +163,7 @@ class TransferFunctionMaker:
             name    = name,
             comp    = self._cfg.source_component,
             qsq     = self._cfg.source)
-        fmod = obj.get_model(obs_ext = obs, update = False)
+        fmod = obj.get_model(obs_ext = obs, mode = Mode.read)
 
         pdf = fmod.fixed_pdf
 
