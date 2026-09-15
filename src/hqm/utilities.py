@@ -6,7 +6,7 @@ from typing     import Final
 from rx_common  import Channel, Mass
 
 NpFltArray        = npt.NDArray[numpy.float64]
-SIZE : Final[int] = 10_000
+SIZE : Final[int] = 20_000
 # ------------------------------------------------
 def get_data(channel : Channel) -> dict[str,NpFltArray]:
     rng = numpy.random.default_rng()
