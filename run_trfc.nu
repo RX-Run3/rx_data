@@ -1,4 +1,3 @@
-#!/usr/bin/env nu
 
 mkdir logs
 let log_file     = $"logs/trfc_run_(date now | format date '%Y%m%d_%H%M%S').log"
@@ -12,17 +11,22 @@ let combinations = [
     {s: psi2, t: high}
 ]
 
-let total = ($blocks | length) * ($projects | length) * ($combinations | length)
-mut index = 0
+# Run fits to electron channel simulation to extract transfer functions 
+def main [ 
+    --binning (-b) : string # String defining binning, e.g. "mva_cmb-1 mva_prc-3"
+] {
+    let total = ($blocks | length) * ($projects | length) * ($combinations | length)
+    mut index = 0
 
-for block in $blocks {
-    let b_arg = $"block-($block) mva_cmb-7 mva_prc-7"
-    for project in $projects {
-        for c in $combinations {
-            $index = $index + 1
-            print $"[Progress: ($index)/($total)] block: ($block), project: ($project), -s ($c.s) -t ($c.t)"
-            hqm make-trfc -b $b_arg -p $project -s $c.s -t $c.t out+err>> $log_file
+    for block in $blocks {
+        let b_arg = $"block-($block) ($binning)"
+        for project in $projects {
+            for c in $combinations {
+                $index = $index + 1
+                print $"[Progress: ($index)/($total)] block: ($block), project: ($project), -s ($c.s) -t ($c.t)"
+                hqm make-trfc -b $b_arg -p $project -s $c.s -t $c.t out+err>> $log_file
+                return
+            }
         }
     }
 }
-
