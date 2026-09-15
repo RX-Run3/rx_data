@@ -19,6 +19,8 @@ let high_ee = []
 let jpsi_mm = [bpkpjpsimm, bdkstkpijpsimm]
 let psi2_mm = [bpkppsi2mm, bdkstkpipsi2mm]
 let high_mm = []
+
+const MODE  = "reuse"
 # -------------------------------
 def in_resonant [q2bin: string, component: string] {
     let in_jpsi = ($q2bin == 'jpsi' and $component in $jpsi_ee)
@@ -49,20 +51,32 @@ def skip_fit [q2bin: string, component: string, trigger: string] {
     return false
 }
 # -------------------------------
-for pair in $pairs {
-    for q2bin in [jpsi psi2 high] {
-        let skip = (skip_fit $q2bin $pair.component $pair.trigger)
-        if $skip {
-            continue
-        }
+def fit_mc [component : string, trigger : string, q2bin : string, binning : string] {
+    let is_leakage = not (in_resonant $q2bin $component)
+    if $is_leakage {
+        hqm fit-mc -c $component -t $trigger -q $q2bin       -b $binning -m $MODE
+    } else {
+        hqm fit-mc -c $component -t $trigger -q $q2bin -d -s -b $binning -m $MODE
+        hqm fit-mc -c $component -t $trigger -q $q2bin -k -s -b $binning -m $MODE
+    }
+}
+# -------------------------------
+def fit_all [] {
+    for pair in $pairs {
+        for q2bin in [jpsi psi2 high] {
+            let component = $pair.component
+            let trigger   = $pair.trigger
+            let binning   = "block-1 mva_cmb-6 mva_prc-7"
 
-        let is_leakage = not (in_resonant $q2bin $pair.component)
-        if $is_leakage {
-            hqm fit-mc -c $pair.component -t $pair.trigger -q $q2bin       -b 'block-1 mva_cmb-7 mva_prc-7'
-        } else {
-            hqm fit-mc -c $pair.component -t $pair.trigger -q $q2bin -d -s -b 'block-1 mva_cmb-7 mva_prc-7'
-            hqm fit-mc -c $pair.component -t $pair.trigger -q $q2bin -k -s -b 'block-1 mva_cmb-7 mva_prc-7'
+            let skip = (skip_fit $q2bin $component $trigger)
+            if $skip {
+                continue
+            }
+
+            fit_mc $component $trigger $q2bin $binning
+            return
         }
     }
 }
 # -------------------------------
+fit_all
