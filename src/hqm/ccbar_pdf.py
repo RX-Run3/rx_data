@@ -17,6 +17,7 @@ from hqm.data_store import DataStore
 from hqm.pdf_mc     import PdfBuilder
 from hqm.prec_maker import PrecMaker
 from hqm.ratc       import CCbarRatioCalculator
+from hqm.types      import Mode
 
 type zsum = zfit.pdf.SumPDF
 type zpdf = zfit.pdf.BasePDF
@@ -113,7 +114,7 @@ class CCbarPDFMaker:
             cfg     = cfg,
             binning = self.__binning,
             project = self.__project)
-        pdf = obj.get_pdf(update = True)
+        pdf = obj.get_pdf(mode = Mode.read)
 
         return pdf.representation
     # ---------------------------------
@@ -150,7 +151,7 @@ class CCbarPDFMaker:
             return obj.get_model(
                 obs_ext= obs, 
                 use_kde= False,
-                update = False)
+                mode   = Mode.read)
     # ---------------------------------
     def __get_ratio(self) -> tuple[float,float]:
         '''
