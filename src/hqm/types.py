@@ -1,7 +1,8 @@
 '''
 Module holding Enums
 '''
-from enum import StrEnum, auto
+from enum    import StrEnum, auto
+from pathlib import Path
 
 # ----------------------------------------------------
 class PRecRatio(StrEnum):
@@ -59,3 +60,18 @@ class Mode(StrEnum):
     '''
     If object found, use it, if not make it
     '''
+    # ----------------
+    def validate(self, path : Path) -> None:
+        '''
+        Will raise an exception if path is not consistent with current mode 
+
+        Parameters
+        -------------
+        path: Path to a file
+        '''
+        if self == Mode.read and not path.exists():
+            raise ValueError(f'Model not found: {path}')
+
+        if self == Mode.write and    path.exists():
+            raise ValueError(f'Model already found: {path}')
+# ----------------------------------------------------
