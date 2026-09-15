@@ -6,11 +6,11 @@ import numpy.typing as npt
 import pytest
 
 from contextlib     import ExitStack
-from dmu.stats      import ZFitPlotter, ZFitPlotterConf, print_pdf, zfit
+from dmu.stats      import print_pdf, zfit
 from dmu.stats      import FittedModel
 from pathlib        import Path
 from typing         import Final
-from rx_common      import Component, Qsq, Trigger, Cuts, Mass
+from rx_common      import Component, Qsq, Trigger
 from hqm.data_store import DataStore
 from hqm.pdf_mc     import PdfBuilder
 from hqm.types      import Mode
@@ -75,9 +75,9 @@ def test_simple_mm(
         '_PdfBuilder__get_arrays',
         _get_arrays_mm)
 
-    sel             = {}
-    sel[Cuts.q2   ] = f'(q2 > {qsq.lower_bound}) & (q2 < {qsq.upper_bound})'
-    sel[Cuts.block] = f'block == {block}'
+    sel          = {}
+    sel['q2   '] = f'(q2 > {qsq.lower_bound}) & (q2 < {qsq.upper_bound})'
+    sel['block'] = f'block == {block}'
 
     obs  = zfit.Space('B_Mass', limits = (4500, 6000))
 
@@ -114,10 +114,10 @@ def test_simple_ee(
         '_PdfBuilder__get_arrays',
         _get_arrays_ee)
 
-    qsq_name        = 'q2_dtf' if use_dtf else 'q2'
-    sel             = {}
-    sel[Cuts.q2   ] = f'({qsq_name} > {qsq.lower_bound}) & ({qsq_name} < {qsq.upper_bound})'
-    sel[Cuts.block] = f'block == {block}'
+    qsq_name     = 'q2_dtf' if use_dtf else 'q2'
+    sel          = {}
+    sel['q2'   ] = f'({qsq_name} > {qsq.lower_bound}) & ({qsq_name} < {qsq.upper_bound})'
+    sel['block'] = f'block == {block}'
 
     ctx2 = DataStore.selection(sel = sel, update = True)
     obs  = zfit.Space('B_Mass', limits = (4500, 6000))
@@ -154,9 +154,9 @@ def test_use_kde(tmp_path : Path, monkeypatch):
     qsq  = Qsq.psi2
     block= 1
 
-    sel             = {}
-    sel[Cuts.q2   ] = f'(q2 > {qsq.lower_bound}) & (q2 < {qsq.upper_bound})'
-    sel[Cuts.block] = f'block == {block}'
+    sel          = {}
+    sel['q2'   ] = f'(q2 > {qsq.lower_bound}) & (q2 < {qsq.upper_bound})'
+    sel['block'] = f'block == {block}'
 
     ctx2 = DataStore.selection(sel = sel, update = True)
     obs  = zfit.Space('B_Mass', limits = (4500, 6000))
@@ -169,7 +169,7 @@ def test_use_kde(tmp_path : Path, monkeypatch):
             trigger = trig,
             qsq     = qsq)
 
-        mod = obj.get_model(
+        obj.get_model(
             obs_ext= obs, 
             use_kde= True,
             mode   = Mode.write)
