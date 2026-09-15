@@ -61,22 +61,24 @@ def fit_mc [component : string, trigger : string, q2bin : string, binning : stri
     }
 }
 # -------------------------------
-def fit_all [] {
+def fit_all [wp : string] {
     for pair in $pairs {
         for q2bin in [jpsi psi2 high] {
-            let component = $pair.component
-            let trigger   = $pair.trigger
-            let binning   = "block-1 mva_cmb-6 mva_prc-7"
+            for block in 1..8 {
+                let component = $pair.component
+                let trigger   = $pair.trigger
+                let binning   = $"block-($block) ($wp)"
 
-            let skip = (skip_fit $q2bin $component $trigger)
-            if $skip {
-                continue
+                let skip = (skip_fit $q2bin $component $trigger)
+                if $skip {
+                    continue
+                }
+
+                fit_mc $component $trigger $q2bin $binning
+                return
             }
-
-            fit_mc $component $trigger $q2bin $binning
-            return
         }
     }
 }
 # -------------------------------
-fit_all
+fit_all "mva_cmb-5 mva_prc-5"
