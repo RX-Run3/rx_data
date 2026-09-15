@@ -18,6 +18,7 @@ from dmu.stats      import FitResult, Fitter, Model, ModelFactory
 from dmu.stats      import FittedModel, ModelFactoryConf, NonParametricModel
 from dmu.stats      import ZFitPlotter, ZFitPlotterConf, zfit
 from hqm.data_store import DataStore
+from hqm.types      import Mode
 
 log=LogStore.add_logger('hqm:pdf_mc')
 
@@ -364,32 +365,38 @@ class PdfBuilder:
     @overload
     def get_model(
         self, 
-        update : bool,
+        mode   : Mode,
         obs_ext: zobs,
         use_kde: Literal[False] = ...) -> FittedModel:...
     @overload
     def get_model(
         self, 
-        update : bool,
+        mode   : Mode,
         obs_ext: zobs,
         use_kde: Literal[True]) -> NonParametricModel:...
     def get_model(
         self, 
-        update : bool,
+        mode   : Mode,
         obs_ext: zobs,
         use_kde: bool = False) -> FittedModel | NonParametricModel:
         '''
         Parameters
         ---------------
         obs_ext: Observable that this model's PDF will use
-        update : If true will remake fit even if JSON file exists
         use_kde: If true won't try to fit to parametric model, default False
+        mode   : Controls how output will be made, read, write or update 
 
         Returns
         ---------------
         PDF associated to MC
         '''
-        if self.model_path.exists() and not update:
+        if     self.model_path.exists() and mode == Mode.write:
+            raise ValueError(f'Model already found: {self.model_path}')
+
+        if not self.model_path.exists() and mode == Mode.read:
+            raise ValueError(f'Model not found: {self.model_path}')
+
+        if self.model_path.exists() and mode != Mode.update:
             log.info(f'Loading model at: {self.model_path}')
             try:
                 return self.__load_model(use_kde, obs_ext)

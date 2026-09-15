@@ -10,8 +10,9 @@ from hqm.pdf_mc     import PdfBuilder
 from hqm.data_store import DataStore
 from hqm.config     import TransferFunctionMakerConf
 from hqm.binning    import BinningConf
+from hqm.types      import Mode
 
-update_opt = typer.Option(False, '-u', help = 'If used, will remake function even if already exists')
+mode_opt   : Mode = typer.Option(...  , '-m', help = 'Mode in which outputs will be created')
 use_dtf_opt= typer.Option(False, '-d', help = 'If used, will use q2_dtf in selection of data')
 use_kde_opt= typer.Option(False, '-k', help = 'If used, will use KDE for fit')
 smear_opt  = typer.Option(False, '-s', help = 'If used, will smear masses before applying selection')
@@ -22,7 +23,7 @@ binning_opt= typer.Option(...  , '-b', help = 'Binning, e.g. block-3')
 # ----------------------------------------------------------------------
 def fit_mc(
     component : str     = comp_opt,
-    update    : bool    = update_opt,
+    mode      : Mode    = mode_opt,
     use_dtf   : bool    = use_dtf_opt,
     use_kde   : bool    = use_kde_opt,
     trigger   : Trigger = trig_opt,
@@ -61,5 +62,5 @@ def fit_mc(
         mod = obj.get_model(
             obs_ext= obs,
             use_kde= use_kde,
-            update = update)
+            update = mode)
 # ----------------------------------------------------------------------

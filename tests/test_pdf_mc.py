@@ -13,6 +13,7 @@ from typing         import Final
 from rx_common      import Component, Qsq, Trigger, Cuts, Mass
 from hqm.data_store import DataStore
 from hqm.pdf_mc     import PdfBuilder
+from hqm.types      import Mode
 
 _SAMPLES_RK_EE : Final[list[tuple[Component,Trigger,Qsq,bool]]] = [
     (Component.bpkppsi2ee, Trigger.rk_ee_os, Qsq.jpsi, False),
@@ -90,7 +91,7 @@ def test_simple_mm(
             trigger = trig,
             qsq     = qsq)
 
-        mod = obj.get_model(obs_ext = obs, update = True)
+        mod = obj.get_model(obs_ext = obs, mode = Mode.write)
 
         print_pdf(pdf = mod.pdf)
 # --------------------
@@ -129,7 +130,7 @@ def test_simple_ee(
             trigger = trig,
             qsq     = qsq)
 
-        mod = obj.get_model(obs_ext = obs, update = True)
+        mod = obj.get_model(obs_ext = obs, mode = Mode.write)
         path= obj.model_path
 
         assert path.exists()
@@ -171,5 +172,5 @@ def test_use_kde(tmp_path : Path, monkeypatch):
         mod = obj.get_model(
             obs_ext= obs, 
             use_kde= True,
-            update = True)
+            mode   = Mode.write)
 # --------------------
