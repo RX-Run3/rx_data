@@ -396,7 +396,7 @@ class PdfBuilder:
         if not self.model_path.exists() and mode == Mode.read:
             raise ValueError(f'Model not found: {self.model_path}')
 
-        if self.model_path.exists() and mode != Mode.update:
+        if self.model_path.exists() and mode == Mode.reuse:
             log.info(f'Loading model at: {self.model_path}')
             try:
                 return self.__load_model(use_kde, obs_ext)

@@ -55,3 +55,7 @@ class Mode(StrEnum):
     '''
     Make object, even if already exists
     '''
+    reuse = auto()
+    '''
+    If object found, use it, if not make it
+    '''
