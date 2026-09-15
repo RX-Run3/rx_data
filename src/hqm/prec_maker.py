@@ -15,6 +15,7 @@ from hqm.config     import TransferFunctionMakerConf
 from hqm.data_store import DataStore
 from rx_common      import Block, Channel, Component, Mass, Cuts, Project, Qsq, Trigger
 from hqm.trfc       import TransferFunction
+from hqm.types      import Mode
 
 type zobs     = zfit.Space
 type zpdf     = zfit.pdf.BasePDF
@@ -212,8 +213,8 @@ class PrecMaker:
     # -------------------------
     def get_pdf(
         self,
-        update: bool,
-        name  : str = 'prec') -> SplinePDF:
+        mode : Mode,
+        name : str = 'prec') -> SplinePDF:
         '''
         Parameters
         ------------------
@@ -225,7 +226,9 @@ class PrecMaker:
         Zfit PDF for electron channel representing part reco background
         '''
         path = self.__get_path()
-        if path.exists() and not update:
+        mode.validate(path = path)
+
+        if path.exists() and mode == Mode.reuse:
             return SplinePDF.from_json(path = path, name = name)
 
         pdf_mm = self.__get_muon_pdf(out_dir = path.parent)
