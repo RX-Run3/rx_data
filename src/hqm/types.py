@@ -39,3 +39,19 @@ class PRecRatio(StrEnum):
             case PRecRatio.jpsi:
                 return r'$r^{part-reco}_{J/\psi}$'
 # ----------------------------------------------------
+class Mode(StrEnum):
+    '''
+    Type describing how an action should be ran
+    '''
+    read  = auto()
+    '''
+    Output expected to exist, raise if not found
+    '''
+    write = auto()
+    '''
+    Output not expected to exist, raise if found
+    '''
+    update= auto()
+    '''
+    Make object, even if already exists
+    '''
