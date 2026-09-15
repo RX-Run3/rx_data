@@ -25,8 +25,8 @@ def main [
                 $index = $index + 1
                 print $"[Progress: ($index)/($total)] block: ($block), project: ($project), -s ($c.s) -t ($c.t)"
                 hqm make-trfc -b $b_arg -p $project -s $c.s -t $c.t out+err>> $log_file
-                return
             }
+            return
         }
     }
 }
