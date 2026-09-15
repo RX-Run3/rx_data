@@ -8,14 +8,13 @@ import numpy.typing  as npt
 import pandas        as pnd
 
 from pathlib           import Path
-from rx_common         import Channel, Component, Cuts, Mass, Qsq, Trigger
+from rx_common         import Channel, Component, Cuts, Mass, Trigger
 from hqm.binning       import BinningConf
 from hqm.data_store    import DataStore
 from hqm.plotter       import Plotter
+from hqm.utilities     import get_data, SIZE
 from hqm.database_conf import DatabaseConf
 from dmu               import LogStore
-
-from .utilities        import get_data, SIZE
 
 type NpFltArray = npt.NDArray[numpy.float64]
 
@@ -97,7 +96,6 @@ def test_data_load(monkeypatch, tmp_path : Path):
 
     comp = Component.bpkpjpsiee
     trig = Trigger.rk_ee_os
-    qsq  = Qsq.high
 
     df   = _load_df_ee(self = None)
     cfg  = DatabaseConf.load()
@@ -122,7 +120,6 @@ def test_new_selection(monkeypatch, tmp_path : Path):
 
     comp = Component.bpkpjpsiee
     trig = Trigger.rk_ee_os
-    qsq  = Qsq.high
 
     df   = _load_df_ee(self = None)
     cfg  = DatabaseConf.load()
@@ -132,8 +129,8 @@ def test_new_selection(monkeypatch, tmp_path : Path):
     print(df)
 
     sel = dict()
-    sel[Cuts.q2]    = 'q2_dtf > 11e6'
-    sel[Cuts.block] = 'block == 1'
+    sel['q2']    = 'q2_dtf > 11e6'
+    sel['block'] = 'block == 1'
     with DataStore.selection(sel = sel, update = False):
         obj = DataStore(trig= trig, comp= comp)
 
@@ -157,7 +154,6 @@ def test_update_selection(
 
     comp = Component.bpkpjpsiee
     trig = Trigger.rk_ee_os
-    qsq  = Qsq.high
 
     df   = _load_df_ee(self = None)
     cfg  = DatabaseConf.load()
@@ -166,8 +162,8 @@ def test_update_selection(
 
     print(df)
 
-    sel          = dict()
-    sel[Cuts.q2] = 'q2_dtf > 11e6'
+    sel       = dict()
+    sel['q2'] = 'q2_dtf > 11e6'
 
     with pytest.raises(ValueError):
         with DataStore.selection(sel = sel, update = False):
@@ -192,7 +188,6 @@ def test_binning_selection(monkeypatch, tmp_path : Path):
 
     comp = Component.bpkpjpsiee
     trig = Trigger.rk_ee_os
-    qsq  = Qsq.high
 
     df   = _load_df_ee(self = None)
     cfg  = DatabaseConf.load()
@@ -226,7 +221,6 @@ def test_merge(monkeypatch, tmp_path : Path):
 
     comp = Component.bpkpjpsiee
     trig = Trigger.rk_ee_os
-    qsq  = Qsq.high
 
     df   = _load_df_ee(self = None)
     cfg  = DatabaseConf.load()
