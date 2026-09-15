@@ -1,7 +1,7 @@
 mkdir logs
 let log_file = $"logs/prec_run_(date now | format date '%Y%m%d_%H%M%S').log"
 let blocks   = seq 1 8
-let projects = ["rk"  , "rkst"]
+let projects = ["rk"] #  , "rkst"]
 let sources  = ["jpsi", "psi2"]
 let targets  = ["jpsi", "psi2", "high"]
 let total    = ($blocks | length) * ($projects | length) * ($sources | length) * ($targets | length)
