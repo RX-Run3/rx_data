@@ -18,6 +18,9 @@ let jpsi_mm = [bpkpjpsimm, bdkstkpijpsimm]
 let psi2_mm = [bpkppsi2mm, bdkstkpipsi2mm]
 let high_mm = []
 
+let q2bins  = [jpsi psi2 high]
+let blocks  = seq 1 8
+
 const MODE  = "reuse"
 # -------------------------------
 def in_resonant [q2bin: string, component: string] {
@@ -63,9 +66,9 @@ def fit_mc [component : string, trigger : string, q2bin : string, binning : stri
 def main [
     --wp (-w) : string # E.g. "mva_cmb-7 mva_prc-3"
 ] {
-    for pair in $pairs {
-        for q2bin in [jpsi psi2 high] {
-            for block in 1..8 {
+    for block in $blocks {
+        for pair in $pairs {
+            for q2bin in $q2bins {
                 let component = $pair.component
                 let trigger   = $pair.trigger
                 let binning   = $"block-($block) ($wp)"
@@ -76,9 +79,9 @@ def main [
                 }
 
                 fit_mc $component $trigger $q2bin $binning
-                return
             }
         }
+        return
     }
 }
 # -------------------------------
