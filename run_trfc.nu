@@ -2,7 +2,7 @@
 mkdir logs
 let log_file     = $"logs/trfc_run_(date now | format date '%Y%m%d_%H%M%S').log"
 let blocks       = seq 1 8
-let projects     = ["rk"]#, "rkst"]
+let projects     = ["rk"] #, "rkst"]
 let combinations = [
     {s: jpsi, t: jpsi},
     {s: jpsi, t: psi2},
