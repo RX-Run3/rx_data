@@ -84,13 +84,20 @@ def _get_fr_shape(self, comp : Component, qsq : Qsq) -> tuple[float,float]:
 
     return mu, sg
 #--------------------------------------
-def _get_mc_pdf(self, comp : Component, qsq : Qsq) -> zpdf:
+def _get_mc_pdf(
+    self, 
+    comp    : Component, 
+    qsq_src : Qsq,
+    qsq_tgt : Qsq) -> zpdf:
     _  = self
-    mu, sg = _get_fr_shape(self = 1, comp = comp, qsq = qsq)
+    _  = qsq_src 
+    _  = qsq_tgt
+
+    mu, sg = _get_fr_shape(self = 1, comp = comp, qsq = qsq_tgt)
 
     obs = zfit.Space('B_Mass', limits = _OBS_RANGE)
-    mu  = zfit.Parameter(f'mu_{comp}_{qsq}', mu, 4000, 7000)
-    sg  = zfit.Parameter(f'sg_{comp}_{qsq}', sg,    0, 300)
+    mu  = zfit.Parameter(f'mu_{comp}_{qsq_tgt}', mu, 4000, 7000)
+    sg  = zfit.Parameter(f'sg_{comp}_{qsq_tgt}', sg,    0, 300)
 
     mu.floating = False
     sg.floating = False
