@@ -12,6 +12,7 @@ from dmu.generic    import Serializable
 from hqm.data_store import DataStore
 from hqm.prec_maker import PrecMaker
 from hqm.pdf_mc     import PdfBuilder
+from hqm.types      import Mode
 from hqm.config     import CCbarRatioCalculatorConf, TransferFunctionMakerConf
 from hqm.trfc       import TransferFunction, TransferFunctionMaker
 from rx_common      import Block, Channel, Component, Mass, Project, Qsq, Trigger, Cuts
@@ -325,7 +326,7 @@ class CCbarRatioCalculator:
             mod = obj.get_model(
                 obs_ext = obs, 
                 use_kde = model == 'kde',
-                update  = False)
+                mode    = Mode.read)
 
             pdf = mod.get_pdf(name = f'{comp}_{qsq}')
 
@@ -402,8 +403,8 @@ class CCbarRatioCalculator:
             project = self._project)
 
         pdf = obj.get_pdf(
-            name   = f'prc_{qsq_src}_{qsq_tgt}',
-            update = False)
+            name = f'prc_{qsq_src}_{qsq_tgt}',
+            mode = Mode.read)
 
         return pdf
     #-----------------------------
