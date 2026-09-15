@@ -9,7 +9,7 @@ def main [
 ] {
     nu run_fits.nu   -w $binning
     nu run_trfc.nu   -b $binning
-    nu run_prec.nu   -b $binning
+    nu run_prec.nu   -w $binning
     nu run_ratios.nu -b $binning
-    nu run_chain.nu  -b $binning
+    nu run_ccbar.nu  -b $binning
 }
