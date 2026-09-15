@@ -1,7 +1,15 @@
-#!/usr/bin/env nu
+let projects = ["rk"] #, "rkst"]
+let blocks   = seq 1 8
 
-for project in ["rk", "rkst"] {
-    for iblock in 1..8 {
-        hqm make-ccbar -b $"block-($iblock) mva_cmb-7 mva_prc-7" -p $project
+# Will pick up ratios and templates and build a model representing the
+# charmonium leaking into the high-q2 bin
+def main [ 
+    --binning (-b) : string # Bin associated to this template, E.g. "mva_cmb-3 mva_prc-2"
+] {
+    for block in $blocks {
+        for project in $projects {
+            hqm make-ccbar -b $"block-($block) ($binning)" -p $project
+        }
+        return
     }
 }
