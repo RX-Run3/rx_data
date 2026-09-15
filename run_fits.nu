@@ -61,7 +61,10 @@ def fit_mc [component : string, trigger : string, q2bin : string, binning : stri
     }
 }
 # -------------------------------
-def fit_all [wp : string] {
+# Runs fits for a given bin
+def main [
+    --wp (-w) : string # E.g. "mva_cmb-7 mva_prc-3"
+] {
     for pair in $pairs {
         for q2bin in [jpsi psi2 high] {
             for block in 1..8 {
@@ -81,4 +84,3 @@ def fit_all [wp : string] {
     }
 }
 # -------------------------------
-fit_all "mva_cmb-5 mva_prc-5"
