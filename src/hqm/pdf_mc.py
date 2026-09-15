@@ -390,11 +390,7 @@ class PdfBuilder:
         ---------------
         PDF associated to MC
         '''
-        if     self.model_path.exists() and mode == Mode.write:
-            raise ValueError(f'Model already found: {self.model_path}')
-
-        if not self.model_path.exists() and mode == Mode.read:
-            raise ValueError(f'Model not found: {self.model_path}')
+        mode.validate(path = self.model_path)
 
         if self.model_path.exists() and mode == Mode.reuse:
             log.info(f'Loading model at: {self.model_path}')
