@@ -5,7 +5,7 @@ import zfit
 import numpy
 
 from functools      import lru_cache
-from typing         import Final
+from typing         import Final, Literal
 from pydantic       import BaseModel
 from dmu.stats      import FitResult, print_pdf
 from dmu.generic    import Serializable
@@ -24,10 +24,6 @@ log=LogStore.add_logger('hqm:ratc')
 
 type Loss = zfit.loss.ExtendedUnbinnedNLL
 type zpdf = zfit.pdf.BasePDF
-
-_MODELS         : Final[dict[str,str]] = {
-    'q2'     : 'kde',        # For standard q2 cut, use kde fits
-    'q2_dtf' : 'parametric'} # For dtf-q2 cut, use parametric fits, due to no shaping of tails
 
 _QSQ_NAME       : Final[str          ] = 'q2'       # Name of q2 variable that cut is applied on to build signal regions in data
 _SOURCE_CHANNEL : Final[Channel      ] = Channel.mm # Channel used to get original part reco distribution
@@ -296,15 +292,40 @@ class CCbarRatioCalculator:
 
         return pdf
     #-----------------------------
-    def __get_mc_pdf(
+    def __get_model_type(
         self, 
-        comp : Component, 
-        qsq  : Qsq) -> zpdf:
+        qsq_src : Qsq, 
+        qsq_tgt : Qsq) -> Literal['kde', 'parametric']:
         '''
         Parameters
         ---------------
-        comp: Component associated to PDF needed
-        qsq : q2-bin for which PDF is needed
+        qsq_src : q2-bin where component originally exists 
+        qsq_tgt : q2-bin for which PDF is needed
+
+        Returns
+        ---------------
+        Type of PDF used for this bin, either kde or parametric
+        '''
+        if _QSQ_NAME == 'q2_dtf': # DTF cut allows parametric fits, no tail shaping
+            return 'parametric'
+
+        if qsq_src == qsq_tgt: # non-dtf cut shapes tails in non-leaked components
+            return 'kde'
+
+        # Leakage components have less shaping with standard q2
+        return 'parametric'
+    #-----------------------------
+    def __get_mc_pdf(
+        self, 
+        comp    : Component, 
+        qsq_src : Qsq,
+        qsq_tgt : Qsq) -> zpdf:
+        '''
+        Parameters
+        ---------------
+        comp    : Component associated to PDF needed
+        qsq_src : q2-bin where component originally exists 
+        qsq_tgt : q2-bin for which PDF is needed
 
         Returns
         ---------------
@@ -312,23 +333,23 @@ class CCbarRatioCalculator:
         '''
         trigger = Trigger.get_main_trigger(project = self._project, channel = _TARGET_CHANNEL)
         obs     = self._cfg.observable.mass_obs
-        model   = _MODELS[_QSQ_NAME] 
+        model   = self.__get_model_type(qsq_src = qsq_src, qsq_tgt = qsq_tgt) 
 
         sel       = dict()
-        sel['q2'] = f'({_QSQ_NAME} > {qsq.lower_bound}) & ({_QSQ_NAME} < {qsq.upper_bound})'
+        sel['q2'] = f'({_QSQ_NAME} > {qsq_tgt.lower_bound}) & ({_QSQ_NAME} < {qsq_tgt.upper_bound})'
         with DataStore.selection(sel = sel, update = True):
             obj = PdfBuilder(
                 name    = f'{_QSQ_NAME}/{self._cfg.binning.dir_path}/{model}',
                 comp    = comp,
                 trigger = trigger,
-                qsq     = qsq)
+                qsq     = qsq_tgt)
 
             mod = obj.get_model(
                 obs_ext = obs, 
                 use_kde = model == 'kde',
                 mode    = Mode.read)
 
-            pdf = mod.get_pdf(name = f'{comp}_{qsq}')
+            pdf = mod.get_pdf(name = f'{comp}_{qsq_tgt}')
 
         for par in pdf.get_params():
             par.floating = False
@@ -350,7 +371,10 @@ class CCbarRatioCalculator:
             qsq          = qsq_src,
             is_part_reco = False)
 
-        pdf = self.__get_mc_pdf(comp = comp, qsq = qsq_tgt)
+        pdf = self.__get_mc_pdf(
+            comp    = comp, 
+            qsq_src = qsq_src,
+            qsq_tgt = qsq_tgt)
 
         return pdf
     #-----------------------------
