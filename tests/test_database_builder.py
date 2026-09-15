@@ -9,8 +9,7 @@ from pathlib              import Path
 from rx_common            import Channel, Component, Trigger
 from hqm.database_builder import DatabaseBuilder
 from hqm.database_conf    import DatabaseConf
-
-from .utilities           import get_data
+from hqm.utilities        import get_data
 
 # ----------------------
 @pytest.fixture(scope='session', autouse=True)
