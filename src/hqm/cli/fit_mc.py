@@ -42,12 +42,13 @@ def fit_mc(
 
     sel      = bins.selection
     if trigger.is_electron:
-        sel['brem'    ] = 'nbrem in [1, 2]'
-    sel[Cuts.q2   ] = f'({qsq_name} > {qsq.lower_bound}) & ({qsq_name} < {qsq.upper_bound})'
+        sel['brem'] = 'nbrem in [1, 2]'
+
+    sel['q2'] = f'({qsq_name} > {qsq.lower_bound}) & ({qsq_name} < {qsq.upper_bound})'
 
     ctx1  = DataStore.smear_masses(value = smear)
-    ctx2  = DataStore.selection(sel = sel, update = True)
-    obs   = zfit.Space('B_Mass', limits = (4500, 6000))
+    ctx2  = DataStore.selection(sel = sel, update = False)
+    obs   = zfit.Space('B_Mass', limits = (4600, 6000))
     with ExitStack() as stack:
         stack.enter_context(ctx1)
         stack.enter_context(ctx2)
