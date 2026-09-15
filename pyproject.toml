@@ -29,3 +29,6 @@ hqm = 'hqm.cli.main:main'
 [tool.ruff.lint]
 dummy-variable-rgx = "^$"
 select             = ["ARG"]
+
+[tool.pyrefly]
+project-includes = ["**/*.py*"]
