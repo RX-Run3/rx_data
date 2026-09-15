@@ -29,7 +29,7 @@ def test_unbinned_trfc(project : Project):
     '''
     Test configuration loader for unbinned case
     '''
-    cfg = TransferFunctionMakerConf.load(
+    TransferFunctionMakerConf.load(
         binning  = 'block-1',
         project  = project,
         source   = Qsq.psi2,
@@ -40,7 +40,7 @@ def test_binned_trfc(project : Project):
     '''
     Test configuration loader for binned case
     '''
-    cfg = TransferFunctionMakerConf.load(
+    TransferFunctionMakerConf.load(
         binning  = 'nbrem-2',
         project  = project,
         source   = Qsq.psi2,
@@ -52,7 +52,7 @@ def test_unbinned_ratio():
     '''
     Test unbinned ratio calculator configuration
     '''
-    cfg = CCbarRatioCalculatorConf.load(binning = 'block-1')
+    CCbarRatioCalculatorConf.load(binning = 'block-1')
 #----------------------------------
 def test_pars():
     '''

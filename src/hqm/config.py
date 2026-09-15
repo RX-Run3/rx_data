@@ -1,5 +1,4 @@
 import os
-import copy
 
 from functools   import cached_property
 from dmu         import LogStore
@@ -16,7 +15,7 @@ from rx_common   import Component, Project, Qsq
 from .binning    import BinConf, BinningConf
 
 log       = LogStore.add_logger('hqm:config')
-type zpar = zfit.Parameter
+type zpar = zfit.Parameter | zfit.ComposedParameter
 type zpdf = zfit.pdf.BasePDF
 type zobs = zfit.Space
 
