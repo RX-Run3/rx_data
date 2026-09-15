@@ -1,5 +1,3 @@
-#!/usr/bin/env nu
-
 let pairs = [
     [component     , trigger   ];
     [bpkpjpsiee    , rk_ee_os  ]
