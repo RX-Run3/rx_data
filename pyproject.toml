@@ -21,10 +21,7 @@ package-dir = {'' = 'src'}
 where = ['src']
 
 [tool.setuptools.package-data]
-hqm_data = [
-    'tests/*.json',
-    'config/*.yaml',
-]
+hqm_data = ['config/*.yaml']
 
 [project.scripts]
 hqm = 'hqm.cli.main:main'
