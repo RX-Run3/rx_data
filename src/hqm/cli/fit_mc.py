@@ -62,5 +62,5 @@ def fit_mc(
         mod = obj.get_model(
             obs_ext= obs,
             use_kde= use_kde,
-            update = mode)
+            mode   = mode)
 # ----------------------------------------------------------------------
