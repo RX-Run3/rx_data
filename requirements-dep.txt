@@ -749,6 +749,8 @@ types-protobuf==6.32.1.20251210
     # via types-tensorflow
 types-pytz==2025.2.0.20251108
     # via pandas-stubs
+types-pyyaml==6.0.12.20260906
+    # via -r requirements-dep.in
 types-requests==2.32.4.20250913
     # via types-tensorflow
 types-tensorflow==2.18.0.20251008

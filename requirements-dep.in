@@ -48,8 +48,8 @@ pdg
 pyarrow
 pydantic
 PyYAML
+types-PyYAML
 python-slugify
-pyYAML
 scikit-learn
 scipy
 seaborn
