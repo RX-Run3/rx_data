@@ -31,8 +31,8 @@ _TARGET_CHANNEL : Final[Channel      ] = Channel.ee # Channel where ratio will b
 
 _LEGS : Final[dict[str,str]] = {
     'jpsi_jpsi'                    : r'$B \to J/\psi(\to e^+e^-) H_s + X$',
-    'psi2_jpsi'                    : r'$B \to \psi(2S)(\to e^+e^-) H_s + X$',
     'jpsi_psi2'                    : r'$B \to J/\psi(\to e^+e^-) H_s + X$',
+    'psi2_jpsi'                    : r'$B \to \psi(2S)(\to e^+e^-) H_s + X$',
     'psi2_psi2'                    : r'$B \to \psi(2S)(\to e^+e^-) H_s + X$',
     Component.bpkpjpsiee.value     : Component.bpkpjpsiee.latex,
     Component.bpkppsi2ee.value     : Component.bpkppsi2ee.latex,
@@ -427,7 +427,7 @@ class CCbarRatioCalculator:
             project = self._project)
 
         pdf = obj.get_pdf(
-            name = f'prc_{qsq_src}_{qsq_tgt}',
+            name = f'{qsq_src}_{qsq_tgt}',
             mode = Mode.read)
 
         return pdf
