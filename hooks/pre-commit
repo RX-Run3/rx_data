@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ruff_output=$(ruff check .)
+ruff_output=$(ruff check . --fix)
 if [ $? -ne 0 ]; then
     echo "ruff failed on the following files:"
     echo "$ruff_output" | cut -d: -f1 | sort -u

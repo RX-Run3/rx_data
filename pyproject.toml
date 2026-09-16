@@ -27,7 +27,10 @@ hqm_data = ['config/*.yaml']
 hqm = 'hqm.cli.main:main'
 
 [tool.ruff.lint]
-select           = ["ARG", 'F']
+select           = ["ARG", 'F', 'W291', 'W293']
+
+[tool.ruff.format]
+docstring-code-format = true
 
 [tool.pyrefly]
 project-includes = ["**/*.py*"]
