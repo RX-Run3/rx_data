@@ -149,10 +149,11 @@ def test_use_kde(tmp_path : Path, monkeypatch):
         '_PdfBuilder__get_arrays',
         _get_arrays_ee)
 
-    comp = Component.bpkppsi2ee
-    trig = Trigger.rk_ee_os
-    qsq  = Qsq.psi2
-    block= 1
+    comp     = Component.bpkppsi2ee
+    trig     = Trigger.rk_ee_os
+    qsq      = Qsq.psi2
+    block    = 1
+    pdf_name = 'pdf_name'
 
     sel          = {}
     sel['q2'   ] = f'(q2 > {qsq.lower_bound}) & (q2 < {qsq.upper_bound})'
@@ -169,8 +170,14 @@ def test_use_kde(tmp_path : Path, monkeypatch):
             trigger = trig,
             qsq     = qsq)
 
-        obj.get_model(
+        model = obj.get_model(
             obs_ext= obs,
             use_kde= True,
             mode   = Mode.write)
+
+    pdf = model.get_pdf(name = pdf_name)
+
+    print_pdf(pdf = pdf) 
+
+    assert pdf.name == pdf_name
 # --------------------
