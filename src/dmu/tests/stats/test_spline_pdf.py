@@ -9,7 +9,7 @@ from pathlib     import Path
 from dmu.stats   import ZFitPlotterConf, ZFitPlotter
 from dmu.stats   import SplinePDF, zfit
 from dmu.stats   import utilities as sut
-from dmu.stats   import SplineRepr 
+from dmu.stats   import SplineRepr
 
 # ------------------------
 def test_simple(tmp_path : Path):
@@ -59,8 +59,8 @@ def test_from_non_spline(tmp_path : Path):
     pdf = zfit.pdf.Gauss(
         name  = name,
         label = label,
-        mu    = 5.0, 
-        sigma = 1.0, 
+        mu    = 5.0,
+        sigma = 1.0,
         obs   = obs)
 
     spline_pdf = SplinePDF.from_non_spline(pdf = pdf)
@@ -111,8 +111,8 @@ def test_representation():
     pdf  = SplinePDF(
         name = 'some_name',
         label= 'some_label',
-        obs  = obs, 
-        xs   = x_grid, 
+        obs  = obs,
+        xs   = x_grid,
         ys   = y_grid)
 
     assert isinstance(pdf.representation, SplineRepr)

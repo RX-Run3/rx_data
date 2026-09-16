@@ -40,13 +40,13 @@ class SplinePDF(zfit.pdf.ZPDF):
     _PARAMS = []
     # ------------------------------
     def __init__( # noqa: PLR0913
-        self, 
-        obs   : zobs, 
+        self,
+        obs   : zobs,
         *,
         name  : str = 'unnamed',
         label : str = 'unlabeled',
         norm  : zobs | None = None,
-        xs    : NpFltArr, 
+        xs    : NpFltArr,
         ys    : NpFltArr):
 
         self.__name = name
@@ -101,21 +101,21 @@ class SplinePDF(zfit.pdf.ZPDF):
         pdf = cls(
             name = pdf.name,
             label= pdf.label,
-            obs  = pdf.space, 
-            xs   = xs, 
+            obs  = pdf.space,
+            xs   = xs,
             ys   = ys)
 
         return pdf
     # ------------------------------
     @classmethod
     def from_json(
-        cls, 
+        cls,
         path : Path,
         name : str | None = None) -> 'SplinePDF':
         '''
         Parameters
         ---------------
-        path: Path to JSON file where PDF is stored 
+        path: Path to JSON file where PDF is stored
         name: If specified, will name the PDF like this, otherwise will pick name from JSON file
         '''
         cfg = SplineRepr.from_json(path = path)
