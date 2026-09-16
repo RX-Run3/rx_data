@@ -9,6 +9,8 @@ from pydantic import RootModel
 _MIN_COMPOSITE_PARS : Final[int] = 2
 # TODO: Add validation for parameter building
 # e.g. actually build the parameters
+
+type YieldConf = SimpleYieldConf | CompositeYieldConf
 # ------------------------------
 class SimpleYieldConf(BaseModel, frozen = True):            # Tested
     '''
@@ -43,19 +45,11 @@ class CompositeYieldConf(BaseModel, frozen = True):
 
         return self
 # ------------------------------
-class YieldConf(RootModel, frozen = True):
-    '''
-    Class meant to wrap SimpleYieldConf and CompositeYieldConf
-    pydantic models
-    '''
-    root : SimpleYieldConf | CompositeYieldConf
-# ------------------------------
-class YieldsConf(RootModel, frozen = True):
+class YieldsConf(RootModel[dict[str,YieldConf]], frozen = True):
     '''
     Class meant to represent dictionary between
     parameter and configuration
     '''
-    root : dict[str, YieldConf]
     # --------------------
     def __iter__(self):  # type: ignore[override]
         return iter(self.root.items())
@@ -67,5 +61,5 @@ class YieldsConf(RootModel, frozen = True):
         return self.root[key]
     # --------------------
     def __setitem__(self, key: str, val : YieldConf) -> None:
-        self.root[key].root = val.root
+        self.root[key] = val
 # ------------------------------
