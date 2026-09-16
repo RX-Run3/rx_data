@@ -319,7 +319,7 @@ class TransferFunctionMaker:
 
         return pdf
     #---------------------------------
-    def get_trf(self, update : bool) -> TransferFunction:
+    def get_trf(self, mode : Mode) -> TransferFunction:
         '''
         Will return transfer function
         '''
@@ -329,7 +329,8 @@ class TransferFunctionMaker:
             subdir  = f'{self._cfg.source}_to_{self._cfg.target}',
             fname   = 'trfc.json')
 
-        if json_path.exists() and not update:
+        mode.validate(path = json_path)
+        if json_path.exists() and mode == Mode.reuse:
             log.info(f'Transfer function found in {json_path}')
             return TransferFunction.from_json(path = json_path)
 

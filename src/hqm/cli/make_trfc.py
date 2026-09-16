@@ -3,19 +3,20 @@ Module used to expose build_database function to CLI
 '''
 import typer
 
+from hqm.types      import Mode
 from rx_common      import Project, Qsq
 from hqm.data_store import DataStore
 from hqm.config     import TransferFunctionMakerConf
 from hqm.trfc       import TransferFunctionMaker 
 
-update_opt= typer.Option(False, '-u', help = 'If used, will remake function even if already exists')
-proj_opt  = typer.Option(...  , '-p', help = 'Project, e.g. rk')
-src_opt   = typer.Option(...  , '-s', help = 'Source q2-bin')
-tgt_opt   = typer.Option(...  , '-t', help = 'Target q2-bin')
-bin_opt   = typer.Option(...  , '-b', help = 'Binning, e.g. "block-1 B_PT-3"')
+mode_opt  = typer.Option(..., '-m', help = 'Controls if transfer function will be remade, read, written or reused')
+proj_opt  = typer.Option(..., '-p', help = 'Project, e.g. rk')
+src_opt   = typer.Option(..., '-s', help = 'Source q2-bin')
+tgt_opt   = typer.Option(..., '-t', help = 'Target q2-bin')
+bin_opt   = typer.Option(..., '-b', help = 'Binning, e.g. "block-1 B_PT-3"')
 # ----------------------------------------------------------------------
 def make_trfc(
-    update  : bool    = update_opt,
+    mode    : Mode    = mode_opt,
     binning : str     = bin_opt,
     project : Project = proj_opt,
     source  : Qsq     = src_opt,
@@ -33,5 +34,5 @@ def make_trfc(
         obj         = TransferFunctionMaker(
             cfg     = cfg,
             project = project)
-        obj.get_trf(update = update)
+        obj.get_trf(mode = mode)
 # ----------------------------------------------------------------------

@@ -6,7 +6,8 @@ import numpy
 
 from pathlib     import Path
 from typing      import Final
-from rx_common   import Block, Project, Qsq
+from rx_common   import Project, Qsq
+from hqm.types   import Mode
 from hqm.trfc    import TransferFunctionMaker, TransferFunction
 from hqm.config  import TransferFunctionMakerConf
 from dmu         import LogStore
@@ -89,7 +90,7 @@ def test_upper_lower(
         cfg     = cfg,
         project = Project.rk)
 
-    trf = obj.get_trf(update = True)
+    trf = obj.get_trf(mode = Mode.write)
 
     path = tmp_path / 'transfer_function.json'
     trf.to_json(path = path)
