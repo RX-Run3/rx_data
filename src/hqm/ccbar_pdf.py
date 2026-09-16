@@ -167,7 +167,7 @@ class CCbarPDFMaker:
                 binning = self.__binning,
                 project = self.__project)
 
-            ratio = cal.get_ratio(update = False)
+            ratio = cal.get_ratio(mode = Mode.read)
 
         return ratio.get_value(name = _RATIO_NAME)
     # ---------------------------------
@@ -184,13 +184,13 @@ class CCbarPDFMaker:
     # ---------------------------------
     def get_pdf(
         self, 
-        obs    : zobs,
-        update : bool) -> CCbarPDF:
+        obs  : zobs,
+        mode : Mode) -> CCbarPDF:
         '''
         Parameters
         ------------
-        obs   : Observable of PDF
-        update: If true will remake PDF even if found
+        obs : Observable of PDF
+        mode: Specifies how to make PDF, reuse, read, write, update 
 
         Returns
         ------------
@@ -200,7 +200,9 @@ class CCbarPDFMaker:
             binning = self.__binning,
             project = self.__project)
 
-        if json_path.exists() and not update:
+        mode.validate(path = json_path)
+
+        if json_path.exists() and mode == Mode.reuse:
             return CCbarPDF.from_json(path = json_path)
 
         pdf_pr = self.__get_pr()
