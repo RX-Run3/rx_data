@@ -8,7 +8,6 @@ import numpy.typing as npt
 import matplotlib.pyplot as plt
 
 from pathlib        import Path
-from fitter         import PRec
 from typing         import Final
 from dmu            import LogStore
 from hqm.types      import Mode
@@ -16,7 +15,7 @@ from hqm.config     import CCbarRatioCalculatorConf
 from hqm.data_store import DataStore
 from hqm.ratc       import CCbarRatioCalculator
 from hqm.types      import PRecRatio
-from rx_common      import Block, Component, Project, Qsq, Cuts
+from rx_common      import Project
 
 binning_opt = typer.Option(...  , '-b', help = 'Binning, e.g. "mva_cmb-7 mva_prc-7"')
 

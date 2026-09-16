@@ -3,7 +3,6 @@ Module holding PdfBuilder
 '''
 import os
 import numpy
-import random
 import numpy.typing      as npt
 import matplotlib.pyplot as plt
 
@@ -12,10 +11,10 @@ from functools      import cached_property
 from pathlib        import Path
 from dmu.generic    import utilities as gut
 from pydantic       import BaseModel, RootModel
-from rx_common      import Component, Cuts, Mass, Trigger, Qsq
+from rx_common      import Component, Mass, Trigger, Qsq
 from dmu            import LogStore
-from dmu.stats      import FitResult, Fitter, Model, ModelFactory
-from dmu.stats      import FittedModel, ModelFactoryConf, NonParametricModel
+from dmu.stats      import Fitter, Model, ModelFactory
+from dmu.stats      import FittedModel, NonParametricModel
 from dmu.stats      import ZFitPlotter, ZFitPlotterConf, zfit
 from hqm.data_store import DataStore
 from hqm.types      import Mode

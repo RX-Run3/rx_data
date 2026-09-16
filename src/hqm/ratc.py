@@ -15,7 +15,7 @@ from hqm.pdf_mc     import PdfBuilder
 from hqm.types      import Mode
 from hqm.config     import CCbarRatioCalculatorConf, TransferFunctionMakerConf
 from hqm.trfc       import TransferFunction, TransferFunctionMaker
-from rx_common      import Block, Channel, Component, Mass, Project, Qsq, Trigger, Cuts
+from rx_common      import Channel, Component, Mass, Project, Qsq, Trigger, Cuts
 from dmu            import LogStore
 
 from .plotter       import Plotter

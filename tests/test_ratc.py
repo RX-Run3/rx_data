@@ -3,13 +3,12 @@ Module with tests for CCbarRatioCalculator class
 '''
 from hqm.types import Mode
 import pytest
-import numpy
 
 from typing      import Final
 from pathlib     import Path
 from dmu         import LogStore
 from dmu.stats   import zfit
-from rx_common   import Block, Component, Project, Qsq
+from rx_common   import Component, Project, Qsq
 from hqm.config  import CCbarRatioCalculatorConf
 from hqm.ratc    import CCbarRatioCalculator
 
