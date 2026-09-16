@@ -33,5 +33,7 @@ def make_prec(
         cfg     = cfg,
         binning = binning,
         project = project)
-    obj.get_pdf(mode = mode)
+    obj.get_pdf(
+        mode = mode,
+        name = f'{source}_{target}')
 # ----------------------------------------------------------------------

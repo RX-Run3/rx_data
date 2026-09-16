@@ -214,7 +214,7 @@ class PrecMaker:
     def get_pdf(
         self,
         mode : Mode,
-        name : str = 'prec') -> SplinePDF:
+        name : str) -> SplinePDF:
         '''
         Parameters
         ------------------
