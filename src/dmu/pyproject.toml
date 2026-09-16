@@ -36,6 +36,11 @@ dependencies = [
 [tool.ruff]
 select = ["F", "PL", "B"]
 
+[tool.pyrefly]
+project-includes = ["**/*.py*"]
+project-excludes = ["**/__pycache__/**"]
+search-path      = ["src"]
+
 [project.scripts]
 check_truth         = 'dmu_scripts.physics.check_truth:main'
 print_trees         = 'dmu_scripts.rfile.print_trees:main'
