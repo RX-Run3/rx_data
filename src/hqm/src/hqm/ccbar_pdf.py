@@ -9,6 +9,7 @@ from dmu.generic    import Serializable
 from dmu.stats      import FittedModel, ObsConf, zfit, SplinePDF
 from pydantic       import BaseModel
 from rx_common      import Channel, Component, Project, Qsq, Trigger
+from dmu            import LogStore
 from dmu.stats      import SplineRepr
 from hqm.binning    import BinningConf
 from hqm.config     import CCbarRatioCalculatorConf, SerializationConf, TransferFunctionMakerConf
@@ -31,6 +32,8 @@ _FULL_RECO_COMP : Final[dict[Project,Component]] = {
          Project.rk   : Component.bpkppsi2ee,
          Project.rkst : Component.bdkstkpipsi2ee,
 }
+
+log=LogStore.add_logger('hqm:ccbar_pdf')
 # ---------------------------------
 class CCbarPDF(BaseModel, Serializable, frozen = True):
     '''
