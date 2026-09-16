@@ -179,7 +179,7 @@ class PdfBuilder:
         comp   : Component,
         trigger: Trigger,
         qsq    : Qsq,
-        label  : str = ''):
+        label  : str = 'Unlabeled'):
         '''
         Parameters
         ------------------

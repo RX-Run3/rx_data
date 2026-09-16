@@ -54,7 +54,7 @@ def fit_mc(
 
         obj = PdfBuilder(
             name    = f'{qsq_name}/{bins.dir_path}/{model}',
-            label   = 'Smeared' if smear else '',
+            label   = 'Smeared' if smear else 'Unsmeared',
             comp    = comp,
             trigger = trigger,
             qsq     = qsq)

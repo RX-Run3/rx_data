@@ -114,7 +114,9 @@ class CCbarPDFMaker:
             cfg     = cfg,
             binning = self.__binning,
             project = self.__project)
-        pdf = obj.get_pdf(mode = Mode.read)
+        pdf = obj.get_pdf(
+            name = 'part-reco',
+            mode = Mode.read)
 
         return pdf.representation
     # ---------------------------------
