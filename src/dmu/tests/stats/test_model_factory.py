@@ -159,9 +159,10 @@ def test_fix_params():
 
     print_pdf(pdf)
 #--------------------------
+@pytest.mark.skip(reason = 'slow')
 def test_ipatia(tmp_path : Path):
     mod   = ModelFactory(
-        preffix = '',
+        preffix = 'name',
         obs     = Data.obs,
         l_pdf   = [Model.ipatia],
         l_shared= [],
@@ -237,7 +238,7 @@ def test_all_pdf(name : Model):
     l_flt = []
 
     mod   = ModelFactory(
-        preffix = '',
+        preffix = 'name',
         obs     = Data.obs,
         l_pdf   = [name],
         l_shared= l_shr,

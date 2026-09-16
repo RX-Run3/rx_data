@@ -2,6 +2,7 @@
 Module storing ZModel class
 '''
 
+from collections.abc import Set
 from functools       import cached_property
 from typing          import Self
 from contextlib      import contextmanager
@@ -10,7 +11,7 @@ from pydantic        import BaseModel, ConfigDict, Field
 from typing          import Callable
 from zfit.interface  import ZfitSpace     as zobs
 from zfit.pdf        import BasePDF       as zpdf
-from zfit.param      import Parameter     as zpar
+from zfit.param      import Parameter, ComposedParameter
 
 from dmu             import LogStore
 from dmu.stats       import ParameterLibrary as PL
@@ -25,6 +26,8 @@ from .zfit_models    import FermiDirac
 log=LogStore.add_logger('dmu:stats:model_factory')
 
 _FIX_CORRECTION : ContextVar[bool] = ContextVar('_FIX_CORRECTION', default = True)
+
+type zpar = Parameter | ComposedParameter
 # ------------------------------
 class ModelFactoryConf(BaseModel, frozen = True):
     '''
@@ -132,7 +135,7 @@ class ModelFactory:
     - Are scales or resolutions that need reparametrizations
     '''
     #-----------------------------------------
-    def __init__(self,
+    def __init__(self, # noqa: PLR0913, PLR0917
         preffix  : str,
         obs      : zobs,
         l_pdf    : list[Model],
@@ -155,6 +158,9 @@ class ModelFactory:
         '''
         l_reuse = []     if l_reuse is None else l_reuse
         values  = dict() if values  is None else values
+
+        if len(preffix) == 0:
+            raise ValueError('Preffix cannot be an empty string, it will be used as name')
 
         self._values  = values
         self._preffix = preffix
@@ -628,7 +634,7 @@ class ModelFactory:
 
         return pdf
     #-----------------------------------------
-    def _find_par(self, s_par : set[zpar], name_start : str) -> zpar:
+    def _find_par(self, s_par : Set[zpar], name_start : str) -> zpar:
         l_par_match = [ par for par in s_par if par.name.startswith(name_start) ]
         npar        = len(l_par_match)
 
