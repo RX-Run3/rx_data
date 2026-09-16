@@ -10,7 +10,7 @@ let mode     = "reuse"
 # - Selects lower sideband in muon data
 # - Fits it to a non-parametric PDF
 # - Convolves it with transfer function to produce part-reco templates
-def main [ 
+def main [
     --wp (-w) : string # String specifying working point, e.g. "mva_cmb-7 mva_prc-6"
 ] {
     mut index = 0
