@@ -9,9 +9,11 @@ from dmu.stats      import Model
 from dmu.stats      import YieldsConf
 from dmu.stats      import ParameterLibrary as PL
 from dmu.generic    import utilities        as gut
-from zfit.param     import Parameter        as zpar
+from zfit.param     import Parameter, ComposedParameter
 
 log=LogStore.add_logger('dmu:test_parameter_library')
+
+type zpar = Parameter | ComposedParameter
 # ----------------------
 @pytest.fixture(scope='module', autouse=True)
 def initialize():

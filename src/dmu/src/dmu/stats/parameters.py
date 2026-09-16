@@ -8,7 +8,7 @@ from pathlib               import Path
 from contextvars           import ContextVar
 from contextlib            import contextmanager
 from importlib.resources   import files
-from zfit.param            import Parameter as zpar
+from zfit.param            import Parameter, ComposedParameter
 from dmu                   import LogStore
 
 from .types                import Model
@@ -19,6 +19,8 @@ from .imports              import zfit
 
 log      = LogStore.add_logger('dmu:parameters')
 _YLD_CFG : ContextVar[YieldsConf | None] = ContextVar('_YLD_CFG', default = None)
+
+type zpar = Parameter | ComposedParameter
 # --------------------------------
 class ParameterLibrary:
     '''
@@ -83,7 +85,7 @@ class ParameterLibrary:
         if parameter not in cls._values[kind]:
             raise ValueError(f'For PDF {kind}, cannot find parameter: {parameter}')
 
-        cfg = cls._values[kind][parameter].root
+        cfg = cls._values[kind][parameter]
         if not isinstance(cfg, SimpleYieldConf):
             raise ValueError(f'Parameter {parameter} is not elementary: {cfg}')
 
@@ -104,19 +106,20 @@ class ParameterLibrary:
         This function will override the value and range for the given parameter
         It should be typically used before using the ModelFactory class
         '''
-        old_par = cls._values[kind][parameter].root
-
-        cls._values[kind][parameter].root = SimpleYieldConf(
+        old = cls._values[kind][parameter]
+        new = SimpleYieldConf(
             val = val, 
             min = low, 
             max = high)
+
+        cls._values[kind][parameter] = new
 
         @contextmanager
         def _context():
             try:
                 yield
             finally:
-                cls._values[kind][parameter].root = old_par 
+                cls._values[kind][parameter] = old
 
         return _context()
     # ----------------------
@@ -168,7 +171,7 @@ class ParameterLibrary:
 
         cfg_yld = cfg[name]
 
-        match cfg_yld.root:
+        match cfg_yld:
             case CompositeYieldConf() as cfg:
                 par = cls._get_composite_yield(name = name, cfg = cfg)
                 cls._d_par[name] = par
@@ -238,7 +241,10 @@ class ParameterLibrary:
         if len(pars) == 0:
             raise ValueError(f'No factor parameters found for: {name}')
 
-        comp_par = zfit.ComposedParameter(name, lambda pars : math.prod(pars), params=pars)
+        def _product(pars : list[zpar]):
+            return math.prod(pars)
+
+        comp_par = zfit.ComposedParameter(name, _product, params=pars)
 
         return comp_par
     # ----------------------
