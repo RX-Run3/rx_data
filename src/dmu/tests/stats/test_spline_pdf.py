@@ -50,20 +50,34 @@ def test_from_non_spline(tmp_path : Path):
     '''
     Test building SplinePDF from non-spline
     '''
+    name = 'pdf_name'
+    label= 'pdf_label'
+
     xs  = np.linspace(1, 10, 400)
     obs = zfit.Space("x", limits=(1, 10))
 
-    pdf        = zfit.pdf.Gauss(mu = 5.0, sigma = 1.0, obs = obs)
+    pdf = zfit.pdf.Gauss(
+        name  = name,
+        label = label,
+        mu    = 5.0, 
+        sigma = 1.0, 
+        obs   = obs)
+
     spline_pdf = SplinePDF.from_non_spline(pdf = pdf)
 
     y1s =        pdf.pdf(xs)
     y2s = spline_pdf.pdf(xs)
+
+    sut.print_pdf(pdf = spline_pdf)
 
     plt.scatter(xs, y1s, s = 6, label = 'Original')
     plt.scatter(xs, y2s, s = 1, label = 'Spline'  )
     plt.legend()
     plt.savefig(tmp_path / 'comparison.png')
     plt.close()
+
+    assert spline_pdf.name  == pdf.name
+    assert spline_pdf.label == pdf.label
 
     assert np.isclose(y1s, y2s, atol = 1e-4).all()
     assert isinstance(spline_pdf, SplinePDF)

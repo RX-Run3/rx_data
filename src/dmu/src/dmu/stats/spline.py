@@ -98,7 +98,14 @@ class SplinePDF(zfit.pdf.ZPDF):
         if isinstance(ys, Tensor):
             ys = ys.numpy()
 
-        return cls(obs = pdf.space, xs = xs, ys = ys)
+        pdf = cls(
+            name = pdf.name,
+            label= pdf.label,
+            obs  = pdf.space, 
+            xs   = xs, 
+            ys   = ys)
+
+        return pdf
     # ------------------------------
     @classmethod
     def from_json(
