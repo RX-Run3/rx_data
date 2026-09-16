@@ -54,7 +54,7 @@ def skip_fit [q2bin: string, component: string, trigger: string] {
 def fit_mc [component : string, trigger : string, q2bin : string, binning : string] {
     let is_leakage = not (in_resonant $q2bin $component)
     if $is_leakage {
-        hqm fit-mc -c $component -t $trigger -q $q2bin       -b $binning -m $mode
+        hqm fit-mc -c $component -t $trigger -q $q2bin    -s -b $binning -m $mode
     } else {
         hqm fit-mc -c $component -t $trigger -q $q2bin -d -s -b $binning -m $mode
         hqm fit-mc -c $component -t $trigger -q $q2bin -k -s -b $binning -m $mode
