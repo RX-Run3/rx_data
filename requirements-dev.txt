@@ -8,6 +8,7 @@ ruff
 pyrefly
 -e src/ap_utilities
 -e src/dmu
+-e src/hqm
 -e src/ecal_calibration
 -e src/fitter
 -e src/post_ap
