@@ -99,7 +99,7 @@ def test_name(tmp_path : Path):
 
     sut.print_pdf(pdf = pdf)
 # ------------------------
-def test_representation(tmp_path : Path):
+def test_representation():
     '''
     Test accessing class representation
     '''
@@ -108,7 +108,14 @@ def test_representation(tmp_path : Path):
     y_grid   = (x_grid - 2)**2 * (x_grid - 5)**2 * (x_grid - 8)**2 + 1
 
     obs  = zfit.Space("x", limits=(1, 10))
-    pdf  = SplinePDF(obs = obs, xs = x_grid, ys = y_grid)
+    pdf  = SplinePDF(
+        name = 'some_name',
+        label= 'some_label',
+        obs  = obs, 
+        xs   = x_grid, 
+        ys   = y_grid)
 
     assert isinstance(pdf.representation, SplineRepr)
+
+    sut.print_pdf(pdf = pdf)
 # ------------------------
