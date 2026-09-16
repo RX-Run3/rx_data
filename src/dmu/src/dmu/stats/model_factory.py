@@ -615,11 +615,16 @@ class ModelFactory:
         nfrc = len(l_pdf)
         if nfrc == 1:
             log.debug('Requested only one PDF, skipping sum')
-            return l_pdf[0]
+            pdf = l_pdf[0]
+
+            return pdf.copy(name = self._preffix)
 
         l_frc= [ zfit.param.Parameter(f'mod_frc_{self._preffix}_{ifrc + 1}', 0.5, 0, 1) for ifrc in range(nfrc - 1) ]
 
-        pdf = zfit.pdf.SumPDF(l_pdf, name=self._preffix, fracs=l_frc)
+        pdf = zfit.pdf.SumPDF(
+            pdfs = l_pdf, 
+            name = self._preffix, 
+            fracs= l_frc)
 
         return pdf
     #-----------------------------------------
