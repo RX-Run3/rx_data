@@ -452,7 +452,7 @@ class CCbarRatioCalculator:
             cfg      = cfg,
             project  = self._project)
 
-        return obj.get_trf(update = False)
+        return obj.get_trf(mode = Mode.read)
     #-----------------------------
     def get_ratio(self, mode : Mode) -> CCbarRatio:
         '''
