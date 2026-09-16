@@ -3,10 +3,8 @@ Module with make_prec function, needed to create part reco electron templates fr
 '''
 import typer
 
-from contextlib     import ExitStack
-from rx_common      import Block, Project, Qsq, Cuts
+from rx_common      import Project, Qsq
 from hqm.prec_maker import PrecMaker
-from hqm.data_store import DataStore
 from hqm.config     import TransferFunctionMakerConf
 from hqm.types      import Mode
 
