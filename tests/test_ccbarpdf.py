@@ -4,10 +4,10 @@ Module holding tests for CCbarPDF
 import matplotlib.pyplot as plt
 
 from hqm           import ccbar_pdf 
-from contextlib    import contextmanager
 from pathlib       import Path
 from rx_common     import Project
 from hqm.ccbar_pdf import CCbarPDFMaker
+from hqm.types     import Mode
 from dmu.stats     import FittedModel, Fitter, Model, ModelFactory
 from dmu.stats     import ObsConf, ModelFactoryConf, SplinePDF, ZFitPlotter, ZFitPlotterConf, print_pdf, zfit
 
@@ -21,8 +21,8 @@ class TestCCbarRatioCalculator:
     def __init__(self, cfg, binning, project):
         pass
 
-    def get_ratio(self, update):
-        _ = update
+    def get_ratio(self, mode):
+        _ = mode
         return TestRatio()
 # ----------------------------
 class TestPdfBuilder:
@@ -35,9 +35,9 @@ class TestPdfBuilder:
         label  : str = ''):
         pass
     # ----------------------------
-    def get_model(self, obs_ext, use_kde, update):
+    def get_model(self, obs_ext, use_kde, mode):
         _ = use_kde
-        _ = update
+        _ = mode 
 
         cfg_obs = ObsConf(name = 'B_Mass', lower = 4600, upper = 6500)
         cfg_mod = ModelFactoryConf.default(pdfs = [Model.gauss])
@@ -71,8 +71,8 @@ class TestPrecMaker:
         project):
         pass
     # ----------------------------
-    def get_pdf(self, update):
-        _   = update
+    def get_pdf(self, mode):
+        _   = mode
 
         obs = zfit.Space('B_Mass', limits=(4600, 6500))
         c   = zfit.Parameter('c',   -0.001,   -0.01,  0)
@@ -99,7 +99,7 @@ def test_simple(monkeypatch, tmp_path : Path):
         binning = binning,
         project = project)
 
-    model= ccb.get_pdf(obs = obs, update = False)
+    model= ccb.get_pdf(obs = obs, mode = Mode.write)
     data = model.pdf.create_sampler(n = 10_000)
 
     cfg = ZFitPlotterConf.default()
