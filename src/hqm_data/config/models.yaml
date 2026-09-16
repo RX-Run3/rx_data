@@ -29,7 +29,7 @@ shape_ee_up: &sh_ee_up
     - 5700
   sg:
     - 100
-    - 10
+    -   5
     - 500
   rn:
     - 5200
@@ -51,7 +51,7 @@ shape_mm_cn: &sh_mm_cn
   mu:
     - 5280
     - 5270
-    - 5310 
+    - 5310
   sg:
     - 15
     - 10
@@ -92,9 +92,9 @@ muon:
 out_dir : DB/hqm/models
 mod_cfg :
   low_stats:
-    stats : [   150,   10000]
+    stats : [   300,   10000]
     models: [ suj ]
-  mid_stats: 
+  mid_stats:
     stats : [ 10000,  100000]
     models: [ dscb ]
   high_stats:
