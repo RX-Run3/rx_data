@@ -17,7 +17,7 @@ type NpFltArr = npt.NDArray[numpy.float64]
 #-----------------------------
 class Plotter:
     '''
-    Class meant to hold plotting functionality 
+    Class meant to hold plotting functionality
     '''
     #-----------------------------
     def __init__(self, out_dir : Path):
@@ -41,7 +41,7 @@ class Plotter:
         else:
             array = data
 
-        upper = array.max() 
+        upper = array.max()
 
         return lower, upper
     #-----------------------------
@@ -50,7 +50,7 @@ class Plotter:
         Parameters
         -------------
         name : Used to build path, i.e. {PATH_DIR}/{name}.png
-        data : Zfit data object 
+        data : Zfit data object
         '''
         array = data.to_numpy()
 
@@ -73,9 +73,9 @@ class Plotter:
         plt.close()
     #-----------------------------
     def plot_nll(
-        self, 
-        name : str, 
-        nll  : Loss, 
+        self,
+        name : str,
+        nll  : Loss,
         legs : dict[str,str]) -> None:
         '''
         Parameters
@@ -90,9 +90,9 @@ class Plotter:
         self.plot_fit(name = name, pdf = pdf, data = dat, legs = legs)
     #-----------------------------
     def plot_fit(
-        self, 
-        name : str, 
-        pdf  : zpdf, 
+        self,
+        name : str,
+        pdf  : zpdf,
         legs : dict[str,str],
         data : numpy.ndarray | zfit.Data) -> None:
 
@@ -120,7 +120,7 @@ class Plotter:
         Parameters
         -------------
         name : Used to build path, i.e. {PATH_DIR}/{name}.png
-        pdf  : PDF 
+        pdf  : PDF
         '''
         lower, upper = sut.range_from_obs(obs = pdf.space)
 

@@ -21,16 +21,16 @@ def make_prec(
     target  : Qsq     = tgt_opt,
     binning : str     = binning_opt):
     '''
-    Make part reco PDF through transfer function and muon data 
+    Make part reco PDF through transfer function and muon data
     '''
     cfg = TransferFunctionMakerConf.load(
-        binning  = binning, 
+        binning  = binning,
         project  = project,
         source   = source,
         target   = target)
 
     obj = PrecMaker(
-        cfg     = cfg, 
+        cfg     = cfg,
         binning = binning,
         project = project)
     obj.get_pdf(mode = mode)

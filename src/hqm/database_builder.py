@@ -5,7 +5,7 @@ import pandas as pnd
 
 from typing         import Final
 from rx_selection   import selection as sel
-from ROOT           import RDF # type: ignore 
+from ROOT           import RDF # type: ignore
 from rx_common      import Trigger, Component, Qsq
 from dmu            import LogStore
 from rx_data        import RDFGetter
@@ -23,7 +23,7 @@ class DatabaseBuilder:
     '''
     # ----------------------------------
     def __init__(
-        self, 
+        self,
         cfg : DatabaseConf,
         trig: Trigger,
         comp: Component):
@@ -50,7 +50,7 @@ class DatabaseBuilder:
 
         rdf  = gtr.get_rdf(per_file = False)
         path = self._cfg.get_path(
-            comp = self._comp, 
+            comp = self._comp,
             trig = self._trig)
 
         with sel.custom_selection(d_sel = self._cfg.selection):
@@ -97,7 +97,7 @@ class DatabaseBuilder:
         df   = pnd.DataFrame(data)
 
         path = self._cfg.get_path(
-            trig = self._trig, 
+            trig = self._trig,
             comp = self._comp)
 
         log.debug('Using columns:')

@@ -27,7 +27,7 @@ def get_data(channel : Channel) -> dict[str,NpFltArray]:
     if channel == Channel.ee:
         data['nbrem'    ] = rng.integers(low = 1, high = 3, size = SIZE).astype(numpy.float64)
     else:
-        data['nbrem'    ] = numpy.zeros(shape = SIZE) 
+        data['nbrem'    ] = numpy.zeros(shape = SIZE)
 
     data['B_ETA']     = rng.normal(loc = 0.0, scale = 1.0, size = SIZE)
     data['ll_angle' ] = rng.normal(loc = 0.5, scale = 0.2, size = SIZE)

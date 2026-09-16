@@ -134,7 +134,7 @@ class PdfBuilderConf(BaseModel, frozen = True):
         -------------
         comp : Component been fitted
         trig : Trigger associated to data
-        qsq  : q2-bin in which component data will be fitted 
+        qsq  : q2-bin in which component data will be fitted
 
         Returns
         -------------
@@ -225,8 +225,8 @@ class PdfBuilder:
 
         if models:
             mod = self.__run_parametric_fit(
-                models = models, 
-                cfg    = cfg_par, 
+                models = models,
+                cfg    = cfg_par,
                 data   = data)
         else:
             mod = NonParametricModel.from_data(
@@ -238,7 +238,7 @@ class PdfBuilder:
         return mod
     # ----------------------------
     def __run_parametric_fit(
-        self, 
+        self,
         models : list[Model],
         cfg    : RangesConf,
         data   : zdat) -> FittedModel:
@@ -246,7 +246,7 @@ class PdfBuilder:
         Parameters
         --------------
         models: List of models needed for fit
-        cfg   : Configuration describing ranges 
+        cfg   : Configuration describing ranges
         data  : Zfit data
 
         Returns
@@ -276,7 +276,7 @@ class PdfBuilder:
             pdf = pdf,
             res = res)
 
-        return fmod 
+        return fmod
     # ----------------------------
     def _get_data(
         self,
@@ -286,7 +286,7 @@ class PdfBuilder:
         Parameters
         ------------------
         mass: Used to build observable for data and get array of masses
-        obs : Observable used to build zfit data object 
+        obs : Observable used to build zfit data object
 
         Returns
         ------------------
@@ -363,18 +363,18 @@ class PdfBuilder:
     # ----------------------------
     @overload
     def get_model(
-        self, 
+        self,
         mode   : Mode,
         obs_ext: zobs,
         use_kde: Literal[False] = ...) -> FittedModel:...
     @overload
     def get_model(
-        self, 
+        self,
         mode   : Mode,
         obs_ext: zobs,
         use_kde: Literal[True]) -> NonParametricModel:...
     def get_model(
-        self, 
+        self,
         mode   : Mode,
         obs_ext: zobs,
         use_kde: bool = False) -> FittedModel | NonParametricModel:
@@ -383,7 +383,7 @@ class PdfBuilder:
         ---------------
         obs_ext: Observable that this model's PDF will use
         use_kde: If true won't try to fit to parametric model, default False
-        mode   : Controls how output will be made, read, write or update 
+        mode   : Controls how output will be made, read, write or update
 
         Returns
         ---------------

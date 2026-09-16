@@ -3,7 +3,7 @@ Module holding tests for CCbarPDF
 '''
 import matplotlib.pyplot as plt
 
-from hqm           import ccbar_pdf 
+from hqm           import ccbar_pdf
 from pathlib       import Path
 from rx_common     import Project
 from hqm.ccbar_pdf import CCbarPDFMaker
@@ -37,7 +37,7 @@ class TestPdfBuilder:
     # ----------------------------
     def get_model(self, obs_ext, use_kde, mode):
         _ = use_kde
-        _ = mode 
+        _ = mode
 
         cfg_obs = ObsConf(name = 'B_Mass', lower = 4600, upper = 6500)
         cfg_mod = ModelFactoryConf.default(pdfs = [Model.gauss])

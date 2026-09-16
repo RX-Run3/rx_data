@@ -84,7 +84,7 @@ class CCbarRatioCalculator:
         '''
         self._cfg      = cfg
         self._project  = project
-        self._binning  = binning 
+        self._binning  = binning
         self._out_dir  = self._cfg.make_path(kind='ratios', project = project)
         self._plotter  = Plotter(out_dir = self._out_dir)
         self._ntoys    = ntoys
@@ -241,10 +241,10 @@ class CCbarRatioCalculator:
         return pdf
     #-----------------------------
     def __extend_fr(
-        self, 
-        pdf_fr  : zpdf, 
-        pdf_pr  : zpdf, 
-        qsq_src : Qsq, 
+        self,
+        pdf_fr  : zpdf,
+        pdf_pr  : zpdf,
+        qsq_src : Qsq,
         qsq_tgt : Qsq) -> zpdf:
         '''
         ```math
@@ -293,13 +293,13 @@ class CCbarRatioCalculator:
         return pdf
     #-----------------------------
     def __get_model_type(
-        self, 
-        qsq_src : Qsq, 
+        self,
+        qsq_src : Qsq,
         qsq_tgt : Qsq) -> Literal['kde', 'parametric']:
         '''
         Parameters
         ---------------
-        qsq_src : q2-bin where component originally exists 
+        qsq_src : q2-bin where component originally exists
         qsq_tgt : q2-bin for which PDF is needed
 
         Returns
@@ -316,15 +316,15 @@ class CCbarRatioCalculator:
         return 'parametric'
     #-----------------------------
     def __get_mc_pdf(
-        self, 
-        comp    : Component, 
+        self,
+        comp    : Component,
         qsq_src : Qsq,
         qsq_tgt : Qsq) -> zpdf:
         '''
         Parameters
         ---------------
         comp    : Component associated to PDF needed
-        qsq_src : q2-bin where component originally exists 
+        qsq_src : q2-bin where component originally exists
         qsq_tgt : q2-bin for which PDF is needed
 
         Returns
@@ -333,7 +333,7 @@ class CCbarRatioCalculator:
         '''
         trigger = Trigger.get_main_trigger(project = self._project, channel = _TARGET_CHANNEL)
         obs     = self._cfg.observable.mass_obs
-        model   = self.__get_model_type(qsq_src = qsq_src, qsq_tgt = qsq_tgt) 
+        model   = self.__get_model_type(qsq_src = qsq_src, qsq_tgt = qsq_tgt)
 
         sel       = dict()
         sel['q2'] = f'({_QSQ_NAME} > {qsq_tgt.lower_bound}) & ({_QSQ_NAME} < {qsq_tgt.upper_bound})'
@@ -345,7 +345,7 @@ class CCbarRatioCalculator:
                 qsq     = qsq_tgt)
 
             mod = obj.get_model(
-                obs_ext = obs, 
+                obs_ext = obs,
                 use_kde = model == 'kde',
                 mode    = Mode.read)
 
@@ -365,14 +365,14 @@ class CCbarRatioCalculator:
 
         Returns
         ------------------
-        Fully reconstructed component's PDF, not extended 
+        Fully reconstructed component's PDF, not extended
         '''
         comp = self.__component_from_qsq(
             qsq          = qsq_src,
             is_part_reco = False)
 
         pdf = self.__get_mc_pdf(
-            comp    = comp, 
+            comp    = comp,
             qsq_src = qsq_src,
             qsq_tgt = qsq_tgt)
 
@@ -422,7 +422,7 @@ class CCbarRatioCalculator:
             target   = qsq_tgt)
 
         obj = PrecMaker(
-            cfg     = cfg, 
+            cfg     = cfg,
             binning = self._binning,
             project = self._project)
 

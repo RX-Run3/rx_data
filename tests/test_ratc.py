@@ -49,16 +49,16 @@ def _get_fr_entries(qsq_src : Qsq, qsq_tgt : Qsq) -> int:
 def _get_pr_shape(self, qsq_src : Qsq, qsq_tgt : Qsq) -> tuple[float,float]:
     _  = self
     if qsq_src == Qsq.jpsi and qsq_tgt == Qsq.jpsi:
-        return 5100, 150 
+        return 5100, 150
 
     if qsq_src == Qsq.psi2 and qsq_tgt == Qsq.jpsi:
-        return 4700, 150 
+        return 4700, 150
 
     if qsq_src == Qsq.psi2 and qsq_tgt == Qsq.psi2:
-        return 5000, 150 
+        return 5000, 150
 
     if qsq_src == Qsq.jpsi and qsq_tgt == Qsq.psi2:
-        return 4700, 150 
+        return 4700, 150
 
     raise ValueError(f'Invalid q2 bin: {qsq_src}')
 #-------------------------------------
@@ -85,12 +85,12 @@ def _get_fr_shape(self, comp : Component, qsq : Qsq) -> tuple[float,float]:
     return mu, sg
 #--------------------------------------
 def _get_mc_pdf(
-    self, 
-    comp    : Component, 
+    self,
+    comp    : Component,
     qsq_src : Qsq,
     qsq_tgt : Qsq) -> zpdf:
     _  = self
-    _  = qsq_src 
+    _  = qsq_src
     _  = qsq_tgt
 
     mu, sg = _get_fr_shape(self = 1, comp = comp, qsq = qsq_tgt)
@@ -125,7 +125,7 @@ def _get_mu_sg(qsq_src: Qsq, qsq_tgt: Qsq) -> tuple[float, float]:
 def _get_pr_pdf(self, qsq_src : Qsq, qsq_tgt : Qsq) -> zpdf:
     _  = self
     mu, sg      = _get_pr_shape(
-        self    = 1, 
+        self    = 1,
         qsq_src = qsq_src,
         qsq_tgt = qsq_tgt)
 

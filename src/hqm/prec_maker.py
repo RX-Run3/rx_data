@@ -44,11 +44,11 @@ class PrecMaker:
         '''
         Parameters
         ----------------
-        binning: String defining binning 
+        binning: String defining binning
         cfg    : Configuration for transfer function
         project: E.g. rk or rkst, needed to extract masses,
         '''
-        self.__proj = project 
+        self.__proj = project
         self.__cfg  = cfg
         self.__sel  = self.__get_selection(binning = binning)
     # -------------------------
@@ -67,12 +67,12 @@ class PrecMaker:
         - Overriding of block for blocks with missing low sideband
         '''
         bin_obj = BinningConf.load()
-        bins    = bin_obj.from_str(binning) 
+        bins    = bin_obj.from_str(binning)
         block   = bins.block
         qsq     = self.__cfg.source
         mass    = Mass.raw_from_project(project = self.__proj)
 
-        sel         = bins.selection 
+        sel         = bins.selection
         sel['q2'  ] = f'(q2 > {qsq.lower_bound}) & (q2 < {qsq.upper_bound})'
         sel['mass'] = f'{mass} < {_PREC_MASS}'
 
@@ -105,7 +105,7 @@ class PrecMaker:
         return arr_raw
     # -------------------------
     def __get_array(
-        self, 
+        self,
         out_dir: Path,
         trig   : Trigger) -> NpFltArr:
         '''
@@ -242,8 +242,8 @@ class PrecMaker:
             n     = _FFT_NPT)
 
         self.__plot_pdf(
-            pdf_mm = pdf_mm, 
-            pdf_ee = pdf_ee, 
+            pdf_mm = pdf_mm,
+            pdf_ee = pdf_ee,
             out_dir= path.parent)
 
         pdf = SplinePDF.from_non_spline(pdf = pdf_ee)

@@ -66,7 +66,7 @@ class ParamConf(RootModel[dict[str,tuple[float,float,float]]], frozen = True):
         return eff
     # -------------------
     def get_factor(
-        self, 
+        self,
         pdf_fr  : zpdf,
         pdf_pr  : zpdf,
         qsq_src : Qsq,
@@ -76,7 +76,7 @@ class ParamConf(RootModel[dict[str,tuple[float,float,float]]], frozen = True):
         --------------
         pdf_fr/pr: PDF for the part-reco/fully-reco component
         qsq_src  : q2 associated to decays, e.g. Jpsi -> ee => jpsi
-        qsq_tgt  : q2 bin 
+        qsq_tgt  : q2 bin
 
         Returns
         --------------
@@ -116,13 +116,13 @@ class ParamConf(RootModel[dict[str,tuple[float,float,float]]], frozen = True):
 
         scale = zfit.param.ConstantParameter(name = f'scl_{qsq_src}_{qsq_tgt}', value = scale)
         fac   = zfit.ComposedParameter(
-            name, 
+            name,
             lambda params : params['scale'] / params['ratio'],
             params = {'scale' : scale, 'ratio' : ratio})
 
         _CACHED_PARAMS[name] = fac
 
-        return fac 
+        return fac
     # -------------------
     def get_part_reco_yield(
         self,
@@ -182,7 +182,7 @@ class ObsConf(BaseModel, frozen = True):
     needed to use all information available in dataset and avoid edge effects
     '''
     mass_range : tuple[float,float]
-    tran_range : dict[Qsq,dict[Qsq,tuple[float, float, float]]] 
+    tran_range : dict[Qsq,dict[Qsq,tuple[float, float, float]]]
     #---------------------------------
     @model_validator(mode = 'after')
     def _validate(self) -> Self:
@@ -192,7 +192,7 @@ class ObsConf(BaseModel, frozen = True):
 
         return self
     #---------------------------------
-    def _validate_range(self, min_trn : float, max_trn : float) -> None: 
+    def _validate_range(self, min_trn : float, max_trn : float) -> None:
         min_fit, max_fit = self.wide_range
         fit_rng = max_fit - min_fit
         trn_rng = max_trn - min_trn
@@ -459,7 +459,7 @@ class CCbarRatioCalculatorConf(PDFConf, frozen = True):
 
         binning_conf           = BinningConf.load()
         rtc_data['observable'] = trf_data['observable']
-        rtc_data['binning'   ] = binning_conf.from_str(binning = binning) 
+        rtc_data['binning'   ] = binning_conf.from_str(binning = binning)
 
         return cls(**rtc_data)
 #-------------------------------------------------------------------

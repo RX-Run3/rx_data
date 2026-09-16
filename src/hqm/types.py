@@ -63,7 +63,7 @@ class Mode(StrEnum):
     # ----------------
     def validate(self, path : Path) -> None:
         '''
-        Will raise an exception if path is not consistent with current mode 
+        Will raise an exception if path is not consistent with current mode
 
         Parameters
         -------------

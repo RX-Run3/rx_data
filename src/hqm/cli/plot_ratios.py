@@ -21,7 +21,7 @@ binning_opt = typer.Option(...  , '-b', help = 'Binning, e.g. "mva_cmb-7 mva_prc
 
 _ANADIR   : Final[Path ]                 = Path(os.environ['ANADIR'])
 _RUN2_RAT : Final[dict[PRecRatio,float]] = { PRecRatio.psi2 : 0.62, PRecRatio.jpsi : 0.7 } # Value of ratios in run2
-_BLOCKS   : Final[list[str]]             = ['4', '3', '2', '1', '5', '6', '7', '8'] 
+_BLOCKS   : Final[list[str]]             = ['4', '3', '2', '1', '5', '6', '7', '8']
 
 log=LogStore.add_logger('hqm:plot_ratios')
 
@@ -29,7 +29,7 @@ type NpFltArr = npt.NDArray[numpy.float64]
 # ----------------------------------------------------------------------
 def _get_block_ratio(
     kind    : PRecRatio,
-    project : Project, 
+    project : Project,
     binning : str) -> tuple[float,float]:
     cfg = CCbarRatioCalculatorConf.load(binning = binning)
     with DataStore.selection(sel = cfg.binning.selection, update = False):
@@ -44,7 +44,7 @@ def _get_block_ratio(
 # ----------------------------------------------------------------------
 def _get_block_ratios(
     kind    : PRecRatio,
-    binning : str, 
+    binning : str,
     project : Project) -> tuple[NpFltArr, NpFltArr, NpFltArr]:
     vals = []
     errs = []
@@ -57,7 +57,7 @@ def _get_block_ratios(
     return numpy.array(vals), numpy.array(errs), numpy.array(_BLOCKS)
 # ----------------------------------------------------------------------
 def _plot_ratio(
-    binning : str, 
+    binning : str,
     kind    : PRecRatio):
     '''
     Run simultaneous fit to resonant modes

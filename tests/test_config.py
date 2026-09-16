@@ -8,7 +8,7 @@ from dmu.stats   import zfit
 from rx_common   import Project, Qsq
 from hqm.binning import BinningConf
 from hqm.config  import SerializationConf, TransferFunctionMakerConf
-from hqm.config  import CCbarRatioCalculatorConf 
+from hqm.config  import CCbarRatioCalculatorConf
 
 type zpdf = zfit.pdf.BasePDF
 #----------------------------------

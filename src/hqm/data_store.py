@@ -20,8 +20,8 @@ log           = LogStore.add_logger('hqm:data_store')
 type NpFltArr = npt.NDArray[numpy.float64]
 
 _BLOCK_CUT    : Final[str]                       = 'block'
-_SELECTION    : ContextVar[dict[str,str] | None] = ContextVar('_SELECTION'   , default = None) 
-_SMEAR_MASSES : ContextVar[bool                ] = ContextVar('_SMEAR_MASSES', default = True) 
+_SELECTION    : ContextVar[dict[str,str] | None] = ContextVar('_SELECTION'   , default = None)
+_SMEAR_MASSES : ContextVar[bool                ] = ContextVar('_SMEAR_MASSES', default = True)
 # ----------------------------------
 class DataStore:
     '''
@@ -29,7 +29,7 @@ class DataStore:
     '''
     # ----------------------------------
     def __init__(
-        self, 
+        self,
         trig        : Trigger,
         comp        : Component,
         max_entries : int = 10_000_000,
@@ -54,7 +54,7 @@ class DataStore:
         df = self._load_df()
 
         if self._comp.is_mc and _SMEAR_MASSES.get():
-            df = self.__smear_masses(df = df) 
+            df = self.__smear_masses(df = df)
         else:
             log.info(f'Not smearing masses for: {self._comp}')
 
@@ -100,8 +100,8 @@ class DataStore:
         return weights
     # ----------------------------------
     def _select_data(
-        self, 
-        df  : pnd.DataFrame, 
+        self,
+        df  : pnd.DataFrame,
         sel : dict[str,str]) -> pnd.DataFrame:
 
         df_org = df
@@ -139,7 +139,7 @@ class DataStore:
     # ----------------------------------
     @classmethod
     def selection(
-        cls, 
+        cls,
         update : bool,
         sel    : dict[str,str]):
         '''
@@ -234,7 +234,7 @@ class DataStore:
 
         Returns
         --------------
-        DataFrame with smeared columns. 
+        DataFrame with smeared columns.
         q2 column is smeared and original kept around as `q2_org`
         '''
         smr = Q2SmearCorrector(channel = self._trig.channel, add_original = True)

@@ -7,7 +7,7 @@ from hqm.types      import Mode
 from rx_common      import Project, Qsq
 from hqm.data_store import DataStore
 from hqm.config     import TransferFunctionMakerConf
-from hqm.trfc       import TransferFunctionMaker 
+from hqm.trfc       import TransferFunctionMaker
 
 mode_opt  = typer.Option(..., '-m', help = 'Controls if transfer function will be remade, read, written or reused')
 proj_opt  = typer.Option(..., '-p', help = 'Project, e.g. rk')
@@ -25,7 +25,7 @@ def make_trfc(
     Make transfer function
     '''
     cfg         = TransferFunctionMakerConf.load(
-        binning = binning, 
+        binning = binning,
         project = project,
         source  = source,
         target  = target)

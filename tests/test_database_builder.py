@@ -34,7 +34,7 @@ def _patch_rdfgetter(monkeypatch):
 # ------------------------------------
 @pytest.mark.parametrize('comp', [Component.data_24, Component.bpkpjpsiee])
 def test_simple(
-    _patch_rdfgetter, 
+    _patch_rdfgetter,
     monkeypatch,
     comp     : Component,
     tmp_path : Path):

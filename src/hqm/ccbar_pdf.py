@@ -27,7 +27,7 @@ _SOURCE_QSQ     : Final[Qsq]                     = Qsq.psi2
 _TARGET_QSQ     : Final[Qsq]                     = Qsq.high
 _TARGET_CHANNEL : Final[Channel]                 = Channel.ee
 _RATIO_NAME     : Final[str]                     = 'rat_psi2' # Fraction used between part_reco and fully reco components
-_FULL_RECO_COMP : Final[dict[Project,Component]] = { 
+_FULL_RECO_COMP : Final[dict[Project,Component]] = {
          Project.rk   : Component.bpkppsi2ee,
          Project.rkst : Component.bdkstkpipsi2ee,
 }
@@ -60,7 +60,7 @@ class CCbarPDF(BaseModel, Serializable, frozen = True):
     # ---------------------------------
     @classmethod
     def get_path(
-        cls, 
+        cls,
         project : Project,
         binning : str) -> Path:
         '''
@@ -71,7 +71,7 @@ class CCbarPDF(BaseModel, Serializable, frozen = True):
 
         Returns
         ---------------
-        Path to JSON file with serialized instance of CCbarPDF 
+        Path to JSON file with serialized instance of CCbarPDF
         '''
         bins_cfg = BinningConf.load()
         bin_cfg  = bins_cfg.from_str(binning = binning)
@@ -85,7 +85,7 @@ class CCbarPDF(BaseModel, Serializable, frozen = True):
 class CCbarPDFMaker:
     '''
     Class mean to provide charmonium PDF for high-q2 bin
-    The PDF consists of the sum of the part reco and fully reco PDF 
+    The PDF consists of the sum of the part reco and fully reco PDF
     '''
     # ---------------------------------
     def __init__(self, binning : str, project : Project):
@@ -128,12 +128,12 @@ class CCbarPDFMaker:
         --------------
         Object representing fully reconstructed component's fit
         '''
-        qsq     = _TARGET_QSQ 
+        qsq     = _TARGET_QSQ
         comp    = _FULL_RECO_COMP[self.__project]
         channel = _TARGET_CHANNEL
 
         trig = Trigger.get_main_trigger(
-            channel = channel, 
+            channel = channel,
             project = self.__project)
 
         bin_obj  = BinningConf.load()
@@ -149,7 +149,7 @@ class CCbarPDFMaker:
                 qsq     = qsq)
 
             return obj.get_model(
-                obs_ext= obs, 
+                obs_ext= obs,
                 use_kde= False,
                 mode   = Mode.read)
     # ---------------------------------
@@ -183,14 +183,14 @@ class CCbarPDFMaker:
         return json_path.parent
     # ---------------------------------
     def get_pdf(
-        self, 
+        self,
         obs  : zobs,
         mode : Mode) -> CCbarPDF:
         '''
         Parameters
         ------------
         obs : Observable of PDF
-        mode: Specifies how to make PDF, reuse, read, write, update 
+        mode: Specifies how to make PDF, reuse, read, write, update
 
         Returns
         ------------

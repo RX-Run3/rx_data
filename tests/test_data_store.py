@@ -234,7 +234,7 @@ def test_merge(monkeypatch, tmp_path : Path):
     with DataStore.selection(sel = sel, update = False):
         obj = DataStore(
             min_entries = min_entries,
-            trig        = trig, 
+            trig        = trig,
             comp        = comp)
 
     arr_raw, arr_wgt = obj.get_array(mass = Mass.bp_bcor)
@@ -242,5 +242,5 @@ def test_merge(monkeypatch, tmp_path : Path):
     sel = obj.save_selection(path = selection_path)
 
     assert 'block' not in sel
-    assert len(arr_raw) >= min_entries 
+    assert len(arr_raw) >= min_entries
 #--------------------------------------

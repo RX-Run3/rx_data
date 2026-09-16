@@ -4,8 +4,8 @@ Module used to expose build_database function to CLI
 import typer
 
 from rx_common            import Component, Trigger
-from hqm.database_builder import DatabaseBuilder 
-from hqm.database_conf    import DatabaseConf 
+from hqm.database_builder import DatabaseBuilder
+from hqm.database_conf    import DatabaseConf
 
 trig_opt = typer.Option(..., '-t', help = 'Hlt2 trigger, i.e. rk_ee_os')
 comp_opt = typer.Option(..., '-c', help = 'Dataset, e.g. data_24')

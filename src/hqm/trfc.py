@@ -25,7 +25,7 @@ _TARGET_CHANNEL : Final[Channel  ] = Channel.ee
 _RAW_QSQ        : Final[str      ] = 'q2'         # Used to switch between q2 cuts for rare
 _DTF_QSQ        : Final[str      ] = 'q2_dtf'     # and resonant target shapes
 _MIN_ENTRIES    : Final[int      ] = 200          # Target dataset has to have at least this number of entries
-_MAX_ENTRIES    : Final[int      ] = 50_000       # Target dataset has to have at most this number of entries 
+_MAX_ENTRIES    : Final[int      ] = 50_000       # Target dataset has to have at most this number of entries
 
 type zpdf = zfit.pdf.BasePDF
 type zobs = zfit.Space
@@ -37,7 +37,7 @@ class TransferFunction(BaseModel, Serializable, frozen = True):
     name       : str
     fit_result : FitResult
     models     : list[Model]
-    trfc_cfg   : TransferFunctionMakerConf 
+    trfc_cfg   : TransferFunctionMakerConf
     #----------------------
     @property
     def pdf(self) -> zpdf:
