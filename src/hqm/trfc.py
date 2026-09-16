@@ -7,12 +7,12 @@ import matplotlib.pyplot as plt
 from pathlib        import Path
 from typing         import Final
 from pydantic       import BaseModel
-from rx_common      import Channel, Cuts, Mass, Project, Trigger
+from rx_common      import Channel, Mass, Project, Trigger
 from dmu            import LogStore
 from dmu.generic    import Serializable
 from dmu.stats      import FitResult, Fitter, Model, ModelFactory
 from dmu.stats      import ZFitPlotter, zfit
-from hqm.config     import TransferFunctionMakerConf, ObsConf
+from hqm.config     import TransferFunctionMakerConf
 from hqm.data_store import DataStore
 from hqm.pdf_mc     import PdfBuilder
 from hqm.types      import Mode
