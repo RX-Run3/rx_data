@@ -5,6 +5,7 @@ pytest-xdist
 pytest-benchmark
 pre-commit
 ruff
+pyrefly
 -e src/ap_utilities
 -e src/dmu
 -e src/ecal_calibration
