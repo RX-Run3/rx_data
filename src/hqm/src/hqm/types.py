@@ -61,6 +61,13 @@ class Mode(StrEnum):
     If object found, use it, if not make it
     '''
     # ----------------
+    @property
+    def skip_reading(self) -> bool:
+        '''
+        If true, won't read any data but process all over again 
+        '''
+        return self in {Mode.write, Mode.update}
+    # ----------------
     def validate(self, path : Path) -> None:
         '''
         Will raise an exception if path is not consistent with current mode
