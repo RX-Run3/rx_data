@@ -71,8 +71,9 @@ class TestPrecMaker:
         project):
         pass
     # ----------------------------
-    def get_pdf(self, mode):
+    def get_pdf(self, mode, name):
         _   = mode
+        _   = name
 
         obs = zfit.Space('B_Mass', limits=(4600, 6500))
         c   = zfit.Parameter('c',   -0.001,   -0.01,  0)

@@ -74,5 +74,5 @@ def test_resonant(
         cfg     = cfg,
         binning = binning,
         project = proj)
-    obj.get_pdf(mode = Mode.write)
+    obj.get_pdf(mode = Mode.write, name = 'test')
 # ------------------------------------------------------------
