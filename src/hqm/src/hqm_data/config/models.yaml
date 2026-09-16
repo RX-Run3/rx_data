@@ -1,0 +1,102 @@
+shape_ee_lo: &sh_ee_lo
+  mu:
+    - 4800
+    - 4600
+    - 5000
+  sg:
+    - 100
+    - 10
+    - 500
+  rn:
+   - 4600
+   - 5200
+shape_ee_cn: &sh_ee_cn
+  mu:
+    - 5280
+    - 5200
+    - 5300
+  sg:
+    - 100
+    - 10
+    - 500
+  rn:
+    - 4600
+    - 6500
+shape_ee_up: &sh_ee_up
+  mu:
+    - 5500
+    - 5400
+    - 5700
+  sg:
+    - 100
+    -   5
+    - 500
+  rn:
+    - 5200
+    - 7000
+shape_ee_UP: &sh_ee_UP
+  mu:
+    - 6300
+    - 6000
+    - 7500
+  sg:
+    - 100
+    - 10
+    - 800
+  rn:
+    - 5600
+    - 7300
+# --------------------
+shape_mm_cn: &sh_mm_cn
+  mu:
+    - 5280
+    - 5270
+    - 5310
+  sg:
+    - 15
+    - 10
+    - 50
+  rn:
+    - 5000
+    - 5400
+# --------------------
+# Outer key: Bin
+# Inner key: Process
+# --------------------
+electron:
+  jpsi:
+    jpsi:
+      <<: *sh_ee_cn
+    psi2:
+      <<: *sh_ee_lo
+  psi2:
+    jpsi:
+      <<: *sh_ee_up
+    psi2:
+      <<: *sh_ee_cn
+  high:
+    jpsi:
+      <<: *sh_ee_UP
+    psi2:
+      <<: *sh_ee_up
+    high:
+      <<: *sh_ee_cn
+muon:
+  jpsi:
+    jpsi:
+      <<: *sh_mm_cn
+  psi2:
+    psi2:
+      <<: *sh_mm_cn
+# --------------------
+out_dir : DB/hqm/models
+mod_cfg :
+  low_stats:
+    stats : [   300,   10000]
+    models: [ suj ]
+  mid_stats:
+    stats : [ 10000,  100000]
+    models: [ dscb ]
+  high_stats:
+    stats : [100000, 1000000]
+    models: [ dscb, gauss ]

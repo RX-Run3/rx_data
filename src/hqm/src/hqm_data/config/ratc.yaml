@@ -1,0 +1,20 @@
+bandwidth : 30
+sb_mass   : 5180
+fft_npt   : 1000
+fits:
+  strategy:
+    ntries : 15
+    pvalue : 0.05
+# ------------------
+parameters:
+  scl_jpsi_jpsi: [ 1.0, 0.0, 50.]
+  scl_psi2_jpsi: [ 1.0, 0.0, 50.]
+  scl_jpsi_psi2: [ 1.0, 0.0, 50.]
+  scl_psi2_psi2: [ 1.0, 0.0, 50.]
+  # ------------------------------
+  rat_jpsi     : [ 0.8, 0.0, 50.]
+  rat_psi2     : [ 0.3, 0.0, 50.]
+  npr_jj       : [1000, 0.0, 4e5]
+  npr_jp       : [1000, 0.0, 4e5]
+  npr_pj       : [1000, 0.0, 4e5]
+  npr_pp       : [1000, 0.0, 4e5]

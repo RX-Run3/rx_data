@@ -1,0 +1,36 @@
+[build-system]
+requires      = ['setuptools>=61']
+build-backend = 'setuptools.build_meta'
+
+[project]
+name         = 'hqm'
+version      = '0.0.1'
+description  = 'Used to build fitting model for high-q2 bin'
+dependencies = [
+    'matplotlib',
+    'jacobi',
+    'numpy',
+    'zfit',
+    'typer',
+]
+
+[tool.setuptools]
+package-dir = {'' = 'src'}
+
+[tool.setuptools.packages.find]
+where = ['src']
+
+[tool.setuptools.package-data]
+hqm_data = ['config/*.yaml']
+
+[project.scripts]
+hqm = 'hqm.cli.main:main'
+
+[tool.ruff.lint]
+select = ["ARG", 'F']
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.pyrefly]
+project-includes = ["**/*.py*"]

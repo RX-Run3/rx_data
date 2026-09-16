@@ -1,0 +1,66 @@
+bandwidth : 3
+fft_npt   : 1000
+observable:
+  name       : B_Mass
+  wide_range : [ 3000, 7000]
+  mass_range : [ 4600, 6700]
+  tran_range : 
+    jpsi :
+      jpsi :
+        [   0, -1500, 1500]
+      psi2 :
+        [ 500,  -500, 1500]
+      high :
+        [ 500,     0, 2000]
+    psi2 :
+      jpsi :
+        [-500, -2000,    0]
+      psi2 :
+        [   0, -1200,  800]
+      high :
+        [ 500,  -500, 1500]
+fits:
+  run_gof   : false
+  do_errors : true
+  strategy  : null
+plots :
+  stacked : false # Do not stack if using only one component
+  nbins   : 100
+qsq:
+  - source     : jpsi
+    target     : jpsi
+    models     : [dscb]
+    plots      :
+      plot_range : [4600, 6000]
+  - source     : jpsi
+    target     : psi2
+    models     : [cbr]
+    plots      :
+      plot_range : [5200, 6200]
+  - source     : jpsi
+    target     : high
+    models     : [cbr]
+    plots      :
+      plot_range : [5500, 7500]
+  - source     : psi2
+    target     : jpsi
+    models     : [cbl]
+    plots      :
+      plot_range : [4600, 5300]
+  - source     : psi2
+    target     : psi2
+    models     : [suj]
+    plots      :
+      plot_range : [4600, 6000]
+  - source     : psi2
+    target     : high
+    models     : [cbr]
+    plots      :
+      plot_range : [5000, 6500]
+models:
+  rk:
+    jpsi: [bpkpjpsimm    , bpkpjpsiee    ]
+    psi2: [bpkppsi2mm    , bpkppsi2ee    ]
+  rkst:
+    jpsi: [bdkstkpijpsimm, bdkstkpijpsiee]
+    psi2: [bdkstkpipsi2mm, bdkstkpipsi2ee]

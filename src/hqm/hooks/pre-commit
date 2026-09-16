@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+ruff_output=$(ruff check . --fix)
+if [ $? -ne 0 ]; then
+    echo "ruff failed on the following files:"
+    echo "$ruff_output" | cut -d: -f1 | sort -u
+    exit 1
+fi
+
+pyrefly_output=$(pyrefly check --output-format min-text --summary=none --progress-bar no)
+if [ $? -ne 0 ]; then
+    echo "pyrefly failed on the following files:"
+    echo "$pyrefly_output" | cut -d: -f1 | sort -u
+    exit 1
+fi
