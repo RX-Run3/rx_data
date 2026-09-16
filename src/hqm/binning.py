@@ -4,9 +4,9 @@ Module holding Binning class
 
 from pathlib     import Path
 from typing      import Final
-from dmu.generic import utilities as gut 
-from pydantic    import BaseModel, RootModel
-from rx_common   import Block, Cuts
+from dmu.generic import utilities as gut
+from pydantic    import RootModel
+from rx_common   import Block
 from dmu         import LogStore
 
 log=LogStore.add_logger('hqm:binning')
@@ -14,9 +14,9 @@ _BLOCK_NAME : Final[str] = 'block' # string used as key in block cut
 # -------------------------------------------
 class BinConf(RootModel[dict[str,tuple[float,float,int]]], frozen = True):
     '''
-    Class representing one bin per variable, e.g. 
+    Class representing one bin per variable, e.g.
 
-    var1 -> lower, upper, bin index 
+    var1 -> lower, upper, bin index
     var2 -> lower, upper, bin index
     var3 -> lower, upper, bin index
     '''
@@ -36,7 +36,7 @@ class BinConf(RootModel[dict[str,tuple[float,float,int]]], frozen = True):
 
         var1-x var2-y var3-z...
 
-        where varX represents a variable and x,y,z, 
+        where varX represents a variable and x,y,z,
         are the bin indexes
         '''
         parts = []
@@ -95,12 +95,12 @@ class BinConf(RootModel[dict[str,tuple[float,float,int]]], frozen = True):
             parts.append(f'{var}_{ibin:03d}')
 
         parts.sort()
-        
+
         return parts
 # -------------------------------------------
 class BinningConf(RootModel[dict[str,list[tuple[float,float]]]], frozen = True):
     '''
-    Class holding binning for variables 
+    Class holding binning for variables
     '''
     # ---------------------------------------------
     @classmethod
@@ -123,7 +123,7 @@ class BinningConf(RootModel[dict[str,list[tuple[float,float]]]], frozen = True):
         Dictionary mapping variable name to bin index
         '''
         parts = binning.split()
-        bins  = dict() 
+        bins  = dict()
         fail  = False
 
         for part in parts:
@@ -154,7 +154,7 @@ class BinningConf(RootModel[dict[str,list[tuple[float,float]]]], frozen = True):
 
         Returns
         ---------------
-        Bins object holding sequence of bins 
+        Bins object holding sequence of bins
         First bin is labeled with number 1
         '''
         bins = self.__bins_from_str(binning = binning)

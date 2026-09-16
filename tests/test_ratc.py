@@ -1,9 +1,9 @@
 '''
 Module with tests for CCbarRatioCalculator class
 '''
-from hqm.types import Mode
 import pytest
 
+from hqm.types   import Mode
 from typing      import Final
 from pathlib     import Path
 from dmu         import LogStore

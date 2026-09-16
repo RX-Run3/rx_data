@@ -13,7 +13,7 @@ from contextvars    import ContextVar
 from dmu            import LogStore
 from dmu.generic    import utilities as sut
 from rx_q2          import Q2SmearCorrector
-from rx_common      import Cuts, Qsq, Trigger, Component, Mass
+from rx_common      import Trigger, Component, Mass
 from .database_conf import DatabaseConf
 
 log           = LogStore.add_logger('hqm:data_store')

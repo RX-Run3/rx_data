@@ -13,7 +13,7 @@ from dmu.stats      import SplinePDF
 from hqm.binning    import BinningConf
 from hqm.config     import TransferFunctionMakerConf
 from hqm.data_store import DataStore
-from rx_common      import Block, Channel, Component, Mass, Cuts, Project, Qsq, Trigger
+from rx_common      import Channel, Component, Mass, Project, Trigger
 from hqm.trfc       import TransferFunction
 from hqm.types      import Mode
 

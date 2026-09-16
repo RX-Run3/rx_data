@@ -4,11 +4,10 @@ Module used to expose build_database function to CLI
 import typer
 
 from contextlib     import ExitStack
-from rx_common      import Block, Component, Project, Qsq, Cuts, Trigger
+from rx_common      import Component, Qsq, Trigger
 from dmu.stats      import zfit
 from hqm.pdf_mc     import PdfBuilder
 from hqm.data_store import DataStore
-from hqm.config     import TransferFunctionMakerConf
 from hqm.binning    import BinningConf
 from hqm.types      import Mode
 
@@ -60,7 +59,7 @@ def fit_mc(
             trigger = trigger,
             qsq     = qsq)
 
-        mod = obj.get_model(
+        obj.get_model(
             obs_ext= obs,
             use_kde= use_kde,
             mode   = mode)

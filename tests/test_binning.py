@@ -56,7 +56,7 @@ def test_block_missing():
     Test that we cannot extract block from cut missing block
     '''
     iblock  = 3
-    binning = f'mva_cmb-3 mva_prc-2'
+    binning = 'mva_cmb-3 mva_prc-2'
 
     obj = BinningConf.load()
     bin = obj.from_str(binning = binning)
