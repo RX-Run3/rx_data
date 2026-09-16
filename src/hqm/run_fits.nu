@@ -32,7 +32,7 @@ def in_resonant [q2bin: string, component: string] {
 def skip_fit [q2bin: string, component: string, trigger: string] {
     let is_muon = ($trigger | str contains '_mm_')
 
-    if ($q2bin == 'high') and ($component not-in $jpsi_ee) {
+    if ($q2bin == 'high') and ($component     in $jpsi_ee) {
         return true
     }
 
@@ -81,6 +81,7 @@ def main [
                     continue
                 }
 
+                print $"Iteration: block ($block), ($pair.component)-($pair.trigger), q2bin ($q2bin)"
                 fit_mc $component $trigger $q2bin $binning
             }
         }
