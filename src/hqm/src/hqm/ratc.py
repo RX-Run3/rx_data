@@ -349,7 +349,7 @@ class CCbarRatioCalculator:
                 use_kde = model == 'kde',
                 mode    = Mode.read)
 
-            pdf = mod.get_pdf(name = f'{comp}_{qsq_tgt}')
+            pdf = mod.get_pdf(name = comp.value)
 
         for par in pdf.get_params():
             par.floating = False
