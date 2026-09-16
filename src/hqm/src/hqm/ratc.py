@@ -467,7 +467,7 @@ class CCbarRatioCalculator:
         json_path = self._out_dir / 'parameters.json'
 
         mode.validate(path = json_path)
-        if json_path.exists() and mode == Mode.reuse:
+        if json_path.exists() and not mode.skip_reading:
             log.info(f'Parameters file found: {json_path}')
             rat = CCbarRatio.from_json(path = json_path)
 

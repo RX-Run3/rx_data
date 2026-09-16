@@ -330,7 +330,7 @@ class TransferFunctionMaker:
             fname   = 'trfc.json')
 
         mode.validate(path = json_path)
-        if json_path.exists() and mode == Mode.reuse:
+        if json_path.exists() and not mode.skip_reading:
             log.info(f'Transfer function found in {json_path}')
             return TransferFunction.from_json(path = json_path)
 

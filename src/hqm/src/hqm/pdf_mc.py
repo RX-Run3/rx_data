@@ -391,7 +391,7 @@ class PdfBuilder:
         '''
         mode.validate(path = self.model_path)
 
-        if self.model_path.exists() and mode == Mode.reuse:
+        if self.model_path.exists() and not mode.skip_reading:
             log.info(f'Loading model at: {self.model_path}')
             try:
                 return self.__load_model(use_kde, obs_ext)

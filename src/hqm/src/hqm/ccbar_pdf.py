@@ -202,8 +202,11 @@ class CCbarPDFMaker:
 
         mode.validate(path = json_path)
 
-        if json_path.exists() and mode == Mode.reuse:
+        if json_path.exists() and not mode.skip_reading:
+            log.info('CCbar PDF found, reusing it')
             return CCbarPDF.from_json(path = json_path)
+
+        log.info('CCbar PDF not found, remaking it')
 
         pdf_pr = self.__get_pr()
         pdf_fr = self.__get_fr(obs = obs)

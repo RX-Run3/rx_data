@@ -228,9 +228,11 @@ class PrecMaker:
         path = self.__get_path()
         mode.validate(path = path)
 
-        if path.exists() and mode == Mode.reuse:
+        if path.exists() and not mode.skip_reading:
+            log.info(f'Part reco PDF found, loading: {path}')
             return SplinePDF.from_json(path = path, name = name)
 
+        log.info('Part reco PDF not found, remaking it')
         pdf_mm = self.__get_muon_pdf(out_dir = path.parent)
         trf    = self.__get_trfc()
 
