@@ -454,7 +454,7 @@ class CCbarRatioCalculator:
 
         return obj.get_trf(update = False)
     #-----------------------------
-    def get_ratio(self, update : bool) -> CCbarRatio:
+    def get_ratio(self, mode : Mode) -> CCbarRatio:
         '''
         Parameters
         -----------------
@@ -465,7 +465,9 @@ class CCbarRatioCalculator:
         Ratio of part reco over fully reco components
         '''
         json_path = self._out_dir / 'parameters.json'
-        if json_path.exists() and not update:
+
+        mode.validate(path = json_path)
+        if json_path.exists() and mode == Mode.reuse:
             log.info(f'Parameters file found: {json_path}')
             rat = CCbarRatio.from_json(path = json_path)
 

@@ -3,17 +3,18 @@ Module used to run fits to resonant mode data
 '''
 import typer
 
+from hqm.types      import Mode
 from hqm.config     import CCbarRatioCalculatorConf
 from hqm.data_store import DataStore
 from hqm.ratc       import CCbarRatioCalculator
 from rx_common      import Block, Component, Project, Qsq, Cuts
 
-update_opt  = typer.Option(False, '-u', help = 'If used, will remake function even if already exists')
-proj_opt    = typer.Option(...  , '-p', help = 'Project, e.g. rk')
-binning_opt = typer.Option(...  , '-b', help = 'Binning, e.g. "block-1 mva_cmb-7 mva_prc-7"')
+mode_opt    = typer.Option(..., '-m', help = 'Creation mode, used to control how to make fits')
+proj_opt    = typer.Option(..., '-p', help = 'Project, e.g. rk')
+binning_opt = typer.Option(..., '-b', help = 'Binning, e.g. "block-1 mva_cmb-7 mva_prc-7"')
 # ----------------------------------------------------------------------
 def fit_resonant(
-    update  : bool    = update_opt,
+    mode    : Mode    = mode_opt,
     binning : str     = binning_opt,
     project : Project = proj_opt):
     '''
@@ -26,5 +27,5 @@ def fit_resonant(
             binning = binning,
             project = project)
 
-        cal.get_ratio(update = update)
+        cal.get_ratio(mode = mode)
 # ----------------------------------------------------------------------

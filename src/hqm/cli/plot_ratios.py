@@ -11,6 +11,7 @@ from pathlib        import Path
 from fitter         import PRec
 from typing         import Final
 from dmu            import LogStore
+from hqm.types      import Mode
 from hqm.config     import CCbarRatioCalculatorConf
 from hqm.data_store import DataStore
 from hqm.ratc       import CCbarRatioCalculator
@@ -38,7 +39,7 @@ def _get_block_ratio(
             binning = binning,
             project = project)
 
-        ratio = cal.get_ratio(update = False)
+        ratio = cal.get_ratio(mode = Mode.read)
 
     return ratio.get_value(name = kind.variable)
 # ----------------------------------------------------------------------
