@@ -27,8 +27,7 @@ hqm_data = ['config/*.yaml']
 hqm = 'hqm.cli.main:main'
 
 [tool.ruff.lint]
-dummy-variable-rgx = "^$"
-select             = ["ARG"]
+select           = ["ARG", 'F']
 
 [tool.pyrefly]
 project-includes = ["**/*.py*"]
