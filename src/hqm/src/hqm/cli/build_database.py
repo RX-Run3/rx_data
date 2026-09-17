@@ -21,7 +21,7 @@ def build_database(
     '''
     cfg = DatabaseConf.load()
     if cfg.has_output(comp = comp, trig = trigger):
-        log.info('Database already found, skipping')
+        log.info(f'Database {trigger}/{comp} already found, skipping')
         return
 
     log.info('Database not found, building it')
