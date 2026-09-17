@@ -47,7 +47,13 @@ rule hqm:
         (
         source setup.sh {params.env} {params.home}
 
-        nu run_chain.nu -b {params.binning} 
+        set -e
+
+        hqm run-fits   -b {params.binning}
+        hqm run-trfc   -b {params.binning}
+        hqm run-prec   -b {params.binning}
+        hqm run-ratios -b {params.binning}
+        hqm run-ccbar  -b {params.binning}
 
         echo "Templates made with status: $?"
         ) > {log.prc} 2>&1
