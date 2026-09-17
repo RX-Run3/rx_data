@@ -99,11 +99,11 @@ def run_fits(binning: str = binning_opt):
         for component, trigger in _PAIRS:
             for q2bin in _QSQBINS:
 
-                binning = f'block-{block} {binning}'.strip()
+                _binning = f'block-{block} {binning}'.strip()
                 if _skip_fit(q2bin, component, trigger):
                     continue
 
                 log.info(f'Iteration: block {block}, {component}-{trigger}, q2bin {q2bin}')
-                _run_fit_mc(component, trigger, q2bin, binning)
+                _run_fit_mc(component, trigger, q2bin, _binning)
         return
 # --------------------------------------------

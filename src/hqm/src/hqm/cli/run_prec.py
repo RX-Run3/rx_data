@@ -35,7 +35,7 @@ def run_prec(binning: str = binning_opt):
                         continue
 
                     index  += 1
-                    binning = f'block-{block} {binning}'.strip()
+                    _binning = f'block-{block} {binning}'.strip()
 
                     log.info(f'[Progress: {index}/{total}] block: {block}, project: {project}, -s {source} -t {target}')
                     make_prec(
@@ -43,7 +43,7 @@ def run_prec(binning: str = binning_opt):
                         project = project,
                         source  = source,
                         target  = target,
-                        binning = binning,
+                        binning = _binning,
                     )
         return
 # ----------------------
