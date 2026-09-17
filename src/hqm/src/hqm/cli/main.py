@@ -29,11 +29,11 @@ main.command(name = 'fit-resonant')(fit_resonant)
 main.command(name = 'fit-mc')(fit_mc)
 
 main.command(name = 'run-databases')(run_databases)
-main.command(name = 'run-ccbar')(run_ccbar)
-main.command(name = 'run-prec')(run_prec)
-main.command(name = 'run-trfc')(run_trfc)
 main.command(name = 'run-fits')(run_fits)
+main.command(name = 'run-trfc')(run_trfc)
+main.command(name = 'run-prec')(run_prec)
 main.command(name = 'run-ratios')(run_ratios)
+main.command(name = 'run-ccbar')(run_ccbar)
 # ----------------------
 if __name__ == '__main__':
     main()
