@@ -13,6 +13,7 @@ from hqm.cli.fit_mc         import fit_mc
 from hqm.cli.run_trfc       import run_trfc
 from hqm.cli.run_ccbar      import run_ccbar
 from hqm.cli.run_databases  import run_databases
+from hqm.cli.run_fits       import run_fits
 
 ctx  = {'help_option_names' : ['-h', '--help']}
 main = typer.Typer(help = 'HQM CLI', context_settings=ctx)
@@ -28,6 +29,7 @@ main.command(name = 'fit-mc')(fit_mc)
 main.command(name = 'run-databases')(run_databases)
 main.command(name = 'run-ccbar')(run_ccbar)
 main.command(name = 'run-trfc')(run_trfc)
+main.command(name = 'run-fits')(run_fits)
 # ----------------------
 if __name__ == '__main__':
     main()
