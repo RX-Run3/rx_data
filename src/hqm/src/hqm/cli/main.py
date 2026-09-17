@@ -10,6 +10,7 @@ from hqm.cli.make_prec      import make_prec
 from hqm.cli.plot_ratios    import plot_ratios
 from hqm.cli.fit_resonant   import fit_resonant
 from hqm.cli.fit_mc         import fit_mc
+from hqm.cli.run_trfc       import run_trfc
 from hqm.cli.run_ccbar      import run_ccbar
 from hqm.cli.run_databases  import run_databases
 
@@ -24,8 +25,9 @@ main.command(name = 'plot-ratios')(plot_ratios)
 main.command(name = 'fit-resonant')(fit_resonant)
 main.command(name = 'fit-mc')(fit_mc)
 
-main.command(name = 'run-ccbar')(run_ccbar)
 main.command(name = 'run-databases')(run_databases)
+main.command(name = 'run-ccbar')(run_ccbar)
+main.command(name = 'run-trfc')(run_trfc)
 # ----------------------
 if __name__ == '__main__':
     main()
