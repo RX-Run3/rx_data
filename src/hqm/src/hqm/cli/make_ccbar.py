@@ -29,7 +29,13 @@ def make_ccbar(
     model= ccb.get_pdf(obs = obs, mode = mode)
     data = model.pdf.create_sampler(n = 10_000)
 
+    legends = {
+        'pdf_mc'    : 'Fully reconstructed',
+        'part-reco' : 'Partially reconstructed'}
+
     cfg = ZFitPlotterConf.default()
+    cfg = cfg.model_copy(update = {'d_leg' : legends})
+
     ptr = ZFitPlotter(model = model.pdf, data = data)
     ptr.run(cfg = cfg)
     plt.savefig(ccb.out_dir / 'model.png')
