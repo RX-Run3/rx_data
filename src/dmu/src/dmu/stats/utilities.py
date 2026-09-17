@@ -270,7 +270,7 @@ def _get_messages(
 
     str_space = str(pdf.space)
 
-    l_msg=[]
+    l_msg : list[str] = []
     l_msg.append(125 * '-')
     l_msg.append(f'Name : {pdf.name}')
     l_msg.append(f'Label: {pdf.label}')
