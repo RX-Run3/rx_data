@@ -15,11 +15,11 @@ _PROJECTS : Final[list[Project]] = [Project.rk]
 _SOURCES  : Final[list[Qsq]]     = [Qsq.jpsi, Qsq.psi2]
 _TARGETS  : Final[list[Qsq]]     = [Qsq.jpsi, Qsq.psi2, Qsq.high]
 
-wp_opt = typer.Option('', '-w', help='String specifying working point, e.g. "mva_cmb-7 mva_prc-6"')
+binning_opt = typer.Option('', '-b', help='String specifying working point, e.g. "mva_cmb-7 mva_prc-6"')
 
 log=LogStore.add_logger('hqm:run_prec')
 # ----------------------
-def run_prec(wp: str = wp_opt):
+def run_prec(binning: str = binning_opt):
     '''
     Selects lower sideband in muon data, fits it to a non-parametric PDF, 
     and convolves it with transfer function to produce part-reco templates
@@ -35,9 +35,7 @@ def run_prec(wp: str = wp_opt):
                         continue
 
                     index  += 1
-                    binning = f'block-{block}'
-                    if wp:
-                        binning = f'{binning} {wp}'
+                    binning = f'block-{block} {binning}'.strip()
 
                     log.info(f'[Progress: {index}/{total}] block: {block}, project: {project}, -s {source} -t {target}')
                     make_prec(

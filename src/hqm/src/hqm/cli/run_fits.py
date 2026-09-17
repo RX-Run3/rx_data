@@ -28,7 +28,7 @@ _HIGH_MM  : Final[list[Component]] = []
 
 _QSQBINS  : Final[list[Qsq]] = [Qsq.jpsi, Qsq.psi2, Qsq.high]
 
-wp_opt = typer.Option('', '-w', help='E.g. "mva_cmb-7 mva_prc-3"')
+binning_opt = typer.Option('', '-b', help='E.g. "mva_cmb-7 mva_prc-3"')
 
 log=LogStore.add_logger('hqm:run_fits')
 # --------------------------------------------
@@ -91,17 +91,15 @@ def _run_fit_mc(component: Component, trigger: Trigger, q2bin: Qsq, binning: str
             mode      = _MODE,
         )
 # --------------------------------------------
-def run_fits(wp: str = wp_opt):
+def run_fits(binning: str = binning_opt):
     '''
     Runs fits for a given bin
     '''
     for block in _BLOCKS:
         for component, trigger in _PAIRS:
             for q2bin in _QSQBINS:
-                binning = f'block-{block}'
-                if wp:
-                    binning = f'{binning} {wp}'
 
+                binning = f'block-{block} {binning}'.strip()
                 if _skip_fit(q2bin, component, trigger):
                     continue
 
