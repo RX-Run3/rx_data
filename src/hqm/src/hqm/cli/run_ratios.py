@@ -29,4 +29,3 @@ def run_ratios(binning: str = bin_opt):
                 binning = b_str,
                 project = project,
             )
-        return

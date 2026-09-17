@@ -105,5 +105,4 @@ def run_fits(binning: str = binning_opt):
 
                 log.info(f'Iteration: block {block}, {component}-{trigger}, q2bin {q2bin}')
                 _run_fit_mc(component, trigger, q2bin, _binning)
-        return
 # --------------------------------------------

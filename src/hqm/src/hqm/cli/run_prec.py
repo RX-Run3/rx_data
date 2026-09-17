@@ -45,5 +45,4 @@ def run_prec(binning: str = binning_opt):
                         target  = target,
                         binning = _binning,
                     )
-        return
 # ----------------------
