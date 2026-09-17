@@ -26,6 +26,3 @@ def run_ccbar(binning: str = bin_opt):
                 binning = b_str,
                 project = project,
             )
-
-        return
-

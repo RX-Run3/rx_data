@@ -210,11 +210,11 @@ dscb:
     max : 5
   nr:
     val : 2
-    min : 0.1
+    min : 0.01
     max : 200
   nl:
     val : 2
-    min : 0.1
+    min : 0.01
     max : 200
 voigt:
   mu:

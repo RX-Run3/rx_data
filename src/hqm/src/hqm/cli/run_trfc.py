@@ -47,4 +47,3 @@ def run_trfc(binning: str = bin_opt):
                     source  = source,
                     target  = target,
                 )
-        return
