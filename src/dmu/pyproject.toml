@@ -35,6 +35,7 @@ dependencies = [
 
 [tool.ruff]
 select = ["F", "PL", "B"]
+ignore = ['PLR0913', 'PLR0917']
 
 [tool.pyrefly]
 project-includes = ["**/*.py*"]
