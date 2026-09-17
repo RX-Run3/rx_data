@@ -15,6 +15,7 @@ from hqm.cli.run_ccbar      import run_ccbar
 from hqm.cli.run_databases  import run_databases
 from hqm.cli.run_fits       import run_fits
 from hqm.cli.run_prec       import run_prec
+from hqm.cli.run_ratios     import run_ratios
 
 ctx  = {'help_option_names' : ['-h', '--help']}
 main = typer.Typer(help = 'HQM CLI', context_settings=ctx)
@@ -32,6 +33,7 @@ main.command(name = 'run-ccbar')(run_ccbar)
 main.command(name = 'run-prec')(run_prec)
 main.command(name = 'run-trfc')(run_trfc)
 main.command(name = 'run-fits')(run_fits)
+main.command(name = 'run-ratios')(run_ratios)
 # ----------------------
 if __name__ == '__main__':
     main()
