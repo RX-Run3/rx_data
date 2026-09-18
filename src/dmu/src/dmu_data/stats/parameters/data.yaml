@@ -1,8 +1,8 @@
 fermi_dirac:
   mu:
-    val : 5000 
-    min : 4500 
-    max : 6000 
+    val : 5000
+    min : 4500
+    max : 6000
   ap:
     val : 100
     min :  30
@@ -72,7 +72,7 @@ suj:
     max : 5000
   sg:
     val : 300
-    min : 2 
+    min : 2
     max : 5000
   gm:
     val : 1
@@ -198,7 +198,7 @@ dscb:
     max : 6000
   sg:
     val : 50
-    min :  2 
+    min :  2
     max : 500
   ar:
     val : 1
@@ -210,11 +210,11 @@ dscb:
     max : 5
   nr:
     val : 2
-    min : 0.01
+    min : -10
     max : 200
   nl:
     val : 2
-    min : 0.01
+    min : -10
     max : 200
 voigt:
   mu:
@@ -254,7 +254,7 @@ ggauss:
   bt:
     val : 2
     min : 1
-    max: 10 
+    max: 10
 egauss:
   mu:
     val : 5280
@@ -267,7 +267,7 @@ egauss:
   lm:
     val : 1
     min : 0
-    max: 10 
+    max: 10
 bgauss:
   mu:
     val : 5280
