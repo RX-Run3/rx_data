@@ -22,7 +22,9 @@ observable:
 fits:
   run_gof   : false
   do_errors : true
-  strategy  : null
+  strategy  :
+    ntries : 5
+    pvalue : 0.05
 plots :
   stacked : false # Do not stack if using only one component
   nbins   : 100
