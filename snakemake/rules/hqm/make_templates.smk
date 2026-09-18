@@ -5,18 +5,19 @@ def _index_from_cut(cut):
     return int(index_str)
 # ---------------------
 def _get_binning(wc):
+    blk = _index_from_cut(wc.blk)
     cmb = _index_from_cut(wc.cmb)
     prc = _index_from_cut(wc.prc)
 
-    return f'mva_cmb-{cmb} mva_prc-{prc}'
+    return f'block-{blk} mva_cmb-{cmb} mva_prc-{prc}'
 # ---------------------
 ENV    = 'rx_run3'
 HOME   = '/afs/ihep.ac.cn/users/c/campoverde'
 ANADIR = '/publicfs/ucas/user/campoverde/Data'
 LOGDIR = '/publicfs/ucas/user/campoverde/Jobs/snakemake'
-BLK    = [ f'block_{blk:03}'   for blk in range(1,  9) ][:1]
-CMB    = [ f'mva_cmb_{cmb:03}' for cmb in range(1,  8) ][6:7]
-PRC    = [ f'mva_prc_{prc:03}' for prc in range(1, 11) ][6:7]
+BLK    = [ f'block_{blk:03}'   for blk in range(1,  9) ]
+CMB    = [ f'mva_cmb_{cmb:03}' for cmb in range(1,  8) ]
+PRC    = [ f'mva_prc_{prc:03}' for prc in range(1, 11) ]
 # ---------------------
 rule all:
     input:
