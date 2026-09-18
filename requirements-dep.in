@@ -58,6 +58,7 @@ tensorflow
 tensorflow-graphics
 toml
 tqdm
+types-tqdm
 typer
 types-tensorflow
 uproot

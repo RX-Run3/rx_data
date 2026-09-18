@@ -755,6 +755,8 @@ types-requests==2.32.4.20250913
     # via types-tensorflow
 types-tensorflow==2.18.0.20251008
     # via -r requirements-dep.in
+types-tqdm==4.70.0.20260906
+    # via -r requirements-dep.in
 typing-extensions==4.15.0
     # via
     #   aiosqlite
