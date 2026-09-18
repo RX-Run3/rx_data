@@ -1,8 +1,6 @@
 '''
 Module holding zfitter class
 '''
-
-import contextlib
 import numpy
 import pandas            as pd
 import matplotlib.pyplot as plt
@@ -322,31 +320,4 @@ class Fitter:
         self._set_pdf_pars(res)
 
         return res
-    # ----------------------
-    @classmethod
-    def criterion(
-        cls,
-        status : bool = True,
-        valid  : bool = True):
-        '''
-        Parameters
-        -------------
-        status: If False, it will ignore status when declaring fits as good
-        valid : If False, it will ignore validity when declaring fits as good
-        '''
-        old_status = Fitter._status
-        old_valid  = Fitter._valid
-
-        Fitter._status = status
-        Fitter._valid  = valid
-
-        @contextlib.contextmanager
-        def _context():
-            try:
-                yield
-            finally:
-                Fitter._valid  = old_valid
-                Fitter._status = old_status
-
-        return _context()
 #------------------------------
