@@ -13,7 +13,7 @@ shape_ee_lo: &sh_ee_lo
 shape_ee_cn: &sh_ee_cn
   mu:
     - 5280
-    - 5200
+    - 5100
     - 5300
   sg:
     - 100
