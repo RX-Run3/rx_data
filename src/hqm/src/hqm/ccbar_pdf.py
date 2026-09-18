@@ -3,6 +3,7 @@ Module holding CCbarPDF class
 '''
 import numpy
 
+from functools      import cached_property
 from pathlib        import Path
 from typing         import Final
 from dmu.generic    import Serializable
@@ -44,7 +45,7 @@ class CCbarPDF(BaseModel, Serializable, frozen = True):
     full_reco : FittedModel
     ratio     : tuple[float,float]
     # ---------------------------------
-    @property
+    @cached_property
     def pdf(self) -> zsum:
         '''
         Sum of part reco and fully reco PDFs

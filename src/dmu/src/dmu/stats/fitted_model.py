@@ -1,6 +1,7 @@
 '''
 Module holding the FittedModel class
 '''
+from functools      import cached_property
 from typing         import Self
 from pydantic       import BaseModel
 from dmu.generic    import Serializable
@@ -90,7 +91,7 @@ class FittedModel(BaseModel, Serializable, frozen = True):
             model_conf = cfg,
             fit_result = res)
     #----------------------
-    @property
+    @cached_property
     def fixed_pdf(self) -> zpdf:
         '''
         PDF with fixed shape
@@ -101,7 +102,7 @@ class FittedModel(BaseModel, Serializable, frozen = True):
 
         return pdf
     #----------------------
-    @property
+    @cached_property
     def pdf(self) -> zpdf:
         '''
         PDF representing transfer function
