@@ -2,7 +2,6 @@
 Module holding zfitter class
 '''
 import numpy
-import pandas            as pd
 import matplotlib.pyplot as plt
 
 from typing          import Protocol
@@ -71,11 +70,6 @@ class Fitter:
             data_np = self._data_in
         elif isinstance(self._data_in, zfit.Data):
             data_np = zfit.run(zfit.z.unstack_x(self._data_in)) # convert original data to numpy array, needed by _calc_gof
-        elif isinstance(self._data_in, pd.DataFrame):
-            data_np = self._data_in.to_numpy()
-        elif isinstance(self._data_in, pd.Series):
-            self._data_in = pd.DataFrame(self._data_in)
-            data_np = self._data_in.to_numpy()
         else:
             data_type = str(type(self._data_in))
             raise ValueError(f'Data is not a numpy array, zfit.Data or pandas.DataFrame, but {data_type}')
