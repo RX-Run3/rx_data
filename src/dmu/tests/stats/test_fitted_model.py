@@ -15,6 +15,8 @@ _MODELS : Final[list[list[Model]]] = [
     [Model.gauss],
     [Model.cbr, Model.cbl],
 ]
+
+zfit.settings.set_seed(42)
 # -----------------------------
 def _get_fit_model(models : list[Model]) -> FittedModel:
     obs = zfit.Space('mass', limits=(5000, 6000))
