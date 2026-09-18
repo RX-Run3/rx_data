@@ -15,9 +15,9 @@ ENV    = 'rx_run3'
 HOME   = '/afs/ihep.ac.cn/users/c/campoverde'
 ANADIR = '/publicfs/ucas/user/campoverde/Data'
 LOGDIR = '/publicfs/ucas/user/campoverde/Jobs/snakemake'
-BLK    = [ f'block_{blk:03}'   for blk in range(1,  9) ][:1]
-CMB    = [ f'mva_cmb_{cmb:03}' for cmb in range(1,  8) ][6:7]
-PRC    = [ f'mva_prc_{prc:03}' for prc in range(1, 11) ][6:7]
+BLK    = [ f'block_{blk:03}'   for blk in range(1,  9) ]
+CMB    = [ f'mva_cmb_{cmb:03}' for cmb in range(1,  8) ]
+PRC    = [ f'mva_prc_{prc:03}' for prc in range(1, 11) ]
 # ---------------------
 rule all:
     input:
