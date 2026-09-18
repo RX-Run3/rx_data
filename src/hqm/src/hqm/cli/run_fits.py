@@ -9,7 +9,6 @@ from hqm.types import Mode
 from typing    import Final
 from .fit_mc   import fit_mc
 
-_BLOCKS   : Final[list[int]]                       = list(range(1, 9))
 _MODE     : Final[Mode]                            = Mode.reuse
 _PAIRS    : Final[list[tuple[Component, Trigger]]] = [
     (Component.bpkpjpsiee, Trigger.rk_ee_os),
@@ -28,7 +27,7 @@ _HIGH_MM  : Final[list[Component]] = []
 
 _QSQBINS  : Final[list[Qsq]] = [Qsq.jpsi, Qsq.psi2, Qsq.high]
 
-binning_opt = typer.Option('', '-b', help='E.g. "mva_cmb-7 mva_prc-3"')
+binning_opt = typer.Option('', '-b', help='E.g. "block-1 mva_cmb-7 mva_prc-3"')
 
 log=LogStore.add_logger('hqm:run_fits')
 # --------------------------------------------
@@ -95,14 +94,12 @@ def run_fits(binning: str = binning_opt):
     '''
     Runs fits for a given bin
     '''
-    for block in _BLOCKS:
-        for component, trigger in _PAIRS:
-            for q2bin in _QSQBINS:
+    for component, trigger in _PAIRS:
+        for q2bin in _QSQBINS:
 
-                _binning = f'block-{block} {binning}'.strip()
-                if _skip_fit(q2bin, component, trigger):
-                    continue
+            if _skip_fit(q2bin, component, trigger):
+                continue
 
-                log.info(f'Iteration: block {block}, {component}-{trigger}, q2bin {q2bin}')
-                _run_fit_mc(component, trigger, q2bin, _binning)
+            log.info(f'Iteration: {component}-{trigger}, q2bin {q2bin}')
+            _run_fit_mc(component, trigger, q2bin, binning)
 # --------------------------------------------
