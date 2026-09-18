@@ -80,6 +80,7 @@ def root_directory(root_dir : Path):
     '''
     token = _ROOT_DIR.set(root_dir)
     try:
+        log.info(f'Overriding root directory in dmu:stats:utilities with: {root_dir}')
         yield
     finally:
         _ROOT_DIR.reset(token)
