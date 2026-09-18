@@ -84,11 +84,11 @@ class Fitter:
         else:
             self._data_zf = self._data_in
     #------------------------------
-    def _check_numpy_data(self, data):
+    def _check_numpy_data(self, data : numpy.ndarray) -> numpy.ndarray:
         shp = data.shape
         if   len(shp) == 1:
             pass
-        elif len(shp) == 2:
+        elif len(shp) == 2: # noqa: PLR2004
             _, jval = shp
             if jval != 1:
                 raise ValueError(f'Invalid data shape: {shp}')
