@@ -92,7 +92,7 @@ muon:
 out_dir : DB/hqm/models
 mod_cfg :
   low_stats:
-    stats : [   300,   10000]
+    stats : [   250,   10000]
     models: [ suj ]
   mid_stats:
     stats : [ 10000,  100000]
