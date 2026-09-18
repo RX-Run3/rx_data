@@ -58,9 +58,17 @@ class CCbarPDF(BaseModel, Serializable, frozen = True):
 
         pdf_fr = self.full_reco.pdf
         val, _ = self.ratio
-        frac   = zfit.param.Parameter('frac', val, 0, 1)
 
-        return zfit.pdf.SumPDF([pdf_pr, pdf_fr], frac, obs = self.obs.obs)
+        if val <= 1.0:
+            log.debug(f'Smaller part_reco found: {val}')
+            frac   = zfit.param.Parameter('frac', val, 0, 1)
+            pdf    = zfit.pdf.SumPDF([pdf_pr, pdf_fr], frac, obs = self.obs.obs)
+        else:
+            log.debug(f'Larger part_reco found: {val}')
+            frac   = zfit.param.Parameter('frac', 1 / val, 0, 1)
+            pdf    = zfit.pdf.SumPDF([pdf_fr, pdf_pr], frac, obs = self.obs.obs)
+
+        return pdf
     # ---------------------------------
     @classmethod
     def get_path(

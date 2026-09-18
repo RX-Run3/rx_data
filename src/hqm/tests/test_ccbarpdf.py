@@ -1,6 +1,7 @@
 '''
 Module holding tests for CCbarPDF
 '''
+import pytest
 import matplotlib.pyplot as plt
 
 from hqm           import ccbar_pdf
@@ -13,8 +14,12 @@ from dmu.stats     import ObsConf, ModelFactoryConf, SplinePDF, ZFitPlotter, ZFi
 
 # ----------------------------
 class TestRatio:
+    larger_prec = False 
     def get_value(self, name):
         _ = name
+        if self.larger_prec:
+            return 1.3, 0.03
+
         return 0.3, 0.03
 # ----------------------------
 class TestCCbarRatioCalculator:
@@ -83,10 +88,16 @@ class TestPrecMaker:
 
         return pdf
 # ----------------------------
-def test_simple(monkeypatch, tmp_path : Path):
+@pytest.mark.parametrize('larger_prec', [False, True])
+def test_simple(
+    monkeypatch, 
+    larger_prec : bool,
+    tmp_path    : Path):
     '''
     Simplest test
     '''
+    TestRatio.larger_prec = larger_prec
+
     monkeypatch.setenv('ANADIR', str(tmp_path))
     monkeypatch.setattr(ccbar_pdf, 'PdfBuilder'          , TestPdfBuilder)
     monkeypatch.setattr(ccbar_pdf, 'CCbarRatioCalculator', TestCCbarRatioCalculator)
