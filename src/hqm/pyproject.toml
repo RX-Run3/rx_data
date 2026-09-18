@@ -24,7 +24,7 @@ where = ['src']
 hqm_data = ['config/*.yaml']
 
 [project.scripts]
-hqm = 'hqm.cli.main:main'
+hqm = 'hqm.cli.main:run'
 
 [tool.ruff.lint]
 select = ["ARG", 'F']

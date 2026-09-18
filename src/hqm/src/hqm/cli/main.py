@@ -1,8 +1,10 @@
 '''
 HQM CLI
 '''
+import os
 import typer
 
+from pathlib                import Path
 from hqm.cli.build_database import build_database
 from hqm.cli.make_ccbar     import make_ccbar
 from hqm.cli.make_trfc      import make_trfc
@@ -16,6 +18,8 @@ from hqm.cli.run_databases  import run_databases
 from hqm.cli.run_fits       import run_fits
 from hqm.cli.run_prec       import run_prec
 from hqm.cli.run_ratios     import run_ratios
+
+from dmu.stats              import utilities as sut
 
 ctx  = {'help_option_names' : ['-h', '--help']}
 main = typer.Typer(help = 'HQM CLI', context_settings=ctx)
@@ -35,5 +39,11 @@ main.command(name = 'run-prec')(run_prec)
 main.command(name = 'run-ratios')(run_ratios)
 main.command(name = 'run-ccbar')(run_ccbar)
 # ----------------------
+def run():
+    _ANADIR = Path(os.environ['ANADIR'])
+    path    = _ANADIR / 'DB/hqm/scratch'
+    with sut.root_directory(root_dir = path):
+        main()
+# ----------------------
 if __name__ == '__main__':
-    main()
+    run()
