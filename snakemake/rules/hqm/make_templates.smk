@@ -5,10 +5,11 @@ def _index_from_cut(cut):
     return int(index_str)
 # ---------------------
 def _get_binning(wc):
+    blk = _index_from_cut(wc.blk)
     cmb = _index_from_cut(wc.cmb)
     prc = _index_from_cut(wc.prc)
 
-    return f'mva_cmb-{cmb} mva_prc-{prc}'
+    return f'block-{blk} mva_cmb-{cmb} mva_prc-{prc}'
 # ---------------------
 ENV    = 'rx_run3'
 HOME   = '/afs/ihep.ac.cn/users/c/campoverde'
