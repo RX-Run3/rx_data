@@ -101,9 +101,9 @@ class ZFitPlotter:
         self._suffix           = suffix
         self._leg              = {}
         self._col              = {}
-        self._l_blind          = [] 
         self._l_plot_components= [] 
         self.axs               : tuple[Axes,...]
+        self._l_blind          = None
         self._figsize          = None
         self._leg_loc          = None
 
@@ -329,7 +329,7 @@ class ZFitPlotter:
             pull_errors[0].append(low / err)
             pull_errors[1].append(up  / err)
 
-        hst            = hist.axis.Regular(nbins, self.lower, self.upper, name="pulls")
+        hst            = hist.new.Reg(nbins, self.lower, self.upper, name="pulls").Double()
         pull_hist      = hist.Hist(hst)
         pull_hist[...] = pulls
 
@@ -461,7 +461,7 @@ class ZFitPlotter:
 
         return ax1, ax2
     #----------------------------------------
-    def _get_component_yield(self, model, par):
+    def _get_component_yield(self, par):
         nevs = self.data_weight_np.sum()
         frac = par.value().numpy()
 
@@ -485,7 +485,7 @@ class ZFitPlotter:
                 log.debug(f'Skipping blinded PDF: {blind_name}')
                 continue
 
-            nevt = self._get_component_yield(model, par)
+            nevt = self._get_component_yield(par)
 
             if   model.name in self._l_plot_components and     isinstance(model, zfit.pdf.SumPDF):
                 l_model = [ (frc, pdf) for pdf, frc in zip(model.pdfs, model.params.values(), strict = True) ]
@@ -618,7 +618,7 @@ class ZFitPlotter:
         self,
         title             = None,
         stacked           = False,
-        blind             = None,
+        blind : list[tuple[str,float,float]] | None = None,
         no_data           = False,
         ranges            = None,
         nbins: int        = 100,
