@@ -28,8 +28,8 @@ _MAX_SIZE : Final[int] = 150_000 # If array is larger than this, limit it to thi
 
 # Ranges used to override parameters from ModelFactory
 _RANGES : Final[list[tuple[str,str,float,float,float]]] = [
-('suj', 'dl', 2.0, 1.0, 4.0),
-('suj', 'gm', 0.0,-3.0, 1.0),
+('suj', 'dl', 2.0, 0.0, 4.0),
+('suj', 'gm', 0.0,-3.0, 3.0),
 ]
 
 type NpFltArr = npt.NDArray[numpy.float64]
