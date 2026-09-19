@@ -24,7 +24,7 @@ from hqm.types      import Mode
 log=LogStore.add_logger('hqm:pdf_mc')
 
 _PDF_NAME : Final[str] = 'pdf_mc'
-_MAX_SIZE : Final[int] = 150_000 # If array is larger than this, limit it to this number
+_MAX_SIZE : Final[int] = 50_000 # If array is larger than this, limit it to this number
 
 # Ranges used to override parameters from ModelFactory
 _RANGES : Final[list[tuple[str,str,float,float,float]]] = [
