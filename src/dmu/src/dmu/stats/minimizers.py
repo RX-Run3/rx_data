@@ -30,9 +30,10 @@ from .imports        import zfit
 from .               import utilities as sut
 
 log = LogStore.add_logger('dmu:stats:minimizers')
-zlos= ExtendedUnbinnedNLL | UnbinnedNLL
-zpar= zfit.param.Parameter
-zmin= zfit.minimize.Minuit
+
+type zlos = ExtendedUnbinnedNLL | UnbinnedNLL
+type zpar = zfit.param.Parameter
+type zmin = zfit.minimize.Minuit
 
 # Should always be these values
 _HIDDEN_TF_LINES          : Final[list[str]] = [
@@ -43,10 +44,7 @@ _HIDDEN_TF_LINES          : Final[list[str]] = [
     'Loaded cuDNN version',
     'All log messages before absl::InitializeLog()']
 
-# Configurations
-_NDOF : Final[int] = 10
-
-Loss= ExtendedUnbinnedNLL | UnbinnedNLL
+_NDOF : Final[int] = 10 # Numbe of degrees of freedom for goodness of fit calculation
 #------------------------------
 class MinimizerFailError(Exception):
     '''
@@ -104,7 +102,7 @@ class AnealingMinimizer:
 
         return good_fit
     # ------------------------
-    def _randomize_parameters(self, nll : Loss):
+    def _randomize_parameters(self, nll : zlos):
         '''
         Will move floating parameters of PDF according
         to uniform PDF
@@ -203,7 +201,7 @@ class AnealingMinimizer:
     # ------------------------
     def get_result( # type: ignore
         self, 
-        loss  : Loss, 
+        loss  : zlos, 
         params: ztyping.ParamsTypeOpt | None = None,
         init  : zres | None = None) -> FitResult:
         '''
@@ -220,7 +218,7 @@ class AnealingMinimizer:
                 obj = self._min.minimize(loss, params = params, init = init)
             except (FailMinimizeNaN, ValueError, RuntimeError) as exc:
                 for pdf in loss.model:
-                    print_pdf(pdf)
+                    print_pdf(pdf, level = LogLevels.debug)
                 log.warning(f'Failed minimization: {exc}')
                 continue
 
@@ -301,8 +299,8 @@ class ContextMinimizer:
         omin: Bytes representation of minimizer 
         path: Path where the result object will be saved
         '''
-        from zfit import dill
-        from .fit_result import FitResult
+        from zfit import dill             # noqa: PLC0415
+        from .fit_result import FitResult # noqa: PLC0415
 
         nll = dill.loads(onll)
         min = dill.loads(omin) 
@@ -337,7 +335,7 @@ class ContextMinimizer:
 
         return frs
 # ------------------------
-def _get_weight_corr(nll : Loss) -> WeightCorr:
+def _get_weight_corr(nll : zlos) -> WeightCorr:
     has_weights = False
     for data in nll.data:
         if data.weights is None:
@@ -352,7 +350,7 @@ def _get_weight_corr(nll : Loss) -> WeightCorr:
 
     return WeightCorr(False)
 # ------------------------
-def _calculate_errors(res : zres, cfg : FitConf, nll : Loss) -> zres:
+def _calculate_errors(res : zres, cfg : FitConf, nll : zlos) -> zres:
     '''
     Parameters
     -------------
