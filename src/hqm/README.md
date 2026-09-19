@@ -13,75 +13,20 @@ This project is meant to:
 
 # CLI
 
-## Make databases
+All the CLIs for this projects can be accessed through `hqm`. For for information on them
+check `hqm -h`.
 
-In order to speed up fits, etc, a database with parquet files, each containing
-a pandas dataframe with only a few columns (masses, MVA scores, etc) is created
-with:
+The workflow proceeds as:
 
-```bash
-nu run_databases.nu
-```
+- Make databases, i.e. small parquet files with only needed data from ROOT files.
+- Fit MC samples.
+- Run fits to calculate transfer functions
+- Fit the low sideband in the muon channel to get part reco template
+- Get part-reco over fully-reco ratios from simultaneous fits
+- Use part reco, ratios and fully reco components to build model
 
-for different processes and triggers
-
-## Fit simulation
-
-With the data above already made run:
+This full process can be steered by a snakemake workflow by running:
 
 ```bash
-nu run_fits.nu
+snakemake -s snakemake/rules/hqm/make_templates.smk --profile ihep --logger=flowo --logger-flowo-name=hqm --keep-going --quiet
 ```
-
-where inside the script:
-
-- `-d` requires the `q2` cut to be on the DTF variable.
-- `-k` requires a KDE fit and without it will try a parametric fit
-- `-b` specifies the binning by using the variable and the bin index
-- `-s` performs smearing of the masses before running the selection
-
-The binning is specified in `hqm_data/config/binning.yaml`.
-
-## Make transfer functions
-
-After building the databases and fitting the shapes, the transfer functios are made with:
-
-```bash
-nu run_trfc.nu
-```
-
-
-which will do the fits for all blocks and a given binning
-
-## Make part reco PDFs
-
-With the transfer functions and the data in the low sideband in the muon mode
-one can calculate the expected partially reconstructed electron charmonium shapes with:
-
-```bash
-nu run_prec.nu
-```
-
-## Calculate ratios
-
-In order to calculate the part reco over fully reconstructed yields run
-
-```bash
-nu run_ratios.nu
-```
-
-this will run simultaneous fit and store the parameters in a JSON file.
-
-## Create $c\bar{c}$ templates
-
-The script below:
-
-```bash
-nu run_ccbar.nu 
-```
-
-will:
-
-- Put together fully and partially reconstructed templates with the ratio mentioned above
-- Save model to JSON
-
