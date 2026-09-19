@@ -6,6 +6,8 @@ import numpy
 import numpy.typing      as npt
 import matplotlib.pyplot as plt
 
+from contextlib     import AbstractContextManager
+from contextlib     import ExitStack
 from typing         import Final, Literal, overload
 from functools      import cached_property
 from pathlib        import Path
@@ -13,7 +15,7 @@ from dmu.generic    import utilities as gut
 from pydantic       import BaseModel, RootModel
 from rx_common      import Component, Mass, Trigger, Qsq
 from dmu            import LogStore
-from dmu.stats      import Fitter, Model, ModelFactory
+from dmu.stats      import Fitter, Model, ModelFactory, ParameterLibrary
 from dmu.stats      import FittedModel, NonParametricModel
 from dmu.stats      import ZFitPlotter, ZFitPlotterConf, zfit
 from hqm.data_store import DataStore
@@ -23,6 +25,12 @@ log=LogStore.add_logger('hqm:pdf_mc')
 
 _PDF_NAME : Final[str] = 'pdf_mc'
 _MAX_SIZE : Final[int] = 150_000 # If array is larger than this, limit it to this number
+
+# Ranges used to override parameters from ModelFactory
+_RANGES : Final[list[tuple[str,str,float,float,float]]] = [
+('suj', 'dl', 2.0, 1.0, 4.0),
+('suj', 'gm', 0.0,-3.0, 1.0),
+]
 
 type NpFltArr = npt.NDArray[numpy.float64]
 type zpdf     = zfit.pdf.BasePDF
@@ -198,6 +206,24 @@ class PdfBuilder:
         self.__out_path = self.__cfg.out_path / name / f'{comp}_{trigger}_{qsq}'
         self.__out_path.mkdir(parents = True, exist_ok = True)
     # ----------------------------
+    def _get_val_ctx(self) -> list[AbstractContextManager[None]]:
+        '''
+        Returns list of context managers, each representing a parameter whose values
+        should be overriden for ModelFactory
+        '''
+        contexts : list[AbstractContextManager[None]] = []
+        for kind, name, val, low, high in _RANGES:
+            ctx = ParameterLibrary.values(
+                kind      = kind, 
+                parameter = name, 
+                val       = val,
+                low       = low,
+                high      = high)
+
+            contexts.append(ctx)
+
+        return contexts 
+    # ----------------------------
     @cached_property
     def name(self) -> str:
         '''
@@ -257,14 +283,18 @@ class PdfBuilder:
             'mu': cfg.mu,
             'sg': cfg.sg}
 
-        fac = ModelFactory(
-            preffix  = _PDF_NAME,
-            obs      = data.space,
-            l_shared = ['mu', 'sg'],
-            l_float  = [],
-            values   = values,
-            l_pdf    = models)
-        pdf = fac.get_pdf()
+        with ExitStack() as stack: 
+            for val_ctx in self._get_val_ctx():
+                stack.enter_context(val_ctx)
+
+            fac = ModelFactory(
+                preffix  = _PDF_NAME,
+                obs      = data.space,
+                l_shared = ['mu', 'sg'],
+                l_float  = [],
+                values   = values,
+                l_pdf    = models)
+            pdf = fac.get_pdf()
 
         ftr = Fitter(pdf = pdf, data = data)
         res = ftr.fit()
