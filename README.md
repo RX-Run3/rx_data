@@ -1,4 +1,3 @@
-![Launch on REANA badge](https://www.reana.io/static/img/badges/launch-with-snakemake-on-reana-at-cern.svg)
 ![Python Version](https://img.shields.io/badge/python-3.13-blue.svg)
 
 # $$R_X \text{ With Run 3 Data}$$
@@ -18,6 +17,7 @@ This project contains the following packages:
 |-----------------|-----------------------------------------------------------------------------|
 | [post_ap](src/post_ap/README.md)                 | Contains code needed to slim ntuples made by the analysis productions   | 
 | [fitter](src/fitter/README.md)                   | Has code needed to run fits to rare and resonant channel                |
+| [hqm](src/hqm/README.md)                         | Used to get the charmonium template for the high-q2 bin                 |
 | [rx_classifier](src/rx_classifier/README.md)     | Used to train classifiers                                               |
 | [rx_data](src/rx_data/README.md)                 | Allows access to the data and also has tools for further processing     |
 | [rx_efficiencies](src/rx_efficiencies/README.md) | Used to calculate geometric acceptances and reconstruction efficiencies |
