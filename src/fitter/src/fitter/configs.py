@@ -184,23 +184,25 @@ class CCbarConf(ComponentConf, frozen = True):
         for key, val in self.weights.items():
             weights += f'{key:<20}{val}\n'
 
-        return f'''
-Samples
-----------------
-{samples}
-
-Weights
-----------------
-{weights}
-
-Fit
-----------------
-{self.fit}
-
-Plot
-----------------
-{self.plots}'
+        msg = f'''
+        Samples
+        ----------------
+        {samples}
+        
+        Weights
+        ----------------
+        {weights}
+        
+        Fit
+        ----------------
+        {self.fit}
+        
+        Plot
+        ----------------
+        {self.plots}'
         '''
+
+        return msg.lstrip()
     # -----------------
     @classmethod
     def default(
@@ -398,7 +400,7 @@ class NonParametricConf(ComponentConf, frozen = True):
 
         return self.cfg_obs.obs
 # ------------------------------
-class CmbConstraintConf(BaseModel):
+class CmbConstraintConf(BaseModel, frozen = True):
     '''
     Class meant to represent configuration for combintorial constraints
 
@@ -407,8 +409,6 @@ class CmbConstraintConf(BaseModel):
     selection : Selection that sample will go through on top of nominal selection, e.g. vetos
     parameters: Parameters that will be constrained
     '''
-    model_config = ConfigDict(frozen=True)
-
     parameters : dict[Qsq,list[str]]
     if TYPE_CHECKING:
         mod_cfg : 'FitModelConf'
