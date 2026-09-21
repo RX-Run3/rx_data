@@ -8,8 +8,7 @@ from dmu           import LogStore
 from dmu.stats     import Constraint, Constraint1D, ConstraintType, ParsHolder
 from rx_common     import Block, Brem, Channel, Correction, Component
 from zfit.param    import Parameter as zpar
-
-from .scale_reader import ScaleReader
+from rx_q2         import ScaleReader
 
 log=LogStore.add_logger('fitter:signal_constraints')
 
