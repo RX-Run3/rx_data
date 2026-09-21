@@ -13,7 +13,7 @@ from rx_common  import Qsq
 
 from .fit_metadata import FitMetadata
 from .fit_summary  import FitSummary
-from .mva_conf     import MVAWp 
+from rx_common     import MVAWp 
 
 log=LogStore.add_logger('fitter:parameter_reader')
 

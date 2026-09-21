@@ -16,7 +16,7 @@ from rx_common         import Component, Qsq, Trigger, Cut, Cuts, WorkingPoint
 from rx_efficiencies   import Efficiency, EfficiencyGrid, EfficiencyScanner, EfficiencyScannerConf
 
 from .yields           import Yield, YieldGrid
-from .mva_conf         import MVAWp
+from rx_common         import MVAWp
 from .parameter_reader import ParameterReader
 
 _BREM    : Final[Brem] = Brem.brx12    # Will get yields in this brem category

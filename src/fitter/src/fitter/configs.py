@@ -9,6 +9,8 @@ from functools   import cached_property
 from pydantic    import BaseModel, field_validator, model_validator
 from pathlib     import Path
 from typing      import TYPE_CHECKING, Any, Callable, Literal, Self, Sequence
+from rx_common   import Block
+from rx_common   import MVAWp
 from rx_common   import Channel, Mass, Project, Qsq, MisID, Region
 from rx_common   import Component, Trigger, CCbarComponent, Cuts
 from rx_misid    import MisIDSampleWeights

@@ -12,7 +12,7 @@ from rx_common   import Trigger, Project, Qsq, WorkingPoint
 from rx_common   import Block, Brem, Channel, Component, Cut, Cuts
 from dmu         import LogStore
 from dmu.generic import hashing
-from .mva_conf   import MVAWp
+from rx_common   import MVAWp
 
 _COMMON   : Final[str] = r'.*\/(\d+-\d+|\d{3})_(\d+-\d+|\d{3})_(all|b\d)\/(?:reso|rare)\/(rk|rkst)\/(mm|ee)\/(low|central|jpsi|psi2|high)'
 _DT_REGEX : Final[str] = r'\/_COMP\/fit\/.*\/brem_([x,0-9]{3})\/parameters.json'
