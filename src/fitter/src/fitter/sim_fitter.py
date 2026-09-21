@@ -121,6 +121,11 @@ class SimFitter(BaseFitter, Cache):
         Parameters
         --------------
         cfg: Object storing configuration
+
+        Returns
+        --------------
+        Dictionary mapping category name (e.g. brem_xx1_b3) to corresponding
+        zfit data object
         '''
         d_data : dict[str, zdata] = {}
         for cat_name, cat_cfg in cfg.categories.items():
