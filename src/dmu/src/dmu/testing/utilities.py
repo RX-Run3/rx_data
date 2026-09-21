@@ -168,7 +168,7 @@ def get_file_with_trees(path : str) -> TFile:
     l_nevt      = [    100, 200, 300]
 
     l_rdf = [ _get_rdf(nevt) for nevt in l_nevt ]
-    for rdf, tree_name in zip(l_rdf, l_tree_name):
+    for rdf, tree_name in zip(l_rdf, l_tree_name, strict = True):
         rdf.Snapshot(tree_name, path, ['x', 'y', 'z'], snap)
         snap.fMode  = 'update'
 
@@ -201,20 +201,21 @@ def get_models(
     return l_model, auc
 # -------------------------------
 def _make_file(
-        fpath    : str,
-        tree     : str,
-        nentries : int) -> None:
+    fpath    : str,
+    tree     : str,
+    nentries : int) -> None:
 
     fdir       = os.path.dirname(fpath)
     sample     = os.path.basename(fdir)
     l_col_name = Data.d_col[sample]
-    data       = {}
+
+    data : dict[str,numpy.ndarray] = {}
     for col_name in l_col_name:
         if col_name == 'index':
             data[col_name] = numpy.arange(nentries)
             continue
 
-        data[col_name] = numpy.random.normal(0, 1, nentries)
+        data[col_name] = numpy.random.normal(loc = 0, scale = 1, size = nentries)
 
     with uproot.recreate(fpath) as ofile:
         log.debug(f'Saving to: {fpath}:{tree}')

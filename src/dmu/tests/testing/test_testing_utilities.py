@@ -17,15 +17,9 @@ def initialize():
     LogStore.set_level('dmu:testing:utilities', 10)
 # ----------------------------------------------
 def _check_rdf(rdf : RDF.RNode) -> None:
-    if not isinstance(rdf, RDF.RNode):
-        kind = str(type(rdf))
-        log.error(f'Object is not a dataframe but: {kind}')
-        raise ValueError
-
     log.info('')
     rdf.Display(nRows=20).Print()
 # ----------------------------------------------
-@pytest.mark.skip
 def test_get_rdf():
     '''
     Test for toy dataframe getter
@@ -36,7 +30,6 @@ def test_get_rdf():
     rdf = ut.get_rdf(kind='bkg', nentries=10)
     _check_rdf(rdf)
 # ----------------------------------------------
-@pytest.mark.skip
 def test_get_rdf_with_nans():
     '''
     Test for toy dataframe getter
