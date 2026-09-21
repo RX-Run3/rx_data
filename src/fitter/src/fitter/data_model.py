@@ -114,21 +114,23 @@ class DataModel:
 
         log.debug(f'Found {npdf} components')
 
-        l_pdf : list[zpdf] = []
+        d_pdf : dict[Component, zpdf] = dict()
         for component, cfg in components.items():
-            pdf           = self._get_component_pdf(
+            if not cfg.from_sim_fit:
+                continue
+
+            pdf           = self._get_sim_fit_pdf(
                 component = component,
                 cfg       = cfg)
 
             if pdf is None:
                 continue
 
-            pdf = self._extend(pdf=pdf, component=component)
-            l_pdf.append(pdf)
+            d_pdf[component] = pdf
 
-        return self._add_components(l_pdf = l_pdf)
+        return self._add_components(d_pdf = d_pdf)
     # ------------------------
-    def _get_component_pdf(
+    def _get_sim_fit_pdf(
         self, 
         cfg       : AnyModelConf, 
         component : Component) -> zpdf | None:
@@ -164,16 +166,24 @@ class DataModel:
 
         return pdf
     # ------------------------
-    def _add_components(self, l_pdf : list[zpdf]) -> zpdf:
+    def _add_components(self, d_pdf : dict[Component, zpdf]) -> zpdf:
         '''
         Parameters
         ----------------
-        l_pdf: List of PDF, each representing a fitting component
+        d_pdf: Dictionary mapping fitting component to corresponding PDF 
 
         Returns
         ----------------
         Sum of components
         '''
+        components = self._cfg.components[self._q2bin]
+
+        l_pdf : list[zpdf] = []
+        for component in components:
+            pdf = d_pdf[component]                           # Sort by component
+            pdf = self._extend(pdf=pdf, component=component) # Extend
+            l_pdf.append(pdf)
+
         if len(l_pdf) == 1:
             log.warning('Found only one PDF, not using it in SumPDF')
             return l_pdf[0]
