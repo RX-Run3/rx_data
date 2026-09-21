@@ -45,7 +45,7 @@ class CompositeYieldConf(BaseModel, frozen = True):
 
         return self
 # ------------------------------
-class YieldsConf(RootModel[dict[str,YieldConf]], frozen = True):
+class YieldsConf(RootModel[dict[str,SimpleYieldConf | CompositeYieldConf]], frozen = True):
     '''
     Class meant to represent dictionary between
     parameter and configuration

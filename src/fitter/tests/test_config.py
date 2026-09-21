@@ -3,9 +3,11 @@ Module with functions that test config classes
 '''
 import pytest
 
+from pydantic    import TypeAdapter
 from pathlib     import Path
 from dmu         import LogStore
-from dmu.stats   import YieldConf
+from dmu.stats   import CompositeYieldConf
+from dmu.stats   import SimpleYieldConf
 from dmu.generic import UnpackerModel, utilities as gut
 from rx_misid    import MisIDSampleWeights, MisIDSampleSplitting
 from rx_common   import Channel, Component, Project, Mass, Qsq, Region
@@ -82,9 +84,10 @@ def test_yield_conf(
         package = 'fitter_data',
         fpath   = f'model/yields/{analysis}/{fname}.yaml')
 
+    yield_adapter = TypeAdapter(SimpleYieldConf | CompositeYieldConf)
     for name, conf in data.items():
         log.info(f'Validating: {name}')
-        YieldConf(**conf)
+        yield_adapter.validate_python(conf)
 # ----------------------
 @pytest.mark.parametrize('analysis', ['rk'  , 'rkst'])
 @pytest.mark.parametrize('kind'    , ['reso', 'rare'])

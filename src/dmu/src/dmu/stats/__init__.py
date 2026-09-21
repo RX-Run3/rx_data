@@ -41,7 +41,6 @@ from .fit_result          import GoodnessOfFit
 from .types               import Model, KDEModel, CorrectionImplementation, ConstraintType
 from .configs             import SimpleYieldConf
 from .configs             import CompositeYieldConf
-from .configs             import YieldConf
 from .configs             import YieldsConf
 
 from .regular_interpolator import RegularInterpolator
@@ -54,7 +53,6 @@ __all__ = [
     'CompositeYieldConf',
     'FittedModel',
     'ObsConf',
-    'YieldConf',
     'YieldsConf',
     'pdf_to_tex',
     'is_pdf_usable',
