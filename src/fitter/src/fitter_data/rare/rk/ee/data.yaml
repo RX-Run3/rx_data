@@ -97,7 +97,7 @@ components:
   central:
     <<: *comp
   high:
-    ccbar : rare/rk/ee/ccbar.yaml
+    ccbar : rare/rk/ee/ccbar_tf.yaml
     <<: *comp
 constraints:
   misid    : misid/rk/ee/data_misid.yaml
