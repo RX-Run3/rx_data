@@ -188,6 +188,8 @@ class CCbarConf(ComponentConf, frozen = True):
     merged  : dict[Qsq,bool]
     fit     : dict[Qsq, KDEConf]
     plots   : ZFitPlotterConf
+
+    from_sim_fit : Literal[True] = True
     # -----------------
     def __str__(self):
         samples = [ f'{sample}' for sample in self.samples ] 
@@ -248,6 +250,8 @@ class ParametricConf(ComponentConf, frozen = True):
     fit        : FitConf
     categories : dict[str, CategoryConf]
     plots      : ZFitPlotterConf
+
+    from_sim_fit : Literal[True] = True
     # ----------------------
     def filter_category(self, func : Callable[[str],bool]) -> Self:
         '''
@@ -381,6 +385,7 @@ class NonParametricConf(ComponentConf, frozen = True):
     fit          : KDEConf
     plots        : ZFitPlotterConf
     events_range : tuple[int,int]
+    from_sim_fit : Literal[True] = True 
     # ---------------------------
     @property
     def obs(self) -> zobs:
@@ -458,6 +463,7 @@ class CombinatorialConfUnconstrained(ComponentConf, frozen = True):
     '''
     models      : dict[Qsq, ModelFactoryConf ]
     constraints : Literal[None] 
+    from_sim_fit: Literal[True] = True 
 # ------------------------------
 class CombinatorialConf(ComponentConf, frozen = True):
     '''
@@ -465,6 +471,7 @@ class CombinatorialConf(ComponentConf, frozen = True):
     '''
     models      : dict[Qsq, ModelFactoryConf ]
     constraints : CmbConstraintConf
+    from_sim_fit: Literal[True] = True 
     # --------------------------------------
     def specialize(self, q2bin : Qsq) -> Self:
         '''
@@ -489,6 +496,7 @@ class MisIDConf(NonParametricConf, frozen = True):
     weights   : MisIDSampleWeights
     data_fit  : FitConf
     selection : dict[Cuts,str]
+    from_sim_fit: Literal[True] = True 
     '''
     Overriding selection to full selection, e.g. `pid == false`
     Selection gets implemented in form of weights
