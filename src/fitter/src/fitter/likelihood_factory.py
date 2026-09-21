@@ -92,17 +92,6 @@ class LikelihoodFactory:
         ------------
         Zfit likelihood
         '''
-        log.info('Getting full data model using fits to simulation')
-        log.debug(f'{"Trigger":<20}{self._trigger}')
-        log.debug(f'{"q2bin  ":<20}{self._q2bin}')
-        mod  = DataModel(
-            name   = self._name,
-            cfg    = self._cfg,
-            obs    = self._obs,
-            q2bin  = self._q2bin,
-            trigger= self._trigger)
-        model= mod.get_model()
-
         log.info(30 * '-')
         log.info(f'Getting real data: {self._sample}/{self._trigger}/{self._q2bin}')
         log.info(30 * '-')
@@ -119,6 +108,17 @@ class LikelihoodFactory:
                 trigger= self._trigger,
                 wgt_cfg= None) # Do not need weights for data
             data = dpr.get_data()
+
+        log.info('Getting full data model using fits to simulation')
+        log.debug(f'{"Trigger":<20}{self._trigger}')
+        log.debug(f'{"q2bin  ":<20}{self._q2bin}')
+        mod  = DataModel(
+            name   = self._name,
+            cfg    = self._cfg,
+            obs    = self._obs,
+            q2bin  = self._q2bin,
+            trigger= self._trigger)
+        model= mod.get_model()
 
         log.info(50 * '-')
         log.info(f'Making {self._name} likelihood')
