@@ -1,9 +1,10 @@
 '''
 Module containing MVAConf class
 '''
-from typing      import Self, Final
-from pydantic    import BaseModel, RootModel, model_validator
-from rx_common   import WorkingPoint, Cut, Cuts
+from typing         import Self, Final
+from pydantic       import BaseModel, RootModel, model_validator
+from .working_point import WorkingPoint
+from .cuts          import Cut, Cuts
 
 _MULT_FACTOR : Final[float] = 1000. # Needed to go back and forth from string representation
 _LEN_STR     : Final[int  ] = 4     # String representation of MVAWp should be like 0100

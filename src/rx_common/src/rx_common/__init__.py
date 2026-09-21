@@ -14,6 +14,7 @@ from .component          import MissingComponent
 from .component          import CCbarComponent
 from .component          import Component
 from .campaign           import Campaign
+from .mva_conf           import MVAConf, MVAWp
 from .process            import set_nproc, get_nproc 
 from .project            import Project, AlternativeProject
 from .channel            import Channel 
@@ -36,6 +37,8 @@ __all__ = [
     'Particle',
     'Trigger', 
     'Channel', 
+    'MVAConf',
+    'MVAWp',
     'Project', 
     'DataSet',
     'Region',

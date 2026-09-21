@@ -40,7 +40,6 @@ from .cmb_validator      import CmbOutputConfig
 # ----------
 # Configs
 # ----------
-from .mva_conf import MVAConf, MVAWp
 from .configs  import FitModelConf
 from .configs  import MisIDConf
 from .configs  import CombinatorialConf
@@ -70,8 +69,6 @@ __all__ = [
     'DatasetSummary',
     'FitMetadata',
     # ------------------
-    'MVAConf',
-    'MVAWp',
     'SignalConstraints',
     'ScaleReader',
     'Category',

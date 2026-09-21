@@ -3,10 +3,10 @@ Test for MVAConf class
 '''
 import pytest
 
-from fitter    import MVAConf, MVAWp
+from rx_common import MVAConf, MVAWp
 from dmu       import LogStore
 
-log = LogStore.add_logger('fitter:test_mva_conf')
+log = LogStore.add_logger('rx_common:test_mva_conf')
 # ----------------------------------------
 def test_from_float():
     '''
