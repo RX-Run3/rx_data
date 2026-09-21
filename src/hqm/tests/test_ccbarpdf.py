@@ -14,7 +14,7 @@ from dmu.stats     import ObsConf, ModelFactoryConf, SplinePDF, ZFitPlotter, ZFi
 
 # ----------------------------
 class TestRatio:
-    larger_prec = False 
+    larger_prec = False
     def get_value(self, name):
         _ = name
         if self.larger_prec:
@@ -90,7 +90,7 @@ class TestPrecMaker:
 # ----------------------------
 @pytest.mark.parametrize('larger_prec', [False, True])
 def test_simple(
-    monkeypatch, 
+    monkeypatch,
     larger_prec : bool,
     tmp_path    : Path):
     '''

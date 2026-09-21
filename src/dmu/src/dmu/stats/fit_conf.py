@@ -106,7 +106,7 @@ class Context(BaseModel, frozen = True):
 #------------------------------
 class Minimization(BaseModel, frozen = True):
     '''
-    Used to hold parameters needed for zfit's Minuit class 
+    Used to hold parameters needed for zfit's Minuit class
     '''
     mode    : int  = 0
     '''
@@ -124,7 +124,7 @@ class FitConf(BaseModel, frozen = True):
     Class meant to define how a fit will be done
     '''
     minimization: Minimization                       = Minimization()
-    nentries    : int                                = -1 
+    nentries    : int                                = -1
     run_gof     : bool                               = True
     do_errors   : bool                               = True
     ranges      : list[tuple[float,float] ]  | None  = None
