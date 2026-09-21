@@ -3,7 +3,7 @@ Module holding CategoryMerger class
 '''
 import zfit
 
-from typing      import Literal, Sequence
+from typing      import Literal, Sequence, Mapping
 from dmu         import LogStore
 from rx_common   import Brem, Block, Correction, Component, Cuts
 from dmu.stats   import FitResult, Model, ModelFactory
@@ -11,10 +11,10 @@ from .category   import Category, FitCategory
 
 log=LogStore.add_logger('fitter:category_merger')
 
-zpar      = zfit.param.Parameter
+type zpar = zfit.param.Parameter | zfit.param.ComposedParameter
 Condition = Literal['all_same', 'all_different']
 # ----------------------
-class CategoryMerger:
+class CategoryMerger[T: Category]:
     '''
     Class meant to merge PDFs, where these PDFs:
 
@@ -25,7 +25,7 @@ class CategoryMerger:
     def __init__(
         self, 
         reparametrize : bool,
-        categories    : list[Category],
+        categories    : Sequence[T],
         comp          : Component):
         '''
         Parameters
@@ -58,7 +58,7 @@ class CategoryMerger:
         elif kind is Block:
             objs = { cat.block for cat in categories }
         else:
-            raise ValueError(f'Invalid type: {type}')
+            raise ValueError(f'Invalid type: {kind}')
 
         ntotal  = len(categories)
         nunique = len(objs)
@@ -101,7 +101,7 @@ class CategoryMerger:
 
         categories = sorted(categories)
         blocks = [ cat.block for cat in categories ]
-        block  = sum(blocks, blocks[0])
+        block  = sum(blocks[:-1], blocks[-1])
         brem   = categories[0].brem
 
         corr   = Correction.blok_fraction
@@ -122,9 +122,9 @@ class CategoryMerger:
 
         return category
     # ----------------------
-    def _group_brems(
+    def _merge_brems(
         self, 
-        categories : Sequence[Category]) -> Sequence[Category]:
+        categories : Sequence[T]) -> Sequence[Category]:
         '''
         Parameters
         -------------
@@ -139,7 +139,7 @@ class CategoryMerger:
             log.warning(f'Only one brem found, skipping merge by brem: {s_brem}')
             return categories
 
-        cat_by_block : dict[Block,list[Category]] = dict()
+        cat_by_block : dict[Block,list[T]] = dict()
         for cat in categories:
             if cat.block not in cat_by_block:
                 cat_by_block[cat.block] = [cat]
@@ -150,15 +150,15 @@ class CategoryMerger:
 
         l_block_cats : list[Category] = []
         for cats_in_block in cat_by_block.values():
-            category = self._merge_brems(categories = cats_in_block)
+            category = self._merge_brems_in_block(categories = cats_in_block)
             log.debug(f'Brem merged for block {category.block}')
             l_block_cats.append(category)
 
         return l_block_cats
     # ----------------------
-    def _merge_brems(
+    def _merge_brems_in_block(
         self, 
-        categories : list[Category]) -> Category:
+        categories : Sequence[T]) -> Category:
         '''
         Parameters
         -------------
@@ -206,7 +206,7 @@ class CategoryMerger:
     def _model_from_categories(
         self, 
         single_model : bool,
-        categories   : list[Category]) -> list[Model]:
+        categories   : Sequence[Category]) -> list[Model]:
         '''
         Parameters
         -------------
@@ -270,7 +270,7 @@ class CategoryMerger:
     # ----------------------
     def _validate_brem_in_categories(
         self, 
-        categories : dict[Block, list[Category]]) -> None:
+        categories : Mapping[Block, Sequence[T]]) -> None:
         '''
         Parameters
         ----------------
@@ -303,7 +303,7 @@ class CategoryMerger:
         Category object resulting from merging input categories
         '''
         log.debug(f'Merging {len(self._categories)} categories by brem')
-        cat_1 = self._group_brems(categories  = self._categories) 
+        cat_1 = self._merge_brems(categories  = self._categories) 
 
         log.debug(f'Merging {len(cat_1)} categories by block')
         cat_2 = self._merge_blocks(categories = cat_1)
@@ -312,7 +312,7 @@ class CategoryMerger:
 
         return cat_2
 # ----------------------
-class FitCategoryMerger(CategoryMerger):
+class FitCategoryMerger(CategoryMerger[FitCategory]):
     '''
     Class meant to merge FitCategoryMerger instances
     '''
@@ -320,7 +320,7 @@ class FitCategoryMerger(CategoryMerger):
     def __init__(
         self, 
         reparametrize : bool,
-        categories    : list[FitCategory],
+        categories    : Sequence[FitCategory],
         comp          : Component):
         '''
         Parameters
@@ -341,7 +341,7 @@ class FitCategoryMerger(CategoryMerger):
         Category object resulting from merging input categories
         '''
         log.debug(f'Merging {len(self._categories)} categories by brem')
-        cat_1 = self._group_brems(categories  = self._categories) 
+        cat_1 = self._merge_brems(categories  = self._categories) 
 
         log.debug(f'Merging {len(cat_1)} categories by block')
         cat_2 = self._merge_blocks(categories = cat_1)
