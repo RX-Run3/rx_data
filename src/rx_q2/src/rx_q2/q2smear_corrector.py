@@ -3,11 +3,12 @@ Module containing Q2SmearCalculator class
 '''
 import pandas as pnd
 
-from rx_q2       import ScaleReader
 from typing      import Final
 from ROOT        import RDF # type: ignore
 from rx_common   import Block, Brem, Channel, Correction, info
 from dmu         import LogStore
+
+from .scale_reader import ScaleReader
 
 log = LogStore.add_logger('rx_q2:q2smear_corrector')
 
