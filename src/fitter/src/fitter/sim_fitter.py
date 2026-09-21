@@ -7,9 +7,6 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 from pathlib             import Path
 from typing              import overload, Literal, Final
-from typing              import runtime_checkable
-from typing              import Protocol
-
 from dmu                 import LogStore
 from dmu.stats           import FitResult, ModelFactoryConf
 from dmu.stats           import ModelFactory
@@ -39,14 +36,6 @@ _MIN_FIT_ENTRIES : Final[int] = 100
 
 # Will not build KDE if fewer than these entries in dataset
 _MIN_KDE_ENTRIES : Final[int] = 50
-# ------------------------
-@runtime_checkable
-class _SelfContainedPDF(Protocol):
-    '''
-    Protocol representing PDFs that implement a `pdf` attribute
-    representing a zfit PDF
-    '''
-    pdf : zpdf
 # ------------------------
 class SimFitter(BaseFitter, Cache):
     '''
@@ -561,9 +550,6 @@ class SimFitter(BaseFitter, Cache):
         - Will fix tails, means and widths
         - Will float scales and resolutions
         '''
-        if isinstance(self._cfg, _SelfContainedPDF):
-            return self._cfg.pdf
-
         if isinstance(self._cfg, CCbarConf):
             return self._get_ccbar_component(cfg = self._cfg)
 
