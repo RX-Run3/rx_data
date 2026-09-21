@@ -6,7 +6,7 @@ import copy
 import yaml
 
 from functools   import cached_property
-from pydantic    import BaseModel, ConfigDict, field_validator, model_validator
+from pydantic    import BaseModel, field_validator, model_validator
 from pathlib     import Path
 from typing      import TYPE_CHECKING, Any, Callable, Literal, Self, Sequence
 from rx_common   import Channel, Mass, Project, Qsq, MisID, Region
