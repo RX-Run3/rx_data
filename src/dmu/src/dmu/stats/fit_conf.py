@@ -33,15 +33,23 @@ class PaddingConf(BaseModel, frozen = True):
     @model_validator(mode = 'before')
     @classmethod
     def check_mirror(cls, data):
-        lowermirror = data['lowermirror']
-        uppermirror = data['uppermirror']
+        lowermirror = data.get('lowermirror')
+        uppermirror = data.get('uppermirror')
 
-        if lowermirror == 0.0 and uppermirror == 0:
-            return data 
+        # Use default padding config
+        if lowermirror is None and uppermirror is None:
+            data['flag'] = False
+            return data
 
-        data['flag'] = True
+        # This is padded -> set flag and return
+        if lowermirror != 0.0 or uppermirror != 0:
+            data['flag'] = True
+            return data
 
-        return data 
+        # User wants no padding
+        data['flag'] = False
+
+        return data
     #------------------------------
     @property
     def value(self) -> dict[str,float] | bool:
