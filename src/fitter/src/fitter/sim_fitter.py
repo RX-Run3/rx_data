@@ -41,7 +41,7 @@ _MIN_FIT_ENTRIES : Final[int] = 100
 _MIN_KDE_ENTRIES : Final[int] = 50
 # ------------------------
 @runtime_checkable
-class SelfContainedPDF(Protocol):
+class _SelfContainedPDF(Protocol):
     '''
     Protocol representing PDFs that implement a `pdf` attribute
     representing a zfit PDF
@@ -556,7 +556,7 @@ class SimFitter(BaseFitter, Cache):
         - Will fix tails, means and widths
         - Will float scales and resolutions
         '''
-        if isinstance(self._cfg, SelfContainedPDF):
+        if isinstance(self._cfg, _SelfContainedPDF):
             return self._cfg.pdf
 
         if isinstance(self._cfg, CCbarConf):
