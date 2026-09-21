@@ -124,7 +124,7 @@ class ConstraintsCfg(UnpackerModel, frozen = True):
 # ------------------------------
 # Components
 # ------------------------------
-class CategoryConf(BaseModel):  # Tested
+class CategoryConf(BaseModel):
     '''
     Class meant to configure a fit category
     '''

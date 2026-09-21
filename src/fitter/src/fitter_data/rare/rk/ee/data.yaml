@@ -57,7 +57,6 @@ plt_cfg: &plt_cfg
     brem_xx1 : *reg_cfg
     brem_xx2 : *reg_cfg
 default_components: &comp
-  ccbar      : rare/rk/ee/ccbar.yaml
   comb       : rare/rk/ee/comb.yaml
   bdkstkpiee : rare/rk/ee/bdkstkpiee_np.yaml
   bpkstkpiee : rare/rk/ee/bpkstkpiee_np.yaml
@@ -98,6 +97,7 @@ components:
   central:
     <<: *comp
   high:
+    ccbar : rare/rk/ee/ccbar.yaml
     <<: *comp
 constraints:
   misid    : misid/rk/ee/data_misid.yaml
