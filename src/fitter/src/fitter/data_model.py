@@ -123,6 +123,7 @@ class DataModel:
             if pdf is None:
                 continue
 
+            pdf = self._extend(pdf=pdf, component=component)
             l_pdf.append(pdf)
 
         return self._add_components(l_pdf = l_pdf)
@@ -160,9 +161,6 @@ class DataModel:
 
         if pdf is None:
             log.warning(f'Cannot build component: {component}')
-            return pdf
-
-        pdf = self._extend(pdf=pdf, component=component)
 
         return pdf
     # ------------------------
