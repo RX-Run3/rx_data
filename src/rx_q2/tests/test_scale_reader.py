@@ -5,12 +5,12 @@ import math
 import pytest
 
 from dmu       import LogStore
-from fitter    import ScaleReader
+from rx_q2     import ScaleReader
 from rx_common import Channel, Correction
 from rx_common import Brem
 from rx_common import Block 
 
-log=LogStore.add_logger('fitter:test_scale_reader')
+log=LogStore.add_logger('rx_q2:test_scale_reader')
 
 _CORRS = [
     Correction.mass_scale,

@@ -12,7 +12,7 @@ from typing         import Final
 from pathlib        import Path
 from rx_common      import Block, Brem, Channel, Component, Correction
 
-log=LogStore.add_logger('fitter:scale_reader')
+log=LogStore.add_logger('rx_q2:scale_reader')
 
 _ANADIR : Final[Path]      = Path(os.environ['ANADIR'])
 _FITDIR : Final[str]       = 'reso_no_dtf-latest' # Name of directory with fits providing scales

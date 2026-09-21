@@ -3,7 +3,7 @@ Module containing Q2SmearCalculator class
 '''
 import pandas as pnd
 
-from fitter      import ScaleReader
+from rx_q2       import ScaleReader
 from typing      import Final
 from ROOT        import RDF # type: ignore
 from rx_common   import Block, Brem, Channel, Correction, info
