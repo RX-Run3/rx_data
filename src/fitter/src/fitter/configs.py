@@ -29,6 +29,8 @@ from .toy_maker  import ToyConf
 
 log     = LogStore.add_logger('fitter:configs')
 _ANADIR = Path(os.environ['ANADIR'])
+
+type zpdf = zfit.pdf.BasePDF
 # ------------------------------
 def _validate_mod_cfg(value) -> 'FitModelConf | None':
     '''
@@ -50,6 +52,11 @@ def _validate_mod_cfg(value) -> 'FitModelConf | None':
 class ObservableConf(BaseModel, frozen = True):
     '''
     Class representing configuration for observable
+
+    Attributes
+    ------------------
+    mass : Mass used to build PDF, e.g. bp, bp_dtf_jpsi, etc
+    range: Range where PDF is normalized to 1
     '''
     name : Mass
     range: tuple[int,int]
@@ -134,13 +141,17 @@ class CategoryConf(BaseModel):
 class ComponentConf(UnpackerModel, frozen = True):
     '''
     Class meant to configure the fit for different components
-
-    Attributes
-    ------------------
-    mass      : Mass used to build PDF, e.g. bp, bp_dtf_jpsi, etc
-    norm_range: Range where PDF is normalized to 1
     '''
-    cfg_obs : ObservableConf | None = None
+    cfg_obs      : ObservableConf | None = None
+    '''
+    Controls observable building
+    '''
+
+    from_sim_fit : bool 
+    '''
+    If true this component will be obtained from fitting MC
+    through the SimFitter class
+    '''
     # ----------------------------------
     @property
     def component_trigger(self) -> Trigger | None:
@@ -238,7 +249,7 @@ class ParametricConf(ComponentConf, frozen = True):
     categories : dict[str, CategoryConf]
     plots      : ZFitPlotterConf
     # ----------------------
-    def filter_category(self, func : Callable) -> Self:
+    def filter_category(self, func : Callable[[str],bool]) -> Self:
         '''
         Parameters
         -------------
@@ -483,7 +494,7 @@ class MisIDConf(NonParametricConf, frozen = True):
     Selection gets implemented in form of weights
     '''
 # ------------------------------
-AnyModelConf = CombinatorialConf | CombinatorialConfUnconstrained | ParametricConf | CCbarConf | MisIDConf | NonParametricConf
+AnyModelConf = CombinatorialConf | CombinatorialConfUnconstrained | ParametricConf | CCbarConf | MisIDConf | NonParametricConf | CCbarConfTF
 # ------------------------------
 class PlotConf(BaseModel):
     merging : dict[Region,    list[Region]]
@@ -515,6 +526,9 @@ class FitModelConf(UnpackerModel, frozen = True):
     trigger    : Trigger
     yields     : YieldsConf
     selection  : dict[Qsq, dict[Cuts,str]]
+    '''
+    Selection needed to override default full selection
+    '''
     observable : dict[Qsq | MisID, ObservableConf]
     components : dict[Qsq, dict[Component, AnyModelConf]]
     plots      : dict[Qsq, PlotConf]
