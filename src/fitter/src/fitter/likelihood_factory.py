@@ -19,13 +19,11 @@ from .data_model        import DataModel
 
 log=LogStore.add_logger('fitter:likelihood_factory')
 # ----------------------
-class NLLConf(BaseModel):
+class NLLConf(BaseModel, frozen = True):
     '''
     Wrapper to NLL and associated objects
     '''
-    model_config = ConfigDict(
-        arbitrary_types_allowed = True,
-        frozen                  = True)
+    model_config = ConfigDict(arbitrary_types_allowed = True)
 
     nll        : ExtendedUnbinnedNLL 
     selection  : dict[str, dict[Cuts,str]]
