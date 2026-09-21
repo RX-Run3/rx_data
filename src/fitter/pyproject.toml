@@ -28,10 +28,6 @@ validate_cmb   = "fitter_scripts.validate_cmb:main"
 plot_toys      = "fitter_scripts.plot_toys:main"
 summarize_toys = "fitter_scripts.summarize_toys:main"
 
-# Optional / development dependencies
-[project.optional-dependencies]
-dev = ["pytest"]
-
 [tool.setuptools.package-data]
 'fitter_data' = ['**/*.yaml']
 
@@ -39,6 +35,5 @@ dev = ["pytest"]
 select = ["F", "PL", "B", 'A']
 ignore = ['PLR0912', 'PLR0913']
 
-[tool.pyright]
-include = ["src"]
-exclude = ["build", "dist", "*.egg-info", "**/__pycache__"]
+[tool.pyrefly.errors]
+implicit-any-type-argument = true
