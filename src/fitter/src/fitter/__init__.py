@@ -16,7 +16,6 @@ from .cmb_constraints    import CmbConstraints
 from .category           import Category
 from .category_merger    import CategoryMerger
 from .signal_constraints import SignalConstraints
-from .scale_reader       import ScaleReader
 from .pars_loader        import ParsLoader
 from .holders            import ChannelHolder
 from .holders            import ComponentHolder
@@ -70,7 +69,6 @@ __all__ = [
     'FitMetadata',
     # ------------------
     'SignalConstraints',
-    'ScaleReader',
     'Category',
     'CategoryMerger',
     'NLLConf',
