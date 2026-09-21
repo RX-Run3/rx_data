@@ -15,7 +15,7 @@ from fitter      import NonParametricConf
 from fitter      import CCbarConf, CombinatorialConf, MisIDConf, ObservableConf, RXFitConfig
 from fitter      import ParametricConf
 from fitter      import FitModelConf
-from fitter      import MVAWp
+from rx_common   import MVAWp
 from fitter      import CmbConstraintConf
 from fitter      import CombinatorialConfUnconstrained
 

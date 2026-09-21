@@ -11,7 +11,7 @@ from rx_common    import Qsq
 
 from fitter       import RXFitConfig
 from fitter       import FitModelConf
-from fitter       import MVAWp
+from rx_common    import MVAWp
 
 log=LogStore.add_logger('fitter:test_fit_config')
 # ----------------------

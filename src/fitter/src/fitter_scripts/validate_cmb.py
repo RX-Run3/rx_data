@@ -22,7 +22,7 @@ from fitter       import CmbValidatorConf
 from fitter       import CmbInputConfig
 from fitter       import CmbValidator
 from fitter       import CmbOutputConfig
-from fitter       import MVAWp
+from rx_common    import MVAWp
 
 log=LogStore.add_logger('rx_fitter:validate_cmb')
 _IHEP_ANADIR        : Final[str] = '/publicfs/ucas/user/campoverde/Data'

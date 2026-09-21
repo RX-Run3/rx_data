@@ -25,7 +25,7 @@ from fitter           import DataFitter
 from fitter           import LikelihoodFactory
 from fitter           import FitModelConf
 from fitter           import ToyConf
-from fitter           import MVAWp
+from rx_common        import MVAWp
 from fitter           import NLLConf
 
 log=LogStore.add_logger('fitter:fit_rx_rare')

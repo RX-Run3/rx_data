@@ -20,7 +20,7 @@ from zfit.param     import Parameter           as zpar
 from zfit           import Space               as zobs
 from fitter         import ConstraintReader
 from fitter         import FitModelConf
-from fitter         import MVAWp
+from rx_common      import MVAWp
 
 log=LogStore.add_logger('fitter:test_constraint_reader')
 

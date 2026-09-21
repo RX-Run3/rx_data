@@ -4,7 +4,7 @@ Module containing ScalesConf class
 import os
 
 from typing      import Literal
-from fitter      import MVAWp
+from rx_common   import MVAWp
 from pydantic    import BaseModel, RootModel
 from pathlib     import Path
 from dmu         import LogStore

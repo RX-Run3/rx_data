@@ -1,7 +1,7 @@
 '''
 Module with tests for ScalesConf
 '''
-from fitter import MVAWp
+from rx_common import MVAWp
 import pytest
 
 from rx_common   import Trigger

@@ -211,7 +211,7 @@ def wp_translator(
     '''
     This will print the signal probability (i.e. MVA working point) given a string
     '''
-    from fitter import MVAWp # noqa 
+    from rx_common import MVAWp # noqa 
 
     val = MVAWp.from_str(val = wp)
 

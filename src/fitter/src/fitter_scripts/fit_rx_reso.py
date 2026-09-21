@@ -21,7 +21,7 @@ from dmu.generic   import UnpackerModel
 
 from fitter        import add_constraints 
 from fitter        import NLLConf
-from fitter        import MVAWp
+from rx_common     import MVAWp
 from fitter        import FitModelConf
 from fitter        import ToyConf
 from fitter        import RXFitConfig

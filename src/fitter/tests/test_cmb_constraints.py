@@ -14,7 +14,7 @@ from dmu.stats    import ParameterLibrary as PL
 from rx_common    import Brem, Component, Cuts, Qsq
 from rx_selection import selection           as sel
 
-from fitter       import MVAWp
+from rx_common    import MVAWp
 from fitter       import CmbConstraints
 from fitter       import RXFitConfig, FitModelConf
 

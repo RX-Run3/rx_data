@@ -4,7 +4,7 @@ import pytest
 from typing    import Final
 from pathlib   import Path
 from fitter    import ParameterReader
-from fitter    import MVAWp
+from rx_common import MVAWp
 from rx_common import Brem, Component
 from rx_common import Trigger 
 from rx_common import Qsq 
