@@ -16,6 +16,9 @@ type zpdf = zfit.pdf.BasePDF
 type zobs = zfit.Space
 # -------------------------------------------------------------------
 class ObsConf(BaseModel, frozen = True):
+    '''
+    Representation of zfit observable
+    '''
     name  : str
     upper : float
     lower : float

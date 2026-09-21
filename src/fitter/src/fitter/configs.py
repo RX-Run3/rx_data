@@ -478,6 +478,10 @@ class MisIDConf(NonParametricConf, frozen = True):
     weights   : MisIDSampleWeights
     data_fit  : FitConf
     selection : dict[Cuts,str]
+    '''
+    Overriding selection to full selection, e.g. `pid == false`
+    Selection gets implemented in form of weights
+    '''
 # ------------------------------
 AnyModelConf = CombinatorialConf | CombinatorialConfUnconstrained | ParametricConf | CCbarConf | MisIDConf | NonParametricConf
 # ------------------------------
