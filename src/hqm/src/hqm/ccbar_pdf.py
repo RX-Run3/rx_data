@@ -52,10 +52,14 @@ class CCbarPDF(BaseModel, Serializable, frozen = True):
         '''
         return self.get_pdf(suffix = '')
     # ---------------------------------
-    def get_pdf(self, suffix : str) -> zsum:
+    def get_pdf(
+        self,
+        suffix : str,
+        name   : str = 'ccbar') -> zsum:
         '''
         Parameters
         ---------------
+        name  : Name of returned PDF
         suffix: String that will be located at the end of
                 PDF and parameter names. Meant to allow combining PDFs and avoiding
                 name clashes
@@ -73,18 +77,19 @@ class CCbarPDF(BaseModel, Serializable, frozen = True):
             ys  = numpy.array(self.part_reco.ys),
             name= f'part-reco{suffix}')
 
-        name   = self.full_reco.name
-        pdf_fr = self.full_reco.get_pdf(name = f'{name}{suffix}')
-        val, _ = self.ratio
+        fr_name= self.full_reco.name
+        pdf_fr = self.full_reco.get_pdf(name = f'{fr_name}{suffix}')
+        val, _ = self.ratio # part-reco / fully-reco
 
-        if val <= 1.0:
-            log.debug(f'Smaller part_reco found: {val}')
-            frac   = zfit.param.Parameter(f'frac{suffix}', val, 0, 1)
-            pdf    = zfit.pdf.SumPDF([pdf_pr, pdf_fr], frac, obs = self.obs.obs)
-        else:
-            log.debug(f'Larger part_reco found: {val}')
-            frac   = zfit.param.Parameter(f'frac{suffix}', 1 / val, 0, 1)
-            pdf    = zfit.pdf.SumPDF([pdf_fr, pdf_pr], frac, obs = self.obs.obs)
+        fval = val / (1 + val)  # part-reco / total
+        pdfs = [pdf_pr, pdf_fr]
+
+        frac = zfit.param.Parameter(f'fr_pr_fr{suffix}', fval, 0, 1)
+        pdf  = zfit.pdf.SumPDF(
+            name  = name,
+            pdfs  = pdfs,
+            fracs = frac,
+            obs   = self.obs.obs)
 
         return pdf
     # ---------------------------------
