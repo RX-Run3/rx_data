@@ -3,7 +3,7 @@ Module meant to store types relevant for statistical analysis
 '''
 
 from enum      import StrEnum, auto
-from dmu.stats import zfit
+from .imports  import zfit
 
 type Fft = type[zfit.pdf.KDE1DimFFT]
 # ---------------------------------------
