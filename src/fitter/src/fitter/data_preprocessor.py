@@ -309,8 +309,8 @@ class DataPreprocessor(Cache):
         if self._copy_from_cache():
             log.info(f'Data found cached, loading: {data_path}')
             with numpy.load(data_path) as ifile:
-                arr = ifile['values' ]
-                wgt = ifile['weights']
+                arr : numpy.ndarray = ifile['values' ]
+                wgt : numpy.ndarray = ifile['weights']
 
             data    = self._data_from_numpy(arr_value=arr, arr_weight=wgt)
             return data
