@@ -40,7 +40,7 @@ class DataModel:
         project: E.g. rx
         q2bin  : E.g. central
         obs    : zfit observable
-        name   : Optional, identifier for this model, 
+        name   : Optional, identifier for this model,
                  if passed, used also as suffix of yields, e.g. yld_combinatorial_{name}
         '''
         self._cfg    = cfg
@@ -50,8 +50,8 @@ class DataModel:
         self._name   = name
     # ------------------------
     def _extend(
-        self, 
-        pdf       : zpdf, 
+        self,
+        pdf       : zpdf,
         component : Component) -> zpdf:
         '''
         Parameters
@@ -92,7 +92,7 @@ class DataModel:
         '''
         # Component has no trigger specified => Do not override project, use Data trigger
         if cfg.component_trigger is None:
-            return None, self._cfg.trigger 
+            return None, self._cfg.trigger
 
         # Component has trigger and is the same as the Data one => Do not override project, use Data trigger
         if self._cfg.trigger == cfg.component_trigger:
@@ -103,7 +103,7 @@ class DataModel:
     # ------------------------
     def get_model(self) -> zpdf:
         '''
-        Returns 
+        Returns
         ----------------
         Fitting model for data fit
         '''
@@ -136,14 +136,14 @@ class DataModel:
                 raise ValueError('Config is not a ccbar TTF config')
 
             d_pdf[component] = cfg.get_pdf(
-                project = self._trigger.project, 
+                project = self._trigger.project,
                 pdfs    = d_pdf)
 
         return self._add_components(d_pdf = d_pdf)
     # ------------------------
     def _get_sim_fit_pdf(
-        self, 
-        cfg       : AnyModelConf, 
+        self,
+        cfg       : AnyModelConf,
         component : Component) -> zpdf | None:
         '''
         Parameters
@@ -181,7 +181,7 @@ class DataModel:
         '''
         Parameters
         ----------------
-        d_pdf: Dictionary mapping fitting component to corresponding PDF 
+        d_pdf: Dictionary mapping fitting component to corresponding PDF
 
         Returns
         ----------------
