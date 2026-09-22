@@ -12,7 +12,7 @@ from rx_data        import SpecMaker
 from zfit           import Space         as zobs
 from zfit.pdf       import BasePDF       as zpdf
 
-from .configs       import AnyModelConf, FitModelConf
+from .configs       import AnyModelConf, FitModelConf, CCbarConfTF
 from .sim_fitter    import SimFitter
 
 log = LogStore.add_logger('fitter:data_model')
@@ -128,6 +128,17 @@ class DataModel:
 
             d_pdf[component] = pdf
 
+        for component, cfg in components.items():
+            if cfg.from_sim_fit:
+                continue
+
+            if not isinstance(cfg, CCbarConfTF):
+                raise ValueError('Config is not a ccbar TTF config')
+
+            d_pdf[component] = cfg.get_pdf(
+                project = self._trigger.project, 
+                pdfs    = d_pdf)
+
         return self._add_components(d_pdf = d_pdf)
     # ------------------------
     def _get_sim_fit_pdf(
@@ -180,6 +191,9 @@ class DataModel:
 
         l_pdf : list[zpdf] = []
         for component in components:
+            if component not in d_pdf:
+                continue
+
             pdf = d_pdf[component]                           # Sort by component
             pdf = self._extend(pdf=pdf, component=component) # Extend
             l_pdf.append(pdf)
