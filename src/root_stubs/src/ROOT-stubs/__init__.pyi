@@ -5,8 +5,8 @@ from .utilities import EnableImplicitMT
 
 __all__ = [
     'RDF',
-    'RDataFrame', 
-    'TCutInfo', 
-    'CutIterator', 
+    'RDataFrame',
+    'TCutInfo',
+    'CutIterator',
     'EnableImplicitMT',
     'gInterpreter']

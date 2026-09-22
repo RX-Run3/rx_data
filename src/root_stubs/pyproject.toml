@@ -1,11 +1,6 @@
 [project]
 name            = "root_stubs"
 version         = "0.1.0"
-description     = "Example project using ROOT.RDF stubs with Pyright"
+description     = "Project implementing stubs for ROOT"
 dependencies    = []
-
-[project.optional-dependencies]
-dev = [
-    "pyright>=1.1.312",
-]
 
