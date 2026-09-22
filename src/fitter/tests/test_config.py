@@ -3,6 +3,7 @@ Module with functions that test config classes
 '''
 import pytest
 
+from typing      import Any
 from pydantic    import TypeAdapter
 from pathlib     import Path
 from dmu         import LogStore
@@ -80,7 +81,7 @@ def test_yield_conf(
     '''
     Test yield configuration class
     '''
-    data = gut.load_data(
+    data : dict[str,Any] = gut.load_data(
         package = 'fitter_data',
         fpath   = f'model/yields/{analysis}/{fname}.yaml')
 
