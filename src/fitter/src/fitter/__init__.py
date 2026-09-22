@@ -49,6 +49,7 @@ from .configs  import ParametricConf
 from .configs  import RXFitConfig
 from .configs  import ObservableConf
 from .configs  import CmbConstraintConf
+from .configs  import CCbarConfTF
 # ----------
 from .scales_tabulator import ScalesTabulator
 from .scales_tabulator import ScalesTabulatorConf
@@ -83,6 +84,7 @@ __all__ = [
     'NonParametricConf',
     'ParametricConf',
     'CCbarConf',
+    'CCbarConfTF',
     'CombinatorialConf',
     'CombinatorialConfUnconstrained',
     'MisIDConf',
