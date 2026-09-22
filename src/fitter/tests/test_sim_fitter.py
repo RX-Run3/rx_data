@@ -5,6 +5,7 @@ import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 import pytest
+import ROOT
 
 from contextlib    import ExitStack
 from pathlib       import Path
@@ -14,6 +15,7 @@ from dmu.generic   import UnpackerModel, utilities as gut
 from dmu.stats     import utilities as sut
 from dmu.workflow  import Cache
 
+from rx_common     import Channel
 from rx_common     import Component, Cuts, Mass, Qsq, Region
 from rx_common     import Trigger
 from rx_data       import RDFGetter
@@ -249,7 +251,11 @@ def test_param_region_constrained(
     assert pdf is not None
 
     pdf = _float_fix_pars(pdf = pdf)
-    calc= SignalConstraints(nll = pdf, comp = Component.bpkpee)
+    calc= SignalConstraints(
+        nll     = pdf,
+        channel = Channel.ee,
+        comp    = Component.bpkpee)
+
     constraints = calc.get_constraints()
 
     log.info('Found parameters:')
@@ -517,8 +523,8 @@ def test_reso_rk_mm(
     cfg  = ParametricConf(**data)
     cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
 
-    import ROOT
     ROOT.EnableImplicitMT(4)
+
     stats = RDFGetter.max_entries(value = 500_000)
     cache = Cache.cache_root(path = tmp_path)
     with ExitStack() as stack:
