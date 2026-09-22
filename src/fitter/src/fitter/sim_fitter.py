@@ -484,9 +484,7 @@ class SimFitter(BaseFitter, Cache):
             log.warning(f'Not bulding KDE, found too few entries: {nentries} < {_MIN_KDE_ENTRIES}')
             return 
 
-        kde_builder = getattr(zfit.pdf, cfg.fit.kind)
-
-        pdf = kde_builder(
+        pdf = cfg.fit.kind.cls(
             data      = data, 
             name      = f'{self._component}_{self._name}', 
             obs       = cfg.obs, 

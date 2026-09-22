@@ -2,8 +2,10 @@
 Module meant to store types relevant for statistical analysis
 '''
 
-from enum import StrEnum, auto
+from enum      import StrEnum, auto
+from dmu.stats import zfit
 
+type Fft = type[zfit.pdf.KDE1DimFFT]
 # ---------------------------------------
 class ConstraintType(StrEnum):
     '''
@@ -46,6 +48,12 @@ class KDEModel(StrEnum):
     '''
     Enum meant to represent KDE PDFs 
     '''
-    kde_fft = 'KDE1DimFFT'
+    kde_fft = auto()
+    # -----------------------
+    @property
+    def cls(self) -> Fft:
+        match self:
+            case KDEModel.kde_fft:
+                return zfit.pdf.KDE1DimFFT
 # --------------------------
 
