@@ -10,7 +10,6 @@ from typing              import overload, Literal, Final
 from dmu                 import LogStore
 from dmu.stats           import FitResult, ModelFactoryConf
 from dmu.stats           import ModelFactory
-from dmu.stats           import zfit
 from dmu.stats           import utilities        as sut
 from dmu.workflow        import Cache
 
