@@ -46,14 +46,14 @@ class Model(StrEnum):
 # --------------------------
 class KDEModel(StrEnum):
     '''
-    Enum meant to represent KDE PDFs 
+    Enum meant to represent KDE PDFs
     '''
-    kde_fft = auto()
+    KDE1DimFFT = 'KDE1DimFFT'
     # -----------------------
     @property
     def cls(self) -> Fft:
         match self:
-            case KDEModel.kde_fft:
+            case KDEModel.KDE1DimFFT:
                 return zfit.pdf.KDE1DimFFT
 # --------------------------
 
