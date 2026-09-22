@@ -80,7 +80,7 @@ class KDEConf(BaseModel, frozen = True):
     @classmethod
     def default(cls) -> Self:
         return cls(
-            kind      = KDEModel.kde_fft,
+            kind      = KDEModel.KDE1DimFFT,
             bandwidth = 20,
             padding   = PaddingConf.default())
 #------------------------------
