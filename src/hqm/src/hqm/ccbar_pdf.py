@@ -50,22 +50,40 @@ class CCbarPDF(BaseModel, Serializable, frozen = True):
         '''
         Sum of part reco and fully reco PDFs
         '''
+        return self.get_pdf(suffix = '')
+    # ---------------------------------
+    def get_pdf(self, suffix : str) -> zsum:
+        '''
+        Parameters
+        ---------------
+        suffix: String that will be located at the end of
+                PDF and parameter names. Meant to allow combining PDFs and avoiding
+                name clashes
+
+        Returns
+        ---------------
+        Sum of part reco and fully reco PDFs
+        '''
+        if suffix:
+            suffix = f'_{suffix}'
+
         pdf_pr = SplinePDF(
             obs = self.part_reco.obs,
             xs  = numpy.array(self.part_reco.xs),
             ys  = numpy.array(self.part_reco.ys),
-            name= 'part-reco')
+            name= f'part-reco{suffix}')
 
-        pdf_fr = self.full_reco.pdf
+        name   = self.full_reco.name
+        pdf_fr = self.full_reco.get_pdf(name = f'{name}{suffix}')
         val, _ = self.ratio
 
         if val <= 1.0:
             log.debug(f'Smaller part_reco found: {val}')
-            frac   = zfit.param.Parameter('frac', val, 0, 1)
+            frac   = zfit.param.Parameter(f'frac{suffix}', val, 0, 1)
             pdf    = zfit.pdf.SumPDF([pdf_pr, pdf_fr], frac, obs = self.obs.obs)
         else:
             log.debug(f'Larger part_reco found: {val}')
-            frac   = zfit.param.Parameter('frac', 1 / val, 0, 1)
+            frac   = zfit.param.Parameter(f'frac{suffix}', 1 / val, 0, 1)
             pdf    = zfit.pdf.SumPDF([pdf_fr, pdf_pr], frac, obs = self.obs.obs)
 
         return pdf

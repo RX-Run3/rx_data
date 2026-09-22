@@ -11,6 +11,7 @@ from hqm.ccbar_pdf import CCbarPDFMaker
 from hqm.types     import Mode
 from dmu.stats     import FittedModel, Fitter, Model, ModelFactory
 from dmu.stats     import ObsConf, ModelFactoryConf, SplinePDF, ZFitPlotter, ZFitPlotterConf, print_pdf, zfit
+from dmu.stats     import utilities as sut
 
 # ----------------------------
 class TestRatio:
@@ -122,3 +123,26 @@ def test_simple(
 
     print_pdf(model.pdf)
 # ----------------------------
+def test_suffix(monkeypatch, tmp_path : Path):
+    '''
+    Override suffix of PDF
+    '''
+    TestRatio.larger_prec = False 
+
+    monkeypatch.setenv('ANADIR', str(tmp_path))
+    monkeypatch.setattr(ccbar_pdf, 'PdfBuilder'          , TestPdfBuilder)
+    monkeypatch.setattr(ccbar_pdf, 'CCbarRatioCalculator', TestCCbarRatioCalculator)
+    monkeypatch.setattr(ccbar_pdf, 'PrecMaker'           , TestPrecMaker)
+
+    obs     = zfit.Space('B_Mass', limits = (4600, 6500))
+    binning = 'block-3 mva_cmb-3'
+    project = Project.rk
+
+    ccb = CCbarPDFMaker(
+        binning = binning,
+        project = project)
+
+    model= ccb.get_pdf(obs = obs, mode = Mode.write)
+    pdf  = model.get_pdf(suffix = 'suf')
+
+    sut.print_pdf(pdf)
