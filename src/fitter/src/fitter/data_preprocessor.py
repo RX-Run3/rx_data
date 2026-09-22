@@ -20,6 +20,7 @@ from zfit.data       import Data
 
 from rx_data         import RDFGetter
 from rx_common       import Component, Qsq, Trigger, Correction, Cuts
+from rx_selection    import Registry
 from rx_selection    import selection  as sel
 from rx_misid        import SampleSplitter
 from rx_misid        import SampleWeighter
@@ -137,6 +138,12 @@ class DataPreprocessor(Cache):
                 process = self._sample, 
                 trigger = self._trigger, 
                 q2bin   = self._q2bin)
+
+            entry = Registry(
+                component = self._sample,
+                trigger   = self._trigger,
+                qsq       = self._q2bin)
+            entry.set(cuts = cuts)
 
         log.debug('Applied selection')
 
