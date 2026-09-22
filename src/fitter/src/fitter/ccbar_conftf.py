@@ -1,6 +1,7 @@
 '''
 Module holding CCbarConfTF class
 '''
+from hqm.binning   import BinningConf
 from rx_common     import Qsq
 from rx_common     import Trigger
 from hqm.ccbar_pdf import CCbarPDF
@@ -45,17 +46,18 @@ class CCbarConfTF(ComponentConf, frozen = True):
         -------------
         String representing selection used to get PDF, e.g. 'mva_cmb-3 mva_prc-4'
         '''
-        log.warning('Using placeholder binning')
-
         entry = Registry(
             qsq       = _QSQ,
             trigger   = _TRIGGER,
             component = _COMPONENT)
 
-        for key, val in entry.diff.items():
-            log.debug(f'{key:<20}{val:<40}')
+        sel     = { str(key) : val for key, val in entry.diff.items() }
+        cfg     = BinningConf.load()
+        binning = cfg.binning_from_sel(sel = sel)
 
-        return 'mva_cmb-3 mva_prc-4'
+        log.info(f'Using binning: {binning}')
+
+        return binning
     # ------------------------------
     def _block_from_par(self, par : zpar) -> Block:
         '''
