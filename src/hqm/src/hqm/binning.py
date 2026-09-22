@@ -188,7 +188,7 @@ class BinningConf(RootModel[dict[str,list[tuple[float,float]]]], frozen = True):
             if math.isclose(lower, lo) and math.isclose(upper, up):
                 return ibin + 1
 
-        raise ValueError(f'No bin found for: {var} in [{lo:.g}, {up:.g}]')
+        raise ValueError(f'No bin found for: {var} in [{lo:.3g}, {up:.3g}]')
     # ---------------------------------------------
     def __bins_from_str(self, binning : str) -> dict[str,int]:
         '''
