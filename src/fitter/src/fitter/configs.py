@@ -109,7 +109,7 @@ class ConstraintsCfg(UnpackerModel, frozen = True):
     # --------------------------------------
     @field_validator('misid')
     @classmethod
-    def _validate(cls, value) -> 'FitModelConf | None':
+    def _validate(cls, value : 'FitModelConf | None') -> 'FitModelConf | None':
         return _validate_mod_cfg(value = value)
     # ---------------------
     @classmethod
@@ -435,12 +435,13 @@ class CmbConstraintConf(BaseModel, frozen = True):
     # --------------------------------------
     @field_validator('mod_cfg')
     @classmethod
-    def _validate(cls, value) -> 'FitModelConf':
-        value = _validate_mod_cfg(value = value)
-        if value is None:
+    def _validate(cls, value : 'FitModelConf') -> 'FitModelConf':
+        validated_value = _validate_mod_cfg(value = value)
+
+        if validated_value is None:
             raise ValueError('mod_cfg field is None')
 
-        return value
+        return validated_value
     # --------------------------------------
     def specialize(self, q2bin : Qsq) -> Self:
         '''
