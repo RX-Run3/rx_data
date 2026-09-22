@@ -146,3 +146,4 @@ def test_suffix(monkeypatch, tmp_path : Path):
     pdf  = model.get_pdf(suffix = 'suf')
 
     sut.print_pdf(pdf)
+# ----------------------------
