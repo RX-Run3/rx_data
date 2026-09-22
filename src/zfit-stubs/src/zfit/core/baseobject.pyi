@@ -8,6 +8,7 @@ from _typeshed import Incomplete
 from collections.abc import Iterable, Mapping
 from ordered_set import OrderedSet
 from zfit._interfaces import ZfitIndependentParameter as ZfitIndependentParameter, ZfitNumericParametrized as ZfitNumericParametrized, ZfitObject as ZfitObject, ZfitParameter as ZfitParameter, ZfitParametrized as ZfitParametrized
+from zfit             import Parameter
 
 RESERVED_NAMES: Incomplete
 valid_name_regex: str
@@ -29,7 +30,7 @@ class BaseParametrized(BaseObject, ZfitParametrized):
     def __init__(self, params, autograd_params=None, **kwargs) -> None: ...
     def get_params(self, floating: bool | None = True, is_yield: bool | None = None, extract_independent: bool | None = True, *, autograd: bool | None = None) -> set[ZfitParameter]: ...
     @property
-    def params(self) -> ztyping.ParameterType: ...
+    def params(self) -> dict[str,Parameter]: ...
 
 class BaseNumeric(GraphCachable, BaseParametrized, ZfitNumericParametrized, BaseObject):
     def __init__(self, **kwargs) -> None: ...
