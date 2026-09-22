@@ -1,6 +1,8 @@
 '''
 Module holding Binning class
 '''
+import re
+import math
 
 from pathlib     import Path
 from typing      import Final
@@ -10,7 +12,11 @@ from rx_common   import Block
 from dmu         import LogStore
 
 log=LogStore.add_logger('hqm:binning')
-_BLOCK_NAME : Final[str] = 'block' # string used as key in block cut
+# string used as key in block cut
+_BLOCK_NAME : Final[str] = 'block'
+
+# regular expression needed to extract bin from cut
+_REGEX_AND  : Final[str] = r'\((\w+)>=(\d+\.\d+)\)&\((\w+)<(\d+\.\d+)\)'
 # -------------------------------------------
 class BinConf(RootModel[dict[str,tuple[float,float,int]]], frozen = True):
     '''
@@ -76,7 +82,7 @@ class BinConf(RootModel[dict[str,tuple[float,float,int]]], frozen = True):
         '''
         sel = dict()
         for var, (lower, upper, _) in self.root.items():
-            sel[var] = f'({var} < {upper}) & ({var} >= {lower})'
+            sel[var] = f'({var} >= {lower}) & ({var} < {upper})'
 
         return sel
     # ---------------------------------------------
@@ -111,6 +117,78 @@ class BinningConf(RootModel[dict[str,list[tuple[float,float]]]], frozen = True):
         data = gut.load_data(package = 'hqm_data', fpath = 'config/binning.yaml')
 
         return cls(**data)
+    # ---------------------------------------------
+    def binning_from_sel(self, sel : dict[str,str]) -> str:
+        '''
+        Parameters
+        -------------
+        sel: Dictionary mapping variable to cut on with expression
+
+        Returns
+        -------------
+        Expression holding binning information, e.g. `mva_cmb-3 mva_prc-2`
+        '''
+        bins : list[str] = []
+        for expr in sel.values():
+            part = self.__var_bin(expr = expr)
+            bins.append(part)
+
+        sorted_bins = sorted(bins)
+
+        return ' '.join(sorted_bins)
+    # ---------------------------------------------
+    def __var_bin(self, expr : str) -> str:
+        '''
+        Parameters
+        ---------------
+        expr: Expression used in cut, e.g. mva_cmb > 0.5 && mva_prc < 1.0
+
+        Returns
+        ---------------
+        String associated to bin associated to cut
+        '''
+        expr = expr.replace(' ' ,  '') # Remove spaces to simplify regex
+        expr = expr.replace('&&', '&') # Double ampersand used by ROOT
+                                       # regex uses single, used by pandas
+
+        mtch = re.match(pattern = _REGEX_AND, string = expr)
+        if not mtch:
+            raise ValueError(f'Cannot extract information from cut: {expr}')
+
+        v1 = mtch.group(1)
+        los= mtch.group(2)
+        v2 = mtch.group(3)
+        ups= mtch.group(4)
+
+        if v1 != v2:
+            raise ValueError(f'Different variables found in expression: {v1}, {v2}')
+
+        if v1 not in self.root:
+            raise ValueError(f'Variable {v1} not found in binning scheme')
+
+        lo = float(los)
+        up = float(ups)
+
+        if lo >= up:
+            raise ValueError(f'Invalid bounds for expression: {expr}')
+
+        ibin = self.__bin_from_bound(lo = lo, up = up, var = v1)
+
+        return f'{v1}-{ibin}'
+    # ---------------------------------------------
+    def __bin_from_bound(self, lo : float, up : float, var : str) -> int:
+        '''
+        Parameters
+        ----------------
+        var  : Variable in which selection is applied
+        lo/up: Lower and upper bounds
+        '''
+        bounds = self.root[var]
+        for ibin, (lower, upper) in enumerate(bounds):
+            if math.isclose(lower, lo) and math.isclose(upper, up):
+                return ibin + 1
+
+        raise ValueError(f'No bin found for: {var} in [{lo:.g}, {up:.g}]')
     # ---------------------------------------------
     def __bins_from_str(self, binning : str) -> dict[str,int]:
         '''

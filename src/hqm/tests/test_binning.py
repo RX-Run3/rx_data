@@ -64,3 +64,17 @@ def test_block_missing():
     with pytest.raises(ValueError):
         assert bin.block == Block(value = iblock)
 # ------------------------------------
+def test_from_sel():
+    '''
+    Retrieve bin index given selection
+    '''
+    binning_in = 'mva_cmb-1 mva_prc-1'
+
+    cfg     = BinningConf.load()
+    bin_cfg = cfg.from_str(binning_in)
+    sel     = bin_cfg.selection
+
+    binning_out = cfg.binning_from_sel(sel = sel)
+
+    assert binning_in == binning_out
+# ------------------------------------
