@@ -1,17 +1,23 @@
 '''
 Module holding CCbarConfTF class
 '''
-
+from rx_common     import Qsq
+from rx_common     import Trigger
 from hqm.ccbar_pdf import CCbarPDF
-from typing        import Literal
+from typing        import Literal, Final
 from rx_common     import Block, Project
 from dmu           import LogStore
 from dmu.stats     import zfit
 from rx_common     import Component
+from rx_selection  import Registry
 
 from .component_conf import ComponentConf
 
 log=LogStore.add_logger('fitter:ccbar_conftf')
+
+_COMPONENT : Final[Component] = Component.data_24
+_TRIGGER   : Final[Trigger  ] = Trigger.rk_ee_os 
+_QSQ       : Final[Qsq      ] = Qsq.high
 
 type zpar = zfit.param.Parameter
 type zpdf = zfit.pdf.BasePDF
@@ -40,6 +46,14 @@ class CCbarConfTF(ComponentConf, frozen = True):
         String representing selection used to get PDF, e.g. 'mva_cmb-3 mva_prc-4'
         '''
         log.warning('Using placeholder binning')
+
+        entry = Registry(
+            qsq       = _QSQ,
+            trigger   = _TRIGGER,
+            component = _COMPONENT)
+
+        for key, val in entry.diff.items():
+            log.debug(f'{key:<20}{val:<40}')
 
         return 'mva_cmb-3 mva_prc-4'
     # ------------------------------
