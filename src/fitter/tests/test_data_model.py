@@ -3,11 +3,11 @@ This module has tests for the DataModel class
 '''
 import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-
 import pytest
 
 from pathlib       import Path
-from rx_common     import Cuts, Trigger, Qsq, Region
+from rx_common     import Cuts, Trigger, Qsq, Region, Project
+from rx_common     import Component
 from rx_selection  import selection as sel
 from dmu           import LogStore
 from dmu.stats     import ParameterLibrary as PL
@@ -17,10 +17,27 @@ from dmu.stats     import utilities as sut
 from dmu.workflow  import Cache
 from fitter        import DataModel
 from fitter        import FitModelConf
+from fitter        import CCbarConfTF
 
 log=LogStore.add_logger('fitter:test_data_model')
 
 type zpdf = zfit.pdf.BasePDF
+# ----------------------
+class TestCCbarConfTF(CCbarConfTF, frozen = True):
+    def get_pdf(
+        self, 
+        project : Project,
+        pdfs    : dict[Component, zpdf]) -> zpdf:
+        _     = project
+        _     = pdfs
+
+        name  = 'name'
+        obs   = zfit.Space('Mass', 4600, 6000)
+        mu    = zfit.Parameter(f"{name}_mu", 5280.0, 5000.0, 5500.0)
+        sigma = zfit.Parameter(f"{name}_sigma", 20.0, 0.1, 100.0)
+        pdf   = zfit.pdf.Gauss(mu=mu, sigma=sigma, obs=obs, name=name)
+
+        return pdf
 # ----------------------
 class TestSimFitter:
     def __init__(
@@ -121,6 +138,31 @@ def test_rare_electron(
         sel.custom_selection(d_sel = {Cuts.mass : '(1)', Cuts.brem : 'nbrem != 0'}):
         dmd = DataModel(
             name    = Region.brem_x12,
+# --------------------------
+def test_rare_electron_high(tmp_path : Path):
+    '''
+    Simplest test for rare electron mode
+    '''
+    trigger    = Trigger.rk_ee_os
+    region     = Region.brem_x12
+    q2bin      = Qsq.high
+
+    data       = gut.load_data(
+        package= 'fitter_data',
+        fpath  =f'rare/{trigger.project}/ee/data.yaml')
+
+    with UnpackerModel.package(name = 'fitter_data'):
+        cfg = FitModelConf(**data)
+        cfg = cfg.specialize(q2bin = q2bin)
+
+    cfg_qsq = cfg.components[q2bin]
+    cfg_qsq[Component.ccbar] = TestCCbarConfTF(kind = 'CCbarPDFTF')
+
+    with PL.parameter_schema(cfg=cfg.yields),\
+        Cache.cache_root(path = tmp_path),\
+        sel.custom_selection(d_sel = {Cuts.mass : '(1)', Cuts.brem : 'nbrem != 0'}):
+        dmd = DataModel(
+            name    = region,
             cfg     = cfg,
             obs     = cfg.obs,
             trigger = trigger,
