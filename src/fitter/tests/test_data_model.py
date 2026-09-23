@@ -31,12 +31,12 @@ class TestSimFitter:
         q2bin     : str,
         cfg       : str):
 
-        self._name      = name     
+        self._name      = name
         self._component = component
 
-        _ = trigger  
-        _ = q2bin    
-        _ = cfg      
+        _ = trigger
+        _ = q2bin
+        _ = cfg
     # ----------------------
     def get_model(self) -> zpdf:
         log.warning('Using mock SimFitter PDF')
@@ -67,8 +67,8 @@ def initialize(monkeypatch):
         yield
 # --------------------------
 @pytest.mark.parametrize('kind, trigger', [
-    ('reso/rk/mm'  , Trigger.rk_mm_os  ), 
-    ('reso/rk/ee'  , Trigger.rk_ee_os  ), 
+    ('reso/rk/mm'  , Trigger.rk_mm_os  ),
+    ('reso/rk/ee'  , Trigger.rk_ee_os  ),
     ('reso/rkst/mm', Trigger.rkst_mm_os),
     ('reso/rkst/ee', Trigger.rkst_ee_os),
 ])
@@ -93,7 +93,7 @@ def test_resonant(kind : str, trigger : Trigger, tmp_path : Path):
             name    = region,
             cfg     = cfg,
             obs     = cfg.obs,
-            trigger = trigger, 
+            trigger = trigger,
             q2bin   = q2bin)
         pdf = dmd.get_model()
 
@@ -102,7 +102,7 @@ def test_resonant(kind : str, trigger : Trigger, tmp_path : Path):
 @pytest.mark.parametrize('q2bin'  , [Qsq.low, Qsq.central])
 @pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rkst_ee_os])
 def test_rare_electron(
-    tmp_path : Path, 
+    tmp_path : Path,
     trigger  : Trigger,
     q2bin    : Qsq):
     '''
@@ -133,8 +133,8 @@ def test_rare_electron(
 @pytest.mark.parametrize('region' , Region.hadronic_misid()   )
 @pytest.mark.parametrize('q2bin'  , ['low', 'central', 'high'])
 def test_misid_rare(
-    region   : Region, 
-    q2bin    : Qsq, 
+    region   : Region,
+    q2bin    : Qsq,
     tmp_path : Path):
     '''
     Test getting model for misid control region
