@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 
-cp pyrefly.toml src/*/pyrefly.toml
+for project in src/*/; do
+    cp pyrefly.toml "$project/pyrefly.toml";
+done
