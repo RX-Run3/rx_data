@@ -95,11 +95,11 @@ class TestPRec:
         q2bin: str,
         cfg  : str):
 
-        _ = name 
-        _ = obs  
-        _ = trig 
+        _ = name
+        _ = obs
+        _ = trig
         _ = q2bin
-        _ = cfg  
+        _ = cfg
     # --------------------------
     def get_sum(self, name : str) -> zsum:
         log.warning('Using mock ccbar PDF')
@@ -119,11 +119,11 @@ class TestPRec:
         frac2 = zfit.Parameter(f"{name}_frac2", 0.3, 0.0, 1.0)
 
         total_pdf= zfit.pdf.SumPDF(
-            pdfs = [exp_pdf, gauss_pdf, uniform_pdf], 
-            fracs= [frac1, frac2], 
+            pdfs = [exp_pdf, gauss_pdf, uniform_pdf],
+            fracs= [frac1, frac2],
             name = f"{name}_sum")
-        
-        return total_pdf 
+
+        return total_pdf
 # ---------------------------------------------------
 @pytest.fixture(autouse=True)
 def initialize(monkeypatch):
@@ -133,11 +133,11 @@ def initialize(monkeypatch):
     log.info('Disabling caching')
 
     monkeypatch.setattr(
-        'fitter.sim_fitter.DataPreprocessor', 
+        'fitter.sim_fitter.DataPreprocessor',
         TestDataPreprocessor)
 
     monkeypatch.setattr(
-        'fitter.sim_fitter.PRec', 
+        'fitter.sim_fitter.PRec',
         TestPRec)
 
     LogStore.set_level('fitter:signal_constraints', 10)
@@ -232,7 +232,7 @@ def test_param_clone(
     cfg_obs = ObservableConf(
         name  = Mass.bp_bcor,
         range = (4500, 7000))
- 
+
     if   trigger == Trigger.rk_ee_os:
         fpath = 'rare/rk/ee/bpkpee.yaml.j2'
     elif trigger == Trigger.rkst_ee_os:
@@ -315,7 +315,7 @@ def test_param_region(
 @pytest.mark.parametrize('region' , [Region.brem_xx1 ,    Region.brem_xx2])
 @pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rkst_ee_os])
 def test_param_region_constrained(
-    tmp_path : Path, 
+    tmp_path : Path,
     trigger  : Trigger,
     region   : Region):
     '''
@@ -394,7 +394,7 @@ def test_kde_rk(component : Component, tmp_path : Path):
 @pytest.mark.parametrize('component', [Component.bpkpipiee, Component.bdkstkpijpsiee, Component.bpk1kpipiee, Component.bpk2kpipiee])
 @pytest.mark.parametrize('qsq', Qsq.for_physics())
 def test_kde_rkst(
-    component : Component, 
+    component : Component,
     qsq       : Qsq,
     tmp_path  : Path):
     '''
