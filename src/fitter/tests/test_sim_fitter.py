@@ -5,14 +5,16 @@ import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 import pytest
+import numpy
 import ROOT
 
+from typing        import Final
 from contextlib    import ExitStack
 from pathlib       import Path
 from dmu           import LogStore
 from dmu.stats     import ParsHolder, print_pdf
 from dmu.generic   import UnpackerModel, utilities as gut
-from dmu.stats     import utilities as sut
+from dmu.stats     import zfit, utilities as sut
 from dmu.workflow  import Cache
 
 from rx_common     import Channel
@@ -30,13 +32,58 @@ from fitter        import MisIDConf
 from fitter        import SignalConstraints
 
 log=LogStore.add_logger('fitter:test_sim_fitter')
+
+_RNG                    = numpy.random.default_rng(seed = 42)
+_DATA_SIZE : Final[int] = 1000
+
+type zdat = zfit.data.Data
+# ---------------------------------------------------
+class TestDataPreprocessor:
+    def __init__( # noqa: PLR0917
+        self,
+        name      : str,
+        wgt_cfg   : str,
+        obs       : str,
+        trigger   : Trigger,
+        q2bin     : str,
+        selection : str,
+        sample    : str):
+        _ = name
+        _ = wgt_cfg
+        _ = obs
+        _ = q2bin
+        _ = selection
+        _ = sample
+
+        self._trigger = trigger
+    # --------------------------
+    @property
+    def rdf_uid(self) -> str:
+        return 'mock_data'
+    # --------------------------
+    def get_data(self) -> zdat:
+        log.warning('Using mock data')
+
+        sigma = 100 if self._trigger.is_electron else 30
+        array = _RNG.normal(loc = 5280, scale = sigma, size = _DATA_SIZE)
+        obs   = zfit.Space('Mass', 4600, 6000)
+        data  = zfit.data.Data.from_numpy(array = array, obs = obs)
+
+        if isinstance(data, zfit.data.Data):
+            return data
+
+        raise ValueError('Invalid data')
 # ---------------------------------------------------
 @pytest.fixture(autouse=True)
-def initialize():
+def initialize(monkeypatch):
     '''
     Runs before any test
     '''
     log.info('Disabling caching')
+
+    monkeypatch.setattr(
+        'fitter.sim_fitter.DataPreprocessor', 
+        TestDataPreprocessor)
 
     LogStore.set_level('fitter:signal_constraints', 10)
     LogStore.set_level('fitter:data_preprocessor' , 10)
