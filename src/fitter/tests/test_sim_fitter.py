@@ -6,7 +6,6 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 import pytest
 import numpy
-import ROOT
 
 from typing        import Final
 from contextlib    import ExitStack
@@ -626,12 +625,8 @@ def test_reso_rk_mm(
     cfg  = ParametricConf(**data)
     cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
 
-    ROOT.EnableImplicitMT(4)
-
-    stats = RDFGetter.max_entries(value = 500_000)
     cache = Cache.cache_root(path = tmp_path)
     with ExitStack() as stack:
-        stack.enter_context(stats)
         stack.enter_context(cache)
 
         ftr = SimFitter(
