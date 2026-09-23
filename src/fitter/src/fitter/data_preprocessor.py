@@ -41,7 +41,7 @@ class DataPreprocessor(Cache):
     - Transforming data into format that zfit can use
     '''
     # ------------------------
-    def __init__( # noqa: PLR0917
+    def __init__(
         self,
         name      : str,
         obs       : zobs,

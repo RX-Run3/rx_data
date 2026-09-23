@@ -39,7 +39,7 @@ type zdat = zfit.data.Data
 type zsum = zfit.pdf.SumPDF
 # ---------------------------------------------------
 class TestDataPreprocessor:
-    def __init__( # noqa: PLR0917
+    def __init__(
         self,
         name      : str,
         wgt_cfg   : str,
