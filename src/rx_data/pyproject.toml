@@ -36,10 +36,6 @@ list_lfns            = "rx_data_scripts.list_lfns:main"
 rx_data_data = ['**/*.json', '**/*.yaml']
 rx_data_lfns = ['**/*.json']
 
-[tool.ruff]
-select = ["F", "PL", "B"]
-ignore = ["PLR0911", "PLR0913"]  # Too many arguments
-
 [tool.pyright]
 include = ["src"]
 exclude = ["build", "dist", "*.egg-info", "**/__pycache__"]

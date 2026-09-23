@@ -16,9 +16,6 @@ dev  = ['pytest']
 [tools.setuptools.packages.find]
 where= ['src']
 
-[tool.ruff]
-select = ["F", "PL", "B"]
-
 [project.scripts]
 analyze_samples    ='ap_utilities_scripts.analyze_samples:main'
 check_production   ='ap_utilities_scripts.check_production:main'

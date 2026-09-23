@@ -23,6 +23,3 @@ calculate_acceptances='rx_efficiencies_scripts.calculate_acceptances:main'
 
 [tool.setuptools]
 script-files=['src/rx_efficiencies_scripts/create_rapidsim_ntuples']
-
-[tool.ruff]
-select = ["F", "PL", "B"]

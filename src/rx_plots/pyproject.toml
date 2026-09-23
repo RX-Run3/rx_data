@@ -39,7 +39,3 @@ dset_overlay        = 'rx_plotter_scripts.dset_overlay:main'
 
 [tool.setuptools.package-data]
 'rx_plotter_data' = ['**/*.yaml']
-
-[tool.ruff]
-select = ["F", "PL", "B"]
-ignore = ['PLR0913']

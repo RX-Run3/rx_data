@@ -15,10 +15,6 @@ dev = ["pytest"]
 [project.scripts]
 rxtests = "rx_tests.cli:app"
 
-[tool.ruff]
-select = ["F", "PL", "B"]
-ignore = ["B008"] # To ignore typer's warnigns
-
 [tool.pyright]
 include = ['src']
 exclude = ['build']

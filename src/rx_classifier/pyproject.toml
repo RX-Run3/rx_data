@@ -24,6 +24,3 @@ compare_classifier ='rx_classifier_scripts.compare_classifier:main'
 
 [tool.setuptools.package-data]
 rx_classifier_data = ['**/*.yaml']
-
-[tool.ruff]
-select = ["F", "PL", "B"]

@@ -30,12 +30,3 @@ summarize_toys = "fitter_scripts.summarize_toys:main"
 
 [tool.setuptools.package-data]
 'fitter_data' = ['**/*.yaml']
-
-[tool.ruff.lint]
-select = ["F", "PL", "B", 'A']
-ignore = ['PLR0912', 'PLR0913']
-
-[tool.pyrefly.errors]
-unknown-attribute-type= "error"
-unknown-variable-type = "error"
-unknown-argument-type = "error"

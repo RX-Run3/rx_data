@@ -36,7 +36,3 @@ script-files=[
 'src/post_ap_scripts/remove_job',
 'src/post_ap_scripts/post_shell',
 ]
-
-[tool.ruff]
-select = ["F", "PL", "B"]
-ignore = ['PLR0911']

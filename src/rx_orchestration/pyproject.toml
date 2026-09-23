@@ -13,10 +13,6 @@ dependencies = [
   "law",
 ]
 
-[tool.ruff]
-select = ["F", "PL", "B"]
-ignore = ['PLC0415'] # allow imports inside code
-
 [project.scripts]
 # ----------------
 # Plotting

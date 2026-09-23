@@ -35,6 +35,3 @@ validate_smear     = "rx_q2_scripts.validate_smear:main"
 
 [tool.setuptools.package-data]
 'rx_q2_data' = ['*/**.csv', '*/**.yaml']
-
-[tool.ruff]
-select = ["F", "PL", "B"]

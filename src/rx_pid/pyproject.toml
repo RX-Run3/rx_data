@@ -26,6 +26,3 @@ rx_pid_data=['**/*.yaml', '**/*.submit']
 
 [tool.setuptools]
 script-files=['src/rx_pid_scripts/make_pid_maps']
-
-[tool.ruff]
-select = ["F", "PL", "B"]

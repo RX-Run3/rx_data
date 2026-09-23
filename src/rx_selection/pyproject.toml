@@ -24,6 +24,3 @@ jmanager_ihep   = "rx_selection_scripts.jmanager_ihep:main"
 
 [tool.setuptools.package-data]
 'rx_selection_data' = ['**/*.yaml']
-
-[tool.ruff]
-select = ["F", "PL", "B"]

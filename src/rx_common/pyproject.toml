@@ -14,10 +14,6 @@ where= ['src']
 [tool.setuptools.package-data]
 'rx_common_data' = ['**/*.txt', '**/*.yaml']
 
-[tool.ruff]
-select = ["F", "PL", "B"]
-ignore = ['PLR0911', 'PLR0912', 'PLR0913', 'PLR0915']
-
 [tool.setuptools]
 script-files=[
 'src/rx_common_scripts/rx_setup',

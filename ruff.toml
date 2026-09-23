@@ -1,0 +1,10 @@
+[lint]
+select = ["F", "PL", "B", "A", "ARG"]
+ignore = [
+  "PLR0911", "PLR0912", "PLR0913", "PLR0915", "PLR0917",
+  "PLC0415",
+  "B008",
+]
+
+[format]
+docstring-code-format = true
