@@ -13,9 +13,6 @@ dependencies    = [
     "jacobi",
 ]
 
-[project.optional-dependencies]
-dev = ["pytest"]
-
 # Scripts / CLI entry points
 [project.scripts]
 rx_q2              = "rx_q2.cli:app"

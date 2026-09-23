@@ -17,7 +17,6 @@ dependencies    = [
 ]
 
 [project.optional-dependencies]
-tst = ["pytest>=0.0.0"]  # When developing
 net = ["xrootd>=0.0.0"]  # When doing things that require access to remote files
 
 [project.scripts]

@@ -6,9 +6,6 @@ readme          = "README.md"
 dependencies    = [
 ]
 
-[project.optional-dependencies]
-dev = ["pytest"]
-
 [tool.setuptools.package-data]
 'rx_tests_data' = ['**/*.yaml', '**/*.html']
 

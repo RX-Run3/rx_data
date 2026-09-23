@@ -17,9 +17,6 @@ dependencies    = [
     "formulate",
 ]
 
-[project.optional-dependencies]
-dev = ["pytest"]
-
 # Scripts / CLI entry points
 [project.scripts]
 rxplt               = "rx_plotter.cli:app"

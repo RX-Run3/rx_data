@@ -4,6 +4,3 @@ description     = "Project with stub files for gvar"
 readme          = "README.md"
 version         = '0.0.1'
 dependencies    = []
-
-[project.optional-dependencies]
-dev = ["pytest"]

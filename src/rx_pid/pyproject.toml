@@ -11,9 +11,6 @@ dependencies= [
 'omegaconf',
 'pidcalib2']
 
-[project.optional-dependencies]
-dev  = ['pytest']
-
 [tools.setuptools.packages.find]
 where   = ['src']
 

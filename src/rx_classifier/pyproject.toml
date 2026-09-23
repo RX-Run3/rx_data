@@ -12,9 +12,6 @@ dependencies    = [
     'PyYAML',
 ]
 
-[project.optional-dependencies]
-dev  = ['pytest']
-
 [project.scripts]
 diagnose_classifier='rx_classifier_scripts.diagnose_classifier:main'
 build_job_script   ='rx_classifier_scripts.build_job_script:main'

@@ -8,9 +8,6 @@ dependencies= [
 'mplhep',
 'matplotlib']
 
-[project.optional-dependencies]
-dev  = ['pytest']
-
 [tools.setuptools.packages.find]
 where   = ['src']
 

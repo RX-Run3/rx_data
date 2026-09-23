@@ -10,9 +10,6 @@ dependencies= [
 'boost-histogram',
 ]
 
-[project.optional-dependencies]
-dev  = ['pytest']
-
 [project.scripts]
 plot_samples='rx_misid_scripts.plot_samples:main'
 

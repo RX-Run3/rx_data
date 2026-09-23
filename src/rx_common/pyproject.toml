@@ -5,9 +5,6 @@ version     = '0.0.6'
 readme      = 'README.md'
 dependencies= ['PyYAML']
 
-[project.optional-dependencies]
-dev  = ['pytest']
-
 [tools.setuptools.packages.find]
 where= ['src']
 

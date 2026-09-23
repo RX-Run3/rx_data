@@ -6,11 +6,5 @@ readme          = "README.md"
 dependencies    = [
 ]
 
-[project.optional-dependencies]
-dev = ["pytest"]
-
-# Scripts / CLI entry points
-[project.scripts]
-
 [tool.setuptools.package-data]
 'rx_selection_data' = ['**/*.yaml']

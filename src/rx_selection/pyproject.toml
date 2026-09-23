@@ -12,9 +12,6 @@ dependencies    = [
     "matplotlib",
 ]
 
-[project.optional-dependencies]
-dev = ["pytest"]
-
 # Scripts / CLI entry points
 [project.scripts]
 apply_selection = "rx_selection_scripts.apply_selection:main"
