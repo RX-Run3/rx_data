@@ -621,7 +621,7 @@ def test_reso_rk_mm(
         name  = mass,
         range = (4800, 6000))
 
-    data = gut.load_data(package='fitter_data', fpath=f'reso/rk/mm/{component}_ipatia.yaml')
+    data = gut.load_data(package='fitter_data', fpath=f'reso/rk/mm/{component}.yaml')
     cfg  = ParametricConf(**data)
     cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
 
