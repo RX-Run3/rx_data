@@ -46,27 +46,39 @@ class TestDataPreprocessor:
         wgt_cfg   : str,
         obs       : str,
         trigger   : Trigger,
-        q2bin     : str,
+        q2bin     : Qsq,
         selection : str,
         sample    : str):
         _ = name
         _ = wgt_cfg
         _ = obs
-        _ = q2bin
         _ = selection
         _ = sample
 
         self._trigger = trigger
+        self._q2bin   = q2bin
     # --------------------------
     @property
     def rdf_uid(self) -> str:
         return 'mock_data'
     # --------------------------
+    def _get_sigma(self) -> float:
+        if self._trigger.is_muon:
+            return 30
+
+        if self._q2bin.is_rare:
+            return 100
+
+        return 20
+    # --------------------------
     def get_data(self) -> zdat:
         log.warning('Using mock data')
 
-        sigma = 100 if self._trigger.is_electron else 30
-        array = _RNG.normal(loc = 5280, scale = sigma, size = _DATA_SIZE)
+        sigma   = self._get_sigma()
+        array_1 = _RNG.normal(loc = 5280, scale = 1.0 * sigma, size = _DATA_SIZE)
+        array_2 = _RNG.normal(loc = 5280, scale = 1.3 * sigma, size = _DATA_SIZE)
+        array   = numpy.concatenate([array_1, array_2])
+
         obs   = zfit.Space('Mass', 4600, 6000)
         data  = zfit.data.Data.from_numpy(array = array, obs = obs)
 
@@ -653,6 +665,7 @@ def test_reso_rkst_ee(
 
     data = gut.load_data(package='fitter_data', fpath=f'reso/rkst/ee/{component}.yaml')
     cfg  = ParametricConf(**data)
+    cfg.add_category_suffix(suffix = 'b1')
     cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
 
     with Cache.cache_root(path = tmp_path):
