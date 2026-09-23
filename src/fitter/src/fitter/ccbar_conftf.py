@@ -1,6 +1,8 @@
 '''
 Module holding CCbarConfTF class
 '''
+import re
+
 from hqm.binning   import BinningConf
 from rx_common     import Qsq
 from rx_common     import Trigger
@@ -16,9 +18,10 @@ from .component_conf import ComponentConf
 
 log=LogStore.add_logger('fitter:ccbar_conftf')
 
-_COMPONENT : Final[Component] = Component.data_24
-_TRIGGER   : Final[Trigger  ] = Trigger.rk_ee_os 
-_QSQ       : Final[Qsq      ] = Qsq.high
+_BLOCK_REGEX : Final[str]       = r'.*_b(\d)(_flt)?$'
+_COMPONENT   : Final[Component] = Component.data_24
+_TRIGGER     : Final[Trigger  ] = Trigger.rk_ee_os
+_QSQ         : Final[Qsq      ] = Qsq.high
 
 type zpar = zfit.param.Parameter
 type zpdf = zfit.pdf.BasePDF
@@ -69,16 +72,13 @@ class CCbarConfTF(ComponentConf, frozen = True):
         ------------------
         Block associated
         '''
-        for block in Block.blocks():
-            iblock = block.to_int()
-            suffix = f'_b{iblock}'
+        mtch = re.match(_BLOCK_REGEX, par.name)
+        if not mtch:
+            raise ValueError(f'Cannot extract block number from: {par.name}')
 
-            if not par.name.endswith(suffix):
-                continue
+        iblock = mtch.group(1)
 
-            return block
-
-        raise ValueError(f'Cannot extract block for parameter: {par.name}')
+        return Block.from_str(value = iblock)
     # ------------------------------
     def _get_block_fractions(self, pdfs : dict[Component, zpdf]) -> dict[Block,zpar]:
         '''
@@ -104,7 +104,7 @@ class CCbarConfTF(ComponentConf, frozen = True):
         raise ValueError('Cannot find block fractions')
     # ------------------------------
     def get_pdf(
-        self, 
+        self,
         project : Project,
         pdfs    : dict[Component, zpdf]) -> zpdf:
         '''
@@ -112,7 +112,7 @@ class CCbarConfTF(ComponentConf, frozen = True):
         -----------------
         project: E.g. rk
         pdfs   : Dictionary mapping component to PDF in fitting model
-                 This should include signal, which contains block fraction 
+                 This should include signal, which contains block fraction
                  parameters, needed to parametrize this PDF
 
         Returns
@@ -145,5 +145,5 @@ class CCbarConfTF(ComponentConf, frozen = True):
         fracs = [ d_frc[block] for block in Block.blocks() if block in d_frc ]
         ccpdf = list(d_pdf.values())
 
-        return zfit.pdf.SumPDF(ccpdf, fracs) 
+        return zfit.pdf.SumPDF(ccpdf, fracs)
 # ------------------------------
