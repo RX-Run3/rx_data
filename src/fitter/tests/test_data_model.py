@@ -5,7 +5,10 @@ import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 import pytest
 
+from contextlib    import contextmanager
+from contextlib    import ExitStack
 from pathlib       import Path
+from rx_common     import Mass
 from rx_common     import Cuts, Trigger, Qsq, Region, Project
 from rx_common     import Component
 from rx_selection  import selection as sel
@@ -40,6 +43,8 @@ class TestCCbarConfTF(CCbarConfTF, frozen = True):
         return pdf
 # ----------------------
 class TestSimFitter:
+    _mass = 'Mass'
+
     def __init__(
         self,
         name      : str,
@@ -55,11 +60,21 @@ class TestSimFitter:
         _ = q2bin
         _ = cfg
     # ----------------------
+    @classmethod
+    @contextmanager
+    def mass(cls, value : Mass):
+        old_value  = cls._mass
+        cls._mass = value
+        try:
+            yield
+        finally:
+            cls._mass = old_value
+    # ----------------------
     def get_model(self) -> zpdf:
         log.warning('Using mock SimFitter PDF')
         name  = f'{self._component}_{self._name}'
 
-        obs   = zfit.Space('Mass', 4600, 6000)
+        obs   = zfit.Space(self._mass, 4600, 6000)
         mu    = zfit.Parameter(f"{name}_mu", 5280.0, 5000.0, 5500.0)
         sigma = zfit.Parameter(f"{name}_sigma", 20.0, 0.1, 100.0)
         pdf   = zfit.pdf.Gauss(mu=mu, sigma=sigma, obs=obs, name=name)
@@ -79,9 +94,6 @@ def initialize(monkeypatch):
     LogStore.set_level('fitter:data_model'        , 10)
     LogStore.set_level('fitter:sim_fitter'        , 10)
     LogStore.set_level('rx_data:rdf_getter'       , 30)
-
-    with DataModel.skip_components(names = ['kkk', 'kpipi']):
-        yield
 # --------------------------
 @pytest.mark.parametrize('kind, trigger', [
     ('reso/rk/mm'  , Trigger.rk_mm_os  ),
@@ -179,7 +191,6 @@ def test_rare_electron_high(tmp_path : Path):
 
     sut.print_pdf(pdf)
 # --------------------------
-@pytest.mark.skip(reason='These tests require smear friend trees for noPID samples')
 @pytest.mark.parametrize('region' , Region.hadronic_misid()   )
 @pytest.mark.parametrize('q2bin'  , ['low', 'central', 'high'])
 def test_misid_rare(
@@ -197,12 +208,20 @@ def test_misid_rare(
     with UnpackerModel.package(name = 'fitter_data'):
         cfg = FitModelConf(**data)
 
-    with PL.parameter_schema(cfg=cfg.yields),\
-        Cache.cache_root(path = tmp_path),\
-        sel.custom_selection(d_sel = {
+    ctx_1 = PL.parameter_schema(cfg=cfg.yields)
+    ctx_2 = Cache.cache_root(path = tmp_path)
+    ctx_3 = TestSimFitter.mass(value = region.mass)
+    ctx_4 = sel.custom_selection(d_sel = {
         Cuts.brem : 'nbrem != 0',
         Cuts.mass : '(1)',
-        Cuts.cmb  : 'mva_cmb > 0.80 && mva_prc > 0.60'}):
+        Cuts.cmb  : 'mva_cmb > 0.80 && mva_prc > 0.60'})
+
+    with ExitStack() as stack:
+        stack.enter_context(ctx_1)
+        stack.enter_context(ctx_2)
+        stack.enter_context(ctx_3)
+        stack.enter_context(ctx_4)
+
         dmd = DataModel(
             name    = region,
             cfg     = cfg,
