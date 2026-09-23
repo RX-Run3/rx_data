@@ -1,12 +1,15 @@
 '''
 Module with Registry class
 '''
+from dmu        import LogStore
 from typing     import ClassVar
 from rx_common  import Component, Trigger, Qsq, Cuts
 from .selection import selection
 
 type Sel = dict[Cuts, str]
 type Key = tuple[Component, Trigger, Qsq]
+
+log=LogStore.add_logger('rx_selection:registry')
 # -----------------------------
 class Registry:
     '''
@@ -14,6 +17,7 @@ class Registry:
     for a given analysis
     '''
     _registry : ClassVar[dict[Key,Sel]] = {}
+    _can_override : ClassVar[bool]      = True
     # --------------------------------------
     def __init__(
         self,
@@ -38,8 +42,11 @@ class Registry:
         ---------------
         cuts: Dictionary mapping cut enum to expression
         '''
-        if self._key in self._registry:
+        if self._key in self._registry and not self._can_override:
             raise ValueError(f'Selection already set for: {self._key}')
+
+        if self._key in self._registry:
+            log.info(f'Overriding: {self._key}')
 
         self._registry[self._key] = cuts
     # --------------------------------------

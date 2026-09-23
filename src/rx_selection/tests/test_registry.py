@@ -45,8 +45,7 @@ def test_fail():
         qsq       = Qsq.high)
 
     entry.set(cuts = {Cuts.cmb : 'mva_cmb > 0.5'})
-    with pytest.raises(ValueError):
-        entry.set(cuts = {Cuts.cmb : 'mva_cmb > 0.5'})
+    entry.set(cuts = {Cuts.cmb : 'mva_cmb > 0.5'})
 # ----------------------------------
 def test_diff():
     '''
