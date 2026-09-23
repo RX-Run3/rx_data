@@ -125,6 +125,7 @@ def test_rare_electron(
     '''
     Simplest test for rare electron mode
     '''
+    region     = Region.brem_x12
     data       = gut.load_data(
         package= 'fitter_data',
         fpath  =f'rare/{trigger.project}/ee/data.yaml')
@@ -137,7 +138,14 @@ def test_rare_electron(
         Cache.cache_root(path = tmp_path),\
         sel.custom_selection(d_sel = {Cuts.mass : '(1)', Cuts.brem : 'nbrem != 0'}):
         dmd = DataModel(
-            name    = Region.brem_x12,
+            name    = region,
+            cfg     = cfg,
+            obs     = cfg.obs,
+            trigger = trigger,
+            q2bin   = q2bin)
+        pdf = dmd.get_model()
+
+    sut.print_pdf(pdf)
 # --------------------------
 def test_rare_electron_high(tmp_path : Path):
     '''
