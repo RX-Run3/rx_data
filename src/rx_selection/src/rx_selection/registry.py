@@ -16,7 +16,7 @@ class Registry:
     _registry : ClassVar[dict[Key,Sel]] = {}
     # --------------------------------------
     def __init__(
-        self, 
+        self,
         *,
         component : Component,
         trigger   : Trigger,
