@@ -37,6 +37,7 @@ _RNG                    = numpy.random.default_rng(seed = 42)
 _DATA_SIZE : Final[int] = 1000
 
 type zdat = zfit.data.Data
+type zsum = zfit.pdf.SumPDF
 # ---------------------------------------------------
 class TestDataPreprocessor:
     def __init__( # noqa: PLR0917
@@ -74,6 +75,45 @@ class TestDataPreprocessor:
 
         raise ValueError('Invalid data')
 # ---------------------------------------------------
+class TestPRec:
+    def __init__(
+        self,
+        name : str,
+        obs  : str,
+        trig : str,
+        q2bin: str,
+        cfg  : str):
+
+        _ = name 
+        _ = obs  
+        _ = trig 
+        _ = q2bin
+        _ = cfg  
+    # --------------------------
+    def get_sum(self, name : str) -> zsum:
+        log.warning('Using mock ccbar PDF')
+
+        obs   = zfit.Space('Mass', 4600, 6000)
+        lam   = zfit.Parameter(f"{name}_lambda", -0.002, -1.0, 1.0)
+        mu    = zfit.Parameter(f"{name}_mu", 5280.0, 5000.0, 5500.0)
+        sigma = zfit.Parameter(f"{name}_sigma", 20.0, 0.1, 100.0)
+        low   = 4500.0
+        high  = 6000.0
+
+        exp_pdf     = zfit.pdf.Exponential(lambda_=lam, obs=obs, name=f"{name}_exp")
+        gauss_pdf   = zfit.pdf.Gauss(mu=mu, sigma=sigma, obs=obs, name=f"{name}_gauss")
+        uniform_pdf = zfit.pdf.Uniform(low=low, high=high, obs=obs, name=f"{name}_uniform")
+
+        frac1 = zfit.Parameter(f"{name}_frac1", 0.3, 0.0, 1.0)
+        frac2 = zfit.Parameter(f"{name}_frac2", 0.3, 0.0, 1.0)
+
+        total_pdf= zfit.pdf.SumPDF(
+            pdfs = [exp_pdf, gauss_pdf, uniform_pdf], 
+            fracs= [frac1, frac2], 
+            name = f"{name}_sum")
+        
+        return total_pdf 
+# ---------------------------------------------------
 @pytest.fixture(autouse=True)
 def initialize(monkeypatch):
     '''
@@ -84,6 +124,10 @@ def initialize(monkeypatch):
     monkeypatch.setattr(
         'fitter.sim_fitter.DataPreprocessor', 
         TestDataPreprocessor)
+
+    monkeypatch.setattr(
+        'fitter.sim_fitter.PRec', 
+        TestPRec)
 
     LogStore.set_level('fitter:signal_constraints', 10)
     LogStore.set_level('fitter:data_preprocessor' , 10)
