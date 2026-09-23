@@ -152,11 +152,11 @@ class MVAWp(RootModel[float|tuple[float,float]]):
         name: Name of branch on which the cut is applied, e.g. mva_cmb
         '''
         if isinstance(self.root, (float, int)):
-            return f'{name} > {self.root}'
+            return f'{name} >= {self.root}'
 
-        min, max = self.root
+        min_val, max_val = self.root
 
-        return f'({name} < {max}) && ({name} > {min})'
+        return f'({name} >= {min_val}) && ({name} < {max_val})'
     # -------------    
     @property
     def name(self):

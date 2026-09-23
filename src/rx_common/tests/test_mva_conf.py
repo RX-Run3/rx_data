@@ -3,10 +3,15 @@ Test for MVAConf class
 '''
 import pytest
 
+from typing    import Final
 from rx_common import MVAConf, MVAWp
 from dmu       import LogStore
 
 log = LogStore.add_logger('rx_common:test_mva_conf')
+
+_WPS : Final[list[tuple[str,str]]] = [
+    ('0300'     ,  'VAR >= 0.3'),
+    ('0100-0200', '(VAR >= 0.1) && (VAR < 0.2)')]
 # ----------------------------------------
 def test_from_float():
     '''
@@ -53,4 +58,17 @@ def test_str_to_wp(str_val : str):
     # Invalid string raises
     with pytest.raises(ValueError):
         MVAWp.from_str(val = '200')
+# ----------------------------------------
+@pytest.mark.parametrize('val, expr', _WPS)
+def test_get_cut(val : str, expr : str):
+    '''
+    Test transforming string into floats
+    '''
+    var= 'mva_cmb'
+    wp = MVAWp.from_str(val = val)
+    cut= wp.get_cut(name = var)
+
+    expr = expr.replace('VAR', var)
+
+    assert expr == cut
 # ----------------------------------------
