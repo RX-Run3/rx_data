@@ -1,0 +1,9 @@
+project-includes = ["**/*.py*"]
+project-excludes = ["**/__pycache__/**"]
+search-path      = ["src"]
+
+[errors]
+not-callable          = true
+unknown-attribute-type= "error"
+unknown-variable-type = "error"
+unknown-argument-type = "error"
