@@ -15,7 +15,6 @@ from dmu.stats        import ParameterLibrary as PL
 from dmu.stats        import utilities as sut
 from dmu.workflow     import Cache
 from dmu              import LogStore
-from rx_data          import RDFGetter
 from rx_selection     import selection as sel
 from rx_common        import Brem, Component, Region
 
@@ -30,7 +29,7 @@ from fitter           import NLLConf
 
 log=LogStore.add_logger('fitter:fit_rx_rare')
 
-DATA_SAMPLE : Final[Component] = Component.data_24
+_DATA_SAMPLE : Final[Component] = Component.data_24
 # ----------------------
 def _set_logs() -> None:
     '''
@@ -70,8 +69,8 @@ def _parse_args() -> RXFitConfig:
     parser.add_argument('-n', '--ncores' , type=int           , help='Number of processes'                             , default =1)
     parser.add_argument('-l', '--log_lvl', type=int           , help='Logging level', choices=[5, 10, 20, 30]          , default =20)
     parser.add_argument('-q', '--q2bin'  , type=str           , help='q2 bin'      , choices=['low', 'central', 'high'], required=True)
-    parser.add_argument('-C', '--mva_cmb', type=MVAWp.from_str, help='MVA working point, e.g. 0.2; 0.1 0.3'            , required=True)
-    parser.add_argument('-P', '--mva_prc', type=MVAWp.from_str, help='MVA working point, e.g. 0.2; 0.1 0.3'            , required=True)
+    parser.add_argument('-C', '--mva_cmb', type=MVAWp.from_str, help='MVA working point, e.g. 0200; 0100-0300'         , required=True)
+    parser.add_argument('-P', '--mva_prc', type=MVAWp.from_str, help='MVA working point, e.g. 0200; 0100-0300'         , required=True)
     args = parser.parse_args()
 
     return _cfg_from_args(args = args)
@@ -117,7 +116,7 @@ def _get_region_nll(brem : Brem, cfg : RXFitConfig) -> NLLConf:
         name   = brem.region,
         obs    = cfg.obs,
         q2bin  = cfg.q2bin,
-        sample = DATA_SAMPLE,
+        sample = _DATA_SAMPLE,
         cfg    = cfg.mod_cfg)
     cfg_nll  = ftr.run()
 
