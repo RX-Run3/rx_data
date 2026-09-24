@@ -129,7 +129,7 @@ class SplinePDF(zfit.pdf.ZPDF):
             ys  = np.array(cfg.ys),
             name= name)
     # ------------------------------
-    def _unnormalized_pdf(self, x):
+    def _unnormalized_pdf(self, x : Tensor):
         x = zfit.z.unstack_x(value = x)
 
         return self.__interpolator.interpolate(xs = x)
