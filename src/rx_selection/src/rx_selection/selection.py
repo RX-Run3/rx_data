@@ -75,7 +75,7 @@ def custom_selection(
 @contextmanager
 def update_selection(d_sel : dict[Cuts,str]):
     '''
-    This manager will **current** selection, i.e. whatever is the selection up to
+    This manager will update **current** selection, i.e. whatever is the selection up to
     the moment the manager is used
 
     Parameters
