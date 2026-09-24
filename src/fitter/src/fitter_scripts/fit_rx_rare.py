@@ -46,6 +46,8 @@ def _set_logs() -> None:
     LogStore.set_level('rx_selection:selection'  , LEVEL)
     LogStore.set_level('rx_selection:registry'   , LEVEL)
 
+    LogStore.set_level('rx_efficiencies:acceptance_reader', LEVEL)
+
     LogStore.set_level('dmu:workflow:cache'      , LEVEL)
     LogStore.set_level('dmu:stats:utilities'     , LEVEL)
     LogStore.set_level('dmu:stats:model_factory' , LEVEL)
