@@ -25,6 +25,7 @@ type zsum = zfit.pdf.SumPDF
 type zpdf = zfit.pdf.BasePDF
 type zobs = zfit.Space
 
+_OBS_NAME       : Final[str]                     = 'Mass'    # Default observable name
 _SOURCE_QSQ     : Final[Qsq]                     = Qsq.psi2
 _TARGET_QSQ     : Final[Qsq]                     = Qsq.high
 _TARGET_CHANNEL : Final[Channel]                 = Channel.ee
@@ -50,17 +51,19 @@ class CCbarPDF(BaseModel, Serializable, frozen = True):
         '''
         Sum of part reco and fully reco PDFs
         '''
-        return self.get_pdf(suffix = '')
+        return self.get_pdf(obs_name = _OBS_NAME, suffix = '')
     # ---------------------------------
     def get_pdf(
         self,
-        suffix : str,
-        name   : str = 'ccbar') -> zsum:
+        obs_name: str,
+        suffix  : str,
+        name    : str = 'ccbar') -> zsum:
         '''
         Parameters
         ---------------
-        name  : Name of returned PDF
-        suffix: String that will be located at the end of
+        obs_name: String used as observable name, e.g. Mass, B_Mass
+        name    : Name of returned PDF
+        suffix  : String that will be located at the end of
                 PDF and parameter names. Meant to allow combining PDFs and avoiding
                 name clashes
 
@@ -68,17 +71,22 @@ class CCbarPDF(BaseModel, Serializable, frozen = True):
         ---------------
         Sum of part reco and fully reco PDFs
         '''
+        obs       = self.obs.model_copy(update = {'name' : obs_name})
+        part_reco = self.part_reco.model_copy(update = {'obs_name' : obs_name})
+        full_reco = self.full_reco.model_copy(update = {'obs_conf' : obs})
+
         if suffix:
             suffix = f'_{suffix}'
 
         pdf_pr = SplinePDF(
-            obs = self.part_reco.obs,
-            xs  = numpy.array(self.part_reco.xs),
-            ys  = numpy.array(self.part_reco.ys),
+            obs = part_reco.obs,
+            xs  = numpy.array(part_reco.xs),
+            ys  = numpy.array(part_reco.ys),
             name= f'part-reco{suffix}')
 
-        fr_name= self.full_reco.name
-        pdf_fr = self.full_reco.get_pdf(name = f'{fr_name}{suffix}')
+        fr_name= full_reco.name
+        pdf_fr = full_reco.get_pdf(name = f'{fr_name}{suffix}')
+
         val, _ = self.ratio # part-reco / fully-reco
 
         fval = val / (1 + val)  # part-reco / total
@@ -89,7 +97,7 @@ class CCbarPDF(BaseModel, Serializable, frozen = True):
             name  = name,
             pdfs  = pdfs,
             fracs = frac,
-            obs   = self.obs.obs)
+            obs   = obs.obs)
 
         return pdf
     # ---------------------------------

@@ -13,10 +13,11 @@ from dmu.stats     import FittedModel, Fitter, Model, ModelFactory
 from dmu.stats     import ObsConf, ModelFactoryConf, SplinePDF, ZFitPlotter, ZFitPlotterConf, print_pdf, zfit
 from dmu.stats     import utilities as sut
 
+type zobs = zfit.Space
 # ----------------------------
 class TestRatio:
     larger_prec = False
-    def get_value(self, name):
+    def get_value(self, name : str):
         _ = name
         if self.larger_prec:
             return 1.3, 0.03
@@ -27,7 +28,7 @@ class TestCCbarRatioCalculator:
     def __init__(self, cfg, binning, project):
         pass
 
-    def get_ratio(self, mode):
+    def get_ratio(self, mode : str):
         _ = mode
         return TestRatio()
 # ----------------------------
@@ -41,7 +42,7 @@ class TestPdfBuilder:
         label  : str = ''):
         pass
     # ----------------------------
-    def get_model(self, obs_ext, use_kde, mode):
+    def get_model(self, obs_ext : zobs, use_kde : str, mode : str):
         _ = use_kde
         _ = mode
 
@@ -77,7 +78,7 @@ class TestPrecMaker:
         project):
         pass
     # ----------------------------
-    def get_pdf(self, mode, name):
+    def get_pdf(self, mode : str, name : str):
         _   = mode
         _   = name
 
@@ -143,7 +144,9 @@ def test_suffix(monkeypatch, tmp_path : Path):
         project = project)
 
     model= ccb.get_pdf(obs = obs, mode = Mode.write)
-    pdf  = model.get_pdf(suffix = 'suf')
+    pdf  = model.get_pdf(
+        obs_name = 'mass',
+        suffix   = 'suf')
 
     sut.print_pdf(pdf)
 # ----------------------------
