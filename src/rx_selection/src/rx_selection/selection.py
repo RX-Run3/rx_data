@@ -38,7 +38,7 @@ class MultipleSelectionOverriding(Exception):
 #-----------------------
 @contextmanager
 def custom_selection(
-    d_sel          : dict[Cuts,str]|None, 
+    d_sel          : dict[Cuts, str] | None,
     force_override : bool = False):
     '''
     This is a context manager updates the **default** selection
@@ -85,7 +85,7 @@ def update_selection(d_sel : dict[Cuts,str]):
     org_val = None if Data.d_custom_selection is None else copy.deepcopy(Data.d_custom_selection)
 
     if Data.d_custom_selection is None:
-        Data.d_custom_selection = {} 
+        Data.d_custom_selection = {}
 
     Data.d_custom_selection.update(d_sel)
 
@@ -119,7 +119,7 @@ def selection(
 
     d_cut : dict[Cuts,str] = {}
 
-    event_type = process if not process.is_mc else process.event_type 
+    event_type = process if not process.is_mc else process.event_type
     log.info(f'{process:<40}{"->":20}{event_type:<20}')
 
     if not process.is_mc:
@@ -128,14 +128,14 @@ def selection(
         d_cut[Cuts.block] = 'block >= 1'
     elif skip_truth:
         log.warning('Not using truth matching')
-        d_cut[Cuts.truth] = '(1)' 
+        d_cut[Cuts.truth] = '(1)'
     else:
         log.debug('Adding truth matching requirement for MC')
         d_cut[Cuts.truth] = tm.get_truth(component=process, project = trigger.project)
 
     d_tmp = _get_selection(
-        chan   = trigger.channel, 
-        proj   = trigger.project, 
+        chan   = trigger.channel,
+        proj   = trigger.project,
         q2_bin = q2bin)
     d_cut.update(d_tmp)
 
@@ -203,7 +203,7 @@ def _update_mass_cuts(
     return d_cut
 #-----------------------
 def _use_smeared_masses(
-    cuts  : dict[Cuts,str], 
+    cuts  : dict[Cuts,str],
     q2bin : Qsq) -> dict[Cuts,str]:
     '''
     Parameters
@@ -263,8 +263,8 @@ def _load_selection_config() -> dict:
 #-----------------------
 # TODO: Add types
 def _get_selection(
-    chan   : Channel, 
-    proj   : Project, 
+    chan   : Channel,
+    proj   : Project,
     q2_bin : Qsq) -> dict[Cuts,str]:
     '''
     Parameters
@@ -273,7 +273,7 @@ def _get_selection(
     proj  : Project, e.g. RK, RKst
     q2_bin: q2 bin e.g. central, needed to pick for q2 dependent cuts
 
-    Returns 
+    Returns
     -----------------
     Dictionary with:
 
@@ -312,8 +312,8 @@ def _get_selection(
     return d_new
 #-----------------------
 def _save_cutflow(
-    path : Path, 
-    rdf  : RDF.RNode, 
+    path : Path,
+    rdf  : RDF.RNode,
     cuts : dict[Cuts,str]) -> None:
     '''
     Parameters
@@ -335,7 +335,7 @@ def _save_cutflow(
     log.info(f'Saving cuts to: {ct_path}')
     gut.dump_json(data = cuts, path = ct_path, exists_ok=True)
 #-----------------------
-def apply_full_selection( # noqa: PLR0913
+def apply_full_selection(
     rdf      : RDF.RNode,
     q2bin    : Qsq,
     process  : Component,
@@ -363,8 +363,8 @@ def apply_full_selection( # noqa: PLR0913
     '''
 
     d_sel = selection(
-        q2bin  =q2bin, 
-        process=process, 
+        q2bin  =q2bin,
+        process=process,
         trigger=trigger)
 
     if ext_cut is not None:
@@ -433,7 +433,7 @@ def apply_selection(
     else:
         log.warning('Not saving cutflow')
 
-    if uid is None: 
+    if uid is None:
         log.debug('No UID found, not updating it')
         return rdf
 
