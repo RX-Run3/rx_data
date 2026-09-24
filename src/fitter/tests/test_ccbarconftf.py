@@ -63,11 +63,11 @@ def test_simple():
         component = _COMPONENT)
     entry.set(cuts = cuts)
 
-    pdf = _get_pdf()
-    cfg = CCbarConfTF(kind = 'CCbarPDFTF')
-    pdf = cfg.get_pdf(
-        pdfs    = {Component.bpkpee : pdf },
+    pdf_sig = _get_pdf()
+    cfg     = CCbarConfTF(kind = 'CCbarPDFTF')
+    pdf_ccb = cfg.get_pdf(
+        pdfs    = {Component.bpkpee : pdf_sig },
         project = Project.rk)
 
-    sut.print_pdf(pdf)
+    sut.print_pdf(pdf_ccb)
 # ---------------------------------
