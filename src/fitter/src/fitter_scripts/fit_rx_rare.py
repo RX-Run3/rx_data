@@ -54,6 +54,7 @@ def _set_logs() -> None:
 
     LogStore.set_level('fitter:data_preprocessor', LEVEL)
     LogStore.set_level('fitter:base_fitter'      , LEVEL)
+    LogStore.set_level('fitter:sim_fitter'       , LEVEL)
 # ----------------------
 def _parse_args() -> RXFitConfig:
     '''
