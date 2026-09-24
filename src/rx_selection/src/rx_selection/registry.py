@@ -68,6 +68,13 @@ class Registry:
 
         return self._registry[self._key]
     # --------------------------------------
+    @classmethod
+    def clear(cls) -> None:
+        '''
+        Empty registry
+        '''
+        cls._registry = dict()
+    # --------------------------------------
     @property
     def diff(self) -> Sel:
         '''

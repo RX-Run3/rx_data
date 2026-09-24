@@ -8,6 +8,13 @@ from rx_selection import Registry, selection as sel
 from rx_common    import Component, Trigger, Qsq, Cuts
 
 log=LogStore.add_logger('rx_selection:test_registry')
+# ----------------------
+@pytest.fixture(autouse=True)
+def clear_registry():
+    '''
+    This will run before every test
+    '''
+    Registry.clear()
 # ----------------------------------
 def test_read_write():
     '''
@@ -38,7 +45,7 @@ def test_fail():
         qsq       = Qsq.high)
 
     with pytest.raises(ValueError):
-        entry.get()
+        _ = entry.get()
 
     entry = Registry(
         component = Component.data_24,
