@@ -22,6 +22,7 @@ binning_opt = typer.Option(...  , '-b', help = 'Binning, e.g. "mva_cmb-7 mva_prc
 _ANADIR   : Final[Path ]                 = Path(os.environ['ANADIR'])
 _RUN2_RAT : Final[dict[PRecRatio,float]] = { PRecRatio.psi2 : 0.62, PRecRatio.jpsi : 0.7 } # Value of ratios in run2
 _BLOCKS   : Final[list[str]]             = ['4', '3', '2', '1', '5', '6', '7', '8']
+_PROJECTS : Final[list[Project]]         = [Project.rk]
 
 log=LogStore.add_logger('hqm:plot_ratios')
 
@@ -64,7 +65,7 @@ def _plot_ratio(
     '''
     _, ax = plt.subplots()
 
-    for project in [Project.rk, Project.rkst]:
+    for project in _PROJECTS:
         vals, errs, blocks = _get_block_ratios(
             kind    = kind,
             binning = binning,
