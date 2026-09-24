@@ -15,8 +15,8 @@ def test_read_write():
     '''
     cuts_in = {Cuts.cmb : 'mva_cmb > 0.5'}
     entry   = Registry(
-        component = Component.data_24, 
-        trigger   = Trigger.rk_ee_os, 
+        component = Component.data_24,
+        trigger   = Trigger.rk_ee_os,
         qsq       = Qsq.high)
 
     entry.set(cuts = cuts_in)
@@ -32,16 +32,16 @@ def test_fail():
     - Writting twice in the same location
     '''
     entry = Registry(
-        component = Component.data_24, 
-        trigger   = Trigger.rk_ee_os, 
+        component = Component.data_24,
+        trigger   = Trigger.rk_ee_os,
         qsq       = Qsq.high)
 
     with pytest.raises(ValueError):
         entry.get()
 
     entry = Registry(
-        component = Component.data_24, 
-        trigger   = Trigger.rk_ee_os, 
+        component = Component.data_24,
+        trigger   = Trigger.rk_ee_os,
         qsq       = Qsq.high)
 
     entry.set(cuts = {Cuts.cmb : 'mva_cmb > 0.5'})
@@ -57,21 +57,20 @@ def test_diff():
     trig    = Trigger.rk_ee_os
     qsq     = Qsq.high
 
-    cuts_def    = sel.selection(
-        q2bin   = qsq,
-        trigger = trig,
-        process = proc)
+    cuts = {Cuts.cmb : cmb_cut}
+    with sel.custom_selection(d_sel = cuts):
+        cuts_new    = sel.selection(
+            q2bin   = qsq,
+            trigger = trig,
+            process = proc)
 
-    cuts_new = copy.deepcopy(cuts_def)
-    cuts_new[Cuts.cmb] = cmb_cut
+        entry = Registry(
+            component = proc,
+            trigger   = trig,
+            qsq       = qsq)
 
-    entry = Registry(
-        component = proc, 
-        trigger   = trig, 
-        qsq       = qsq)
+        entry.set(cuts = cuts_new)
 
-    entry.set(cuts = cuts_new)
-
-    assert Cuts.cmb in entry.diff
-    assert entry.diff[Cuts.cmb] == cmb_cut
+        assert Cuts.cmb in entry.diff
+        assert entry.diff[Cuts.cmb] == cmb_cut
 # ----------------------------------
