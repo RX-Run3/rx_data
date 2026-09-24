@@ -10,7 +10,7 @@ import numpy
 from dataclasses import dataclass
 from functools   import lru_cache
 from typing      import Union
-from ROOT        import RDataFrame, RDF, Numba # type: ignore
+from ROOT        import RDF, Numba # type: ignore
 from dmu         import LogStore
 from dmu.generic import hashing 
 
@@ -39,7 +39,7 @@ def columns_from_rdf(rdf : RDF.RNode) -> list[str]:
 
     return l_str
 # ---------------------------------------------------------------------
-def add_column(rdf : RDataFrame, arr_val : Union[numpy.ndarray,None], name : str, d_opt : dict[str,str | None] | None = None):
+def add_column(rdf : RDF.RNode, arr_val : Union[numpy.ndarray,None], name : str, d_opt : dict[str,str | None] | None = None):
     '''
     Will take a dataframe, an array of numbers and a string
     Will add the array as a colunm to the dataframe
@@ -89,10 +89,10 @@ def add_column(rdf : RDataFrame, arr_val : Union[numpy.ndarray,None], name : str
     return rdf
 # ---------------------------------------------------------------------
 def add_column_with_numba(
-    rdf        : RDataFrame,
+    rdf        : RDF.RNode,
     arr_val    : numpy.ndarray,
     name       : str,
-    identifier : str) -> RDataFrame:
+    identifier : str) -> RDF.RNode:
     '''
     Will take a dataframe, an array of numbers and a string
     Will add the array as a colunm to the dataframe
