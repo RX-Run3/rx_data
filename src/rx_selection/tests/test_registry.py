@@ -49,7 +49,7 @@ def test_fail():
 # ----------------------------------
 def test_diff():
     '''
-    Test that registry can extract difference between\
+    Test that registry can extract difference between
     registered selection and default one
     '''
     cmb_cut = 'mva_cmb > 0.5'

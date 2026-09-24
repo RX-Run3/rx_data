@@ -2,7 +2,6 @@
 Module containing the selection function, which returns a dictionary of cuts
 '''
 
-import os
 import copy
 import yaml
 
@@ -16,7 +15,6 @@ from dmu.generic            import hashing
 from dmu.rdataframe         import utilities          as rut
 from dmu.generic            import utilities          as gut
 from rx_selection           import truth_matching     as tm
-from rx_selection           import version_management as vman
 from rx_common              import Channel, Component, Project, Qsq, Trigger, Cuts
 
 log=LogStore.add_logger('rx_selection:selection')
