@@ -2,23 +2,19 @@
 Module with CmbConstraints class
 '''
 
-from typing       import Final, Sequence
+from typing       import Final
 from pathlib      import Path
 from dmu          import LogStore
-from dmu.stats    import ConstraintType, FitParameter, zfit, FitResult
-from dmu.stats    import Constraint, ConstraintAdder
+from dmu.stats    import ConstraintType, FitParameter, FitResult
 from dmu.workflow import Cache
 from dmu.stats    import ConstraintND
-from zfit.pdf     import BasePDF             as zpdf
 from rx_common    import Brem, Trigger, Component
 from rx_selection import selection           as sel
 
-from .prec_scales        import get_constraints as get_prec_constraints
 from .configs            import CombinatorialConf, RXFitConfig 
 from .base_fitter        import BaseFitter
 from .data_fitter        import DataFitter
-from .signal_constraints import SignalConstraints
-from .likelihood_factory import LikelihoodFactory, NLLConf
+from .likelihood_factory import LikelihoodFactory
 
 log=LogStore.add_logger('fitter:cmb_constraints')
 _DATA_SAMPLE : Final[Component] = Component.data_24 # What will be used to constrain combinatorial shape
@@ -39,11 +35,8 @@ class CmbConstraints(BaseFitter, Cache):
         Parameters
         -------------
         brem    : Brem category to fit 
-        nll     : Likelihood that needs constraining
         signal  : Signal component, needed to get constraints for CR fit
-        cfg_cmb : fit configuration for combinatorial component
         cfg_fit : Full fit configuration
-        q2bin   : E.g. central
         '''
         BaseFitter.__init__(self)
 
@@ -62,7 +55,6 @@ class CmbConstraints(BaseFitter, Cache):
             q2bin   = self._q2bin,
             regions = [brem.region])
 
-        self._brem      = brem
         self._reg       = brem.region 
         self._component = _COMPONENT
         self._base_path = Path(Component.comb) / 'fit' / self._reg
@@ -74,66 +66,6 @@ class CmbConstraints(BaseFitter, Cache):
             out_path = self._base_path,
             cfg      = cfg_cmb.model_dump())
     # ----------------------
-    def _get_basic_models(self, models : list[zpdf]) -> list[zpdf]:
-        '''
-        Parameters
-        -------------
-        models: List of PDFs
-
-        Returns
-        -------------
-        List of PDFs where the SumPDF ones have been unpacked
-        '''
-        basic_models : list[zpdf] = []
-        for pdf in models:
-            if not isinstance(pdf, zfit.pdf.SumPDF):
-                basic_models.append(pdf)
-                continue
-
-            basic_models += self._get_basic_models(models = pdf.pdfs)
-
-        return basic_models
-    # ----------------------
-    def _model_from_models(self, models : list[zpdf]) -> zpdf:
-        '''
-        Parameters
-        -------------
-        models: List of PDFs 
-
-        Returns
-        -------------
-        Combinatorial PDF if found one and only one model, 
-        otherwise it will raise ValueError
-        '''
-        cmb_models : list[zpdf] = []
-
-        for pdf in models: 
-            if Component.comb not in pdf.name:
-                log.debug(f'Skipping non-combinatorial: {pdf.name}')
-                continue
-
-            log.debug(f'Found combinatorial: {pdf.name}')
-            if self._reg      not in pdf.name:
-                continue
-
-            log.info(f'Picking: {pdf.name}')
-            cmb_models.append(pdf)
-
-        if len(cmb_models) == 1:
-            return cmb_models[0]
-
-        log.error(20 * '-')
-        log.error('Existing:')
-        for pdf in models:
-            log.error(pdf.name)
-
-        log.error(20 * '-')
-        log.error('Found:')
-        for pdf in cmb_models:
-            log.error(pdf.name)
-
-        raise ValueError('Not found one and only one combinatorial model')
-    # ---------------------
     def __pick_parameter(self, name : str) -> bool:
         '''
         Parameters
@@ -148,39 +80,7 @@ class CmbConstraints(BaseFitter, Cache):
 
         return any( name.startswith(par_name) for par_name in par_names )
     # ----------------------
-    def _add_constraints(
-        self,
-        cons   : Sequence[Constraint],
-        cfg_nll: NLLConf) -> NLLConf:
-        '''
-        Parameters
-        -------------
-        cons    : List of constraints
-        cfg_nll : Likelihood wrapper
-    
-        Returns
-        -------------
-        Wrapper with constrained NLL
-        '''
-        if not cons:
-            log.warning('Not using any constraints')
-    
-        log.info('Constraints:')
-        for constraint in cons:
-            log.info(constraint)
-    
-        cad  = ConstraintAdder(
-            nll=cfg_nll.nll, 
-            constraints=cons)
-        nll  = cad.get_nll()
-
-        return NLLConf(
-            nll         = nll,
-            constraints = cons,
-            selection   = cfg_nll.selection,
-        )
-    # ---------------------
-    def _fit_cr(self) -> FitResult:
+    def __fit_cr(self) -> FitResult:
         '''
         Fits the control region
 
@@ -195,23 +95,6 @@ class CmbConstraints(BaseFitter, Cache):
             sample = _DATA_SAMPLE,
             cfg    = self._mod_cfg)
         cfg_nll    = ftr.run()
-
-        constraints= get_prec_constraints(
-            brem   = self._brem,
-            pars   = [ par.name for par in cfg_nll.nll.get_params() ],
-            signal = self._signal,
-            cfg    = self._cfg_fit, 
-        )
-
-        calc       = SignalConstraints(
-            comp   = self._signal,
-            nll    = cfg_nll.nll,
-        )
-        constraints+= calc.get_constraints()
-
-        cfg_nll     = self._add_constraints(
-            cons    = constraints,
-            cfg_nll = cfg_nll)
 
         ftr       = DataFitter(
             q2bin = self._q2bin,
@@ -239,7 +122,7 @@ class CmbConstraints(BaseFitter, Cache):
         log.info('Constraints not found, calculating them')
 
         with sel.update_selection(d_sel = self._mod_cfg.selection[self._q2bin]):
-            res = self._fit_cr()
+            res = self.__fit_cr()
 
         params : list[FitParameter] = [ param for param in res.parameters if self.__pick_parameter(name = param.name) ]
 

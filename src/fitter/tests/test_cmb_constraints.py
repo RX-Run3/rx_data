@@ -11,8 +11,8 @@ from dmu.generic  import UnpackerModel, utilities           as gut
 from dmu.stats    import ConstraintND
 from dmu.stats    import ParameterLibrary as PL
 
-from rx_common    import Brem, Component, Cuts, Qsq
-from rx_selection import selection           as sel
+from rx_common    import Brem, Component, Qsq
+from rx_selection import selection as sel
 
 from rx_common    import MVAWp
 from fitter       import CmbConstraints
