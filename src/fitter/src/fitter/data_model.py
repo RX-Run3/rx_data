@@ -135,7 +135,12 @@ class DataModel:
             if not isinstance(cfg, CCbarConfTF):
                 raise ValueError('Config is not a ccbar TTF config')
 
+            obs_names = self._obs.obs
+            if obs_names is None:
+                raise ValueError(f'Cannot find observable name in: {self._obs}')
+
             d_pdf[component] = cfg.get_pdf(
+                obs_name= obs_names[0],
                 project = self._trigger.project,
                 pdfs    = d_pdf)
 

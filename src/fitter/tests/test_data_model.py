@@ -29,13 +29,14 @@ type zpdf = zfit.pdf.BasePDF
 class TestCCbarConfTF(CCbarConfTF, frozen = True):
     def get_pdf(
         self, 
+        obs_name: str,
         project : Project,
         pdfs    : dict[Component, zpdf]) -> zpdf:
         _     = project
         _     = pdfs
 
         name  = 'name'
-        obs   = zfit.Space('Mass', 4600, 6000)
+        obs   = zfit.Space(obs_name, 4600, 6000)
         mu    = zfit.Parameter(f"{name}_mu", 5280.0, 5000.0, 5500.0)
         sigma = zfit.Parameter(f"{name}_sigma", 20.0, 0.1, 100.0)
         pdf   = zfit.pdf.Gauss(mu=mu, sigma=sigma, obs=obs, name=name)
