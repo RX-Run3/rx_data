@@ -105,13 +105,15 @@ class CCbarConfTF(ComponentConf, frozen = True):
     # ------------------------------
     def get_pdf(
         self,
+        obs_name: str,
         project : Project,
         pdfs    : dict[Component, zpdf]) -> zpdf:
         '''
         Parameters
         -----------------
-        project: E.g. rk
-        pdfs   : Dictionary mapping component to PDF in fitting model
+        obs_name: String used as observable name, e.g. Mass, B_Mass
+        project : E.g. rk
+        pdfs    : Dictionary mapping component to PDF in fitting model
                  This should include signal, which contains block fraction
                  parameters, needed to parametrize this PDF
 
@@ -134,8 +136,9 @@ class CCbarConfTF(ComponentConf, frozen = True):
 
             iblock     = block.to_int()
             pdf        = obj.get_pdf(
-                name   = f'ccbar_block_{iblock}',
-                suffix = f'b{iblock}')
+                obs_name= obs_name,
+                name    = f'ccbar_block_{iblock}',
+                suffix  = f'b{iblock}')
 
             for par in pdf.get_params():
                 par.floating = False

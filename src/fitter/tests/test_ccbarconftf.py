@@ -66,6 +66,7 @@ def test_simple():
     pdf_sig = _get_pdf()
     cfg     = CCbarConfTF(kind = 'CCbarPDFTF')
     pdf_ccb = cfg.get_pdf(
+        obs_name= 'mass',
         pdfs    = {Component.bpkpee : pdf_sig },
         project = Project.rk)
 
