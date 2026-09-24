@@ -149,7 +149,7 @@ class DataPreprocessor(Cache):
 
         return rdf_sel, cuts
     # ------------------------
-    def _get_report(self) -> pnd.DataFrame:
+    def _get_report(self, rep : RDF.RCutFlowReport) -> pnd.DataFrame:
         '''
         This will trigger graph execution
 
@@ -157,9 +157,7 @@ class DataPreprocessor(Cache):
         --------------
         Pandas dataframe with cutflow
         '''
-        rep = self._rdf.Report()
         df  = rut.rdf_report_to_df(rep=rep)
-
         rep.Print()
         for name, val in self._cuts.items():
             log.info(f'{name:<15}{val}')
@@ -240,7 +238,7 @@ class DataPreprocessor(Cache):
 
         return df['pid_weights'].to_numpy()
     # ------------------------
-    def _get_array(self) -> tuple[numpy.ndarray,numpy.ndarray]:
+    def _get_array(self) -> tuple[numpy.ndarray,numpy.ndarray, RDF.RCutFlowReport]:
         '''
         Return a tuple of numpy arrays with the observable and weight
         for the sample requested, this array is fully selected
@@ -250,6 +248,8 @@ class DataPreprocessor(Cache):
         rdf         = self._rdf
         branch_name = self._obs.label
         log.debug(f'Retrieving masses/weights from: {branch_name}/{_WEIGHT_BRANCH}')
+
+        rep  = rdf.Report()
         data = rdf.AsNumpy([branch_name, _WEIGHT_BRANCH])
         arr  = data[branch_name]
         wgt  = data[_WEIGHT_BRANCH]
@@ -259,7 +259,7 @@ class DataPreprocessor(Cache):
         nevt = len(arr)
         log.debug(f'Found {nevt} entries')
 
-        return arr, wgt
+        return arr, wgt, rep
     # ------------------------
     @property
     def rdf_uid(self) -> str:
@@ -324,13 +324,13 @@ class DataPreprocessor(Cache):
             return data
 
         log.info('Data not found cached, rebuilding dataset')
-        arr, wgt  = self._get_array()
-        data      = self._data_from_numpy(arr_value=arr, arr_weight=wgt)
-        cuts_path = data_path.with_suffix('.yaml')
+        arr, wgt, rep = self._get_array()
+        data          = self._data_from_numpy(arr_value=arr, arr_weight=wgt)
+        cuts_path     = data_path.with_suffix('.yaml')
         gut.dump_json(data=self._cuts , path=cuts_path)
 
         ctfl_path = cuts_path.with_suffix('.md')
-        df_ctf    = self._get_report()
+        df_ctf    = self._get_report(rep = rep)
 
         put.to_markdown(df=df_ctf, path=ctfl_path)
 
