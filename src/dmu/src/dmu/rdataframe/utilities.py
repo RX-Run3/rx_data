@@ -1,7 +1,6 @@
 '''
 Module containing utility functions to be used with ROOT dataframes
 '''
-import os
 import re
 import ROOT
 import pandas  as pnd
@@ -40,7 +39,7 @@ def columns_from_rdf(rdf : RDF.RNode) -> list[str]:
 
     return l_str
 # ---------------------------------------------------------------------
-def add_column(rdf : RDataFrame, arr_val : Union[numpy.ndarray,None], name : str, d_opt : Union[dict,None] = None):
+def add_column(rdf : RDataFrame, arr_val : Union[numpy.ndarray,None], name : str, d_opt : dict[str,str | None] | None = None):
     '''
     Will take a dataframe, an array of numbers and a string
     Will add the array as a colunm to the dataframe
@@ -104,7 +103,7 @@ def add_column_with_numba(
     identifier=f'fun_{identifier}'
 
     @Numba.Declare(['int'], 'float', name=identifier)
-    def get_value(index):
+    def get_value(index : int):
         return arr_val[index]
 
     log.debug(f'Adding column {name} with numba')
