@@ -1,6 +1,7 @@
 '''
 Module with Registry class
 '''
+from typing     import Final
 from dmu        import LogStore
 from typing     import ClassVar
 from rx_common  import Component, Trigger, Qsq, Cuts
@@ -10,6 +11,10 @@ type Sel = dict[Cuts, str]
 type Key = tuple[Component, Trigger, Qsq]
 
 log=LogStore.add_logger('rx_selection:registry')
+
+# These are values for cuts that are not really applied, e.g. block == (1)
+# Skip them in the building of the difference of selections
+_SKIPPED : Final[list[str]] = ['(1)', 'true']
 # -----------------------------
 class Registry:
     '''
@@ -76,6 +81,9 @@ class Registry:
         result : Sel = dict()
         for key, val in registered.items():
             if key in default and default[key] == val:
+                continue
+
+            if val in _SKIPPED:
                 continue
 
             result[key] = val

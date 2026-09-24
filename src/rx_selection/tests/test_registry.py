@@ -3,9 +3,11 @@ Module with tests for Registry class
 '''
 import pytest
 
+from dmu          import LogStore
 from rx_selection import Registry, selection as sel
 from rx_common    import Component, Trigger, Qsq, Cuts
 
+log=LogStore.add_logger('rx_selection:test_registry')
 # ----------------------------------
 def test_read_write():
     '''
@@ -56,7 +58,10 @@ def test_diff():
     trig    = Trigger.rk_ee_os
     qsq     = Qsq.high
 
-    cuts = {Cuts.cmb : cmb_cut}
+    cuts = {
+        'mass'   : '(1)', # No cut cuts should not count in the diff
+        'block'  : 'true',
+        'cmb'    : cmb_cut}
     with sel.custom_selection(d_sel = cuts):
         cuts_new    = sel.selection(
             q2bin   = qsq,
@@ -75,4 +80,7 @@ def test_diff():
 
     assert Cuts.cmb in entry.diff
     assert entry.diff[Cuts.cmb] == cmb_cut
+
+    assert 'mass'  not in entry.diff
+    assert 'block' not in entry.diff
 # ----------------------------------
