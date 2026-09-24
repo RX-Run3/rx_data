@@ -14,7 +14,11 @@ log=LogStore.add_logger('rx_selection:registry')
 
 # These are values for cuts that are not really applied, e.g. block == (1)
 # Skip them in the building of the difference of selections
-_SKIPPED : Final[list[str]] = ['(1)', 'true']
+_SKIPPED_VALUES : Final[list[str]] = ['(1)', 'true']
+
+# TODO: Improve this eventually
+# nbrem was excluded in special way, do not use it as part of binning
+_SKIPPED_KEYS   : Final[list[str]] = ['nbrem']
 # -----------------------------
 class Registry:
     '''
@@ -83,7 +87,10 @@ class Registry:
             if key in default and default[key] == val:
                 continue
 
-            if val in _SKIPPED:
+            if val in _SKIPPED_VALUES:
+                continue
+
+            if key in _SKIPPED_KEYS:
                 continue
 
             result[key] = val
