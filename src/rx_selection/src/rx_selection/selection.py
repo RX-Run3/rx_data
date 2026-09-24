@@ -169,8 +169,12 @@ def get_q2_cut(q2bin : Qsq) -> str:
     '''
     data = _load_selection_config()
     q2sel= data['q2_common']
+    val  = q2sel[q2bin]
 
-    return q2sel[q2bin]
+    if not isinstance(val, str):
+        raise ValueError(f'q2 cut not a string: {val}')
+
+    return val
 #-----------------------
 def _update_mass_cuts(
     d_cut   : dict[Cuts,str],
@@ -248,7 +252,7 @@ def _use_smeared_masses(
     return cuts
 #-----------------------
 @cache
-def _load_selection_config() -> dict:
+def _load_selection_config() -> dict[str,dict[str,str | dict[str,str]]]:
     '''
     Returns dictionary with the latest selection config
     '''
@@ -265,7 +269,7 @@ def _load_selection_config() -> dict:
 def _get_selection(
     chan   : Channel,
     proj   : Project,
-    q2_bin : Qsq) -> dict[Cuts,str]:
+    q2_bin : Qsq) -> dict[str,str]:
     '''
     Parameters
     -----------------
@@ -291,6 +295,8 @@ def _get_selection(
         raise ValueError(f'Cannot find {chan} in config section for {proj}')
 
     d_cut = cfg[proj][chan]
+    if isinstance(d_cut, str):
+        raise ValueError(f'Selection at {proj}/{chan} is a string: {d_cut}')
 
     d_new = {}
     for cut_name, d_q2bin in d_cut.items():
