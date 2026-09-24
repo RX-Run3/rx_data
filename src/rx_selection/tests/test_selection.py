@@ -2,6 +2,7 @@
 Script with functions needed to test functions in selection.py
 '''
 import pytest
+
 from pathlib      import Path
 from dmu          import LogStore
 from rx_common    import Component, Cuts, Qsq, Trigger
@@ -167,6 +168,7 @@ def test_no_truth(trigger : Trigger):
 
     assert d_sel[Cuts.truth] == '(1)'
 # --------------------------
+@pytest.mark.skip(reason = 'Uses data, it is slow')
 def test_apply_full_selection(tmp_path : Path):
     '''
     Tests application of selection
@@ -190,6 +192,7 @@ def test_apply_full_selection(tmp_path : Path):
         trigger =trigger,
         out_path=out_path)
 # --------------------------
+@pytest.mark.skip(reason = 'Uses data, it is slow')
 def test_apply_selection(tmp_path : Path):
     '''
     Tests application of selection
