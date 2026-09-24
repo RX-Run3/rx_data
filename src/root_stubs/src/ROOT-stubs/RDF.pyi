@@ -1,9 +1,9 @@
-
 import numpy
 import pandas as pnd
 
+from typing           import Iterator
 from typing           import Self, overload
-from ROOT             import TCutInfo, CutIterator
+from ROOT             import TCutInfo
 from dask.distributed import Client
 
 class RResultPtr:
@@ -13,7 +13,7 @@ class RCutFlowReport:
     def Print(self) -> None: ...
     def begin(self) -> TCutInfo: ...
     def end(self)   -> TCutInfo: ...
-    def __iter__(self) -> CutIterator: ...
+    def __iter__(self) -> Iterator[TCutInfo]: ...
 
 class RSnapshotOptions:
     def __init__(self) -> None:
