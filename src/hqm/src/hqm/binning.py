@@ -206,18 +206,18 @@ class BinningConf(RootModel[dict[str,list[tuple[float,float]]]], frozen = True):
 
         for part in parts:
             try:
-                [var, bin] = part.split('-')
+                [var, ibin] = part.split('-')
             except Exception as exc:
                 raise ValueError(f'Cannot extract variable and bin from: {part}') from exc
 
-            if not bin.isnumeric():
+            if not ibin.isnumeric():
                 raise ValueError(f'Bin number is not a number in: {part}')
 
             if var in bins:
                 fail = True
                 log.error(f'Variable {var} already found')
 
-            bins[var] = int(bin)
+            bins[var] = int(ibin)
 
         if fail:
             raise ValueError('Invalid binning')
