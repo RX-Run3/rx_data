@@ -76,13 +76,13 @@ def add_column(rdf : RDataFrame, arr_val : Union[numpy.ndarray,None], name : str
         log.debug(f'Picking: {col}')
         l_col.append(col)
 
-    data  = ak.from_rdataframe(rdf, columns=l_col)
+    data  = ak.from_rdataframe(rdf, columns=l_col) # type: ignore
     d_data= { col : data[col] for col in l_col }
 
     if arr_val.dtype == 'object':
         arr_val = arr_val.astype(float)
 
-    d_data[name] = ak.from_numpy(arr_val)
+    d_data[name] = ak.from_numpy(arr_val) # type: ignore
 
     rdf = ak.to_rdataframe(d_data)
 
