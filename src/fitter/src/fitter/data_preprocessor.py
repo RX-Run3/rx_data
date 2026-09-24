@@ -250,8 +250,9 @@ class DataPreprocessor(Cache):
         rdf         = self._rdf
         branch_name = self._obs.label
         log.debug(f'Retrieving masses/weights from: {branch_name}/{_WEIGHT_BRANCH}')
-        arr  = rdf.AsNumpy([branch_name])[branch_name]
-        wgt  = rdf.AsNumpy([_WEIGHT_BRANCH])[_WEIGHT_BRANCH]
+        data = rdf.AsNumpy([branch_name, _WEIGHT_BRANCH])
+        arr  = data[branch_name]
+        wgt  = data[_WEIGHT_BRANCH]
         wgt  = wgt.astype(float)
         wgt  = self._add_extra_weights(wgt=wgt)
 
