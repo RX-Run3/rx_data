@@ -1,17 +1,13 @@
 '''
 Module will hold unit tests for functions in rdataframe/utilities.py
 '''
-# pylint: disable=no-name-in-module, no-member
 import math
-
-from ROOT import RDF, RDataFrame
-
 import numpy
 import pytest
-
 import dmu.rdataframe.utilities as ut
 
-from dmu.logging.log_store import LogStore
+from ROOT import RDF, RDataFrame
+from dmu  import LogStore
 
 log=LogStore.add_logger('dmu:test:rdataframe:utilities')
 # -------------------------------------------------
@@ -23,7 +19,7 @@ def initialize():
     LogStore.set_level('dmu:rdataframe:utilities', 10)
 # -------------------------------------------------
 @pytest.mark.parametrize('entries', [0, 10])
-def test_columns_from_rdf(entries):
+def test_columns_from_rdf(entries : int):
     '''
     Tests columns_from_rdf
     '''
@@ -58,7 +54,7 @@ def test_add_column(itry):
     rdf.Display().Print()
 # -------------------------------------------------
 @pytest.mark.parametrize('itry', [1, 2])
-def test_add_column_with_numba(itry):
+def test_add_column_with_numba(itry : int):
     '''
     Will test adding a numpy array to a ROOT dataframe with numba
     '''
