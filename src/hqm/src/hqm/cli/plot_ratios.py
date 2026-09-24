@@ -81,7 +81,7 @@ def _plot_ratio(
         )
         ax.plot(blocks, vals, color = project.color)
 
-    ax.set_ylim(bottom = 0, top = 1.3)
+    ax.set_ylim(bottom = 0, top = 2.0)
     ax.set_xlabel('Block')
     ax.set_ylabel(kind.latex)
     ax.axhline(y = _RUN2_RAT[kind], color = 'black', linestyle = ':', label = 'Run 2')
@@ -90,7 +90,9 @@ def _plot_ratio(
     var     = kind.variable
 
     name_binning = binning.replace(' ', '_')
-    out_path= _ANADIR / 'DB/hqm/ccbar_pdf/latest/' / f'{var}_{name_binning}.png'
+    out_path= _ANADIR / 'DB/hqm/ccbar_pdf/latest/plots' / f'{var}_{name_binning}.png'
+    out_path.parent.mkdir(exist_ok = True, parents = True)
+
     log.info(f'Saving to: {out_path}')
 
     plt.savefig(out_path)
