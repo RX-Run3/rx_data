@@ -33,7 +33,7 @@ class MultipleSelectionOverriding(Exception):
     '''
     Will be risen when global selection is overriden more than once per run
     '''
-    def __init__(self, message):
+    def __init__(self, message : str):
         super().__init__(message)
 #-----------------------
 @contextmanager
