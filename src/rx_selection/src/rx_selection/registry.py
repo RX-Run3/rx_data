@@ -18,7 +18,7 @@ _SKIPPED_VALUES : Final[list[str]] = ['(1)', 'true']
 
 # TODO: Improve this eventually
 # nbrem was excluded in special way, do not use it as part of binning
-_SKIPPED_KEYS   : Final[list[str]] = ['nbrem']
+_SKIPPED_KEYS   : Final[list[str]] = ['brem']
 # -----------------------------
 class Registry:
     '''

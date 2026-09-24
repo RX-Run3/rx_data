@@ -59,9 +59,10 @@ def test_diff():
     qsq     = Qsq.high
 
     cuts = {
-        'mass'   : '(1)', # No cut cuts should not count in the diff
-        'block'  : 'true',
-        'cmb'    : cmb_cut}
+        Cuts.brem   : 'nbrem != 0',
+        Cuts.mass   : '(1)', # No cut cuts should not count in the diff
+        Cuts.block  : 'true',
+        Cuts.cmb    : cmb_cut}
     with sel.custom_selection(d_sel = cuts):
         cuts_new    = sel.selection(
             q2bin   = qsq,
@@ -81,6 +82,7 @@ def test_diff():
     assert Cuts.cmb in entry.diff
     assert entry.diff[Cuts.cmb] == cmb_cut
 
-    assert 'mass'  not in entry.diff
-    assert 'block' not in entry.diff
+    assert Cuts.mass  not in entry.diff
+    assert Cuts.block not in entry.diff
+    assert Cuts.brem  not in entry.diff
 # ----------------------------------
