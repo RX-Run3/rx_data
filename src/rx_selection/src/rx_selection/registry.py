@@ -4,7 +4,7 @@ Module with Registry class
 from dmu        import LogStore
 from typing     import ClassVar
 from rx_common  import Component, Trigger, Qsq, Cuts
-from .selection import selection
+from .          import selection as sel
 
 type Sel = dict[Cuts, str]
 type Key = tuple[Component, Trigger, Qsq]
@@ -69,7 +69,9 @@ class Registry:
         component, trigger, qsq = self._key
 
         registered = self.get()
-        default    = selection(q2bin = qsq, process = component, trigger = trigger)
+        # Pick default selection
+        with sel.custom_selection(d_sel = dict(), force_override= True):
+            default = sel.selection(q2bin = qsq, process = component, trigger = trigger)
 
         result : Sel = dict()
         for key, val in registered.items():

@@ -1,7 +1,6 @@
 '''
 Module with tests for Registry class
 '''
-import copy
 import pytest
 
 from rx_selection import Registry, selection as sel
@@ -73,4 +72,7 @@ def test_diff():
 
         assert Cuts.cmb in entry.diff
         assert entry.diff[Cuts.cmb] == cmb_cut
+
+    assert Cuts.cmb in entry.diff
+    assert entry.diff[Cuts.cmb] == cmb_cut
 # ----------------------------------
