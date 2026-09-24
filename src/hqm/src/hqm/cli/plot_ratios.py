@@ -88,7 +88,9 @@ def _plot_ratio(
     ax.legend()
 
     var     = kind.variable
-    out_path= _ANADIR / 'DB/hqm/ccbar_pdf/latest/' / f'{var}_{binning}.png'
+
+    name_binning = binning.replace(' ', '_')
+    out_path= _ANADIR / 'DB/hqm/ccbar_pdf/latest/' / f'{var}_{name_binning}.png'
     log.info(f'Saving to: {out_path}')
 
     plt.savefig(out_path)
