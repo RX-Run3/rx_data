@@ -12,7 +12,9 @@ from rx_common    import Trigger
 from rx_common    import Component
 from rx_data      import DBMaker, DBMakerConf
 from rx_data      import db_maker
+
 from dmu.rdataframe import utilities          as rut
+from dmu.generic    import Mode
 
 # -------------------------
 class TestRDFGetter:
@@ -83,5 +85,27 @@ def test_make_db(
         dropped_cuts = [Cuts.prc])
 
     mkr = DBMaker(cfg = cfg)
-    mkr.run()
+    mkr.run(mode = Mode.write)
+# -------------------------------------
+def test_read_db(
+    monkeypatch,
+    _patch_rdfgetter,
+    tmp_path : Path):
+    '''
+    Test making of database
+    '''
+    monkeypatch.setenv('ANADIR', str(tmp_path))
+
+    cfg = DBMakerConf(
+        component    = Component.bpkpee,
+        trigger      = Trigger.rk_ee_os,
+        ncores       = 1,
+        dropped_cuts = [Cuts.prc])
+
+    mkr = DBMaker(cfg = cfg)
+    with pytest.raises(ValueError):
+        mkr.run(mode = Mode.read)
+
+    mkr.run(mode = Mode.write)
+    mkr.run(mode = Mode.read)
 # -------------------------------------
