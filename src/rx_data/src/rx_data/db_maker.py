@@ -3,10 +3,12 @@ Module holding the DBMaker class
 '''
 import os
 
+from functools    import cached_property
 from dmu          import LogStore
 from pydantic     import BaseModel
 from dmu.generic  import Serializable
 from dmu.generic  import Mode
+from dmu.generic  import utilities as gut
 from ROOT         import RDataFrame, RDF
 from typing       import Final
 from pathlib      import Path
@@ -31,6 +33,17 @@ class DBMakerConf(BaseModel, Serializable, frozen = True):
     trigger      : Trigger
     ncores       : int
     dropped_cuts : list[Cuts]
+    # ------------------------
+    @cached_property
+    def columns(self) -> list[str]:
+        '''
+        List of columns to save
+        '''
+        data = gut.load_data(
+            package = 'rx_data_data',
+            fpath   = 'databases/fitter.yaml')
+
+        return data['columns']
     # ------------------------
     @property
     def out_dir(self) -> Path:
@@ -116,7 +129,8 @@ class DBMaker:
         log.info(f'Saving to: {self.__out_path}')
         rdf.Snapshot(
             filename = str(self.__out_path),
-            treename = _TREE_NAME)
+            treename = _TREE_NAME,
+            columns  = self.__cfg.columns)
 
         return rdf
 # ------------------------
