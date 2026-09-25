@@ -7,10 +7,11 @@ import os
 import tqdm
 import typer
 
-from ROOT       import EnableImplicitMT # type: ignore
-from typing     import Final
-from pathlib    import Path
-from dmu        import LogLevels, LogStore
+from ROOT        import EnableImplicitMT # type: ignore
+from typing      import Final
+from pathlib     import Path
+from dmu         import LogLevels, LogStore
+from dmu.generic import Mode
 
 from rx_common  import Project
 from rx_common  import Cuts
@@ -89,7 +90,7 @@ def make_database(
         dropped_cuts = dropped)
 
     mkr = DBMaker(cfg = cfg)
-    mkr.run()
+    mkr.run(mode = Mode.write)
 # ----------------------
 @app.command()
 def show_samples_by_block(
