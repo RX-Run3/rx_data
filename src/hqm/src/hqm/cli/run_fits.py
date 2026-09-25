@@ -5,7 +5,7 @@ import typer
 
 from dmu       import LogStore
 from rx_common import Component, Trigger, Qsq
-from hqm.types import Mode
+from dmu.generic import Mode
 from typing    import Final
 from .fit_mc   import fit_mc
 

@@ -5,7 +5,7 @@ import typer
 
 from rx_common  import Project, Qsq
 from dmu        import LogStore
-from hqm.types  import Mode
+from dmu.generic import Mode
 from typing     import Final
 from .make_prec import make_prec
 

@@ -4,7 +4,7 @@ Script used to steer running resonant fits
 import typer
 
 from rx_common     import Project
-from hqm.types     import Mode
+from dmu.generic   import Mode
 from typing        import Final
 from .fit_resonant import fit_resonant
 

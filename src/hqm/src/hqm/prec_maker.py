@@ -15,7 +15,7 @@ from hqm.config     import TransferFunctionMakerConf
 from hqm.data_store import DataStore
 from rx_common      import Channel, Component, Mass, Project, Trigger
 from hqm.trfc       import TransferFunction
-from hqm.types      import Mode
+from dmu.generic    import Mode
 
 type zobs     = zfit.Space
 type zpdf     = zfit.pdf.BasePDF

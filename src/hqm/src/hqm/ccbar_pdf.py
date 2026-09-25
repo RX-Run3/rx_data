@@ -19,7 +19,7 @@ from hqm.data_store import DataStore
 from hqm.pdf_mc     import PdfBuilder
 from hqm.prec_maker import PrecMaker
 from hqm.ratc       import CCbarRatioCalculator
-from hqm.types      import Mode
+from dmu.generic    import Mode
 
 type zsum = zfit.pdf.SumPDF
 type zpdf = zfit.pdf.BasePDF

@@ -7,7 +7,7 @@ import numpy
 from pathlib     import Path
 from typing      import Final
 from rx_common   import Project, Qsq
-from hqm.types   import Mode
+from dmu.generic import Mode
 from hqm.trfc    import TransferFunctionMaker, TransferFunction
 from hqm.config  import TransferFunctionMakerConf
 from dmu         import LogStore

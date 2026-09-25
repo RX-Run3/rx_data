@@ -15,7 +15,7 @@ from dmu.stats      import ZFitPlotter, zfit
 from hqm.config     import TransferFunctionMakerConf
 from hqm.data_store import DataStore
 from hqm.pdf_mc     import PdfBuilder
-from hqm.types      import Mode
+from dmu.generic    import Mode
 
 log=LogStore.add_logger('rx_hqm:trfc')
 _FLOAT          : Final[list[str]] = []

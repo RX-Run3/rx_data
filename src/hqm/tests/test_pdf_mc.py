@@ -13,7 +13,7 @@ from typing         import Final
 from rx_common      import Component, Qsq, Trigger
 from hqm.data_store import DataStore
 from hqm.pdf_mc     import PdfBuilder
-from hqm.types      import Mode
+from dmu.generic    import Mode
 
 _SAMPLES_RK_EE : Final[list[tuple[Component,Trigger,Qsq,bool]]] = [
     (Component.bpkppsi2ee, Trigger.rk_ee_os, Qsq.jpsi, False),

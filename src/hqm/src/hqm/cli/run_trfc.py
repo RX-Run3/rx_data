@@ -5,7 +5,7 @@ import typer
 
 from dmu        import LogStore
 from rx_common  import Project, Qsq
-from hqm.types  import Mode
+from dmu.generic import Mode
 from typing     import Final
 from .make_trfc import make_trfc
 

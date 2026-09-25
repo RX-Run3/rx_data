@@ -10,7 +10,7 @@ from dmu.stats      import zfit
 from hqm.config     import TransferFunctionMakerConf
 from hqm.prec_maker import PrecMaker
 from rx_common      import Project, Qsq
-from hqm.types      import Mode
+from dmu.generic    import Mode
 
 type NpFltArr = npt.NDArray[numpy.float64]
 type zpdf     = zfit.pdf.BasePDF

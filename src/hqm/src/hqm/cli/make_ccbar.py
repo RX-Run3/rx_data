@@ -4,7 +4,7 @@ Module used to expose build_database function to CLI
 import typer
 import matplotlib.pyplot as plt
 
-from hqm.types     import Mode
+from dmu.generic   import Mode
 from rx_common     import Project
 from dmu.stats     import zfit
 from dmu.stats     import ZFitPlotter, ZFitPlotterConf

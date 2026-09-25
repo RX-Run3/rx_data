@@ -9,7 +9,7 @@ from dmu.stats      import zfit
 from hqm.pdf_mc     import PdfBuilder
 from hqm.data_store import DataStore
 from hqm.binning    import BinningConf
-from hqm.types      import Mode
+from dmu.generic    import Mode
 
 mode_opt   : Mode = typer.Option(...  , '-m', help = 'Mode in which outputs will be created')
 use_dtf_opt= typer.Option(False, '-d', help = 'If used, will use q2_dtf in selection of data')

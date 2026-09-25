@@ -8,7 +8,7 @@ from hqm           import ccbar_pdf
 from pathlib       import Path
 from rx_common     import Project
 from hqm.ccbar_pdf import CCbarPDFMaker
-from hqm.types     import Mode
+from dmu.generic   import Mode
 from dmu.stats     import FittedModel, Fitter, Model, ModelFactory
 from dmu.stats     import ObsConf, ModelFactoryConf, SplinePDF, ZFitPlotter, ZFitPlotterConf, print_pdf, zfit
 from dmu.stats     import utilities as sut

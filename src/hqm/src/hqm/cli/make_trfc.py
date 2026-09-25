@@ -3,7 +3,7 @@ Module used to expose build_database function to CLI
 '''
 import typer
 
-from hqm.types      import Mode
+from dmu.generic    import Mode
 from rx_common      import Project, Qsq
 from hqm.data_store import DataStore
 from hqm.config     import TransferFunctionMakerConf

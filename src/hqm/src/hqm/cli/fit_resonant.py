@@ -3,7 +3,7 @@ Module used to run fits to resonant mode data
 '''
 import typer
 
-from hqm.types      import Mode
+from dmu.generic    import Mode
 from hqm.config     import CCbarRatioCalculatorConf
 from hqm.data_store import DataStore
 from hqm.ratc       import CCbarRatioCalculator

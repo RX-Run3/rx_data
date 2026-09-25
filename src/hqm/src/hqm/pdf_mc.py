@@ -19,7 +19,7 @@ from dmu.stats      import Fitter, Model, ModelFactory, ParameterLibrary
 from dmu.stats      import FittedModel, NonParametricModel
 from dmu.stats      import ZFitPlotter, ZFitPlotterConf, zfit
 from hqm.data_store import DataStore
-from hqm.types      import Mode
+from dmu.generic    import Mode
 
 log=LogStore.add_logger('hqm:pdf_mc')
 

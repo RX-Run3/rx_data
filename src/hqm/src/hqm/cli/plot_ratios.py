@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from pathlib        import Path
 from typing         import Final
 from dmu            import LogStore
-from hqm.types      import Mode
+from dmu.generic    import Mode
 from hqm.config     import CCbarRatioCalculatorConf
 from hqm.data_store import DataStore
 from hqm.ratc       import CCbarRatioCalculator

@@ -1,7 +1,7 @@
 import typer
 
 from rx_common   import Project
-from hqm.types   import Mode
+from dmu.generic import Mode
 from typing      import Final
 from .make_ccbar import make_ccbar
 

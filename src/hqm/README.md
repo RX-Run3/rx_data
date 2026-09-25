@@ -38,7 +38,7 @@ The model can be obtained with:
 ```python
 
 from hqm           import ccbar_pdf
-from hqm.types     import Mode
+from dmu.generic   import Mode
 
 obs     = zfit.Space('B_Mass', limits = (4600, 6500))
 binning = 'block-3 mva_cmb-3'

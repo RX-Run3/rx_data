@@ -6,7 +6,7 @@ import typer
 from rx_common      import Project, Qsq
 from hqm.prec_maker import PrecMaker
 from hqm.config     import TransferFunctionMakerConf
-from hqm.types      import Mode
+from dmu.generic    import Mode
 
 mode_opt    = typer.Option(... , '-m', help = 'Mode in which to run')
 proj_opt    = typer.Option(... , '-p', help = 'Project, e.g. rk')

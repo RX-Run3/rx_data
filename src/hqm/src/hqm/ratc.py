@@ -12,7 +12,7 @@ from dmu.generic    import Serializable
 from hqm.data_store import DataStore
 from hqm.prec_maker import PrecMaker
 from hqm.pdf_mc     import PdfBuilder
-from hqm.types      import Mode
+from dmu.generic    import Mode
 from hqm.config     import CCbarRatioCalculatorConf, TransferFunctionMakerConf
 from hqm.trfc       import TransferFunction, TransferFunctionMaker
 from rx_common      import Channel, Component, Mass, Project, Qsq, Trigger, Cuts
