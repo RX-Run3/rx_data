@@ -11,7 +11,13 @@ from ROOT       import EnableImplicitMT # type: ignore
 from typing     import Final
 from pathlib    import Path
 from dmu        import LogLevels, LogStore
+
 from rx_common  import Project
+from rx_common  import Cuts
+from rx_common  import Trigger
+from rx_common  import Component
+
+from rx_data    import DBMaker, DBMakerConf
 from rx_data    import SampleSplitter
 from rx_data    import SamplesPrinter
 from rx_data    import PFNDownloader
@@ -67,6 +73,23 @@ def _get_samples(version : str, level : LogLevels) -> Samples:
         print(sam)
 
     return sam
+# ----------------------
+@app.command()
+def make_database(
+    component : Component = typer.Option(..., '--component', '-c', help = 'Sample to make database for'),
+    trigger   : Trigger   = typer.Option(..., '--trigger'  , '-t', help = 'HLT2 trigger'),
+    dropped   : list[Cuts]= typer.Option(..., '--dropped'  , '-d', help = 'List of cuts to drop with respect to full selection')) -> None:
+    '''
+    Used to slim ROOT files
+    '''
+    cfg = DBMakerConf(
+        component    = component,
+        trigger      = trigger,
+        ncores       = 1,
+        dropped_cuts = dropped)
+
+    mkr = DBMaker(cfg = cfg)
+    mkr.run()
 # ----------------------
 @app.command()
 def show_samples_by_block(
