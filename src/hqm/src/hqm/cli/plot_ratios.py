@@ -87,7 +87,7 @@ def _plot_ratio(
     ax.axhline(y = _RUN2_RAT[kind], color = 'black', linestyle = ':', label = 'Run 2')
     ax.legend()
 
-    var     = kind.variable
+    var = kind.variable
 
     name_binning = binning.replace(' ', '_')
     out_path= _ANADIR / 'DB/hqm/ccbar_pdf/latest/plots' / f'{var}_{name_binning}.png'
