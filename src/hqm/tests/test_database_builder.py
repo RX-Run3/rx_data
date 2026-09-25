@@ -5,8 +5,10 @@ import pytest
 
 from dmu                  import LogStore
 from ROOT                 import RDF  # type: ignore
+from typing               import Any
 from pathlib              import Path
 from rx_common            import Channel, Component, Trigger
+from collections.abc      import Callable
 from hqm.database_builder import DatabaseBuilder
 from hqm.database_conf    import DatabaseConf
 from hqm.utilities        import get_data
@@ -19,7 +21,7 @@ def initialize():
     '''
     LogStore.set_level('hqm:database_builder', 10)
 # ------------------------------------
-def _get_rdf(self) -> RDF.RNode:
+def _get_rdf(self : Any) -> RDF.RNode:
     _    = self
     data = get_data(channel = Channel.ee)
 
@@ -34,10 +36,10 @@ def _patch_rdfgetter(monkeypatch):
 # ------------------------------------
 @pytest.mark.parametrize('comp', [Component.data_24, Component.bpkpjpsiee])
 def test_simple(
-    _patch_rdfgetter,
     monkeypatch,
-    comp     : Component,
-    tmp_path : Path):
+    _patch_rdfgetter : Callable,
+    comp             : Component,
+    tmp_path         : Path):
 
     _ = _patch_rdfgetter
     monkeypatch.setenv('ANADIR', str(tmp_path))
