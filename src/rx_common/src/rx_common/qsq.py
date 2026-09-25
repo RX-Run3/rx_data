@@ -169,9 +169,9 @@ def _load_data() -> dict[str,float]:
 
     low_lower -> 1e5
     '''
-    data    = gut.load_data(package = 'rx_selection_data', fpath = 'selection/latest.yaml')
-    q2_data = data['q2_common']
+    data = gut.load_data(package = 'rx_selection_data', fpath = 'selection/latest.yaml')
 
+    q2_data : dict[str,str ] = data['q2_common']
     result : dict[str,float] = dict()
     for qsq in Qsq:
         if qsq == Qsq.none:
