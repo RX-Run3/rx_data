@@ -38,7 +38,7 @@ class DBMakerConf(BaseModel, Serializable, frozen = True):
         Path to directory where output goes
         '''
         anadir  = Path(os.environ['ANADIR'])
-        out_dir = anadir / f'DB/fitter/{self.component}/{self.trigger}'
+        out_dir = anadir / f'DB/fitter/{self.component}/{self.trigger.name}'
 
         out_dir.mkdir(exist_ok = True, parents = True)
 
