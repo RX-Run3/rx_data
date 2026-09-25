@@ -6,7 +6,8 @@ import os
 from dmu          import LogStore
 from pydantic     import BaseModel
 from dmu.generic  import Serializable
-from ROOT         import RDF
+from dmu.generic  import Mode
+from ROOT         import RDataFrame, RDF
 from typing       import Final
 from pathlib      import Path
 
@@ -58,7 +59,8 @@ class DBMaker:
         -------------
         cfg: Object holding configuration
         '''
-        self.__cfg = cfg
+        self.__cfg      = cfg
+        self.__out_path = self.__cfg.out_dir / 'data.root'
     # -----------------------------
     def __get_rdf(self) -> RDF.RNode:
         '''
@@ -98,24 +100,23 @@ class DBMaker:
 
         return rdf
     # -----------------------------
-    def __save(self, rdf : RDF.RNode) -> None:
-        '''
-        Saves dataframe
-        '''
-        out_path = str(self.__cfg.out_dir / 'data.root')
-
-        log.info(f'Saving to: {out_path}')
-
-        rdf.Snapshot(
-            filename = out_path,
-            treename = _TREE_NAME)
-    # -----------------------------
-    def run(self) -> None:
+    def run(self, mode : Mode) -> RDF.RNode:
         '''
         Triggers execution
         '''
+        mode.validate(path = self.__out_path)
+
+        if mode == Mode.read:
+            log.info(f'Reading file from: {self.__out_path}')
+            return RDataFrame(_TREE_NAME, str(self.__out_path))
+
         rdf = self.__get_rdf()
         rdf = self.__filter(rdf)
 
-        self.__save(rdf = rdf)
+        log.info(f'Saving to: {self.__out_path}')
+        rdf.Snapshot(
+            filename = str(self.__out_path),
+            treename = _TREE_NAME)
+
+        return rdf
 # ------------------------
