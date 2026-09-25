@@ -113,6 +113,21 @@ class DBMaker:
 
         return rdf
     # -----------------------------
+    def __save(self, rdf : RDF.RNode) -> None:
+        '''
+        Parameters
+        --------------
+        rdf: Dataframe after selection
+        '''
+        found_columns = [ name.c_str() for name in rdf.GetColumnNames() ]
+        columns       = [ name         for name in found_columns if name in self.__cfg.columns ]
+
+        log.info(f'Saving to: {self.__out_path}')
+        rdf.Snapshot(
+            treename  = _TREE_NAME,
+            filename  = str(self.__out_path),
+            columnList= columns)
+    # -----------------------------
     def run(self, mode : Mode) -> RDF.RNode:
         '''
         Triggers execution
@@ -126,11 +141,7 @@ class DBMaker:
         rdf = self.__get_rdf()
         rdf = self.__filter(rdf)
 
-        log.info(f'Saving to: {self.__out_path}')
-        rdf.Snapshot(
-            filename = str(self.__out_path),
-            treename = _TREE_NAME,
-            columns  = self.__cfg.columns)
+        self.__save(rdf = rdf)
 
         return rdf
 # ------------------------
