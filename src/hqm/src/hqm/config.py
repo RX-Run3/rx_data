@@ -372,6 +372,7 @@ class TransferFunctionMakerConf(PDFConf, frozen = True):
         '''
         return f'{self.source}_{self.target}_{self.binning.label}'
     # -----------------------------------------------
+    # TODO: Find a better way to do loading of config that does not require ignoring type checker errors
     @classmethod
     def load(
         cls,
@@ -392,7 +393,7 @@ class TransferFunctionMakerConf(PDFConf, frozen = True):
         Config object
         '''
         trf_data = gut.load_data(package = 'hqm_data', fpath = 'config/transfer.yaml')
-        qsq_data = trf_data['qsq']
+        qsq_data = trf_data['qsq'] # type: ignore
         data     = dict()
 
         for q2_cfg in qsq_data:
@@ -402,15 +403,15 @@ class TransferFunctionMakerConf(PDFConf, frozen = True):
             if q2_cfg['target'] != target:
                 continue
 
-            data.update(q2_cfg)
+            data.update(q2_cfg) # type: ignore
 
         binning_conf = BinningConf.load()
 
-        data['fits'      ] = trf_data['fits'       ]
-        data['observable'] = trf_data['observable' ]
-        data['fft_npt'   ] = trf_data['fft_npt'    ]
-        data['bandwidth' ] = trf_data['bandwidth'  ]
-        data['components'] = trf_data['models'][project][source]
+        data['fits'      ] = trf_data['fits'       ] # type: ignore
+        data['observable'] = trf_data['observable' ] # type: ignore
+        data['fft_npt'   ] = trf_data['fft_npt'    ] # type: ignore
+        data['bandwidth' ] = trf_data['bandwidth'  ] # type: ignore
+        data['components'] = trf_data['models'][project][source] # type: ignore
         data['binning'   ] = binning_conf.from_str(binning = binning)
         data['plots'     ].update(trf_data['plots'])
 
