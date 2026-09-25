@@ -121,8 +121,9 @@ class DBMaker:
         '''
         found_columns = [ name.c_str() for name in rdf.GetColumnNames() ]
         columns       = [ name         for name in found_columns if name in self.__cfg.columns ]
+        ncol          = len(columns)
 
-        log.info(f'Saving to: {self.__out_path}')
+        log.info(f'Saving {ncol} columns to: {self.__out_path}')
         rdf.Snapshot(
             treename  = _TREE_NAME,
             filename  = str(self.__out_path),
