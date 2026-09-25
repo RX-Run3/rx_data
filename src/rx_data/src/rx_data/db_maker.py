@@ -93,7 +93,7 @@ class DBMaker:
                 q2bin   = _Q2BIN,
                 trigger = self.__cfg.trigger,
                 process = self.__cfg.component,
-                out_path= self.__cfg.out_dir / 'selection.json',
+                out_path= self.__cfg.out_dir,
                 rdf     = rdf)
 
         return rdf
