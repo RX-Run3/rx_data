@@ -123,6 +123,9 @@ class DBMaker:
         columns       = [ name         for name in found_columns if name in self.__cfg.columns ]
         ncol          = len(columns)
 
+        columns_path = self.__out_path.parent / 'columns.json'
+        gut.dump_json(data = columns, path = columns_path)
+
         log.info(f'Saving {ncol} columns to: {self.__out_path}')
         rdf.Snapshot(
             treename  = _TREE_NAME,
