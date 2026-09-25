@@ -3,14 +3,16 @@ Module with tests for DBMaker
 '''
 import pytest
 
-from ROOT         import RDataFrame
+from ROOT         import RDataFrame, RDF
 from typing       import Any
 from pathlib      import Path
 from rx_selection import selection
+from rx_common    import Cuts
 from rx_common    import Trigger
 from rx_common    import Component
 from rx_data      import DBMaker, DBMakerConf
 from rx_data      import db_maker
+from dmu.rdataframe import utilities          as rut
 
 # -------------------------
 class TestRDFGetter:
@@ -24,8 +26,9 @@ class TestRDFGetter:
         _   = per_file
 
         rdf = RDataFrame(10_000)
-        rdf = rdf.Define('mva_cmb', 'gRandom->Uniform(0, 1)')
-        rdf = rdf.Define('mva_prc', 'gRandom->Gaus(0, 1)')
+        rdf = rdf.Define('mva_cmb', 'gRandom->Uniform(0,   1)')
+        rdf = rdf.Define('mva_prc', 'gRandom->Uniform(0,   1)')
+        rdf = rdf.Define('mass'   , 'gRandom->Uniform(0, 100)')
 
         return rdf
 # -------------------------
@@ -33,13 +36,29 @@ def selector(
     q2bin   : Any,
     trigger : Any,
     process : Any,
-    out_path: Any,
-    rdf     : Any):
+    out_path: Path,
+    rdf     : RDF.RNode):
 
     _ = q2bin
     _ = trigger
     _ = process
-    _ = out_path
+
+    cuts = {
+        Cuts.mass : 'mass    >  50',
+        Cuts.prc  : 'mva_prc > 0.5',
+        Cuts.cmb  : 'mva_cmb > 0.5',
+    }
+
+    overriding = selection.Data.d_custom_selection
+    if overriding:
+        cuts.update(overriding)
+
+    for name, cut in cuts.items():
+        rdf = rdf.Filter(cut, name)
+
+    rep = rdf.Report()
+    df  = rut.rdf_report_to_df(rep=rep)
+    df.to_markdown(out_path / 'cuts.md')
 
     return rdf
 # -------------------------
@@ -61,7 +80,7 @@ def test_simple(
         component    = Component.bpkpee,
         trigger      = Trigger.rk_ee_os,
         ncores       = 1,
-        dropped_cuts = [])
+        dropped_cuts = [Cuts.prc])
 
     mkr = DBMaker(cfg = cfg)
     mkr.run()
