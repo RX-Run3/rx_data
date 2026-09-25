@@ -5,6 +5,7 @@ import numpy
 import numpy.typing as npt
 import pytest
 
+from typing         import Any
 from contextlib     import ExitStack
 from dmu.stats      import print_pdf, zfit
 from dmu.stats      import FittedModel
@@ -39,7 +40,7 @@ type zdat       = zfit.data.Data
 
 _RNG = numpy.random.default_rng(seed = 42)
 # --------------------
-def _get_arrays_ee(self, mass) -> tuple[NpFltArray, NpFltArray]:
+def _get_arrays_ee(self : Any, mass : Any) -> tuple[NpFltArray, NpFltArray]:
     _ = self
     _ = mass
 
@@ -48,7 +49,7 @@ def _get_arrays_ee(self, mass) -> tuple[NpFltArray, NpFltArray]:
 
     return masses, weights
 # --------------------
-def _get_arrays_mm(self, mass) -> tuple[NpFltArray, NpFltArray]:
+def _get_arrays_mm(self : Any, mass : Any) -> tuple[NpFltArray, NpFltArray]:
     _ = self
     _ = mass
 

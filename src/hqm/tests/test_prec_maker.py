@@ -5,6 +5,8 @@ import pytest
 import numpy
 import numpy.typing as npt
 
+from collections.abc import Callable
+from typing         import Any
 from pathlib        import Path
 from dmu.stats      import zfit
 from hqm.config     import TransferFunctionMakerConf
@@ -24,14 +26,14 @@ class TransferFunctionTest:
 
         return zfit.pdf.Gauss(obs = obs, mu = mu, sigma = sg)
 #--------------------------------------
-def _get_array(self, out_dir, trig) -> NpFltArr:
+def _get_array(self : Any, out_dir : Any, trig : Any) -> NpFltArr:
     _ = self
     _ = out_dir
     _ = trig
 
     return numpy.random.uniform(3500, 4800, size = 10_000)
 #--------------------------------------
-def _get_trfc(self) -> TransferFunctionTest:
+def _get_trfc(self : Any) -> TransferFunctionTest:
     _    = self
     return TransferFunctionTest()
 #--------------------------------------
@@ -50,7 +52,7 @@ def _use_fake_masses(monkeypatch):
 @pytest.mark.parametrize('source', [Qsq.jpsi, Qsq.psi2])
 @pytest.mark.parametrize('target', [Qsq.jpsi, Qsq.psi2, Qsq.high])
 def test_resonant(
-    _use_fake_masses,
+    _use_fake_masses : Callable,
     monkeypatch,
     tmp_path: Path,
     source  : Qsq,

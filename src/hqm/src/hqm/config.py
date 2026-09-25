@@ -186,8 +186,8 @@ class ObsConf(BaseModel, frozen = True):
     #---------------------------------
     @model_validator(mode = 'after')
     def _validate(self) -> Self:
-        for src, val in self.tran_range.items():
-            for tgt, (_, min_trn, max_trn) in val.items():
+        for _, val in self.tran_range.items():
+            for _, (_, min_trn, max_trn) in val.items():
                 self._validate_range(min_trn, max_trn)
 
         return self
@@ -417,10 +417,9 @@ class TransferFunctionMakerConf(PDFConf, frozen = True):
         return cls(**data)
     # -----------------------------------------------
     @staticmethod
-    def print_config(name) -> None:
+    def print_config(name : str) -> None:
         if not hasattr(TransferFunctionMakerConf, name):
-            log.error(f'Cannot find {name} in configuration')
-            raise
+            raise ValueError(f'Cannot find {name} in configuration')
 
         d_data = getattr(TransferFunctionMakerConf, name)
         log.info(80 * '-')

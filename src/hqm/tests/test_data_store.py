@@ -7,6 +7,8 @@ import numpy
 import numpy.typing  as npt
 import pandas        as pnd
 
+from collections.abc   import Callable
+from typing            import Any
 from pathlib           import Path
 from rx_common         import Channel, Component, Cuts, Mass, Trigger
 from hqm.binning       import BinningConf
@@ -27,13 +29,13 @@ def initialize():
     '''
     LogStore.set_level('rx_hqm:data_store', 10)
 #--------------------------------------
-def _load_df_ee(self) -> pnd.DataFrame:
+def _load_df_ee(self : Any) -> pnd.DataFrame:
     _    = self
     data = get_data(channel = Channel.ee)
 
     return pnd.DataFrame(data)
 #--------------------------------------
-def _load_df_mm(self) -> pnd.DataFrame:
+def _load_df_mm(self : Any) -> pnd.DataFrame:
     _    = self
     data = get_data(channel = Channel.mm)
 
@@ -61,9 +63,9 @@ def _block_selection():
 #--------------------------------------
 @pytest.mark.parametrize('comp', [Component.data_24, Component.bpkpjpsiee])
 def test_data_retrieval(
-    _patch_loader_ee,
-    comp     : Component,
-    tmp_path : Path):
+    _patch_loader_ee : Callable,
+    comp             : Component,
+    tmp_path         : Path):
     '''
     Test initialized object with fake data
     '''
@@ -144,7 +146,7 @@ def test_new_selection(monkeypatch, tmp_path : Path):
 #--------------------------------------
 def test_update_selection(
     monkeypatch,
-    _block_selection,
+    _block_selection : Callable,
     tmp_path : Path):
     '''
     Test with database data and selection from zero

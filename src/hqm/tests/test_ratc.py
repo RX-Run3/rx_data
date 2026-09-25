@@ -3,6 +3,7 @@ Module with tests for CCbarRatioCalculator class
 '''
 import pytest
 
+from typing      import Any
 from dmu.generic import Mode
 from typing      import Final
 from pathlib     import Path
@@ -46,7 +47,7 @@ def _get_fr_entries(qsq_src : Qsq, qsq_tgt : Qsq) -> int:
 
     raise ValueError('Invalid q2')
 #-------------------------------------
-def _get_pr_shape(self, qsq_src : Qsq, qsq_tgt : Qsq) -> tuple[float,float]:
+def _get_pr_shape(self : Any, qsq_src : Qsq, qsq_tgt : Qsq) -> tuple[float,float]:
     _  = self
     if qsq_src == Qsq.jpsi and qsq_tgt == Qsq.jpsi:
         return 5100, 150
@@ -62,7 +63,7 @@ def _get_pr_shape(self, qsq_src : Qsq, qsq_tgt : Qsq) -> tuple[float,float]:
 
     raise ValueError(f'Invalid q2 bin: {qsq_src}')
 #-------------------------------------
-def _get_fr_shape(self, comp : Component, qsq : Qsq) -> tuple[float,float]:
+def _get_fr_shape(self : Any, comp : Component, qsq : Qsq) -> tuple[float,float]:
     _  = self
     jj = comp == Component.bpkpjpsiee and qsq == Qsq.jpsi
     pj = comp == Component.bpkppsi2ee and qsq == Qsq.jpsi
@@ -85,7 +86,7 @@ def _get_fr_shape(self, comp : Component, qsq : Qsq) -> tuple[float,float]:
     return mu, sg
 #--------------------------------------
 def _get_mc_pdf(
-    self,
+    self    : Any,
     comp    : Component,
     qsq_src : Qsq,
     qsq_tgt : Qsq) -> zpdf:
@@ -122,7 +123,7 @@ def _get_mu_sg(qsq_src: Qsq, qsq_tgt: Qsq) -> tuple[float, float]:
     else:
         raise ValueError(f"Invalid qsq combination: {qsq_src=}, {qsq_tgt=}")
 #-------------------------------------
-def _get_pr_pdf(self, qsq_src : Qsq, qsq_tgt : Qsq) -> zpdf:
+def _get_pr_pdf(self : Any, qsq_src : Qsq, qsq_tgt : Qsq) -> zpdf:
     _  = self
     mu, sg      = _get_pr_shape(
         self    = 1,

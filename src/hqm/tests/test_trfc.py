@@ -4,6 +4,8 @@ Module holding tests for TransferFunctionMaker
 import pytest
 import numpy
 
+from collections.abc import Callable
+from typing      import Any
 from pathlib     import Path
 from typing      import Final
 from rx_common   import Project, Qsq
@@ -28,17 +30,17 @@ def set_log():
     LogStore.set_level('rx_scripts:version_management', 30)
     LogStore.set_level('tools:calc_utility'           , 30)
 #--------------------------------------
-def _get_target_masses_low(self, out_dir : Path) -> numpy.ndarray:
+def _get_target_masses_low(self : Any, out_dir : Path) -> numpy.ndarray:
     _ = self
     _ = out_dir
     return numpy.random.normal(loc = 4750, scale = 80, size = 2000)
 #--------------------------------------
-def _get_target_masses_high(self, out_dir : Path) -> numpy.ndarray:
+def _get_target_masses_high(self : Any, out_dir : Path) -> numpy.ndarray:
     _ = self
     _ = out_dir
     return numpy.random.normal(loc = 5750, scale = 80, size = 2000)
 #--------------------------------------
-def _get_source_pdf(self, obs : zobs, out_dir : Path) -> zpdf:
+def _get_source_pdf(self : Any, obs : zobs, out_dir : Path) -> zpdf:
     _  = self
     _  = obs
     _  = out_dir
@@ -64,7 +66,7 @@ def _use_source_target(monkeypatch):
 def test_upper_lower(
     monkeypatch,
     upper : bool,
-    _use_source_target,
+    _use_source_target : Callable,
     tmp_path : Path):
     '''
     Test moving PDF upper or lower
