@@ -34,6 +34,7 @@ from .sample_splitter         import SampleSplitter
 from .sample_splitter         import FilePart 
 from .candidate_rebuilder     import CandidateRebuilder
 from .path_splitter           import Samples, NestedSamples
+from .db_maker                import DBMaker, DBMakerConf
 
 __all__ = [
     'CandidateRebuilder',
@@ -72,5 +73,7 @@ __all__ = [
     'RDFLoader',
     'Stats', 
     'df_from_rdf',
+    'DBMaker',
+    'DBMakerConf',
     'Specification',
     'SpecMaker']
