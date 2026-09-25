@@ -67,12 +67,12 @@ def _patch_rdfgetter(monkeypatch):
     monkeypatch.setattr(db_maker , 'RDFGetter'           , TestRDFGetter)
     monkeypatch.setattr(selection, 'apply_full_selection', selector)
 # -------------------------------------
-def test_simple(
+def test_make_db(
     monkeypatch,
     _patch_rdfgetter,
     tmp_path : Path):
     '''
-    Simplets test
+    Test making of database
     '''
     monkeypatch.setenv('ANADIR', str(tmp_path))
 
