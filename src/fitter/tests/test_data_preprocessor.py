@@ -54,6 +54,30 @@ def _validate_data(
     plt.savefig(plt_path)
     plt.close()
 # -------------------------------------------------
+def test_database(tmp_path : Path):
+    '''
+    Test reading from database
+    '''
+    obs = zfit.Space('B_Mass', limits=(5180, 6000))
+
+    ctx_1 = Cache.cache_root(path = tmp_path)
+    ctx_2 = DataPreprocessor.use_database()
+
+    with ExitStack() as stack:
+        stack.enter_context(ctx_1)
+        stack.enter_context(ctx_2)
+
+        prp = DataPreprocessor(
+            name   = 'main',
+            obs    = obs,
+            sample = Component.bpkpjpsiee,
+            trigger= Trigger.rk_ee_os,
+            wgt_cfg= None,
+            q2bin  = Qsq.jpsi)
+        dat = prp.get_data()
+
+    _validate_data(data=dat, tmp_path = tmp_path)
+# -------------------------------------------------
 @pytest.mark.parametrize('component', [Component.bpkpjpsimm])
 def test_mc(
     tmp_path : Path, 
