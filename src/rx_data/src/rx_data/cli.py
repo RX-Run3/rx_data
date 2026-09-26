@@ -87,6 +87,7 @@ def make_database(
         component    = component,
         trigger      = trigger,
         ncores       = 1,
+        cuts         = {Cuts.cmb : 'mva_cmb > 0.1'},
         dropped_cuts = dropped)
 
     mkr = DBMaker(cfg = cfg)
