@@ -139,6 +139,7 @@ class DBMaker:
         '''
         log.info(f'Reading file from: {self.__out_path}')
         rdf = RDataFrame(_TREE_NAME, str(self.__out_path))
+        rdf = rdf.Define('weight', '1.0')
 
         json_path = self.__out_path.parent / 'cuts.json'
         d_sel     = gut.load_json(path = json_path)
@@ -160,7 +161,7 @@ class DBMaker:
         uid   = ifile.GetUUID()
         ifile.Close()
 
-        return uid
+        return uid.AsString()
     # -----------------------------
     def run(self, mode : Mode) -> RDF.RNode:
         '''

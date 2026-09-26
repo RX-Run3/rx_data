@@ -113,4 +113,7 @@ def test_read_db(
 
     rdf = mkr.run(mode = Mode.read)
     assert hasattr(rdf, 'd_sel')
+    assert hasattr(rdf,   'uid')
+
+    assert isinstance(rdf.uid, str)
 # -------------------------------------
