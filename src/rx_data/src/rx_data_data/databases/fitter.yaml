@@ -8,8 +8,8 @@ columns:
   - Jpsi_Mass
   - q2
   - q2_dtf
-  - B_mass_const_M
-  - B_mass_const_psi2S_M
+  - B_const_mass_M
+  - B_const_mass_psi2S_M
   # ------------------------
   # PID
   # ------------------------
