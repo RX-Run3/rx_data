@@ -9,7 +9,7 @@ from pydantic     import BaseModel
 from dmu.generic  import Serializable
 from dmu.generic  import Mode
 from dmu.generic  import utilities as gut
-from ROOT         import RDataFrame, RDF
+from ROOT         import TFile, RDataFrame, RDF
 from typing       import Final
 from pathlib      import Path
 
@@ -143,9 +143,24 @@ class DBMaker:
         json_path = self.__out_path.parent / 'cuts.json'
         d_sel     = gut.load_json(path = json_path)
 
-        setattr(rdf, 'd_sel', d_sel) # noqa: B010
+        setattr(rdf, 'd_sel', d_sel   ) # noqa: B010
+        setattr(rdf, 'uid'  , self.uid) # noqa: B010
 
         return rdf
+    # -----------------------------
+    @cached_property
+    def uid(self) -> str:
+        '''
+        Unique identifier associated to ROOT file produced by this instance
+        '''
+        if not self.__out_path.exists():
+            raise ValueError(f'Cannot get UUID, file not found: {self.__out_path}')
+
+        ifile = TFile(str(self.__out_path))
+        uid   = ifile.GetUUID()
+        ifile.Close()
+
+        return uid
     # -----------------------------
     def run(self, mode : Mode) -> RDF.RNode:
         '''
