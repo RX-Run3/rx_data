@@ -3,10 +3,6 @@
 redefinitions:
   block         : 'block < 0 ? 0 : block'                   # This is needed to process pre-UT data as Block 0 data, temporary. Ntuples from post_ap already
   q2            : Jpsi_M_brem_track_2 * Jpsi_M_brem_track_2 # have q2 calculated without correction use brem_track_2 in definition to keep skipping code simple
-  # --------
-  B_Mass_smr    : smear.B_Mass_smr                          # Same as above, additionally, B_Mass_smr does not exist already, but
-  Jpsi_Mass_smr : smear.Jpsi_Mass_smr                       # ROOT recognizes smear.B_Mass_smr == B_Mass_smr, so a definition alone does not work
-  q2_smr        : smear.q2_smr
 # Define columns if they do not exist
 definitions:
   common: &common
