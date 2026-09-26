@@ -64,11 +64,13 @@ class Block(BaseModel):
     # ----------------
     @model_validator(mode='before')
     @classmethod
-    def coerce_from_primitive(cls, data):
+    def coerce_from_primitive(
+        cls,
+        data : dict[str,set[int] | int] | int):
         if isinstance(data, int):
             return {'value' : data}
 
-        value = data['value']
+        value : int | set[int] = data['value']
 
         if isinstance(value, set):
             for val in value:
