@@ -4,13 +4,8 @@ HOME   = '/afs/ihep.ac.cn/users/c/campoverde'
 ANADIR = '/publicfs/ucas/user/campoverde/Data'
 LOGDIR = '/publicfs/ucas/user/campoverde/Jobs/snakemake'
 # ---------------------
-def _get_paths():
-    return [
-        f'{ANADIR}/DB/fitter/bpkpee/rk_ee_os/data.root',
-        f'{ANADIR}/DB/fitter/bpkpmm/rk_mm_os/data.root']
-# ---------------------
 rule all:
-    input: _get_paths()
+    input: [f'{ANADIR}/DB/fitter/{component}/{trigger}/data.root' for component, trigger in config['samples']]
 # ---------------------
 rule database_making:
     output:
