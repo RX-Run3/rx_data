@@ -16,6 +16,7 @@ from omegaconf      import DictConfig, OmegaConf
 from rx_common      import Component, Trigger
 from .spec_maker    import SpecMaker
 from .rdf_loader    import RDFLoader
+from .rdf_renamer   import RDFRenamer
 
 log=LogStore.add_logger('rx_data:rdf_getter')
 # ---------------------------------------------------
@@ -546,7 +547,9 @@ class RDFGetter(SpecMaker):
         self.check_alignment(rdf = rdf, index = 'EVENTNUMBER')
         self.check_alignment(rdf = rdf, index = 'RUNNUMBER')
 
-        return rdf
+        als = RDFRenamer()
+
+        return als.run(rdf = rdf)
     # ----------------------
     @classmethod
     def check_alignment(
