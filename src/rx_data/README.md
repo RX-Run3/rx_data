@@ -73,3 +73,22 @@ rxdata patch-files -p rk   -v v1
 ```
 
 where `v1` is the version of the main trees. However this is not needed if one won't use `MCDecayTree`
+
+## Database creation
+
+Using `RDFGetter` on the filtered ntuples can cause the code to be slow. A further filtering step can
+be applied where:
+
+- Most of the selection is applied, except for a few cuts
+- Most of the branches are dropped
+
+The branches kept are listed in `rx_data_data/databases/*.yaml`. These files can be made by running:
+
+```bash
+snakemake -s snakemake/rules/fits/make_databases.smk --profile ihep --logger=flowo \
+          --logger-flowo-name=database --keep-going --quiet \
+          --configfile snakemake/configs/fits/database.yaml
+```
+
+and the outputs will go to `{ANADIR}/DB/fitter/{COMPONENT}/{TRIGGER}/data.root`.
+The config file and snakefile can be changed for different usecases.
