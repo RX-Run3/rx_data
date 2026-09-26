@@ -4,6 +4,7 @@ Module holding DataPreprocessor class
 import numpy
 import pandas   as pnd
 
+from contextlib      import contextmanager
 from pathlib         import Path
 from ROOT            import RDF # type: ignore
 from typing          import Final
@@ -11,6 +12,7 @@ from typing          import Final
 from dmu             import LogStore
 from dmu.workflow    import Cache
 from dmu.stats       import utilities  as sut
+from dmu.generic     import Mode
 from dmu.generic     import utilities  as gut
 from dmu.rdataframe  import utilities  as rut
 from dmu.pdataframe  import utilities  as put
@@ -18,6 +20,8 @@ from dmu.pdataframe  import utilities  as put
 from zfit            import Space      as zobs
 from zfit.data       import Data
 
+from rx_data         import DBMakerConf
+from rx_data         import DBMaker
 from rx_data         import RDFGetter
 from rx_common       import Component, Qsq, Trigger, Correction, Cuts
 from rx_selection    import Registry
@@ -29,6 +33,9 @@ from rx_misid        import MisIDSampleWeights
 log=LogStore.add_logger('fitter:data_preprocessor')
 
 _WEIGHT_BRANCH : Final[str] = 'weight'
+
+type Selection = dict[Cuts,str]
+type WgtCfg    = dict[Correction,MisIDSampleWeights]
 # ------------------------
 # TODO: Should this class take a dictionary of cuts? 
 # Should this be made into a context manager?
@@ -40,6 +47,7 @@ class DataPreprocessor(Cache):
     - Applying selection
     - Transforming data into format that zfit can use
     '''
+    _USE_DATABASE : bool = False
     # ------------------------
     def __init__(
         self,
@@ -48,9 +56,9 @@ class DataPreprocessor(Cache):
         sample    : Component,
         trigger   : Trigger,
         q2bin     : Qsq,
-        wgt_cfg   : dict[Correction,MisIDSampleWeights] | None,
-        is_sig    : bool                  = True,
-        selection : dict[Cuts,str] | None = None):
+        wgt_cfg   : WgtCfg    | None,
+        is_sig    : bool             = True,
+        selection : Selection | None = None):
         '''
         Parameters
         --------------------
@@ -96,7 +104,7 @@ class DataPreprocessor(Cache):
     # ------------------------
     def _get_rdf(
         self, 
-        selection : dict[Cuts,str]) -> tuple[RDF.RNode, dict[Cuts,str]]:
+        selection : Selection) -> tuple[RDF.RNode, Selection]:
         '''
         Parameters
         -------------------
@@ -108,46 +116,110 @@ class DataPreprocessor(Cache):
            - ROOT dataframe after selection and with Unique identifier attached as uid
            - Dictionary storing selection
         '''
-        log.debug(f'Retrieving dataframe for {self._sample}/{self._trigger}')
-        gtr = RDFGetter(
-            sample  =self._sample,
-            trigger =self._trigger)
+        # NOTE: Update selection such that category selection
+        # is applied on top of potentially non-default selection
+        # Current selection might contain different cuts,
+        # e.g. special BDT cut or special brem choice
+        with sel.update_selection(d_sel=selection):
+            selection = sel.selection(
+                q2bin   = self._q2bin,
+                trigger = self._trigger,
+                process = self._sample)
 
-        rdf_raw = gtr.get_rdf(per_file=False)
-        uid     = gtr.get_uid()
+        if not self._USE_DATABASE:
+            rdf, uid = self._get_rdf_from_filtered_files()
+        else:
+            rdf, uid, selection = self._get_rdf_from_database(selection = selection)
 
         log.debug(f'Applying selection to {self._sample}/{self._trigger}')
 
         if Cache._cache_root is None:
             raise ValueError('Cache root directory not defined')
 
-        # NOTE: Update selection such that category selection
-        # is applied on top of potentially non-default selection
-        # Current selection might contain different cuts,
-        # e.g. special BDT cut or special brem choice
-        with sel.update_selection(d_sel=selection):
-            rdf_sel = sel.apply_full_selection(
-                rdf     = rdf_raw,
-                uid     = uid,
-                q2bin   = self._q2bin,
-                trigger = self._trigger,
-                process = self._sample,
-                out_path= 0) # keep this lazy, do not execute and save selection
+        rdf_sel = sel.apply_selection(
+            rdf     = rdf,
+            uid     = uid,
+            cuts    = selection,
+            out_path= None) # keep this lazy, do not execute and save selection
 
-            cuts = sel.selection(
-                process = self._sample, 
-                trigger = self._trigger, 
-                q2bin   = self._q2bin)
-
-            entry = Registry(
-                component = self._sample,
-                trigger   = self._trigger,
-                qsq       = self._q2bin)
-            entry.set(cuts = cuts)
+        entry = Registry(
+            component = self._sample,
+            trigger   = self._trigger,
+            qsq       = self._q2bin)
+        entry.set(cuts = selection)
 
         log.debug('Applied selection')
 
-        return rdf_sel, cuts
+        return rdf_sel, selection 
+    # ------------------------
+    def _get_rdf_from_database(self, selection : Selection) -> tuple[RDF.RNode, str, Selection]:
+        '''
+        Parameters 
+        ---------------------
+        selection: Dictionary holding selection that needs to be applied
+                   to input files
+
+        Returns 
+        ---------------------
+        Tuple with:
+        - Dataframe from database with `d_sel` attached
+        - UID
+        - Dictionary with selection that needs to be applied on top of already applied selection in database
+        '''
+        log.debug('Getting dataframe from database')
+
+        cfg = DBMakerConf(
+            component   = self._sample,
+            trigger     = self._trigger,
+            dropped_cuts= [],
+            ncores      = 1)
+
+        mkr = DBMaker(cfg = cfg)
+        rdf = mkr.run(mode = Mode.read)
+
+        if not hasattr(rdf, 'd_sel'):
+            raise ValueError('DataFrame has no selection attached')
+
+        remaining_selection : Selection = dict()
+        d_sel : Selection = rdf.d_sel
+
+        ninit = len(selection)
+        for cut, needed in selection.items():
+            if cut not in d_sel:
+                log.debug(f'Missing {cut} added to selection')
+                remaining_selection[cut] = needed
+                continue
+
+            applied = d_sel[cut]
+            if needed == applied:
+                log.debug(f'Cut {cut} already applied')
+                continue
+
+            log.debug(f'Different cut {cut} added to selection')
+            remaining_selection[cut] = needed
+
+        nfnal = len(remaining_selection)
+
+        log.debug(f'Remaining cut: {nfnal}/{ninit}')
+
+        return rdf, rdf.uid, remaining_selection
+    # ------------------------
+    def _get_rdf_from_filtered_files(self) -> tuple[RDF.RNode, str]:
+        '''
+        Will retrieve tuple with: 
+
+        - Dataframe by reading filtered files
+        - UID
+        '''
+        log.debug(f'Retrieving dataframe from filtered files for {self._sample}/{self._trigger}')
+        gtr = RDFGetter(
+            sample  =self._sample,
+            trigger =self._trigger)
+
+        rdf = gtr.get_rdf(per_file=False)
+        uid = gtr.get_uid()
+
+        return rdf, uid
     # ------------------------
     def _get_report(self, rep : RDF.RCutFlowReport) -> pnd.DataFrame:
         '''
@@ -260,6 +332,20 @@ class DataPreprocessor(Cache):
         log.debug(f'Found {nevt} entries')
 
         return arr, wgt, rep
+    # ------------------------
+    @classmethod
+    @contextmanager
+    def use_database(cls):
+        '''
+        Used to pick database files as source of data
+        '''
+        old_val = cls._USE_DATABASE
+
+        try:
+            cls._USE_DATABASE = True
+            yield
+        finally:
+            cls._USE_DATABASE = old_val
     # ------------------------
     @property
     def rdf_uid(self) -> str:
