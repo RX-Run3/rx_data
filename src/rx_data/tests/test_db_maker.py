@@ -13,7 +13,8 @@ from rx_common    import Component
 from rx_data      import DBMaker, DBMakerConf
 from rx_data      import db_maker
 
-from dmu.rdataframe import utilities          as rut
+from dmu.rdataframe import utilities as rut
+from dmu.generic    import utilities as gut
 from dmu.generic    import Mode
 
 # -------------------------
@@ -62,6 +63,8 @@ def selector(
     df  = rut.rdf_report_to_df(rep=rep)
     df.to_markdown(out_path / 'cuts.md')
 
+    gut.dump_json(data = cuts, path = out_path / 'cuts.json')
+
     return rdf
 # -------------------------
 @pytest.fixture(autouse = False)
@@ -107,5 +110,7 @@ def test_read_db(
         mkr.run(mode = Mode.read)
 
     mkr.run(mode = Mode.write)
-    mkr.run(mode = Mode.read)
+
+    rdf = mkr.run(mode = Mode.read)
+    assert hasattr(rdf, 'd_sel')
 # -------------------------------------

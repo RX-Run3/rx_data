@@ -132,6 +132,21 @@ class DBMaker:
             filename  = str(self.__out_path),
             columnList= columns)
     # -----------------------------
+    def __rdf_from_db(self) -> RDF.RNode:
+        '''
+        Returns dataframe read from disk with `d_sel` attached with
+        selection
+        '''
+        log.info(f'Reading file from: {self.__out_path}')
+        rdf = RDataFrame(_TREE_NAME, str(self.__out_path))
+
+        json_path = self.__out_path.parent / 'cuts.json'
+        d_sel     = gut.load_json(path = json_path)
+
+        setattr(rdf, 'd_sel', d_sel) # noqa: B010
+
+        return rdf
+    # -----------------------------
     def run(self, mode : Mode) -> RDF.RNode:
         '''
         Triggers execution
@@ -139,8 +154,7 @@ class DBMaker:
         mode.validate(path = self.__out_path)
 
         if mode == Mode.read:
-            log.info(f'Reading file from: {self.__out_path}')
-            return RDataFrame(_TREE_NAME, str(self.__out_path))
+            return self.__rdf_from_db()
 
         rdf = self.__get_rdf()
         rdf = self.__filter(rdf)
