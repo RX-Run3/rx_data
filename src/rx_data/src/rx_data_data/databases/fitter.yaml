@@ -7,6 +7,7 @@ columns:
   - B_Mass
   - Jpsi_Mass
   - q2
+  - q2_smr
   - q2_dtf
   - B_const_mass_M
   - B_const_mass_psi2S_M
