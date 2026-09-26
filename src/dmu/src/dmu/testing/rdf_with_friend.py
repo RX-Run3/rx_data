@@ -47,6 +47,17 @@ def _get_json_path(main : Path, friend : Path) -> Path:
     return json_path
 # ----------------------------------
 def rdf_with_friend(df : pnd.DataFrame, branch : str) -> RDF.RNode:
+    '''
+    Parameters
+    --------------
+    df    : Pandas dataframe with e.g. a, b, c columns
+    branch: One of the columns in dataframe meant to be transformed into a friend tree
+            type of column, e.g. c -> f.c
+
+    Returns
+    --------------
+    ROOT dataframe with a, b, c, f.c
+    '''
     log.debug(f'Returning dataframe with friend tree for branch {branch}')
 
     path_main, path_friend = _make_files(df=df, branch=branch)
