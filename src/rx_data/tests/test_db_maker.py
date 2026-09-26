@@ -85,6 +85,7 @@ def test_make_db(
         component    = Component.bpkpee,
         trigger      = Trigger.rk_ee_os,
         ncores       = 1,
+        cuts         = {Cuts.cmb : 'mva_cmb > 0.1'},
         dropped_cuts = [Cuts.prc])
 
     mkr = DBMaker(cfg = cfg)

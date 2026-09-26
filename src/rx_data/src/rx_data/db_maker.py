@@ -33,6 +33,7 @@ class DBMakerConf(BaseModel, Serializable, frozen = True):
     trigger      : Trigger
     ncores       : int
     dropped_cuts : list[Cuts]
+    cuts         : dict[Cuts,str] = dict()
     # ------------------------
     @cached_property
     def columns(self) -> list[str]:
@@ -102,6 +103,7 @@ class DBMaker:
         '''
         log.info('Applying selection')
         overriding_cuts = { cut : 'true' for cut in self.__cfg.dropped_cuts }
+        overriding_cuts.update(self.__cfg.cuts)
 
         with sel.custom_selection(d_sel = overriding_cuts):
             rdf = sel.apply_full_selection(
