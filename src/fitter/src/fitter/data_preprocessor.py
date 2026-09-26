@@ -30,7 +30,7 @@ log=LogStore.add_logger('fitter:data_preprocessor')
 
 _WEIGHT_BRANCH : Final[str] = 'weight'
 # ------------------------
-# TODO: Shold this class take a dictionary of cuts? 
+# TODO: Should this class take a dictionary of cuts? 
 # Should this be made into a context manager?
 class DataPreprocessor(Cache):
     '''
