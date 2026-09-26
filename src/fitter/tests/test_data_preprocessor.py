@@ -70,7 +70,7 @@ def test_database(tmp_path : Path):
         prp = DataPreprocessor(
             name   = 'main',
             obs    = obs,
-            sample = Component.bpkpjpsiee,
+            sample = Component.bpkpee,
             trigger= Trigger.rk_ee_os,
             wgt_cfg= None,
             q2bin  = Qsq.jpsi)
