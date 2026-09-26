@@ -247,7 +247,7 @@ class RDFGetter(SpecMaker):
     def _define_common_columns(self, rdf : RDF.RNode) -> RDF.RNode:
         log.info('Adding common columns')
 
-        d_def = self._cfg['definitions'][self._trigger.channel]
+        d_def : dict[str,str] = self._cfg['definitions'][self._trigger.channel]
         if self._d_custom_columns:
             log.debug('Adding custom column definitions')
             d_def.update(self._d_custom_columns)
@@ -274,7 +274,7 @@ class RDFGetter(SpecMaker):
             return rdf
 
         log.info('Adding MC only columns')
-        d_def = self._cfg.definitions.MC
+        d_def : dict[str,str] = self._cfg.definitions.MC
         for var, expr in d_def.items():
             rdf = self._add_column(redefine=False, rdf=rdf, name=var, definition=expr)
 
@@ -291,7 +291,7 @@ class RDFGetter(SpecMaker):
             return rdf
 
         log.info('Adding data only columns')
-        d_def = self._cfg['definitions']['DATA']
+        d_def : dict[str,str] = self._cfg['definitions']['DATA']
         for name, definition in d_def.items():
             rdf = self._add_column(redefine=False, rdf=rdf, name=name, definition=definition)
 
@@ -312,7 +312,8 @@ class RDFGetter(SpecMaker):
             return rdf
 
         log.warning('Found temporary definitions')
-        for name, expr in self._cfg.temporary_definitions.items():
+        definitions : dict[str,str] = self._cfg.temporary_definitions
+        for name, expr in definitions.items():
             log.debug(f'{name:20}{expr}')
             if name in self._l_columns:
                 log.warning('Already defined column')
@@ -326,7 +327,7 @@ class RDFGetter(SpecMaker):
     def _redefine_columns(self, rdf : RDF.RNode) -> RDF.RNode:
         log.info('Redefining columns')
 
-        d_def = self._cfg['redefinitions']
+        d_def : dict[str,str] = self._cfg['redefinitions']
         for name, definition in d_def.items():
             if name == 'block':
                 log.debug('Sending pre-UT candidates to block 0')
@@ -339,7 +340,11 @@ class RDFGetter(SpecMaker):
                 log.warning(f'Not redefining {name} for trigger {self._trigger}')
                 continue
 
-            rdf = self._add_column(redefine=True, rdf=rdf, name=name, definition=definition)
+            rdf = self._add_column(
+                redefine  = True, 
+                rdf       = rdf, 
+                name      = name, 
+                definition= definition)
 
         return rdf
     # ---------------------------------------------------
@@ -355,7 +360,7 @@ class RDFGetter(SpecMaker):
         '''
         log.debug('Adding MCDT columns')
 
-        q2_def = self._cfg['definitions']['MCDT'][self._trigger.channel]['q2']
+        q2_def : str = self._cfg['definitions']['MCDT'][self._trigger.channel]['q2']
         rdf    = self._add_column(redefine=False, rdf=rdf, name='q2', definition=q2_def)
 
         return rdf
@@ -629,7 +634,11 @@ class RDFGetter(SpecMaker):
         '''
         log.info('Adding TRUEM branches')
 
-        rdf = rdf.Define('B_TRUEM', cfg.TRUEM.B_mass)
+        definition : str = cfg.TRUEM.B_mass
+        if not isinstance(definition, str):
+            raise ValueError('True B mass definition is not a string')
+
+        rdf = rdf.Define('B_TRUEM', definition)
 
         return rdf
     # ---------------------------------------------------
