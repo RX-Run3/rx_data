@@ -628,9 +628,9 @@ class FitResult(BaseModel, frozen = True):
         pars = tuple(l_par)
 
         if hasattr(res, 'cov'):
-            covariance = res.cov # type: ignore
+            covariance : numpy.ndarray = res.cov # type: ignore
         else:
-            covariance = res.covariance()
+            covariance : numpy.ndarray = res.covariance()
 
         if numpy.isnan(covariance).any():
             log.warning('Found at least one NaN in covariance')
