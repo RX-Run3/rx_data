@@ -43,9 +43,9 @@ def test_context_minimizer(kind : SumLiteral):
     Test context minimizer 
     '''
     nll       = get_nll(kind = kind)
-    min       = zfit.minimize.Minuit()
+    minimizer = zfit.minimize.Minuit()
 
-    minimizer = ContextMinimizer(min = min)
+    minimizer = ContextMinimizer(minimizer = minimizer)
     res       = minimizer.minimize(loss = nll)
 
     print(res)
@@ -58,8 +58,8 @@ def test_context_minimizer_sim():
     nll_mm    = get_nll(kind = 's+b', suffix = 'gaus_mm_1')
     nll       = nll_ee + nll_mm
 
-    min       = zfit.minimize.Minuit()
-    minimizer = ContextMinimizer(min = min)
+    minimizer = zfit.minimize.Minuit()
+    minimizer = ContextMinimizer(minimizer = minimizer)
     res       = minimizer.minimize(loss = nll)
 
     print(res)

@@ -13,7 +13,6 @@ from zfit                          import dill
 from zfit.loss                     import ExtendedUnbinnedNLL
 from zfit.loss                     import UnbinnedNLL
 from zfit.result                   import FitResult as zres
-from zfit.util                     import ztyping
 from zfit.pdf                      import BasePDF           as zpdf
 from zfit.minimizers.errors        import WeightCorr
 from zfit.minimizers.strategy      import FailMinimizeNaN
@@ -183,14 +182,14 @@ class AnealingMinimizer:
             log.debug(f'{"":<4}{par.name:<20}{"->":<10}{val:<20.3e}')
             par.set_value(val)
     # ------------------------
-    def _pdf_from_nll(self, nll) -> zpdf:
+    def _pdf_from_nll(self, nll : zlos) -> zpdf:
         l_model = nll.model
         if len(l_model) != 1:
             raise ValueError('Cannot extract one and only one PDF from NLL')
 
         return l_model[0]
     # ------------------------
-    def _print_failed_fit_diagnostics(self, nll) -> None:
+    def _print_failed_fit_diagnostics(self, nll : zlos) -> None:
         for res in self._l_bad_fit_res:
             print(res)
 
@@ -199,12 +198,12 @@ class AnealingMinimizer:
         plt.hist(arr_mass, bins=60)
         plt.show()
     # ------------------------
-    def get_result( # type: ignore
-        self, 
-        loss  : zlos, 
-        params: ztyping.ParamsTypeOpt | None = None,
-        init  : zres | None = None) -> FitResult:
+    def get_result(self, loss : zlos) -> FitResult:
         '''
+        Parameters
+        -----------------
+        loss: NLL that will be minimized
+
         Returns
         -----------------
         Object holding fit result
@@ -215,7 +214,7 @@ class AnealingMinimizer:
                 self._randomize_parameters(loss)
 
             try:
-                obj = self._min.minimize(loss, params = params, init = init)
+                obj = self._min.minimize(loss)
             except (FailMinimizeNaN, ValueError, RuntimeError) as exc:
                 for pdf in loss.model:
                     print_pdf(pdf, level = LogLevels.debug)
@@ -272,16 +271,14 @@ class ContextMinimizer:
     And could be removed once issue is fixed
     '''
     # ----------------------
-    def __init__(
-        self, 
-        min : zmin):
+    def __init__(self, minimizer : zmin):
         '''
         Parameters
         ---------------
         min: Minimizer
         '''
         self._ctx = get_context(method = 'spawn')
-        self._min = dill.dumps(min)
+        self._min = dill.dumps(minimizer)
     # ----------------------
     @staticmethod
     def _proc_minimize(
@@ -302,10 +299,10 @@ class ContextMinimizer:
         from zfit import dill             # noqa: PLC0415
         from .fit_result import FitResult # noqa: PLC0415
 
-        nll = dill.loads(onll)
-        min = dill.loads(omin) 
+        nll              = dill.loads(onll)
+        minimizer : zmin = dill.loads(omin) 
 
-        res = min.minimize(loss = nll)
+        res = minimizer.minimize(loss = nll)
         res.hesse(name = 'minuit_hesse')
 
         frs = FitResult.from_zfit(res = res)
@@ -427,7 +424,7 @@ def minimize(
 
     if isinstance(cfg.strategy, Context):
         log.info('Using context minimizer')
-        mnm = ContextMinimizer(min = mnm)
+        mnm = ContextMinimizer(minimizer = mnm)
 
     with mes.filter_stderr(banned_substrings=_HIDDEN_TF_LINES):
         try:
