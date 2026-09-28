@@ -7,21 +7,21 @@ import tqdm
 import pandas as pnd
 import pytest
 
-from typing      import Union
-from zfit.loss   import ExtendedUnbinnedNLL, UnbinnedNLL 
-from omegaconf   import DictConfig
 from dmu         import LogStore
 from dmu.stats   import zfit
-from dmu.stats   import Constraint1D, ConstraintND
+from dmu.stats   import Constraint1D, ConstraintND, Constraints
 from dmu.stats   import ConstraintAdder
 from dmu.stats   import print_constraints
 from dmu.generic import utilities as gut
 from dmu.generic import rxran
 from dmu.testing import get_nll
 
-log        = LogStore.add_logger('dmu:stats:test_constraint_adder')
-Loss       = Union[ExtendedUnbinnedNLL, UnbinnedNLL]
-Constraint = Union[Constraint1D, ConstraintND]
+from zfit.data   import SamplerData
+from zfit.loss   import ExtendedUnbinnedNLL, UnbinnedNLL 
+
+log             = LogStore.add_logger('dmu:stats:test_constraint_adder')
+type Loss       = ExtendedUnbinnedNLL | UnbinnedNLL
+type Constraint = Constraint1D        | ConstraintND
 # ----------------------
 @pytest.fixture(scope='session', autouse=True)
 def initialize():
@@ -55,7 +55,9 @@ def _extract_parameters(nll : Loss) -> pnd.DataFrame:
 
     return df
 # ----------------------
-def _validate(df : pnd.DataFrame, cfg : DictConfig) -> None:
+def _validate(
+    df   : pnd.DataFrame, 
+    cons : Constraints[Constraint1D]) -> None:
     '''
     Check that for each parameter the mean and std from the dataframe (toys)
     is compatible (within 15%) to what is in the config
@@ -65,13 +67,11 @@ def _validate(df : pnd.DataFrame, cfg : DictConfig) -> None:
     df : Dataframe with parameter name, observed value and toy inde
     cfg: Config with user defined information 
     '''
-
-    for tmp, df_par in df.groupby('Parameter'):
-        if tmp not in cfg:
+    for toy_par, df_par in df.groupby('Parameter'):
+        if toy_par not in cons.root:
             continue
 
-        toy_par   = str(tmp)
-        cfg_block = cfg[toy_par]
+        cfg_block = cons.root[toy_par]
         log.debug('')
         log.debug(f'Parameter: {toy_par}')
 
@@ -99,9 +99,9 @@ def test_uncorrelated() -> None:
     '''
     Test multiple uncorrelated constraints
     '''
-    nll = get_nll(kind='s+b')
-    cns = gut.load_data(package='dmu_data', fpath='tests/stats/constraints/uncorrelated.yaml')
-    cons : list[Constraint] = [ Constraint1D(**data) for data in cns.values() ]
+    nll  = get_nll(kind='s+b', suffix = '')
+    data = gut.load_data(package='dmu_data', fpath='tests/stats/constraints/uncorrelated.yaml')
+    cons = Constraints[Constraint1D](root = data)
 
     cad = ConstraintAdder(nll=nll, constraints=cons)
     nll = cad.get_nll()
@@ -110,9 +110,9 @@ def test_correlated() -> None:
     '''
     Test constraints of correlated parameters
     '''
-    nll = get_nll(kind='s+b')
-    cns = gut.load_data(package='dmu_data', fpath='tests/stats/constraints/correlated.yaml')
-    cons : list[Constraint] = [ ConstraintND(**data) for data in cns.values() ]
+    nll = get_nll(kind='s+b', suffix = '')
+    data = gut.load_data(package='dmu_data', fpath='tests/stats/constraints/correlated.yaml')
+    cons = Constraints[ConstraintND](root = data)
 
     cad = ConstraintAdder(nll=nll, constraints=cons)
     nll = cad.get_nll()
@@ -124,9 +124,10 @@ def test_toy() -> None:
     with timeout extended in order to profile
     '''
     ntoy= 100
-    nll = get_nll(kind='s+b', nentries = 2000) # Do not change 2000, constraints are for 2000
-    cns = gut.load_conf(package='dmu_data', fpath='tests/stats/constraints/uncorrelated.yaml')
-    cons : list[Constraint] = [ Constraint1D(kind=data.kind, name=data.name, mu=data.mu, sg=data.sg) for data in cns.values() ]
+    nll = get_nll(kind='s+b', suffix = '', nentries = 2000) # Do not change 2000, constraints are for 2000
+
+    data = gut.load_data(package='dmu_data', fpath='tests/stats/constraints/uncorrelated.yaml')
+    cons = Constraints[Constraint1D](root = data)
 
     log.info('')
     print_constraints(cons)
@@ -137,8 +138,11 @@ def test_toy() -> None:
 
     l_df : list[pnd.DataFrame] = []
     sam = nll.data[0]
+    if not isinstance(sam, SamplerData):
+        raise ValueError('Data is not in a sampler')
+
     for _ in tqdm.trange(ntoy, ascii=' -'):
-        for constraint in cons:
+        for constraint in cons.root.values():
             constraint.resample()
 
         sam.resample()
@@ -149,5 +153,5 @@ def test_toy() -> None:
 
     df = pnd.concat(l_df, ignore_index=True)
 
-    _validate(df=df, cfg=cns)
+    _validate(df=df, cons=cons)
 # ----------------------

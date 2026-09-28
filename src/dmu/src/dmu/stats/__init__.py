@@ -1,3 +1,4 @@
+from .constraint          import Constraints
 from .constraint          import Constraint1D
 from .constraint          import ConstraintND
 from .constraint          import Constraint
@@ -92,6 +93,7 @@ __all__ = [
     'SplineRepr',
     # ---------------------
     'MethodRegistry',
+    'Constraints',
     'Constraint1D',
     'ConstraintND',
     'print_constraints',

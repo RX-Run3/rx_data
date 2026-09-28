@@ -8,6 +8,7 @@ import math
 import numpy
 import pprint
 
+from collections.abc import Mapping
 from pathlib         import Path
 from typing          import Literal, Self, Sequence
 from tabulate        import tabulate
@@ -16,6 +17,7 @@ from zfit.constraint import GaussianConstraint as GConstraint
 from zfit.constraint import PoissonConstraint  as PConstraint
 from zfit.param      import Parameter as zpar
 from pydantic        import BaseModel, model_validator, TypeAdapter
+from pydantic        import RootModel
 
 from dmu             import LogStore
 from .fit_result     import FitResult
@@ -436,6 +438,16 @@ class Constraint1D(Constraint):
 
         self.observation.set_value(new_val)
 # ----------------------------------------
+class Constraints[C : Constraint](RootModel[Mapping[str,C]]):
+    '''
+    Class meant to be used as a container of constraint objects
+
+    The key of the mapping is:
+
+    1D: Name of the constrained parameter, e.g. mu
+    ND: Name of physical thing constrained, e.g. signal_shape
+    '''
+# ----------------------------------------
 def build_constraint(data: dict) -> Constraint:
     '''
     Parameters
@@ -454,7 +466,7 @@ def build_constraint(data: dict) -> Constraint:
         pprint.pprint(data)
         raise ValueError('Cannot build constrain from input') from exc
 # ----------------------------------------
-def print_constraints(constraints : Sequence[Constraint]) -> None:
+def print_constraints(constraints : Constraints) -> None:
     '''
     Parameters
     -------------
