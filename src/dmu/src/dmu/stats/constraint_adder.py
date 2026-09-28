@@ -5,16 +5,16 @@ import numpy
 
 from contextlib      import contextmanager
 from dmu             import LogStore
-from typing          import cast
 from omegaconf       import DictConfig
 from zfit            import Parameter
 from zfit.loss       import ExtendedUnbinnedNLL
-from .constraint     import Constraints
+
+from .constraint     import Constraints, Constraint
 from .imports        import zfit
 
 log = LogStore.add_logger('dmu:stats:constraint_adder')
 # ----------------------
-class ConstraintAdder:
+class ConstraintAdder[C : Constraint]:
     '''
     This class is in charge of:
 
@@ -25,7 +25,7 @@ class ConstraintAdder:
     def __init__(
         self, 
         nll         : ExtendedUnbinnedNLL, 
-        constraints : Constraints):
+        constraints : Constraints[C]):
         '''
         Parameters
         -------------
@@ -52,7 +52,7 @@ class ConstraintAdder:
         if len(s_par) == 0:
             raise ValueError('No floating parameter found in likelihood')
 
-        return { par.name : cast(Parameter, par) for par in s_par }
+        return { par.name : par for par in s_par }
     # ----------------------
     def _get_observation(self, cfg : DictConfig) -> list[Parameter]:
         '''
@@ -100,7 +100,7 @@ class ConstraintAdder:
             if value is None:
                 continue
 
-            log.debug(f'{par.name:<30}{value:<20.3g}')
+            log.warning(f'{par.name:<30}{value:<20.3g}')
             par.set_value(value)
             par.floating = False
     # ----------------------
@@ -132,6 +132,9 @@ class ConstraintAdder:
         if self._fix_parameters:
             self.__fix_parameters()
             return self._nll
+
+        for cons in self._constraints.root.values():
+            log.info(cons)
 
         l_const = [ 
             cns.zfit_cons(holder = self._nll)
