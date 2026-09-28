@@ -68,7 +68,7 @@ class ParsHolder:
 
         return {mu, sg, nsig, nbkg}
 # ---------------------------------
-@pytest.mark.parametrize('data, mean, stdv', zip(_load_constraints(), _EXPECTED_MU, _EXPECTED_SG))
+@pytest.mark.parametrize('data, mean, stdv', zip(_load_constraints(), _EXPECTED_MU, _EXPECTED_SG, strict = True))
 def test_constraint1D(data : dict, mean : float, stdv : float):
     '''
     Basic test for Constraint1D 
