@@ -299,9 +299,6 @@ class Fitter:
 
             return res
 
-        log.info(30 * '-')
-        log.info(f'{"chi2":<10}{"pval":<10}{"stat":<10}')
-        log.info(30 * '-')
 
         nll = self._get_full_nll(cfg = cfg)
         if isinstance(cfg.strategy, Retries):
