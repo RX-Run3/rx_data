@@ -438,7 +438,7 @@ class Constraint1D(Constraint):
 
         self.observation.set_value(new_val)
 # ----------------------------------------
-class Constraints[C : Constraint](RootModel[Mapping[str,C]]):
+class Constraints[C : Constraint](RootModel[Mapping[str,C]], frozen = True):
     '''
     Class meant to be used as a container of constraint objects
 
