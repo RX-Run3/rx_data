@@ -1,4 +1,5 @@
 signal_shape:
+  name        : placeholder
   kind        : GaussianConstraint 
   parameters  :
     - mu
