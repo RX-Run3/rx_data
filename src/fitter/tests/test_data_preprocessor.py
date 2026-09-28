@@ -11,6 +11,7 @@ from dmu.generic   import utilities as gut
 from dmu.stats     import utilities as sut
 from dmu           import LogStore
 from dmu.workflow  import Cache
+from rx_selection  import selection as sel
 from rx_common     import Correction, Cuts, Qsq, Region, Trigger, Component
 from rx_data       import RDFGetter
 from rx_misid      import MisIDSampleWeights
@@ -65,10 +66,12 @@ def test_database(
 
     ctx_1 = Cache.cache_root(path = tmp_path)
     ctx_2 = DataPreprocessor.use_database()
+    ctx_3 = sel.custom_selection(d_sel = {Cuts.brem : 'nbrem == 2'})
 
     with ExitStack() as stack:
         stack.enter_context(ctx_1)
         stack.enter_context(ctx_2)
+        stack.enter_context(ctx_3)
 
         prp = DataPreprocessor(
             name   = 'main',
