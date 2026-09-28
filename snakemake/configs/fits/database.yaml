@@ -10,6 +10,8 @@ samples:
   - [bdjpsixee  , rk_ee_os   ]
   - [bsjpsixee  , rk_ee_os   ]
   - [bpjpsixee  , rk_ee_os   ]
+  - [bpkpjpsiee , rk_ee_os   ]
+  - [bpkppsi2ee , rk_ee_os   ]
   - [bpkpipi    , rk_ee_nopid]
   - [bpkkk      , rk_ee_nopid]
   # ----
