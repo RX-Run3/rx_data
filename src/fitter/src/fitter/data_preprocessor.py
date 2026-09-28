@@ -231,7 +231,7 @@ class DataPreprocessor(Cache):
         '''
         df  = rut.rdf_report_to_df(rep=rep)
         for name, val in self._cuts.items():
-            log.info(f'{name:<15}{val}')
+            log.debug(f'{name:<15}{val}')
 
         return df
     # ------------------------
