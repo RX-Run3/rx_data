@@ -43,7 +43,8 @@ _HIDDEN_TF_LINES          : Final[list[str]] = [
     'Loaded cuDNN version',
     'All log messages before absl::InitializeLog()']
 
-_NDOF : Final[int] = 10 # Numbe of degrees of freedom for goodness of fit calculation
+_NDOF         : Final[int] = 10             # Numbe of degrees of freedom for goodness of fit calculation
+_ERROR_METHOD : Final[str] = 'minuit_hesse' # Method used to calculate errors
 #------------------------------
 class MinimizerFailError(Exception):
     '''
@@ -367,34 +368,38 @@ def _calculate_errors(res : zres, cfg : FitConf, nll : zlos) -> zres:
     log.debug('Calculating errors')
 
     weight_corr = _get_weight_corr(nll = nll)
-    for method in ['minuit_hesse', 'approx']:
-        try:
-            res.hesse(
-                weightcorr = weight_corr,
-                name       = 'minuit_hesse', 
-                method     = method)
+    try:
+        res.hesse(
+            weightcorr = weight_corr,
+            name       = _ERROR_METHOD, 
+            method     = _ERROR_METHOD)
 
-            cov = res.covariance(method = method, weightcorr = weight_corr)
+        cov = res.covariance(method = _ERROR_METHOD, weightcorr = weight_corr)
 
-            setattr(res, 'cov', cov) # noqa: B010
-        except ValueError as exc:
-            log.error(res)
-            raise ValueError(f'Failed calculating error with method: {method}') from exc
+        setattr(res, 'cov', cov) # noqa: B010
+    except ValueError as exc:
+        log.error('Failed error calculation')
+        log.error(res)
+        path = sut.save_nll(loss = nll)
+        log.error(f'Saving NLL to: {path}')
 
-        if not res.valid:
-            log.warning('Result invalid after error calculation')
-            log.warning(res)
-            continue
+        raise ValueError('Failed calculating error') from exc
 
-        try:
-            # If result is not readable, raise
-            FitResult.from_zfit(res = res)
-            return res
-        except Exception as exc:
-            log.warning(f'Failed error calculation with: {method}')
-            log.warning(exc)
-            log.debug(res)
+    if not res.valid:
+        log.error('Invalid result after error calculation')
+        log.error(res)
+        path = sut.save_nll(loss = nll)
+        log.error(f'Saving NLL to: {path}')
 
+    try:
+        # If result is not readable, raise
+        FitResult.from_zfit(res = res)
+        return res
+    except Exception as exc:
+        log.error(exc)
+        log.error(res)
+
+    log.error('Failed error calculation')
     path = sut.save_nll(loss = nll)
     log.error(f'Saving NLL to: {path}')
 
