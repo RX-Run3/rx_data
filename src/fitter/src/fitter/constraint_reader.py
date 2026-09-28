@@ -8,7 +8,9 @@ from pathlib             import Path
 from typing              import Final
 from dmu                 import LogStore
 from dmu.stats           import ConstraintAdder
-from dmu.stats           import Constraint, ParsHolder
+from dmu.stats           import Constraint, ParsHolder, Constraints
+from dmu.stats           import ConstraintND
+from dmu.stats           import Constraint1D
 from rx_common           import Brem, Component
 from zfit.loss           import ExtendedUnbinnedNLL
 
@@ -178,34 +180,36 @@ class ConstraintReader:
         skip_prec  : bool        = False,
         skip_comb  : bool        = False,
         skip_signal: bool        = False,
-        save_to    : Path | None = None) -> list[Constraint]:
+        save_to    : Path | None = None) -> Constraints[Constraint1D | ConstraintND]:
         '''
         Parameters
         ---------------
         skip_xx: By default false, if true, will skip constraints, meant for tests
         save_to: Path to yaml file where constraints are save, default None
 
-        Returns dictionary with constraints, i.e.
-
-        Key  : Name of fitting parameter
-        Value: Tuple with mu and error
+        Returns
+        ---------------
+        Container holding constraints object
         '''
         self._add_misid_constraints(skip = skip_misid)
         self._add_bkg_fraction_constraints(skip = skip_prec)
         self._add_combinatorial_constraints(skip = skip_comb)
         self._add_signal_constraints(skip = skip_signal)
 
+        data : dict[str,Constraint] = { constraint.name : constraint for constraint in self._constraints }
+        constraints = Constraints[Constraint1D | ConstraintND](root = data)
+
         if save_to is None:
-            return self._constraints
+            return constraints
 
         self._save_constraints(path = save_to)
 
-        return self._constraints
+        return constraints
 # -------------------------------------------------------------
 def add_constraints(
     brem: Brem,
     nll : ExtendedUnbinnedNLL,
-    cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL, list[Constraint]]:
+    cfg : RXFitConfig) -> tuple[ExtendedUnbinnedNLL, Constraints]:
     '''
     Parameters
     -------------
@@ -218,7 +222,7 @@ def add_constraints(
     Tuple with:
 
     - Constrained likelihood
-    - List of constraints
+    - Object holding constraints
     '''
     signal = cfg.mod_cfg.trigger.get_signal_component(qsq = cfg.q2bin)
     crd  = ConstraintReader(
@@ -230,10 +234,6 @@ def add_constraints(
 
     if not cons:
         log.warning('Not using any constraints')
-
-    log.info('Constraints:')
-    for constraint in cons:
-        log.info(constraint)
 
     cad  = ConstraintAdder(nll=nll, constraints=cons)
     nll  = cad.get_nll()

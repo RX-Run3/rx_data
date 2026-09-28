@@ -299,7 +299,7 @@ def test_all_but_cmb(
     if kind != 'rare_prec_rk':
         return
 
-    assert len(constraints) > 0 
+    assert len(constraints.root) > 0 
 # --------------------------------------------------------------
 @pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
 def test_only_cmb(
@@ -343,7 +343,7 @@ def test_only_cmb(
 
     print_constraints(constraints = constraints)
 
-    assert len(constraints) > 0 
+    assert len(constraints.root) > 0 
 # --------------------------------------------------------------
 @pytest.mark.skip(reason = 'Includes misID, too slow')
 @pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
@@ -454,7 +454,7 @@ def test_reso_misid(
     print_constraints(constraints = constraints)
     log.info(nll)
 
-    assert len(constraints) > 0 
+    assert len(constraints.root) > 0 
 # --------------------------------------------------------------
 @pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
 @pytest.mark.parametrize('brem' , [Brem.one, Brem.two, Brem.brx12])
@@ -495,7 +495,7 @@ def test_rare_background_fraction(
     print_constraints(constraints = constraints)
     log.error('-------------------------------')
 
-    assert len(constraints) == len(_PRC_COMPONENTS)
+    assert len(constraints.root) == len(_PRC_COMPONENTS)
 # --------------------------------------------------------------
 @pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
 def test_save(
@@ -533,5 +533,5 @@ def test_save(
 
     print_constraints(constraints = constraints)
 
-    assert len(constraints) > 0 
+    assert len(constraints.root) > 0 
 # --------------------------------------------------------------
