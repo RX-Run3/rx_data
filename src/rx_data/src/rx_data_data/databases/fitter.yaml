@@ -5,6 +5,7 @@ columns:
   - B_M
   - Jpsi_M
   - B_Mass
+  - B_Mass_smr
   - Jpsi_Mass
   - q2
   - q2_smr
