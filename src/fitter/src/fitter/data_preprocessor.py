@@ -230,7 +230,6 @@ class DataPreprocessor(Cache):
         Pandas dataframe with cutflow
         '''
         df  = rut.rdf_report_to_df(rep=rep)
-        rep.Print()
         for name, val in self._cuts.items():
             log.info(f'{name:<15}{val}')
 

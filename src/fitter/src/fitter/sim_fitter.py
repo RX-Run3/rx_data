@@ -116,7 +116,10 @@ class SimFitter(BaseFitter, Cache):
         zfit data object
         '''
         d_data : dict[str, zdata] = {}
+        log.info('Retrieving category data')
         for cat_name, cat_cfg in cfg.categories.items():
+            log.info(f'    {cat_name}')
+
             prp = DataPreprocessor(
                 name      = cat_name,
                 wgt_cfg   = dict(),
