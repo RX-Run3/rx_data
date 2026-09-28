@@ -34,6 +34,7 @@ columns:
   # ------------------------
   # Others
   # ------------------------
+  - block
   - nbrem
   - mva_cmb
   - mva_prc
