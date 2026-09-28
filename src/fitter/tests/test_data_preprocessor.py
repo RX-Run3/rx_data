@@ -54,7 +54,10 @@ def _validate_data(
     plt.savefig(plt_path)
     plt.close()
 # -------------------------------------------------
-def test_database(tmp_path : Path):
+@pytest.mark.parametrize('qsq', Qsq.for_physics())
+def test_database(
+    qsq      : Qsq,
+    tmp_path : Path):
     '''
     Test reading from database
     '''
@@ -73,7 +76,7 @@ def test_database(tmp_path : Path):
             sample = Component.bpkpee,
             trigger= Trigger.rk_ee_os,
             wgt_cfg= None,
-            q2bin  = Qsq.jpsi)
+            q2bin  = qsq)
         dat = prp.get_data()
 
     _validate_data(data=dat, tmp_path = tmp_path)
