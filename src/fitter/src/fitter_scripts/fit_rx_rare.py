@@ -13,10 +13,12 @@ from contextlib       import ExitStack
 from dmu.generic      import UnpackerModel, utilities as gut
 from dmu.stats        import ParameterLibrary as PL
 from dmu.stats        import utilities as sut
+from dmu.stats        import ConstraintAdder
 from dmu.workflow     import Cache
 from dmu              import LogStore
 from rx_selection     import selection as sel
 from rx_common        import Brem, Component, Region
+from rx_common        import MVAWp
 
 from fitter           import DataPreprocessor
 from fitter           import RXFitConfig
@@ -25,7 +27,6 @@ from fitter           import DataFitter
 from fitter           import LikelihoodFactory
 from fitter           import FitModelConf
 from fitter           import ToyConf
-from rx_common        import MVAWp
 from fitter           import NLLConf
 
 log=LogStore.add_logger('fitter:fit_rx_rare')
@@ -199,6 +200,7 @@ def main():
     ctx_3 = sel.custom_selection(d_sel=cfg.overriding_selection)
     ctx_4 = sut.root_directory(root_dir=cfg.output_directory / 'failed_nll')
     ctx_5 = DataPreprocessor.use_database()
+    ctx_6 = ConstraintAdder.fixed_parameters()
 
     with ExitStack() as stack:
         stack.enter_context(ctx_1)
@@ -206,6 +208,7 @@ def main():
         stack.enter_context(ctx_3)
         stack.enter_context(ctx_4)
         stack.enter_context(ctx_5)
+        stack.enter_context(ctx_6)
 
         _fit(cfg=cfg)
 # ----------------------
