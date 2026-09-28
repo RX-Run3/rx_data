@@ -210,31 +210,43 @@ class AnealingMinimizer:
         Object holding fit result
         '''
         results : list[FitResult] = []
+        log.info(30 * '-')
+        log.info(f'{"Try":<5}{"Chi2/Status":>25}')
+        log.info(30 * '-')
         for i_try in range(1, self._strategy.ntries + 1):
             if i_try > 1:
                 self._randomize_parameters(loss)
 
             try:
                 obj = self._min.minimize(loss)
-            except (FailMinimizeNaN, ValueError, RuntimeError) as exc:
+                obj = _calculate_errors(res = obj, cfg = self._cfg, nll = loss)
+            except (FailMinimizeNaN, ValueError, RuntimeError, MinimizerFailError):
                 for pdf in loss.model:
                     print_pdf(pdf, level = LogLevels.debug)
-                log.debug(f'Failed minimization: {exc}')
+                    
+                log.info(f'{i_try:02}/{self._strategy.ntries:02}{"Failed minimization":>25}')
                 continue
 
-            obj = _calculate_errors(res = obj, cfg = self._cfg, nll = loss)
             gcl = GofCalculator(nll = loss)
             gof = gcl.get_gof()
-            res = FitResult.from_zfit(
-                res          = obj, 
-                gof          = gof,
-                no_errors_ok = not self._cfg.do_errors)
-
-            if res.cov_status != 0:
-                log.warning('Found invalid covariance')
+            try:
+                res = FitResult.from_zfit(
+                    res          = obj, 
+                    gof          = gof,
+                    no_errors_ok = not self._cfg.do_errors)
+            except Exception:
+                log.info(f'{i_try:02}/{self._strategy.ntries:02}{"Unreadable result":>25}')
                 continue
 
-            log.info(f'{i_try:02}/{self._strategy.ntries:02}{gof.chi2:>20.3f}')
+            if not res.valid:
+                log.info(f'{i_try:02}/{self._strategy.ntries:02}{"Invalid minimum":>25}')
+                continue
+
+            if res.cov_status != 0:
+                log.info(f'{i_try:02}/{self._strategy.ntries:02}{"Invalid covariance":>25}')
+                continue
+
+            log.info(f'{i_try:02}/{self._strategy.ntries:02}{gof.chi2:>25.3f}')
             if gof < self._target_gof: 
                 results.append(res)
                 continue
@@ -373,32 +385,10 @@ def _calculate_errors(res : zres, cfg : FitConf, nll : zlos) -> zres:
 
         setattr(res, 'cov', cov) # noqa: B010
     except ValueError as exc:
-        log.error('Failed error calculation')
-        log.error(res)
-        path = sut.save_nll(loss = nll)
-        log.error(f'Saving NLL to: {path}')
+        log.info('Failed error calculation')
+        raise MinimizerFailError('Failed calculating error') from exc
 
-        raise ValueError('Failed calculating error') from exc
-
-    if not res.valid:
-        log.error('Invalid result after error calculation')
-        log.error(res)
-        path = sut.save_nll(loss = nll)
-        log.error(f'Saving NLL to: {path}')
-
-    try:
-        # If result is not readable, raise
-        FitResult.from_zfit(res = res)
-        return res
-    except Exception as exc:
-        log.error(exc)
-        log.error(res)
-
-    log.error('Failed error calculation')
-    path = sut.save_nll(loss = nll)
-    log.error(f'Saving NLL to: {path}')
-
-    raise MinimizerFailError('Fit error could not be found')
+    return res
 # ------------------------
 def minimize(
     nll : zlos,
