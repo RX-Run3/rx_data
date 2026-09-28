@@ -4,10 +4,17 @@ events_range :
   - 6000
 fit:
   kind      : KDE1DimFFT
-  bandwidth : 20
+  bandwidth : 30
   padding   :
     flag : False
 plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#fit-plotting
   nbins   : 30
   stacked : True
-  d_leg   : {}
+  d_leg   :
+    bsphiee_brem_012 : $B_s\to \phi(\to K^+K^-)e^+e^-$
+    bsphiee_brem_x1x : $B_s\to \phi(\to K^+K^-)e^+e^-$
+    bsphiee_brem_x2x : $B_s\to \phi(\to K^+K^-)e^+e^-$
+    bsphiee_brem_x12 : $B_s\to \phi(\to K^+K^-)e^+e^-$
+  plot_range:
+    - 4600
+    - 6000
