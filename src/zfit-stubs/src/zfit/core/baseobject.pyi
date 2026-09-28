@@ -28,7 +28,12 @@ def convert_param_values(params: Mapping[str | ztyping.ParamType, float] | ZfitR
 
 class BaseParametrized(BaseObject, ZfitParametrized):
     def __init__(self, params, autograd_params=None, **kwargs) -> None: ...
-    def get_params(self, floating: bool | None = True, is_yield: bool | None = None, extract_independent: bool | None = True, *, autograd: bool | None = None) -> set[ZfitParameter]: ...
+    def get_params(
+            self, 
+            floating: bool | None = True, 
+            is_yield: bool | None = None, 
+            extract_independent: bool | None = True, 
+            *, autograd: bool | None = None) -> set[Parameter]: ...
     @property
     def params(self) -> dict[str,Parameter]: ...
 
