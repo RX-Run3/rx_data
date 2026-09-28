@@ -4,10 +4,17 @@ events_range :
   - 6000
 fit:
   kind     : KDE1DimFFT
-  bandwidth: 50
+  bandwidth: 20
   padding  :
     flag : False
 plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#fit-plotting
   nbins   : 30
   stacked : True
-  d_leg   : {}
+  d_leg   :
+    bdkstkpiee_brem_012 : '$B_d\to K^{*}(\to K\pi)e^+e^-$'
+    bdkstkpiee_brem_xx1 : '$B_d\to K^{*}(\to K\pi)e^+e^-$'
+    bdkstkpiee_brem_xx2 : '$B_d\to K^{*}(\to K\pi)e^+e^-$'
+    bdkstkpiee_brem_x12 : '$B_d\to K^{*}(\to K\pi)e^+e^-$'
+  plot_range:
+    - 4600
+    - 6000
