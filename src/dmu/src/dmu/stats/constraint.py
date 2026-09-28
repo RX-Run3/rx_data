@@ -447,6 +447,28 @@ class Constraints[C : Constraint](RootModel[Mapping[str,C]]):
     1D: Name of the constrained parameter, e.g. mu
     ND: Name of physical thing constrained, e.g. signal_shape
     '''
+    # -------------------------------------------
+    def value(self, name : str) -> float | None:
+        '''
+        Parameters
+        ----------------
+        name: Parameter name
+
+        Returns
+        ----------------
+        Value at which corresponding parameter is constrained, None if not found
+        '''
+        for cons in self.root.values():
+            if isinstance(cons, Constraint1D) and cons.name != name:
+                continue
+
+            if isinstance(cons, Constraint1D) and cons.name == name:
+                return cons.mu
+
+            if isinstance(cons, ConstraintND) and name in cons.parameters:
+                return cons.observation(name = name)
+
+        return None
 # ----------------------------------------
 def build_constraint(data: dict) -> Constraint:
     '''
