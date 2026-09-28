@@ -29,7 +29,10 @@ rule database_making:
 
         set -e
 
-        rxdata make-database -c {wildcards.component} -t {wildcards.trigger} -d cmb -d prc -d q2 -d mass -d jpsi_misid -d pid_l
+        rxdata make-database \
+                -c {wildcards.component} -t {wildcards.trigger} \
+                -d cmb -d prc -d q2 -d mass -d jpsi_misid -d pid_l\
+                -d cascade -d hop
 
         echo "Databases made with status: $?"
         ) > {log.prc} 2>&1
