@@ -80,6 +80,8 @@ class Region(StrEnum):
                 return {Cuts.brem : 'nbrem == 2'}
             case Region.brem_x12:
                 return {Cuts.brem : '(nbrem == 1) || (nbrem == 2)'}
+            case Region.brem_012:
+                return {Cuts.brem : 'true'}
             case _:
                 raise ValueError(f'No cut defined for region: {self}')
     # ---------------------
