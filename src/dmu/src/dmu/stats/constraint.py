@@ -111,10 +111,10 @@ class ConstraintND(Constraint):
         '''
         List of errors
         '''
-        npar = len(self.parameters)
-        vars = [ self.cov[ipar][ipar] for ipar in range(npar) ]
+        npar      = len(self.parameters)
+        variables = [ self.cov[ipar][ipar] for ipar in range(npar) ]
 
-        return [ math.sqrt(var) for var in vars ]
+        return [ math.sqrt(var) for var in variables ]
     # ----------------------
     def calibrate(self, result : FitResult) -> 'ConstraintND':
         '''
@@ -311,8 +311,7 @@ class Constraint1D(Constraint):
         -----------------
         List of 1D constraints
         '''
-
-        constraints = []
+        constraints : list[Constraint1D] = []
         for name, (value, error) in data.items():
             cns = cls(
                 kind = kind,
