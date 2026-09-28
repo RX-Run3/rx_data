@@ -3,6 +3,7 @@ This module contains the ConstraintAdder class
 '''
 import numpy
 
+from contextlib      import contextmanager
 from dmu             import LogStore
 from typing          import cast
 from omegaconf       import DictConfig
@@ -19,6 +20,7 @@ class ConstraintAdder:
 
     - Using those constraints to update the NLL
     '''
+    _fix_parameters = False
     # ----------------------
     def __init__(
         self, 
@@ -87,6 +89,36 @@ class ConstraintAdder:
             par = self._d_cns[name]
             par.set_value(value)
     # ----------------------
+    def __fix_parameters(self) -> None:
+        '''
+        Fixes NLL parameters based on central values of constraints
+        '''
+        log.warning('Fixing parameters instead of constraining them')
+        pars : set[Parameter] = self._nll.get_params()
+        for par in pars:
+            value = self._constraints.value(name = par.name)
+            if value is None:
+                continue
+
+            log.debug(f'{par.name:<30}{value:<20.3g}')
+            par.set_value(value)
+            par.floating = False
+    # ----------------------
+    @classmethod
+    @contextmanager
+    def fixed_parameters(cls):
+        '''
+        Contextmanager whose context makes ConstraintAdder fix parameters
+        instead of constrain them
+        '''
+        old_value = cls._fix_parameters
+
+        try:
+            cls._fix_parameters = True
+            yield
+        finally:
+            cls._fix_parameters = old_value
+    # ----------------------
     def get_nll(self) -> ExtendedUnbinnedNLL:
         '''
         Returns
@@ -95,6 +127,10 @@ class ConstraintAdder:
         '''
         if self._constraints is None:
             log.info('No constraints found, using original (unconstrained) NLL')
+            return self._nll
+
+        if self._fix_parameters:
+            self.__fix_parameters()
             return self._nll
 
         l_const = [ 

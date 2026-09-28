@@ -34,6 +34,14 @@ def initialize():
     with rxran.seed(42):
         yield
 # ----------------------
+@pytest.fixture(params=[True, False], ids=['Fixed', 'Constrained'])
+def _fix_or_constrain(request):
+    if request.param:
+        with ConstraintAdder.fixed_parameters():
+            yield
+    else:
+        yield
+# ----------------------
 def _extract_parameters(nll : Loss) -> pnd.DataFrame:
     '''
     Parameters
@@ -95,7 +103,7 @@ def _validate(
         log.debug(f'STD : {std:.2f}/{expc:.2f}')
         assert std < expc # Parameters distribution in data should be narrower than constrain
 # ----------------------
-def test_uncorrelated() -> None:
+def test_uncorrelated(_fix_or_constrain) -> None:
     '''
     Test multiple uncorrelated constraints
     '''
@@ -106,7 +114,7 @@ def test_uncorrelated() -> None:
     cad = ConstraintAdder(nll=nll, constraints=cons)
     nll = cad.get_nll()
 # ----------------------
-def test_correlated() -> None:
+def test_correlated(_fix_or_constrain) -> None:
     '''
     Test constraints of correlated parameters
     '''
@@ -118,7 +126,7 @@ def test_correlated() -> None:
     nll = cad.get_nll()
 # ----------------------
 @pytest.mark.timeout(100)
-def test_toy() -> None:
+def test_toy(_fix_or_constrain) -> None:
     '''
     Tests toy constraint addition in a loop
     with timeout extended in order to profile
