@@ -53,7 +53,8 @@ python-slugify
 scikit-learn
 scipy
 seaborn
-tabulate2
+types-tabulate
+tabulate
 tensorflow
 tensorflow-graphics
 toml

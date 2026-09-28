@@ -663,10 +663,9 @@ sqlmodel==0.0.37
     # via snakemake
 tabulate==0.8.10
     # via
+    #   -r requirements-dep.in
     #   snakemake
     #   zfit
-tabulate2==1.10.2
-    # via -r requirements-dep.in
 tblib==3.2.2
     # via distributed
 tenacity==9.1.4
@@ -753,6 +752,8 @@ types-pyyaml==6.0.12.20260906
     # via -r requirements-dep.in
 types-requests==2.32.4.20250913
     # via types-tensorflow
+types-tabulate==0.10.0.20260508
+    # via -r requirements-dep.in
 types-tensorflow==2.18.0.20251008
     # via -r requirements-dep.in
 types-tqdm==4.70.0.20260906
@@ -804,8 +805,6 @@ vector==1.7.0
     # via -r requirements-dep.in
 virtualenv==20.35.4
     # via pre-commit
-wcwidth==0.2.14
-    # via tabulate2
 werkzeug==3.1.4
     # via tensorboard
 wheel==0.45.1
