@@ -219,15 +219,10 @@ class AnealingMinimizer:
             except (FailMinimizeNaN, ValueError, RuntimeError) as exc:
                 for pdf in loss.model:
                     print_pdf(pdf, level = LogLevels.debug)
-                log.warning(f'Failed minimization: {exc}')
+                log.debug(f'Failed minimization: {exc}')
                 continue
 
-            try:
-                obj = _calculate_errors(res = obj, cfg = self._cfg, nll = loss)
-            except MinimizerFailError as exc:
-                log.warning(f'Could not calculate error: {exc}')
-                continue
-
+            obj = _calculate_errors(res = obj, cfg = self._cfg, nll = loss)
             gcl = GofCalculator(nll = loss)
             gof = gcl.get_gof()
             res = FitResult.from_zfit(
