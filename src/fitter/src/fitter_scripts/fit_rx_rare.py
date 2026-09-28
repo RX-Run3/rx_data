@@ -38,6 +38,7 @@ def _set_logs() -> None:
     '''
     LEVEL=30
 
+    LogStore.set_level('rx_data:db_maker'        , LEVEL)
     LogStore.set_level('rx_data:path_splitter'   , LEVEL)
     LogStore.set_level('rx_data:data_model'      , LEVEL)
     LogStore.set_level('rx_data:rdf_getter'      , LEVEL)
@@ -54,10 +55,12 @@ def _set_logs() -> None:
     LogStore.set_level('dmu:stats:model_factory' , LEVEL)
     LogStore.set_level('dmu:stats:fitter'        , LEVEL)
     LogStore.set_level('dmu:stats:minimizers'    , LEVEL)
+    LogStore.set_level('dmu:pdataframe:utilities', LEVEL)
 
-    LogStore.set_level('fitter:data_preprocessor', LEVEL)
     LogStore.set_level('fitter:base_fitter'      , LEVEL)
-    LogStore.set_level('fitter:sim_fitter'       , LEVEL)
+
+    LogStore.set_level('fitter:sim_fitter'       , 20)
+    LogStore.set_level('fitter:data_preprocessor', 20)
 # ----------------------
 def _parse_args() -> RXFitConfig:
     '''
