@@ -100,7 +100,7 @@ class ConstraintAdder[C : Constraint]:
             if value is None:
                 continue
 
-            log.warning(f'{par.name:<30}{value:<20.3g}')
+            log.warning(f'{par.name:<60}{value:<20.3g}')
             par.set_value(value)
             par.floating = False
     # ----------------------
