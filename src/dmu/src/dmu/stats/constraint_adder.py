@@ -4,11 +4,11 @@ This module contains the ConstraintAdder class
 import numpy
 
 from dmu             import LogStore
-from typing          import Sequence, cast
+from typing          import cast
 from omegaconf       import DictConfig
 from zfit            import Parameter
 from zfit.loss       import ExtendedUnbinnedNLL
-from .constraint     import Constraint
+from .constraint     import Constraints
 from .imports        import zfit
 
 log = LogStore.add_logger('dmu:stats:constraint_adder')
@@ -23,7 +23,7 @@ class ConstraintAdder:
     def __init__(
         self, 
         nll         : ExtendedUnbinnedNLL, 
-        constraints : Sequence[Constraint]):
+        constraints : Constraints):
         '''
         Parameters
         -------------
@@ -65,7 +65,7 @@ class ConstraintAdder:
         '''
         l_nam = cfg.parameters
         l_val = cfg.observation
-        l_par = [ zfit.Parameter(f'{nam}_cns', fval) for nam, fval in zip(l_nam, l_val) ]
+        l_par = [ zfit.Parameter(f'{nam}_cns', fval) for nam, fval in zip(l_nam, l_val, strict = True) ]
 
         return l_par
     # ----------------------
@@ -78,7 +78,7 @@ class ConstraintAdder:
         values: Array with resampled observations
         names : Names of parameters used to constrain likelihood
         '''
-        for name, value in zip(names, values):
+        for name, value in zip(names, values, strict = True):
             log.verbose(f'Setting {name}={value}')
 
             if name not in self._d_cns:
@@ -98,8 +98,8 @@ class ConstraintAdder:
             return self._nll
 
         l_const = [ 
-            cns.zfit_cons(holder = self._nll) # type: ignore
-            for cns in self._constraints ]
+            cns.zfit_cons(holder = self._nll)
+            for cns in self._constraints.root.values() ]
 
         nll = self._nll.create_new(constraints=l_const)
         if nll is None:
