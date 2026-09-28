@@ -18,6 +18,7 @@ from dmu              import LogStore
 from rx_selection     import selection as sel
 from rx_common        import Brem, Component, Region
 
+from fitter           import DataPreprocessor
 from fitter           import RXFitConfig
 from fitter           import add_constraints 
 from fitter           import DataFitter
@@ -190,11 +191,18 @@ def main():
 
     _set_logs()
 
+    ctx_1 = Cache.cache_root(path=cfg.output_directory)
+    ctx_2 = PL.parameter_schema(cfg=cfg.mod_cfg.yields)
+    ctx_3 = sel.custom_selection(d_sel=cfg.overriding_selection)
+    ctx_4 = sut.root_directory(root_dir=cfg.output_directory / 'failed_nll')
+    ctx_5 = DataPreprocessor.use_database()
+
     with ExitStack() as stack:
-        stack.enter_context(Cache.cache_root(path=cfg.output_directory))
-        stack.enter_context(PL.parameter_schema(cfg=cfg.mod_cfg.yields))
-        stack.enter_context(sel.custom_selection(d_sel=cfg.overriding_selection))
-        stack.enter_context(sut.root_directory(root_dir=cfg.output_directory / 'failed_nll'))
+        stack.enter_context(ctx_1)
+        stack.enter_context(ctx_2)
+        stack.enter_context(ctx_3)
+        stack.enter_context(ctx_4)
+        stack.enter_context(ctx_5)
 
         _fit(cfg=cfg)
 # ----------------------
