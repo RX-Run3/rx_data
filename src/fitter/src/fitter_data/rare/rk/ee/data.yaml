@@ -97,9 +97,13 @@ components:
   central:
     <<: *comp
   high:
-    ccbar : 
+    ccbar      :
       kind : CCbarPDFTF
-    <<: *comp
+    comb       : rare/rk/ee/comb.yaml
+    bdkstkpiee : rare/rk/ee/bdkstkpiee_np.yaml
+    bpkstkpiee : rare/rk/ee/bpkstkpiee_np.yaml
+    bsphiee    : rare/rk/ee/bsphiee_np.yaml
+    bpkpee     : rare/rk/ee/bpkpee.yaml.j2
 constraints:
   misid    : misid/rk/ee/data_misid.yaml
   signal_fraction :
