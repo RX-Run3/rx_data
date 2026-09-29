@@ -113,47 +113,6 @@ class DataFitter(BaseFitter, Cache):
             ) from exc
 
         return fres
-    # ----------------------
-    def run(self) -> FitResult:
-        '''
-        Parameters
-        -------------
-        fit_cfg: Fit configuration.
-
-        Returns
-        -------------
-        Fit result
-        '''
-        result_path = self._out_path / 'parameters.json'
-        if self._copy_from_cache():
-            fres = FitResult.from_json(path = result_path)
-            return fres
-
-        nll = self._get_full_nll()
-        if nll is None:
-            raise ValueError('Likelihood is missing')
-
-        fres = self._minimize_nll(nll = nll)
-
-        self._save_by_region(nll = nll, fres = fres)
-
-        fres.to_json(path = result_path)
-
-        # If there is one signal region (fit is not simultaneous)
-        # we can skip making plot of merged signal regions 
-        if len(self._d_nll) == 1:
-            self._cache()
-            return fres
-
-        for cat, regions in self._cfg.plots[self._q2bin].merging.items():
-            self._save_merged_regions(
-                region  = cat, 
-                fres    = fres,
-                regions = regions)
-
-        self._cache()
-
-        return fres
     # ---------------------------------------------
     def _minimize_nll(self, nll : NLL) -> FitResult:
         '''
@@ -250,4 +209,45 @@ class DataFitter(BaseFitter, Cache):
                 out_path = out_path)
 
             self._save_config(out_dir=out_path)
+    # ----------------------
+    def run(self) -> FitResult:
+        '''
+        Parameters
+        -------------
+        fit_cfg: Fit configuration.
+
+        Returns
+        -------------
+        Fit result
+        '''
+        result_path = self._out_path / 'parameters.json'
+        if self._copy_from_cache():
+            fres = FitResult.from_json(path = result_path)
+            return fres
+
+        nll = self._get_full_nll()
+        if nll is None:
+            raise ValueError('Likelihood is missing')
+
+        fres = self._minimize_nll(nll = nll)
+
+        self._save_by_region(nll = nll, fres = fres)
+
+        fres.to_json(path = result_path)
+
+        # If there is one signal region (fit is not simultaneous)
+        # we can skip making plot of merged signal regions 
+        if len(self._d_nll) == 1:
+            self._cache()
+            return fres
+
+        for cat, regions in self._cfg.plots[self._q2bin].merging.items():
+            self._save_merged_regions(
+                region  = cat, 
+                fres    = fres,
+                regions = regions)
+
+        self._cache()
+
+        return fres
 # ----------------------
