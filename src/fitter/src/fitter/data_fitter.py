@@ -1,6 +1,8 @@
 '''
 Module containing DataFitter class
 '''
+from typing          import Literal
+from typing          import overload
 from typing          import Final
 from pathlib         import Path
 from dmu             import LogStore
@@ -195,8 +197,6 @@ class DataFitter(BaseFitter, Cache):
         l_sel  = [ cfg.selection for cfg in self._d_nll.values() ]
         l_reg  = list(self._d_nll)
 
-        sut.save_nll(loss = nll, path = self._out_path / 'nll.bytes')
-
         for model, data, sel, region in zip(nll.model, nll.data, l_sel, l_reg, strict = True):
             out_path = self._out_path / region
 
@@ -212,11 +212,15 @@ class DataFitter(BaseFitter, Cache):
 
             self._save_config(out_dir=out_path)
     # ----------------------
-    def run(self) -> FitResult:
+    @overload
+    def run(self, skip_fit: Literal[True]) -> None: ...
+    @overload
+    def run(self, skip_fit: Literal[False])-> FitResult: ...
+    def run(self, skip_fit: bool) -> FitResult | None:
         '''
         Parameters
         -------------
-        fit_cfg: Fit configuration.
+        skip_fit: If true will do an early return (of None) just before fit
 
         Returns
         -------------
@@ -231,7 +235,12 @@ class DataFitter(BaseFitter, Cache):
         if nll is None:
             raise ValueError('Likelihood is missing')
 
+        sut.save_nll(loss = nll, path = self._out_path / 'nll_unfitted.bytes')
+        if skip_fit:
+            return None
+
         fres = self._minimize_nll(nll = nll)
+        sut.save_nll(loss = nll, path = self._out_path / 'nll_fitted.bytes')
 
         self._save_by_region(nll = nll, fres = fres)
 
