@@ -14,6 +14,36 @@ from dmu.stats     import ObsConf, ModelFactoryConf, SplinePDF, ZFitPlotter, ZFi
 from dmu.stats     import utilities as sut
 
 type zobs = zfit.Space
+type zpdf = zfit.pdf.BasePDF
+# ----------------------------
+def _get_real_ccbar(obs : zobs) -> zpdf:
+    binning = 'block-3 mva_cmb-3 mva_prc-3'
+    project = Project.rk
+
+    ccb = CCbarPDFMaker(
+        binning = binning,
+        project = project)
+
+    model= ccb.get_pdf(obs = obs, mode = Mode.read)
+    pdf  = model.get_pdf(
+        obs_name = 'mass',
+        suffix   = 'suf')
+
+    for par in pdf.get_params():
+        par.floating = False
+
+    nev  = zfit.Parameter('nbkg', 1000, 0, 100_000)
+
+    return pdf.create_extended(nev, name = 'ccbar')
+# ----------------------------
+def _get_fake_signal(obs : zobs) -> zpdf:
+    mu = zfit.Parameter('mu'  , 5280, 5250, 5310)
+    sg = zfit.Parameter('sg'  ,   80,   50,  100)
+    nev= zfit.Parameter('nsig', 1000, 0, 100_000)
+
+    pdf= zfit.pdf.Gauss(mu = mu, sigma = sg, obs = obs)
+
+    return pdf.create_extended(nev, name = 'signal')
 # ----------------------------
 class TestRatio:
     larger_prec = False
@@ -149,4 +179,20 @@ def test_suffix(monkeypatch, tmp_path : Path):
         suffix   = 'suf')
 
     sut.print_pdf(pdf)
+# ----------------------------
+@pytest.mark.skip(reason = 'Needs external inputs')
+def test_real_fit():
+    '''
+    Override suffix of PDF
+    '''
+    obs = zfit.Space('mass', limits = (4600, 6500))
+    bkg = _get_real_ccbar(obs = obs)
+    sig = _get_fake_signal(obs = obs)
+
+    pdf = zfit.pdf.SumPDF([bkg, sig])
+    dat = pdf.create_sampler()
+
+    ftr = Fitter(data = dat, pdf = pdf)
+    res = ftr.fit()
+    print(res)
 # ----------------------------
