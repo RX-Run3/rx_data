@@ -97,9 +97,9 @@ components:
   central:
     <<: *comp
   high:
+    comb       : rare/rk/ee/comb.yaml
     ccbar      :
       kind : CCbarPDFTF
-    comb       : rare/rk/ee/comb.yaml
     bdkstkpiee : rare/rk/ee/bdkstkpiee_np.yaml
     bpkstkpiee : rare/rk/ee/bpkstkpiee_np.yaml
     bsphiee    : rare/rk/ee/bsphiee_np.yaml
