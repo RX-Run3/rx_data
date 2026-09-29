@@ -18,6 +18,12 @@ from rx_misid      import MisIDSampleWeights
 from zfit.data     import Data      as zdata
 from fitter        import DataPreprocessor
 
+_PH_SAMPLES : list[tuple[Component, Component, Trigger]] = [
+    (Component.data_24, Component.comb   , Trigger.rk_ee_ss),
+    (Component.data_24, Component.data_24, Trigger.rk_ee_ss),
+    (Component.bpkpee , Component.bpkpee , Trigger.rk_ee_os),
+]
+
 log=LogStore.add_logger('fitter:test_data_preprocessor')
 # ----------------------
 @pytest.fixture(scope='session', autouse=True)
@@ -230,4 +236,38 @@ def test_with_pid_weights(
         dat  = prp.get_data()
 
     _validate_data(data=dat, tmp_path = tmp_path)
+# -------------------------------------------------
+@pytest.mark.parametrize('sample, ph_sample, trigger', _PH_SAMPLES)
+def test_ph_sample(
+    tmp_path : Path, 
+    ph_sample: Component,
+    sample   : Component,
+    trigger  : Trigger):
+    '''
+    Test MC over few entries
+    '''
+    obs   = zfit.Space('B_Mass', limits=(5180, 6000))
+    ctx_1 = Cache.cache_root(path = tmp_path)
+    ctx_2 = RDFGetter.max_entries(value = 1000)
+    ctx_3 = DataPreprocessor.use_database()
+    ctx_4 = pytest.raises(ValueError)
+
+    with ExitStack() as stack:
+        stack.enter_context(ctx_1)
+        stack.enter_context(ctx_2)
+        stack.enter_context(ctx_3)
+        if sample.is_mc or sample == ph_sample:
+            stack.enter_context(ctx_4)
+
+        prp = DataPreprocessor(
+            name      = 'main',
+            obs       = obs,
+            sample    = sample,
+            ph_sample = ph_sample,
+            trigger   = trigger,
+            wgt_cfg   = None,
+            q2bin     = Qsq.jpsi)
+        dat = prp.get_data()
+
+        _validate_data(data=dat, tmp_path = tmp_path)
 # -------------------------------------------------
