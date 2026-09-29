@@ -441,7 +441,7 @@ class DataPreprocessor(Cache):
         log.info('Data not found cached, rebuilding dataset')
         arr, wgt, rep = self._get_array()
         data          = self._data_from_numpy(arr_value=arr, arr_weight=wgt)
-        cuts_path     = data_path.with_suffix('.yaml')
+        cuts_path     = data_path.with_suffix('.json')
         gut.dump_json(data=self._cuts , path=cuts_path)
 
         ctfl_path = cuts_path.with_suffix('.md')
