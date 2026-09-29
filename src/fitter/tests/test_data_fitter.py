@@ -7,7 +7,7 @@ from typing          import Final
 from pathlib         import Path
 from dmu             import LogStore
 from dmu.stats       import FitParameter, zfit
-from dmu.stats       import Constraint1D
+from dmu.stats       import Constraint1D, Constraints
 from dmu.stats       import constraint_adder as cad
 from dmu.stats       import gof_calculator   as goc
 from dmu.generic     import utilities        as gut
@@ -72,7 +72,7 @@ def test_single_region(tmp_path : Path) -> None:
 
     with Cache.cache_root(path = tmp_path):
         ftr = DataFitter(
-            q2bin= Qsq.jpsi,
+            q2bin= Qsq.low,
             d_nll= d_nll,
             cfg  = cfg)
         ftr.run()
@@ -108,7 +108,7 @@ def test_two_regions(tmp_path : Path) -> None:
         Region.region_002 : cfg_nll_002,
     }
 
-    q2bin = Qsq.central
+    q2bin = Qsq.low
     with goc.GofCalculator.disabled(True),\
          Cache.cache_root(path = tmp_path):
         data = gut.load_data(
@@ -156,7 +156,7 @@ def test_two_regions_shared(tmp_path : Path) -> None:
         Region.region_002 : cfg_nll_002,
     }
 
-    q2bin = Qsq.central
+    q2bin = Qsq.low
     with goc.GofCalculator.disabled(True),\
          Cache.cache_root(path = tmp_path):
         data = gut.load_data(
@@ -176,6 +176,7 @@ def test_with_constraints(tmp_path : Path) -> None:
     '''
     Test fitting with constraints
     '''
+    q2bin = Qsq.low
     pdf   = get_model(kind='s+b')
     pdf   = _rename_model(pdf = pdf, signal = 'bpkpee', background = 'comb')
     dat   = pdf.create_sampler(10_000)
@@ -187,8 +188,10 @@ def test_with_constraints(tmp_path : Path) -> None:
         selection   = _SEL_CFG, 
         constraints = [cons])
 
-    d_nll = {Region.region_001 : cfg_nll}
-    adr   = cad.ConstraintAdder(nll=nll, constraints = [cons])
+    d_nll       = {Region.region_001 : cfg_nll}
+    constraints = Constraints(root = {'mu' : cons})
+
+    adr   = cad.ConstraintAdder(nll=nll, constraints = constraints)
     nll   = adr.get_nll()
 
     data  = gut.load_data(package='fitter_data', fpath='tests/fits/single_region.yaml')
@@ -196,7 +199,7 @@ def test_with_constraints(tmp_path : Path) -> None:
 
     with Cache.cache_root(path = tmp_path):
         ftr = DataFitter(
-            q2bin= Qsq.jpsi,
+            q2bin= q2bin,
             d_nll= d_nll,
             cfg  = cfg)
 
@@ -211,7 +214,7 @@ def test_with_toys(ntoys : int, tmp_path : Path) -> None:
     - Making toys
     - Plotting
     '''
-    q2bin = Qsq.jpsi
+    q2bin = Qsq.low
     pdf = get_model(kind='s+b')
     pdf = _rename_model(pdf = pdf, signal = 'bpkpee', background = 'comb')
     dat = pdf.create_sampler(10_000)
