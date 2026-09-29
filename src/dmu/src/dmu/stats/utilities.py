@@ -455,7 +455,6 @@ def save_fit(
     fit_dir : str|Path,
     plt_cfg : ZFitPlotterConf | None,
     d_const : dict[str,tuple[float,float]]|None = None) -> None: ...
-#---------------------------------------------
 @overload
 def save_fit(
     data    : zdata,
@@ -464,7 +463,6 @@ def save_fit(
     fit_dir : str|Path,
     plt_cfg : ZFitPlotterConf | None,
     d_const : dict[str,tuple[float,float]]|None = None) -> Measurement: ...
-#---------------------------------------------
 @overload
 def save_fit(
     data    : zdata,
@@ -473,7 +471,6 @@ def save_fit(
     fit_dir : str|Path,
     plt_cfg : ZFitPlotterConf | None,
     d_const : dict[str,tuple[float,float]]|None = None) -> Measurement | None: ...
-#---------------------------------------------
 def save_fit(
     data    : zdata,
     model   : zpdf|None,
