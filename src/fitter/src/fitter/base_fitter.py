@@ -1,7 +1,7 @@
 '''
 This module contains BaseFitter
 '''
-import yaml
+import json 
 import textwrap
 
 from pathlib     import Path
@@ -168,7 +168,7 @@ class BaseFitter:
         except Exception as exc:
             raise ValueError('Cannot retrieve brem cut string from cuts dictionary') from exc
 
-        sel_fit = yaml.dump(cuts_fit, indent = 2)
+        sel_fit = json.dumps(cuts_fit, indent = 2)
 
         return sel_fit, sel_dif, brem_cuts
     # --------------------------
@@ -265,7 +265,7 @@ class BaseFitter:
         new_fields = {'title' : title, 'ext_text' : text}
         plt_cfg    = plt_cfg.model_copy(update = new_fields)
 
-        sel_path = out_path / 'selection.yaml'
+        sel_path = out_path / 'selection.json'
         out_path.mkdir(parents = True, exist_ok = True)
         sel_path.write_text(sel_fit)
 
