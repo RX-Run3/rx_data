@@ -180,7 +180,7 @@ def _fit(cfg : RXFitConfig) -> None:
         q2bin = cfg.q2bin,
         d_nll = d_nll,
         cfg   = cfg.mod_cfg)
-    ftr.run()
+    ftr.run(skip_fit = False)
 # ----------------------
 def main():
     '''
