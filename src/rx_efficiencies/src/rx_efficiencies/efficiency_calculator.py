@@ -194,7 +194,6 @@ class EfficiencyCalculator(Cache):
         df_org = df
 
         df = df[ df['Sample'] == self._sample ]
-        df = cast(pnd.DataFrame, df)
 
         if len(df) != 1:
             log.error('\n' + str(df_org))
@@ -204,8 +203,8 @@ class EfficiencyCalculator(Cache):
             log.error(df)
             raise ValueError(f'After specifying process {self._sample.name} dataframe does not have one and only one column')
 
-        pas = df['Passed'].iloc[0]
-        tot = df['Total' ].iloc[0]
+        pas : float = df['Passed'].iloc[0]
+        tot : float = df['Total' ].iloc[0]
 
         if as_yields:
             return pas, tot - pas
