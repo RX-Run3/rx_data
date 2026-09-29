@@ -57,6 +57,7 @@ class DataPreprocessor(Cache):
         trigger   : Trigger,
         q2bin     : Qsq,
         wgt_cfg   : WgtCfg    | None,
+        ph_sample : Component | None = None,
         is_sig    : bool             = True,
         selection : Selection | None = None):
         '''
@@ -65,6 +66,8 @@ class DataPreprocessor(Cache):
         name       : Optional name of dataset, e.g. fit category brem_x12
         obs        : zfit observable
         sample     : e.g. DATA_24_MagUp...
+        ph_sample  : Physical sample. Represents what sample will be used for.
+                     E.g. data_24 -> comb, data_24 -> misID, etc. Only makes sense for data
         trigger    : e.g. Hlt2RD...
         q2bin      : e.g. central
         max_entries: If used (default None), limit number of entries to this value
@@ -93,14 +96,41 @@ class DataPreprocessor(Cache):
         self._rdf    = rdf 
         self._cuts   = cuts
 
+        dir_root     = self._get_dir_root(sample = sample, ph_sample = ph_sample)
+
         super().__init__(
-            out_path = Path(self._sample) / 'dataset' / self._name,
+            out_path = dir_root / 'dataset' / self._name,
             obs_name = sut.name_from_obs(obs=obs),
             obs_range= sut.range_from_obs(obs=obs),
             d_sel    = cuts,
             is_sig   = is_sig,
             wgt_cfg  = '' if self._wgt_cfg is None else {key : val.model_dump() for key, val in self._wgt_cfg.items()}, 
             rdf_uid  = rdf.uid)
+    # ------------------------
+    def _get_dir_root(
+        self, 
+        sample    : Component, 
+        ph_sample : Component | None) -> Path:
+        '''
+        Parameters
+        -----------------
+        sample   : Sample used to extract data
+        ph_sample: Physically meaningful version of sample
+
+        Returns
+        -----------------
+        Path used as starting point of output, after ANADIR, i.e. ANADIR/{PATH}/dataset/brem_x12/
+        '''
+        if ph_sample is None:
+            return Path(sample)
+
+        if sample.is_mc:
+            raise ValueError(f'Physical sample specified for simulation: {sample} -> {ph_sample}')
+
+        if sample == ph_sample:
+            raise ValueError(f'Physical sample and sample are equal: {sample}')
+
+        return Path(ph_sample)
     # ------------------------
     def _get_rdf(
         self, 
