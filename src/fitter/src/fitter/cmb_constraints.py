@@ -5,7 +5,7 @@ Module with CmbConstraints class
 from typing       import Final
 from pathlib      import Path
 from dmu          import LogStore
-from dmu.stats    import ConstraintType, FitParameter, FitResult
+from dmu.stats    import ConstraintType, FitParameter, FitResult, zfit
 from dmu.workflow import Cache
 from dmu.stats    import ConstraintND
 from rx_common    import Brem, Trigger, Component
@@ -13,13 +13,14 @@ from rx_selection import selection           as sel
 
 from .configs            import CombinatorialConf, RXFitConfig 
 from .base_fitter        import BaseFitter
-from .data_fitter        import DataFitter
 from .likelihood_factory import LikelihoodFactory
 
 log=LogStore.add_logger('fitter:cmb_constraints')
-_DATA_SAMPLE : Final[Component] = Component.data_24 # What will be used to constrain combinatorial shape
-_COMPONENT   : Final[Component] = Component.comb    # What will be constrained
-_SIG_PREFIX  : Final[str]       = 'BREM'            # Signal category prefix
+_CONST_TYPE  : Final[ConstraintType] = ConstraintType.gauss # Will use fit results to build these constraints
+_DATA_SAMPLE : Final[Component]      = Component.data_24    # What will be used to constrain combinatorial shape
+_COMPONENT   : Final[Component]      = Component.comb       # What will be constrained
+_SIG_PREFIX  : Final[str]            = 'BREM'               # Signal category prefix
+_ERR_METHOD  : Final[str]            = 'minuit_hesse'       # Method used to extract errors
 # ------------------------------------
 class CmbConstraints(BaseFitter, Cache):
     '''
@@ -57,13 +58,12 @@ class CmbConstraints(BaseFitter, Cache):
 
         self._reg       = brem.region 
         self._component = _COMPONENT
-        self._base_path = Path(Component.comb) / 'fit' / self._reg
         self._trigger   = Trigger(self._mod_cfg.trigger)
         self._obs       = self._mod_cfg.obs
 
         Cache.__init__(
             self,
-            out_path = self._base_path,
+            out_path = Path(_COMPONENT) / 'fit' / self._reg,
             cfg      = cfg_cmb.model_dump())
     # ----------------------
     def __pick_parameter(self, name : str) -> bool:
@@ -88,19 +88,19 @@ class CmbConstraints(BaseFitter, Cache):
         --------------
         Fit result object
         '''
-        ftr        = LikelihoodFactory(
-            name   = self._reg,
-            obs    = self._obs,
-            q2bin  = self._q2bin,
-            sample = _DATA_SAMPLE,
-            cfg    = self._mod_cfg)
-        cfg_nll    = ftr.run()
+        ftr = LikelihoodFactory(
+            name     = self._reg,
+            obs      = self._obs,
+            q2bin    = self._q2bin,
+            sample   = _DATA_SAMPLE,
+            ph_sample= _COMPONENT,
+            cfg      = self._mod_cfg)
+        cfg_nll = ftr.run()
 
-        ftr       = DataFitter(
-            q2bin = self._q2bin,
-            d_nll = { self._reg : cfg_nll },
-            cfg   = self._mod_cfg)
-        res = ftr.run()
+        minimizer = zfit.minimize.Minuit()
+        zres      = minimizer.minimize(cfg_nll.nll)
+        zres.hesse(method = _ERR_METHOD, name = _ERR_METHOD)
+        res       = FitResult.from_zfit(res = zres)
 
         self._save_fit(
             data    = cfg_nll.nll.data[0],   # Likelihood factory makes NLL for one single region
@@ -119,8 +119,12 @@ class CmbConstraints(BaseFitter, Cache):
         ----------------------
         N dimensional Gaussian constraint
         '''
-        log.info('Constraints not found, calculating them')
+        constraints_path = self._out_path / 'constraints.json'
+        if constraints_path.exists():
+            log.info(f'Loading combinatorial constraints from: {constraints_path}')
+            return ConstraintND.from_json(constraints_path)
 
+        log.info('Constraints not found, calculating them')
         with sel.update_selection(d_sel = self._mod_cfg.selection[self._q2bin]):
             res = self.__fit_cr()
 
@@ -134,14 +138,14 @@ class CmbConstraints(BaseFitter, Cache):
 
         cns = ConstraintND(
             name       = self._reg, 
-            kind       = ConstraintType.gauss,
+            kind       = _CONST_TYPE,
             parameters = names, 
             values     = values, 
             cov        = cov,
         )
 
-        constraints_path = self._out_path / 'constraints.json'
         cns.to_json(constraints_path)
+        self._cache()
 
         return cns
 # ------------------------------------
