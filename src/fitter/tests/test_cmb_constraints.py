@@ -14,6 +14,7 @@ from dmu.stats    import ParameterLibrary as PL
 from rx_common    import Brem, Component, Qsq
 from rx_selection import selection as sel
 
+from fitter       import DataPreprocessor
 from rx_common    import MVAWp
 from fitter       import CmbConstraints
 from fitter       import RXFitConfig, FitModelConf
@@ -29,7 +30,12 @@ def initialize():
     LogStore.set_level('dmu:stats:minimizers'  , 10)
     LogStore.set_level('dmu:stats:fitter'      , 10)
 
-    with UnpackerModel.package(name = 'fitter_data'):
+    ctx_1 = UnpackerModel.package(name = 'fitter_data')
+    ctx_2 = DataPreprocessor.use_database()
+
+    with ExitStack() as stack:
+        stack.enter_context(ctx_1)
+        stack.enter_context(ctx_2)
         yield
 # --------------------------------------------------------------
 def _get_fit_config(q2bin : Qsq) -> RXFitConfig:
@@ -64,10 +70,14 @@ def test_simple(q2bin : Qsq, tmp_path : Path):
     signal = Component.bpkpee
     cfg_fit= _get_fit_config(q2bin = q2bin)
 
+    ctx_1 = Cache.cache_root(path = tmp_path)
+    ctx_2 = sel.custom_selection(d_sel = cfg_fit.overriding_selection)
+    ctx_3 = PL.parameter_schema(cfg = cfg_fit.mod_cfg.yields)
+
     with ExitStack() as stack:
-        stack.enter_context(Cache.cache_root(path = tmp_path))
-        stack.enter_context(sel.custom_selection(d_sel = cfg_fit.overriding_selection))
-        stack.enter_context(PL.parameter_schema(cfg = cfg_fit.mod_cfg.yields))
+        stack.enter_context(ctx_1)
+        stack.enter_context(ctx_2)
+        stack.enter_context(ctx_3)
 
         calc        = CmbConstraints(
             brem    = brem,
