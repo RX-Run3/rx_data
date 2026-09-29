@@ -1,7 +1,3 @@
-# This is a config file used for tests
-# It illustrates how a fit would run for data
-
-
 trigger   : rk_ee_os
 selection : {}
 yields    : 
@@ -10,40 +6,43 @@ yields    :
     min : 0
     max : 100000
 observable:
-  central:
+  low:
     name : B_M 
     range:
       - 4500 
       - 7000
 components:
-  comb   :
-    
-    models:
-      central : 
-        pdfs :
-          - gauss
-        shared        : []
-        reparametrize : {}
-        fix           : {} 
-        floating      : []
-    constraints: {}
-  bpkpee :
-    
-    component : bpkpee
-    fit       : {}
-    categories: {}
-    plots     :
-      nbins  : 60
-      stacked: True
+  low:
+    comb   :
+      models:
+        central : 
+          pdfs :
+            - gauss
+          shared        : []
+          reparametrize : {}
+          fix           : {} 
+          floating      : []
+      constraints: null
+    bpkpee :
+      component : bpkpee
+      fit       : {}
+      categories: {}
+      plots     :
+        nbins  : 60
+        stacked: True
 constraints:
   signal_fraction : []
+  combinatorial   : False
+  signal_shape    : False
 fit: {}
 plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#fit-plotting
-  merging : {}
-  regions :
-    region_001:
-      nbins   : 50
-      stacked : True
-      d_leg :
-        Gauss_ext       : Signal
-        Exponential_ext : Combinatorial
+  low:
+    merging : 
+      region_001 : []
+    regions :
+      region_001:
+        nbins   : 50
+        stacked : True
+        d_leg :
+          Gauss_ext       : Signal
+          Exponential_ext : Combinatorial

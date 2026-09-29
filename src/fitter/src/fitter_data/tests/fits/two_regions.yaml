@@ -12,56 +12,60 @@ yields    :
     min : 0
     max : 100000
 observable:
-  central:
+  low:
     name : B_M
     range:
       - 4500
       - 7000
 components:
-  comb   :
-    models:
-      central :
-        pdfs :
-          - gauss
-        shared        : []
-        reparametrize : {}
-        fix           : {}
-        floating      : []
-    constraints: {}
-  bpkpee :
-    component : bpkpee
-    fit       : {}
-    categories: {}
-    plots     :
-      nbins  : 60
-      stacked: True
+  low:
+    comb   :
+      models:
+        central :
+          pdfs :
+            - gauss
+          shared        : []
+          reparametrize : {}
+          fix           : {}
+          floating      : []
+      constraints: null
+    bpkpee :
+      component : bpkpee
+      fit       : {}
+      categories: {}
+      plots     :
+        nbins  : 60
+        stacked: True
 constraints:
   signal_fraction : []
+  combinatorial   : False
+  signal_shape    : False
 fit: {}
 plots:
-  merging:
-    region_003:
-      - region_001
-      - region_002
-  regions:
-    region_003:
-      title   : Region 1 and 2
-      nbins   : 50
-      stacked : True
-      d_leg :
-        Gauss_ext       : Signal
-        Exponential_ext : Combinatorial
-    region_001 :
-      title   : Region 1
-      nbins   : 50
-      stacked : True
-      d_leg :
-        Gauss_ext       : Signal
-        Exponential_ext : Combinatorial
-    region_002 :
-      title   : Region 2
-      nbins   : 50
-      stacked : True
-      d_leg :
-        Gauss_ext       : Signal
-        Exponential_ext : Combinatorial
+  low:
+    merging:
+      region_003:
+        - region_001
+        - region_002
+    regions:
+      region_003:
+        title   : Region 1 and 2
+        nbins   : 50
+        stacked : True
+        d_leg :
+          Gauss_ext       : Signal
+          Exponential_ext : Combinatorial
+      region_001 :
+        title   : Region 1
+        nbins   : 50
+        stacked : True
+        d_leg :
+          Gauss_ext       : Signal
+          Exponential_ext : Combinatorial
+      region_002 :
+        title   : Region 2
+        nbins   : 50
+        stacked : True
+        d_leg :
+          Gauss_ext       : Signal
+          Exponential_ext : Combinatorial
