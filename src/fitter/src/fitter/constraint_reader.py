@@ -2,7 +2,7 @@
 Script holding ConstraintReader class
 '''
 
-import yaml
+import json
 
 from pathlib             import Path
 from typing              import Final
@@ -160,7 +160,7 @@ class ConstraintReader:
         '''
         Parameters
         -------------
-        path: Path to YAML file to save constraints to
+        path: Path to JSON file to save constraints to
         '''
         log.info(f'Saving constraints to: {path}')
 
@@ -171,7 +171,7 @@ class ConstraintReader:
 
         data = { cons.name : cons.model_dump() for cons in self._constraints }
 
-        yaml_string = yaml.dump(data)
+        yaml_string = json.dumps(data, indent = 2)
         path.write_text(yaml_string)
     # ----------------------
     def get_constraints(
@@ -230,7 +230,7 @@ def add_constraints(
         signal = signal,
         nll    = nll,
         cfg    = cfg)
-    cons = crd.get_constraints(save_to = cfg.output_directory / f'constraints/{brem.region}.yaml')
+    cons = crd.get_constraints(save_to = cfg.output_directory / f'constraints/{brem.region}.json')
 
     if not cons:
         log.warning('Not using any constraints')
