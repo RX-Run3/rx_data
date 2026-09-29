@@ -195,6 +195,8 @@ class DataFitter(BaseFitter, Cache):
         l_sel  = [ cfg.selection for cfg in self._d_nll.values() ]
         l_reg  = list(self._d_nll)
 
+        sut.save_nll(loss = nll, path = self._out_path / 'nll.bytes')
+
         for model, data, sel, region in zip(nll.model, nll.data, l_sel, l_reg, strict = True):
             out_path = self._out_path / region
 
