@@ -39,18 +39,23 @@ class LikelihoodFactory:
     # ------------------------
     def __init__(
         self,
-        obs     : zobs,
-        sample  : Component,
-        q2bin   : Qsq,
-        cfg     : FitModelConf,
-        name    : str):
+        obs       : zobs,
+        sample    : Component,
+        q2bin     : Qsq,
+        cfg       : FitModelConf,
+        name      : str,
+        ph_sample : Component | None = None):
         '''
-        name   : Identifier for fit, e.g. block. This is optional
-        cfg    : configuration for the fit as a DictConfig object
-        sample : Identifies sample e.g. DATA_24_MagUp...
-        project: E.g. rx
-        q2bin  : E.g. central
-        cfg    : Configuration for the fit to data
+        Parameters
+        ------------------
+        name     : Identifier for fit, e.g. block. This is optional
+        cfg      : configuration for the fit as a DictConfig object
+        sample   : Identifies sample e.g. DATA_24_MagUp...
+        project  : E.g. rx
+        q2bin    : E.g. central
+        cfg      : Configuration for the fit to data
+        ph_sample: Physical sample. Represents what sample will be used for.
+                     E.g. data_24 -> comb, data_24 -> misID, etc. Only makes sense for data
         '''
         self._name      = name 
         self._obs       = obs
@@ -58,6 +63,7 @@ class LikelihoodFactory:
         self._trigger   = cfg.trigger
         self._q2bin     = q2bin
         self._cfg       = cfg
+        self._ph_sample = ph_sample
     # ----------------------
     def _get_config(self) -> dict[str,dict[Cuts,str]]:
         '''
@@ -101,12 +107,13 @@ class LikelihoodFactory:
                 stack.enter_context(RDFGetter.project(project = project))
 
             dpr  = DataPreprocessor(
-                name   = self._name,
-                obs    = self._obs,
-                q2bin  = self._q2bin,
-                sample = self._sample,
-                trigger= self._trigger,
-                wgt_cfg= None) # Do not need weights for data
+                name      = self._name,
+                obs       = self._obs,
+                q2bin     = self._q2bin,
+                sample    = self._sample,
+                trigger   = self._trigger,
+                ph_sample = self._ph_sample,
+                wgt_cfg   = None) # Do not need weights for data
             data = dpr.get_data()
 
         log.info('Getting full data model using fits to simulation')
