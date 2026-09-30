@@ -103,6 +103,24 @@ class CCbarConfTF(ComponentConf, frozen = True):
 
         raise ValueError('Cannot find block fractions')
     # ------------------------------
+    def __fix_pars(self, pdf : zpdf) -> None:
+        '''
+        Fixes certain parameters
+
+        Parameters
+        ----------------
+        pdf: Fully reconstructed plus partly reconstructed charmonium PDF
+        '''
+        pars = pdf.get_params(floating = None)
+        for par in pars:
+            par.floating = False
+
+        [mu] = [ par for par in pars if par.name.startswith('mu_') ]
+        [sg] = [ par for par in pars if par.name.startswith('sg_') ]
+
+        mu.floating = False
+        sg.floating = True
+    # ------------------------------
     def get_pdf(
         self,
         obs_name: str,
@@ -140,8 +158,7 @@ class CCbarConfTF(ComponentConf, frozen = True):
                 name    = f'ccbar_block_{iblock}',
                 suffix  = f'b{iblock}')
 
-            for par in pdf.get_params():
-                par.floating = False
+            self.__fix_pars(pdf = pdf)
 
             d_pdf[block] = pdf
 
