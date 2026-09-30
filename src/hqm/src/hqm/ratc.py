@@ -307,7 +307,7 @@ class CCbarRatioCalculator:
         Type of PDF used for this bin, either kde or parametric
         '''
         if _QSQ_NAME == 'q2_dtf': # DTF cut allows parametric fits, no tail shaping
-            return 'parametric'
+            raise ValueError(f'Incorrect q2 used in ratio fits: {_QSQ_NAME}')
 
         if qsq_src == qsq_tgt: # non-dtf cut shapes tails in non-leaked components
             return 'kde'
