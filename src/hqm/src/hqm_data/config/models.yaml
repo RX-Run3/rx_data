@@ -33,7 +33,7 @@ shape_ee_up: &sh_ee_up
     - 500
   rn:
     - 5200
-    - 7000
+    - 6000
 shape_ee_UP: &sh_ee_UP
   mu:
     - 6300
@@ -92,7 +92,7 @@ muon:
 out_dir : DB/hqm/models
 mod_cfg :
   low_stats:
-    stats : [   250,   10000]
+    stats : [   150,   10000]
     models: [ suj ]
   mid_stats:
     stats : [ 10000,  100000]
