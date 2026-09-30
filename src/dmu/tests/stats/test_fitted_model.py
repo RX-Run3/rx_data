@@ -50,7 +50,7 @@ def test_from_fit():
         obs     = obs,
         l_pdf   = [Model.gauss],
         l_shared= [],
-        l_float = [],
+        l_float = ['mu'],
         preffix = 'test')
 
     pdf  = mfc.get_pdf()
