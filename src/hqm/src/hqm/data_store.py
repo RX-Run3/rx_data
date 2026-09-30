@@ -197,6 +197,7 @@ class DataStore:
         ----------------
         Dictionary with cut name and number of entries passed
         '''
+        log.info(f'Saving selection to: {self.__full_sel}')
         sut.dump_json(
             exists_ok = True,
             path      = path,

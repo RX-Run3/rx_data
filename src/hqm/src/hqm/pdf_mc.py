@@ -428,9 +428,8 @@ class PdfBuilder:
             except Exception:
                 log.warning(f'Removing and remaking broken model at {self.model_path}')
                 self.model_path.unlink()
-        else:
-            log.info(f'Model not found at: {self.model_path}')
 
+        log.info(f'Model not found at: {self.model_path}')
         cfg_par  = self.__cfg.read_conf(
             comp = self.__comp,
             trig = self.__trig,
