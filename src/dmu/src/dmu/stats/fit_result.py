@@ -515,6 +515,23 @@ class FitResult(BaseModel, frozen = True):
 
         return pars
     # ----------------------
+    def fix_pars(self, pars : set[zpar]) -> set[zpar]:
+        '''
+        Parameters
+        -------------
+        pars: Set of parameters
+
+        Returns
+        -------------
+        Set of parameters with values fixed as in current object 
+        '''
+        pars = self.set_pars(pars = pars)
+
+        for par in pars:
+            par.floating = False
+
+        return pars
+    # ----------------------
     def get_pars(self, prefix : str) -> list[FitParameter]:
         '''
         Parameters
