@@ -8,8 +8,8 @@ shape_ee_lo: &sh_ee_lo
     - 10
     - 700
   rn:
-   - 4600
-   - 5200
+    - 4600
+    - 5200
 shape_ee_cn: &sh_ee_cn
   mu:
     - 5280
