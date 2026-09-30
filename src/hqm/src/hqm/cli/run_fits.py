@@ -64,7 +64,7 @@ def _run_fit_mc(component: Component, trigger: Trigger, q2bin: Qsq, binning: str
             qsq       = q2bin,
             use_dtf   = False,
             use_kde   = False,
-            smear     = True,
+            smear     = False,
             binning   = binning,
             mode      = _MODE,
         )
