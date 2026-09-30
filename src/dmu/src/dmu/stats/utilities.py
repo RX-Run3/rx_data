@@ -33,8 +33,8 @@ from .measurement     import Measurement
 from .zfit_plotter    import ZFitPlotter, ZFitPlotterConf
 
 log           = LogStore.add_logger('dmu:stats:utilities')
-Loss          = ExtendedUnbinnedNLL | UnbinnedNLL
-SumPDF        = zfit.pdf.SumPDF
+type Loss     = ExtendedUnbinnedNLL | UnbinnedNLL
+type SumPDF   = zfit.pdf.SumPDF
 
 SingleLiteral = Literal['signal', 'signal_alt', 'bkg']
 SumLiteral    = Literal['s+b', 's_alt+b']
@@ -265,26 +265,26 @@ def _get_pars(
 #-------------------------------------------------------
 def _get_messages(
     pdf       : zpdf,
-    l_par_flt : list,
-    l_par_fix : list,
+    l_par_flt : list[zpar],
+    l_par_fix : list[zpar],
     d_const   : None|dict[str,tuple[float,float]] = None) -> list[str]:
 
     str_space = str(pdf.space)
 
     l_msg : list[str] = []
-    l_msg.append(125 * '-')
+    l_msg.append('-' * 20)
     l_msg.append(f'Name : {pdf.name}')
     l_msg.append(f'Label: {pdf.label}')
     l_msg.append(f'OBS  : {str_space}')
-    l_msg.append(125 * '-')
-    l_msg.append(f'{"Parameter":<50}{"Value":>15}{"Low":>15}{"High":>15}{"Floating":>5}{"Constraint":>25}')
+    l_msg.append('-' * 20)
+    l_msg.append(f'{"Parameter":<50}{"Value":<15}{"Low":<15}{"High":<15}{"Floating":<10}{"Constraint":<25}')
     l_msg.append('-' * 20)
     for par in l_par_flt:
         value = par.value().numpy()
         low   = par.lower
         hig   = par.upper
         const = _get_const(par, d_const)
-        l_msg.append(f'{par.name:<50}{value:>15.3e}{low:>15.3e}{hig:>15.3e}{par.floating:>5}{const:>25}')
+        l_msg.append(f'{par.name:<50}{value:<15,.6g}{low:<15,.6g}{hig:<15,.6g}{par.floating:<10}{const:<25}')
 
     l_msg.append('')
 
@@ -293,7 +293,7 @@ def _get_messages(
         low   = par.lower
         hig   = par.upper
         const = _get_const(par, d_const)
-        l_msg.append(f'{par.name:<50}{value:>15.3e}{low:>15.3e}{hig:>15.3e}{par.floating:>5}{const:>25}')
+        l_msg.append(f'{par.name:<50}{value:<15,.6g}{low:<15,.6g}{hig:<15,.6g}{par.floating:<10}{const:<25}')
 
     return l_msg
 #-------------------------------------------------------
