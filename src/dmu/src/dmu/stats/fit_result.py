@@ -12,7 +12,7 @@ import pandas as pnd
 
 from functools   import cached_property
 from gvar        import gvar
-from typing      import Self, Sequence
+from typing      import Self, Sequence, Any
 from contextvars import ContextVar
 from contextlib  import contextmanager
 from typing      import Final
@@ -48,7 +48,7 @@ class GoodnessOfFit(BaseModel):
     # --------------------------
     @model_validator(mode='before')
     @classmethod
-    def compute_or_validate(cls, data):
+    def compute_or_validate(cls, data : Any):
         '''
         Validates:
 
@@ -56,9 +56,9 @@ class GoodnessOfFit(BaseModel):
         - Chi2 or Pvalue needs to exist 
         - If both chi2 and pvalue exist, check consistency 
         '''
-        chi2 = data.get('chi2', math.nan) 
-        pval = data.get('pval', math.nan) 
-        ndof = data['ndof']
+        chi2 : float = data.get('chi2', math.nan) 
+        pval : float = data.get('pval', math.nan) 
+        ndof : float = data['ndof']
 
         if not (_MIN_NDOF < ndof < _MAX_NDOF):
             raise ValueError(f'Invalid Ndof: {ndof}')
@@ -581,15 +581,15 @@ class FitResult(BaseModel, frozen = True):
         FitParameter
         '''
         if 'minuit_hesse' in data:
-            error = data['minuit_hesse']['error']
+            error : float = data['minuit_hesse']['error']
         elif no_errors_ok:
-            error = math.nan
+            error : float = math.nan
         else:
             pprint.pprint(data)
             raise KeyError(f'Cannot extract error from parameter: {name}')
 
         try:
-            value = data['value']
+            value : float = data['value']
         except KeyError as exc:
             pprint.pprint(data)
             raise KeyError(f'Cannot extract value from parameter: {name}') from exc
