@@ -122,7 +122,7 @@ def _check_columns(rdf : RDF.RNode) -> None:
     s_col  = { name.c_str() for name in rdf.GetColumnNames() }
 
     fail = False
-    for col in {'EVENTNUMBER', 'RUNNUMBER', 'Jpsi_Mass_smr', 'B_Mass_smr', 'q2_smr'}:
+    for col in ['EVENTNUMBER', 'RUNNUMBER', 'Jpsi_Mass_smr', 'B_Mass_smr', 'q2_smr']:
         if col in s_col:
             continue
 
@@ -153,7 +153,7 @@ def test_get_rdf(
     is_uniform : bool, 
     channel    : Channel,
     is_data    : bool,
-    tmp_path):
+    tmp_path   : Path):
     '''
     Checks if the input is wrong
     '''
