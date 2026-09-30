@@ -6,7 +6,9 @@ import pytest
 import numpy
 import numpy.typing  as npt
 import pandas        as pnd
+import matplotlib.pyplot as plt
 
+from contextlib        import ExitStack
 from collections.abc   import Callable
 from typing            import Any
 from pathlib           import Path
@@ -245,4 +247,41 @@ def test_merge(monkeypatch, tmp_path : Path):
 
     assert 'block' not in sel
     assert len(arr_raw) >= min_entries
+#--------------------------------------
+@pytest.mark.parametrize('comp', [Component.data_24, Component.bpkpjpsiee])
+def test_smearing(
+    _patch_loader_ee : Callable,
+    comp             : Component,
+    tmp_path         : Path):
+    '''
+    Test that smearing is/is not done 
+    '''
+    _   = _patch_loader_ee
+    ctx_1 = DataStore.selection(sel = {Cuts.block : 'true'}, update = True)
+    with ExitStack() as stack:
+        stack.enter_context(ctx_1)
+
+        obj               = DataStore(comp= comp, trig= Trigger.rk_ee_os)
+        arr_mass_smr, _   = obj.get_array(mass = Mass.bp_bcor)
+
+    ctx_1 = DataStore.selection(sel = {Cuts.block : 'true'}, update = True)
+    ctx_2 = DataStore.smear_masses(value = False)
+    with ExitStack() as stack:
+        stack.enter_context(ctx_1)
+        stack.enter_context(ctx_2)
+
+        obj               = DataStore(comp= comp, trig= Trigger.rk_ee_os)
+        arr_mass_raw, _   = obj.get_array(mass = Mass.bp_bcor)
+
+    if not comp.is_mc:
+        assert numpy.isclose(arr_mass_raw, arr_mass_smr).all()
+    else:
+        assert arr_mass_raw.std() < arr_mass_smr.std()
+
+    plt.hist(arr_mass_raw, bins = 60, range = (5000, 6000), alpha    =    0.3, label = 'Raw')
+    plt.hist(arr_mass_smr, bins = 60, range = (5000, 6000), histtype = 'step', label = 'Smeared')
+    plt.title(comp.latex)
+    plt.legend()
+    plt.savefig(tmp_path / 'plot.png')
+    plt.close()
 #--------------------------------------
