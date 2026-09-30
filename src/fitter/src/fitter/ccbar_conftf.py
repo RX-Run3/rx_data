@@ -119,7 +119,7 @@ class CCbarConfTF(ComponentConf, frozen = True):
         [sg] = [ par for par in pars if par.name.startswith('sg_') ]
 
         mu.floating = False
-        sg.floating = True
+        sg.floating = False
     # ------------------------------
     def get_pdf(
         self,
