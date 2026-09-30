@@ -15,8 +15,8 @@ log = LogStore.add_logger('rx_q2:q2smear_corrector')
 _BPLUS_PDG_MASS: Final[float]     = 5279.41
 _EXTRA_COLUMNS : Final[list[str]] = ['EVENTNUMBER', 'RUNNUMBER']
 _PARTICLES     : Final[list[str]] = ['B', 'Jpsi']
-_COLUMNS       : Final[list[str]] = [  # These are the expected columns in the 
-    'B_Mass'   , 'Jpsi_Mass',          # input ROOT dataframe 
+_COLUMNS       : Final[list[str]] = [  # These are the expected columns in the
+    'B_Mass'   , 'Jpsi_Mass',          # input ROOT dataframe
     'B_TRUEID' , 'Jpsi_TRUEID',
     'B_TRUEM'  , 'Jpsi_TRUEM',
     'nbrem'    , 'block']
@@ -27,11 +27,11 @@ class Q2SmearCorrector:
 
     - Read mass scales and resolutions
     - Calculate smeared and scaled masses
-    - Returns smeared mass for each unsmeared mass, block and brem 
+    - Returns smeared mass for each unsmeared mass, block and brem
     '''
     # ------------------------------------
     def __init__(
-        self, 
+        self,
         channel      : Channel,
         add_original : bool = False):
         '''
@@ -81,7 +81,7 @@ class Q2SmearCorrector:
         return RDF.FromPandas(df)
     # ----------------------
     def _add_extra_columns(
-        self, 
+        self,
         rdf : RDF.RNode,
         df  : pnd.DataFrame) -> pnd.DataFrame:
         '''
@@ -112,7 +112,7 @@ class Q2SmearCorrector:
         -------------
         Dataframe with only the needed columns
         '''
-        all_needed : Final[list[str]] = self._expected + _EXTRA_COLUMNS 
+        all_needed : Final[list[str]] = self._expected + _EXTRA_COLUMNS
 
         columns = df.columns
         for column in columns:
@@ -152,16 +152,16 @@ class Q2SmearCorrector:
                 mu_mc, _ = self._reader.get_param(is_mc=True, param='mu', block=block, brem=brem)
                 reso , _ = self._reader.get_scale(corr=Correction.mass_resolution, block=block, brem=brem)
                 scale, _ = self._reader.get_scale(corr=Correction.mass_scale,     block=block, brem=brem)
-        
+
             data = {
-                'block': row['block'], 
+                'block': row['block'],
                 'nbrem': row['nbrem'],
-                'mu_mc': mu_mc, 
-                'reso' : reso, 
+                'mu_mc': mu_mc,
+                'reso' : reso,
                 'scale': scale}
 
             records.append(data)
-        
+
         return pnd.DataFrame(records)
     # ----------------------
     def _mass_from_particle(self, particle : str, df : pnd.DataFrame) -> pnd.Series:
@@ -176,7 +176,7 @@ class Q2SmearCorrector:
         '''
         recom = df[f'{particle}_Mass']
         truem = df[f'{particle}_TRUEM']
-            
+
         masses= (
                 truem
                 + df['reso'] * (recom - truem)
@@ -193,7 +193,7 @@ class Q2SmearCorrector:
 
         Returns
         -------------
-        ROOT dataframe with data to be smeared 
+        ROOT dataframe with data to be smeared
         '''
         if info.is_rdf_data(rdf=rdf):
             log.info('DataFrame from real data, will return unsmeared variables')
@@ -205,14 +205,14 @@ class Q2SmearCorrector:
         df   = self._add_extra_columns(df=df, rdf=rdf)
         df   = self._trim_columns(df=df)
 
-        return RDF.FromPandas(df) 
+        return RDF.FromPandas(df)
     # ----------------------
     def get_df(self, df : pnd.DataFrame, replace : bool = False) -> pnd.DataFrame:
         '''
         Parameters
         ---------------
         df     : Pandas dataframe with event per row
-        replace: 
+        replace:
             True : will override mass columns, and keep original with `_org` suffix
             Talse: (default) will add new ones with `_smr` suffix
         '''
@@ -224,9 +224,9 @@ class Q2SmearCorrector:
             log.debug(particle)
             if replace:
                 df[f'{particle}_Mass_org'] = df[f'{particle}_Mass'].to_numpy()
-                df[f'{particle}_Mass'    ] = self._mass_from_particle(particle, df) 
+                df[f'{particle}_Mass'    ] = self._mass_from_particle(particle, df)
             else:
-                df[f'{particle}_Mass_smr'] = self._mass_from_particle(particle, df) 
+                df[f'{particle}_Mass_smr'] = self._mass_from_particle(particle, df)
 
         df = df.drop(columns=['mu_mc', 'reso', 'scale'])
 
