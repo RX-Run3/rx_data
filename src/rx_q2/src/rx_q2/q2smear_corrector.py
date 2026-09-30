@@ -144,6 +144,7 @@ class Q2SmearCorrector:
             brem  = Brem.from_int(int(row['nbrem']))
 
             if self._channel == Channel.ee and brem == Brem.zero:
+                log.warning('Using dummy scales for brem zero')
                 reso     = 1.0
                 scale    = 0.0
                 mu_mc    = 5280
