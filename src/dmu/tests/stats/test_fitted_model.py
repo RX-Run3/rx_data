@@ -65,6 +65,8 @@ def test_from_fit():
         pdf = pdf,
         res = res)
 
+    sut.print_pdf(fmo.pdf)
+
     assert isinstance(fmo, FittedModel)
 # -----------------------------
 @pytest.mark.parametrize('models', _MODELS)
