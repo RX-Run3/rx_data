@@ -67,6 +67,12 @@ def test_from_fit():
 
     sut.print_pdf(fmo.pdf)
 
+    [mu] = [ par for par in fmo.pdf.get_params(floating = None) if par.name.startswith('mu') ]
+    [sg] = [ par for par in fmo.pdf.get_params(floating = None) if par.name.startswith('sg') ]
+
+    assert     mu.floating
+    assert not sg.floating
+
     assert isinstance(fmo, FittedModel)
 # -----------------------------
 @pytest.mark.parametrize('models', _MODELS)
