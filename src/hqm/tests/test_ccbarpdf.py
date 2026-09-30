@@ -177,8 +177,8 @@ def test_suffix(monkeypatch, tmp_path : Path):
 
     sut.print_pdf(pdf)
 # ----------------------------
-@pytest.mark.skip(reason = 'Needs external inputs')
-def test_real_fit():
+@pytest.mark.skip(reason = 'Needs external input')
+def test_real_fit(tmp_path : Path):
     '''
     Override suffix of PDF
     '''
