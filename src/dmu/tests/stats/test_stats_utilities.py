@@ -92,7 +92,10 @@ def _get_zdata(weighted : bool) -> tuple[zdata, float]:
         target  = 100
 
     obs  = zfit.Space('x', limits=(0, 1))
-    data = zfit.data.from_numpy(obs=obs, array=arr_val, weights=arr_wgt)
+    data = zfit.Data.from_numpy(obs=obs, array=arr_val, weights=arr_wgt)
+
+    if not isinstance(data, zdata):
+        raise ValueError('No zfit ata found')
 
     return data, target
 #----------------------------------
