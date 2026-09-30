@@ -124,28 +124,6 @@ class Q2SmearCorrector:
 
         return df
     # ----------------------
-    def get_rdf(self, rdf : RDF.RNode) -> RDF.RNode:
-        '''
-        Parameters
-        -------------
-        rdf: ROOT dataframe with mass columns to be smeared
-
-        Returns
-        -------------
-        ROOT dataframe with data to be smeared 
-        '''
-        if info.is_rdf_data(rdf=rdf):
-            log.info('DataFrame from real data, will return unsmeared variables')
-            return self._process_data(rdf=rdf)
-
-        data = rdf.AsNumpy(_COLUMNS)
-        df   = pnd.DataFrame(data)
-        df   = self.get_df(df = df)
-        df   = self._add_extra_columns(df=df, rdf=rdf)
-        df   = self._trim_columns(df=df)
-
-        return RDF.FromPandas(df) 
-    # ----------------------
     def __get_lookup(self, df : pnd.DataFrame) -> pnd.DataFrame:
         '''
         Parameters
@@ -205,6 +183,28 @@ class Q2SmearCorrector:
                 + (1 - df['reso']) * (df['mu_mc'] - _BPLUS_PDG_MASS))
 
         return masses
+    # ----------------------
+    def get_rdf(self, rdf : RDF.RNode) -> RDF.RNode:
+        '''
+        Parameters
+        -------------
+        rdf: ROOT dataframe with mass columns to be smeared
+
+        Returns
+        -------------
+        ROOT dataframe with data to be smeared 
+        '''
+        if info.is_rdf_data(rdf=rdf):
+            log.info('DataFrame from real data, will return unsmeared variables')
+            return self._process_data(rdf=rdf)
+
+        data = rdf.AsNumpy(_COLUMNS)
+        df   = pnd.DataFrame(data)
+        df   = self.get_df(df = df)
+        df   = self._add_extra_columns(df=df, rdf=rdf)
+        df   = self._trim_columns(df=df)
+
+        return RDF.FromPandas(df) 
     # ----------------------
     def get_df(self, df : pnd.DataFrame, replace : bool = False) -> pnd.DataFrame:
         '''
