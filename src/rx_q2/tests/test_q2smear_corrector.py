@@ -45,10 +45,11 @@ def _plot_masses(
     if is_data:
         assert numpy.isclose(arr_reco, arr_smr).all()
 
-    plt.hist(arr_reco, range=rng, bins=60, alpha=0.3      )
-    plt.hist(arr_smr , range=rng, bins=60, histtype='step')
+    plt.hist(arr_reco, range=rng, bins=60, alpha=0.3      , label = 'Raw'    )
+    plt.hist(arr_smr , range=rng, bins=60, histtype='step', label = 'Smeared')
 
     dir_path.mkdir(exist_ok=True, parents=True)
+    plt.legend()
     plt.savefig(dir_path / f'{particle}.png')
     plt.close()
 # -------------------------------------------
@@ -157,7 +158,10 @@ def test_get_rdf(
     '''
     Checks if the input is wrong
     '''
-    df  = _get_df(uniform = is_uniform, channel = channel, is_data = is_data)
+    df  = _get_df(
+        uniform = is_uniform, 
+        channel = channel, 
+        is_data = is_data)
     rdf = RDF.FromPandas(df)
 
     obj = Q2SmearCorrector(channel=channel, add_original=True)
