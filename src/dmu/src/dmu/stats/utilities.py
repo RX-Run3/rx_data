@@ -608,7 +608,7 @@ def _format_float_str(val : str) -> str:
     '''
     Takes number as string and returns a formatted version
     '''
-
+    val  = val.replace(',', '')
     fval = float(val)
     if abs(fval) > _MIN_INT_PRINT:
         return f'{fval:,.0f}'
