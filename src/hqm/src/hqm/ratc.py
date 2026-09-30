@@ -351,9 +351,6 @@ class CCbarRatioCalculator:
 
             pdf = mod.get_pdf(name = comp.value)
 
-        for par in pdf.get_params():
-            par.floating = False
-
         return pdf
     #-----------------------------
     def __get_fr_pdf(self, qsq_src : Qsq, qsq_tgt : Qsq) -> zpdf:
@@ -376,7 +373,27 @@ class CCbarRatioCalculator:
             qsq_src = qsq_src,
             qsq_tgt = qsq_tgt)
 
+        self.__set_fr_pars(pdf = pdf)
+
         return pdf
+    #-----------------------------
+    def __set_fr_pars(self, pdf : zpdf) -> None:
+        '''
+        Fix/Float parameters in PDF
+
+        Parameters
+        -----------------
+        pdf: PDF used to describe fully reconstructed candidates
+        '''
+        pars = pdf.get_params(floating = None)
+        for par in pars:
+            par.floating = False
+
+        [mu] = [ par for par in pars if par.name.startswith('mu_') ]
+        [sg] = [ par for par in pars if par.name.startswith('sg_') ]
+
+        mu.floating = True
+        sg.floating = True
     #-----------------------------
     def __component_from_qsq(self, qsq : Qsq, is_part_reco : bool) -> Component:
         '''
