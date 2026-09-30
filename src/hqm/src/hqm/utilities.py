@@ -6,16 +6,16 @@ from typing     import Final
 from rx_common  import Channel, Mass
 
 NpFltArray        = npt.NDArray[numpy.float64]
-SIZE : Final[int] = 20_000
+SIZE : Final[int] = 2000
 # ------------------------------------------------
 def get_data(channel : Channel) -> dict[str,NpFltArray]:
-    rng = numpy.random.default_rng()
+    rng = numpy.random.default_rng(seed = 42)
 
     data : dict[str,NpFltArray] = {
         'B_TRUEM'              : rng.uniform(3000, 5100, SIZE),
         'Jpsi_Mass'            : rng.uniform(2500, 3200, SIZE),
         'Jpsi_TRUEM'           : rng.uniform(2500, 3200, SIZE),
-        Mass.bp_bcor.value     : rng.uniform(3000, 5100, SIZE),
+        Mass.bp_bcor.value     : rng.normal(loc = 5280, scale = 100,size = SIZE),
         Mass.bp_dtf_jpsi.value : rng.normal(loc = 5200, scale = 20, size = SIZE),
         Mass.bp_dtf_psi2.value : rng.normal(loc = 5200, scale = 20, size = SIZE),
     }
