@@ -17,6 +17,7 @@ from hqm.config     import CCbarRatioCalculatorConf, TransferFunctionMakerConf
 from hqm.trfc       import TransferFunction, TransferFunctionMaker
 from rx_common      import Channel, Component, Mass, Project, Qsq, Trigger, Cuts
 from dmu            import LogStore
+from dmu.stats      import utilities as sut
 
 from .plotter       import Plotter
 
@@ -373,11 +374,12 @@ class CCbarRatioCalculator:
             qsq_src = qsq_src,
             qsq_tgt = qsq_tgt)
 
-        self.__set_fr_pars(pdf = pdf)
+        is_leakage = qsq_src != qsq_tgt
+        self.__set_fr_pars(pdf = pdf, is_leakage = is_leakage)
 
         return pdf
     #-----------------------------
-    def __set_fr_pars(self, pdf : zpdf) -> None:
+    def __set_fr_pars(self, pdf : zpdf, is_leakage : bool) -> None:
         '''
         Fix/Float parameters in PDF
 
@@ -389,8 +391,15 @@ class CCbarRatioCalculator:
         for par in pars:
             par.floating = False
 
-        [mu] = [ par for par in pars if par.name.startswith('mu_') ]
-        [sg] = [ par for par in pars if par.name.startswith('sg_') ]
+        if not is_leakage:
+            return
+
+        try:
+            [mu] = [ par for par in pars if par.name.startswith('mu_') ]
+            [sg] = [ par for par in pars if par.name.startswith('sg_') ]
+        except Exception as exc:
+            sut.print_pdf(pdf = pdf)
+            raise ValueError('Cannot extract mean and width from fully reco PDF') from exc
 
         mu.floating = True
         sg.floating = True
