@@ -29,9 +29,6 @@ def _get_real_ccbar(obs : zobs) -> zpdf:
         obs_name = 'mass',
         suffix   = 'suf')
 
-    for par in pdf.get_params():
-        par.floating = False
-
     nev  = zfit.Parameter('nbkg', 1000, 0, 100_000)
 
     return pdf.create_extended(nev, name = 'ccbar')
@@ -195,4 +192,10 @@ def test_real_fit():
     ftr = Fitter(data = dat, pdf = pdf)
     res = ftr.fit()
     print(res)
+
+    cfg = ZFitPlotterConf.default()
+    ptr = ZFitPlotter(data = dat, model = pdf)
+    ptr.run(cfg = cfg)
+    plt.savefig(tmp_path / 'plot.png')
+    plt.close()
 # ----------------------------
