@@ -137,7 +137,16 @@ class FittedModel(BaseModel, Serializable, frozen = True):
         else:
             fit_result = self.fit_result
 
-        fit_result.set_pars(pars = pars)
+        fit_result.fix_pars(pars = pars)
+
+        for phys_par_name in self.model_conf.floating:
+            par_res   = fit_result.get_par(prefix = phys_par_name)
+            try:
+                [par_pdf] = [ par for par in pars if par.name == par_res.name ]
+            except Exception as exc:
+                raise ValueError(f'Cannot extract {par_res.name} from PDF') from exc
+
+            par_pdf.floating = True
 
         return pdf
 #---------------------------------
