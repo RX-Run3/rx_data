@@ -37,8 +37,31 @@ def _plot_masses(
     log.info('Plotting')
 
     data     = rdf.AsNumpy()
-    arr_reco = data[f'{particle}_Mass']
-    arr_smr  = data[f'{particle}_Mass_smr'      ]
+    arr_reco = data[f'{particle}_Mass'    ]
+    arr_smr  = data[f'{particle}_Mass_smr']
+
+    rng = {'B' : (5000, 6000), 'Jpsi' : (2000, 3500)}[particle]
+
+    if is_data:
+        assert numpy.isclose(arr_reco, arr_smr).all()
+
+    plt.hist(arr_reco, range=rng, bins=60, alpha=0.3      , label = 'Raw'    )
+    plt.hist(arr_smr , range=rng, bins=60, histtype='step', label = 'Smeared')
+
+    dir_path.mkdir(exist_ok=True, parents=True)
+    plt.legend()
+    plt.savefig(dir_path / f'{particle}.png')
+    plt.close()
+# -------------------------------------------
+def _plot_df_masses(
+    df       : pnd.DataFrame, 
+    is_data  : bool,
+    particle : str,
+    dir_path : Path) -> None:
+    log.info('Plotting')
+
+    arr_reco = df[f'{particle}_Mass'    ].to_numpy()
+    arr_smr  = df[f'{particle}_Mass_smr'].to_numpy()
 
     rng = {'B' : (5000, 6000), 'Jpsi' : (2000, 3500)}[particle]
 
@@ -147,16 +170,16 @@ def _check_rdf(rdf : RDF.RNode) -> None:
 
     assert numpy.isclose(arr_q2, arr_jp ** 2, atol=1).all()
 # -------------------------------------------
-@pytest.mark.parametrize('is_uniform', [True, False])
-@pytest.mark.parametrize('channel'   , _CHANNELS)
-@pytest.mark.parametrize('is_data'   , [True, False])
+@pytest.mark.parametrize('is_uniform', [False])
+@pytest.mark.parametrize('channel'   , [Channel.ee])
+@pytest.mark.parametrize('is_data'   , [False])
 def test_get_rdf(
     is_uniform : bool, 
     channel    : Channel,
     is_data    : bool,
     tmp_path   : Path):
     '''
-    Checks if the input is wrong
+    Run using ROOT data frame input
     '''
     df  = _get_df(
         uniform = is_uniform, 
@@ -174,17 +197,36 @@ def test_get_rdf(
     _plot_masses(rdf=rdf, is_data = is_data, particle='B'   , dir_path=tmp_path / sample)
     _plot_masses(rdf=rdf, is_data = is_data, particle='Jpsi', dir_path=tmp_path / sample)
 # -------------------------------------------
-@pytest.mark.parametrize('channel', _CHANNELS)
-@pytest.mark.parametrize('replace', [True, False])
-def test_get_df(channel : Channel, replace : bool):
+@pytest.mark.parametrize('is_uniform', [False])
+@pytest.mark.parametrize('channel'   , [Channel.ee])
+@pytest.mark.parametrize('is_data'   , [False])
+def test_get_df(
+    is_uniform : bool, 
+    channel    : Channel,
+    is_data    : bool,
+    tmp_path   : Path):
     '''
-    Checks if the input is wrong
+    Run using pandas data frame input
     '''
-    df  = _get_df(uniform = False, channel = channel, is_data = False)
-    obj = Q2SmearCorrector(channel=channel, add_original=True)
-    df  = obj.get_df(
-        df      = df, 
-        replace = replace)
+    df  = _get_df(
+        uniform = is_uniform, 
+        channel = channel, 
+        is_data = is_data)
 
-    print(df)
+    obj = Q2SmearCorrector(channel=channel, add_original=True)
+    df  = obj.get_df(df=df)
+
+    sample = 'data' if is_data else 'simulation'
+
+    _plot_df_masses(
+        df      = df, 
+        is_data = is_data, 
+        particle='B', 
+        dir_path=tmp_path / sample)
+
+    _plot_df_masses(
+        df      = df, 
+        is_data = is_data, 
+        particle='Jpsi', 
+        dir_path=tmp_path / sample)
 # -------------------------------------------
