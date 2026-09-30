@@ -19,6 +19,8 @@ def has_gradient(pdf : zfit.pdf.BasePDF) -> bool:
     --------------
     True if PDF has gradient defined
     '''
+    yields = pdf.get_params(is_yield=True) if pdf.is_extended else []
+
     data   = pdf.sample(n=3).value()
     params = list(pdf.get_params())
     
@@ -32,6 +34,9 @@ def has_gradient(pdf : zfit.pdf.BasePDF) -> bool:
 
     missing = False
     for param, gradient in zip(params, grads, strict=True):
+        if param in yields:
+            continue
+
         if gradient is None:
             log.warning(f'No gradient for: {param.name}')
             missing = True
