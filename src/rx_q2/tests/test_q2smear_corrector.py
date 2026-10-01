@@ -7,6 +7,8 @@ import pytest
 import pandas            as pnd
 import matplotlib.pyplot as plt
 
+from rx_common             import Correction
+from typing                import Any
 from functools             import lru_cache
 from typing                import Final
 from ROOT                  import RDF # type: ignore
@@ -19,15 +21,65 @@ log  = LogStore.add_logger('rx_q2:test_q2smear_corrector')
 
 _CHANNELS : Final[list[Channel]] = [Channel.ee, Channel.mm]
 _NENTRIES : Final[int] = 10_000
+
+_SCALE      : Final[tuple[float,float]] = -50, 0
+_RESOLUTION : Final[tuple[float,float]] = 1.5, 0
 # -------------------------------------------
-@pytest.fixture(scope='session', autouse=True)
-def initialize():
+class TestScaleReader:
+    '''
+    Class meant to monkey patch ScaleReader
+    '''
+    # ---------------------------
+    def __init__(self, channel : Any):
+        _ = channel
+
+        log.info('Using tester ScaleReader')
+    # ---------------------------
+    def get_param(
+        self, 
+        param : str, 
+        is_mc : Any, 
+        block : Any,
+        brem  : Any) -> tuple[float,float]:
+
+        _ = is_mc,
+        _ = block,
+        _ = brem,
+
+        if param == 'mu':
+            return 5280, 0
+
+        raise ValueError(f'Invalid parameter: {param}')
+    # ---------------------------
+    def get_scale(
+        self,
+        corr : Correction,
+        block: Any,
+        brem : Any) -> tuple[float, float]:
+
+        _ = brem
+        _ = block 
+
+        if corr == Correction.mass_resolution:
+            return _RESOLUTION 
+
+        if corr == Correction.mass_scale:
+            return _SCALE 
+
+        raise ValueError(f'Invalid correction: {corr}')
+# -------------------------------------------
+@pytest.fixture(autouse=True)
+def initialize(monkeypatch):
     '''
     This runs before any test
     '''
     LogStore.set_level('fitter:scale_reader'         , 10)
     LogStore.set_level('rx_q2:q2smear_corrector'     , 10)
     LogStore.set_level('rx_q2:test_q2smear_corrector', 10)
+
+    monkeypatch.setattr(
+        'rx_q2.q2smear_corrector.ScaleReader', 
+        TestScaleReader)
 # -------------------------------------------
 def _plot_masses(
     rdf      : RDF.RNode,
