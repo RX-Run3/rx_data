@@ -25,6 +25,11 @@ from fitter        import CCbarConfTF
 log=LogStore.add_logger('fitter:test_data_model')
 
 type zpdf = zfit.pdf.BasePDF
+
+_TRIGGERS : list[tuple[Trigger,Trigger]] = [
+    (Trigger.rk_ee_os  , Trigger.rk_mm_os  ),
+    (Trigger.rkst_ee_os, Trigger.rkst_mm_os),
+]
 # ----------------------
 class TestCCbarConfTF(CCbarConfTF, frozen = True):
     def get_pdf(
@@ -270,29 +275,33 @@ def test_misid_rare(
 
     sut.print_pdf(pdf)
 # --------------------------
-def test_simultaneous(tmp_path : Path):
+@pytest.mark.parametrize('etrig, mtrig', _TRIGGERS)
+def test_simultaneous_rk(
+    etrig    : Trigger,
+    mtrig    : Trigger,
+    tmp_path : Path):
     '''
-    Tests reparametrization of yields for rx extraction
+    Tests reparametrization of yields for rk extraction
     '''
-    q2bin   = Qsq.low
+    PL.clear()
 
-    trigger = Trigger.rk_ee_os
+    q2bin   = Qsq.low
     region  = Region.brem_x12
 
     pdf_ee  = _get_model(
         q2bin    = q2bin,
-        trigger  = trigger,
+        trigger  = etrig,
         region   = region,
         cache_dir= tmp_path / 'ee')
 
-    trigger = Trigger.rk_mm_os
     region  = Region.brem_xx0
+    proj    = etrig.project
 
-    files = {'rare_muon.yaml' : 'rare_muon_simultaneous.yaml'}
+    files = {f'{proj}/rare_muon.yaml' : f'{proj}/rare_muon_simultaneous.yaml'}
     with UnpackerModel.replacements(files = files):
         pdf_mm  = _get_model(
             q2bin    = q2bin,
-            trigger  = trigger,
+            trigger  = mtrig,
             region   = region,
             cache_dir= tmp_path / 'mm')
 
