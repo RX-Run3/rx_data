@@ -63,7 +63,8 @@ class DataModel:
         -------------------
         PDF with yield
         '''
-        yield_name = f'yld_{component}' if self._name == _MAIN_CATEGORY_NAME else f'yld_{component}_{self._name}'
+        yield_name = f'yld_{component}_{self._trigger.project}'
+        yield_name = yield_name if self._name == _MAIN_CATEGORY_NAME else f'{yield_name}_{self._name}'
         pdf_name   = f'{component}_{self._name}'
 
         nevt = PL.get_yield(name=yield_name)
