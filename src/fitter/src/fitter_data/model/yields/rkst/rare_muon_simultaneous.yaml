@@ -8,10 +8,10 @@ rkst:
   val : 1
   min : 0
   max : 2
-yld_bdkstkpimm_brem_xx0:
+yld_bdkstkpimm_rkst_brem_xx0:
   kind : mul
   pars :
-    - yld_bdkstkpiee_brem_x12
+    - yld_bdkstkpiee_rkst_brem_x12
     - rkst
-yld_comb_brem_xx0:
+yld_comb_rkst_brem_xx0:
   <<: *yields

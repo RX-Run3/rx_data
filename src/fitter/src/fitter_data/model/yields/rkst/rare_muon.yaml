@@ -5,7 +5,7 @@ yields: &yields
   min : 0
   max : 1000000
 
-yld_bdkstkpimm_brem_xx0:
+yld_bdkstkpimm_rkst_brem_xx0:
   <<: *yields
-yld_comb_brem_xx0:
+yld_comb_rkst_brem_xx0:
   <<: *yields
