@@ -22,7 +22,11 @@ class DictModel(UnpackerModel):
     number : int
     models : dict[str,SimpleModel]
 # -----------------------------------
-def test_simple(tmp_path : Path):
+def test_unpackable(tmp_path : Path):
+    '''
+    Test that config with unpackable fields
+    can be loaded
+    '''
     simple_path = tmp_path / 'simple.yaml'
 
     obj = SimpleModel(frequency = 3)
