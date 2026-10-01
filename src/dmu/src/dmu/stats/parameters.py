@@ -41,8 +41,8 @@ class ParameterLibrary:
         data_path = Path(str(data_path))
         data      = yaml.safe_load(data_path.read_text())
 
-        cls._values = { pdf_name : YieldsConf(**pdf_data) 
-            for pdf_name, pdf_data in data.items()} 
+        cls._values = { pdf_name : YieldsConf(**pdf_data)
+            for pdf_name, pdf_data in data.items()}
 
         npdf = len(cls._values)
         if npdf == 0:
@@ -92,7 +92,7 @@ class ParameterLibrary:
         if cfg.fix:
             return cfg.val, cfg.val, cfg.val
 
-        return cfg.val, cfg.min, cfg.max 
+        return cfg.val, cfg.min, cfg.max
     # --------------------------------
     @classmethod
     def values(
@@ -108,8 +108,8 @@ class ParameterLibrary:
         '''
         old = cls._values[kind][parameter]
         new = SimpleYieldConf(
-            val = val, 
-            min = low, 
+            val = val,
+            min = low,
             max = high)
 
         cls._values[kind][parameter] = new
@@ -183,7 +183,7 @@ class ParameterLibrary:
     # ----------------------
     @classmethod
     def _get_composite_yield(
-        cls, 
+        cls,
         name: str,
         cfg : CompositeYieldConf) -> zpar:
         '''
@@ -216,7 +216,7 @@ class ParameterLibrary:
         Parameters
         -------------
         name   : Name of product parameter
-        par_1/2: Parameters to be subtracted 
+        par_1/2: Parameters to be subtracted
 
         Returns
         -------------
@@ -250,8 +250,8 @@ class ParameterLibrary:
     # ----------------------
     @classmethod
     def _get_simple_yield(
-        cls, 
-        name : str, 
+        cls,
+        name : str,
         cfg  : SimpleYieldConf) -> zpar:
         '''
         Parameters
