@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 from contextlib        import ExitStack
 from collections.abc   import Callable
-from typing            import Any
+from typing            import Any, Final
 from pathlib           import Path
 from rx_common         import Channel, Component, Cuts, Mass, Trigger
 from hqm.binning       import BinningConf
@@ -23,13 +23,31 @@ from dmu               import LogStore
 type NpFltArray = npt.NDArray[numpy.float64]
 
 log=LogStore.add_logger('hqm:test_data_store')
+_BMASS   : Final[Mass ] = Mass.bp_bcor
+_SMR_VAL : Final[float] = 5280
 # ----------------------
-@pytest.fixture(scope='session', autouse=True)
-def initialize():
+class TestQ2SmearCorrector:
+    def __init__(self, channel : Any, add_original : Any):
+        _ = channel
+        _ = add_original
+
+    def get_df(self, replace : Any, df : pnd.DataFrame) -> pnd.DataFrame:
+        _ = replace
+
+        df[_BMASS] = _SMR_VAL
+
+        return df
+# ----------------------
+@pytest.fixture(autouse=True)
+def initialize(monkeypatch):
     '''
     This will run before any test
     '''
     LogStore.set_level('rx_hqm:data_store', 10)
+
+    monkeypatch.setattr(
+        'hqm.data_store.Q2SmearCorrector',
+        TestQ2SmearCorrector)
 #--------------------------------------
 def _load_df_ee(self : Any) -> pnd.DataFrame:
     _    = self
@@ -262,7 +280,7 @@ def test_smearing(
         stack.enter_context(ctx_1)
 
         obj               = DataStore(comp= comp, trig= Trigger.rk_ee_os)
-        arr_mass_smr, _   = obj.get_array(mass = Mass.bp_bcor)
+        arr_mass_smr, _   = obj.get_array(mass = _BMASS)
 
     ctx_1 = DataStore.selection(sel = {Cuts.block : 'true'}, update = True)
     ctx_2 = DataStore.smear_masses(value = False)
@@ -271,13 +289,13 @@ def test_smearing(
         stack.enter_context(ctx_2)
 
         obj               = DataStore(comp= comp, trig= Trigger.rk_ee_os)
-        arr_mass_raw, _   = obj.get_array(mass = Mass.bp_bcor)
+        arr_mass_raw, _   = obj.get_array(mass = _BMASS)
 
-    if not comp.is_mc:
-        assert numpy.isclose(arr_mass_raw, arr_mass_smr).all()
+    if comp.is_mc:
+        assert numpy.equal(arr_mass_smr, _SMR_VAL).all()
     else:
-        assert arr_mass_raw.std()  < arr_mass_smr.std()
-        assert arr_mass_raw.mean() > arr_mass_smr.mean()
+        assert not numpy.equal(arr_mass_smr, _SMR_VAL).any()
+        assert not numpy.equal(arr_mass_raw, _SMR_VAL).any()
 
     plt.hist(arr_mass_raw, bins = 60, range = (5000, 6000), alpha    =    0.3, label = 'Raw')
     plt.hist(arr_mass_smr, bins = 60, range = (5000, 6000), histtype = 'step', label = 'Smeared')
