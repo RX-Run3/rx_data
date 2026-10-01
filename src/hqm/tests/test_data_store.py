@@ -254,7 +254,7 @@ def test_smearing(
     comp             : Component,
     tmp_path         : Path):
     '''
-    Test that smearing is/is not done 
+    Test that smearing is/is not done
     '''
     _   = _patch_loader_ee
     ctx_1 = DataStore.selection(sel = {Cuts.block : 'true'}, update = True)
