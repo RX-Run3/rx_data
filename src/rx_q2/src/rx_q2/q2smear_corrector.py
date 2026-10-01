@@ -149,9 +149,21 @@ class Q2SmearCorrector:
                 scale    = 0.0
                 mu_mc    = 5280
             else:
-                mu_mc, _ = self._reader.get_param(is_mc=True, param='mu', block=block, brem=brem)
-                reso , _ = self._reader.get_scale(corr=Correction.mass_resolution, block=block, brem=brem)
-                scale, _ = self._reader.get_scale(corr=Correction.mass_scale,     block=block, brem=brem)
+                mu_mc, _ = self._reader.get_param(
+                    is_mc= True, 
+                    param= 'mu', 
+                    block= block, 
+                    brem = brem)
+
+                reso , _ = self._reader.get_scale(
+                    corr = Correction.mass_resolution, 
+                    block= block, 
+                    brem = brem)
+
+                scale, _ = self._reader.get_scale(
+                    corr = Correction.mass_scale,
+                    block= block, 
+                    brem = brem)
 
             data = {
                 'block': row['block'],
@@ -162,7 +174,14 @@ class Q2SmearCorrector:
 
             records.append(data)
 
-        return pnd.DataFrame(records)
+        df = pnd.DataFrame(records)
+
+        log.debug(20 * '-')
+        log.debug('Scales:')
+        log.debug(20 * '-')
+        log.debug(f'\n{str(df)}')
+
+        return df
     # ----------------------
     def _mass_from_particle(self, particle : str, df : pnd.DataFrame) -> pnd.Series:
         '''
