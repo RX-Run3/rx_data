@@ -281,7 +281,7 @@ def test_simultaneous_rk(
     mtrig    : Trigger,
     tmp_path : Path):
     '''
-    Tests reparametrization of yields for rk extraction
+    Tests reparametrization of yields for rk/rkst extraction
     '''
     PL.clear()
 
@@ -318,4 +318,39 @@ def test_simultaneous_rk(
 
     sut.print_pdf(pdf = pdf_ee)
     sut.print_pdf(pdf = pdf_mm)
+# --------------------------
+def test_simultaneous_electron(tmp_path : Path):
+    '''
+    Tests reparametrization of yields for rk/rkst extraction
+    '''
+    PL.clear()
+
+    q2bin  = Qsq.low
+    region = Region.brem_x12
+    files  = {'rkst/rare_electron.yaml' : 'rkst/rare_electron_simultaneous.yaml'}
+    with UnpackerModel.replacements(files = files):
+        pdf_rk       = _get_model(
+            q2bin    = q2bin,
+            trigger  = Trigger.rk_ee_os,
+            region   = region,
+            cache_dir= tmp_path / 'ee')
+
+        pdf_rkst     = _get_model(
+            q2bin    = q2bin,
+            trigger  = Trigger.rkst_ee_os,
+            region   = region,
+            cache_dir= tmp_path / 'ee')
+
+    pars_rk   = pdf_rk.get_params()
+    pars_rkst = pdf_rkst.get_params()
+    common    = pars_rk & pars_rkst
+
+    sut.print_pdf(pdf = pdf_rk)
+    sut.print_pdf(pdf = pdf_rkst)
+
+    log.info('Common parameters')
+    for par in common:
+        log.info(par.name)
+
+    assert len(common) == 1
 # --------------------------
