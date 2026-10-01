@@ -28,7 +28,7 @@ type zpdf = zfit.pdf.BasePDF
 # ----------------------
 class TestCCbarConfTF(CCbarConfTF, frozen = True):
     def get_pdf(
-        self, 
+        self,
         obs_name: str,
         project : Project,
         pdfs    : dict[Component, zpdf]) -> zpdf:
@@ -81,6 +81,43 @@ class TestSimFitter:
         pdf   = zfit.pdf.Gauss(mu=mu, sigma=sigma, obs=obs, name=name)
 
         return pdf
+# ----------------------
+def _get_model(
+    q2bin     : Qsq,
+    trigger   : Trigger,
+    region    : Region,
+    cache_dir : Path) -> zpdf:
+    '''
+    Retrieves full PDF for signal region fit
+    '''
+    data       = gut.load_data(
+        package= 'fitter_data',
+        fpath  =f'rare/{trigger.project}/{trigger.channel}/data.yaml')
+
+    with UnpackerModel.package(name = 'fitter_data'):
+        cfg = FitModelConf(**data)
+        cfg = cfg.specialize(q2bin = q2bin)
+
+    ctx_1 = PL.parameter_schema(cfg=cfg.yields)
+    ctx_2 = Cache.cache_root(path = cache_dir)
+    ctx_3 = sel.custom_selection(d_sel = {Cuts.mass : '(1)'})
+
+    with ExitStack() as stack:
+        stack.enter_context(ctx_1)
+        stack.enter_context(ctx_2)
+        stack.enter_context(ctx_3)
+
+        dmd = DataModel(
+            name    = region,
+            cfg     = cfg,
+            obs     = cfg.obs,
+            trigger = trigger,
+            q2bin   = q2bin)
+        pdf = dmd.get_model()
+
+    sut.print_pdf(pdf)
+
+    return pdf
 # ----------------------
 @pytest.fixture(autouse=True)
 def initialize(monkeypatch):
@@ -232,4 +269,42 @@ def test_misid_rare(
         pdf = dmd.get_model()
 
     sut.print_pdf(pdf)
+# --------------------------
+def test_simultaneous(tmp_path : Path):
+    '''
+    Tests reparametrization of yields for rx extraction
+    '''
+    q2bin   = Qsq.low
+
+    trigger = Trigger.rk_ee_os
+    region  = Region.brem_x12
+
+    pdf_ee  = _get_model(
+        q2bin    = q2bin,
+        trigger  = trigger,
+        region   = region,
+        cache_dir= tmp_path / 'ee')
+
+    trigger = Trigger.rk_mm_os
+    region  = Region.brem_xx0
+
+    pdf_mm  = _get_model(
+        q2bin    = q2bin,
+        trigger  = trigger,
+        region   = region,
+        cache_dir= tmp_path / 'mm')
+
+    pars_ee = pdf_ee.get_params()
+    pars_mm = pdf_mm.get_params()
+
+    common  = pars_ee & pars_mm
+
+    assert len(common) == 1
+
+    log.info('Common parameters')
+    for par in common:
+        log.info(par.name)
+
+    sut.print_pdf(pdf = pdf_ee)
+    sut.print_pdf(pdf = pdf_mm)
 # --------------------------
