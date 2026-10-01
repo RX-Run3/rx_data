@@ -288,11 +288,13 @@ def test_simultaneous(tmp_path : Path):
     trigger = Trigger.rk_mm_os
     region  = Region.brem_xx0
 
-    pdf_mm  = _get_model(
-        q2bin    = q2bin,
-        trigger  = trigger,
-        region   = region,
-        cache_dir= tmp_path / 'mm')
+    files = {'rare_muon.yaml' : 'rare_muon_simultaneous.yaml'}
+    with UnpackerModel.replacements(files = files):
+        pdf_mm  = _get_model(
+            q2bin    = q2bin,
+            trigger  = trigger,
+            region   = region,
+            cache_dir= tmp_path / 'mm')
 
     pars_ee = pdf_ee.get_params()
     pars_mm = pdf_mm.get_params()
