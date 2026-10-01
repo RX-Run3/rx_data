@@ -18,19 +18,19 @@ eff_kst_k:
 # --------------------
 # Signal yield
 # --------------------
-yld_bdkstkpiee_brem_x12:
+yld_bdkstkpiee_rkst_brem_x12:
   kind : mul
   pars :
-    - yld_bpkpee_brem_x12
+    - yld_bpkpee_rk_brem_x12
     - eff_kst_k
 bdkstkpiee_fraction:
   <<      : *fractions
-yld_bdkstkpiee_brem_xx1:
+yld_bdkstkpiee_rkst_brem_xx1:
   kind : mul
   pars :
     - bdkstkpiee_fraction
     - yld_bdkstkpiee
-yld_bdkstkpiee_brem_xx2:
+yld_bdkstkpiee_rkst_brem_xx2:
   kind : dif
   pars :
     - yld_bdkstkpiee
@@ -38,59 +38,59 @@ yld_bdkstkpiee_brem_xx2:
 # --------------------
 # Unconstrained background yields
 # --------------------
-yld_ccbar_brem_x12:
+yld_ccbar_rkst_brem_x12:
   <<      : *yields
-yld_bpkpipiee_brem_x12:
+yld_bpkpipiee_rkst_brem_x12:
   <<      : *yields
-yld_bpk1kpipiee_brem_x12:
+yld_bpk1kpipiee_rkst_brem_x12:
   <<      : *yields
-yld_bpk2kpipiee_brem_x12:
+yld_bpk2kpipiee_rkst_brem_x12:
   <<      : *yields
-yld_bpkxkpipiee_brem_x12:
+yld_bpkxkpipiee_rkst_brem_x12:
   <<      : *yields
-yld_comb_brem_x12:
+yld_comb_rkst_brem_x12:
   <<      : *yields
-yld_bdkstkpijpsiee_brem_x12:
+yld_bdkstkpijpsiee_rkst_brem_x12:
   <<      : *yields
-yld_bdkstkpipsi2ee_brem_x12:
+yld_bdkstkpipsi2ee_rkst_brem_x12:
   <<      : *yields
-yld_bppsi2ee_brem_x12:
-  <<      : *yields
-# --------------------
-yld_ccbar_brem_xx1:
-  <<      : *yields
-yld_bpkpipiee_brem_xx1:
-  <<      : *yields
-yld_bpk1kpipiee_brem_xx1:
-  <<      : *yields
-yld_bpk2kpipiee_brem_xx1:
-  <<      : *yields
-yld_bpkxkpipiee_brem_xx1:
-  <<      : *yields
-yld_comb_brem_xx1:
-  <<      : *yields
-yld_bdkstkpijpsiee_brem_xx1:
-  <<      : *yields
-yld_bdkstkpipsi2ee_brem_xx1:
-  <<      : *yields
-yld_bppsi2ee_brem_xx1:
+yld_bppsi2ee_rkst_brem_x12:
   <<      : *yields
 # --------------------
-yld_ccbar_brem_xx2:
+yld_ccbar_rkst_brem_xx1:
   <<      : *yields
-yld_bpkpipiee_brem_xx2:
+yld_bpkpipiee_rkst_brem_xx1:
   <<      : *yields
-yld_bpk1kpipiee_brem_xx2:
+yld_bpk1kpipiee_rkst_brem_xx1:
   <<      : *yields
-yld_bpk2kpipiee_brem_xx2:
+yld_bpk2kpipiee_rkst_brem_xx1:
   <<      : *yields
-yld_bpkxkpipiee_brem_xx2:
+yld_bpkxkpipiee_rkst_brem_xx1:
   <<      : *yields
-yld_comb_brem_xx2:
+yld_comb_rkst_brem_xx1:
   <<      : *yields
-yld_bdkstkpijpsiee_brem_xx2:
+yld_bdkstkpijpsiee_rkst_brem_xx1:
   <<      : *yields
-yld_bdkstkpipsi2ee_brem_xx2:
+yld_bdkstkpipsi2ee_rkst_brem_xx1:
   <<      : *yields
-yld_bppsi2ee_brem_xx2:
+yld_bppsi2ee_rkst_brem_xx1:
+  <<      : *yields
+# --------------------
+yld_ccbar_rkst_brem_xx2:
+  <<      : *yields
+yld_bpkpipiee_rkst_brem_xx2:
+  <<      : *yields
+yld_bpk1kpipiee_rkst_brem_xx2:
+  <<      : *yields
+yld_bpk2kpipiee_rkst_brem_xx2:
+  <<      : *yields
+yld_bpkxkpipiee_rkst_brem_xx2:
+  <<      : *yields
+yld_comb_rkst_brem_xx2:
+  <<      : *yields
+yld_bdkstkpijpsiee_rkst_brem_xx2:
+  <<      : *yields
+yld_bdkstkpipsi2ee_rkst_brem_xx2:
+  <<      : *yields
+yld_bppsi2ee_rkst_brem_xx2:
   <<      : *yields
