@@ -34,6 +34,14 @@ class ParameterLibrary:
     _values : dict[str,YieldsConf] = {}   # Values of parameters for all PDFs are in YAML file, they will be loaded here
     # --------------------------------
     @classmethod
+    def clear(cls) -> None:
+        '''
+        Empties the containers of parameters and custom values
+        '''
+        cls._d_par = dict()
+        cls._values= dict()
+    # --------------------------------
+    @classmethod
     def _load_data(cls) -> None:
         if len(cls._values) > 0:
             return
