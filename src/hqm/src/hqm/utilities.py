@@ -12,9 +12,9 @@ def get_data(channel : Channel) -> dict[str,NpFltArray]:
     rng = numpy.random.default_rng(seed = 42)
 
     data : dict[str,NpFltArray] = {
-        'B_TRUEM'              : rng.uniform(3000, 5100, SIZE),
-        'Jpsi_Mass'            : rng.uniform(2500, 3200, SIZE),
-        'Jpsi_TRUEM'           : rng.uniform(2500, 3200, SIZE),
+        'Jpsi_Mass'            : rng.normal(3097, 10, SIZE),
+        'B_TRUEM'              : rng.normal(5280,  1, SIZE),
+        'Jpsi_TRUEM'           : rng.normal(3097,  1, SIZE),
         Mass.bp_bcor.value     : rng.normal(loc = 5280, scale = 100,size = SIZE),
         Mass.bp_dtf_jpsi.value : rng.normal(loc = 5200, scale = 20, size = SIZE),
         Mass.bp_dtf_psi2.value : rng.normal(loc = 5200, scale = 20, size = SIZE),
