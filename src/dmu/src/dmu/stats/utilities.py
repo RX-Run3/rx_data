@@ -78,6 +78,7 @@ def root_directory(root_dir : Path):
     -------------
     root_dir: Directory that will override /tmp/ when saving NLL
     '''
+    root_dir.mkdir(parents = True, exist_ok = True)
     token = _ROOT_DIR.set(root_dir)
     try:
         log.info(f'Overriding root directory in dmu:stats:utilities with: {root_dir}')
