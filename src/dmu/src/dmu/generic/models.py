@@ -11,6 +11,7 @@ from contextvars         import ContextVar
 from importlib.resources import files
 from dmu                 import LogStore
 from dmu.generic         import hashing
+from typing              import Any
 from typing              import Self
 from pathlib             import Path
 from pydantic            import BaseModel, model_validator
@@ -62,7 +63,7 @@ class UnpackerModel(BaseModel, frozen = True):
     # --------------
     @model_validator(mode='before')
     @classmethod
-    def _unpack_paths(cls, data):
+    def _unpack_paths(cls, data : Any):
         '''
         This method will update data by unpacking yaml file paths
         and inserting the python data in the `data` variable
@@ -79,7 +80,7 @@ class UnpackerModel(BaseModel, frozen = True):
             log.debug(f'Not unpacking directly: {data}')
 
         for field_name in cls.model_fields:
-            val = data.get(field_name)
+            val : Any = data.get(field_name)
 
             if not cls._is_unpackable(val):
                 log.debug(f'Not unpacking {field_name} = {val}')
@@ -92,7 +93,7 @@ class UnpackerModel(BaseModel, frozen = True):
         return data
     # --------------
     @staticmethod
-    def _is_unpackable(val) -> bool:
+    def _is_unpackable(val : Any) -> bool:
         '''
         Check if val is a valid yaml path to a config
         that can be made into a config
@@ -154,7 +155,7 @@ class UnpackerModel(BaseModel, frozen = True):
         text = path.read_text()
 
         if path.name.endswith('.j2'):
-            template = Template(text)
+            template : Template = Template(source = text)
             text     = template.render()
 
         return yaml.safe_load(text)

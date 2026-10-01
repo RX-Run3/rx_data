@@ -1,5 +1,6 @@
 import yaml
 
+from pytest_mock import MockerFixture
 from pathlib     import Path
 from dmu.generic import UnpackerModel
 
@@ -38,7 +39,7 @@ def test_simple(tmp_path : Path):
     assert cmp.number == 1
     assert cmp.model  == obj 
 # -----------------------------------
-def test_with_package(mocker, tmp_path : Path):
+def test_with_package(mocker : MockerFixture, tmp_path : Path):
     simple_path = tmp_path / 'simple.yaml'
 
     obj = SimpleModel(frequency = 3)
@@ -72,4 +73,3 @@ def test_dict_model(tmp_path : Path):
 
     DictModel.from_yaml(path = simple_path)
 # -----------------------------------
-
