@@ -30,7 +30,7 @@ def initialize():
     LogStore.set_level('rx_q2:test_q2smear_corrector', 10)
 # -------------------------------------------
 def _plot_masses(
-    rdf      : RDF.RNode, 
+    rdf      : RDF.RNode,
     is_data  : bool,
     particle : str,
     dir_path : Path) -> None:
@@ -54,7 +54,7 @@ def _plot_masses(
     plt.close()
 # -------------------------------------------
 def _plot_df_masses(
-    df       : pnd.DataFrame, 
+    df       : pnd.DataFrame,
     is_data  : bool,
     particle : str,
     dir_path : Path) -> None:
@@ -78,7 +78,7 @@ def _plot_df_masses(
 # -------------------------------------------
 @lru_cache(maxsize = 3)
 def _get_df(
-    uniform : bool, 
+    uniform : bool,
     is_data : bool,
     channel : str) -> pnd.DataFrame:
 
@@ -103,7 +103,7 @@ def _get_df(
     if not is_data:
         df['B_TRUEID'   ] = 521
         df['Jpsi_TRUEID'] = 451
-        df['B_TRUEM'    ] = 5280 
+        df['B_TRUEM'    ] = 5280
         df['Jpsi_TRUEM' ] = 3096.9
 
     return df
@@ -174,7 +174,7 @@ def _check_rdf(rdf : RDF.RNode) -> None:
 @pytest.mark.parametrize('channel'   , [Channel.ee])
 @pytest.mark.parametrize('is_data'   , [False])
 def test_get_rdf(
-    is_uniform : bool, 
+    is_uniform : bool,
     channel    : Channel,
     is_data    : bool,
     tmp_path   : Path):
@@ -182,8 +182,8 @@ def test_get_rdf(
     Run using ROOT data frame input
     '''
     df  = _get_df(
-        uniform = is_uniform, 
-        channel = channel, 
+        uniform = is_uniform,
+        channel = channel,
         is_data = is_data)
     rdf = RDF.FromPandas(df)
 
@@ -201,7 +201,7 @@ def test_get_rdf(
 @pytest.mark.parametrize('channel'   , [Channel.ee])
 @pytest.mark.parametrize('is_data'   , [False])
 def test_get_df(
-    is_uniform : bool, 
+    is_uniform : bool,
     channel    : Channel,
     is_data    : bool,
     tmp_path   : Path):
@@ -209,8 +209,8 @@ def test_get_df(
     Run using pandas data frame input
     '''
     df  = _get_df(
-        uniform = is_uniform, 
-        channel = channel, 
+        uniform = is_uniform,
+        channel = channel,
         is_data = is_data)
 
     obj = Q2SmearCorrector(channel=channel, add_original=True)
@@ -219,14 +219,14 @@ def test_get_df(
     sample = 'data' if is_data else 'simulation'
 
     _plot_df_masses(
-        df      = df, 
-        is_data = is_data, 
-        particle='B', 
+        df      = df,
+        is_data = is_data,
+        particle='B',
         dir_path=tmp_path / sample)
 
     _plot_df_masses(
-        df      = df, 
-        is_data = is_data, 
-        particle='Jpsi', 
+        df      = df,
+        is_data = is_data,
+        particle='Jpsi',
         dir_path=tmp_path / sample)
 # -------------------------------------------
