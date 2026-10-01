@@ -4,6 +4,7 @@ Module with ParameterLibrary class
 import math
 import yaml
 
+from typing                import Any
 from pathlib               import Path
 from contextvars           import ContextVar
 from contextlib            import contextmanager
@@ -39,7 +40,7 @@ class ParameterLibrary:
 
         data_path = files('dmu_data').joinpath('stats/parameters/data.yaml')
         data_path = Path(str(data_path))
-        data      = yaml.safe_load(data_path.read_text())
+        data : dict[str,Any] = yaml.safe_load(data_path.read_text())
 
         cls._values = { pdf_name : YieldsConf(**pdf_data)
             for pdf_name, pdf_data in data.items()}
