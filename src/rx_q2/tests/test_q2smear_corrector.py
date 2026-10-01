@@ -36,9 +36,9 @@ class TestScaleReader:
         log.info('Using tester ScaleReader')
     # ---------------------------
     def get_param(
-        self, 
-        param : str, 
-        is_mc : Any, 
+        self,
+        param : str,
+        is_mc : Any,
         block : Any,
         brem  : Any) -> tuple[float,float]:
 
@@ -58,13 +58,13 @@ class TestScaleReader:
         brem : Any) -> tuple[float, float]:
 
         _ = brem
-        _ = block 
+        _ = block
 
         if corr == Correction.mass_resolution:
-            return _RESOLUTION 
+            return _RESOLUTION
 
         if corr == Correction.mass_scale:
-            return _SCALE 
+            return _SCALE
 
         raise ValueError(f'Invalid correction: {corr}')
 # -------------------------------------------
@@ -78,7 +78,7 @@ def initialize(monkeypatch):
     LogStore.set_level('rx_q2:test_q2smear_corrector', 10)
 
     monkeypatch.setattr(
-        'rx_q2.q2smear_corrector.ScaleReader', 
+        'rx_q2.q2smear_corrector.ScaleReader',
         TestScaleReader)
 # -------------------------------------------
 def _plot_masses(

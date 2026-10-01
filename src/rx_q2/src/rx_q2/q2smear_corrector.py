@@ -150,19 +150,19 @@ class Q2SmearCorrector:
                 mu_mc    = 5280
             else:
                 mu_mc, _ = self._reader.get_param(
-                    is_mc= True, 
-                    param= 'mu', 
-                    block= block, 
+                    is_mc= True,
+                    param= 'mu',
+                    block= block,
                     brem = brem)
 
                 reso , _ = self._reader.get_scale(
-                    corr = Correction.mass_resolution, 
-                    block= block, 
+                    corr = Correction.mass_resolution,
+                    block= block,
                     brem = brem)
 
                 scale, _ = self._reader.get_scale(
                     corr = Correction.mass_scale,
-                    block= block, 
+                    block= block,
                     brem = brem)
 
             data = {
