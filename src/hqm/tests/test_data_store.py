@@ -276,7 +276,8 @@ def test_smearing(
     if not comp.is_mc:
         assert numpy.isclose(arr_mass_raw, arr_mass_smr).all()
     else:
-        assert arr_mass_raw.std() < arr_mass_smr.std()
+        assert arr_mass_raw.std()  < arr_mass_smr.std()
+        assert arr_mass_raw.mean() > arr_mass_smr.mean()
 
     plt.hist(arr_mass_raw, bins = 60, range = (5000, 6000), alpha    =    0.3, label = 'Raw')
     plt.hist(arr_mass_smr, bins = 60, range = (5000, 6000), histtype = 'step', label = 'Smeared')
