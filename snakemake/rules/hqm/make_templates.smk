@@ -40,7 +40,7 @@ rule hqm:
         env     = ENV,
         binning = lambda wc : _get_binning(wc)
     resources:
-        htcondor_request_mem_mb = 6000,
+        htcondor_request_mem_mb = 4000,
         htcondor_request_disk_mb= 2000,
     shell :
         '''
