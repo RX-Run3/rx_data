@@ -6,6 +6,7 @@ pydantic models
 import yaml
 import contextlib
 
+from contextlib          import contextmanager
 from jinja2              import Template
 from contextvars         import ContextVar
 from importlib.resources import files
@@ -18,7 +19,8 @@ from pydantic            import BaseModel, model_validator
 
 log=LogStore.add_logger('dmu:generic:models')
 
-_PACKAGE = ContextVar('_PACKAGE', default = '') 
+_PACKAGE      : ContextVar[str]                  = ContextVar('_PACKAGE'     , default =   '')
+_REPLACEMENTS : ContextVar[dict[str,str] | None] = ContextVar('_REPLACEMENTS', default = None)
 # --------------------------------------------------
 class UnpackerModel(BaseModel, frozen = True):
     '''
@@ -27,6 +29,21 @@ class UnpackerModel(BaseModel, frozen = True):
     - Load models from paths when the value is a string or path ending with '.yaml'
     - Load data directly from path to file
     '''
+    # --------------
+    @classmethod
+    @contextmanager
+    def replacements(cls, files : dict[str,str]):
+        '''
+        Parameters
+        ---------------
+        files: Dictionary mapping the ending of paths (e.g. file.yaml, dir/file.yaml, etc) to other endings.
+               This is meant to allow switching from one path to another when unpacking
+        '''
+        token = _REPLACEMENTS.set(files)
+        try:
+            yield
+        finally:
+            _REPLACEMENTS.reset(token)
     # --------------
     @staticmethod
     def _update_path(path : Path) -> Path:
@@ -142,6 +159,32 @@ class UnpackerModel(BaseModel, frozen = True):
             return cls(**data)
     # ----------------------
     @staticmethod
+    def _switch_path(path : Path) -> Path:
+        '''
+        Parameters
+        -----------------
+        path: Path to YAML file holding configuration
+
+        Returns
+        -----------------
+        Path to config file with ending switched according to `_REPLACEMENTS`
+        '''
+        replacements = _REPLACEMENTS.get()
+        if replacements is None:
+            return path
+
+        path_str = str(path)
+        for key, val in replacements.items():
+            if not path_str.endswith(key):
+                continue
+
+            stripped = path_str.removesuffix(key)
+
+            return Path(f'{stripped}{val}')
+
+        return path
+    # ----------------------
+    @staticmethod
     def _load_from_path(path : Path):
         '''
         Parameters
@@ -152,6 +195,7 @@ class UnpackerModel(BaseModel, frozen = True):
         -------------
         Data from safe loading
         '''
+        path = UnpackerModel._switch_path(path = path)
         text = path.read_text()
 
         if path.name.endswith('.j2'):
