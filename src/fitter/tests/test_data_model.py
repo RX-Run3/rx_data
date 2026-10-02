@@ -354,3 +354,61 @@ def test_simultaneous_electron(tmp_path : Path):
 
     assert len(common) == 1
 # --------------------------
+def test_simultaneous_rx(tmp_path : Path):
+    '''
+    Tests reparametrization of yields for rk/rkst extraction
+    '''
+    PL.clear()
+
+    q2bin  = Qsq.low
+    files  = {
+        'rkst/rare_muon.yaml'     : 'rkst/rare_muon_simultaneous.yaml',
+        'rkst/rare_electron.yaml' : 'rkst/rare_electron_simultaneous.yaml',
+        'rk/rare_muon.yaml'       : 'rk/rare_muon_simultaneous.yaml',
+    }
+
+    with UnpackerModel.replacements(files = files):
+        pdf_ee_rk    = _get_model(
+            q2bin    = q2bin,
+            trigger  = Trigger.rk_ee_os,
+            region   = Region.brem_x12,
+            cache_dir= tmp_path / 'ee')
+
+        pdf_ee_rkst  = _get_model(
+            q2bin    = q2bin,
+            trigger  = Trigger.rkst_ee_os,
+            region   = Region.brem_x12,
+            cache_dir= tmp_path / 'ee')
+
+        pdf_mm_rk    = _get_model(
+            q2bin    = q2bin,
+            trigger  = Trigger.rk_mm_os,
+            region   = Region.brem_xx0,
+            cache_dir= tmp_path / 'ee')
+
+        pdf_mm_rkst  = _get_model(
+            q2bin    = q2bin,
+            trigger  = Trigger.rkst_mm_os,
+            region   = Region.brem_xx0,
+            cache_dir= tmp_path / 'mm')
+
+    pars_ee_rk   = pdf_ee_rk.get_params()
+    pars_ee_rkst = pdf_ee_rkst.get_params()
+    pars_mm_rk   = pdf_mm_rk.get_params()
+    pars_mm_rkst = pdf_mm_rkst.get_params()
+
+    common_rkst  = pars_ee_rkst & pars_mm_rkst
+    common_rk    = pars_ee_rk   & pars_mm_rk
+    common       = common_rk    & common_rkst
+
+    log.info('Common parameters for full model')
+    for par in common:
+        log.info(par.name)
+
+    log.info('Common parameters for rkst')
+    for par in common_rkst:
+        log.info(par.name)
+
+    assert len(common_rkst) == 2 # noqa: PLR2004
+    assert len(common     ) == 1
+# --------------------------
