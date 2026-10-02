@@ -321,7 +321,7 @@ def test_simultaneous_rk(
 # --------------------------
 def test_simultaneous_electron(tmp_path : Path):
     '''
-    Tests reparametrization of yields for rk/rkst extraction
+    Tests reparametrization of yields for extraction of electron yields
     '''
     PL.clear()
 
