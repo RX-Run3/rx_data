@@ -9,27 +9,78 @@ from dmu       import LogStore
 
 type zdat = zfit.data.Data
 type zsum = zfit.pdf.SumPDF
+type zpdf = zfit.pdf.BasePDF
 
 _RNG                    = numpy.random.default_rng(seed = 42)
 _DATA_SIZE : Final[int] = 1000
 
 log=LogStore.add_logger('fitter:patch_classes')
 # ---------------------------------------------------
+def _get_model(name : str) -> zsum:
+    log.warning('Using mock ccbar PDF')
+
+    obs   = zfit.Space('Mass', 4600, 6000)
+    lam   = zfit.Parameter(f"{name}_lambda", -0.002, -1.0, 1.0)
+    mu    = zfit.Parameter(f"{name}_mu", 5280.0, 5000.0, 5500.0)
+    sigma = zfit.Parameter(f"{name}_sigma", 20.0, 0.1, 100.0)
+    low   = 4500.0
+    high  = 6000.0
+
+    exp_pdf     = zfit.pdf.Exponential(lambda_=lam, obs=obs, name=f"{name}_exp")
+    gauss_pdf   = zfit.pdf.Gauss(mu=mu, sigma=sigma, obs=obs, name=f"{name}_gauss")
+    uniform_pdf = zfit.pdf.Uniform(low=low, high=high, obs=obs, name=f"{name}_uniform")
+
+    frac1 = zfit.Parameter(f"{name}_frac1", 0.3, 0.0, 1.0)
+    frac2 = zfit.Parameter(f"{name}_frac2", 0.3, 0.0, 1.0)
+
+    total_pdf= zfit.pdf.SumPDF(
+        pdfs = [exp_pdf, gauss_pdf, uniform_pdf],
+        fracs= [frac1, frac2],
+        name = f"{name}_sum")
+
+    return total_pdf
+# ---------------------------------------------------
+class TestDataModel:
+    '''
+    Class meant to replace DataModel in tests
+    '''
+    # ------------------------
+    def __init__(
+        self,
+        cfg     : str,
+        obs     : str,
+        trigger : str,
+        q2bin   : str,
+        name    : str):
+        _ = cfg
+        _ = obs
+        _ = trigger
+        _ = q2bin
+        _ = name
+    # ------------------------
+    def get_model(self) -> zpdf:
+        return _get_model(name = 'data_model')
+# ---------------------------------------------------
 class TestDataPreprocessor:
     def __init__(
         self,
         name      : str,
-        wgt_cfg   : str,
         obs       : str,
+        sample    : str,
         trigger   : Trigger,
         q2bin     : Qsq,
-        selection : str,
-        sample    : str):
+        wgt_cfg   : str | None,
+        ph_sample : str | None = None,
+        is_sig    : bool       = True,
+        selection : str | None = None):
         _ = name
         _ = wgt_cfg
         _ = obs
         _ = selection
         _ = sample
+        _ = ph_sample
+        _ = is_sig
+
         log.warning('Using TestDataPreprocessor')
 
         self._trigger = trigger
@@ -82,32 +133,24 @@ class TestPRec:
         _ = cfg
     # --------------------------
     def get_sum(self, name : str) -> zsum:
-        log.warning('Using mock ccbar PDF')
+        return _get_model(name = name)
+# ---------------------------------------------------
+@pytest.fixture
+def _patch_data_model(
+        request     : pytest.FixtureRequest,
+        monkeypatch : pytest.MonkeyPatch):
 
-        obs   = zfit.Space('Mass', 4600, 6000)
-        lam   = zfit.Parameter(f"{name}_lambda", -0.002, -1.0, 1.0)
-        mu    = zfit.Parameter(f"{name}_mu", 5280.0, 5000.0, 5500.0)
-        sigma = zfit.Parameter(f"{name}_sigma", 20.0, 0.1, 100.0)
-        low   = 4500.0
-        high  = 6000.0
+    module : ModuleType = request.module
+    target : str | None = getattr(module, '_DATA_MODEL_TARGET', None)
 
-        exp_pdf     = zfit.pdf.Exponential(lambda_=lam, obs=obs, name=f"{name}_exp")
-        gauss_pdf   = zfit.pdf.Gauss(mu=mu, sigma=sigma, obs=obs, name=f"{name}_gauss")
-        uniform_pdf = zfit.pdf.Uniform(low=low, high=high, obs=obs, name=f"{name}_uniform")
+    if target is None:
+        raise ValueError('Cannot set data model target')
 
-        frac1 = zfit.Parameter(f"{name}_frac1", 0.3, 0.0, 1.0)
-        frac2 = zfit.Parameter(f"{name}_frac2", 0.3, 0.0, 1.0)
-
-        total_pdf= zfit.pdf.SumPDF(
-            pdfs = [exp_pdf, gauss_pdf, uniform_pdf],
-            fracs= [frac1, frac2],
-            name = f"{name}_sum")
-
-        return total_pdf
+    monkeypatch.setattr(target, TestDataModel)
 # ---------------------------------------------------
 @pytest.fixture
 def _patch_data_preprocessor(
-        request     : pytest.FixtureRequest, 
+        request     : pytest.FixtureRequest,
         monkeypatch : pytest.MonkeyPatch):
 
     module : ModuleType = request.module
@@ -120,7 +163,7 @@ def _patch_data_preprocessor(
 # -----------------------------------
 @pytest.fixture
 def _patch_prec(
-        request     : pytest.FixtureRequest, 
+        request     : pytest.FixtureRequest,
         monkeypatch : pytest.MonkeyPatch):
 
     module : ModuleType = request.module
