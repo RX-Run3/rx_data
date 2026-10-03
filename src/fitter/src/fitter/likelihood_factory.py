@@ -35,6 +35,8 @@ class LikelihoodFactory:
 
     - Data sample
     - Configuration describing the models to use
+
+    Basically a wrapper for DataModel and DataPreprocessor
     '''
     # ------------------------
     def __init__(
@@ -48,12 +50,11 @@ class LikelihoodFactory:
         '''
         Parameters
         ------------------
-        name     : Identifier for fit, e.g. block. This is optional
-        cfg      : configuration for the fit as a DictConfig object
-        sample   : Identifies sample e.g. DATA_24_MagUp...
-        project  : E.g. rx
+        obs      : zfit observable
+        sample   : Identifies data sample e.g. DATA_24_MagUp...
         q2bin    : E.g. central
         cfg      : Configuration for the fit to data
+        name     : Identifier for fit, e.g. block. This is optional
         ph_sample: Physical sample. Represents what sample will be used for.
                      E.g. data_24 -> comb, data_24 -> misID, etc. Only makes sense for data
         '''
