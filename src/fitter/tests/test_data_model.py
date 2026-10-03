@@ -437,7 +437,7 @@ def test_simultaneous_rx(tmp_path : Path):
             q2bin    = q2bin,
             trigger  = Trigger.rk_mm_os,
             region   = Region.brem_xx0,
-            cache_dir= tmp_path / 'ee')
+            cache_dir= tmp_path / 'mm')
 
         pdf_mm_rkst  = _get_model(
             q2bin    = q2bin,
