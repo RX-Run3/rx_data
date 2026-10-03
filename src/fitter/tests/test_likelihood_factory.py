@@ -17,18 +17,7 @@ from zfit.core.loss  import ExtendedUnbinnedNLL
 from fitter          import FitModelConf
 from fitter          import ParametricConf
 
-# -------------------------------------------
-class Data:
-    '''
-    Used to share attributes
-    '''
-    d_block_cut = {
-        'b12': 'block == 1 || block == 2',
-        'b3' : 'block == 3',
-        'b4' : 'block == 4',
-        'b5' : 'block == 5',
-        'b6' : 'block == 6',
-        'b78': 'block == 7 || block == 8'}
+log=LogStore.add_logger('fitter:test_likelihood_factory')
 # ----------------------
 @pytest.fixture(scope='module', autouse=True)
 def initialize():
