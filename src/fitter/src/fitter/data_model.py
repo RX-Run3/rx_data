@@ -102,51 +102,6 @@ class DataModel:
         # Component has trigger and it different from data => Override project and trigger
         return cfg.component_trigger.project, cfg.component_trigger
     # ------------------------
-    def get_model(self) -> zpdf:
-        '''
-        Returns
-        ----------------
-        Fitting model for data fit
-        '''
-        components = self._cfg.components[self._q2bin]
-        npdf       = len(components)
-        if npdf == 0:
-            raise ValueError('Found zero components in model')
-
-        log.debug(f'Found {npdf} components')
-
-        d_pdf : dict[Component, zpdf] = dict()
-        for component, cfg in components.items():
-            if not cfg.from_sim_fit:
-                continue
-
-            pdf           = self._get_sim_fit_pdf(
-                component = component,
-                cfg       = cfg)
-
-            if pdf is None:
-                continue
-
-            d_pdf[component] = pdf
-
-        for component, cfg in components.items():
-            if cfg.from_sim_fit:
-                continue
-
-            if not isinstance(cfg, CCbarConfTF):
-                raise ValueError('Config is not a ccbar TTF config')
-
-            obs_names = self._obs.obs
-            if obs_names is None:
-                raise ValueError(f'Cannot find observable name in: {self._obs}')
-
-            d_pdf[component] = cfg.get_pdf(
-                obs_name= obs_names[0],
-                project = self._trigger.project,
-                pdfs    = d_pdf)
-
-        return self._add_components(d_pdf = d_pdf)
-    # ------------------------
     def _get_sim_fit_pdf(
         self,
         cfg       : AnyModelConf,
@@ -238,4 +193,49 @@ class DataModel:
                 cls._skipped_components = old_val
 
         return _context()
+    # ------------------------
+    def get_model(self) -> zpdf:
+        '''
+        Returns
+        ----------------
+        Fitting model for data fit
+        '''
+        components = self._cfg.components[self._q2bin]
+        npdf       = len(components)
+        if npdf == 0:
+            raise ValueError('Found zero components in model')
+
+        log.debug(f'Found {npdf} components')
+
+        d_pdf : dict[Component, zpdf] = dict()
+        for component, cfg in components.items():
+            if not cfg.from_sim_fit:
+                continue
+
+            pdf           = self._get_sim_fit_pdf(
+                component = component,
+                cfg       = cfg)
+
+            if pdf is None:
+                continue
+
+            d_pdf[component] = pdf
+
+        for component, cfg in components.items():
+            if cfg.from_sim_fit:
+                continue
+
+            if not isinstance(cfg, CCbarConfTF):
+                raise ValueError('Config is not a ccbar TTF config')
+
+            obs_names = self._obs.obs
+            if obs_names is None:
+                raise ValueError(f'Cannot find observable name in: {self._obs}')
+
+            d_pdf[component] = cfg.get_pdf(
+                obs_name= obs_names[0],
+                project = self._trigger.project,
+                pdfs    = d_pdf)
+
+        return self._add_components(d_pdf = d_pdf)
 # ------------------------
