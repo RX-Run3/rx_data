@@ -14,7 +14,6 @@ from dmu.generic   import UnpackerModel, utilities as gut
 from dmu.stats     import zfit, utilities as sut
 from dmu.workflow  import Cache
 
-from rx_common     import Channel
 from rx_common     import Component, Cuts, Mass, Qsq, Region
 from rx_common     import Trigger
 from rx_data       import RDFGetter
@@ -26,7 +25,6 @@ from fitter        import ParametricConf
 from fitter        import CCbarConf
 from fitter        import NonParametricConf
 from fitter        import MisIDConf
-from fitter        import SignalConstraints
 
 log=LogStore.add_logger('fitter:test_sim_fitter')
 
