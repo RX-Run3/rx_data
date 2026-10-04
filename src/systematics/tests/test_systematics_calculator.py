@@ -157,8 +157,8 @@ def test_sim_model_switch(
         kind     ='s+b', 
         suffix   = 'ee')
 
-    min = zfit.minimize.Minuit()
-    obj = min.minimize(loss=nll_mm + nll_ee)
+    minimizer = zfit.minimize.Minuit()
+    obj       = minimizer.minimize(loss=nll_mm + nll_ee)
     obj.hesse(name = 'minuit_hesse')
     res = FitResult.from_zfit(res = obj)
 
@@ -213,9 +213,9 @@ def test_sim_parameter_fixing(
     if ntoys is not None:
         data['ntoys'] = ntoys
 
-    cfg = ToyConf(**data)
-    min = zfit.minimize.Minuit()
-    obj = min.minimize(loss = nll_mm + nll_ee)
+    cfg       = ToyConf(**data)
+    minimizer = zfit.minimize.Minuit()
+    obj       = minimizer.minimize(loss = nll_mm + nll_ee)
     obj.hesse(name = 'minuit_hesse')
     res = FitResult.from_zfit(res = obj)
 
