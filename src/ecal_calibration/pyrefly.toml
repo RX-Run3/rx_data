@@ -1,6 +1,6 @@
 project-includes = ["**/*.py*"]
 project-excludes = ["**/__pycache__/**"]
-search-path      = ["src"]
+search-path      = ["src", "tests"]
 
 [errors]
 not-callable          = true
