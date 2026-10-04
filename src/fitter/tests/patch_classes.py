@@ -84,8 +84,14 @@ class TestSimFitter:
     # ----------------------
     @property
     def values(self) -> dict[str, tuple[float,float,float]]:
-        signals         = {Component.bpkpee, Component.bpkpmm, Component.bdkstkpimm}
+        signals         = {Component.bpkpee, Component.bpkpmm, Component.bdkstkpimm, Component.bpkpipi, Component.bpkkk}
         signal_shape    = {'mu' : (5280., 5200., 5350.), 'sg' : (50., 5., 100.)}
+
+        resonant        = {Component.bpkpjpsiee, Component.bpkpjpsimm, Component.bdkstkpijpsiee, Component.bdkstkpijpsimm}
+        resonant_shape  = {'mu' : (5280., 5200., 5350.), 'sg' : (30., 5., 100.)}
+
+        cabibbo         = {Component.bppijpsimm, Component.bppijpsiee}
+        cabibbo_shape   = {'mu' : (5320., 5200., 5350.), 'sg' : (80., 5., 100.)}
 
         part_reco       = {Component.bsphiee, Component.bpkxkpipiee}
         part_reco_shape = {'mu' : (5000., 4800., 5200.), 'sg' : (200., 100., 300.)}
@@ -98,6 +104,12 @@ class TestSimFitter:
 
         if self._component in signals:
             return signal_shape
+
+        if self._component in cabibbo:
+            return cabibbo_shape
+
+        if self._component in resonant:
+            return resonant_shape
 
         if self._component == Component.bdkstkpiee and self._trigger == Trigger.rk_ee_os:
             return part_reco_shape 
@@ -128,6 +140,14 @@ class TestSimFitter:
         log.warning('Using mock SimFitter PDF')
         skipped = {
             Component.ccbar, 
+            Component.bdkstjpsimm_had_swp,
+            Component.bdkstjpsiee_had_swp,
+            Component.bskstjpsiee,
+            Component.bskstjpsimm,
+            Component.bsphijpsiee,
+            Component.bsphijpsimm,
+            Component.lbpkjpsimm,
+            Component.lbpkjpsiee,
             Component.bpkppsi2ee, 
             Component.bpkstkpiee,
             Component.bdkstkpipsi2ee}
