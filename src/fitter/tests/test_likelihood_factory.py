@@ -68,7 +68,7 @@ def _update_block(
 # -------------------------------------------
 def test_simple(tmp_path : Path):
     '''
-    Test using toy data
+    Simplest test
     '''
     data = gut.load_data(
         package='fitter_data',
