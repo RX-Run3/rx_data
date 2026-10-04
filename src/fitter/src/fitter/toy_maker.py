@@ -399,9 +399,9 @@ class ToyMaker:
                     self._print_result(res = res, msg = 'Toy fit')
 
             hashes = [ self._sampler_identifier(sampler = sam) for sam in samplers ]
-            hash   = sum(hashes)
+            hsh    = sum(hashes)
             log.debug(30 * '-')
-            log.debug(f'Hash: {hash}')
+            log.debug(f'Hash: {hsh}')
             log.debug(f'Toy : {itoy}')
             log.debug(f'Seed: {self._cfg.rseed}')
             log.debug(30 * '-')
@@ -409,7 +409,7 @@ class ToyMaker:
             df = self._add_parameters(
                 df  = df,
                 res = res,
-                hash= hash, 
+                hash= hsh, 
                 itoy= itoy)
 
         if n_lost:
