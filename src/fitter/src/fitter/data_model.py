@@ -226,7 +226,8 @@ class DataModel:
                 continue
 
             if not isinstance(cfg, CCbarConfTF):
-                raise ValueError('Config is not a ccbar TTF config')
+                this_type = type(cfg)
+                raise ValueError(f'Config is not a ccbar TTF config but {this_type}')
 
             obs_names = self._obs.obs
             if obs_names is None:
