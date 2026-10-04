@@ -14,17 +14,17 @@ cns_yields: &cns_yields
   max : 1000 
   fix : True
 # ------------------
-yld_comb_bdkk:
+yld_comb_rkst_no_pid_bdkk:
   <<: *flt_yields
-yld_comb_bdpipi:
-  <<: *flt_yields
-# ------------------
-yld_bdkpipi_bdpipi:
-  <<: *flt_yields
-yld_bdkkk_bdkk:
+yld_comb_rkst_no_pid_bdpipi:
   <<: *flt_yields
 # ------------------
-yld_bdkpipi_bdkk:     # Kpipi yield in KKK region
+yld_bdkpipi_rkst_no_pid_bdpipi:
+  <<: *flt_yields
+yld_bdkkk_rkst_no_pid_bdkk:
+  <<: *flt_yields
+# ------------------
+yld_bdkpipi_rkst_no_pid_bdkk:     # Kpipi yield in KKK region
   <<: *cns_yields
-yld_bdkkk_bdpipi:     # KKK yield in Kpipi region
+yld_bdkkk_rkst_no_pid_bdpipi:     # KKK yield in Kpipi region
   <<: *cns_yields
