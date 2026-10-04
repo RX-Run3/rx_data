@@ -16,27 +16,27 @@ _DATA_SIZE : Final[int] = 1000
 
 log=LogStore.add_logger('fitter:patch_classes')
 # ---------------------------------------------------
-def _get_model(name : str) -> zsum:
+def _get_model(trigger : Trigger) -> zsum:
     log.warning('Using mock ccbar PDF')
 
     obs   = zfit.Space('Mass', 4600, 6000)
-    lam   = zfit.Parameter(f"{name}_lambda", -0.002, -1.0, 1.0)
-    mu    = zfit.Parameter(f"{name}_mu", 5280.0, 5000.0, 5500.0)
-    sigma = zfit.Parameter(f"{name}_sigma", 20.0, 0.1, 100.0)
+    lam   = zfit.Parameter(f"{trigger}_lambda", -0.002, -1.0, 1.0)
+    mu    = zfit.Parameter(f"{trigger}_mu", 5280.0, 5000.0, 5500.0)
+    sigma = zfit.Parameter(f"{trigger}_sigma", 20.0, 0.1, 100.0)
     low   = 4500.0
     high  = 6000.0
 
-    exp_pdf     = zfit.pdf.Exponential(lambda_=lam, obs=obs, name=f"{name}_exp")
-    gauss_pdf   = zfit.pdf.Gauss(mu=mu, sigma=sigma, obs=obs, name=f"{name}_gauss")
-    uniform_pdf = zfit.pdf.Uniform(low=low, high=high, obs=obs, name=f"{name}_uniform")
+    exp_pdf     = zfit.pdf.Exponential(lambda_=lam, obs=obs, name=f"{trigger}_exp")
+    gauss_pdf   = zfit.pdf.Gauss(mu=mu, sigma=sigma, obs=obs, name=f"{trigger}_gauss")
+    uniform_pdf = zfit.pdf.Uniform(low=low, high=high, obs=obs, name=f"{trigger}_uniform")
 
-    frac1 = zfit.Parameter(f"{name}_frac1", 0.3, 0.0, 1.0)
-    frac2 = zfit.Parameter(f"{name}_frac2", 0.3, 0.0, 1.0)
+    frac1 = zfit.Parameter(f"{trigger}_frac1", 0.3, 0.0, 1.0)
+    frac2 = zfit.Parameter(f"{trigger}_frac2", 0.3, 0.0, 1.0)
 
     total_pdf= zfit.pdf.SumPDF(
         pdfs = [exp_pdf, gauss_pdf, uniform_pdf],
         fracs= [frac1, frac2],
-        name = f"{name}_sum")
+        name = f"{trigger}_sum")
 
     return total_pdf
 # ---------------------------------------------------
@@ -49,18 +49,19 @@ class TestDataModel:
         self,
         cfg     : str,
         obs     : str,
-        trigger : str,
+        trigger : Trigger,
         q2bin   : str,
         name    : str):
         log.warning('Using testing DataModel')
         _ = cfg
         _ = obs
-        _ = trigger
         _ = q2bin
         _ = name
+
+        self._trigger = trigger
     # ------------------------
     def get_model(self) -> zpdf:
-        return _get_model(name = 'data_model')
+        return _get_model(trigger = self._trigger)
 # ---------------------------------------------------
 class TestDataPreprocessor:
     def __init__(
@@ -119,9 +120,9 @@ class TestDataPreprocessor:
 class TestPRec:
     def __init__(
         self,
+        trig : Trigger,
         name : str,
         obs  : str,
-        trig : str,
         q2bin: str,
         cfg  : str):
 
@@ -129,12 +130,12 @@ class TestPRec:
 
         _ = name
         _ = obs
-        _ = trig
         _ = q2bin
         _ = cfg
+        self._trig = trig
     # --------------------------
-    def get_sum(self, name : str) -> zsum:
-        return _get_model(name = name)
+    def get_sum(self) -> zsum:
+        return _get_model(trigger = self._trig)
 # ---------------------------------------------------
 @pytest.fixture
 def _patch_data_model(
