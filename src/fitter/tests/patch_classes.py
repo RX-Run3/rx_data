@@ -52,6 +52,7 @@ class TestDataModel:
         trigger : str,
         q2bin   : str,
         name    : str):
+        log.warning('Using testing DataModel')
         _ = cfg
         _ = obs
         _ = trigger
