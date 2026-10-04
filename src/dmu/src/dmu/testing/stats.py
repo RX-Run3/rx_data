@@ -122,7 +122,7 @@ def get_model(
         pdf_name   = f'{kind}{pdf_suffix}'
 
         mu  = zfit.Parameter(f'{prefix}mu{suffix}', 5200, 4500, 6000)
-        sg  = zfit.Parameter(f'{prefix}sg{suffix}',  150,   10,  200)
+        sg  = zfit.Parameter(f'{prefix}sg{suffix}',  150,   10,  300)
         ar  = zfit.Parameter(f'{prefix}ar{suffix}',    1,    0,    5)
         al  = zfit.Parameter(f'{prefix}al{suffix}',    1,    0,    5)
         nr  = zfit.Parameter(f'{prefix}nr{suffix}',    1,  -10,   50)
