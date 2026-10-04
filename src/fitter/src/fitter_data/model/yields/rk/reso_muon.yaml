@@ -10,18 +10,18 @@ s_bppijpsimm_brem_xx0:
   min : 0.0
   max : 1.0
 # -------------------------
-yld_bppijpsimm_brem_xx0:
+yld_bppijpsimm_rk_brem_xx0:
   kind : mul
   pars :
     - s_bppijpsimm_brem_xx0
-    - yld_bpkpjpsimm_brem_xx0
+    - yld_bpkpjpsimm_rk_brem_xx0
 # -------------------------
-yld_comb_brem_xx0:
+yld_comb_rk_brem_xx0:
   <<: *yields
-yld_bpkpjpsimm_brem_xx0:
+yld_bpkpjpsimm_rk_brem_xx0:
   <<: *yields
-yld_bpkppsi2mm_brem_xx0:
+yld_bpkppsi2mm_rk_brem_xx0:
   <<: *yields
-yld_ccbar_brem_xx0:
+yld_ccbar_rk_brem_xx0:
   <<: *yields
 # -------------------------

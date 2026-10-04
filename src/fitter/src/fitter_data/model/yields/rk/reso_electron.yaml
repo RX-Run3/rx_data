@@ -21,50 +21,50 @@ s_bppijpsiee_brem_xx1:
 s_bppijpsiee_brem_xx2:
   <<: *frac
 # -------------------------
-yld_bppijpsiee_brem_xx1:
+yld_bppijpsiee_rk_brem_xx1:
   kind : mul
   pars :
     - s_bppijpsiee_brem_xx1
-    - yld_bpkpjpsiee_brem_xx1
+    - yld_bpkpjpsiee_rk_brem_xx1
 # -------------------------
-yld_bppijpsiee_brem_xx2:
+yld_bppijpsiee_rk_brem_xx2:
   kind : mul
   pars :
     - s_bppijpsiee_brem_xx2
-    - yld_bpkpjpsiee_brem_xx2
+    - yld_bpkpjpsiee_rk_brem_xx2
 # -------------------------
-yld_ccbar_brem_xx1:
+yld_ccbar_rk_brem_xx1:
   <<: *yields
-yld_ccbar_brem_xx2:
-  <<: *yields
-# -------------------------
-yld_comb_brem_xx1:
-  <<: *yields
-yld_comb_brem_xx2:
+yld_ccbar_rk_brem_xx2:
   <<: *yields
 # -------------------------
-yld_bpkpjpsiee_brem_x12:
+yld_comb_rk_brem_xx1:
   <<: *yields
-yld_bpkpjpsiee_brem_xx1:
+yld_comb_rk_brem_xx2:
+  <<: *yields
+# -------------------------
+yld_bpkpjpsiee_rk_brem_x12:
+  <<: *yields
+yld_bpkpjpsiee_rk_brem_xx1:
   kind : mul
   pars : 
-    - yld_bpkpjpsiee_brem_x12
+    - yld_bpkpjpsiee_rk_brem_x12
     - bpkpjpsiee_fraction
-yld_bpkpjpsiee_brem_xx2:
+yld_bpkpjpsiee_rk_brem_xx2:
   kind : dif 
   pars :
-    - yld_bpkpjpsiee_brem_x12
-    - yld_bpkpjpsiee_brem_xx1
+    - yld_bpkpjpsiee_rk_brem_x12
+    - yld_bpkpjpsiee_rk_brem_xx1
 # -------------------------
-yld_bpkppsi2ee_brem_x12:
+yld_bpkppsi2ee_rk_brem_x12:
   <<: *yields
-yld_bpkppsi2ee_brem_xx1:
+yld_bpkppsi2ee_rk_brem_xx1:
   kind : mul
   pars : 
-    - yld_bpkppsi2ee_brem_x12
+    - yld_bpkppsi2ee_rk_brem_x12
     - bpkppsi2ee_fraction
-yld_bpkppsi2ee_brem_xx2:
+yld_bpkppsi2ee_rk_brem_xx2:
   kind : dif 
   pars :
-    - yld_bpkppsi2ee_brem_x12
-    - yld_bpkppsi2ee_brem_xx1
+    - yld_bpkppsi2ee_rk_brem_x12
+    - yld_bpkppsi2ee_rk_brem_xx1

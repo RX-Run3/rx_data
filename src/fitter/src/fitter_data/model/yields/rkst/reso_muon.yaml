@@ -14,9 +14,9 @@ yields: &yields
 # -------------------------
 # Total signals
 # -------------------------
-yld_bdkstkpijpsimm_brem_xx0:
+yld_bdkstkpijpsimm_rkst_brem_xx0:
   <<: *yields
-yld_bdkstkpipsi2mm_brem_xx0:
+yld_bdkstkpipsi2mm_rkst_brem_xx0:
   <<: *yields
 # -------------------------
 # J/psi scales
@@ -43,53 +43,53 @@ s_bskstpsi2mm_brem_xx0:
 # -------------------------
 # J/Psi backgrounds
 # -------------------------
-yld_bdkstjpsimm_had_swp_brem_xx0:
+yld_bdkstjpsimm_rkst_had_swp_brem_xx0:
   kind: mul
   pars:
     -  s_bdkstjpsimm_had_swp_brem_xx0
-    - yld_bdkstkpijpsimm_brem_xx0
-yld_lbpkjpsimm_brem_xx0:
+    - yld_bdkstkpijpsimm_rkst_brem_xx0
+yld_lbpkjpsimm_rkst_brem_xx0:
   kind: mul
   pars:
     -       s_lbpkjpsimm_brem_xx0
-    - yld_bdkstkpijpsimm_brem_xx0
-yld_bsphijpsimm_brem_xx0:
+    - yld_bdkstkpijpsimm_rkst_brem_xx0
+yld_bsphijpsimm_rkst_brem_xx0:
   kind: mul
   pars:
     -      s_bsphijpsimm_brem_xx0
-    - yld_bdkstkpijpsimm_brem_xx0
-yld_bskstjpsimm_brem_xx0:
+    - yld_bdkstkpijpsimm_rkst_brem_xx0
+yld_bskstjpsimm_rkst_brem_xx0:
   kind: mul
   pars:
     -      s_bskstjpsimm_brem_xx0
-    - yld_bdkstkpijpsimm_brem_xx0
+    - yld_bdkstkpijpsimm_rkst_brem_xx0
 # -------------------------
 # Psi(2S) backgrounds
 # -------------------------
-yld_bdkstpsi2mm_had_swp_brem_xx0:
+yld_bdkstpsi2mm_rkst_had_swp_brem_xx0:
   kind: mul
   pars:
     -  s_bdkstpsi2mm_had_swp_brem_xx0
-    - yld_bdkstkpipsi2mm_brem_xx0
-yld_lbpkpsi2mm_brem_xx0:
+    - yld_bdkstkpipsi2mm_rkst_brem_xx0
+yld_lbpkpsi2mm_rkst_brem_xx0:
   kind: mul
   pars:
     -       s_lbpkpsi2mm_brem_xx0
-    - yld_bdkstkpipsi2mm_brem_xx0
-yld_bsphipsi2mm_brem_xx0:
+    - yld_bdkstkpipsi2mm_rkst_brem_xx0
+yld_bsphipsi2mm_rkst_brem_xx0:
   kind: mul
   pars:
     -      s_bsphipsi2mm_brem_xx0
-    - yld_bdkstkpipsi2mm_brem_xx0
-yld_bskstpsi2mm_brem_xx0:
+    - yld_bdkstkpipsi2mm_rkst_brem_xx0
+yld_bskstpsi2mm_rkst_brem_xx0:
   kind: mul
   pars:
     -      s_bskstpsi2mm_brem_xx0
-    - yld_bdkstkpipsi2mm_brem_xx0
+    - yld_bdkstkpipsi2mm_rkst_brem_xx0
 # -------------------------
 # Shared backgrounds
 # -------------------------
-yld_ccbar_brem_xx0:
+yld_ccbar_rkst_brem_xx0:
   <<: *yields
-yld_comb_brem_xx0:
+yld_comb_rkst_brem_xx0:
   <<: *yields

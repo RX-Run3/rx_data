@@ -28,26 +28,26 @@ bdkstkpipsi2ee_fraction:
 # -------------------------
 # Signals by brem
 # -------------------------
-yld_bdkstkpijpsiee_brem_xx1:
+yld_bdkstkpijpsiee_rkst_brem_xx1:
   kind: mul
   pars: 
     - yld_bdkstkpijpsiee
     - bdkstkpijpsiee_fraction
-yld_bdkstkpijpsiee_brem_xx2:
+yld_bdkstkpijpsiee_rkst_brem_xx2:
   kind: dif 
   pars:
     - yld_bdkstkpijpsiee
-    - yld_bdkstkpijpsiee_brem_xx1
-yld_bdkstkpipsi2ee_brem_xx1:
+    - yld_bdkstkpijpsiee_rkst_brem_xx1
+yld_bdkstkpipsi2ee_rkst_brem_xx1:
   kind: mul
   pars: 
     - yld_bdkstkpipsi2ee
     - bdkstkpipsi2ee_fraction
-yld_bdkstkpipsi2ee_brem_xx2:
+yld_bdkstkpipsi2ee_rkst_brem_xx2:
   kind: dif 
   pars:
     - yld_bdkstkpipsi2ee
-    - yld_bdkstkpipsi2ee_brem_xx1 
+    - yld_bdkstkpipsi2ee_rkst_brem_xx1 
 # -------------------------
 # J/psi scales
 # -------------------------
@@ -89,97 +89,97 @@ s_bskstpsi2ee_brem_xx2:
 # -------------------------
 # J/Psi backgrounds
 # -------------------------
-yld_bdkstjpsiee_had_swp_brem_xx1:
+yld_bdkstjpsiee_rkst_had_swp_brem_xx1:
   kind: mul
   pars:
     -  s_bdkstjpsiee_had_swp_brem_xx1
-    - yld_bdkstkpijpsiee_brem_xx1
-yld_bdkstjpsiee_had_swp_brem_xx2:
+    - yld_bdkstkpijpsiee_rkst_brem_xx1
+yld_bdkstjpsiee_rkst_had_swp_brem_xx2:
   kind: mul
   pars:
     -  s_bdkstjpsiee_had_swp_brem_xx2
-    - yld_bdkstkpijpsiee_brem_xx2
-yld_lbpkjpsiee_brem_xx1:
+    - yld_bdkstkpijpsiee_rkst_brem_xx2
+yld_lbpkjpsiee_rkst_brem_xx1:
   kind: mul
   pars:
     -       s_lbpkjpsiee_brem_xx1
-    - yld_bdkstkpijpsiee_brem_xx1
-yld_lbpkjpsiee_brem_xx2:
+    - yld_bdkstkpijpsiee_rkst_brem_xx1
+yld_lbpkjpsiee_rkst_brem_xx2:
   kind: mul
   pars:
     -       s_lbpkjpsiee_brem_xx2
-    - yld_bdkstkpijpsiee_brem_xx2
-yld_bsphijpsiee_brem_xx1:
+    - yld_bdkstkpijpsiee_rkst_brem_xx2
+yld_bsphijpsiee_rkst_brem_xx1:
   kind: mul
   pars:
     -      s_bsphijpsiee_brem_xx1
-    - yld_bdkstkpijpsiee_brem_xx1
-yld_bsphijpsiee_brem_xx2:
+    - yld_bdkstkpijpsiee_rkst_brem_xx1
+yld_bsphijpsiee_rkst_brem_xx2:
   kind: mul
   pars:
     -      s_bsphijpsiee_brem_xx2
-    - yld_bdkstkpijpsiee_brem_xx2
-yld_bskstjpsiee_brem_xx1:
+    - yld_bdkstkpijpsiee_rkst_brem_xx2
+yld_bskstjpsiee_rkst_brem_xx1:
   kind: mul
   pars:
     -      s_bskstjpsiee_brem_xx1
-    - yld_bdkstkpijpsiee_brem_xx1
-yld_bskstjpsiee_brem_xx2:
+    - yld_bdkstkpijpsiee_rkst_brem_xx1
+yld_bskstjpsiee_rkst_brem_xx2:
   kind: mul
   pars:
     -      s_bskstjpsiee_brem_xx2
-    - yld_bdkstkpijpsiee_brem_xx2
+    - yld_bdkstkpijpsiee_rkst_brem_xx2
 # -------------------------
 # Psi(2S) backgrounds
 # -------------------------
-yld_bdkstpsi2ee_had_swp_brem_xx1:
+yld_bdkstpsi2ee_rkst_had_swp_brem_xx1:
   kind: mul
   pars:
     -  s_bdkstpsi2ee_had_swp_brem_xx1
-    - yld_bdkstkpipsi2ee_brem_xx1
-yld_bdkstpsi2ee_had_swp_brem_xx2:
+    - yld_bdkstkpipsi2ee_rkst_brem_xx1
+yld_bdkstpsi2ee_rkst_had_swp_brem_xx2:
   kind: mul
   pars:
     -  s_bdkstpsi2ee_had_swp_brem_xx2
-    - yld_bdkstkpipsi2ee_brem_xx2
-yld_lbpkpsi2ee_brem_xx1:
+    - yld_bdkstkpipsi2ee_rkst_brem_xx2
+yld_lbpkpsi2ee_rkst_brem_xx1:
   kind: mul
   pars:
     -       s_lbpkpsi2ee_brem_xx1
-    - yld_bdkstkpipsi2ee_brem_xx1
-yld_lbpkpsi2ee_brem_xx2:
+    - yld_bdkstkpipsi2ee_rkst_brem_xx1
+yld_lbpkpsi2ee_rkst_brem_xx2:
   kind: mul
   pars:
     -       s_lbpkpsi2ee_brem_xx2
-    - yld_bdkstkpipsi2ee_brem_xx2
-yld_bsphipsi2ee_brem_xx1:
+    - yld_bdkstkpipsi2ee_rkst_brem_xx2
+yld_bsphipsi2ee_rkst_brem_xx1:
   kind: mul
   pars:
     -      s_bsphipsi2ee_brem_xx1
-    - yld_bdkstkpipsi2ee_brem_xx1
-yld_bsphipsi2ee_brem_xx2:
+    - yld_bdkstkpipsi2ee_rkst_brem_xx1
+yld_bsphipsi2ee_rkst_brem_xx2:
   kind: mul
   pars:
     -      s_bsphipsi2ee_brem_xx2
-    - yld_bdkstkpipsi2ee_brem_xx2
-yld_bskstpsi2ee_brem_xx1:
+    - yld_bdkstkpipsi2ee_rkst_brem_xx2
+yld_bskstpsi2ee_rkst_brem_xx1:
   kind: mul
   pars:
     -      s_bskstpsi2ee_brem_xx1
-    - yld_bdkstkpipsi2ee_brem_xx1
-yld_bskstpsi2ee_brem_xx2:
+    - yld_bdkstkpipsi2ee_rkst_brem_xx1
+yld_bskstpsi2ee_rkst_brem_xx2:
   kind: mul
   pars:
     -      s_bskstpsi2ee_brem_xx2
-    - yld_bdkstkpipsi2ee_brem_xx2
+    - yld_bdkstkpipsi2ee_rkst_brem_xx2
 # -------------------------
 # Shared backgrounds
 # -------------------------
-yld_ccbar_brem_xx1:
+yld_ccbar_rkst_brem_xx1:
   <<: *yields
-yld_ccbar_brem_xx2:
+yld_ccbar_rkst_brem_xx2:
   <<: *yields
-yld_comb_brem_xx1:
+yld_comb_rkst_brem_xx1:
   <<: *yields
-yld_comb_brem_xx2:
+yld_comb_rkst_brem_xx2:
   <<: *yields
