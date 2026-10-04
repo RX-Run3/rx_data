@@ -102,3 +102,24 @@ def test_simple(tmp_path : Path):
 
     assert isinstance(nll.nll, ExtendedUnbinnedNLL)
 # -------------------------------------------
+def test_simultaneous(tmp_path : Path):
+    '''
+    Load likelihoods with shared parameters, for simultaneous fits
+    '''
+    files  = {
+        'rkst/rare_muon.yaml'     : 'rkst/rare_muon_simultaneous.yaml',
+        'rkst/rare_electron.yaml' : 'rkst/rare_electron_simultaneous.yaml',
+        'rk/rare_muon.yaml'       : 'rk/rare_muon_simultaneous.yaml',
+    }
+
+    with UnpackerModel.replacements(files = files):
+        nll_ee = _get_nll(
+            trigger = Trigger.rk_ee_os,
+            tmp_path= tmp_path)
+
+        nll_mm = _get_nll(
+            trigger = Trigger.rk_mm_os,
+            tmp_path= tmp_path)
+
+        nll = nll_ee.nll + nll_mm.nll
+# -------------------------------------------
