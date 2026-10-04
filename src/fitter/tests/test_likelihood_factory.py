@@ -9,8 +9,10 @@ from dmu.stats       import ParameterLibrary as PL
 from dmu.stats       import zfit
 from dmu.generic     import UnpackerModel, utilities  as gut
 from dmu.workflow    import Cache
+from rx_common       import Trigger
 from rx_common       import Qsq, Component
 from rx_data         import RDFGetter
+from fitter          import NLLConf
 from fitter          import LikelihoodFactory
 from zfit.core.loss  import ExtendedUnbinnedNLL
 from fitter          import FitModelConf
@@ -19,6 +21,29 @@ from fitter          import ParametricConf
 from patch_classes   import TestDataPreprocessor, TestDataModel
 
 log=LogStore.add_logger('fitter:test_likelihood_factory')
+# ----------------------
+def _get_nll(trigger : Trigger, tmp_path : Path) -> NLLConf:
+    data = gut.load_data(
+        package= 'fitter_data',
+        fpath  =f'rare/{trigger.project}/{trigger.channel}/data.yaml')
+
+    with UnpackerModel.package(name = 'fitter_data'):
+        cfg = FitModelConf(**data)
+
+    obs = zfit.Space('B_Mass_smr', limits=(5000, 6000))
+    with PL.parameter_schema(cfg=cfg.yields),\
+         Cache.cache_root(path = tmp_path),\
+         RDFGetter.max_entries(value=100_000):
+
+        ftr = LikelihoodFactory(
+            name   = trigger,
+            obs    = obs,
+            sample = Component.data_24,
+            q2bin  = Qsq.jpsi,
+            cfg    = cfg)
+        nll = ftr.run()
+
+    return nll
 # ----------------------
 @pytest.fixture(autouse=True)
 def initialize(monkeypatch):
@@ -71,25 +96,9 @@ def test_simple(tmp_path : Path):
     '''
     Simplest test
     '''
-    data = gut.load_data(
-        package='fitter_data',
-        fpath  ='rare/rk/ee/data.yaml')
-
-    with UnpackerModel.package(name = 'fitter_data'):
-        cfg = FitModelConf(**data)
-
-    obs = zfit.Space('B_Mass_smr', limits=(5000, 6000))
-    with PL.parameter_schema(cfg=cfg.yields),\
-         Cache.cache_root(path = tmp_path),\
-         RDFGetter.max_entries(value=100_000):
-
-        ftr = LikelihoodFactory(
-            name   = 'muon',
-            obs    = obs,
-            sample = Component.data_24,
-            q2bin  = Qsq.jpsi,
-            cfg    = cfg)
-        nll = ftr.run()
+    nll = _get_nll(
+        trigger = Trigger.rk_ee_os,
+        tmp_path= tmp_path)
 
     assert isinstance(nll.nll, ExtendedUnbinnedNLL)
 # -------------------------------------------
