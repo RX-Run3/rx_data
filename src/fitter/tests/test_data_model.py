@@ -5,22 +5,21 @@ import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 import pytest
 
-from contextlib    import contextmanager
 from contextlib    import ExitStack
 from pathlib       import Path
-from rx_common     import Mass
-from rx_common     import Cuts, Trigger, Qsq, Region, Project
+from rx_common     import Cuts, Trigger, Qsq, Region
 from rx_common     import Component
 from rx_selection  import selection as sel
 from dmu           import LogStore
 from dmu.stats     import ParameterLibrary as PL
-from dmu.stats     import zfit, ModelFactory, Model
+from dmu.stats     import zfit
 from dmu.generic   import UnpackerModel, utilities as gut
 from dmu.stats     import utilities as sut
 from dmu.workflow  import Cache
 from fitter        import DataModel
 from fitter        import FitModelConf
-from fitter        import CCbarConfTF
+
+from patch_classes import TestCCbarConfTF, TestSimFitter
 
 log=LogStore.add_logger('fitter:test_data_model')
 
@@ -30,115 +29,6 @@ _TRIGGERS : list[tuple[Trigger,Trigger]] = [
     (Trigger.rk_ee_os  , Trigger.rk_mm_os  ),
     (Trigger.rkst_ee_os, Trigger.rkst_mm_os),
 ]
-# ----------------------
-class TestCCbarConfTF(CCbarConfTF, frozen = True):
-    def get_pdf(
-        self,
-        obs_name: str,
-        project : Project,
-        pdfs    : dict[Component, zpdf]) -> zpdf:
-        _     = project
-        _     = pdfs
-
-        name  = 'name'
-        obs   = zfit.Space(obs_name, 4600, 6000)
-        mu    = zfit.Parameter(f"{name}_mu", 5280.0, 5000.0, 5500.0)
-        sigma = zfit.Parameter(f"{name}_sigma", 20.0, 0.1, 100.0)
-        pdf   = zfit.pdf.Gauss(mu=mu, sigma=sigma, obs=obs, name=name)
-
-        return pdf
-# ----------------------
-class TestSimFitter:
-    _mass = 'Mass'
-    # ----------------------
-    def __init__(
-        self,
-        name      : str,
-        component : Component,
-        trigger   : Trigger,
-        q2bin     : str,
-        cfg       : str):
-
-        self._name      = name
-        self._component = component
-        self._trigger   = trigger
-
-        _ = q2bin
-        _ = cfg
-    # ----------------------
-    @property
-    def pdfs(self) -> list[Model]:
-        if self._component == Component.comb:
-            return [Model.exp]
-
-        return [Model.gauss]
-    # ----------------------
-    @property
-    def values(self) -> dict[str, tuple[float,float,float]]:
-        signals         = {Component.bpkpee, Component.bpkpmm, Component.bdkstkpimm}
-        signal_shape    = {'mu' : (5280., 5200., 5350.), 'sg' : (50., 5., 100.)}
-
-        part_reco       = {Component.bsphiee, Component.bpkxkpipiee}
-        part_reco_shape = {'mu' : (5000., 4800., 5200.), 'sg' : (200., 100., 300.)}
-
-        leak_down       = {Component.bpkpjpsiee, Component.bdkstkpijpsiee}
-        leak_down_shape = {'mu' : (4800., 4500., 5000.), 'sg' : (400., 200., 600.)}
-
-        if self._component == Component.comb:
-            return {'c' : (-0.001, -0.01, 0.00)}
-
-        if self._component in signals:
-            return signal_shape
-
-        if self._component == Component.bdkstkpiee and self._trigger == Trigger.rk_ee_os:
-            return part_reco_shape 
-
-        if self._component == Component.bdkstkpiee and self._trigger == Trigger.rkst_ee_os:
-            return signal_shape
-
-        if self._component in part_reco:
-            return part_reco_shape
-
-        if self._component in leak_down:
-            return leak_down_shape
-
-
-        raise ValueError(f'No values for {self._component}/{self._trigger}')
-    # ----------------------
-    @classmethod
-    @contextmanager
-    def mass(cls, value : Mass):
-        old_value  = cls._mass
-        cls._mass = value
-        try:
-            yield
-        finally:
-            cls._mass = old_value
-    # ----------------------
-    def get_model(self) -> zpdf | None:
-        log.warning('Using mock SimFitter PDF')
-        skipped = {
-            Component.ccbar, 
-            Component.bpkppsi2ee, 
-            Component.bpkstkpiee,
-            Component.bdkstkpipsi2ee}
-
-        if self._component in skipped:
-            return None
-
-        name  = f'{self._component}_{self._name}'
-        obs   = zfit.Space(self._mass, 4600, 6000)
-        mfc   = ModelFactory(
-            obs     = obs,
-            preffix = name,
-            l_float = [],
-            l_shared= [],
-            values  = self.values,
-            l_pdf   = self.pdfs)
-
-        log.debug(f'Component: {self._component}')
-
-        return mfc.get_pdf()
 # ----------------------
 def _get_model(
     q2bin     : Qsq,

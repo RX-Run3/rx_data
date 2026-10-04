@@ -9,29 +9,30 @@ from dmu.stats       import ParameterLibrary as PL
 from dmu.stats       import zfit
 from dmu.generic     import UnpackerModel, utilities  as gut
 from dmu.workflow    import Cache
-from rx_common       import Cuts, Mass, Qsq, Component, Region
+from rx_common       import Qsq, Component
 from rx_data         import RDFGetter
-from rx_selection    import selection  as sel
 from fitter          import LikelihoodFactory
 from zfit.core.loss  import ExtendedUnbinnedNLL
 from fitter          import FitModelConf
 from fitter          import ParametricConf
 
+from patch_classes   import TestDataPreprocessor, TestDataModel
+
 log=LogStore.add_logger('fitter:test_likelihood_factory')
-
-_DATA_PREPROCESSOR_TARGET = 'fitter.likelihood_factory.DataPreprocessor'
-mark_data_preprocessor    = pytest.mark.usefixtures('_patch_data_preprocessor')
-
-_DATA_MODEL_TARGET = 'fitter.likelihood_factory.DataModel'
-mark_data_model    = pytest.mark.usefixtures('_patch_data_model')
-
-pytestmark = [mark_data_preprocessor, mark_data_model]
 # ----------------------
-@pytest.fixture(scope='module', autouse=True)
-def initialize():
+@pytest.fixture(autouse=True)
+def initialize(monkeypatch):
     '''
     This runs before any test
     '''
+    monkeypatch.setattr(
+        'fitter.likelihood_factory.DataPreprocessor',
+        TestDataPreprocessor)
+
+    monkeypatch.setattr(
+        'fitter.likelihood_factory.DataModel',
+        TestDataModel)
+
     LogStore.set_level('dmu:stats:fitter'         , 10)
     LogStore.set_level('rx_data:rdf_getter'       , 30)
     LogStore.set_level('rx_misid:sample_weighter' , 10)
