@@ -28,6 +28,15 @@ class GoodnessOfFit(BaseModel, frozen = True):
     chi2: float = math.nan
     pval: float = math.nan
     ndof: int
+    calculated : bool = True
+    # --------------------------
+    @classmethod
+    def none(cls) -> 'GoodnessOfFit':
+        '''
+        Instance of GoodnessOfFit representing
+        not yet calculated goodness of fit
+        '''
+        return cls(pval = 1, ndof = 10, calculated = False)
     # --------------------------
     @model_validator(mode='before')
     @classmethod

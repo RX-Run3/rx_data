@@ -7,7 +7,7 @@ import pytest
 
 from dmu        import LogStore
 from dmu.stats  import zfit
-from dmu.stats  import GofCalculator
+from dmu.stats  import GofCalculator, GoodnessOfFit
 
 log = LogStore.add_logger('dmu:stats:test_gofcalculator')
 zdat= zfit.Data
@@ -59,4 +59,12 @@ def test_simple():
     gof = gcl.get_gof()
 
     assert math.isclose(gof.pval, 0.9649746, abs_tol=1e-5)
+# -------------------------------------------
+def test_gof_none():
+    '''
+    Test none class method in GoodnessOfFit
+    '''
+    gof = GoodnessOfFit.none()
+
+    assert gof.calculated == False
 # -------------------------------------------
