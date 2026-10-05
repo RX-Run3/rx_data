@@ -269,6 +269,17 @@ class ConstraintND(Constraint):
 
         return obs
     # ----------------------
+    def _params_from_holder(self, holder : ParsHolder) -> list[zpar]:
+        '''
+        Parameters to be constrained as zfit Parameter instances
+        '''
+        s_flt   = holder.get_params(floating =  True)
+        s_fix   = holder.get_params(floating = False)
+        s_all   = s_flt | s_fix
+        d_param = { par.name : par for par in s_all if par.name in self.parameters }
+
+        return [ d_param[name] for name in self.parameters ] 
+    # ----------------------
     @cached_property
     def observations(self) -> dict[str,zpar]:
         '''
@@ -301,20 +312,19 @@ class ConstraintND(Constraint):
         ------------
         Multidimentional Gaussian constraint
         '''
-        l_par = self._obs_from_holder(holder = holder)
-        l_obs = self.observations.values()
-
-        if self.kind == 'GaussianConstraint':
-            cns   = zfit.constraint.GaussianConstraint(
-                params      = l_par, 
-                observation = l_obs,
-                cov         = self.cov)
-        else:
+        if self.kind != ConstraintType.gauss:
             raise ValueError(f'Invalid constraint kind: {self.kind}')
+
+        params= self._params_from_holder(holder = holder)
+        l_obs = self.observations.values()
+        cns   = zfit.constraint.GaussianConstraint(
+            params      = params, 
+            observation = l_obs,
+            cov         = self.cov)
 
         return cns
     # ----------------------
-    def observation(self, name : str) -> float:
+    def observation(self, name : str) -> float | None:
         '''
         Parameters
         -------------
@@ -322,12 +332,11 @@ class ConstraintND(Constraint):
 
         Returns
         -------------
-        Value to which it will be constrained
+        Value to which it will be constrained, None if name is wrong
         '''
-        if name not in self.observations:
-            raise ValueError(f'Parameter {name} not found')
-
-        par = self.observations[name]
+        par = self.observations.get(name)
+        if par is None:
+            return None
 
         return float(par.value().numpy())
     # ----------------------
