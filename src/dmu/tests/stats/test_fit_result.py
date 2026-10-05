@@ -28,10 +28,10 @@ def test_from_zfit():
     '''
     Test conversion from zfit object
     '''
-    nll = get_nll(kind = 's+b', suffix = '_gaus_test_1')
-    min = zfit.minimize.Minuit()
+    nll       = get_nll(kind = 's+b', suffix = '_gaus_test_1')
+    minimizer = zfit.minimize.Minuit()
 
-    res = min.minimize(loss = nll)
+    res = minimizer.minimize(loss = nll)
     res.hesse(name = 'minuit_hesse')
 
     val = FitResult.from_zfit(res = res)
@@ -47,10 +47,10 @@ def test_dataframe():
     '''
     Test getting dataframe with parameter values
     '''
-    nll = get_nll(kind = 's+b', suffix = '_gaus_test_1')
-    min = zfit.minimize.Minuit()
+    nll       = get_nll(kind = 's+b', suffix = '_gaus_test_1')
+    minimizer = zfit.minimize.Minuit()
 
-    res = min.minimize(loss = nll)
+    res = minimizer.minimize(loss = nll)
     res.hesse(name = 'minuit_hesse')
 
     res = FitResult.from_zfit(res = res)
@@ -61,10 +61,10 @@ def test_serialize(tmp_path : Path):
     '''
     Test conversion from zfit object
     '''
-    nll = get_nll(kind = 's+b', suffix = '_gaus_test_1')
-    min = zfit.minimize.Minuit()
+    nll       = get_nll(kind = 's+b', suffix = '_gaus_test_1')
+    minimizer = zfit.minimize.Minuit()
 
-    res = min.minimize(loss = nll)
+    res = minimizer.minimize(loss = nll)
     res.hesse(name = 'minuit_hesse')
 
     val = FitResult.from_zfit(res = res)
@@ -81,9 +81,9 @@ def test_getitem():
     Test conversion from zfit object
     '''
     nll = get_nll(kind = 's+b', suffix = '_gaus_test_1')
-    min = zfit.minimize.Minuit()
+    minimizer = zfit.minimize.Minuit()
 
-    res = min.minimize(loss = nll)
+    res = minimizer.minimize(loss = nll)
     res.hesse(name = 'minuit_hesse')
 
     val = FitResult.from_zfit(res = res)
@@ -98,9 +98,9 @@ def test_getpar():
     Test conversion from zfit object
     '''
     nll = get_nll(kind = 's+b', suffix = '_gaus_test_1')
-    min = zfit.minimize.Minuit()
+    minimizer = zfit.minimize.Minuit()
 
-    res = min.minimize(loss = nll)
+    res = minimizer.minimize(loss = nll)
     res.hesse(name = 'minuit_hesse')
 
     val = FitResult.from_zfit(res = res)
@@ -118,9 +118,9 @@ def test_get():
     Test conversion from zfit object
     '''
     nll = get_nll(kind = 's+b', suffix = '_gaus_test_1')
-    min = zfit.minimize.Minuit()
+    minimizer = zfit.minimize.Minuit()
 
-    res = min.minimize(loss = nll)
+    res = minimizer.minimize(loss = nll)
     res.hesse(name = 'minuit_hesse')
 
     val = FitResult.from_zfit(res = res)
@@ -141,9 +141,9 @@ def test_extend():
     Test extending fit result
     '''
     nll = get_nll(kind = 's+b', suffix = '')
-    min = zfit.minimize.Minuit()
+    minimizer = zfit.minimize.Minuit()
 
-    res = min.minimize(loss = nll)
+    res = minimizer.minimize(loss = nll)
     res.hesse(name = 'minuit_hesse')
 
     ores = FitResult.from_zfit(res = res)
@@ -165,9 +165,9 @@ def test_no_errors_ok():
     Test no_errors_ok
     '''
     nll = get_nll(kind = 's+b', suffix = '_gaus_test_1')
-    min = zfit.minimize.Minuit()
+    minimizer = zfit.minimize.Minuit()
 
-    res = min.minimize(loss = nll)
+    res = minimizer.minimize(loss = nll)
     FitResult.from_zfit(res = res, no_errors_ok=True)
 
     with pytest.raises(KeyError):
@@ -178,9 +178,9 @@ def test_hash():
     Test conversion from zfit object
     '''
     nll = get_nll(kind = 's+b', suffix = '_gaus_test_1')
-    min = zfit.minimize.Minuit()
+    minimizer = zfit.minimize.Minuit()
 
-    res = min.minimize(loss = nll)
+    res = minimizer.minimize(loss = nll)
     res.hesse(name = 'minuit_hesse')
 
     val = FitResult.from_zfit(res = res)
@@ -192,9 +192,9 @@ def test_prefix(prefix : str | None):
         kind   = 's+b',
         prefix = prefix,
         suffix = 'test')
-    min = zfit.minimize.Minuit()
+    minimizer = zfit.minimize.Minuit()
 
-    res = min.minimize(loss = nll)
+    res = minimizer.minimize(loss = nll)
     res.hesse(name = 'minuit_hesse')
 
     val = FitResult.from_zfit(res = res)
@@ -205,9 +205,9 @@ def test_rename():
     Test renaming of parameters
     '''
     nll = get_nll(kind = 's+b', suffix = '_old_name')
-    min = zfit.minimize.Minuit()
+    minimizer = zfit.minimize.Minuit()
 
-    res = min.minimize(loss = nll)
+    res = minimizer.minimize(loss = nll)
     res.hesse(name = 'minuit_hesse')
 
     old_res = FitResult.from_zfit(res = res)
