@@ -352,6 +352,7 @@ class Constraint1D(Constraint):
     '''
     Class representing Gaussian 1D constrain
     '''
+    name: str
     kind: ConstraintType 
     mu  : float
     sg  : float
@@ -360,7 +361,7 @@ class Constraint1D(Constraint):
     def from_dict(
         cls,
         data : dict[str,tuple[float,float]],
-        kind : ConstraintType) -> list['Constraint1D']:
+        kind : ConstraintType) -> Constraints['Constraint1D']:
         '''
         Parameters
         -----------------
@@ -371,7 +372,7 @@ class Constraint1D(Constraint):
         -----------------
         List of 1D constraints
         '''
-        constraints : list[Constraint1D] = []
+        constraints : dict[str,Constraint1D] = dict()
         for name, (value, error) in data.items():
             cns = cls(
                 kind = kind,
@@ -379,9 +380,9 @@ class Constraint1D(Constraint):
                 mu   = value,
                 sg   = error)
 
-            constraints.append(cns)
+            constraints[name] = cns
 
-        return constraints
+        return Constraints[Constraint1D](root = constraints) 
     # ----------------------
     def calibrate(self, result : FitResult) -> 'Constraint1D':
         '''
@@ -409,7 +410,7 @@ class Constraint1D(Constraint):
         )
     # ----------------------
     @cached_property
-    def observation(self) -> zpar:
+    def obs(self) -> zpar:
         '''
         Parameter symbolizing mean of Gaussian constraint
         '''
@@ -422,55 +423,74 @@ class Constraint1D(Constraint):
                 raise ValueError(f'Invalid constraint: {self.kind}')
 
         mu   = zfit.Parameter(
-            f'{self.name}_mu', 
-            self.mu, 
-            self.mu - 5 * sg,
-            self.mu + 5 * sg)
+            name  = f'{self.name}_mu', 
+            value = self.mu, 
+            lower = self.mu - _CONS_SPACE_SIGMAS * sg,
+            upper = self.mu + _CONS_SPACE_SIGMAS * sg)
 
         return mu
     # ----------------------
-    def _obs_from_holder(self, holder : ParsHolder) -> zpar:
+    def observation(self, name : str) -> float | None:
         '''
         Parameters
-        ------------------
-        holder: Object holding parameters
+        -------------
+        name: Name of parameter whose observation is needed
 
         Returns
-        ------------------
-        Observable of constraint, i.e. parameter to constrain
+        -------------
+        None if parameter does not match name attribute, observation value otherwise
         '''
-        s_par_flt = holder.get_params(floating = True)
-        s_par_fix = holder.get_params(floating = False)
-        for par in s_par_flt:
-            if par.name == self.name and isinstance(par, zpar):
-                return par
+        if name != self.name:
+            return
 
-        log.error('Floating parameters')
-        for par in s_par_flt:
-            log.error(par.name)
+        return self.mu
+    # ----------------------
+    @property
+    def current_observation(self) -> float:
+        '''
+        Value of `mu` at this moment. Can differ from `self.mu`
+        if constraint is been resampled for e.g. toys
+        '''
+        return self.obs.numpy()
+    # ----------------------
+    def _param_from_holder(self, holder : ParsHolder) -> zpar:
+        '''
+        Parameters
+        ----------------
+        holder: Object storing parameters to constrain (e.g. likelihood)
 
-        log.error('Fixed parameters')
-        for par in s_par_fix:
-            log.error(par.name)
+        Returns
+        ----------------
+        Parameter been constrained, taken from holder (e.g. likelihood)
+        '''
+        s_flt   = holder.get_params(floating =  True)
+        s_fix   = holder.get_params(floating = False)
+        s_all   = s_flt | s_fix
+        l_par   = [ par for par in s_all if par.name == self.name ]
 
-        raise ValueError(f'Cannot find {self.name} in NLL')
+        if len(l_par) != 1:
+            for par in l_par:
+                log.error(par.name)
+            raise ValueError(f'Not found one and only one parameter named: {self.name}')
+
+        return l_par[0]
     # ----------------------
     def zfit_cons(self, holder : ParsHolder) -> GConstraint | PConstraint:
         '''
         Zfit constraint corresponding to `par`
         '''
-        obs = self._obs_from_holder(holder = holder)
+        param = self._param_from_holder(holder = holder)
 
         match self.kind:
             case ConstraintType.gauss: 
                 cons = GConstraint(
-                    params      = obs, 
-                    observation = self.observation, 
+                    params      = param, 
+                    observation = self.obs, 
                     uncertainty = self.sg)
             case ConstraintType.poisson:
                 cons = PConstraint(
-                    params      = obs, 
-                    observation = self.observation)
+                    params      = param, 
+                    observation = self.obs)
 
         return cons
     # ----------------------
@@ -494,7 +514,7 @@ class Constraint1D(Constraint):
             case _:
                 raise ValueError(f'Invalid constraint kind: {self.kind}')
 
-        self.observation.set_value(new_val)
+        self.obs.set_value(new_val)
 # ----------------------------------------
 def build_constraint(data: dict) -> Constraint:
     '''
@@ -514,20 +534,29 @@ def build_constraint(data: dict) -> Constraint:
         pprint.pprint(data)
         raise ValueError('Cannot build constrain from input') from exc
 # ----------------------------------------
-def print_constraints(constraints : Constraints) -> None:
+def print_constraints[C : Constraint](constraints : Constraints[C]) -> None:
     '''
     Parameters
     -------------
     List of constraint objects
     '''
-    l_cons_1d = [ cons for cons in constraints if isinstance(cons, Constraint1D) ]
-    l_cons_nd = [ cons for cons in constraints if isinstance(cons, ConstraintND) ]
+    l_cons_1d = [ cons for cons in constraints.root.values() if isinstance(cons, Constraint1D) ]
+    l_cons_nd = [ cons for cons in constraints.root.values() if isinstance(cons, ConstraintND) ]
+    l_none    = [ cons for cons in constraints.root.values() if cons not in l_cons_1d and cons not in l_cons_nd ]
 
     if l_cons_1d:
         _print_1d_constraints(l_cons_1d)
 
     if l_cons_nd:
         _print_nd_constraints(l_cons_nd)
+
+    if not l_none:
+        return
+
+    for elm in l_none:
+        log.error(type(elm))
+
+    raise ValueError('Found constraints of invalid type')
 # ----------------------------------------
 def _print_1d_constraints(constraints : Sequence[Constraint1D]) -> None:
     '''
