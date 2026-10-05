@@ -10,7 +10,7 @@ from dmu         import LogStore
 from dmu.stats   import FitResult, FitParameter
 from dmu.stats   import zfit
 from dmu.testing import get_nll
-from dmu.generic import rxran 
+from dmu.generic import rxran
 
 log=LogStore.add_logger('dmu:test_fit_result')
 # ----------------------
@@ -138,7 +138,7 @@ def test_get():
 # -----------------------------
 def test_extend():
     '''
-    Test extending fit result 
+    Test extending fit result
     '''
     nll = get_nll(kind = 's+b', suffix = '')
     min = zfit.minimize.Minuit()
@@ -189,7 +189,7 @@ def test_hash():
 @pytest.mark.parametrize('prefix', [None, 'yld', 's'])
 def test_prefix(prefix : str | None):
     nll = get_nll(
-        kind   = 's+b', 
+        kind   = 's+b',
         prefix = prefix,
         suffix = 'test')
     min = zfit.minimize.Minuit()
@@ -202,7 +202,7 @@ def test_prefix(prefix : str | None):
 # -----------------------------
 def test_rename():
     '''
-    Test renaming of parameters 
+    Test renaming of parameters
     '''
     nll = get_nll(kind = 's+b', suffix = '_old_name')
     min = zfit.minimize.Minuit()
