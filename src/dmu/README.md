@@ -1212,7 +1212,7 @@ for _ in range(ntoys):
     cad.resample()
     data.resample()
 
-    res = min.minimize(nll)
+    res = minimizer.minimize(nll)
 ```
 
 ### Helpers
