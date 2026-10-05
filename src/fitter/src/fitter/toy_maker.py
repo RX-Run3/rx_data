@@ -19,14 +19,14 @@ from dmu.stats   import FitResult
 from dmu.stats   import FitConf
 
 from pathlib     import Path
-from pydantic    import BaseModel, ConfigDict
+from pydantic    import BaseModel
 from zfit.data   import SamplerData
 
 log  = LogStore.add_logger('fitter:toy_maker')
 zlos = zfit.loss.ExtendedUnbinnedNLL | zfit.loss.UnbinnedNLL
 zres = zfit.result.FitResult
 # ----------------------
-class ToyConf(BaseModel):
+class ToyConf(BaseModel, frozen = True):
     '''
     Class meant to configure how toys are generated
 
@@ -37,8 +37,6 @@ class ToyConf(BaseModel):
     rseed           : Random seed will be a Cantor mapping of rseed and index of toy
     ntoys           : Number of toys
     '''
-    model_config = ConfigDict(frozen=True)
-
     fit_conf         : FitConf
     output_directory : Path
     ntoys            : int
