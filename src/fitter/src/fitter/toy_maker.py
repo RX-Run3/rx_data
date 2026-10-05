@@ -17,6 +17,7 @@ from dmu.stats   import GofCalculator
 from dmu.stats   import MinimizerFailError
 from dmu.stats   import FitResult
 from dmu.stats   import FitConf
+from dmu.stats   import ErrorFailError
 
 from pathlib     import Path
 from pydantic    import BaseModel
@@ -382,17 +383,12 @@ class ToyMaker:
 
             with GofCalculator.disabled(value = not self._cfg.fit_conf.run_gof):
                 try:
-                    obj = minimizers.minimize(
+                    res = minimizers.minimize(
                         nll = nll, 
                         cfg = self._cfg.fit_conf)
-                except MinimizerFailError:
+                except (MinimizerFailError, ErrorFailError):
                     n_lost += 1
                     continue
-
-                if isinstance(obj, zres):
-                    res = FitResult.from_zfit(res = obj, no_errors_ok = True)
-                else:
-                    res = obj
 
                 if log.getEffectiveLevel() < LogLevels.info:
                     self._print_result(res = res, msg = 'Toy fit')
