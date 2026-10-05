@@ -27,7 +27,7 @@ class GofCalculator:
     '''
     Class used to calculate goodness of fit from zfit NLL
     '''
-    _disabled = False # If true, it will not run, returning chi2=0 and pvalue=1
+    _disabled : bool = False # If true, it will not run, returning chi2=0 and pvalue=1
     # ---------------------
     def __init__(
         self, 
@@ -39,12 +39,11 @@ class GofCalculator:
         nll : Likelihood, after minimization
         ndof: Number of degrees of freedom used to calculate pvalue from chi2
         '''
-        self._ndof    = ndof
-        self._nll     = nll
-
         if GofCalculator._disabled:
             return
 
+        self._ndof    = ndof
+        self._nll     = nll
         self._pdf     = self._pdf_from_nll()
         self._data_in = self._data_from_nll()
         self._data_np = self._data_np_from_data(self._data_in)
