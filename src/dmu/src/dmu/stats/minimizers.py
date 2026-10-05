@@ -26,7 +26,7 @@ from .fit_result     import FitResult, GoodnessOfFit
 from .utilities      import print_pdf
 from .fit_conf       import Context, Retries, FitConf
 from .imports        import zfit
-from .exception      import MinimizerFailError, ErrorFailError
+from .exceptions     import MinimizerFailError, ErrorFailError
 from .               import utilities as sut
 
 log = LogStore.add_logger('dmu:stats:minimizers')
@@ -215,7 +215,11 @@ class AnealingMinimizer:
 
             try:
                 obj = self._min.minimize(loss)
-                obj = _calculate_errors(res = obj, cfg = self._cfg, nll = loss)
+                res = _calculate_errors(
+                    res = obj,
+                    cfg = self._cfg,
+                    gof = GoodnessOfFit.none(),
+                    nll = loss)
             except (FailMinimizeNaN, ValueError, RuntimeError, MinimizerFailError):
                 for pdf in loss.model:
                     print_pdf(pdf, level = LogLevels.debug)
@@ -225,14 +229,6 @@ class AnealingMinimizer:
 
             gcl = GofCalculator(nll = loss)
             gof = gcl.get_gof()
-            try:
-                res = FitResult.from_zfit(
-                    res          = obj,
-                    gof          = gof,
-                    no_errors_ok = not self._cfg.do_errors)
-            except Exception:
-                log.info(f'{i_try:02}/{self._strategy.ntries:02}{"Unreadable result":>25}')
-                continue
 
             if not res.valid:
                 log.info(f'{i_try:02}/{self._strategy.ntries:02}{"Invalid minimum":>25}')
@@ -435,10 +431,11 @@ def minimize(
         path = sut.save_nll(loss = nll)
         raise MinimizerFailError(f'Fit result invalid, likelihood saved to: {path}')
 
-    gof = None
     if cfg.run_gof:
         gcl = GofCalculator(nll = nll)
         gof = gcl.get_gof()
+    else:
+        gof = GoodnessOfFit.none()
 
     if isinstance(obj, zres):
         res = _calculate_errors(
