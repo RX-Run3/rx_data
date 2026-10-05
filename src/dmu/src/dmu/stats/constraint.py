@@ -8,6 +8,7 @@ import math
 import numpy
 import pprint
 
+from typing          import Final
 from collections.abc import Mapping
 from pathlib         import Path
 from typing          import Literal, Self, Sequence
@@ -25,7 +26,10 @@ from .protocols      import ParsHolder
 from .types          import ConstraintType
 from .imports        import zfit
 
-log   = LogStore.add_logger('dmu:stats:constraint')
+log = LogStore.add_logger('dmu:stats:constraint')
+
+# Size of space where constrained parameter lives, in standard deviations
+_CONS_SPACE_SIGMAS : Final[float] = 5
 # ----------------------------------------
 class Constraint(BaseModel):
     '''
@@ -35,11 +39,10 @@ class Constraint(BaseModel):
     # ----------------------
     def calibrate(self, result : FitResult) -> 'Constraint':
         _ = result
-
-        raise NotImplementedError('Cannot calibrate base Constraint')
+        raise NotImplementedError('calibrate method not implemented')
     # ----------------------
     def resample(self) -> None:
-        raise NotImplementedError('Cannot resample base Constraint')
+        raise NotImplementedError('resample method not implemented')
     # ----------------------
     def zfit_cons(self, holder : ParsHolder) -> GConstraint | PConstraint:
         _ = holder
