@@ -11,5 +11,6 @@ except ImportError:
 import dmu.generic.utilities as gut
 with gut.silent_import():
     import tensorflow
+    from tensorflow import config as tf_config
 
 import zfit

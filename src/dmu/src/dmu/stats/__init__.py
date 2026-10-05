@@ -32,6 +32,7 @@ from .non_parametric_model import NonParametricModel
 from .fit_conf            import FitConf, KDEConf, PaddingConf
 from .imports             import zfit
 from .imports             import tensorflow
+from .imports             import tf_config
 from .minimizers          import AnealingMinimizer
 from .minimizers          import ContextMinimizer
 from .minimizers          import Retries
@@ -47,6 +48,13 @@ from .exceptions          import MinimizerFailError, ErrorFailError
 from .regular_interpolator import RegularInterpolator
 
 __all__ = [
+    # ---------------------
+    # Reimports
+    # ---------------------
+    'tensorflow',
+    'tf_config',
+    'zfit',
+    # ---------------------
     'Function',
     'CorrectionImplementation',
     'ConstraintType',
@@ -65,14 +73,12 @@ __all__ = [
     'FitConf',
     'PaddingConf',
     'KDEConf',
-    'tensorflow',
     'save_fit',
     'ContextMinimizer',
     'FitResult',
     'FitParameter',
     'AnealingMinimizer',
     'ZFitPlotter',
-    'zfit',
     'print_pdf',
     'Fitter',
     'MinimizerFailError',
