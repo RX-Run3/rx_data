@@ -34,7 +34,6 @@ from .imports             import zfit
 from .imports             import tensorflow
 from .minimizers          import AnealingMinimizer
 from .minimizers          import ContextMinimizer
-from .minimizers          import MinimizerFailError
 from .minimizers          import Retries
 from .fit_result          import FitResult
 from .fit_result          import FitParameter
@@ -43,6 +42,7 @@ from .types               import Model, KDEModel, CorrectionImplementation, Cons
 from .configs             import SimpleYieldConf
 from .configs             import CompositeYieldConf
 from .configs             import YieldsConf
+from .exceptions          import MinimizerFailError, ErrorFailError
 
 from .regular_interpolator import RegularInterpolator
 
@@ -76,6 +76,7 @@ __all__ = [
     'print_pdf',
     'Fitter',
     'MinimizerFailError',
+    'ErrorFailError',
     'build_constraint',
     'Constraint',
     'ModelFactory',
