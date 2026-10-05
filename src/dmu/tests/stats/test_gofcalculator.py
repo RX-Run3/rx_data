@@ -68,3 +68,17 @@ def test_gof_none():
 
     assert gof.calculated == False
 # -------------------------------------------
+def test_disabled():
+    '''
+    Test disabling GOF calculator
+    '''
+    nll = _get_nll()
+    res = Data.minimizer.minimize(nll)
+    print(res)
+
+    with GofCalculator.disabled(value = True):
+        gcl = GofCalculator(nll, ndof=10)
+        gof = gcl.get_gof()
+
+    assert gof == GoodnessOfFit.none()
+# -------------------------------------------

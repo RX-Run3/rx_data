@@ -7,16 +7,16 @@ import pandas as pnd
 
 from dmu         import LogStore
 from contextlib  import contextmanager
-from functools   import lru_cache
 from zfit.loss   import ExtendedUnbinnedNLL, UnbinnedNLL
-from zfit.pdf    import BasePDF   as zpdf
-from zfit.param  import Parameter as zpar
 
 from .imports    import zfit
 from .fit_result import GoodnessOfFit
 
 log = LogStore.add_logger('dmu:stats:gofcalculator')
-Loss= ExtendedUnbinnedNLL | UnbinnedNLL
+type Loss = ExtendedUnbinnedNLL | UnbinnedNLL
+type zdat = zfit.data.Data
+type zpdf = zfit.pdf.BasePDF
+type zpar = zfit.Parameter
 #------------------------------
 class GofError(Exception):
     '''
@@ -77,7 +77,7 @@ class GofCalculator:
 
         return l_model[0]
     # ---------------------
-    def _data_from_nll(self) -> zpdf:
+    def _data_from_nll(self) -> zdat:
         l_data = self._nll.data
         if len(l_data) != 1:
             raise ValueError('Not found one and only one dataset')
@@ -93,7 +93,6 @@ class GofCalculator:
 
         return npar
     # ---------------------
-    @lru_cache(maxsize=10)
     def _get_binning(self) -> tuple[int, float, float]:
         min_x = numpy.min(self._data_np)
         max_x = numpy.max(self._data_np)
@@ -110,13 +109,13 @@ class GofCalculator:
 
         size = arr_edg.size
 
-        l_bc = []
+        l_bc : list[float] = []
         for i_edg in range(size - 1):
             low = arr_edg[i_edg + 0]
             hig = arr_edg[i_edg + 1]
 
-            var : zpar = self._pdf.integrate(limits = [low, hig])
-            val = var.numpy()[0]
+            var : zpar  = self._pdf.integrate(limits = [low, hig])
+            val : float = var.numpy()[0]
             l_bc.append(val * self._data_np.size)
 
         return numpy.array(l_bc)
@@ -139,7 +138,7 @@ class GofCalculator:
         Goodness of fit of a given kind
         '''
         if GofCalculator._disabled:
-            return GoodnessOfFit(pval = 0.5, ndof = self._ndof) 
+            return GoodnessOfFit.none()
 
         log.debug('Calculating GOF')
 
@@ -149,16 +148,16 @@ class GofCalculator:
         log.debug(40 * '-')
         log.debug(f'{"Data":<20}{"Model":<20}')
         log.debug(40 * '-')
-        for dval, mval in zip(arr_data, arr_modl):
+        for dval, mval in zip(arr_data, arr_modl, strict = True):
             log.debug(f'{dval:<20.3f}{mval:<20.3f}')
         log.debug(40 * '-')
 
-        norm        = numpy.sum(arr_data) / numpy.sum(arr_modl)
-        arr_modl    = norm * arr_modl
-        arr_res     = arr_modl - arr_data
+        norm     : float         = numpy.sum(arr_data) / numpy.sum(arr_modl)
+        arr_modl : numpy.ndarray = norm * arr_modl
+        arr_res  : numpy.ndarray = arr_modl - arr_data
 
-        arr_chi2    = numpy.divide(arr_res ** 2, arr_data, out=numpy.zeros_like(arr_data), where=arr_data!=0)
-        sum_chi2    = numpy.sum(arr_chi2)
+        arr_chi2 = numpy.divide(arr_res ** 2, arr_data, out=numpy.zeros_like(arr_data), where=arr_data!=0)
+        sum_chi2 = numpy.sum(arr_chi2)
 
         return GoodnessOfFit(chi2 = sum_chi2, ndof = self._ndof)
     # ---------------------
