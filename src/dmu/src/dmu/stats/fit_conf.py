@@ -33,8 +33,8 @@ class PaddingConf(BaseModel, frozen = True):
     @model_validator(mode = 'before')
     @classmethod
     def check_mirror(cls, data):
-        lowermirror = data.get('lowermirror')
-        uppermirror = data.get('uppermirror')
+        lowermirror : float = data.get('lowermirror')
+        uppermirror : float = data.get('uppermirror')
 
         # Use default padding config
         if lowermirror is None and uppermirror is None:
