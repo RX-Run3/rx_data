@@ -20,6 +20,8 @@ from scipy.stats import chi2 as chi2_dist
 from pathlib     import Path
 from pydantic    import BaseModel, ConfigDict, Field, model_validator
 from dmu         import LogStore
+
+from .exceptions import ErrorFailError
 from .imports    import zfit
 
 zres = zfit.result.FitResult
@@ -603,7 +605,7 @@ class FitResult(BaseModel, frozen = True):
             error : float = math.nan
         else:
             pprint.pprint(data)
-            raise KeyError(f'Cannot extract error from parameter: {name}')
+            raise ErrorFailError(f'Cannot extract error from parameter: {name}')
 
         try:
             value : float = data['value']
