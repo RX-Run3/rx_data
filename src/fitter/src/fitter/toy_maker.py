@@ -11,7 +11,7 @@ import pandas     as pnd
 from dmu         import LogLevels, LogStore
 from dmu.generic import rxran
 from dmu.stats   import minimizers, zfit
-from dmu.stats   import tensorflow as tf
+from dmu.stats   import tf_config
 from dmu.stats   import Constraint
 from dmu.stats   import GofCalculator
 from dmu.stats   import MinimizerFailError
@@ -90,7 +90,7 @@ class ToyMaker:
         '''
         Check if using GPU
         '''
-        if tf.config.list_physical_devices('GPU'):
+        if tf_config.list_physical_devices('GPU'):
             log.warning('Running with GPU')
         else:
             log.debug('Running with CPU')
@@ -359,7 +359,7 @@ class ToyMaker:
         self._print_samplers(samplers = samplers, msg = 'Samplers before recreating NLL')
         nll = self._nll.create_new(
             data        = samplers,
-            constraints = zfit_cns) # type: ignore
+            constraints = zfit_cns)
         self._print_samplers(samplers = samplers, msg = 'Samplers after recreating NLL')
 
         if nll is None:
