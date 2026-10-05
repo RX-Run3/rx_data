@@ -20,9 +20,10 @@ from .imports         import zfit
 from .goodness_of_fit import GoodnessOfFit
 from .fit_parameter   import FitParameter
 
+log = LogStore.add_logger('rx_stats:fit_result')
+
 type zres = zfit.result.FitResult
 type zpar = zfit.param.Parameter
-type log  = LogStore.add_logger('rx_stats:fit_result')
 # -------------------------------------
 class FitResult(BaseModel, frozen = True):
     '''
