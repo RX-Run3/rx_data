@@ -8,7 +8,7 @@ import math
 import numpy
 import pprint
 
-from typing          import Final
+from typing          import Final, overload
 from collections.abc import Mapping
 from pathlib         import Path
 from typing          import Literal, Self, Sequence
@@ -44,7 +44,7 @@ class Constraint(BaseModel):
     def resample(self) -> None:
         raise NotImplementedError('resample method not implemented')
     # ----------------------
-    def observation(self, name : str) -> float | None:
+    def observation(self, name : str, raise_on_missing : bool = True) -> float | None:
         '''
         Parameters
         --------------
@@ -134,7 +134,7 @@ class Constraints[C : Constraint](RootModel[Mapping[str,C]], frozen = True):
         '''
         vals : list[float] = []
         for cons in self.root.values():
-            val = cons.observation(name = name)
+            val = cons.observation(name = name, raise_on_missing = False)
             if val is None:
                 continue
 
@@ -324,21 +324,30 @@ class ConstraintND(Constraint):
 
         return cns
     # ----------------------
-    def observation(self, name : str) -> float | None:
+    @overload
+    def observation(self, name : str, raise_on_missing : bool =     ...) ->        float:...
+    @overload
+    def observation(self, name : str, raise_on_missing : Literal[False]) -> None | float:...
+    def observation(self, name : str, raise_on_missing : bool = True   ) -> None | float:
         '''
         Parameters
         -------------
-        name: Name of parameter that will be constrained
+        name            : Name of parameter that will be constrained
+        raise_on_missing: If True and if parameter is not found, raises ValueError, 
+                          If False and not found, returns None
 
         Returns
         -------------
         Value to which it will be constrained, None if name is wrong
         '''
         par = self.observations.get(name)
-        if par is None:
+        if par is not None:
+            return float(par.value().numpy())
+
+        if not raise_on_missing:
             return None
 
-        return float(par.value().numpy())
+        raise ValueError(f'Missing value: {name}')
     # ----------------------
     def resample(self) -> None:
         '''
@@ -430,20 +439,29 @@ class Constraint1D(Constraint):
 
         return mu
     # ----------------------
-    def observation(self, name : str) -> float | None:
+    @overload
+    def observation(self, name : str, raise_on_missing : bool =     ...) ->        float:...
+    @overload
+    def observation(self, name : str, raise_on_missing : Literal[False]) -> None | float:...
+    def observation(self, name : str, raise_on_missing : bool = True   ) -> None | float:
         '''
         Parameters
         -------------
-        name: Name of parameter whose observation is needed
+        name            : Name of parameter that will be constrained
+        raise_on_missing: If True and if parameter is not found, raises ValueError, 
+                          If False and not found, returns None
 
         Returns
         -------------
         None if parameter does not match name attribute, observation value otherwise
         '''
-        if name != self.name:
-            return
+        if name == self.name:
+            return self.mu
 
-        return self.mu
+        if raise_on_missing:
+            raise ValueError(f'Missing parameter: {name}')
+
+        return None
     # ----------------------
     @property
     def current_observation(self) -> float:

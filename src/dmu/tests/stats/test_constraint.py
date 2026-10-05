@@ -113,6 +113,12 @@ def test_print_1d():
 
     log.info('')
     print_constraints(constraints = cons)
+
+    mu_cons = cons.root['mu']
+    with pytest.raises(ValueError):
+        mu_cons.observation(name = 'fake')
+
+    assert mu_cons.observation(name = 'fake', raise_on_missing=False) is None
 # ---------------------------------
 def test_print_nd():
     '''
@@ -123,6 +129,12 @@ def test_print_nd():
 
     log.info('')
     print_constraints(constraints = cons)
+
+    sig_cons = cons.root['signal_shape']
+    with pytest.raises(ValueError):
+        sig_cons.observation(name = 'fake')
+
+    assert sig_cons.observation(name = 'fake', raise_on_missing=False) is None
 # ---------------------------------
 def test_constraintND():
     '''
@@ -137,8 +149,8 @@ def test_constraintND():
 
     assert isinstance(zcons, GConstraint)
 
-    l_mu = []
-    l_sg = []
+    l_mu : list[float] = []
+    l_sg : list[float] = []
     for _ in range(1000):
         cons.resample()
         mu = cons.observation('mu')
