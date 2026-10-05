@@ -115,7 +115,8 @@ class FitResult(BaseModel, frozen = True):
     # ----------------------
     def __hash__(self) -> int:
         cov  = tuple( tuple(row) for row in self.covariance )
-        data = cov, self.valid, self.status, self.__all_parameters, self.gof
+        pars = tuple(self.__all_parameters)
+        data = cov, self.valid, self.status, pars, self.gof
 
         return hash(data)
     # ----------------------
