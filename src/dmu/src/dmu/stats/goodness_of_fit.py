@@ -19,7 +19,7 @@ _PVAL_MIN : Final[float] = 1e-7
 _MIN_NDOF : Final[int  ] =  9
 _MAX_NDOF : Final[int  ] = 41
 
-log = LogStore.add_logger('rx_stats:fit_result')
+log = LogStore.add_logger('rx_stats:goodness_of_fit')
 # -----------------------------------------------
 class GoodnessOfFit(BaseModel, frozen = True):
     '''
