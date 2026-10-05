@@ -87,18 +87,16 @@ def test_constraint1D(data : dict, mean : float, stdv : float):
     '''
     Basic test for Constraint1D 
     '''
-    numpy.random.seed(42)
     holder = ParsHolder()
     cons   = Constraint1D(**data)
+    zcons  = cons.zfit_cons(holder = holder)
 
-    zcons  = cons.zfit_cons(holder)
     assert isinstance(zcons, (GConstraint, PConstraint))
 
-    values = []
+    values : list[float] = []
     for _ in range(100):
         cons.resample()
-        val = cons.observation.value()
-        values.append(val)
+        values.append(cons.current_observation)
 
     mean_test = numpy.mean(values)
     stdv_test = numpy.std(values)
@@ -110,27 +108,28 @@ def test_print_1d():
     '''
     Test printing of constraints
     '''
-    numpy.random.seed(42)
-    l_cons : list[Constraint] = [ Constraint1D(**data) for data in _load_constraints() ]
+    data = gut.load_data(package='dmu_data', fpath='tests/stats/constraints/uncorrelated.yaml')
+    cons = Constraints[Constraint1D](root = data)
 
     log.info('')
-    print_constraints(l_cons)
+    print_constraints(constraints = cons)
 # ---------------------------------
 def test_print_nd():
     '''
     Test printing of constraints
     '''
-    numpy.random.seed(42)
-    l_cons : list[Constraint] = [ ConstraintND(**data) for data in _load_constraints(kind = 'correlated') ]
+    data = gut.load_data(package='dmu_data', fpath='tests/stats/constraints/correlated.yaml')
+    cons = Constraints[ConstraintND](root = data)
 
     log.info('')
-    print_constraints(l_cons)
+    print_constraints(constraints = cons)
 # ---------------------------------
 def test_constraintND():
-    numpy.random.seed(42)
-
-    data = gut.load_data(package='dmu_data', fpath='tests/stats/constraints/correlated.yaml')
-    block= data['signal_shape']
+    '''
+    Test ND constraints, loading and resampling
+    '''
+    data : dict[str,Any] = gut.load_data(package='dmu_data', fpath='tests/stats/constraints/correlated.yaml')
+    block                = data['signal_shape']
 
     holder = ParsHolder()
     cons   = ConstraintND(**block)
@@ -167,10 +166,9 @@ def test_from_dict():
         'b' : (3., 2.),
     }
 
-    constraints = Constraint1D.from_dict(data = data, kind = 'GaussianConstraint')
-    assert constraints
-    assert isinstance(constraints, list)
-    assert all( isinstance(const, Constraint1D) for const in constraints )
+    constraints = Constraint1D.from_dict(data = data, kind = ConstraintType.gauss)
+    assert constraints.root
+    assert all( isinstance(const, Constraint1D) for const in constraints.root.values() )
 
     print_constraints(constraints)
 # ---------------------------------
@@ -192,7 +190,7 @@ def test_serialization_nd(tmp_path : Path):
     assert res == obj
 # ---------------------------------
 @pytest.mark.parametrize('data', _load_constraints(kind = 'uncorrelated'))
-def test_serialization_1d(tmp_path : Path, data):
+def test_serialization_1d(tmp_path : Path, data : dict[str,Any]):
     '''
     Tests serialization to and from JSON
     fro ND constraints
@@ -207,3 +205,4 @@ def test_serialization_1d(tmp_path : Path, data):
     res = Constraint1D.from_json(path=path)
 
     assert res == obj
+# ---------------------------------
