@@ -1,5 +1,6 @@
 # This config is used for testing the ToyMaker class
 output_directory : toys/test
-fit_conf         : {}
+fit_conf         :
+  run_gof : false
 ntoys            : 20
-rseed            : 42 
+rseed            : 42
