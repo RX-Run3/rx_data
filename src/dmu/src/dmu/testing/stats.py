@@ -125,8 +125,8 @@ def get_model(
         sg  = zfit.Parameter(f'{prefix}sg{suffix}',  150,   10,  300)
         ar  = zfit.Parameter(f'{prefix}ar{suffix}',    1,    0,    5)
         al  = zfit.Parameter(f'{prefix}al{suffix}',    1,    0,    5)
-        nr  = zfit.Parameter(f'{prefix}nr{suffix}',    1,  -10,   50)
-        nl  = zfit.Parameter(f'{prefix}nl{suffix}',    1,  -10,   50)
+        nr  = zfit.Parameter(f'{prefix}nr{suffix}',    1,  -10,  150)
+        nl  = zfit.Parameter(f'{prefix}nl{suffix}',    1,  -10,  150)
         pdf = zfit.pdf.DoubleCB(
             mu    = mu, 
             sigma = sg, 
