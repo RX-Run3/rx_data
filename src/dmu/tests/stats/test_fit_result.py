@@ -6,13 +6,17 @@ import numpy
 import pytest
 
 from pathlib     import Path
+from typing      import Final
 from dmu         import LogStore
+from dmu.stats   import ErrorFailError
 from dmu.stats   import FitResult, FitParameter
 from dmu.stats   import zfit
 from dmu.testing import get_nll
 from dmu.generic import rxran
 
 log=LogStore.add_logger('dmu:test_fit_result')
+
+_FALL_BACK : Final[int] = 3 # placeholder for missing parameter value
 # ----------------------
 @pytest.fixture(scope='module', autouse=True)
 def initialize():
@@ -120,21 +124,21 @@ def test_get():
     nll = get_nll(kind = 's+b', suffix = '_gaus_test_1')
     minimizer = zfit.minimize.Minuit()
 
-    res = minimizer.minimize(loss = nll)
-    res.hesse(name = 'minuit_hesse')
+    zres = minimizer.minimize(loss = nll)
+    zres.hesse(name = 'minuit_hesse')
 
-    val = FitResult.from_zfit(res = res)
+    res = FitResult.from_zfit(res = zres)
 
-    x, y = val['mu_gaus_test_1']
-    a, b = val.get('mu_gaus_test_1', 3)
+    x, y = res['mu_gaus_test_1']
+    a, b = res.get('mu_gaus_test_1', _FALL_BACK)
 
     assert a == x
     assert b == y
 
-    a, b = val.get('none', 3)
+    a, b = res.get('none', _FALL_BACK)
 
-    assert a == 3
-    assert b == 3
+    assert a == _FALL_BACK
+    assert b == _FALL_BACK
 # -----------------------------
 def test_extend():
     '''
@@ -170,7 +174,7 @@ def test_no_errors_ok():
     res = minimizer.minimize(loss = nll)
     FitResult.from_zfit(res = res, no_errors_ok=True)
 
-    with pytest.raises(KeyError):
+    with pytest.raises(ErrorFailError):
         FitResult.from_zfit(res = res)
 # -----------------------------
 def test_hash():
