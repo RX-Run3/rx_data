@@ -22,9 +22,10 @@ from pathlib     import Path
 from pydantic    import BaseModel
 from zfit.data   import SamplerData
 
-log  = LogStore.add_logger('fitter:toy_maker')
-zlos = zfit.loss.ExtendedUnbinnedNLL | zfit.loss.UnbinnedNLL
-zres = zfit.result.FitResult
+log = LogStore.add_logger('fitter:toy_maker')
+
+type zlos = zfit.loss.ExtendedUnbinnedNLL | zfit.loss.UnbinnedNLL
+type zres = zfit.result.FitResult
 # ----------------------
 class ToyConf(BaseModel, frozen = True):
     '''
@@ -98,7 +99,7 @@ class ToyMaker:
         self,
         df  : pnd.DataFrame,
         res : FitResult,
-        hash: int,
+        hsh : int,
         itoy: int) -> pnd.DataFrame:
         '''
         Parameters
@@ -128,7 +129,7 @@ class ToyMaker:
                 itoy, 
                 pvalue, 
                 res.valid,
-                hash]
+                hsh]
 
         return df
     # ----------------------
@@ -407,7 +408,7 @@ class ToyMaker:
             df = self._add_parameters(
                 df  = df,
                 res = res,
-                hash= hsh, 
+                hsh = hsh,
                 itoy= itoy)
 
         if n_lost:
