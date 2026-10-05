@@ -20,8 +20,8 @@ from dmu.generic   import utilities as gut
 from fitter        import ChannelHolder, ToyConf
 from systematics   import SystematicsCalculator
 
-log =LogStore.add_logger('rx_stats:test_systematics_calculator')
-zlos=ExtendedUnbinnedNLL
+log = LogStore.add_logger('rx_stats:test_systematics_calculator')
+type zlos = ExtendedUnbinnedNLL
 # ----------------------
 @pytest.fixture(scope='module', autouse=True)
 def initialize():
