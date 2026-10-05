@@ -4,13 +4,15 @@ Module with tests for classes and functions in constraint.py module
 import numpy
 import pytest
 
+from typing          import Any
 from pathlib         import Path
 from typing          import Final
 from dmu             import LogStore
 from dmu.generic     import utilities          as gut
+from dmu.stats       import ConstraintType
 from dmu.stats       import Constraint1D 
 from dmu.stats       import ConstraintND
-from dmu.stats       import Constraint
+from dmu.stats       import Constraints
 from dmu.stats       import print_constraints 
 from dmu.stats       import zfit
 from zfit            import Parameter          as zpar
@@ -31,6 +33,14 @@ _EXPECTED_SG : Final[list[float]] = [
     31.62811407592934,
     31.62811407592934,
 ]
+
+# ----------------------
+@pytest.fixture(autouse=True)
+def initialize():
+    '''
+    This will run before any test
+    '''
+    numpy.random.seed(42)
 # ---------------------------------
 def _load_constraints(kind = 'uncorrelated') -> list[dict]:
     '''
@@ -56,10 +66,14 @@ class ParsHolder:
     Class representing object holding parameters
     '''
     # ------------
-    def get_params(self) -> set[zpar]:
+    def get_params(self, floating : bool) -> set[zpar]:
         '''
         Returns set of parameters
         '''
+        _    = floating
+        if not floating:
+            return set()
+
         mu   = zfit.Parameter('mu', 5300, 5000, 6000)
         sg   = zfit.Parameter('sg',   20,   10,   60)
 
