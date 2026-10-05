@@ -26,6 +26,7 @@ from .fit_result     import FitResult, GoodnessOfFit
 from .utilities      import print_pdf
 from .fit_conf       import Context, Retries, FitConf
 from .imports        import zfit
+from .exception      import MinimizerFailError, ErrorFailError
 from .               import utilities as sut
 
 log = LogStore.add_logger('dmu:stats:minimizers')
@@ -45,11 +46,6 @@ _HIDDEN_TF_LINES          : Final[list[str]] = [
 
 _NDOF         : Final[int] = 10             # Numbe of degrees of freedom for goodness of fit calculation
 _ERROR_METHOD : Final[str] = 'minuit_hesse' # Method used to calculate errors
-#------------------------------
-class MinimizerFailError(Exception):
-    '''
-    Exception used when fit fails in error calculation 
-    '''
 # ------------------------
 class AnealingMinimizer:
     '''
@@ -355,22 +351,29 @@ def _get_weight_corr(nll : zlos) -> WeightCorr:
 
     return WeightCorr(False)
 # ------------------------
-def _calculate_errors(res : zres, cfg : FitConf, nll : zlos) -> zres:
+def _calculate_errors(
+    res : zres, 
+    cfg : FitConf, 
+    gof : GoodnessOfFit,
+    nll : zlos) -> FitResult:
     '''
     Parameters
     -------------
-    nll: Likelihood, will save it if failure
     res: Result of fit, before error calculation
     cfg: Configuration for fit
+    gof: Object holding goodness of fit from minimization stage
+    nll: Likelihood, will save it if failure
 
     Returns
     -------------
-    Result of fit after error calculation
-    None if error could not be calculated after 10 attempts
+    Fit result with errors added
     '''
     if not cfg.do_errors:
         log.warning('Not calculating fit errors')
-        return res
+        return FitResult.from_zfit(
+            res          = res, 
+            gof          = gof,
+            no_errors_ok = not cfg.do_errors)
 
     log.debug('Calculating errors')
 
@@ -386,9 +389,12 @@ def _calculate_errors(res : zres, cfg : FitConf, nll : zlos) -> zres:
         setattr(res, 'cov', cov) # noqa: B010
     except ValueError as exc:
         log.info('Failed error calculation')
-        raise MinimizerFailError('Failed calculating error') from exc
+        raise ErrorFailError('Failed calculating error') from exc
 
-    return res
+    return FitResult.from_zfit(
+        res          = res, 
+        gof          = gof,
+        no_errors_ok = not cfg.do_errors)
 # ------------------------
 def minimize(
     nll : zlos,
@@ -427,7 +433,7 @@ def minimize(
     if not obj.valid:
         log.error(obj)
         path = sut.save_nll(loss = nll)
-        raise ValueError(f'Fit result invalid, likelihood saved to: {path}')
+        raise MinimizerFailError(f'Fit result invalid, likelihood saved to: {path}')
 
     gof = None
     if cfg.run_gof:
@@ -435,11 +441,11 @@ def minimize(
         gof = gcl.get_gof()
 
     if isinstance(obj, zres):
-        obj = _calculate_errors(res = obj, cfg = cfg, nll = nll)
-        res = FitResult.from_zfit(
-            res          = obj, 
-            gof          = gof,
-            no_errors_ok = not cfg.do_errors)
+        res = _calculate_errors(
+            res = obj, 
+            cfg = cfg, 
+            gof = gof,
+            nll = nll)
     else:
         res = obj
 
