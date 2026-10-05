@@ -112,6 +112,42 @@ class Constraint(BaseModel):
         '''
         return self.name < other.name
 # ----------------------------------------
+class Constraints[C : Constraint](RootModel[Mapping[str,C]], frozen = True):
+    '''
+    Class meant to be used as a container of constraint objects
+
+    The key of the mapping is:
+
+    1D: Name of the constrained parameter, e.g. mu
+    ND: Name of physical thing constrained, e.g. signal_shape
+    '''
+    # -------------------------------------------
+    def value(self, name : str) -> float | None:
+        '''
+        Parameters
+        ----------------
+        name: Parameter name
+
+        Returns
+        ----------------
+        Value at which corresponding parameter is constrained, None if not found
+        '''
+        vals : list[float] = []
+        for cons in self.root.values():
+            val = cons.observation(name = name)
+            if val is None:
+                continue
+
+            vals.append(val)
+
+        if len(vals) == 1:
+            return vals[0]
+
+        if len(vals) == 0:
+            return None
+
+        raise ValueError(f'Found multiple values for parameter {name}')
+# ----------------------------------------
 class ConstraintND(Constraint):
     '''
     Class meant to symbolize NDimensional Gaussian constraint
@@ -450,38 +486,6 @@ class Constraint1D(Constraint):
                 raise ValueError(f'Invalid constraint kind: {self.kind}')
 
         self.observation.set_value(new_val)
-# ----------------------------------------
-class Constraints[C : Constraint](RootModel[Mapping[str,C]], frozen = True):
-    '''
-    Class meant to be used as a container of constraint objects
-
-    The key of the mapping is:
-
-    1D: Name of the constrained parameter, e.g. mu
-    ND: Name of physical thing constrained, e.g. signal_shape
-    '''
-    # -------------------------------------------
-    def value(self, name : str) -> float | None:
-        '''
-        Parameters
-        ----------------
-        name: Parameter name
-
-        Returns
-        ----------------
-        Value at which corresponding parameter is constrained, None if not found
-        '''
-        for cons in self.root.values():
-            if isinstance(cons, Constraint1D) and cons.name != name:
-                continue
-
-            if isinstance(cons, Constraint1D) and cons.name == name:
-                return cons.mu
-
-            if isinstance(cons, ConstraintND) and name in cons.parameters:
-                return cons.observation(name = name)
-
-        return None
 # ----------------------------------------
 def build_constraint(data: dict) -> Constraint:
     '''
