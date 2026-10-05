@@ -37,7 +37,7 @@ from .minimizers          import ContextMinimizer
 from .minimizers          import Retries
 from .fit_result          import FitResult
 from .fit_result          import FitParameter
-from .fit_result          import GoodnessOfFit
+from .goodness_of_fit     import GoodnessOfFit
 from .types               import Model, KDEModel, CorrectionImplementation, ConstraintType
 from .configs             import SimpleYieldConf
 from .configs             import CompositeYieldConf
