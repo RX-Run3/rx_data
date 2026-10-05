@@ -44,9 +44,19 @@ class Constraint(BaseModel):
     def resample(self) -> None:
         raise NotImplementedError('resample method not implemented')
     # ----------------------
-    def zfit_cons(self, holder : ParsHolder) -> GConstraint | PConstraint:
-        _ = holder
+    def observation(self, name : str) -> float | None:
+        '''
+        Parameters
+        --------------
+        name: Name of constrained parameter
 
+        Returns
+        --------------
+        Zfit parameter representing observation
+        '''
+        raise NotImplementedError('observation method not implemented')
+    # ----------------------
+    def zfit_cons(self, holder : ParsHolder) -> GConstraint | PConstraint:
         raise NotImplementedError('Cannot extract zfit constraint from base Constraint')
     # ----------------------
     def string(self, kind : Literal['yaml', 'json']) -> str:
