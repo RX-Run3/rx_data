@@ -44,8 +44,8 @@ _VALIDATE_PAR_NAME : ContextVar[bool] = ContextVar('_validate_par_name', default
 class GoodnessOfFit(BaseModel):
     model_config = ConfigDict(frozen=True)
 
-    chi2: float = math.nan 
-    pval: float = math.nan 
+    chi2: float = math.nan
+    pval: float = math.nan
     ndof: int
     # --------------------------
     @model_validator(mode='before')
@@ -55,11 +55,11 @@ class GoodnessOfFit(BaseModel):
         Validates:
 
         - NODF is between bounds
-        - Chi2 or Pvalue needs to exist 
-        - If both chi2 and pvalue exist, check consistency 
+        - Chi2 or Pvalue needs to exist
+        - If both chi2 and pvalue exist, check consistency
         '''
-        chi2 : float = data.get('chi2', math.nan) 
-        pval : float = data.get('pval', math.nan) 
+        chi2 : float = data.get('chi2', math.nan)
+        pval : float = data.get('pval', math.nan)
         ndof : float = data['ndof']
 
         if not (_MIN_NDOF < ndof < _MAX_NDOF):
@@ -90,15 +90,15 @@ class GoodnessOfFit(BaseModel):
         # ----------------
         if   math.isnan(chi2) and not math.isnan(computed_chi2):
             data['chi2'] = computed_chi2
-            return data 
+            return data
         elif math.isnan(chi2) and     math.isnan(computed_chi2):
             raise ValueError('Cannot compute chi2')
         # ----------------
-        # Got chi2, not pvalue, assign pvalue 
+        # Got chi2, not pvalue, assign pvalue
         # ----------------
         if   math.isnan(pval) and not math.isnan(computed_pval):
             data['pval'] = computed_pval
-            return data 
+            return data
         elif math.isnan(pval) and     math.isnan(computed_pval):
             raise ValueError('Cannot compute pvalue')
         # ----------------
@@ -119,7 +119,7 @@ class GoodnessOfFit(BaseModel):
             raise ValueError(f'Inconsistent pvalue values: {pval:.7} vs {computed_pval:.7}')
         # ----------------
 
-        return data 
+        return data
     # --------------------------
     def __str__(self) -> str:
         fchi2 = -1 if self.chi2 is None else self.chi2
@@ -130,7 +130,7 @@ class GoodnessOfFit(BaseModel):
         msg+= f'pval: {fpval:.3f}\n'
         msg+= f'Ndof: {indof:}\n'
 
-        return msg 
+        return msg
     # --------------------------
     def __lt__(self, other : 'GoodnessOfFit') -> bool:
         '''
@@ -143,7 +143,7 @@ class FitParameter(BaseModel, frozen = True):
     Class meant to represent fitting parameter
     '''
     name : str
-    value: float 
+    value: float
     error: float
     # ----------------------
     def rename(self, original : str, new : str) -> Self:
@@ -158,7 +158,7 @@ class FitParameter(BaseModel, frozen = True):
 
         i.e. will replace substring starting with leading '_'
         '''
-        if f'_{original }' not in self.name: 
+        if f'_{original }' not in self.name:
             raise ValueError(f'In renaming, {original} not found in {self.name}')
 
         new_name = self.name.replace(f'_{original}', f'_{new}')
@@ -212,7 +212,7 @@ class FitParameter(BaseModel, frozen = True):
         first = parts[0]
 
         # If yld_comb_..., yld_sign_...
-        # Use yld_comb as prefix 
+        # Use yld_comb as prefix
         # Same with scales
         if first in {'yld', 's'}:
             return '_'.join(parts[:2])
@@ -257,7 +257,7 @@ class FitResult(BaseModel, frozen = True):
     gof        : GoodnessOfFit | None = None
     extra_pars : list[FitParameter]   = Field(default_factory = list, description = 'E.g. parameters derived from main parameters')
     parameters : tuple[FitParameter,...]
-    covariance : list[list[float]] 
+    covariance : list[list[float]]
     # ----------------------
     def extend(self, pars : list[FitParameter]) -> 'FitResult':
         '''
@@ -377,7 +377,7 @@ class FitResult(BaseModel, frozen = True):
 
         Returns
         -------------
-        Covariance matrix among parameters 
+        Covariance matrix among parameters
         '''
         indexes : list[int] = self._get_parameter_indexes(pars = pars)
 
@@ -475,12 +475,12 @@ class FitResult(BaseModel, frozen = True):
         msg += f'{"Name":<50}{"Value":<20}{"":<5}{"Error":<20}\n'
         msg += 100 * '-' + '\n'
         for par in self.__all_parameters:
-            msg += str(par) + '\n' 
+            msg += str(par) + '\n'
 
         return msg
     # ----------------------
     def to_json(
-        self, 
+        self,
         path : Path) -> None:
         '''
         Parameters
@@ -501,7 +501,7 @@ class FitResult(BaseModel, frozen = True):
 
         Returns
         -------------
-        Set of parameters with values set as in current object 
+        Set of parameters with values set as in current object
         '''
         fail = False
         for par in pars:
@@ -525,7 +525,7 @@ class FitResult(BaseModel, frozen = True):
 
         Returns
         -------------
-        Set of parameters with values fixed as in current object 
+        Set of parameters with values fixed as in current object
         '''
         pars = self.set_pars(pars = pars)
 
@@ -584,7 +584,7 @@ class FitResult(BaseModel, frozen = True):
     # ----------------------
     @classmethod
     def _par_from_zfit(
-        cls, 
+        cls,
         name        : str,
         no_errors_ok: bool,
         data        : dict) -> 'FitParameter':
@@ -620,7 +620,7 @@ class FitResult(BaseModel, frozen = True):
     # ----------------------
     @classmethod
     def from_zfit(
-        cls, 
+        cls,
         res          : zres,
         gof          : GoodnessOfFit | None = None,
         no_errors_ok : bool                 = False) -> 'FitResult':
@@ -635,11 +635,11 @@ class FitResult(BaseModel, frozen = True):
         ---------------
         Fitting result
         '''
-        l_par : list[FitParameter] = [] 
+        l_par : list[FitParameter] = []
         for par, data in res.params.items():
             param = cls._par_from_zfit(
                 no_errors_ok = no_errors_ok,
-                name         = par.name, 
+                name         = par.name,
                 data         = data) # type: ignore
 
             l_par.append(param)

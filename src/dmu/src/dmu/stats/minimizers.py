@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from typing                        import Final
 from pathlib                       import Path
 from multiprocessing               import get_context
-from zfit                          import dill                     
+from zfit                          import dill
 from zfit.loss                     import ExtendedUnbinnedNLL
 from zfit.loss                     import UnbinnedNLL
 from zfit.result                   import FitResult as zres
@@ -70,7 +70,7 @@ class AnealingMinimizer:
         self._strategy   = cfg.strategy
         self._cfg        = cfg
         self._target_gof = GoodnessOfFit(
-            pval = self._strategy.pvalue, 
+            pval = self._strategy.pvalue,
             ndof = _NDOF)
 
         self._l_bad_fit_res : list[zres] = []
@@ -120,8 +120,8 @@ class AnealingMinimizer:
             log.debug(f'{par.name:<40}{ival:<15.3f}{"->":<10}{fval:<15.3f}{"in":<5}{par.lower:<15.3e}{par.upper:<15.3e}')
     # ----------------------
     def _param_bounds(
-        self, 
-        par            : zpar, 
+        self,
+        par            : zpar,
         must_be_finite : bool = True) -> tuple[float,float]:
         '''
         Parameters
@@ -219,7 +219,7 @@ class AnealingMinimizer:
             except (FailMinimizeNaN, ValueError, RuntimeError, MinimizerFailError):
                 for pdf in loss.model:
                     print_pdf(pdf, level = LogLevels.debug)
-                    
+
                 log.info(f'{i_try:02}/{self._strategy.ntries:02}{"Failed minimization":>25}')
                 continue
 
@@ -227,7 +227,7 @@ class AnealingMinimizer:
             gof = gcl.get_gof()
             try:
                 res = FitResult.from_zfit(
-                    res          = obj, 
+                    res          = obj,
                     gof          = gof,
                     no_errors_ok = not self._cfg.do_errors)
             except Exception:
@@ -243,7 +243,7 @@ class AnealingMinimizer:
                 continue
 
             log.info(f'{i_try:02}/{self._strategy.ntries:02}{gof.chi2:>25.3f}')
-            if gof < self._target_gof: 
+            if gof < self._target_gof:
                 results.append(res)
                 continue
 
@@ -286,7 +286,7 @@ class ContextMinimizer:
     # ----------------------
     @staticmethod
     def _proc_minimize(
-        onll: bytes, 
+        onll: bytes,
         omin: bytes,
         path: Path):
         '''
@@ -297,14 +297,14 @@ class ContextMinimizer:
         Parameters
         ----------------
         onll: Bytes representation of likelihood
-        omin: Bytes representation of minimizer 
+        omin: Bytes representation of minimizer
         path: Path where the result object will be saved
         '''
         from zfit import dill             # noqa: PLC0415
         from .fit_result import FitResult # noqa: PLC0415
 
         nll              = dill.loads(onll)
-        minimizer : zmin = dill.loads(omin) 
+        minimizer : zmin = dill.loads(omin)
 
         res = minimizer.minimize(loss = nll)
         res.hesse(name = 'minuit_hesse')
@@ -352,8 +352,8 @@ def _get_weight_corr(nll : zlos) -> WeightCorr:
     return WeightCorr(False)
 # ------------------------
 def _calculate_errors(
-    res : zres, 
-    cfg : FitConf, 
+    res : zres,
+    cfg : FitConf,
     gof : GoodnessOfFit,
     nll : zlos) -> FitResult:
     '''
@@ -371,7 +371,7 @@ def _calculate_errors(
     if not cfg.do_errors:
         log.warning('Not calculating fit errors')
         return FitResult.from_zfit(
-            res          = res, 
+            res          = res,
             gof          = gof,
             no_errors_ok = not cfg.do_errors)
 
@@ -381,7 +381,7 @@ def _calculate_errors(
     try:
         res.hesse(
             weightcorr = weight_corr,
-            name       = _ERROR_METHOD, 
+            name       = _ERROR_METHOD,
             method     = _ERROR_METHOD)
 
         cov = res.covariance(method = _ERROR_METHOD, weightcorr = weight_corr)
@@ -392,7 +392,7 @@ def _calculate_errors(
         raise ErrorFailError('Failed calculating error') from exc
 
     return FitResult.from_zfit(
-        res          = res, 
+        res          = res,
         gof          = gof,
         no_errors_ok = not cfg.do_errors)
 # ------------------------
@@ -403,7 +403,7 @@ def minimize(
     Parameters
     --------------
     nll : Negative log likelihood
-    cfg : Fit configuration object 
+    cfg : Fit configuration object
 
     Returns
     --------------
@@ -442,8 +442,8 @@ def minimize(
 
     if isinstance(obj, zres):
         res = _calculate_errors(
-            res = obj, 
-            cfg = cfg, 
+            res = obj,
+            cfg = cfg,
             gof = gof,
             nll = nll)
     else:
