@@ -18,7 +18,7 @@ from contextlib  import contextmanager
 from typing      import Final
 from scipy.stats import chi2 as chi2_dist
 from pathlib     import Path
-from pydantic    import BaseModel, ConfigDict, Field, model_validator
+from pydantic    import BaseModel, Field, model_validator
 from dmu         import LogStore
 
 from .exceptions import ErrorFailError
@@ -41,9 +41,10 @@ _PAR_REGX : Final[str  ] = r'\w+_\w+_\w+_\d+'
 
 _VALIDATE_PAR_NAME : ContextVar[bool] = ContextVar('_validate_par_name', default = False)
 # -------------------------------------
-class GoodnessOfFit(BaseModel):
-    model_config = ConfigDict(frozen=True)
-
+class GoodnessOfFit(BaseModel, frozen = True):
+    '''
+    Class meant to represent Chi2 or p-value from a fit
+    '''
     chi2: float = math.nan
     pval: float = math.nan
     ndof: int
