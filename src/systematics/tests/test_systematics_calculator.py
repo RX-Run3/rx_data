@@ -22,7 +22,7 @@ from systematics   import SystematicsCalculator
 log = LogStore.add_logger('rx_stats:test_systematics_calculator')
 type zlos = ExtendedUnbinnedNLL
 # ----------------------
-@pytest.fixture(scope='module', autouse=True)
+@pytest.fixture(autouse=True)
 def initialize():
     '''
     This will run before any test
