@@ -48,7 +48,7 @@ class FitResult(BaseModel, frozen = True):
         for par in pars:
             if par.name in self:
                 fail = True
-                log.error(par)
+                log.info(par)
 
         if fail:
             raise ValueError('Cannot extend FitResult with parameters already found')
@@ -380,7 +380,7 @@ class FitResult(BaseModel, frozen = True):
         elif no_errors_ok:
             error : float = math.nan
         else:
-            log.error(data)
+            log.info(data)
             raise ErrorFailError(f'Cannot extract error from parameter: {name}')
 
         try:
