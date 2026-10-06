@@ -1,13 +1,11 @@
 '''
 Module containing FitResult class
 '''
-import re
 import copy
 import math
 import yaml
 import json
 import numpy
-import pprint
 import pandas as pnd
 
 from typing           import Self, Sequence
@@ -382,13 +380,13 @@ class FitResult(BaseModel, frozen = True):
         elif no_errors_ok:
             error : float = math.nan
         else:
-            pprint.pprint(data)
+            log.error(data)
             raise ErrorFailError(f'Cannot extract error from parameter: {name}')
 
         try:
             value : float = data['value']
         except KeyError as exc:
-            pprint.pprint(data)
+            log.error(data)
             raise KeyError(f'Cannot extract value from parameter: {name}') from exc
 
         return FitParameter(
