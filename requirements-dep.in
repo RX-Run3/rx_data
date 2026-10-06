@@ -55,7 +55,7 @@ scipy
 seaborn
 types-tabulate
 tabulate
-tensorflow
+tensorflow>=2.21.0
 tensorflow-graphics
 toml
 tqdm

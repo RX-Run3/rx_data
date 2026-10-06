@@ -6,7 +6,6 @@ absl-py==2.3.1
     #   dm-tree
     #   etils
     #   keras
-    #   tensorboard
     #   tensorflow
     #   tensorflow-datasets
     #   tensorflow-graphics
@@ -195,12 +194,10 @@ googleapis-common-protos==1.75.0
 greenlet==3.3.0
     # via sqlalchemy
 grpcio==1.76.0
-    # via
-    #   tensorboard
-    #   tensorflow
+    # via tensorflow
 gvar==13.1.9
     # via -r requirements-dep.in
-h5py==3.15.1
+h5py==3.14.0
     # via
     #   keras
     #   tensorflow
@@ -297,9 +294,7 @@ luigi==3.8.0
 mako==1.3.10
     # via alembic
 markdown==3.10
-    # via
-    #   sigal
-    #   tensorboard
+    # via sigal
 markdown-it-py==4.0.0
     # via
     #   mdit-py-plugins
@@ -309,7 +304,6 @@ markupsafe==3.0.3
     # via
     #   jinja2
     #   mako
-    #   werkzeug
 matplotlib==3.10.8
     # via
     #   -r requirements-dep.in
@@ -388,7 +382,6 @@ numpy==2.3.5
     #   scikit-learn
     #   scipy
     #   seaborn
-    #   tensorboard
     #   tensorflow
     #   tensorflow-datasets
     #   tensorflow-graphics
@@ -432,7 +425,6 @@ packaging==25.0
     #   optuna
     #   snakemake
     #   snakemake-interface-common
-    #   tensorboard
     #   tensorflow
     #   uproot
     #   vector
@@ -461,7 +453,6 @@ pillow==12.0.0
     #   matplotlib
     #   pilkit
     #   sigal
-    #   tensorboard
 platformdirs==4.5.1
     # via
     #   jupyter-core
@@ -475,7 +466,6 @@ promise==2.3
 protobuf==6.33.2
     # via
     #   googleapis-common-protos
-    #   tensorboard
     #   tensorflow
     #   tensorflow-datasets
     #   tensorflow-metadata
@@ -588,7 +578,6 @@ send2trash==2.1.0
 setuptools==80.9.0
     # via
     #   jsonschema
-    #   tensorboard
     #   tensorflow
 shellingham==1.5.4
     # via typer
@@ -673,11 +662,7 @@ tenacity==9.1.4
     #   luigi
     #   snakemake
     #   snakemake-interface-storage-plugins
-tensorboard==2.20.0
-    # via tensorflow
-tensorboard-data-server==0.7.2
-    # via tensorboard
-tensorflow==2.20.0
+tensorflow==2.21.0
     # via
     #   -r requirements-dep.in
     #   tensorflow-graphics
@@ -703,7 +688,7 @@ texttable==1.7.0
     # via zfit
 textual==8.2.8
     # via snkmt
-tf-keras==2.20.1
+tf-keras==2.21.0
     # via tensorflow-probability
 threadpoolctl==3.6.0
     # via scikit-learn
@@ -805,8 +790,6 @@ vector==1.7.0
     # via -r requirements-dep.in
 virtualenv==20.35.4
     # via pre-commit
-werkzeug==3.1.4
-    # via tensorboard
 wheel==0.45.1
     # via astunparse
 wrapt==1.17.3
