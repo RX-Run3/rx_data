@@ -32,7 +32,6 @@ _EXPECTED_SG : Final[list[float]] = [
     31.62811407592934,
     31.62811407592934,
 ]
-
 # ----------------------
 @pytest.fixture(autouse=True)
 def initialize():
@@ -135,7 +134,7 @@ def test_mixed():
     '''
     Mix 1D and ND constraints
     '''
-    data = gut.load_data(package='dmu_data', fpath='tests/stats/constraints/uncorrelated.yaml')
+    data = gut.load_data(package='dmu_data', fpath='tests/stats/constraints/uncorrelated_gauss.yaml')
     cn1d = Constraints[Constraint1D](root = data)
 
     data = gut.load_data(package='dmu_data', fpath='tests/stats/constraints/correlated.yaml')
