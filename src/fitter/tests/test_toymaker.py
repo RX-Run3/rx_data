@@ -12,6 +12,7 @@ from fitter      import ToyMaker
 from fitter      import ToyConf
 from dmu.stats   import FitResult
 from dmu.stats   import FitParameter
+from dmu.stats   import Constraints, Constraint1D, ConstraintND
 from dmu.stats   import ConstraintAdder, build_constraint
 from dmu.stats   import zfit 
 from dmu.testing import get_nll
@@ -20,7 +21,7 @@ from dmu.generic import rxran
 from dmu         import LogStore
 
 log=LogStore.add_logger('fitter:test_toymaker')
-plt.style.use(mplhep.style.LHCb2) # type: ignore
+plt.style.use(mplhep.style.LHCb2)
 # ----------------------
 @pytest.fixture(scope='module', autouse=True)
 def initialize():
@@ -43,16 +44,19 @@ def test_simple(tmp_path: Path) -> None:
     log.info('')
     nll   = get_nll(kind='s+b', suffix = '')
 
-    cfg_dt= gut.load_data(package='fitter_data', fpath='tests/toys/toy_maker.yaml')
-    cfg   = ToyConf(**cfg_dt)
-    cfg   = cfg.model_copy(update = {'output' : tmp_path / 'data.parquet'})
+    data  = gut.load_data(package='fitter_data', fpath='tests/toys/toy_maker.yaml')
+    cfg   = ToyConf(**data)
+    cfg   = cfg.model_copy(update = {'output_directory' : tmp_path / 'data.parquet'})
 
-    cns_dt= gut.load_data(package='fitter_data', fpath='tests/fits/constraint_adder.yaml')
-    cns   = [ build_constraint(data=block) for block in cns_dt.values() ] 
+    data  = gut.load_data(package='fitter_data', fpath='tests/fits/constraint_adder.yaml')
+    cons  = Constraints[Constraint1D | ConstraintND](root = data)
 
     assert isinstance(nll, ExtendedUnbinnedNLL)
-    adr = ConstraintAdder(nll = nll, constraints = cns)
-    nll = adr.get_nll()
+    adr_1d = ConstraintAdder[Constraint1D](nll = nll, constraints = cons.one_dim)
+    nll    = adr_1d.get_nll()
+
+    adr_nd = ConstraintAdder[ConstraintND](nll = nll, constraints = cons.multi_dim)
+    nll    = adr_nd.get_nll()
 
     minimizer = zfit.minimize.Minuit()
     res = minimizer.minimize(loss = nll)
@@ -63,7 +67,7 @@ def test_simple(tmp_path: Path) -> None:
             nll=nll, 
             res=FitResult.from_zfit(res), 
             cfg=cfg, 
-            cns=cns)
+            cns=cons)
         df    = mkr.get_parameter_information(name = 'test')
 
     l_col = ['Parameter', 'Value', 'Error', 'Gen', 'Toy', 'GOF', 'Valid', 'Hash']
