@@ -38,16 +38,19 @@ def initialize():
          FitParameter.enforce_naming_convention(value = False):
         yield
 # ----------------------
-def test_simple(tmp_path: Path) -> None:
+def test_simple(
+    monkeypatch,
+    tmp_path: Path) -> None:
     '''
     Simplest test of ToyMaker
     '''
+    monkeypatch.setenv('ANADIR', str(tmp_path))
+
     log.info('')
     nll   = get_nll(kind='s+b', suffix = '')
 
     data  = gut.load_data(package='fitter_data', fpath='tests/toys/toy_maker.yaml')
     cfg   = ToyConf(**data)
-    cfg   = cfg.model_copy(update = {'output_directory' : tmp_path / 'data.parquet'})
 
     data  = gut.load_data(package='fitter_data', fpath='tests/fits/constraint_adder.yaml')
     cons  = Constraints[Constraint1D | ConstraintND](root = data)
@@ -63,13 +66,12 @@ def test_simple(tmp_path: Path) -> None:
     res = minimizer.minimize(loss = nll)
     res.hesse(name = 'minuit_hesse')
 
-    with gut.environment(mapping = {'ANADIR' : str(tmp_path)}):
-        mkr   = ToyMaker(
-            nll=nll, 
-            res=FitResult.from_zfit(res), 
-            cfg=cfg, 
-            cns=cons)
-        df    = mkr.get_parameter_information(name = 'test')
+    mkr   = ToyMaker(
+        nll=nll, 
+        res=FitResult.from_zfit(res), 
+        cfg=cfg, 
+        cns=cons)
+    df    = mkr.get_parameter_information(name = 'test')
 
     l_col = ['Parameter', 'Value', 'Error', 'Gen', 'Toy', 'GOF', 'Valid', 'Hash']
 
@@ -80,6 +82,7 @@ def test_simple(tmp_path: Path) -> None:
 # ----------------------
 @pytest.mark.parametrize('ntoys', [100])
 def test_integration(
+    monkeypatch,
     tmp_path : Path,
     ntoys    : int | None) -> None:
     '''
@@ -90,13 +93,15 @@ def test_integration(
     tmp_path : Where output plots will go
     ntoys    : Number of toys to override what is in config
     '''
+    monkeypatch.setenv('ANADIR', str(tmp_path))
+
     log.info('')
     nll   = get_nll(kind='s+b', suffix = '')
     assert isinstance(nll, ExtendedUnbinnedNLL)
 
     data = gut.load_data(package='fitter_data', fpath='tests/toys/toy_maker.yaml')
     cfg  = ToyConf(**data)
-    cfg  = cfg.model_copy(update = {'ntoys' : ntoys, 'output' : tmp_path / 'parameters.parquet'})
+    cfg  = cfg.model_copy(update = {'ntoys' : ntoys})
 
     data : dict[str,Any] = gut.load_data(package='fitter_data', fpath='tests/fits/constraint_adder.yaml') 
     cns  = Constraints[Constraint1D | ConstraintND](root = data)
@@ -111,13 +116,12 @@ def test_integration(
     res = minimizer.minimize(loss = nll)
     res.hesse(name = 'minuit_hesse')
 
-    with gut.environment(mapping = {'ANADIR' : str(tmp_path)}):
-        mkr = ToyMaker(
-            nll=nll, 
-            res=FitResult.from_zfit(res), 
-            cfg=cfg, 
-            cns=cns)
-        df  = mkr.get_parameter_information(name = 'nominal')
+    mkr = ToyMaker(
+        nll=nll, 
+        res=FitResult.from_zfit(res), 
+        cfg=cfg, 
+        cns=cns)
+    df  = mkr.get_parameter_information(name = 'nominal')
 
     cfg = gut.load_conf(package='fitter_data', fpath='tests/toys/toy_plotter_integration.yaml')
     cfg.saving.plt_dir = tmp_path / 'toymaker/integration/plots'
