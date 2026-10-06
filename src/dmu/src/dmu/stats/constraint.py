@@ -123,6 +123,24 @@ class Constraints[C : Constraint](RootModel[Mapping[str,C]], frozen = True):
     ND: Name of physical thing constrained, e.g. signal_shape
     '''
     # -------------------------------------------
+    @property
+    def one_dim(self) -> 'Constraints[Constraint1D]':
+        '''
+        Holder of 1D constraints
+        '''
+        root = { key : val for key, val in self.root.items() if isinstance(key, Constraint1D) }
+
+        return Constraints(root = root)
+    # -------------------------------------------
+    @property
+    def multi_dim(self) -> 'Constraints[ConstraintND]':
+        '''
+        Holder of ND constraints
+        '''
+        root = { key : val for key, val in self.root.items() if isinstance(key, ConstraintND) }
+
+        return Constraints(root = root)
+    # -------------------------------------------
     def __str__(self) -> str:
         header_1d = f'{"Parameter":<50}{"Value":<20}{"Error":<20}{"Kind":<20}\n'
         header_1d+= '-' * 110
