@@ -28,7 +28,7 @@ class SumPDF(BaseFunctor, SerializableMixin):
     def __init__(
         self,
         pdfs: Iterable[ZfitPDF],
-        fracs: Iterable[Parameter] | None = None,
+        fracs: Iterable[Parameter] | Iterable[float] | None = None,
         obs  : ztyping.ObsTypeInput = None,
         extended: ExtendedInputType = None,
         norm: NormInputType = None,
