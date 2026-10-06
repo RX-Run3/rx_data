@@ -45,7 +45,7 @@ class ToyConf(BaseModel, frozen = True):
     rseed            : int
     # ----------------
     def __str__(self) -> str:
-        data = self.model_dump()
+        data = self.model_dump(mode = 'json')
 
         return yaml.safe_dump(data)
 # ----------------------
