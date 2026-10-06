@@ -5,7 +5,6 @@ Module containing unit tests for Fitter class
 import tqdm
 import numpy
 import pytest
-import pandas              as pnd
 import matplotlib.pyplot   as plt
 
 from pathlib     import Path
@@ -29,6 +28,7 @@ _NSAMPLE : int = 10_000
 log = LogStore.add_logger('dmu:logging:test_fitter')
 
 SamplerData = zfit.data.SamplerData
+zdat        = zfit.data.Data
 # ----------------------
 @cache
 def _get_data() -> numpy.ndarray:
@@ -48,13 +48,14 @@ class Data:
     '''
     Data class used to store share data
     '''
-    data    = _get_data()
-    pdf     = None
-    obs     = zfit.Space('m', limits=(0, 10))
-    df      = pnd.DataFrame({'x' : data})
-    zf      = zfit.data.from_numpy(obs=obs, array=data)
+    data= _get_data()
+    obs = zfit.Space('m', limits=(0, 10))
+    zf  = zfit.data.Data.from_numpy(obs=obs, array=data)
 
-    l_arg_simple = [data, df, zf]
+    if not isinstance(zf, zfit.data.Data):
+        raise ValueError('Invalid data format')
+
+    l_arg_simple : list[ numpy.ndarray | zdat ] = [data, zf]
 #-------------------------------------
 @pytest.fixture(scope='module', autouse=True)
 def initialize():
@@ -107,7 +108,7 @@ def _save_fit(
     plt.close()
 #-------------------------------------
 @pytest.mark.parametrize('dat', Data.l_arg_simple)
-def test_simple(dat):
+def test_simple(dat : numpy.ndarray | zdat):
     '''
     Simples fitting test
     '''
@@ -192,9 +193,11 @@ def test_wgt():
     wgt = numpy.random.binomial(1, 0.5, size=arr.size)
 
     pdf = _get_pdf()
-    dat = zfit.data.from_numpy(array=arr, weights=wgt, obs=pdf.space)
+    dat = zfit.data.Data.from_numpy(array=arr, weights=wgt, obs=pdf.space)
+    if not isinstance(dat, zfit.data.Data):
+        raise ValueError('Invalid data format')
 
-    obj=Fitter(pdf, dat)
+    obj = Fitter(pdf, dat)
     obj.fit()
 #-------------------------------------
 def test_minimizer() -> None:
