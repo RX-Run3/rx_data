@@ -122,6 +122,23 @@ class Constraints[C : Constraint](RootModel[Mapping[str,C]], frozen = True):
     ND: Name of physical thing constrained, e.g. signal_shape
     '''
     # -------------------------------------------
+    def __str__(self) -> str:
+        header_1d = f'{"Parameter":<50}{"Value":<20}{"Error":<20}{"Kind":<20}\n'
+        header_1d+= '-' * 110
+
+        l_cons_1d = [ cons for cons in self.root.values() if isinstance(cons, Constraint1D) ]
+        l_cons_nd = [ cons for cons in self.root.values() if isinstance(cons, ConstraintND) ]
+
+        msg = ''
+        if l_cons_1d:
+            msgs  = [ header_1d ] + [ str(cons) for cons in l_cons_1d ]
+            msg  += '\n'.join(msgs) + '\n'
+
+        if l_cons_nd:
+            msgs  = [ '-' * 110 ] + [ str(cons) for cons in l_cons_nd ]
+            msg  += '\n'.join(msgs) + '\n'
+
+        return msg 
     def value(self, name : str) -> float | None:
         '''
         Parameters
@@ -551,44 +568,4 @@ def build_constraint(data: dict) -> Constraint:
     except Exception as exc:
         pprint.pprint(data)
         raise ValueError('Cannot build constrain from input') from exc
-# ----------------------------------------
-def print_constraints[C : Constraint](constraints : Constraints[C]) -> None:
-    '''
-    Parameters
-    -------------
-    List of constraint objects
-    '''
-    l_cons_1d = [ cons for cons in constraints.root.values() if isinstance(cons, Constraint1D) ]
-    l_cons_nd = [ cons for cons in constraints.root.values() if isinstance(cons, ConstraintND) ]
-    l_none    = [ cons for cons in constraints.root.values() if cons not in l_cons_1d and cons not in l_cons_nd ]
-
-    if l_cons_1d:
-        _print_1d_constraints(l_cons_1d)
-
-    if l_cons_nd:
-        _print_nd_constraints(l_cons_nd)
-
-    if not l_none:
-        return
-
-    for elm in l_none:
-        log.error(type(elm))
-
-    raise ValueError('Found constraints of invalid type')
-# ----------------------------------------
-def _print_1d_constraints(constraints : Sequence[Constraint1D]) -> None:
-    '''
-    Prints list of constraints
-    '''
-    log.info(f'{"Parameter":<50}{"Value":<20}{"Error":<20}{"Kind":<20}')
-    log.info(80 * '-')
-    for constraint in constraints:
-        log.info(constraint)
-# ----------------------------------------
-def _print_nd_constraints(constraints : Sequence[ConstraintND]) -> None:
-    '''
-    Prints list of constraints
-    '''
-    for constraint in constraints:
-        log.info(constraint)
 # ----------------------------------------
