@@ -12,12 +12,14 @@ from dmu         import LogLevels, LogStore
 from dmu.generic import rxran
 from dmu.stats   import minimizers, zfit
 from dmu.stats   import tf_config
-from dmu.stats   import Constraint
 from dmu.stats   import GofCalculator
 from dmu.stats   import MinimizerFailError
 from dmu.stats   import FitResult
 from dmu.stats   import FitConf
 from dmu.stats   import ErrorFailError
+from dmu.stats   import Constraints
+from dmu.stats   import ConstraintND
+from dmu.stats   import Constraint1D
 
 from pathlib     import Path
 from pydantic    import BaseModel
@@ -62,7 +64,7 @@ class ToyMaker:
     def __init__(
         self,
         nll   : zlos,
-        cns   : list[Constraint],
+        cns   : Constraints[Constraint1D | ConstraintND],
         res   : FitResult,
         cfg   : ToyConf):
         '''
@@ -80,7 +82,7 @@ class ToyMaker:
         self._nll   = nll
         self._res   = res
         self._cfg   = cfg
-        self._cns   = [ cons.calibrate(result = res) for cons in cns ]
+        self._cns   = [ cons.calibrate(result = res) for cons in cns.root.values() ]
 
         for cons in self._cns:
             log.debug(cons)
