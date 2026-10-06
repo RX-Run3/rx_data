@@ -31,6 +31,9 @@ log = LogStore.add_logger('dmu:stats:constraint')
 
 # Size of space where constrained parameter lives, in standard deviations
 _CONS_SPACE_SIGMAS : Final[float] = 5
+
+# When merging 1D constraints into ND one, use this ND Constraint
+_1D_CONS_TYPE      : Final[ConstraintType] = ConstraintType.gauss
 # ----------------------------------------
 class Constraint(BaseModel):
     '''
@@ -180,23 +183,25 @@ class Constraints[C : Constraint](RootModel[Mapping[str,C]], frozen = True):
         l_cons_1d : list[Constraint1D] = [ cons for cons in self.root.values() if isinstance(cons, Constraint1D) ]
         l_cons_nd : list[ConstraintND] = [ cons for cons in self.root.values() if isinstance(cons, ConstraintND) ]
 
-        types     = { cons.kind for cons in l_cons_nd }
+        if l_cons_1d:
+            cons_nd_from_1d = self._merge_1d_constraints(
+                constraints = l_cons_1d, 
+                kind        = _1D_CONS_TYPE)
+
+            l_cons_nd.append(cons_nd_from_1d)
+
+        if len(l_cons_nd) == 1:
+            return l_cons_nd[0]
+
+        types = { cons.kind for cons in l_cons_nd }
         if len(types) != 1:
             raise ValueError(f'Found multiple types of 1D constraints: {types}')
         cons_type = types.pop() 
 
-        if l_cons_1d:
-            cons_nd_from_1d = self._merge_1d_constraints(
-                constraints = l_cons_1d, 
-                kind        = cons_type)
-            constraints = [cons_nd_from_1d] + l_cons_nd
-        else:
-            constraints = l_cons_nd
-
         cons = self._merge_nd_constraints(
             name        = name,
             kind        = cons_type,
-            constraints = constraints)
+            constraints = l_cons_nd)
 
         return cons 
     # -------------------------------------------
@@ -241,6 +246,11 @@ class Constraints[C : Constraint](RootModel[Mapping[str,C]], frozen = True):
         -----------------
         ND constraint resulting from merging 1D ones
         '''
+        kinds = { cons.kind for cons in constraints }
+        if kinds != {_1D_CONS_TYPE}:
+            log.error(kinds)
+            raise ValueError(f'Not all 1D constraints are of type: {_1D_CONS_TYPE}')
+
         params = [ cons.name    for cons in constraints ]
         values = [ cons.mu      for cons in constraints ]
         varncs = [ cons.sg ** 2 for cons in constraints ]
