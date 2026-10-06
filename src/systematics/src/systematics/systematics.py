@@ -3,26 +3,23 @@ Module holding Calculator class
 '''
 import pandas as pnd
 
-from pathlib       import Path
 from dmu.stats     import zfit 
 from dmu.stats     import FitResult
 from zfit.data     import SamplerData
-from typing        import Generic, Literal, TypeVar
-from omegaconf     import DictConfig
+from typing        import Literal
 from dmu           import LogStore
+from dmu.stats     import Constraints
 from fitter        import ToyConf, ToyMaker
 from fitter        import ChannelHolder 
 
-log    = LogStore.add_logger('rx_stats:systematics')
-SumPDF = zfit.pdf.SumPDF
-zlos   = zfit.loss.ExtendedUnbinnedNLL
-zpar   = zfit.param.Parameter
-zpdf   = zfit.pdf.BasePDF
-Channel= Literal['mm', 'ee']
+pdf    = zfit.pdf
+loss   = zfit.loss
+param  = zfit.param
 
-PDF=TypeVar('PDF')
+log    = LogStore.add_logger('rx_stats:systematics')
+Channel= Literal['mm', 'ee']
 # ------------------------------------
-class Calculator(Generic[PDF]):
+class Calculator[PDF : pdf.BasePDF ]:
     '''
     Class meant to:
 
@@ -33,7 +30,7 @@ class Calculator(Generic[PDF]):
     # ----------------------
     def __init__(
         self,
-        obj  : 'ChannelHolder[zfit.loss.ExtendedUnbinnedNLL] | zlos',
+        obj  : 'ChannelHolder[zfit.loss.ExtendedUnbinnedNLL] | loss.ExtendedUnbinnedNLL',
         poi  : str,
         res  : FitResult,
         cfg  : ToyConf):
@@ -46,7 +43,7 @@ class Calculator(Generic[PDF]):
         rseed: Random seed for current toys
         '''
         self._obj = obj
-        self._nll = obj if isinstance(obj, zlos) else obj.mm + obj.ee
+        self._nll = obj if isinstance(obj, loss.ExtendedUnbinnedNLL) else obj.mm + obj.ee
         self._poi = poi
         self._res = res
         self._cfg = cfg
@@ -55,19 +52,15 @@ class Calculator(Generic[PDF]):
         # i.e. sampler will be re-used
         self._sam = [ self._sampler_from_model(model = model) for model in self._nll.model ]
 
-        self._df_nom : None | pnd.DataFrame = None
-
-        # TODO: Remove ignore once:
-        # https://github.com/zfit/zfit/issues/699
-        # be fixed
-        self._params : dict[str,zpar] = { par.name : par for par in self._nll.get_params(floating = True) } # type: ignore
+        self._df_nom : None | pnd.DataFrame      = None
+        self._params : dict[str,param.Parameter] = { par.name : par for par in self._nll.get_params(floating = True) }
 
         if self._poi not in self._params:
             for name in self._params:
                 log.error(name)
             raise ValueError(f'POI {poi} not found as floating parameter in NLL')
     # ----------------------
-    def _sampler_from_model(self, model : zpdf) -> SamplerData:
+    def _sampler_from_model(self, model : pdf.BasePDF) -> SamplerData:
         '''
         Parameters
         -------------
@@ -85,7 +78,7 @@ class Calculator(Generic[PDF]):
     def _make_toys(
         self, 
         label   : str,
-        model   : SumPDF | None,
+        model   : pdf.SumPDF | None,
         channel : Channel| None) -> pnd.DataFrame:
         '''
         Parameters
@@ -98,10 +91,12 @@ class Calculator(Generic[PDF]):
         -------------
         DataFrame with fitting parameters
         '''
+        cns = Constraints.none()
         nll = self._get_new_nll(model = model, channel = channel)
+
         mkr = ToyMaker(
             nll = nll, 
-            cns = [], 
+            cns = cns, 
             cfg = self._cfg,
             res = self._res)
 
@@ -111,8 +106,8 @@ class Calculator(Generic[PDF]):
     # ----------------------
     def _get_new_nll(
         self, 
-        model  : SumPDF | None,
-        channel: Channel| None) -> zlos:
+        model  : pdf.SumPDF | None,
+        channel: Channel| None) -> loss.ExtendedUnbinnedNLL:
         '''
         Parameters
         -------------
@@ -127,18 +122,19 @@ class Calculator(Generic[PDF]):
             log.debug('Using nominal model')
             return self._nll
 
-        if isinstance(self._obj, zlos) and isinstance(model, SumPDF):
+        if isinstance(self._obj, loss.ExtendedUnbinnedNLL) and isinstance(model, pdf.SumPDF):
             log.debug('Found NLL for non-simultaneous fit, replacing model')
             return self._obj.create_new(model = model)
 
         if channel is None:
             raise ValueError('Channel not specified but using multichannel likelihood')
 
-        if isinstance(self._obj, ChannelHolder) and isinstance(model, SumPDF):
+        if isinstance(self._obj, ChannelHolder) and isinstance(model, pdf.SumPDF):
             other_channel = 'ee' if channel == 'mm' else 'mm'
             nll_other     = getattr(self._obj, other_channel)
-            nll_this      = getattr(self._obj,       channel)
-            nll_new       = nll_this.create_new(model = model)
+
+            nll_this : loss.ExtendedUnbinnedNLL = getattr(self._obj,       channel)
+            nll_new = nll_this.create_new(model = model)
 
             return nll_new + nll_other
 
@@ -167,7 +163,7 @@ class Calculator(Generic[PDF]):
         return models # type: ignore
     # ----------------------
     @property
-    def parameters(self) -> dict[str,zpar]:
+    def parameters(self) -> dict[str, param.Parameter]:
         '''
         Returns
         ------------
@@ -190,7 +186,7 @@ class Calculator(Generic[PDF]):
     def switch_model(
         self, 
         label  : str,
-        model  : SumPDF | None,
+        model  : pdf.SumPDF | None,
         channel: Channel | None = None) -> pnd.DataFrame:
         '''
         Parameters
