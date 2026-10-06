@@ -186,7 +186,7 @@ def _get_const(par : zpar , d_const : None | dict[str, tuple[float,float]]) -> s
     return val
 #-------------------------------------------------------
 def _get_unblinded_vars(
-    s_par   : set, 
+    s_par   : set[zpar], 
     l_blind : list[str]|None = None) -> set[zpar]:
     '''
     Parameters
