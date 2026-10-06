@@ -19,6 +19,7 @@ from .fit_result     import FitResult
 from .zfit_plotter   import ZFitPlotter
 from .minimizers     import AnealingMinimizer
 from .pdf_utilities  import has_gradient
+from .utilities      import range_from_obs
 
 log = LogStore.add_logger('dmu:stats:fitter')
 Loss= ExtendedUnbinnedNLL | UnbinnedNLL
@@ -69,7 +70,7 @@ class Fitter:
         if   isinstance(self._data_in, numpy.ndarray):
             data_np = self._data_in
         elif isinstance(self._data_in, zfit.Data):
-            data_np = zfit.run(zfit.z.unstack_x(self._data_in)) # convert original data to numpy array, needed by _calc_gof
+            data_np : numpy.ndarray = zfit.run(zfit.z.unstack_x(self._data_in)) # convert original data to numpy array, needed by _calc_gof
         else:
             data_type = str(type(self._data_in))
             raise ValueError(f'Data is not a numpy array, zfit.Data or pandas.DataFrame, but {data_type}')
@@ -186,7 +187,9 @@ class Fitter:
         else:
             arr_wgt = None
 
-        data = zfit.data.from_numpy(array=arr_out, weights=arr_wgt, obs=self._data_zf.space)
+        data = zfit.data.Data.from_numpy(array=arr_out, weights=arr_wgt, obs=self._data_zf.space)
+        if not isinstance(data, zfit.Data):
+            raise ValueError('Dataset not unbinned')
 
         return data
     #------------------------------
@@ -195,10 +198,9 @@ class Fitter:
         if not isinstance(obs, zobs):
             raise ValueError('Observable not an Space instance')
 
-        [[minx]], [[maxx]] = obs.limits
-
-        binning = zfit.binned.RegularBinning(nbins, minx, maxx, name=obs.label)
-        obs_bin = zfit.Space(obs.label, binning=binning)
+        minx, maxx = range_from_obs(obs = obs)
+        binning    = zfit.binned.RegularBinning(nbins, minx, maxx, name=obs.label)
+        obs_bin    = zfit.Space(obs.label, binning=binning)
 
         return obs_bin
     #------------------------------
