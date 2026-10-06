@@ -263,6 +263,7 @@ class TestPRec:
         _ = cfg
         self._trig = trig
     # --------------------------
-    def get_sum(self) -> zsum:
+    def get_sum(self, name : str) -> zsum:
+        _ = name
         return _get_model(trigger = self._trig)
 # ---------------------------------------------------
