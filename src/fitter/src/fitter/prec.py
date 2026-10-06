@@ -572,10 +572,10 @@ class PRec(Cache):
         return d_cut
     #-----------------------------------------------------------
     def __normalize_weights(self, arr_wgt : numpy.ndarray) -> numpy.ndarray:
-        tot_wgt = arr_wgt.sum()
-        num_wgt = arr_wgt.shape[0]
-        fact    = num_wgt / tot_wgt
-        arr_wgt = fact * arr_wgt
+        tot_wgt : float = arr_wgt.sum()
+        num_wgt : int   = arr_wgt.shape[0]
+        fact            = num_wgt / tot_wgt
+        arr_wgt         = fact * arr_wgt
 
         return arr_wgt
     #-----------------------------------------------------------
