@@ -37,8 +37,6 @@ def initialize(monkeypatch):
     '''
     Runs before any test
     '''
-    log.info('Disabling caching')
-
     monkeypatch.setattr('fitter.sim_fitter.DataPreprocessor', TestDataPreprocessor)
     monkeypatch.setattr('fitter.sim_fitter.PRec'            , TestPRec)
 
@@ -47,9 +45,6 @@ def initialize(monkeypatch):
     LogStore.set_level('fitter:category_merger'   , 10)
     LogStore.set_level('fitter:sim_fitter'        , 10)
     LogStore.set_level('fitter:configs'           , 10)
-
-    with RDFGetter.max_entries(value = 100_000):
-        yield
 # ----------------------
 def _filter_category(name : str) -> bool:
     c1 = name.endswith('_b1')
