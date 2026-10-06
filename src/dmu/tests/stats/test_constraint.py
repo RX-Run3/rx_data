@@ -13,7 +13,6 @@ from dmu.stats       import ConstraintType
 from dmu.stats       import Constraint1D 
 from dmu.stats       import ConstraintND
 from dmu.stats       import Constraints
-from dmu.stats       import print_constraints 
 from dmu.stats       import zfit
 from zfit            import Parameter          as zpar
 from zfit.constraint import GaussianConstraint as GConstraint 
@@ -110,9 +109,7 @@ def test_print_1d():
     '''
     data = gut.load_data(package='dmu_data', fpath='tests/stats/constraints/uncorrelated.yaml')
     cons = Constraints[Constraint1D](root = data)
-
-    log.info('')
-    print_constraints(constraints = cons)
+    log.info(f'\n{cons}')
 
     mu_cons = cons.root['mu']
     with pytest.raises(ValueError):
@@ -126,15 +123,28 @@ def test_print_nd():
     '''
     data = gut.load_data(package='dmu_data', fpath='tests/stats/constraints/correlated.yaml')
     cons = Constraints[ConstraintND](root = data)
-
-    log.info('')
-    print_constraints(constraints = cons)
+    log.info(f'\n{cons}')
 
     sig_cons = cons.root['signal_shape']
     with pytest.raises(ValueError):
         sig_cons.observation(name = 'fake')
 
     assert sig_cons.observation(name = 'fake', raise_on_missing=False) is None
+# ---------------------------------
+def test_mixed():
+    '''
+    Mix 1D and ND constraints
+    '''
+    data = gut.load_data(package='dmu_data', fpath='tests/stats/constraints/uncorrelated.yaml')
+    cn1d = Constraints[Constraint1D](root = data)
+
+    data = gut.load_data(package='dmu_data', fpath='tests/stats/constraints/correlated.yaml')
+    cnnd = Constraints[ConstraintND](root = data)
+
+    root = {**cn1d.root, **cnnd.root}
+
+    cons = Constraints(root = root)
+    log.info(f'\n{cons}')
 # ---------------------------------
 def test_constraintND():
     '''
