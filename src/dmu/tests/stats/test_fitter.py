@@ -11,7 +11,7 @@ from pathlib     import Path
 from functools   import cache
 
 from dmu         import LogStore
-from dmu.stats   import Constraint1D
+from dmu.stats   import Constraint1D, Constraints
 from dmu.stats   import Retries
 from dmu.stats   import ConstraintType
 from dmu.testing import get_model, get_nll
@@ -133,7 +133,7 @@ def test_retry():
 
     assert res.valid
 #-------------------------------------
-def test_constrain():
+def test_1d_constrain():
     '''
     Fits with constraints to parameters
     '''
@@ -158,6 +158,39 @@ def test_constrain():
     res = obj.fit(cfg)
 
     assert res.valid
+
+    print(res)
+#-------------------------------------
+def test_nd_constrain():
+    '''
+    Fits with constraints to parameters
+    '''
+    mu  = Constraint1D(
+        kind = ConstraintType.gauss, 
+        name = 'mu', 
+        mu   = 5.0, 
+        sg   = 1.0)
+
+    sg  = Constraint1D(
+        kind = ConstraintType.gauss,
+        name = 'sg', 
+        mu   = 1.0, 
+        sg   = 0.1)
+
+    cons = Constraints(root = {'mu' : mu, 'sg' : sg}).merge(name = 'mu_sg_const')
+
+    fcf = FitConf.default()
+    cfg = fcf.model_copy(update = {'constraints' : [cons]})
+
+    pdf = _get_pdf()
+    arr = _get_data()
+    obj = Fitter(pdf, arr)
+    res = obj.fit(cfg)
+
+    assert res.valid
+
+    print(cons)
+    print(res)
 #-------------------------------------
 def test_ranges(tmp_path : Path):
     '''

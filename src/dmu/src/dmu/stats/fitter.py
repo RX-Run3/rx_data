@@ -292,25 +292,24 @@ class Fitter:
         Fit result object
         '''
         cfg = FitConf.default() if cfg is None else cfg
+        nll = self._get_full_nll(cfg = cfg)
+
         if cfg.strategy is None:
             log.info('Not using any strategy, simple fit')
-            nll = self._get_full_nll(cfg = cfg)
-            res = minimizers.minimize(nll, cfg)
 
+            res       = minimizers.minimize(nll, cfg)
             self._nll = nll
 
             return res
 
-
-        nll = self._get_full_nll(cfg = cfg)
         if isinstance(cfg.strategy, Retries):
             log.info('Using retry strategy')
+
             obj = AnealingMinimizer(cfg = cfg)
             res = obj.get_result(loss = nll)
-        else:
-            raise ValueError(f'Unsupported fitting strategy: {cfg.strategy}')
+            self._set_pdf_pars(res)
 
-        self._set_pdf_pars(res)
+            return res
 
-        return res
+        raise ValueError(f'Unsupported fitting strategy: {cfg.strategy}')
 #------------------------------
