@@ -123,6 +123,13 @@ class Constraints[C : Constraint](RootModel[Mapping[str,C]], frozen = True):
     ND: Name of physical thing constrained, e.g. signal_shape
     '''
     # -------------------------------------------
+    @classmethod
+    def none(cls) -> 'Constraints[Constraint1D | ConstraintND]':
+        '''
+        Returns instance of constraints holder, holding no constraints
+        '''
+        return cls(root = dict())
+    # -------------------------------------------
     @property
     def one_dim(self) -> 'Constraints[Constraint1D]':
         '''
