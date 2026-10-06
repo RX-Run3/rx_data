@@ -200,7 +200,7 @@ def main():
     ctx_3 = sel.custom_selection(d_sel=cfg.overriding_selection)
     ctx_4 = sut.root_directory(root_dir=cfg.output_directory / 'failed_nll')
     ctx_5 = DataPreprocessor.use_database()
-    ctx_6 = ConstraintAdder.fixed_parameters()
+    ctx_6 = ConstraintAdder.fixed_parameters(value = True)
 
     with ExitStack() as stack:
         stack.enter_context(ctx_1)

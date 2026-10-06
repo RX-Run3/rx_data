@@ -37,7 +37,7 @@ def initialize():
 @pytest.fixture(params=[True, False], ids=['Fixed', 'Constrained'])
 def _fix_or_constrain(request):
     if request.param:
-        with ConstraintAdder.fixed_parameters():
+        with ConstraintAdder.fixed_parameters(value = True):
             yield
     else:
         yield

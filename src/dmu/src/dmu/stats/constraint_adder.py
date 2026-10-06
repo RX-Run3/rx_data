@@ -106,7 +106,7 @@ class ConstraintAdder[C : Constraint]:
     # ----------------------
     @classmethod
     @contextmanager
-    def fixed_parameters(cls):
+    def fixed_parameters(cls, value : bool):
         '''
         Contextmanager whose context makes ConstraintAdder fix parameters
         instead of constrain them
@@ -114,7 +114,7 @@ class ConstraintAdder[C : Constraint]:
         old_value = cls._fix_parameters
 
         try:
-            cls._fix_parameters = True
+            cls._fix_parameters = value
             yield
         finally:
             cls._fix_parameters = old_value
