@@ -220,7 +220,7 @@ class AnealingMinimizer:
                     cfg = self._cfg,
                     gof = GoodnessOfFit.none(),
                     nll = loss)
-            except (FailMinimizeNaN, ValueError, RuntimeError, MinimizerFailError):
+            except (ErrorFailError, FailMinimizeNaN, ValueError, RuntimeError, MinimizerFailError):
                 for pdf in loss.model:
                     print_pdf(pdf, level = LogLevels.debug)
 
