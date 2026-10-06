@@ -258,14 +258,13 @@ def test_kde_rk(component : Component, tmp_path : Path):
     '''
     cfg_obs = ObservableConf(
         name  = Mass.bp_bcor_smr,
-        range = (4500, 7000))
+        range = (4600, 7000))
 
     data = gut.load_data(package='fitter_data', fpath=f'rare/rk/ee/{component}_np.yaml')
     cfg  = NonParametricConf(**data)
     cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
 
-    with Cache.cache_root(path = tmp_path),\
-         RDFGetter.max_entries(value = -1):
+    with Cache.cache_root(path = tmp_path):
         ftr = SimFitter(
             name     = 'main',
             component= cfg.component,
