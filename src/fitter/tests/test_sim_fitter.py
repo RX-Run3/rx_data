@@ -25,26 +25,22 @@ from fitter        import ParametricConf
 from fitter        import CCbarConf
 from fitter        import NonParametricConf
 from fitter        import MisIDConf
+from patch_classes import TestDataPreprocessor, TestPRec
 
 log=LogStore.add_logger('fitter:test_sim_fitter')
 
 type zdat = zfit.data.Data
 type zsum = zfit.pdf.SumPDF
-
-_DATA_PREPROCESSOR_TARGET = 'fitter.sim_fitter.DataPreprocessor'
-mark_data_preprocessor = pytest.mark.usefixtures('_patch_data_preprocessor')
-
-_PREC_TARGET           = 'fitter.sim_fitter.PRec'
-mark_prec              = pytest.mark.usefixtures('_patch_prec')
-
-pytestmark = [mark_data_preprocessor, mark_prec]
 # ---------------------------------------------------
 @pytest.fixture(autouse=True)
-def initialize():
+def initialize(monkeypatch):
     '''
     Runs before any test
     '''
     log.info('Disabling caching')
+
+    monkeypatch.setattr('fitter.sim_fitter.DataPreprocessor', TestDataPreprocessor)
+    monkeypatch.setattr('fitter.sim_fitter.PRec'            , TestPRec)
 
     LogStore.set_level('fitter:signal_constraints', 10)
     LogStore.set_level('fitter:data_preprocessor' , 10)
