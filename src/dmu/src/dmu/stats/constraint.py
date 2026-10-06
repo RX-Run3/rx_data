@@ -8,10 +8,11 @@ import math
 import numpy
 import pprint
 
+from scipy.linalg    import block_diag
 from typing          import Final, overload
 from collections.abc import Mapping
 from pathlib         import Path
-from typing          import Literal, Self, Sequence
+from typing          import Literal, Self
 from tabulate        import tabulate
 from functools       import cached_property
 from zfit.constraint import GaussianConstraint as GConstraint
@@ -139,6 +140,93 @@ class Constraints[C : Constraint](RootModel[Mapping[str,C]], frozen = True):
             msg  += '\n'.join(msgs) + '\n'
 
         return msg 
+    # -------------------------------------------
+    def merge(self, name : str) -> 'ConstraintND':
+        '''
+        Parameters
+        ---------
+        name: Name of merged constraint
+
+        Returns
+        ---------
+        Holder of constraints with one ND constraint, resulting from merging
+        all constraints
+        '''
+        l_cons_1d : list[Constraint1D] = [ cons for cons in self.root.values() if isinstance(cons, Constraint1D) ]
+        l_cons_nd : list[ConstraintND] = [ cons for cons in self.root.values() if isinstance(cons, ConstraintND) ]
+
+        types     = { cons.kind for cons in l_cons_nd }
+        if len(types) != 1:
+            raise ValueError(f'Found multiple types of 1D constraints: {types}')
+        cons_type = types.pop() 
+
+        if l_cons_1d:
+            cons_nd_from_1d = self._merge_1d_constraints(
+                constraints = l_cons_1d, 
+                kind        = cons_type)
+            constraints = [cons_nd_from_1d] + l_cons_nd
+        else:
+            constraints = l_cons_nd
+
+        cons = self._merge_nd_constraints(
+            name        = name,
+            kind        = cons_type,
+            constraints = constraints)
+
+        return cons 
+    # -------------------------------------------
+    def _merge_nd_constraints(
+        self, 
+        name        : str, 
+        kind        : ConstraintType,
+        constraints : list['ConstraintND']) -> 'ConstraintND':
+        '''
+        Parameters
+        -----------------
+        name       : Name of resulting constraint
+        constraints: List of ND constraint to merge into an ND one
+
+        Returns
+        -----------------
+        ND constraint resulting from merging ND ones
+        '''
+        parameters = [ parameter for cons in constraints for parameter in cons.parameters ]
+        values     = [ value     for cons in constraints for value     in cons.values     ]
+        covs       = [ cons.cov  for cons in constraints ] 
+        cov : list[list[float]] = block_diag(*[ numpy.asarray(c, dtype = float) for c in covs ]).tolist()
+
+        return ConstraintND(
+            name       = name,
+            kind       = kind,
+            parameters = parameters,
+            values     = values,
+            cov        = cov)
+    # -------------------------------------------
+    def _merge_1d_constraints(
+        self, 
+        kind        : ConstraintType,
+        constraints : list['Constraint1D']) -> 'ConstraintND':
+        '''
+        Parameters
+        -----------------
+        kind       : Type of ND constraint to build, e.g. Gaussian
+        constraints: List of 1D constraint to merge into an ND one
+
+        Returns
+        -----------------
+        ND constraint resulting from merging 1D ones
+        '''
+        params = [ cons.name    for cons in constraints ]
+        values = [ cons.mu      for cons in constraints ]
+        varncs = [ cons.sg ** 2 for cons in constraints ]
+
+        return ConstraintND(
+            name       = 'merged_1d',
+            kind       = kind,
+            parameters = params,
+            values     = values,
+            cov        = numpy.diag(varncs))
+    # -------------------------------------------
     def value(self, name : str) -> float | None:
         '''
         Parameters

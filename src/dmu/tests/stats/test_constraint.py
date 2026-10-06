@@ -142,9 +142,11 @@ def test_mixed():
     cnnd = Constraints[ConstraintND](root = data)
 
     root = {**cn1d.root, **cnnd.root}
-
     cons = Constraints(root = root)
     log.info(f'\n{cons}')
+
+    merged = cons.merge(name = 'merged')
+    log.info(f'\n{merged}')
 # ---------------------------------
 def test_constraintND():
     '''
@@ -192,7 +194,7 @@ def test_from_dict():
     assert constraints.root
     assert all( isinstance(const, Constraint1D) for const in constraints.root.values() )
 
-    print_constraints(constraints)
+    log.info(f'\n{constraints}')
 # ---------------------------------
 def test_serialization_nd(tmp_path : Path):
     '''
