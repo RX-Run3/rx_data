@@ -10,16 +10,17 @@ import numpy                 as np
 import matplotlib.pyplot     as plt
 import matplotlib.colors     as mcolors
 
-from hist                   import Hist
-from typing                 import Final, Self
-from pydantic               import BaseModel, Field
-from matplotlib.axes        import Axes
-from zfit.pdf               import BasePDF    as zpdf
-from zfit.data              import Data       as zdat
-from zfit.result            import FitResult  as zres
-from dmu                    import LogStore
-from dmu.generic            import utilities  as gut
-from dmu.stats              import utilities  as sut
+from hist                    import Hist
+from mplhep.error_estimation import poisson_interval
+from typing                  import Final, Self
+from pydantic                import BaseModel, Field
+from matplotlib.axes         import Axes
+from zfit.pdf                import BasePDF    as zpdf
+from zfit.data               import Data       as zdat
+from zfit.result             import FitResult  as zres
+from dmu                     import LogStore
+from dmu.generic             import utilities  as gut
+from dmu.stats               import utilities  as sut
 
 from .fit_result            import FitResult
 from .imports               import zfit, tensorflow as tf
@@ -109,7 +110,7 @@ class ZFitPlotter:
         self.axs                : tuple[Axes,...]
 
         self._nbins      : int    | None              = None
-        self._xcoords    : Npaflt | None              = None 
+        self._xcoords    : Npaflt | None              = None
         self._plot_range : Range  | None              = None
         self._l_blind : tuple[str,float,float] | None = None
         self._figsize : tuple[int,int]         | None = None
@@ -191,33 +192,13 @@ class ZFitPlotter:
         data_hist = data_hist.Weight()
         data_hist.fill(dat, weight=wgt)
 
-        tmp_fig, tmp_ax = plt.subplots()
-        errorbars       = mplhep.histplot( # type: ignore
-            data_hist,
-            yerr     =True,
-            color    ='white',
-            histtype ='errorbar',
-            label    =None,
-            ax       =tmp_ax)
+        values   = data_hist.values()
+        variance = data_hist.variances()
 
-        lines  = errorbars[0].errorbar[2] # type: ignore
-        segs   = lines[0].get_segments()  # type: ignore
-        values = data_hist.values()
+        errors : tuple[Npaflt, Npaflt] = poisson_interval(values, variance)
+        low, up                        = errors
 
-        l_error=[]
-        for i in range(self.nbins):
-            seg = segs[i] # type: ignore
-            val = values[i]
-
-            try:
-                low =  val - seg[0][1] # type: ignore
-                up  = -val + seg[1][1] # type: ignore
-            except IndexError as exc:
-                raise IndexError(f'Cannot read the upper/lower errors, found {seg}') from exc
-
-            l_error.append((low, up))
-
-        plt.close(tmp_fig)
+        l_error  = list(zip(values - low, up - values, strict = True))
 
         return l_error
     #----------------------------------------
@@ -523,7 +504,12 @@ class ZFitPlotter:
                 log.debug(f'Skipping blinded PDF: {blind_name}')
                 continue
 
-            nevt           = self._get_component_yield(par = par, name = model.name)
+            yld_par = model.get_yield()
+            if yld_par is not None:
+                nevt = float(yld_par.value().numpy())
+            else:
+                nevt = self._get_component_yield(par = par, name = model.name)
+
             component_sum += nevt
 
             l_model : list[tuple[float,zpdf]]
@@ -593,7 +579,7 @@ class ZFitPlotter:
         plt.show()
     #----------------------------------------
     def _evaluate_pdf(
-        self, 
+        self,
         pdf : zpdf,
         xs  : Npaflt) -> Npaflt:
         '''
@@ -607,7 +593,7 @@ class ZFitPlotter:
             self._print_data()
             raise ValueError('Cannot evaluate PDF') from exc
 
-        return tensor.numpy() 
+        return tensor.numpy()
     #----------------------------------------
     def _plot_sub_components(
         self,
@@ -625,7 +611,7 @@ class ZFitPlotter:
         for frc, model in l_model:
             arr_y    = self._evaluate_pdf(pdf = model, xs = xs)
             bin_width= self.plot_width / self.nbins
-            this_y   = frc * arr_y * bin_width * nevt 
+            this_y   = frc * arr_y * bin_width * nevt
 
             if stacked:
                 y = this_y if y is None else y + this_y
@@ -651,9 +637,9 @@ class ZFitPlotter:
 
         xs       = self._get_xcoor(rng = self.plot_range)
         arr_y    = self._evaluate_pdf(pdf = model, xs = xs)
-        bin_size = self.plot_width / nbins 
+        bin_size = self.plot_width / nbins
 
-        ys       = arr_y * bin_size * self.norm_area 
+        ys       = arr_y * bin_size * self.norm_area
         name     = model.name
 
         ax.plot(xs, ys, linestyle, label=self._leg.get(name, name), color=self._col.get(name))
@@ -677,7 +663,7 @@ class ZFitPlotter:
         '''
         Coordinates in x used to sample PDF
         '''
-        lower, upper = rng 
+        lower, upper = rng
 
         log.debug(f'Scanning models in [{lower:,.5g}, {upper:,.5g}]')
 
@@ -724,7 +710,7 @@ class ZFitPlotter:
     @property
     def plot_width(self) -> float:
         '''
-        Width of region 
+        Width of region
         '''
         lower, upper = self.plot_range
 
@@ -766,7 +752,7 @@ class ZFitPlotter:
         ylabel                : ylabel
         d_leg                 : Customize legend
         d_col                 : Customize color
-        plot_range            : Tuple with lower and upper bound for plot 
+        plot_range            : Tuple with lower and upper bound for plot
         pull_styling(bool)    : Will add lines at +/-3 and set range to +/-5 for pull plots, by default True
         plot_components (list): List of strings, with names of PDFs, which are expected to be sums of PDFs and whose components should be plotted separately
         ext_text              : Text that can be added to plot
