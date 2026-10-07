@@ -26,6 +26,7 @@ from dmu.stats              import utilities  as sut
 
 from .imports               import zfit
 
+param      = zfit.param
 Npaflt     = np.ndarray[tuple[int], np.dtype[np.float64]]
 type Range = tuple[float,float]
 
@@ -490,13 +491,24 @@ class ZFitPlotter:
 
         return ax1, ax2
     #----------------------------------------
-    def _get_component_yield(self, par) -> float:
+    def _get_component_yield(
+        self,
+        *,
+        par : param.Parameter,
+        name: str) -> float:
         nevs : int   = self.data_weight_np.sum()
-        frac : float = par.value().numpy()
+        frac : float = float(par.value().numpy())
+        yld  : float = frac * nevs
 
-        return frac * nevs
+        log.debug(f'Found yield {yld:,.5g} for component {name}')
+
+        return yld
     #----------------------------------------
-    def _plot_model_components(self, nbins : int, stacked : bool):
+    def _plot_model_components(
+        self,
+        *,
+        nbins   : int,
+        stacked : bool) -> None:
         if not isinstance(self.total_model, zfit.pdf.SumPDF):
             return
 
@@ -505,16 +517,18 @@ class ZFitPlotter:
         else:
             blind_name = None
 
-        y   : None | Npaflt = None
+        y   : None | Npaflt            = None
         l_y : list[tuple[Npaflt, str]] = []
-        was_blinded = False
+        was_blinded                    = False
+        component_sum                  = 0
         for model, par in zip(self.total_model.pdfs, self.total_model.params.values(), strict = True):
             if model.name == blind_name:
                 was_blinded = True
                 log.debug(f'Skipping blinded PDF: {blind_name}')
                 continue
 
-            nevt = self._get_component_yield(par)
+            nevt           = self._get_component_yield(par = par, name = model.name)
+            component_sum += nevt
 
             l_model : list[tuple[float,zpdf]]
             if   model.name in self._l_plot_components and     isinstance(model, zfit.pdf.SumPDF):
@@ -532,6 +546,8 @@ class ZFitPlotter:
                 nevt    = nevt,
                 l_model = l_model)
             y,_  = l_y[-1]
+
+        log.debug(f'Found total component yield: {component_sum:,.5g}')
 
         l_y.reverse()
         ax  = self.axs[0]
@@ -650,7 +666,9 @@ class ZFitPlotter:
     #----------------------------------------
     def _get_data_yield(self, mas_tup : Range | None) -> float:
         if mas_tup is None:
-            return self.data_weight_np.sum()
+            yld = self.data_weight_np.sum()
+            log.debug(f'Found a yield of {yld:,.5g} in full range')
+            return yld
 
         minx, maxx            = mas_tup
         arr_data : np.ndarray = np.array([self.data_np, self.data_weight_np]).T
@@ -663,7 +681,11 @@ class ZFitPlotter:
 
         arr_wgt : np.ndarray = arr_flt2.T[1]
 
-        return arr_wgt.sum()
+        yld = arr_wgt.sum()
+
+        log.debug(f'Found a yield of {yld:,.5g} in range [{mas_tup}]')
+
+        return yld
     #----------------------------------------
     @gut.timeit
     def plot(
@@ -744,7 +766,9 @@ class ZFitPlotter:
             self._plot_model(self.axs[0], self.total_model, nbins)
 
         log.debug('Plotting model components')
-        self._plot_model_components(nbins, stacked)
+        self._plot_model_components(
+            nbins   = nbins,
+            stacked = stacked)
 
         if not no_data:
             log.debug('Plotting data')
