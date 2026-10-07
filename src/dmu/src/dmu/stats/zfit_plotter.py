@@ -3,7 +3,6 @@ Module containing plot class, used to plot fits
 '''
 
 import math
-import warnings
 import hist
 import mplhep
 import pandas                as pd
@@ -32,6 +31,7 @@ type Range = tuple[float,float]
 log = LogStore.add_logger('dmu:zfit_plotter')
 plt.style.use(mplhep.style.LHCb2)
 
+_Y_MIN_LOG      : Final[float] = 0.01
 _NORMAL_BINNING : Final[int  ] = 100
 _FINE_BINNING   : Final[int  ] = 200
 _MAX_PULL       : Final[int  ] = 5    # If fit ull is beyond this, will print info message
@@ -92,7 +92,6 @@ class ZFitPlotter:
 
         self.obs               = model.space
         self.norm              = model.space if not isinstance(model.norm, zfit.Space) else model.norm
-        self.norm_size         = self._norm_size_from_norm(norm = self.norm) 
         self._obs_name         = sut.name_from_obs(obs = self.obs)
 
         self.data              = self._data_to_zdata(data, weights)
@@ -116,16 +115,7 @@ class ZFitPlotter:
         self._figsize : tuple[int,int]         | None = None
         self._leg_loc : str                    | None = None
 
-        warnings.filterwarnings("ignore")
         self._l_def_col = list(mcolors.TABLEAU_COLORS.keys())
-    #----------------------------------------
-    def _norm_size_from_norm(self, norm : zfit.Space) -> float:
-        '''
-        Returns size of normalization range
-        '''
-        lower, upper = sut.range_from_obs(obs = norm)
-
-        return upper - lower
     #----------------------------------------
     def _data_to_zdata(
         self,
@@ -403,9 +393,11 @@ class ZFitPlotter:
         chi2, ndof, pval = getattr(self._result, 'gof') # noqa: B009
         rchi2 : float    = chi2 / ndof
 
-        return f'$\chi^2$/NdoF={chi2:.2f}/{ndof}={rchi2:.2f}\np={pval:.3f}'
+        return (
+            fr'$\chi^2$/NdoF={chi2:.2f}/{ndof}={rchi2:.2f}'
+            f'\np={pval:.3f}')
     #----------------------------------------
-    def _get_text(self, ext_text : str) -> str | None:
+    def _get_text(self, ext_text : str | None) -> str | None:
         '''
         Returns text used in plot, None if no text can be found
         '''
@@ -481,7 +473,7 @@ class ZFitPlotter:
             return (ax,)
 
         if add_pars is None:
-            fig       = plt.figure()
+            fig       = plt.figure(figsize = self._figsize)
             gs        = fig.add_gridspec(nrows=2, ncols=1, hspace=0.1, height_ratios=[4, 1])
             axs       = gs.subplots(sharex=True)
             taxs      = tuple(axs.flat) # type: ignore
@@ -564,7 +556,7 @@ class ZFitPlotter:
         for ys, name in l_y:
             log.debug(f'Plotting {name}')
             if stacked:
-                ax.fill_between(xs, ys, alpha=_ALPHA, label=self._leg.get(name, name), color=self._get_col(name))
+                ax.fill_between(xs, ys, alpha=_ALPHA, label=self._leg.get(name, name), color=self._get_color(name))
             else:
                 ax.plot(xs, ys, ':',                  label=self._leg.get(name, name), color=self._col.get(name))
 
@@ -574,7 +566,11 @@ class ZFitPlotter:
 
             raise ValueError(f'Blinding was requested, but PDF {blind_name} was not found among:')
     #----------------------------------------
-    def _get_col(self, name : str):
+    def _get_color(self, name : str) -> str:
+        '''
+        Returns name of color associated to PDF component
+        OR default color
+        '''
         if name in self._col:
             return self._col[name]
 
@@ -671,7 +667,7 @@ class ZFitPlotter:
             xlabel    = f"{obs_name} [{unit}]"
 
         if not ylabel:
-            upper, lower = self.plot_range
+            lower, upper = self.plot_range
             width        = (upper - lower) / nbins
             ylabel       = f'Candidates / ({width:.0f} {unit})'
 
@@ -750,7 +746,7 @@ class ZFitPlotter:
         d_col           : dict[str,str] | None          = None,
         plot_range      : Range | None                  = None,
         plot_components : list[str]          | None     = None,
-        ext_text        : str                           = '',
+        ext_text        : None | str                    = None,
         add_pars        : None | str | list[str]        = None,
         ymax            : None | float                  = None,
         skip_pulls      : bool                          = False,
@@ -832,7 +828,8 @@ class ZFitPlotter:
             self.axs[0].set_title(title)
 
         if ymax is not None:
-            self.axs[0].set_ylim(bottom = 0, top = ymax)
+            ymin = _Y_MIN_LOG if yscale == 'log' else 0
+            self.axs[0].set_ylim(bottom = ymin, top = ymax)
 
         if not skip_pulls:
             self.axs[1].set(xlabel=xlabel, ylabel="pulls")
