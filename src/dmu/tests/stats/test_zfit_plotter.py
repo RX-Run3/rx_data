@@ -447,7 +447,7 @@ def test_composed(tmp_path : Path):
 
     obj   = ZFitPlotter(data=sam, model=pdf)
     d_leg = {'gauss': 'New Gauss'}
-    obj.plot(nbins=50, d_leg=d_leg, plot_range=(0, 10), ext_text='Extra text here')
+    obj.plot(stacked = True, nbins=50, d_leg=d_leg, plot_range=(0, 10), ext_text='Extra text here')
 
     # add a line to pull hist
     obj.axs[1].plot([0, 10], [0, 0], linestyle='--', color='black')
