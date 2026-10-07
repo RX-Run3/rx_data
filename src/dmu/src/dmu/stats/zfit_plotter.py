@@ -78,15 +78,14 @@ class ZFitPlotter:
         data   : zdat | np.ndarray | pd.Series | pd.DataFrame,
         model  : zpdf,
         weights: np.ndarray| None = None,
-        result : zres | None      = None,
-        suffix : str              = ''):
+        result : zres | None      = None):
         '''
         Parameters
         ------------------
-        obs    : Zfit space you are using to define the data and model
         data   : The data you are fit on
-        weights: 1D numpy array of weights
         model  : The final total fit model
+        weights: 1D numpy array of weights
+        result : Zfit fit result object
         '''
         if not isinstance(model.space, zfit.Space):
             raise ValueError('No observable found in PDF')
@@ -101,7 +100,6 @@ class ZFitPlotter:
 
         self.data_weight_np    = np.ones_like(self.data_np) if self.data.weights is None else self.data.weights.numpy().flatten()
         self._result           = result
-        self._suffix           = suffix
 
         self.errors : list[tuple[float,float]] = []
         self._leg   : dict[str,str]            = {}
@@ -550,7 +548,7 @@ class ZFitPlotter:
             for model in self.total_model.pdfs:
                 log.info(model.name)
 
-            raise ValueError(f'Blinding was requested, but PDF {blind_name} was not found among:')
+            raise ValueError(f'Blinding was requested, but PDF {blind_name} was not found')
     #----------------------------------------
     def _get_color(self, name : str) -> str:
         '''
