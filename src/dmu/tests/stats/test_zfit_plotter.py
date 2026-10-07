@@ -28,12 +28,13 @@ class Data:
             (0.5  , 'xerr_0p5'),
             ]
 #--------------------------------
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(autouse=True)
 def initialize():
     '''
     This will run before all tests in this module
     '''
     LogStore.set_level('dmu:zfit_plotter', 10)
+    numpy.random.seed(42)
 #--------------------------------
 def test_simple(tmp_path : Path):
     '''
@@ -71,7 +72,7 @@ def test_high_binning(tmp_path : Path):
     pdf = pdf.create_extended(nev,)
 
     obj   = ZFitPlotter(data=arr, model=pdf, result=None)
-    d_leg = {'gauss': 'New Gauss'}
+    d_leg = {'gauss_ext': 'New Gauss'}
     obj.plot(nbins=400, d_leg=d_leg, plot_range=(-10, 10), ext_text='Extra text here')
     obj.axs[1].set_ylim(-5, 5)
 
@@ -231,7 +232,7 @@ def test_weights(tmp_path : Path):
     res = mnm.minimize(nll)
 
     #Fake GOF for ploting purposes
-    setattr(res, 'gof', (11, 10, 0.5))
+    setattr(res, 'gof', (11, 10, 0.5)) # noqa: B010
 
     obj   = ZFitPlotter(data=dat, model=pdf, result=res)
     obj.plot(nbins=50)
@@ -264,7 +265,7 @@ def test_low_stat(tmp_path : Path):
     res = mnm.minimize(nll)
 
     #Fake GOF for ploting purposes
-    setattr(res, 'gof', (11, 10, 0.5))
+    setattr(res, 'gof', (11, 10, 0.5)) # noqa: B010
 
     obj   = ZFitPlotter(data=arr, model=pdf, result=res)
     d_leg = {'gauss': 'New Gauss'}
@@ -300,7 +301,7 @@ def test_skip_pulls(tmp_path : Path):
     mnm = zfit.minimize.Minuit()
     res = mnm.minimize(nll)
 
-    setattr(res, 'gof', (11, 10, 0.5))
+    setattr(res, 'gof', (11, 10, 0.5)) # noqa: B010
 
     obj   = ZFitPlotter(data=arr, model=pdf, result=res)
     obj.plot(plot_range=(0, 10), skip_pulls=True)
@@ -354,7 +355,7 @@ def test_empty_region(tmp_path : Path):
     mnm = zfit.minimize.Minuit()
     res = mnm.minimize(nll)
 
-    wgt = (arr < 400).astype(float)
+    wgt = numpy.ones_like(arr, dtype = float)
 
     obj = ZFitPlotter(data=arr, model=pdf, result=res, weights=wgt)
     obj.plot(nbins=50, plot_range=(0, 10))
@@ -512,7 +513,12 @@ def test_composed_blind(tmp_path : Path):
     print(res)
 
     obj   = ZFitPlotter(data=dat, model=pdf, result=res)
-    obj.plot(nbins=50, blind=['signal', 4, 5], stacked=False, plot_range=(0, 10), ext_text='Extra text here')
+    obj.plot(
+        nbins     = 50, 
+        blind     = ('signal', 4, 5), 
+        stacked   = False, 
+        plot_range= (0, 10), 
+        ext_text  = 'Extra text here')
 
     # add a line to pull hist
     obj.axs[1].plot([0, 10], [0, 0], linestyle='--', color='black')
@@ -623,7 +629,7 @@ def test_blind(tmp_path : Path):
     res = mnm.minimize(nll)
 
     #Fake GOF for ploting purposes
-    setattr(res, 'gof', (11, 10, 0.5))
+    setattr(res, 'gof', (11, 10, 0.5)) # noqa: B010
 
     obj   = ZFitPlotter(data=dat, model=pdf, result=res)
     d_leg = {'gauss': 'New Gauss'}
