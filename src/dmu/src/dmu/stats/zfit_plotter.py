@@ -4,10 +4,8 @@ Module containing plot class, used to plot fits
 
 import math
 import warnings
-import pprint
 import hist
 import mplhep
-import tensorflow            as tf
 import pandas                as pd
 import numpy                 as np
 import matplotlib.pyplot     as plt
@@ -24,19 +22,20 @@ from dmu                    import LogStore
 from dmu.generic            import utilities  as gut
 from dmu.stats              import utilities  as sut
 
-from .imports               import zfit
+from .fit_result            import FitResult
+from .imports               import zfit, tensorflow as tf
 
 param      = zfit.param
 Npaflt     = np.ndarray[tuple[int], np.dtype[np.float64]]
 type Range = tuple[float,float]
 
 log = LogStore.add_logger('dmu:zfit_plotter')
-plt.style.use(mplhep.style.LHCb2) # type: ignore
+plt.style.use(mplhep.style.LHCb2)
 
 _NORMAL_BINNING : Final[int  ] = 100
 _FINE_BINNING   : Final[int  ] = 200
 _MAX_PULL       : Final[int  ] = 5    # If fit ull is beyond this, will print info message
-_NXPOINTS       : Final[int  ] = 2000 # Number of points to scan PDF
+_NXPOINTS       : Final[int  ] = 2000 # Number of points to scan PDF for both plotting or calculating normalization
 _ALPHA          : Final[float] =  0.8 # Transparency of PDF plots when stacking
 #----------------------------------------
 class EmptyDataSet(Exception):
@@ -92,12 +91,12 @@ class ZFitPlotter:
             raise ValueError('No observable found in PDF')
 
         self.obs               = model.space
+        self.norm              = model.space if not isinstance(model.norm, zfit.Space) else model.norm
+        self.norm_size         = self._norm_size_from_norm(norm = self.norm) 
         self._obs_name         = sut.name_from_obs(obs = self.obs)
 
         self.data              = self._data_to_zdata(data, weights)
-        self.lower, self.upper = sut.range_from_obs(obs = self.obs)
         self.total_model       = model
-        self.x                 = np.linspace(self.lower, self.upper, 2000)
         self.data_np           = self.data.numpy().flatten()
 
         self.data_weight_np    = np.ones_like(self.data_np) if self.data.weights is None else self.data.weights.numpy().flatten()
@@ -108,17 +107,25 @@ class ZFitPlotter:
         self._leg   : dict[str,str]            = {}
         self._col   : dict[str,str]            = {}
         self._l_plot_components : list[str]    = []
-
         self.axs                : tuple[Axes,...]
 
-        self._total_entries : None | float                  = None
-        self._plot_range : Range | None                     = None
-        self._l_blind : tuple[str,float,float] | None       = None
-        self._figsize : tuple[int,int]               | None = None
-        self._leg_loc : str                          | None = None
+        self._nbins      : int    | None              = None
+        self._xcoords    : Npaflt | None              = None 
+        self._plot_range : Range  | None              = None
+        self._l_blind : tuple[str,float,float] | None = None
+        self._figsize : tuple[int,int]         | None = None
+        self._leg_loc : str                    | None = None
 
         warnings.filterwarnings("ignore")
         self._l_def_col = list(mcolors.TABLEAU_COLORS.keys())
+    #----------------------------------------
+    def _norm_size_from_norm(self, norm : zfit.Space) -> float:
+        '''
+        Returns size of normalization range
+        '''
+        lower, upper = sut.range_from_obs(obs = norm)
+
+        return upper - lower
     #----------------------------------------
     def _data_to_zdata(
         self,
@@ -170,24 +177,23 @@ class ZFitPlotter:
         return 0.5
     #----------------------------------------
     def _get_errors(
-            self,
-            nbins  : int                = 100,
-            l_range: list[Range] | None = None) -> list[Range]:
+        self,
+        l_range: list[Range] | None = None) -> list[Range]:
         '''
         Parameters
         ---------------------
-        nbins  : Number of bins
         l_range: List of ranges where data should be picked, if None, will pick full range
 
         Returns
         ---------------------
         list of errors associated to histogram filled with data
         '''
-        dat, wgt  = self._get_range_data(l_range=l_range, blind=False)
-        data_hist = hist.Hist.new.Regular(
-            nbins,
-            self.lower,
-            self.upper,
+        lower, upper = self.plot_range
+        dat, wgt     = self._get_range_data(l_range=l_range, blind=False)
+        data_hist    = hist.Hist.new.Regular(
+            self.nbins,
+            lower,
+            upper,
             name       =self._obs_name,
             underflow  =False,
             overflow   =False)
@@ -209,7 +215,7 @@ class ZFitPlotter:
         values = data_hist.values()
 
         l_error=[]
-        for i in range(nbins):
+        for i in range(self.nbins):
             seg = segs[i] # type: ignore
             val = values[i]
 
@@ -297,8 +303,11 @@ class ZFitPlotter:
         ax      : Axes,
         nbins   : int                = 100,
         l_range : None | list[Range] = None):
-        dat, wgt  = self._get_range_data(l_range, blind=True)
-        data_hist = hist.Hist.new.Regular(nbins, self.lower, self.upper, name=self._obs_name, underflow=False, overflow=False)
+
+        dat, wgt     = self._get_range_data(l_range, blind=True)
+        lower, upper = self.plot_range
+
+        data_hist = hist.Hist.new.Regular(nbins, lower, upper, name=self._obs_name, underflow=False, overflow=False)
         data_hist = data_hist.Weight()
         data_hist.fill(dat, weight=wgt)
 
@@ -316,20 +325,17 @@ class ZFitPlotter:
         pdf_hist   : Hist,
         nbins      : int,
         l_range    : None | list[Range] = None) -> tuple[Hist, list[Range]]:
-        if self._total_entries is None:
-            raise ValueError('Total number of entries not initialized')
-
+        lower, upper        = self.plot_range
         pdf_values : Npaflt = pdf_hist.values()
         dat, wgt  = self._get_range_data(l_range, blind=False)
-        hist_bldr = hist.Hist.new.Regular(nbins, self.lower, self.upper, name=self._obs_name, underflow=False, overflow=False)
+        hist_bldr = hist.Hist.new.Regular(nbins, lower, upper, name=self._obs_name, underflow=False, overflow=False)
         data_hist = hist_bldr.Weight()
         data_hist.fill(dat, weight=wgt)
 
         data_values : Npaflt = data_hist.values()
-        pdf_tot     = sum(pdf_values)
-        pdf_scl     = self._total_entries / pdf_tot
 
-        pdf_val_scl = [ value * pdf_scl for value in pdf_values ]
+        scale       = sum(data_values) / sum(pdf_values)
+        pdf_val_scl = [ value * scale for value in pdf_values ]
 
         pulls       : list[float] = []
         pull_errors : list[Range] = []
@@ -354,7 +360,7 @@ class ZFitPlotter:
             errors = low / err, up  / err
             pull_errors.append(errors)
 
-        hst            = hist.new.Reg(nbins, self.lower, self.upper, name="pulls").Double()
+        hst            = hist.new.Reg(nbins, lower, upper, name="pulls").Double()
         pull_hist      = hist.Hist(hst)
         pull_hist[...] = pulls
 
@@ -363,15 +369,16 @@ class ZFitPlotter:
     def _plot_pulls(
         self,
         *,
-        ax         : Axes,
-        nbins      : int,
-        l_range    : list[Range] | None):
+        ax      : Axes,
+        nbins   : int,
+        l_range : list[Range] | None) -> None:
 
-        obs_name   = self._obs_name
-        binning    = zfit.binned.RegularBinning(bins=nbins, start=self.lower, stop=self.upper, name=obs_name)
-        binned_obs = zfit.Space(obs_name, binning=binning)
-        binned_pdf = zfit.pdf.BinnedFromUnbinnedPDF(self.total_model, binned_obs)
-        pdf_hist   = binned_pdf.to_hist()
+        obs_name     = self._obs_name
+        lower, upper = self.plot_range
+        binning      = zfit.binned.RegularBinning(bins=nbins, start=lower, stop=upper, name=obs_name)
+        binned_obs   = zfit.Space(obs_name, binning=binning)
+        binned_pdf   = zfit.pdf.BinnedFromUnbinnedPDF(self.total_model, binned_obs)
+        pdf_hist     = binned_pdf.to_hist()
 
         pull_hist, pull_errors = self._pull_hist(
             pdf_hist   = pdf_hist,
@@ -384,10 +391,12 @@ class ZFitPlotter:
             histtype   = "errorbar",
             markersize = self._get_marker_size(nbins = nbins),
             yerr       = np.array(pull_errors).T,
-            ax         = ax,
-        )
+            ax         = ax)
     #----------------------------------------
-    def _get_zfit_gof(self):
+    def _get_zfit_gof(self) -> str | None:
+        '''
+        Returns goodness of fit string
+        '''
         if not self._result or not hasattr(self._result, 'gof'):
             return None
 
@@ -396,7 +405,10 @@ class ZFitPlotter:
 
         return f'$\chi^2$/NdoF={chi2:.2f}/{ndof}={rchi2:.2f}\np={pval:.3f}'
     #----------------------------------------
-    def _get_text(self, ext_text):
+    def _get_text(self, ext_text : str) -> str | None:
+        '''
+        Returns text used in plot, None if no text can be found
+        '''
         gof_text = self._get_zfit_gof()
 
         if ext_text is     None and gof_text is     None:
@@ -410,7 +422,7 @@ class ZFitPlotter:
 
         return f'{ext_text}\n{gof_text}'
     #----------------------------------------
-    def _get_pars(self):
+    def _get_pars(self) -> dict[str, list[float]]:
         '''
         Will return a dictionary with:
         ```
@@ -419,28 +431,19 @@ class ZFitPlotter:
 
         if error is not available, will assign zeros
         '''
-        pdf = self.total_model
-
         if self._result is not None:
-            d_par = {}
-            for par, d_val in self._result.params.items():
-                val = d_val['value']
-                name= par if isinstance(par, str) else par.name
-                try:
-                    err = d_val['minuit_hesse']['error']
-                except KeyError:
-                    log.warning(f'Cannot extract {name} Hesse errors, using zeros')
-                    pprint.pprint(d_val)
-                    err = 0
-
-                d_par[name] = [val, err]
+            res   = FitResult.from_zfit(
+                res          = self._result,
+                no_errors_ok = True)
+            pars  = res.parameters
+            d_par = { par.name : [par.value, par.error] for par in pars }
         else:
-            s_par = pdf.get_params()
-            d_par = {par.name : [par.value(), 0] for par in s_par}
+            s_par = self.total_model.get_params()
+            d_par = {par.name : [float(par.value()), 0] for par in s_par }
 
         return d_par
     #----------------------------------------
-    def _add_pars_box(self, add_pars : list[str] | str):
+    def _add_pars_box(self, add_pars : list[str] | str) -> None:
         '''
         Will add parameter values to box to the right of fit plot
 
@@ -499,12 +502,11 @@ class ZFitPlotter:
         *,
         par : param.Parameter,
         name: str) -> float:
-
-        if self._total_entries is None:
-            raise ValueError('Total number of entries in data not initialized')
-
+        '''
+        Returns yield in normalization range of model's component PDF
+        '''
         frac : float = float(par.value().numpy())
-        yld  : float = frac * self._total_entries
+        yld  : float = frac * self.norm_area
 
         log.verbose(f'Found yield {yld:,.5g} for component {name}')
 
@@ -513,20 +515,16 @@ class ZFitPlotter:
     def _plot_model_components(
         self,
         *,
-        nbins   : int,
         stacked : bool) -> None:
         if not isinstance(self.total_model, zfit.pdf.SumPDF):
             return
 
-        if self._l_blind is not None:
-            [blind_name, _, _] = self._l_blind
-        else:
-            blind_name = None
+        blind_name = None if self._l_blind is None else self._l_blind[0]
 
         y   : None | Npaflt            = None
         l_y : list[tuple[Npaflt, str]] = []
-        was_blinded                    = False
         component_sum                  = 0
+        was_blinded                    = False
         for model, par in zip(self.total_model.pdfs, self.total_model.params.values(), strict = True):
             if model.name == blind_name:
                 was_blinded = True
@@ -549,7 +547,6 @@ class ZFitPlotter:
 
             l_y += self._plot_sub_components(
                 y       = y,
-                nbins   = nbins,
                 stacked = stacked,
                 nevt    = nevt,
                 l_model = l_model)
@@ -563,12 +560,13 @@ class ZFitPlotter:
 
         l_y.reverse()
         ax  = self.axs[0]
-        for y, name in l_y:
+        xs  = self._get_xcoor(rng = self.plot_range)
+        for ys, name in l_y:
             log.debug(f'Plotting {name}')
             if stacked:
-                ax.fill_between(self.x, y, alpha=_ALPHA, label=self._leg.get(name, name), color=self._get_col(name))
+                ax.fill_between(xs, ys, alpha=_ALPHA, label=self._leg.get(name, name), color=self._get_col(name))
             else:
-                ax.plot(self.x, y, ':',               label=self._leg.get(name, name), color=self._col.get(name))
+                ax.plot(xs, ys, ':',                  label=self._leg.get(name, name), color=self._col.get(name))
 
         if (blind_name is not None) and (was_blinded is False):
             for model in self.total_model.pdfs:
@@ -598,29 +596,40 @@ class ZFitPlotter:
         plt.hist(self.data_np, weights=self.data_weight_np)
         plt.show()
     #----------------------------------------
-    def _evaluate_pdf(self, pdf : zpdf) -> np.ndarray:
+    def _evaluate_pdf(
+        self, 
+        pdf : zpdf,
+        xs  : Npaflt) -> Npaflt:
+        '''
+        Returns array of y coordinates for array of x corrdinates
+        and a given PDF
+        '''
         try:
-            arr_y = pdf.pdf(self.x)
-        except tf.errors.InvalidArgumentError as exc:
-            log.info(f'X values: {self.x}')
+            tensor : tf.Tensor = pdf.pdf(x = xs)
+        except Exception as exc:
+            log.info(f'X values: {xs}')
             self._print_data()
             raise ValueError('Cannot evaluate PDF') from exc
 
-        return arr_y
+        return tensor.numpy() 
     #----------------------------------------
     def _plot_sub_components(
         self,
         *,
         y       : Npaflt | None,
-        nbins   : int,
-        stacked : bool,
         nevt    : float,
+        stacked : bool,
         l_model : list[tuple[float,zpdf]]) -> list[tuple[Npaflt, str]]:
-
+        '''
+        nevt : Yield for sum of components in l_model. This yield is in the normalization range
+        '''
         l_y : list[tuple[Npaflt, str]] = []
+
+        xs = self._get_xcoor(rng = self.plot_range)
         for frc, model in l_model:
-            arr_y  = self._evaluate_pdf(pdf = model)
-            this_y = arr_y * nevt * frc / nbins * (self.upper - self.lower)
+            arr_y    = self._evaluate_pdf(pdf = model, xs = xs)
+            bin_width= self.plot_width / self.nbins
+            this_y   = frc * arr_y * bin_width * nevt 
 
             if stacked:
                 y = this_y if y is None else y + this_y
@@ -631,30 +640,29 @@ class ZFitPlotter:
 
         return l_y
     #----------------------------------------
-    def _plot_model(
+    def _plot_full_model(
         self,
         ax        : Axes,
         model     : zpdf,
         nbins     : int = 100,
-        linestyle : str ='-'):
-
+        linestyle : str = '-') -> None:
+        '''
+        Plots full model when running in stack = False mode
+        '''
         if self._l_blind is not None:
             log.debug(f'Blinding: {model.name}')
             return
 
-        data_yield : float = self.data_weight_np.sum()
-        try:
-            arr_y = self._evaluate_pdf(model)
-            y     = arr_y * data_yield / nbins * (self.upper - self.lower)
-        except tf.errors.InvalidArgumentError as exc:
-            log.warning(f'Data yield: {data_yield:.0f}')
-            log.info(self.data_np)
-            raise RuntimeError('Cannot parse PDF') from exc
+        xs       = self._get_xcoor(rng = self.plot_range)
+        arr_y    = self._evaluate_pdf(pdf = model, xs = xs)
+        bin_size = self.plot_width / nbins 
 
-        name = model.name
-        ax.plot(self.x, y, linestyle, label=self._leg.get(name, name), color=self._col.get(name))
+        ys       = arr_y * bin_size * self.norm_area 
+        name     = model.name
+
+        ax.plot(xs, ys, linestyle, label=self._leg.get(name, name), color=self._col.get(name))
     #----------------------------------------
-    def _get_labels(self, xlabel : str, ylabel : str, unit : str, nbins : int):
+    def _get_labels(self, xlabel : str, ylabel : str, unit : str, nbins : int) -> tuple[str,str]:
         if not xlabel:
             if not self.obs.obs:
                 raise ValueError(f'Cannot find observable: {self.obs}')
@@ -663,49 +671,68 @@ class ZFitPlotter:
             xlabel    = f"{obs_name} [{unit}]"
 
         if not ylabel:
-            width  = (self.upper - self.lower) / nbins
-            ylabel = f'Candidates / ({width:.0f} {unit})'
+            upper, lower = self.plot_range
+            width        = (upper - lower) / nbins
+            ylabel       = f'Candidates / ({width:.0f} {unit})'
 
         return xlabel, ylabel
     #----------------------------------------
-    def _get_xcoor(self) -> Npaflt:
+    def _get_xcoor(self, rng : Range) -> Npaflt:
         '''
         Coordinates in x used to sample PDF
         '''
-        if self._plot_range is not None:
-            lower, upper = self._plot_range
-        else:
-            lower, upper = self.lower, self.upper
+        lower, upper = rng 
 
         log.debug(f'Scanning models in [{lower:,.5g}, {upper:,.5g}]')
 
         return np.linspace(lower, upper, _NXPOINTS)
     #----------------------------------------
-    def _get_data_yield(self) -> float:
+    @property
+    def norm_area(self) -> float:
         '''
-        Returns yield of data in a given range
+        Returns yield of data in normalization range
         '''
-        if self._plot_range is None:
-            yld = self.data_weight_np.sum()
-            log.debug(f'Found a yield of {yld:,.5g} in full range')
-            return yld
+        data = self.data.with_obs(self.norm)
 
-        minx, maxx            = self._plot_range 
-        arr_data : np.ndarray = np.array([self.data_np, self.data_weight_np]).T
+        if data.has_weights:
+            yld : float = data.weights.numpy().sum()
+        else:
+            yld : float = float(data.nevents.numpy())
 
-        min_msk1   = arr_data[:, 0] > minx
-        arr_flt1   = arr_data[min_msk1]
+        norm_range  = sut.range_from_obs(obs = self.norm)
 
-        max_msk2   = arr_flt1[:, 0] < maxx
-        arr_flt2   = arr_flt1[max_msk2]
-
-        arr_wgt : np.ndarray = arr_flt2.T[1]
-
-        yld = arr_wgt.sum()
-
-        log.debug(f'Found a yield of {yld:,.5g} in range [{self._plot_range}]')
+        log.debug(f'Found a yield of {yld:,.5g} in range [{norm_range}]')
 
         return yld
+    #----------------------------------------
+    @property
+    def plot_range(self) -> tuple[float,float]:
+        '''
+        Tuple with lower, upper bound of plots
+        '''
+        if self._plot_range is None:
+            raise ValueError('Plot range not initialized')
+
+        return self._plot_range
+    #----------------------------------------
+    @property
+    def nbins(self) -> int:
+        '''
+        Number of bins meant for plots
+        '''
+        if self._nbins is None:
+            raise ValueError('Number of bins not initialized')
+
+        return self._nbins
+    #----------------------------------------
+    @property
+    def plot_width(self) -> float:
+        '''
+        Width of region 
+        '''
+        lower, upper = self.plot_range
+
+        return upper - lower
     #----------------------------------------
     @gut.timeit
     def plot(
@@ -743,7 +770,7 @@ class ZFitPlotter:
         ylabel                : ylabel
         d_leg                 : Customize legend
         d_col                 : Customize color
-        plot_range            : Set plot_range
+        plot_range            : Tuple with lower and upper bound for plot 
         pull_styling(bool)    : Will add lines at +/-3 and set range to +/-5 for pull plots, by default True
         plot_components (list): List of strings, with names of PDFs, which are expected to be sums of PDFs and whose components should be plotted separately
         ext_text              : Text that can be added to plot
@@ -755,35 +782,29 @@ class ZFitPlotter:
         leg_loc (str)         : Location of legend, default 'best'
         yscale (str)          : Scale for y axis of main plot, either log or linear
         '''
-        if not isinstance(self.total_model, zfit.pdf.SumPDF):
-            #if it's not a sum of PDFs, do not stack
-            stacked=False
-
-        self._plot_range        = plot_range
+        stacked                 = False if not isinstance(self.total_model, zfit.pdf.SumPDF) else stacked
         self._figsize           = figsize
         self._leg_loc           = leg_loc
-        self._l_plot_components = [] if plot_components is None else plot_components
-        self._leg               = {} if           d_leg is None else d_leg
-        self._col               = {} if           d_col is None else d_col
-        self.x                  = self._get_xcoor()
+        self._plot_range        = sut.range_from_obs(self.norm) if plot_range      is None else plot_range
+        self._l_plot_components = []                            if plot_components is None else plot_components
+        self._leg               = {}                            if           d_leg is None else d_leg
+        self._col               = {}                            if           d_col is None else d_col
         self.axs                = self._get_axis(add_pars, skip_pulls) if axs is None else axs
         self._l_blind           = blind
-        self._total_entries     = self._get_data_yield()
+        self._nbins             = nbins
 
         try:
-            self.errors   = self._get_errors(nbins, ranges)
+            self.errors   = self._get_errors(ranges)
         except EmptyDataSet:
             log.warning('Found empty dataset, skipping plot')
             return
 
         if not stacked:
             log.debug('Plotting full model, for non-stacked case')
-            self._plot_model(self.axs[0], self.total_model, nbins)
+            self._plot_full_model(self.axs[0], self.total_model, nbins)
 
         log.debug('Plotting model components')
-        self._plot_model_components(
-            nbins   = nbins,
-            stacked = stacked)
+        self._plot_model_components(stacked = stacked)
 
         if not no_data:
             log.debug('Plotting data')
@@ -802,7 +823,7 @@ class ZFitPlotter:
         self.axs[0].legend(title=text, fontsize=20, title_fontsize=20, loc=self._leg_loc)
         self.axs[0].set(xlabel=xlabel, ylabel=ylabel)
 
-        self.axs[0].set_xlim((self.lower, self.upper))
+        self.axs[0].set_xlim(self._plot_range)
 
         if yscale is not None:
             self.axs[0].set_yscale(yscale)
@@ -815,7 +836,7 @@ class ZFitPlotter:
 
         if not skip_pulls:
             self.axs[1].set(xlabel=xlabel, ylabel="pulls")
-            self.axs[1].set_xlim(xmin = self.lower, xmax = self.upper)
+            self.axs[1].set_xlim(*self.plot_range)
 
         for ax in self.axs:
             ax.label_outer()
