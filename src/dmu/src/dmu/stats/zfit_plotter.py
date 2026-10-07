@@ -35,7 +35,8 @@ plt.style.use(mplhep.style.LHCb2) # type: ignore
 
 _NORMAL_BINNING : Final[int] = 100
 _FINE_BINNING   : Final[int] = 200
-_MAX_PULL       : Final[int] = 5   # If fit ull is beyond this, will print info message
+_MAX_PULL       : Final[int] = 5    # If fit ull is beyond this, will print info message
+_NXPOINTS       : Final[int] = 2000 # Number of points to scan PDF
 #----------------------------------------
 class EmptyDataSet(Exception):
     '''
@@ -109,6 +110,7 @@ class ZFitPlotter:
 
         self.axs                : tuple[Axes,...]
 
+        self._plot_range : Range | None                     = None
         self._l_blind : tuple[str,float,float] | None       = None
         self._figsize : tuple[int,int]               | None = None
         self._leg_loc : str                          | None = None
@@ -500,7 +502,7 @@ class ZFitPlotter:
         frac : float = float(par.value().numpy())
         yld  : float = frac * nevs
 
-        log.debug(f'Found yield {yld:,.5g} for component {name}')
+        log.verbose(f'Found yield {yld:,.5g} for component {name}')
 
         return yld
     #----------------------------------------
@@ -532,11 +534,13 @@ class ZFitPlotter:
 
             l_model : list[tuple[float,zpdf]]
             if   model.name in self._l_plot_components and     isinstance(model, zfit.pdf.SumPDF):
+                log.debug(f'Plotting subcomponents for {model.name}')
                 l_model = [ (float(frc.value().numpy()), pdf) for pdf, frc in zip(model.pdfs, model.params.values(), strict = True) ]
             elif model.name in self._l_plot_components and not isinstance(model, zfit.pdf.SumPDF):
                 log.warning(f'Cannot plot {model.name} as separate components, despite it was requested')
                 l_model = [ (1., model) ]
             else:
+                log.debug(f'Not plotting subcomponents for {model.name}')
                 l_model = [ (1., model) ]
 
             l_y += self._plot_sub_components(
@@ -545,13 +549,18 @@ class ZFitPlotter:
                 stacked = stacked,
                 nevt    = nevt,
                 l_model = l_model)
-            y,_  = l_y[-1]
+
+            nsubcomp = len(l_y)
+            log.debug(f'Plotting {nsubcomp} subcomponents for {model.name}')
+
+            y, _  = l_y[-1]
 
         log.debug(f'Found total component yield: {component_sum:,.5g}')
 
         l_y.reverse()
         ax  = self.axs[0]
         for y, name in l_y:
+            log.debug(f'Plotting {name}')
             if stacked:
                 ax.fill_between(self.x, y, alpha=1.0, label=self._leg.get(name, name), color=self._get_col(name))
             else:
@@ -655,22 +664,29 @@ class ZFitPlotter:
 
         return xlabel, ylabel
     #----------------------------------------
-    def _get_xcoor(self, plot_range : Range | None) -> Npaflt:
-        if plot_range is not None:
-            try:
-                self.lower, self.upper = plot_range
-            except TypeError as exc:
-                raise TypeError('plot_range argument is expected to be a tuple with two numeric values') from exc
+    def _get_xcoor(self) -> Npaflt:
+        '''
+        Coordinates in x used to sample PDF
+        '''
+        if self._plot_range is not None:
+            lower, upper = self._plot_range
+        else:
+            lower, upper = self.lower, self.upper
 
-        return np.linspace(self.lower, self.upper, 2000)
+        log.debug(f'Scanning models in [{lower:,.5g}, {upper:,.5g}]')
+
+        return np.linspace(lower, upper, _NXPOINTS)
     #----------------------------------------
-    def _get_data_yield(self, mas_tup : Range | None) -> float:
-        if mas_tup is None:
+    def _get_data_yield(self) -> float:
+        '''
+        Returns yield of data in a given range
+        '''
+        if self._plot_range is None:
             yld = self.data_weight_np.sum()
             log.debug(f'Found a yield of {yld:,.5g} in full range')
             return yld
 
-        minx, maxx            = mas_tup
+        minx, maxx            = self._plot_range 
         arr_data : np.ndarray = np.array([self.data_np, self.data_weight_np]).T
 
         min_msk1   = arr_data[:, 0] > minx
@@ -683,7 +699,7 @@ class ZFitPlotter:
 
         yld = arr_wgt.sum()
 
-        log.debug(f'Found a yield of {yld:,.5g} in range [{mas_tup}]')
+        log.debug(f'Found a yield of {yld:,.5g} in range [{self._plot_range}]')
 
         return yld
     #----------------------------------------
@@ -735,25 +751,20 @@ class ZFitPlotter:
         leg_loc (str)         : Location of legend, default 'best'
         yscale (str)          : Scale for y axis of main plot, either log or linear
         '''
-        d_leg           = {} if           d_leg is None else d_leg
-        d_col           = {} if           d_col is None else d_col
-        plot_components = [] if plot_components is None else plot_components
-
         if not isinstance(self.total_model, zfit.pdf.SumPDF):
             #if it's not a sum of PDFs, do not stack
             stacked=False
 
-        self._figsize = figsize
-        self._leg_loc = leg_loc
-
-        self._l_plot_components = plot_components
-
-        self._leg     = d_leg
-        self._col     = d_col
-        self.x        = self._get_xcoor(plot_range)
-        self.axs      = self._get_axis(add_pars, skip_pulls) if axs is None else axs
-        self._l_blind = blind
-        total_entries = self._get_data_yield(mas_tup = plot_range)
+        self._plot_range        = plot_range
+        self._figsize           = figsize
+        self._leg_loc           = leg_loc
+        self._l_plot_components = [] if plot_components is None else plot_components
+        self._leg               = {} if           d_leg is None else d_leg
+        self._col               = {} if           d_col is None else d_col
+        self.x                  = self._get_xcoor()
+        self.axs                = self._get_axis(add_pars, skip_pulls) if axs is None else axs
+        self._l_blind           = blind
+        total_entries           = self._get_data_yield()
 
         try:
             self.errors   = self._get_errors(nbins, ranges)
