@@ -13,6 +13,7 @@ import numpy                 as np
 import matplotlib.pyplot     as plt
 import matplotlib.colors     as mcolors
 
+from hist                   import Hist
 from typing                 import Final, Self
 from pydantic               import BaseModel, Field
 from matplotlib.axes        import Axes
@@ -24,6 +25,9 @@ from dmu.generic            import utilities  as gut
 from dmu.stats              import utilities  as sut
 
 from .imports               import zfit
+
+Npaflt     = np.ndarray[tuple[int], np.dtype[np.float64]]
+type Range = tuple[float,float]
 
 log = LogStore.add_logger('dmu:zfit_plotter')
 plt.style.use(mplhep.style.LHCb2) # type: ignore
@@ -88,26 +92,26 @@ class ZFitPlotter:
         self._obs_name         = sut.name_from_obs(obs = self.obs) 
 
         self.data              = self._data_to_zdata(data, weights)
-        min, max               = self.obs.limits
-        self.lower, self.upper = min[0][0], max[0][0]
+        self.lower, self.upper = sut.range_from_obs(obs = self.obs) 
         self.total_model       = model
         self.x                 = np.linspace(self.lower, self.upper, 2000)
-        self.data_np           = zfit.run(self.data.unstack_x())
+        self.data_np           = self.data.numpy().flatten()
 
-        self.data_weight_np    = np.ones_like(self.data_np) if self.data.weights is None else zfit.run(self.data.weights)
-        self.errors            = []
-        self._l_def_col        = []
+        self.data_weight_np    = np.ones_like(self.data_np) if self.data.weights is None else self.data.weights.numpy().flatten()
         self._result           = result
         self._suffix           = suffix
-        self._leg              = {}
-        self._col              = {}
-        self._l_plot_components= [] 
-        self.axs               : tuple[Axes,...]
-        self._l_blind          = None
-        self._figsize          = None
-        self._leg_loc          = None
 
-        # zfit.settings.advanced_warnings['extend_wrapped_extended'] = False
+        self.errors : list[tuple[float,float]] = []
+        self._leg   : dict[str,str]            = {}
+        self._col   : dict[str,str]            = {}
+        self._l_plot_components : list[str]    = [] 
+
+        self.axs                : tuple[Axes,...]
+
+        self._l_blind : tuple[str,float,float] | None       = None
+        self._figsize : tuple[int,int]               | None = None
+        self._leg_loc : str                          | None = None
+
         warnings.filterwarnings("ignore")
         self._l_def_col = list(mcolors.TABLEAU_COLORS.keys())
     #----------------------------------------
@@ -162,8 +166,8 @@ class ZFitPlotter:
     #----------------------------------------
     def _get_errors(
             self,
-            nbins  : int = 100,
-            l_range: list[tuple[float,float]]|None = None) -> list[tuple[float,float]]:
+            nbins  : int                = 100,
+            l_range: list[Range] | None = None) -> list[Range]:
         '''
         Parameters
         ---------------------
@@ -187,7 +191,7 @@ class ZFitPlotter:
         data_hist.fill(dat, weight=wgt)
 
         tmp_fig, tmp_ax = plt.subplots()
-        errorbars       = mplhep.histplot(
+        errorbars       = mplhep.histplot( # type: ignore
             data_hist,
             yerr     =True,
             color    ='white',
@@ -195,18 +199,18 @@ class ZFitPlotter:
             label    =None,
             ax       =tmp_ax)
 
-        lines  = errorbars[0].errorbar[2]
-        segs   = lines[0].get_segments()
+        lines  = errorbars[0].errorbar[2] # type: ignore
+        segs   = lines[0].get_segments()  # type: ignore
         values = data_hist.values()
 
         l_error=[]
         for i in range(nbins):
-            seg = segs[i]
+            seg = segs[i] # type: ignore
             val = values[i]
 
             try:
-                low =  val - seg[0][1]
-                up  = -val + seg[1][1]
+                low =  val - seg[0][1] # type: ignore
+                up  = -val + seg[1][1] # type: ignore
             except IndexError as exc:
                 raise IndexError(f'Cannot read the upper/lower errors, found {seg}') from exc
 
@@ -218,8 +222,8 @@ class ZFitPlotter:
     #----------------------------------------
     def _get_range_data(
         self,
-        l_range : list[tuple[float,float]]|None,
-        blind   : bool =True) -> tuple[np.ndarray, np.ndarray]:
+        l_range : list[Range] | None,
+        blind   : bool = True) -> tuple[Npaflt, Npaflt]:
         '''
         Parameters
         -----------------
@@ -237,10 +241,13 @@ class ZFitPlotter:
         if blind and self._l_blind is not None:
             log.debug(f'Blinding data with: {self._l_blind}')
             _, min_val, max_val = self._l_blind
-            dmat = dmat[(dmat.T[0] < min_val) | (dmat.T[0] > max_val)]
+            mask                = (dmat.T[0] < min_val) | (dmat.T[0] > max_val)
+            dmat                = dmat[mask]
 
         if l_range is None:
-            [dat, wgt] = dmat.T
+            dat : Npaflt = dmat.T[0]
+            wgt : Npaflt = dmat.T[1]
+
             self._check_data(dat=dat, wgt=wgt)
 
             return dat, wgt
@@ -248,7 +255,8 @@ class ZFitPlotter:
         l_dat = []
         l_wgt = []
         for lo, hi in l_range:
-            dmat_f = dmat[(dmat.T[0] > lo) & (dmat.T[0] < hi)]
+            mask   : np.ndarray = (dmat.T[0] > lo) & (dmat.T[0] < hi)
+            dmat_f : np.ndarray = dmat[mask]
 
             [dat, wgt] = dmat_f.T
 
@@ -263,9 +271,9 @@ class ZFitPlotter:
         return dat_f, wgt_f
     #----------------------------------------
     def _check_data(
-            self,
-            dat : np.ndarray,
-            wgt : np.ndarray) -> None:
+        self,
+        dat : Npaflt,
+        wgt : Npaflt) -> None:
         '''
         Checks for empty data, etc
 
@@ -279,7 +287,11 @@ class ZFitPlotter:
         if len(dat) == 0:
             raise EmptyDataSet('Dataset is empty')
     #----------------------------------------
-    def _plot_data(self, ax, nbins=100, l_range=None):
+    def _plot_data(
+        self, 
+        ax      : Axes, 
+        nbins   : int                = 100, 
+        l_range : None | list[Range] = None):
         dat, wgt  = self._get_range_data(l_range, blind=True)
         data_hist = hist.Hist.new.Regular(nbins, self.lower, self.upper, name=self._obs_name, underflow=False, overflow=False)
         data_hist = data_hist.Weight()
@@ -294,22 +306,28 @@ class ZFitPlotter:
             label      = self._leg.get('Data', 'Data'),
             ax         = ax)
     #----------------------------------------
-    def _pull_hist(self, pdf_hist, nbins, data_yield, l_range=None):
-        pdf_values= pdf_hist.values()
+    def _pull_hist(
+        self, 
+        pdf_hist   : Hist, 
+        nbins      : int, 
+        data_yield : float, 
+        l_range    : None | list[Range] = None) -> tuple[Hist, list[Range]]:
+
+        pdf_values : Npaflt = pdf_hist.values()
         dat, wgt  = self._get_range_data(l_range, blind=False)
-        data_hist = hist.Hist.new.Regular(nbins, self.lower, self.upper, name=self._obs_name, underflow=False, overflow=False)
-        data_hist = data_hist.Weight()
+        hist_bldr = hist.Hist.new.Regular(nbins, self.lower, self.upper, name=self._obs_name, underflow=False, overflow=False)
+        data_hist = hist_bldr.Weight()
         data_hist.fill(dat, weight=wgt)
 
-        data_values = data_hist.values()
+        data_values : Npaflt = data_hist.values()
         pdf_tot     = sum(pdf_values)
         pdf_scl     = data_yield / pdf_tot
 
-        pdf_values  = [ value * pdf_scl for value in pdf_values ]
-        pull_errors = [[], []]
-        pulls       = []
+        pdf_val_scl = [ value * pdf_scl for value in pdf_values ]
 
-        for (low, up), pdf_val, dat_val in zip(self.errors, pdf_values, data_values, strict = True):
+        pulls       : list[float] = []
+        pull_errors : list[Range] = []
+        for (low, up), pdf_val, dat_val in zip(self.errors, pdf_val_scl, data_values, strict = True):
             res = float(dat_val - pdf_val)
             err = low if res > 0 else up
             pul = res / err
@@ -326,8 +344,9 @@ class ZFitPlotter:
                 log.debug(f'Pull: {pul:.2f}=({dat_val:.2f}-{pdf_val:.2f})/{err:.2f}')
 
             pulls.append(pul)
-            pull_errors[0].append(low / err)
-            pull_errors[1].append(up  / err)
+
+            errors = low / err, up  / err
+            pull_errors.append(errors)
 
         hst            = hist.new.Reg(nbins, self.lower, self.upper, name="pulls").Double()
         pull_hist      = hist.Hist(hst)
@@ -335,21 +354,32 @@ class ZFitPlotter:
 
         return pull_hist, pull_errors
     #----------------------------------------
-    def _plot_pulls(self, ax, nbins, data_yield, l_range):
+    def _plot_pulls(
+        self, 
+        *,
+        ax         : Axes, 
+        nbins      : int, 
+        data_yield : float, 
+        l_range    : list[Range] | None):
+
         obs_name   = self._obs_name
         binning    = zfit.binned.RegularBinning(bins=nbins, start=self.lower, stop=self.upper, name=obs_name)
         binned_obs = zfit.Space(obs_name, binning=binning)
         binned_pdf = zfit.pdf.BinnedFromUnbinnedPDF(self.total_model, binned_obs)
         pdf_hist   = binned_pdf.to_hist()
 
-        pull_hist, pull_errors = self._pull_hist(pdf_hist, nbins, data_yield, l_range=l_range)
+        pull_hist, pull_errors = self._pull_hist(
+            pdf_hist   = pdf_hist, 
+            nbins      = nbins, 
+            data_yield = data_yield, 
+            l_range    = l_range)
 
         mplhep.histplot(
-            pull_hist,
+            H          = pull_hist,
             color      = "black",
             histtype   = "errorbar",
             markersize = self._get_marker_size(nbins = nbins),
-            yerr       = np.array(pull_errors),
+            yerr       = np.array(pull_errors).T,
             ax         = ax,
         )
     #----------------------------------------
@@ -358,10 +388,9 @@ class ZFitPlotter:
             return None
 
         chi2, ndof, pval = getattr(self._result, 'gof') # noqa: B009
+        rchi2 : float    = chi2 / ndof
 
-        rchi2 = chi2/ndof
-
-        return fr'$\chi^2$/NdoF={chi2:.2f}/{ndof}={rchi2:.2f}\np={pval:.3f}'
+        return f'$\chi^2$/NdoF={chi2:.2f}/{ndof}={rchi2:.2f}\np={pval:.3f}'
     #----------------------------------------
     def _get_text(self, ext_text):
         gof_text = self._get_zfit_gof()
@@ -407,7 +436,7 @@ class ZFitPlotter:
 
         return d_par
     #----------------------------------------
-    def _add_pars_box(self, add_pars):
+    def _add_pars_box(self, add_pars : list[str] | str):
         '''
         Will add parameter values to box to the right of fit plot
 
@@ -428,12 +457,12 @@ class ZFitPlotter:
     #----------------------------------------
     def _get_axis(
         self,
-        add_pars   : list[str]|None,
+        add_pars   : list[str] | None | str,
         skip_pulls : bool) -> tuple[Axes,...]:
         '''
         Parameters
         ----------------
-        add_pars  : Parameters with values to add in figure, by default None
+        add_pars  : Parameters with values to add in figure, by default None, can be 'all' or list of strings
         skip_pulls: If true will only draw fit
 
         Returns
@@ -461,13 +490,13 @@ class ZFitPlotter:
 
         return ax1, ax2
     #----------------------------------------
-    def _get_component_yield(self, par):
-        nevs = self.data_weight_np.sum()
-        frac = par.value().numpy()
+    def _get_component_yield(self, par) -> float:
+        nevs : int   = self.data_weight_np.sum()
+        frac : float = par.value().numpy()
 
         return frac * nevs
     #----------------------------------------
-    def _plot_model_components(self, nbins, stacked): # noqa: PLR0912
+    def _plot_model_components(self, nbins : int, stacked : bool):
         if not isinstance(self.total_model, zfit.pdf.SumPDF):
             return
 
@@ -476,8 +505,8 @@ class ZFitPlotter:
         else:
             blind_name = None
 
-        y           = None
-        l_y         = []
+        y   : None | Npaflt = None
+        l_y : list[tuple[Npaflt, str]] = []
         was_blinded = False
         for model, par in zip(self.total_model.pdfs, self.total_model.params.values(), strict = True):
             if model.name == blind_name:
@@ -487,15 +516,21 @@ class ZFitPlotter:
 
             nevt = self._get_component_yield(par)
 
+            l_model : list[tuple[float,zpdf]]
             if   model.name in self._l_plot_components and     isinstance(model, zfit.pdf.SumPDF):
-                l_model = [ (frc, pdf) for pdf, frc in zip(model.pdfs, model.params.values(), strict = True) ]
+                l_model = [ (float(frc.value().numpy()), pdf) for pdf, frc in zip(model.pdfs, model.params.values(), strict = True) ]
             elif model.name in self._l_plot_components and not isinstance(model, zfit.pdf.SumPDF):
                 log.warning(f'Cannot plot {model.name} as separate components, despite it was requested')
-                l_model = [ (1, model)]
+                l_model = [ (1., model) ]
             else:
-                l_model = [ (1, model)]
+                l_model = [ (1., model) ]
 
-            l_y += self._plot_sub_components(y, nbins, stacked, nevt, l_model)
+            l_y += self._plot_sub_components(
+                y       = y, 
+                nbins   = nbins, 
+                stacked = stacked, 
+                nevt    = nevt, 
+                l_model = l_model)
             y,_  = l_y[-1]
 
         l_y.reverse()
@@ -512,7 +547,7 @@ class ZFitPlotter:
 
             raise ValueError(f'Blinding was requested, but PDF {blind_name} was not found among:')
     #----------------------------------------
-    def _get_col(self, name):
+    def _get_col(self, name : str):
         if name in self._col:
             return self._col[name]
 
@@ -544,8 +579,16 @@ class ZFitPlotter:
 
         return arr_y
     #----------------------------------------
-    def _plot_sub_components(self, y, nbins, stacked, nevt, l_model):
-        l_y = []
+    def _plot_sub_components(
+        self, 
+        *,
+        y       : Npaflt | None, 
+        nbins   : int, 
+        stacked : bool, 
+        nevt    : float, 
+        l_model : list[tuple[float,zpdf]]) -> list[tuple[Npaflt, str]]:
+
+        l_y : list[tuple[Npaflt, str]] = []
         for frc, model in l_model:
             arr_y  = self._evaluate_pdf(pdf = model)
             this_y = arr_y * nevt * frc / nbins * (self.upper - self.lower)
@@ -559,12 +602,18 @@ class ZFitPlotter:
 
         return l_y
     #----------------------------------------
-    def _plot_model(self, ax, model, nbins=100, linestyle='-'):
+    def _plot_model(
+        self, 
+        ax        : Axes, 
+        model     : zpdf, 
+        nbins     : int = 100, 
+        linestyle : str ='-'):
+
         if self._l_blind is not None:
             log.debug(f'Blinding: {model.name}')
             return
 
-        data_yield = self.data_weight_np.sum()
+        data_yield : float = self.data_weight_np.sum()
         try:
             arr_y = self._evaluate_pdf(model)
             y     = arr_y * data_yield / nbins * (self.upper - self.lower)
@@ -576,21 +625,21 @@ class ZFitPlotter:
         name = model.name
         ax.plot(self.x, y, linestyle, label=self._leg.get(name, name), color=self._col.get(name))
     #----------------------------------------
-    def _get_labels(self, xlabel, ylabel, unit, nbins):
-        if xlabel == "":
+    def _get_labels(self, xlabel : str, ylabel : str, unit : str, nbins : int):
+        if not xlabel:
             if not self.obs.obs:
                 raise ValueError(f'Cannot find observable: {self.obs}')
 
             obs_name, = self.obs.obs
             xlabel    = f"{obs_name} [{unit}]"
 
-        if ylabel == "":
-            width  = (self.upper-self.lower)/nbins
+        if not ylabel:
+            width  = (self.upper - self.lower) / nbins
             ylabel = f'Candidates / ({width:.0f} {unit})'
 
         return xlabel, ylabel
     #----------------------------------------
-    def _get_xcoor(self, plot_range : tuple[float,float] | None) -> np.ndarray:
+    def _get_xcoor(self, plot_range : Range | None) -> Npaflt:
         if plot_range is not None:
             try:
                 self.lower, self.upper = plot_range
@@ -599,45 +648,48 @@ class ZFitPlotter:
 
         return np.linspace(self.lower, self.upper, 2000)
     #----------------------------------------
-    def _get_data_yield(self, mas_tup):
+    def _get_data_yield(self, mas_tup : Range | None) -> float:
         if mas_tup is None:
             return self.data_weight_np.sum()
 
-        minx, maxx = mas_tup
-        arr_data   = np.array([self.data_np, self.data_weight_np]).T
+        minx, maxx            = mas_tup
+        arr_data : np.ndarray = np.array([self.data_np, self.data_weight_np]).T
 
-        arr_data = arr_data[arr_data[:, 0] > minx]
-        arr_data = arr_data[arr_data[:, 0] < maxx]
+        min_msk1   = arr_data[:, 0] > minx
+        arr_flt1   = arr_data[min_msk1]
 
-        [_, arr_wgt] = arr_data.T
+        max_msk2   = arr_flt1[:, 0] < maxx
+        arr_flt2   = arr_flt1[max_msk2]
+
+        arr_wgt : np.ndarray = arr_flt2.T[1]
 
         return arr_wgt.sum()
     #----------------------------------------
     @gut.timeit
-    def plot( # noqa: PLR0913
+    def plot(
         self,
-        title             = None,
-        stacked           = False,
-        blind : list[tuple[str,float,float]] | None = None,
-        no_data           = False,
-        ranges            = None,
-        nbins: int        = 100,
-        unit: str         = r'$\rm{MeV}/\it{c}^{2}$',
-        xlabel: str       = '',
-        ylabel: str       = '',
-        d_leg : dict|None = None,
-        d_col : dict|None = None,
-        plot_range: tuple | None           = None,
-        plot_components : list[str] | None = None,
-        ext_text : str    = '',
-        add_pars          = None,
-        ymax              = None,
-        skip_pulls        = False,
-        pull_styling :bool= True,
-        yscale : str      = 'linear',
-        axs               = None,
-        figsize:tuple     = (13, 7),
-        leg_loc:str       = 'best'):
+        title           : None | str                    = None,
+        stacked         : bool                          = False,
+        blind           : tuple[str,float,float] | None = None,
+        no_data         : bool                          = False,
+        ranges          : None | list[Range]            = None,
+        nbins           : int                           = 100,
+        unit            : str                           = r'$\rm{MeV}/\it{c}^{2}$',
+        xlabel          : str                           = '',
+        ylabel          : str                           = '',
+        d_leg           : dict[str,str] | None          = None,
+        d_col           : dict[str,str] | None          = None,
+        plot_range      : Range | None                  = None,
+        plot_components : list[str]          | None     = None,
+        ext_text        : str                           = '',
+        add_pars        : None | str | list[str]        = None,
+        ymax            : None | float                  = None,
+        skip_pulls      : bool                          = False,
+        pull_styling    : bool                          = True,
+        yscale          : str                           = 'linear',
+        axs             : None | tuple[Axes,...]        = None,
+        figsize         : tuple[int,int]                = (13, 7),
+        leg_loc         : str                           = 'best'):
         '''
         title (str)           : Title
         stacked (bool)        : If true will stack the PDFs
@@ -656,7 +708,7 @@ class ZFitPlotter:
         add_pars (list|str)   : List of names of parameters to be added or string with value 'all' to add all fit parameters. If this is used, plot won't use LHCb style.
         skip_pulls(bool)      : Will not draw pulls if True, default False
         ymax (float)          : Optional, if specified will be used to set the maximum in plot
-        blind (list)          : PDF name for the signal if blinding is needed, followed by blinding range, min and max.
+        blind                 : PDF name for the signal if blinding is needed, followed by blinding range, min and max.
         figsize (tuple)       : Tuple with figure size, default (13, 7)
         leg_loc (str)         : Location of legend, default 'best'
         yscale (str)          : Scale for y axis of main plot, either log or linear
@@ -679,7 +731,7 @@ class ZFitPlotter:
         self.x        = self._get_xcoor(plot_range)
         self.axs      = self._get_axis(add_pars, skip_pulls) if axs is None else axs
         self._l_blind = blind
-        total_entries = self._get_data_yield(plot_range)
+        total_entries = self._get_data_yield(mas_tup = plot_range)
 
         try:
             self.errors   = self._get_errors(nbins, ranges)
@@ -700,7 +752,11 @@ class ZFitPlotter:
 
         if not skip_pulls and not no_data:
             log.debug('Plotting pulls')
-            self._plot_pulls(self.axs[1], nbins, total_entries, ranges)
+            self._plot_pulls(
+                ax         = self.axs[1], 
+                nbins      = nbins, 
+                data_yield = total_entries, 
+                l_range    = ranges)
 
         text           = self._get_text(ext_text)
         xlabel, ylabel = self._get_labels(xlabel, ylabel, unit, nbins)
