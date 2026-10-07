@@ -110,6 +110,7 @@ class ZFitPlotter:
 
         self.axs                : tuple[Axes,...]
 
+        self._total_entries : None | float                  = None
         self._plot_range : Range | None                     = None
         self._l_blind : tuple[str,float,float] | None       = None
         self._figsize : tuple[int,int]               | None = None
@@ -313,8 +314,9 @@ class ZFitPlotter:
         self,
         pdf_hist   : Hist,
         nbins      : int,
-        data_yield : float,
         l_range    : None | list[Range] = None) -> tuple[Hist, list[Range]]:
+        if self._total_entries is None:
+            raise ValueError('Total number of entries not initialized')
 
         pdf_values : Npaflt = pdf_hist.values()
         dat, wgt  = self._get_range_data(l_range, blind=False)
@@ -324,7 +326,7 @@ class ZFitPlotter:
 
         data_values : Npaflt = data_hist.values()
         pdf_tot     = sum(pdf_values)
-        pdf_scl     = data_yield / pdf_tot
+        pdf_scl     = self._total_entries / pdf_tot
 
         pdf_val_scl = [ value * pdf_scl for value in pdf_values ]
 
@@ -362,7 +364,6 @@ class ZFitPlotter:
         *,
         ax         : Axes,
         nbins      : int,
-        data_yield : float,
         l_range    : list[Range] | None):
 
         obs_name   = self._obs_name
@@ -374,7 +375,6 @@ class ZFitPlotter:
         pull_hist, pull_errors = self._pull_hist(
             pdf_hist   = pdf_hist,
             nbins      = nbins,
-            data_yield = data_yield,
             l_range    = l_range)
 
         mplhep.histplot(
@@ -498,6 +498,7 @@ class ZFitPlotter:
         *,
         par : param.Parameter,
         name: str) -> float:
+
         nevs : int   = self.data_weight_np.sum()
         frac : float = float(par.value().numpy())
         yld  : float = frac * nevs
@@ -764,7 +765,7 @@ class ZFitPlotter:
         self.x                  = self._get_xcoor()
         self.axs                = self._get_axis(add_pars, skip_pulls) if axs is None else axs
         self._l_blind           = blind
-        total_entries           = self._get_data_yield()
+        self._total_entries     = self._get_data_yield()
 
         try:
             self.errors   = self._get_errors(nbins, ranges)
@@ -790,7 +791,6 @@ class ZFitPlotter:
             self._plot_pulls(
                 ax         = self.axs[1],
                 nbins      = nbins,
-                data_yield = total_entries,
                 l_range    = ranges)
 
         text           = self._get_text(ext_text)
