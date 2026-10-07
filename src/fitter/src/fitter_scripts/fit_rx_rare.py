@@ -6,6 +6,7 @@ import argparse
 import os
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 from ROOT             import EnableImplicitMT # type: ignore
 from typing           import Final
@@ -200,7 +201,7 @@ def main():
     ctx_3 = sel.custom_selection(d_sel=cfg.overriding_selection)
     ctx_4 = sut.root_directory(root_dir=cfg.output_directory / 'failed_nll')
     ctx_5 = DataPreprocessor.use_database()
-    ctx_6 = ConstraintAdder.fixed_parameters(value = True)
+    ctx_6 = ConstraintAdder.fixed_parameters(value = False)
 
     with ExitStack() as stack:
         stack.enter_context(ctx_1)
