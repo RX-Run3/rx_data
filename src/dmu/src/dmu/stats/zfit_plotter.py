@@ -71,11 +71,11 @@ class ZFitPlotter:
     '''
     #----------------------------------------
     def __init__(
-        self, 
-        data   : zdat | np.ndarray | pd.Series | pd.DataFrame, 
-        model  : zpdf, 
-        weights: np.ndarray| None = None, 
-        result : zres | None      = None, 
+        self,
+        data   : zdat | np.ndarray | pd.Series | pd.DataFrame,
+        model  : zpdf,
+        weights: np.ndarray| None = None,
+        result : zres | None      = None,
         suffix : str              = ''):
         '''
         Parameters
@@ -89,10 +89,10 @@ class ZFitPlotter:
             raise ValueError('No observable found in PDF')
 
         self.obs               = model.space
-        self._obs_name         = sut.name_from_obs(obs = self.obs) 
+        self._obs_name         = sut.name_from_obs(obs = self.obs)
 
         self.data              = self._data_to_zdata(data, weights)
-        self.lower, self.upper = sut.range_from_obs(obs = self.obs) 
+        self.lower, self.upper = sut.range_from_obs(obs = self.obs)
         self.total_model       = model
         self.x                 = np.linspace(self.lower, self.upper, 2000)
         self.data_np           = self.data.numpy().flatten()
@@ -104,7 +104,7 @@ class ZFitPlotter:
         self.errors : list[tuple[float,float]] = []
         self._leg   : dict[str,str]            = {}
         self._col   : dict[str,str]            = {}
-        self._l_plot_components : list[str]    = [] 
+        self._l_plot_components : list[str]    = []
 
         self.axs                : tuple[Axes,...]
 
@@ -116,8 +116,8 @@ class ZFitPlotter:
         self._l_def_col = list(mcolors.TABLEAU_COLORS.keys())
     #----------------------------------------
     def _data_to_zdata(
-        self, 
-        data    : np.ndarray | zfit.Data | pd.Series | pd.DataFrame, 
+        self,
+        data    : np.ndarray | zfit.Data | pd.Series | pd.DataFrame,
         weights : np.ndarray | None) -> zfit.Data:
         '''
         Parameters
@@ -288,9 +288,9 @@ class ZFitPlotter:
             raise EmptyDataSet('Dataset is empty')
     #----------------------------------------
     def _plot_data(
-        self, 
-        ax      : Axes, 
-        nbins   : int                = 100, 
+        self,
+        ax      : Axes,
+        nbins   : int                = 100,
         l_range : None | list[Range] = None):
         dat, wgt  = self._get_range_data(l_range, blind=True)
         data_hist = hist.Hist.new.Regular(nbins, self.lower, self.upper, name=self._obs_name, underflow=False, overflow=False)
@@ -307,10 +307,10 @@ class ZFitPlotter:
             ax         = ax)
     #----------------------------------------
     def _pull_hist(
-        self, 
-        pdf_hist   : Hist, 
-        nbins      : int, 
-        data_yield : float, 
+        self,
+        pdf_hist   : Hist,
+        nbins      : int,
+        data_yield : float,
         l_range    : None | list[Range] = None) -> tuple[Hist, list[Range]]:
 
         pdf_values : Npaflt = pdf_hist.values()
@@ -355,11 +355,11 @@ class ZFitPlotter:
         return pull_hist, pull_errors
     #----------------------------------------
     def _plot_pulls(
-        self, 
+        self,
         *,
-        ax         : Axes, 
-        nbins      : int, 
-        data_yield : float, 
+        ax         : Axes,
+        nbins      : int,
+        data_yield : float,
         l_range    : list[Range] | None):
 
         obs_name   = self._obs_name
@@ -369,9 +369,9 @@ class ZFitPlotter:
         pdf_hist   = binned_pdf.to_hist()
 
         pull_hist, pull_errors = self._pull_hist(
-            pdf_hist   = pdf_hist, 
-            nbins      = nbins, 
-            data_yield = data_yield, 
+            pdf_hist   = pdf_hist,
+            nbins      = nbins,
+            data_yield = data_yield,
             l_range    = l_range)
 
         mplhep.histplot(
@@ -526,10 +526,10 @@ class ZFitPlotter:
                 l_model = [ (1., model) ]
 
             l_y += self._plot_sub_components(
-                y       = y, 
-                nbins   = nbins, 
-                stacked = stacked, 
-                nevt    = nevt, 
+                y       = y,
+                nbins   = nbins,
+                stacked = stacked,
+                nevt    = nevt,
                 l_model = l_model)
             y,_  = l_y[-1]
 
@@ -580,12 +580,12 @@ class ZFitPlotter:
         return arr_y
     #----------------------------------------
     def _plot_sub_components(
-        self, 
+        self,
         *,
-        y       : Npaflt | None, 
-        nbins   : int, 
-        stacked : bool, 
-        nevt    : float, 
+        y       : Npaflt | None,
+        nbins   : int,
+        stacked : bool,
+        nevt    : float,
         l_model : list[tuple[float,zpdf]]) -> list[tuple[Npaflt, str]]:
 
         l_y : list[tuple[Npaflt, str]] = []
@@ -603,10 +603,10 @@ class ZFitPlotter:
         return l_y
     #----------------------------------------
     def _plot_model(
-        self, 
-        ax        : Axes, 
-        model     : zpdf, 
-        nbins     : int = 100, 
+        self,
+        ax        : Axes,
+        model     : zpdf,
+        nbins     : int = 100,
         linestyle : str ='-'):
 
         if self._l_blind is not None:
@@ -753,9 +753,9 @@ class ZFitPlotter:
         if not skip_pulls and not no_data:
             log.debug('Plotting pulls')
             self._plot_pulls(
-                ax         = self.axs[1], 
-                nbins      = nbins, 
-                data_yield = total_entries, 
+                ax         = self.axs[1],
+                nbins      = nbins,
+                data_yield = total_entries,
                 l_range    = ranges)
 
         text           = self._get_text(ext_text)
@@ -789,7 +789,7 @@ class ZFitPlotter:
             self.axs[1].set_ylim(-5, 5)
     #----------------------------------------
     def run(
-        self, 
+        self,
         cfg : ZFitPlotterConf) -> None:
         '''
         Parameters
@@ -797,12 +797,12 @@ class ZFitPlotter:
         cfg: Object storing plotting configuration
         '''
         self.plot(
-            nbins           = cfg.nbins,          
-            stacked         = cfg.stacked,        
+            nbins           = cfg.nbins,
+            stacked         = cfg.stacked,
             plot_components = cfg.plot_components,
-            plot_range      = cfg.plot_range,     
-            ext_text        = cfg.ext_text,       
-            title           = cfg.title,          
+            plot_range      = cfg.plot_range,
+            ext_text        = cfg.ext_text,
+            title           = cfg.title,
             skip_pulls      = cfg.skip_pulls,
             d_leg           = cfg.d_leg)
 #----------------------------------------

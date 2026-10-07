@@ -95,9 +95,9 @@ def test_run(tmp_path : Path):
     d_leg = {'gauss': 'New Gauss'}
     cfg = ZFitPlotterConf(
         stacked   = True,
-        nbins     = 50, 
-        d_leg     = d_leg, 
-        plot_range= (-10, 10), 
+        nbins     = 50,
+        d_leg     = d_leg,
+        plot_range= (-10, 10),
         ext_text  = 'Extra text here')
 
     obj = ZFitPlotter(data=arr, model=pdf, result=None)
@@ -514,10 +514,10 @@ def test_composed_blind(tmp_path : Path):
 
     obj   = ZFitPlotter(data=dat, model=pdf, result=res)
     obj.plot(
-        nbins     = 50, 
-        blind     = ('signal', 4, 5), 
-        stacked   = False, 
-        plot_range= (0, 10), 
+        nbins     = 50,
+        blind     = ('signal', 4, 5),
+        stacked   = False,
+        plot_range= (0, 10),
         ext_text  = 'Extra text here')
 
     # add a line to pull hist
