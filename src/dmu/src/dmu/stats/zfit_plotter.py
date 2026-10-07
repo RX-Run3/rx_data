@@ -33,10 +33,11 @@ type Range = tuple[float,float]
 log = LogStore.add_logger('dmu:zfit_plotter')
 plt.style.use(mplhep.style.LHCb2) # type: ignore
 
-_NORMAL_BINNING : Final[int] = 100
-_FINE_BINNING   : Final[int] = 200
-_MAX_PULL       : Final[int] = 5    # If fit ull is beyond this, will print info message
-_NXPOINTS       : Final[int] = 2000 # Number of points to scan PDF
+_NORMAL_BINNING : Final[int  ] = 100
+_FINE_BINNING   : Final[int  ] = 200
+_MAX_PULL       : Final[int  ] = 5    # If fit ull is beyond this, will print info message
+_NXPOINTS       : Final[int  ] = 2000 # Number of points to scan PDF
+_ALPHA          : Final[float] =  0.8 # Transparency of PDF plots when stacking
 #----------------------------------------
 class EmptyDataSet(Exception):
     '''
@@ -499,9 +500,11 @@ class ZFitPlotter:
         par : param.Parameter,
         name: str) -> float:
 
-        nevs : int   = self.data_weight_np.sum()
+        if self._total_entries is None:
+            raise ValueError('Total number of entries in data not initialized')
+
         frac : float = float(par.value().numpy())
-        yld  : float = frac * nevs
+        yld  : float = frac * self._total_entries
 
         log.verbose(f'Found yield {yld:,.5g} for component {name}')
 
@@ -563,7 +566,7 @@ class ZFitPlotter:
         for y, name in l_y:
             log.debug(f'Plotting {name}')
             if stacked:
-                ax.fill_between(self.x, y, alpha=1.0, label=self._leg.get(name, name), color=self._get_col(name))
+                ax.fill_between(self.x, y, alpha=_ALPHA, label=self._leg.get(name, name), color=self._get_col(name))
             else:
                 ax.plot(self.x, y, ':',               label=self._leg.get(name, name), color=self._col.get(name))
 
