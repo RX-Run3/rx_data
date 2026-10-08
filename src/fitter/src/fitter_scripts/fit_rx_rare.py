@@ -58,6 +58,7 @@ def _set_logs() -> None:
     LogStore.set_level('dmu:stats:fitter'        , LEVEL)
     LogStore.set_level('dmu:stats:minimizers'    , LEVEL)
     LogStore.set_level('dmu:pdataframe:utilities', LEVEL)
+    LogStore.set_level('dmu:stats:fit_result'    , LEVEL)
 
     LogStore.set_level('fitter:base_fitter'      , LEVEL)
 
