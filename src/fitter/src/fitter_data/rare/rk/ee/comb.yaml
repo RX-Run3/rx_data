@@ -69,18 +69,18 @@ mod_cfg: &mod_cfg
     low:
       name : B_Mass
       range:
-        - 4600 
-        - 6996
+        - 4500 
+        - 6896
     central:
       name : B_Mass
       range:
-        - 4600 
-        - 6996
+        - 4500 
+        - 6896
     high:
       name : B_Mass
       range:
-        - 4600 
-        - 6996
+        - 4500 
+        - 6896
   components:
     low:
       comb : rare/rk/ee/comb_ss.yaml
