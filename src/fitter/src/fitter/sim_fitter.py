@@ -490,6 +490,7 @@ class SimFitter(BaseFitter, Cache):
             data      = data, 
             name      = f'{self._component}_{self._name}', 
             obs       = cfg.obs, 
+            norm      = cfg.norm,
             bandwidth = cfg.fit.bandwidth,
             padding   = cfg.fit.padding.value)
 
