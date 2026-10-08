@@ -147,7 +147,7 @@ class ZFitPlotter:
 
         return out_data
     #----------------------------------------
-    def _get_marker_size(self, nbins : int) -> float:
+    def _get_marker_size(self) -> float:
         '''
         Parameters
         -----------------
@@ -157,10 +157,10 @@ class ZFitPlotter:
         -----------------
         Size of marker
         '''
-        if nbins <= _NORMAL_BINNING:
+        if self.nbins <= _NORMAL_BINNING:
             return 1.
 
-        if nbins <= _FINE_BINNING:
+        if self.nbins <= _FINE_BINNING:
             return 0.75
 
         return 0.5
@@ -270,20 +270,19 @@ class ZFitPlotter:
     def _plot_data(
         self,
         ax      : Axes,
-        nbins   : int                = 100,
         l_range : None | list[Range] = None):
 
         dat, wgt     = self._get_range_data(l_range, blind=True)
         lower, upper = self.plot_range
 
-        data_hist = hist.Hist.new.Regular(nbins, lower, upper, name=self._obs_name, underflow=False, overflow=False)
+        data_hist = hist.Hist.new.Regular(self.nbins, lower, upper, name=self._obs_name, underflow=False, overflow=False)
         data_hist = data_hist.Weight()
         data_hist.fill(dat, weight=wgt)
 
         mplhep.histplot(
             data_hist,
             yerr       = True,
-            markersize = self._get_marker_size(nbins = nbins),
+            markersize = self._get_marker_size(),
             color      = 'black',
             histtype   = 'errorbar',
             label      = self._leg.get('Data', 'Data'),
@@ -292,12 +291,11 @@ class ZFitPlotter:
     def _pull_hist(
         self,
         pdf_hist   : Hist,
-        nbins      : int,
         l_range    : None | list[Range] = None) -> tuple[Hist, list[Range]]:
         lower, upper        = self.plot_range
         pdf_values : Npaflt = pdf_hist.values()
         dat, wgt  = self._get_range_data(l_range, blind=False)
-        hist_bldr = hist.Hist.new.Regular(nbins, lower, upper, name=self._obs_name, underflow=False, overflow=False)
+        hist_bldr = hist.Hist.new.Regular(self.nbins, lower, upper, name=self._obs_name, underflow=False, overflow=False)
         data_hist = hist_bldr.Weight()
         data_hist.fill(dat, weight=wgt)
 
@@ -329,7 +327,7 @@ class ZFitPlotter:
             errors = low / err, up  / err
             pull_errors.append(errors)
 
-        hst            = hist.new.Reg(nbins, lower, upper, name="pulls").Double()
+        hst            = hist.new.Reg(self.nbins, lower, upper, name="pulls").Double()
         pull_hist      = hist.Hist(hst)
         pull_hist[...] = pulls
 
@@ -339,26 +337,22 @@ class ZFitPlotter:
         self,
         *,
         ax      : Axes,
-        nbins   : int,
         l_range : list[Range] | None) -> None:
 
         obs_name     = self._obs_name
         lower, upper = self.plot_range
-        binning      = zfit.binned.RegularBinning(bins=nbins, start=lower, stop=upper, name=obs_name)
+        binning      = zfit.binned.RegularBinning(bins=self.nbins, start=lower, stop=upper, name=obs_name)
         binned_obs   = zfit.Space(obs_name, binning=binning)
         binned_pdf   = zfit.pdf.BinnedFromUnbinnedPDF(self.total_model, binned_obs)
         pdf_hist     = binned_pdf.to_hist()
 
-        pull_hist, pull_errors = self._pull_hist(
-            pdf_hist   = pdf_hist,
-            nbins      = nbins,
-            l_range    = l_range)
+        pull_hist, pull_errors = self._pull_hist(pdf_hist = pdf_hist, l_range = l_range)
 
         mplhep.histplot(
             H          = pull_hist,
             color      = "black",
             histtype   = "errorbar",
-            markersize = self._get_marker_size(nbins = nbins),
+            markersize = self._get_marker_size(),
             yerr       = np.array(pull_errors).T,
             ax         = ax)
     #----------------------------------------
@@ -477,7 +471,7 @@ class ZFitPlotter:
         Returns yield in normalization range of model's component PDF
         '''
         frac : float = float(par.value().numpy())
-        yld  : float = frac * self.norm_area
+        yld  : float = frac * self.norm_yield
 
         log.verbose(f'Found yield {yld:,.5g} for component {name}')
 
@@ -624,7 +618,6 @@ class ZFitPlotter:
         self,
         ax        : Axes,
         model     : zpdf,
-        nbins     : int = 100,
         linestyle : str = '-') -> None:
         '''
         Plots full model when running in stack = False mode
@@ -633,16 +626,32 @@ class ZFitPlotter:
             log.debug(f'Blinding: {model.name}')
             return
 
-        xs       = self._get_xcoor(rng = self.plot_range)
-        arr_y    = self._evaluate_pdf(pdf = model, xs = xs)
-        bin_size = self.plot_width / nbins
+        xs   = self._get_xcoor(rng = self.plot_range)
+        ys   = self._evaluate_pdf(pdf = model, xs = xs)
+        name = model.name
 
-        ys       = arr_y * bin_size * self.norm_area
-        name     = model.name
-
-        ax.plot(xs, ys, linestyle, label=self._leg.get(name, name), color=self._col.get(name))
+        ax.plot(
+            xs, 
+            ys * self.scale, 
+            ls   = linestyle, 
+            label= self._leg.get(name, name), 
+            color= self._col.get(name))
     #----------------------------------------
-    def _get_labels(self, xlabel : str, ylabel : str, unit : str, nbins : int) -> tuple[str,str]:
+    @property
+    def scale(self) -> float:
+        '''
+        Number needed to scale scanned PDF array to match data normalization
+        '''
+        bin_size  = self.plot_width / self.nbins
+        plot_area = bin_size * self.plot_yield
+
+        scn_size  = self.plot_width / _NXPOINTS
+        corr      = self.norm_yield / self.plot_yield
+        scale     = scn_size * corr * plot_area
+
+        return scale / scn_size
+    #----------------------------------------
+    def _get_labels(self, xlabel : str, ylabel : str, unit : str) -> tuple[str,str]:
         if not xlabel:
             if not self.obs.obs:
                 raise ValueError(f'Cannot find observable: {self.obs}')
@@ -652,7 +661,7 @@ class ZFitPlotter:
 
         if not ylabel:
             lower, upper = self.plot_range
-            width        = (upper - lower) / nbins
+            width        = (upper - lower) / self.nbins
             ylabel       = f'Candidates / ({width:.0f} {unit})'
 
         return xlabel, ylabel
@@ -668,7 +677,7 @@ class ZFitPlotter:
         return np.linspace(lower, upper, _NXPOINTS)
     #----------------------------------------
     @property
-    def norm_area(self) -> float:
+    def norm_yield(self) -> float:
         '''
         Returns yield of data in normalization range
         '''
@@ -679,9 +688,31 @@ class ZFitPlotter:
         else:
             yld : float = float(data.nevents.numpy())
 
-        norm_range  = sut.range_from_obs(obs = self.norm)
+        log.debug(f'Found a yield of {yld:,.5g} in range [{self.norm_range}]')
 
-        log.debug(f'Found a yield of {yld:,.5g} in range [{norm_range}]')
+        return yld
+    #----------------------------------------
+    @property
+    def norm_range(self) -> tuple[float,float]:
+        '''
+        Range where PDF area is meant to be 1
+        '''
+        return sut.range_from_obs(obs = self.norm)
+    #----------------------------------------
+    @property
+    def plot_yield(self) -> float:
+        '''
+        Returns yield of data in plotting range
+        '''
+        obs_plt = zfit.Space(self._obs_name, limits = self.plot_range) 
+        data    = self.data.with_obs(obs_plt)
+
+        if data.has_weights:
+            yld : float = data.weights.numpy().sum()
+        else:
+            yld : float = float(data.nevents.numpy())
+
+        log.debug(f'Found a yield of {yld:,.5g} in range [{self.plot_range}]')
 
         return yld
     #----------------------------------------
@@ -781,24 +812,21 @@ class ZFitPlotter:
 
         if not stacked:
             log.debug('Plotting full model, for non-stacked case')
-            self._plot_full_model(self.axs[0], self.total_model, nbins)
+            self._plot_full_model(self.axs[0], self.total_model)
 
         log.debug('Plotting model components')
         self._plot_model_components(stacked = stacked)
 
         if not no_data:
             log.debug('Plotting data')
-            self._plot_data(self.axs[0], nbins, ranges)
+            self._plot_data(self.axs[0], ranges)
 
         if not skip_pulls and not no_data:
             log.debug('Plotting pulls')
-            self._plot_pulls(
-                ax         = self.axs[1],
-                nbins      = nbins,
-                l_range    = ranges)
+            self._plot_pulls(ax = self.axs[1], l_range = ranges)
 
         text           = self._get_text(ext_text)
-        xlabel, ylabel = self._get_labels(xlabel, ylabel, unit, nbins)
+        xlabel, ylabel = self._get_labels(xlabel, ylabel, unit)
 
         self.axs[0].legend(title=text, fontsize=20, title_fontsize=20, loc=self._leg_loc)
         self.axs[0].set(xlabel=xlabel, ylabel=ylabel)
