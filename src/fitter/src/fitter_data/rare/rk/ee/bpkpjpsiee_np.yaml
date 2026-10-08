@@ -18,4 +18,4 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
     bpkpjpsiee_brem_012 : $B^+\to K^+ J/\psi(\to e^+e^-)$
   plot_range:
     - 4600
-    - 6200
+    - 5200
