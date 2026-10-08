@@ -28,6 +28,7 @@ from .imports               import zfit, tensorflow as tf
 param      = zfit.param
 Npaflt     = np.ndarray[tuple[int], np.dtype[np.float64]]
 type Range = tuple[float,float]
+type zpar  = zfit.param.Parameter
 
 log = LogStore.add_logger('dmu:zfit_plotter')
 plt.style.use(mplhep.style.LHCb2)
@@ -477,10 +478,7 @@ class ZFitPlotter:
 
         return yld
     #----------------------------------------
-    def _plot_model_components(
-        self,
-        *,
-        stacked : bool) -> None:
+    def _plot_model_components(self, *, stacked : bool) -> None:
         if not isinstance(self.total_model, zfit.pdf.SumPDF):
             return
 
@@ -488,45 +486,23 @@ class ZFitPlotter:
 
         y   : None | Npaflt            = None
         l_y : list[tuple[Npaflt, str]] = []
-        component_sum                  = 0
         was_blinded                    = False
-        for model, par in zip(self.total_model.pdfs, self.total_model.params.values(), strict = True):
+        for model, frac in zip(self.total_model.pdfs, self.total_model.params.values(), strict = True):
             if model.name == blind_name:
                 was_blinded = True
                 log.debug(f'Skipping blinded PDF: {blind_name}')
                 continue
 
-            yld_par = model.get_yield()
-            if yld_par is not None:
-                nevt = float(yld_par.value().numpy())
-            else:
-                nevt = self._get_component_yield(par = par, name = model.name)
-
-            component_sum += nevt
-
-            l_model : list[tuple[float,zpdf]]
-            if   model.name in self._l_plot_components and     isinstance(model, zfit.pdf.SumPDF):
-                log.debug(f'Plotting subcomponents for {model.name}')
-                l_model = [ (float(frc.value().numpy()), pdf) for pdf, frc in zip(model.pdfs, model.params.values(), strict = True) ]
-            elif model.name in self._l_plot_components and not isinstance(model, zfit.pdf.SumPDF):
-                log.warning(f'Cannot plot {model.name} as separate components, despite it was requested')
-                l_model = [ (1., model) ]
-            else:
-                log.debug(f'Not plotting subcomponents for {model.name}')
-                l_model = [ (1., model) ]
-
-            l_y += self._plot_sub_components(
+            models = self._get_components(model = model, frac = frac)
+            l_y   += self._scan_subcomponents(
                 y       = y,
                 stacked = stacked,
-                nevt    = nevt,
-                l_model = l_model)
+                l_model = models)
 
             nsubcomp = len(l_y)
             log.debug(f'Plotting {nsubcomp} subcomponents for {model.name}')
 
             y, _  = l_y[-1]
-
-        log.debug(f'Found total component yield: {component_sum:,.5g}')
 
         l_y.reverse()
         ax  = self.axs[0]
@@ -534,15 +510,75 @@ class ZFitPlotter:
         for ys, name in l_y:
             log.debug(f'Plotting {name}')
             if stacked:
-                ax.fill_between(xs, ys, alpha=_ALPHA, label=self._leg.get(name, name), color=self._get_color(name))
+                ax.fill_between(xs, ys * self.scale, alpha=_ALPHA, label=self._leg.get(name, name), color=self._get_color(name))
             else:
-                ax.plot(xs, ys, ':',                  label=self._leg.get(name, name), color=self._col.get(name))
+                ax.plot(xs, ys * self.scale, ':',                  label=self._leg.get(name, name), color=self._col.get(name))
 
         if (blind_name is not None) and (was_blinded is False):
             for model in self.total_model.pdfs:
                 log.info(model.name)
 
             raise ValueError(f'Blinding was requested, but PDF {blind_name} was not found')
+    #----------------------------------------
+    def _scan_subcomponents(
+        self,
+        *,
+        y       : Npaflt | None,
+        stacked : bool,
+        l_model : list[tuple[float,zpdf]]) -> list[tuple[Npaflt, str]]:
+        '''
+        Will split model component into sub components, if needed.
+
+        Returns
+        ---------------
+        List of arrays of y values paired with model name
+        '''
+        l_y : list[tuple[Npaflt, str]] = []
+
+        xs = self._get_xcoor(rng = self.plot_range)
+        for frc, model in l_model:
+            ys = self._evaluate_pdf(pdf = model, xs = xs) * frc
+
+            if stacked:
+                y = ys if y is None else y + ys
+            else:
+                y = ys 
+
+            l_y.append((y, model.name))
+
+        return l_y
+    #----------------------------------------
+    def _get_components(self, model : zpdf, frac : zpar) -> list[tuple[float,zpdf]]:
+        '''
+        Parameters
+        ----------------
+        model: PDF meant to be split into subcomponents
+        frac : Fraction of this PDF in full model
+
+        Returns
+        ----------------
+        List of tuples where:
+
+        - Fraction of this component WRT full model
+        - Component
+        '''
+        outer_frac = self._float_from_par(frac)
+        split_model= model.name in self._l_plot_components
+
+        if split_model and isinstance(model, zfit.pdf.SumPDF):
+            log.debug(f'Plotting subcomponents for {model.name}')
+            zipped = zip(model.pdfs, model.params.values(), strict = True)
+            return [ (outer_frac * self._float_from_par(frc), pdf) for pdf, frc in zipped ]
+
+        if split_model and not isinstance(model, zfit.pdf.SumPDF):
+            log.warning(f'Cannot plot {model.name} as separate components, despite it was requested')
+        else:
+            log.debug(f'Not plotting subcomponents for {model.name}')
+
+        return [ (outer_frac, model) ]
+    #----------------------------------------
+    def _float_from_par(self, par : zpar) -> float:
+        return float(par.value().numpy())
     #----------------------------------------
     def _get_color(self, name : str) -> str:
         '''
@@ -586,33 +622,6 @@ class ZFitPlotter:
             raise ValueError('Cannot evaluate PDF') from exc
 
         return tensor.numpy()
-    #----------------------------------------
-    def _plot_sub_components(
-        self,
-        *,
-        y       : Npaflt | None,
-        nevt    : float,
-        stacked : bool,
-        l_model : list[tuple[float,zpdf]]) -> list[tuple[Npaflt, str]]:
-        '''
-        nevt : Yield for sum of components in l_model. This yield is in the normalization range
-        '''
-        l_y : list[tuple[Npaflt, str]] = []
-
-        xs = self._get_xcoor(rng = self.plot_range)
-        for frc, model in l_model:
-            arr_y    = self._evaluate_pdf(pdf = model, xs = xs)
-            bin_width= self.plot_width / self.nbins
-            this_y   = frc * arr_y * bin_width * nevt
-
-            if stacked:
-                y = this_y if y is None else y + this_y
-            else:
-                y = this_y
-
-            l_y.append((y, model.name))
-
-        return l_y
     #----------------------------------------
     def _plot_full_model(
         self,
