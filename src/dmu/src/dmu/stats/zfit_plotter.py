@@ -511,9 +511,9 @@ class ZFitPlotter:
         for ys, name in l_y:
             log.debug(f'Plotting {name}')
             if stacked:
-                ax.fill_between(xs, ys * self.scale, alpha=_ALPHA, label=self._leg.get(name, name), color=self._get_color(name))
+                ax.fill_between(xs, ys * self.hist_area, alpha=_ALPHA, label=self._leg.get(name, name), color=self._get_color(name))
             else:
-                ax.plot(xs, ys * self.scale, ':',                  label=self._leg.get(name, name), color=self._col.get(name))
+                ax.plot(xs, ys * self.hist_area, ':',                  label=self._leg.get(name, name), color=self._col.get(name))
 
         if (blind_name is not None) and (was_blinded is False):
             for model in self.total_model.pdfs:
@@ -651,7 +651,7 @@ class ZFitPlotter:
 
         ax.plot(
             xs, 
-            ys * self.scale, 
+            ys * self.hist_area, 
             ls   = linestyle, 
             label= self._leg.get(name, name), 
             color= self._col.get(name))
@@ -682,17 +682,14 @@ class ZFitPlotter:
         return np.linspace(lower, upper, _NXPOINTS)
     #----------------------------------------
     @property
-    def scale(self) -> float:
+    def hist_area(self) -> float:
         '''
-        Number needed to scale scanned PDF array to match data normalization
+        Area of data histogram in plotting range
         '''
         bin_size  = self.plot_width / self.nbins
-        plot_area = bin_size * self.plot_yield
+        hist_area = bin_size * self.plot_yield
 
-        corr      = self.norm_yield / self.plot_yield
-        scale     = self.scan_width * corr * plot_area
-
-        return scale / self.scan_width 
+        return hist_area 
     #----------------------------------------
     @property
     def norm_yield(self) -> float:
