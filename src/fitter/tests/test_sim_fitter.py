@@ -45,6 +45,14 @@ def initialize(monkeypatch):
     LogStore.set_level('fitter:category_merger'   , 10)
     LogStore.set_level('fitter:sim_fitter'        , 10)
     LogStore.set_level('fitter:configs'           , 10)
+
+    # NOTE: Turn this on to run on real data instead of 
+    # monkey patching TestDataPreprocessor
+
+    #from fitter import DataPreprocessor
+
+    #with DataPreprocessor.use_database():
+    #    yield
 # ----------------------
 def _filter_category(name : str) -> bool:
     c1 = name.endswith('_b1')
