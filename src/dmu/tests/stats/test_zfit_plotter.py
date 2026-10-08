@@ -447,7 +447,12 @@ def test_composed(tmp_path : Path):
 
     obj   = ZFitPlotter(data=sam, model=pdf)
     d_leg = {'gauss': 'New Gauss'}
-    obj.plot(stacked = True, nbins=50, d_leg=d_leg, plot_range=(0, 10), ext_text='Extra text here')
+    obj.plot(
+        stacked    = False, 
+        nbins      = 50, 
+        d_leg      = d_leg, 
+        plot_range = (0, 10), 
+        ext_text   = 'Extra text here')
 
     # add a line to pull hist
     obj.axs[1].plot([0, 10], [0, 0], linestyle='--', color='black')
@@ -455,6 +460,7 @@ def test_composed(tmp_path : Path):
     plt.savefig(tmp_path / 'fit_lin.png', bbox_inches='tight')
 
     obj.axs[0].set_yscale('log')
+    obj.axs[0].set_ylim(bottom = 0.1)
     plt.savefig(tmp_path / 'fit_log.png', bbox_inches='tight')
 #--------------------------------
 def test_composed_nonextended(tmp_path : Path):
