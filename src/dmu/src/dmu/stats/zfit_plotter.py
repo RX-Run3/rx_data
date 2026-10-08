@@ -37,7 +37,8 @@ _Y_MIN_LOG      : Final[float] = 0.01
 _NORMAL_BINNING : Final[int  ] = 100
 _FINE_BINNING   : Final[int  ] = 200
 _MAX_PULL       : Final[int  ] = 5    # If fit ull is beyond this, will print info message
-_NXPOINTS       : Final[int  ] = 2000 # Number of points to scan PDF for both plotting or calculating normalization
+_NXPOINTS       : Final[int  ] = 2000 
+'''Number of points to scan PDF for both plotting or calculating normalization'''
 _ALPHA          : Final[float] =  0.8 # Transparency of PDF plots when stacking
 #----------------------------------------
 class EmptyDataSet(Exception):
@@ -621,7 +622,16 @@ class ZFitPlotter:
             self._print_data()
             raise ValueError('Cannot evaluate PDF') from exc
 
-        return tensor.numpy()
+        rng= self.plot_range
+        ys = tensor.numpy()
+        ys = ys / float(pdf.integrate(limits = rng).numpy())
+
+        bin_area = ys * self.scan_width
+        area = float(bin_area.sum())
+        if not math.isclose(area, 1, abs_tol=0.01):
+            raise ValueError(f'{pdf.name} not normalized to unity but {area:.3f} in {rng}')
+
+        return ys
     #----------------------------------------
     def _plot_full_model(
         self,
@@ -645,20 +655,6 @@ class ZFitPlotter:
             ls   = linestyle, 
             label= self._leg.get(name, name), 
             color= self._col.get(name))
-    #----------------------------------------
-    @property
-    def scale(self) -> float:
-        '''
-        Number needed to scale scanned PDF array to match data normalization
-        '''
-        bin_size  = self.plot_width / self.nbins
-        plot_area = bin_size * self.plot_yield
-
-        scn_size  = self.plot_width / _NXPOINTS
-        corr      = self.norm_yield / self.plot_yield
-        scale     = scn_size * corr * plot_area
-
-        return scale / scn_size
     #----------------------------------------
     def _get_labels(self, xlabel : str, ylabel : str, unit : str) -> tuple[str,str]:
         if not xlabel:
@@ -684,6 +680,19 @@ class ZFitPlotter:
         log.debug(f'Scanning models in [{lower:,.5g}, {upper:,.5g}]')
 
         return np.linspace(lower, upper, _NXPOINTS)
+    #----------------------------------------
+    @property
+    def scale(self) -> float:
+        '''
+        Number needed to scale scanned PDF array to match data normalization
+        '''
+        bin_size  = self.plot_width / self.nbins
+        plot_area = bin_size * self.plot_yield
+
+        corr      = self.norm_yield / self.plot_yield
+        scale     = self.scan_width * corr * plot_area
+
+        return scale / self.scan_width 
     #----------------------------------------
     @property
     def norm_yield(self) -> float:
@@ -753,6 +762,13 @@ class ZFitPlotter:
         lower, upper = self.plot_range
 
         return upper - lower
+    #----------------------------------------
+    @property
+    def scan_width(self) -> float:
+        '''
+        Distance between points when sampling PDFs
+        '''
+        return self.plot_width / _NXPOINTS
     #----------------------------------------
     @gut.timeit
     def plot(
