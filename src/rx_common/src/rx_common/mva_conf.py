@@ -180,7 +180,7 @@ class MVAWp(RootModel[float|tuple[float,float]]):
 
         return f'{low:.2f}-{high:.2f}'
     # -------------    
-    def __format__(self, spec):
+    def __format__(self, spec : str):
         return format(str(self), spec)
 # ---------------------
 class MVAConf(BaseModel):
