@@ -10,6 +10,7 @@ junit2html
 junitparser
 ihep-utilities>=0.0.3
 htcondor
+snakemake-logger-plugin-flowo
 snakemake-logger-plugin-snkmt
 snakemake-executor-plugin-ihep
 snakemake-executor-plugin-htcondor
@@ -37,7 +38,7 @@ memory-profiler
 mplhep
 numba
 numexpr
-numpy
+numpy==2.3.5
 omegaconf>=2.3.0
 optuna
 pandas
