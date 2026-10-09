@@ -61,7 +61,11 @@ class FitResult(BaseModel, frozen = True):
     # ----------------------
     @property
     def __all_parameters(self) -> Sequence[FitParameter]:
-        return list(self.parameters) + self.extra_pars
+        pars = list(self.parameters)
+        pars.sort(key = lambda par : par.name)
+        self.extra_pars.sort(key = lambda par : par.name)
+
+        return pars + self.extra_pars
     # ----------------------
     @property
     def df(self) -> pnd.DataFrame:
