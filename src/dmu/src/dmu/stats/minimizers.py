@@ -103,7 +103,6 @@ class AnealingMinimizer:
         Will move floating parameters of PDF according
         to uniform PDF
         '''
-
         log.debug('Randomizing parameters')
         l_model = nll.model
         if len(l_model) != 1:
@@ -111,13 +110,23 @@ class AnealingMinimizer:
 
         model = l_model[0]
         s_par = model.get_params(floating=True)
-        for par in s_par:
-            ival = par.value().numpy()
+        l_par = list(s_par)
+        l_par.sort(key = lambda par : par.name)
 
+        for par in l_par:
             lower, upper = self._param_bounds(par = par)
-            fval = numpy.random.uniform(lower, upper)
-            par.set_value(fval)
+
+            ival = par.value().numpy()
+            par.randomize()
+            fval = par.value().numpy()
+
             log.debug(f'{par.name:<40}{ival:<15.3f}{"->":<10}{fval:<15.3f}{"in":<5}{par.lower:<15.3e}{par.upper:<15.3e}')
+
+        s_par = model.get_params(floating=False)
+        for par in s_par:
+            ival         = par.value().numpy()
+            lower, upper = self._param_bounds(par = par)
+            log.debug(f'{par.name:<40}{ival:<15.3f}{"||":<10}{ival:<15.3f}{"in":<5}{par.lower:<15.3e}{par.upper:<15.3e}')
     # ----------------------
     def _param_bounds(
         self,
@@ -211,7 +220,7 @@ class AnealingMinimizer:
         log.info(30 * '-')
         for i_try in range(1, self._strategy.ntries + 1):
             if i_try > 1:
-                self._randomize_parameters(loss)
+                self._randomize_parameters(nll = loss)
 
             try:
                 obj = self._min.minimize(loss)
