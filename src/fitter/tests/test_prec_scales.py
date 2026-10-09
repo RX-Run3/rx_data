@@ -17,7 +17,6 @@ log=LogStore.add_logger('fitter:test_prec_scales')
 
 _NSCALES : Final[int] = 2
 # -----------------------------------
-@staticmethod
 def _get_seq_wp(min_cmb : float, min_prc : float, step : float) -> list[str]:
     '''
     Will take starting point for both combinatorial and PRec WP, as well as step

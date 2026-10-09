@@ -7,7 +7,6 @@ import mplhep
 import pandas            as pnd
 import matplotlib.pyplot as plt
 
-from typing             import cast
 from pathlib            import Path
 from ROOT               import RDF # type: ignore
 from dmu                import LogStore
