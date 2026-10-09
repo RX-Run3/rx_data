@@ -1,5 +1,3 @@
-path: yields/rare
-fits: reso_dtf-latest
 grid:
   cmb:
     - 0100-0150

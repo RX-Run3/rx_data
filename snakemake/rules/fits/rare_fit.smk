@@ -52,15 +52,13 @@ rule fits:
         (
         source setup.sh {params.env} {params.home}
 
-        CMB_WP=$(rxfitter wp-translator -w {wildcards.cmb})
-        PRC_WP=$(rxfitter wp-translator -w {wildcards.prc})
-        fit_rx_rare \
-                    -b -1              \
-                    -g {params.fit_name}   \
+        fit_rx_rare                                                 \
+                    -b -1                                           \
+                    -g {params.fit_name}                            \
                     -c {params.mode}/{wildcards.prj}/{wildcards.chn}\
-                    -q {wildcards.qsq} \
-                    -C $CMB_WP         \
-                    -P $PRC_WP || true
+                    -q {wildcards.qsq}                              \
+                    -C {wildcards.cmb}                              \
+                    -P {wildcards.prc} || true
         ) > {log.prc} 2>&1
 
         JOBID=$(grep -m1 '^ClusterId' $_CONDOR_JOB_AD | awk '{{print $3}}')
