@@ -63,7 +63,8 @@ mod_cfg: &mod_cfg
   yields           : model/yields/rk/rare_electron.yaml
   selection        : # Put here whavever needs to be added ON TOP of the signal region
     low    : {}
-    central: {}
+    central:
+      leakage : TMath::Abs(B_const_mass_M - 5280) > 200
     high   : {}
   observable:
     low:
