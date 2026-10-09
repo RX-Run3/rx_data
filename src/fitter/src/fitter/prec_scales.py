@@ -43,7 +43,7 @@ class PrecScales:
         self._trigger     = trigger 
         self._brem        = brem
         self._q2bin       = q2bin
-        self._d_frbf      = gut.load_data(
+        self._d_frbf : dict[str,dict[str,tuple[float,float]]] = gut.load_data(
             package='rx_efficiencies_data', 
             fpath  ='scales/fr_bf.yaml')
     #------------------------------------------
