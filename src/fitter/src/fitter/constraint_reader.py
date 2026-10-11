@@ -72,6 +72,15 @@ class ConstraintReader:
             signal = self._signal,
             brem   = self._brem)
     # ----------------------
+    def _add_eff_constraints(self, skip : bool) -> None:
+        '''
+        Appends constraints to _constraints list for parameters in parameter holder
+        whose names start with `eff_{COMPONENT}_{source_trig}_{target_trig}...`
+        '''
+        if skip: 
+            log.warning('Dropping efficiency ratio constraints')
+            return
+    # ----------------------
     def _add_misid_constraints(self, skip : bool) -> None:
         '''
         Adds constraints for fully hadronic MisID components
@@ -180,6 +189,7 @@ class ConstraintReader:
         skip_prec  : bool        = False,
         skip_comb  : bool        = False,
         skip_signal: bool        = False,
+        skip_eff   : bool        = False,
         save_to    : Path | None = None) -> Constraints[Constraint1D | ConstraintND]:
         '''
         Parameters
@@ -195,6 +205,7 @@ class ConstraintReader:
         self._add_bkg_fraction_constraints(skip = skip_prec)
         self._add_combinatorial_constraints(skip = skip_comb)
         self._add_signal_constraints(skip = skip_signal)
+        self._add_eff_constraints(skip = skip_eff)
 
         data : dict[str,Constraint] = { constraint.name : constraint for constraint in self._constraints }
         constraints = Constraints[Constraint1D | ConstraintND](root = data)
