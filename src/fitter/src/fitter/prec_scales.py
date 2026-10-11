@@ -1,5 +1,5 @@
 '''
-Module containing class PrecScales 
+Module containing class PrecScales
 '''
 
 import math
@@ -12,7 +12,7 @@ from dmu.stats       import Constraint1D, ConstraintType
 from dmu.generic     import utilities  as gut
 from rx_common       import Qsq, Brem
 from rx_common       import Component
-from rx_common       import Trigger 
+from rx_common       import Trigger
 from rx_selection    import selection  as sel
 from rx_efficiencies import EfficiencyCalculator
 
@@ -26,7 +26,7 @@ class PrecScales:
     '''
     #------------------------------------------
     def __init__(
-        self, 
+        self,
         output_directory : Path,
         trigger          : Trigger,
         brem             : Brem,
@@ -40,11 +40,11 @@ class PrecScales:
         q2bin            : Needed to apply correct selection to get correct efficiencies and scales
         '''
         self._out_dir     = output_directory
-        self._trigger     = trigger 
+        self._trigger     = trigger
         self._brem        = brem
         self._q2bin       = q2bin
         self._d_frbf : dict[str,dict[str,tuple[float,float]]] = gut.load_data(
-            package='rx_efficiencies_data', 
+            package='rx_efficiencies_data',
             fpath  ='scales/fr_bf.yaml')
     #------------------------------------------
     def _check_arg(self, l_val, val, name):
@@ -121,8 +121,8 @@ class PrecScales:
         with sel.update_selection(d_sel = self._brem.region.selection):
             obj = EfficiencyCalculator(
                 out_dir= self._out_dir,
-                q2bin  = self._q2bin, 
-                sample = component, 
+                q2bin  = self._q2bin,
+                sample = component,
                 trigger= self._trigger)
             val = obj.get_efficiency()
 
@@ -141,7 +141,7 @@ class PrecScales:
         log.debug('-' * 20)
     #------------------------------------------
     def get_scale(
-        self, 
+        self,
         background : Component,
         signal     : Component) -> tuple[float,float]:
         '''
@@ -181,9 +181,9 @@ class PrecScales:
         return val, err
     #------------------------------------------
     def get_constraint(
-        self, 
+        self,
         background : Component,
-        signal     : Component, 
+        signal     : Component,
         par        : str) -> Constraint1D:
         '''
         Parameters
@@ -205,7 +205,7 @@ class PrecScales:
             kind = ConstraintType.gauss,
             mu   = val,
             sg   = err)
-        
+
         return cns
 #------------------------------------------
 def get_constraints(
@@ -251,10 +251,10 @@ def get_constraints(
 
         background = scales[par]
         cns = obj.get_constraint(
-            par        = par, 
+            par        = par,
             background = background,
             signal     = signal)
         constraints.append(cns)
 
-    return constraints 
+    return constraints
 #------------------------------------------
