@@ -15,6 +15,8 @@ yields: &yields
 # --------------------
 yld_bpkpee_rk_brem_x12:
   <<      : *yields
+yld_bdkstkpiee_rkst_brem_x12:
+  <<      : *yields
 bpkpee_fraction:
   <<      : *fractions
 yld_bpkpee_rk_brem_xx1:
@@ -27,6 +29,15 @@ yld_bpkpee_rk_brem_xx2:
   pars :
     - yld_bpkpee
     - yld_bpkpee_brem_xx1
+# --------------------
+# Efficiency ratios between rkst and rk signal regions
+# --------------------
+eff_rkst_rk_brem_xx1:
+  <<      : *fractions
+eff_rkst_rk_brem_xx2:
+  <<      : *fractions
+eff_rkst_rk_brem_x12:
+  <<      : *fractions
 # --------------------
 # Scales between signal and part-reco
 # --------------------
