@@ -5,8 +5,9 @@ Module holding EffScales class
 from gvar            import GVar, gvar
 from pathlib         import Path
 from rx_efficiencies import EfficiencyCalculator
-from rx_common       import Component
-from rx_common       import Trigger, Brem, Qsq
+from rx_common       import Trigger
+from rx_common       import Component, Channel
+from rx_common       import Project, Brem, Qsq
 from rx_selection    import selection as sel
 from dmu             import LogStore
 
@@ -21,14 +22,16 @@ class EffScales:
     def __init__(
         self,
         out_dir: Path,
-        source : Trigger,
-        target : Trigger,
+        channel: Channel,
+        source : Project,
+        target : Project,
         sample : Component,
         brem   : Brem,
         q2bin  : Qsq):
         '''
         Parameters
         ---------------
+        channel      : E.g. electron or muon
         out_dir      : Directory where outputs will be saved
         sample       : Component associated to efficiency needed
         source/target: Trigger associated to the signal region where the yield
@@ -36,23 +39,28 @@ class EffScales:
         brem/q2bin   : Brem category and q2bin associated to regions
         '''
         self.__out_dir= out_dir
+        self.__channel= channel
         self.__source = source
         self.__target = target
         self.__sample = sample
         self.__brem   = brem
         self.__q2bin  = q2bin
     # -------------------------
-    def _get_ef(self, trigger : Trigger) -> GVar:
+    def _get_ef(self, project : Project) -> GVar:
         '''
         Parameters
         --------------
-        trigger: Trigger to which efficiencies are associated
+        project: Trigger to which efficiencies are associated
 
         Returns
         --------------
         Gaussian random variable representing efficiency
         '''
         log.debug(f'Calculating efficiencies for {self.__sample}')
+
+        trigger = Trigger.get_main_trigger(
+            channel = self.__channel, 
+            project = project)
 
         with sel.update_selection(d_sel = self.__brem.region.selection):
             obj = EfficiencyCalculator(
@@ -72,8 +80,8 @@ class EffScales:
         -----------
         Tuple with value and error of scale factor
         '''
-        eff_src = self._get_ef(trigger = self.__source)
-        eff_tgt = self._get_ef(trigger = self.__target)
+        eff_src = self._get_ef(project = self.__source)
+        eff_tgt = self._get_ef(project = self.__target)
         scale   = eff_tgt / eff_src
 
         log.debug(f'Source efficiency: {eff_src}')

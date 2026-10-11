@@ -6,7 +6,9 @@ import pytest
 from pathlib       import Path
 from rx_common     import Component
 from fitter        import EffScales
-from rx_common     import Trigger, Brem, Qsq
+from rx_common     import Brem, Qsq
+from rx_common     import Channel
+from rx_common     import Project
 from patch_classes import TestEfficiencyCalculator
 from dmu.workflow  import Cache
 from dmu           import LogStore
@@ -37,8 +39,9 @@ def test_simple(tmp_path : Path):
     obj = EffScales(
         out_dir = tmp_path,
         sample  = Component.bdkstkpiee,
-        source  = Trigger.rkst_ee_os,
-        target  = Trigger.rk_ee_os,
+        channel = Channel.ee,
+        source  = Project.rkst,
+        target  = Project.rk,
         brem    = Brem.one,
         q2bin   = Qsq.central)
 
@@ -59,8 +62,9 @@ def test_real(tmp_path : Path):
         obj = EffScales(
             out_dir = tmp_path,
             sample  = Component.bdkstkpiee,
-            source  = Trigger.rkst_ee_os,
-            target  = Trigger.rk_ee_os,
+            channel = Channel.ee,
+            source  = Project.rkst,
+            target  = Project.rk,
             brem    = Brem.one,
             q2bin   = Qsq.central)
 
