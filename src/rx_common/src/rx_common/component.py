@@ -504,11 +504,11 @@ class Component(StrEnum):
             case 'bpkpmm':
                 return ['bpkp']
             case 'bdkstkpiee':
-                return ['bdks', 'k+kp']
+                return ['bdks', 'kokp']
             case 'bdkstkpimm':
-                return ['bdks', 'k+kp']
+                return ['bdks', 'kokp']
             case 'bpkstkpiee':
-                return ['bpks', 'kokp']
+                return ['bpks', 'k+kp']
             case 'bsphiee':
                 return ['bsph', 'phkk']
             case 'bpk1kpipiee':
