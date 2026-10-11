@@ -123,8 +123,9 @@ class ConstraintReader:
         obj = EffScales(
             out_dir = self._cfg.output_directory,
             sample  = self._signal,
-            source  = source,
-            target  = target,
+            channel = source.channel,
+            source  = source.project,
+            target  = target.project,
             brem    = self._brem,
             q2bin   = self._cfg.q2bin)
 
