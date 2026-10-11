@@ -12,6 +12,7 @@ from rx_selection  import selection  as sel
 from fitter        import PrecScales
 from dmu           import LogStore
 from dmu.workflow  import Cache
+from patch_classes import TestEfficiencyCalculator
 
 log=LogStore.add_logger('fitter:test_prec_scales')
 
@@ -37,13 +38,16 @@ def _get_seq_wp(min_cmb : float, min_prc : float, step : float) -> list[str]:
 
     return l_wp
 # -----------------------------------
-@pytest.fixture(scope='module', autouse=True)
-def initialize():
+@pytest.fixture(autouse=True)
+def initialize(monkeypatch):
     '''
     This is called before any test
     '''
-    LogStore.set_level('rx_fitter:prec_scales', 10)
-    LogStore.set_level('rx_efficiencies:efficiency_calculator', 10)
+    LogStore.set_level('fitter:prec_scales', 10)
+
+    monkeypatch.setattr(
+        'fitter.prec_scales.EfficiencyCalculator',
+        TestEfficiencyCalculator)
 # ----------------------
 def _validate_scales(scales : Any) -> None:
     '''
