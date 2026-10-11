@@ -1,0 +1,141 @@
+# This config file defines the yields and the relationships between them
+# For the fit of the rare electron channel
+# --------------------
+fractions: &fractions
+  val : 0.5
+  min : 0.0
+  max : 1.0
+# --------------------
+yields: &yields
+  val : 10
+  min : 0
+  max : 100000
+# --------------------
+# Signal yield
+# --------------------
+yld_bpkpee_rk_brem_x12:
+  <<      : *yields
+bpkpee_fraction:
+  <<      : *fractions
+yld_bpkpee_rk_brem_xx1:
+  kind : mul
+  pars :
+    - bpkpee_fraction
+    - yld_bpkpee
+yld_bpkpee_rk_brem_xx2:
+  kind : dif
+  pars :
+    - yld_bpkpee
+    - yld_bpkpee_brem_xx1
+# --------------------
+# Scales between signal and part-reco
+# --------------------
+s_bsphiee_brem_x12:
+  <<      : *fractions
+s_bpkstkpiee_brem_x12:
+  <<      : *fractions
+# --------------------
+s_bsphiee_brem_xx1:
+  <<      : *fractions
+s_bdkstkpiee_brem_xx1:
+  <<      : *fractions
+s_bpkstkpiee_brem_xx1:
+  <<      : *fractions
+# --------------------
+s_bsphiee_brem_xx2:
+  <<      : *fractions
+s_bdkstkpiee_brem_xx2:
+  <<      : *fractions
+s_bpkstkpiee_brem_xx2:
+  <<      : *fractions
+# --------------------
+# Yields of part-reco
+# --------------------
+yld_bdkstkpiee_rk_brem_x12:
+  kind : mul
+  pars :
+    - eff_rkst_rk 
+    - yld_bdkstkpiee_rkst_brem_x12
+yld_bpkstkpiee_rk_brem_x12:
+  kind : mul
+  pars :
+    - s_bpkstkpiee_brem_x12
+    - yld_bpkpee_rk_brem_x12
+yld_bsphiee_rk_brem_x12:
+  kind : mul
+  pars :
+    - s_bsphiee_brem_x12
+    - yld_bpkpee_rk_brem_x12
+# --------------------
+yld_bdkstkpiee_rk_brem_xx1:
+  kind : mul
+  pars :
+    - s_bdkstkpiee_brem_xx1
+    - yld_bpkpee_rk_brem_xx1
+yld_bpkstkpiee_rk_brem_xx1:
+  kind : mul
+  pars :
+    - s_bpkstkpiee_brem_xx1
+    - yld_bpkpee_rk_brem_xx1
+yld_bsphiee_rk_brem_xx1:
+  kind : mul
+  pars :
+    - s_bsphiee_brem_xx1
+    - yld_bpkpee_rk_brem_xx1
+# --------------------
+yld_bdkstkpiee_rk_brem_xx2:
+  kind : mul
+  pars :
+    - s_bdkstkpiee_brem_xx2
+    - yld_bpkpee_brem_xx2
+yld_bpkstkpiee_rk_brem_xx2:
+  kind : mul
+  pars :
+    - s_bpkstkpiee_brem_xx2
+    - yld_bpkpee_brem_xx2
+yld_bsphiee_rk_brem_xx2:
+  kind : mul
+  pars :
+    - s_bsphiee_brem_xx2
+    - yld_bpkpee_brem_xx2
+# --------------------
+# Unconstrained background yields
+# --------------------
+yld_ccbar_rk_brem_x12:
+  <<      : *yields
+yld_comb_rk_brem_x12:
+  <<      : *yields
+yld_bpkpjpsiee_rk_brem_x12:
+  <<      : *yields
+yld_bpkppsi2ee_rk_brem_x12:
+  <<      : *yields
+yld_bpkpipi_rk_brem_x12:
+  <<      : *yields
+yld_bpkkk_rk_brem_x12:
+  <<      : *yields
+# --------------------
+yld_ccbar_rk_brem_xx1:
+  <<      : *yields
+yld_comb_rk_brem_xx1:
+  <<      : *yields
+yld_bpkpjpsiee_rk_brem_xx1:
+  <<      : *yields
+yld_bpkppsi2ee_rk_brem_xx1:
+  <<      : *yields
+yld_bpkpipi_rk_brem_xx1:
+  <<      : *yields
+yld_bpkkk_rk_brem_xx1:
+  <<      : *yields
+# --------------------
+yld_ccbar_rk_brem_xx2:
+  <<      : *yields
+yld_comb_rk_brem_xx2:
+  <<      : *yields
+yld_bpkpjpsiee_rk_brem_xx2:
+  <<      : *yields
+yld_bpkppsi2ee_rk_brem_xx2:
+  <<      : *yields
+yld_bpkpipi_rk_brem_xx2:
+  <<      : *yields
+yld_bpkkk_rk_brem_xx2:
+  <<      : *yields
