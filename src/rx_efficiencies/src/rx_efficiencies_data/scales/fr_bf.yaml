@@ -2,20 +2,20 @@
 # fu and fd taken from https://hflav-eos.web.cern.ch/hflav-eos/osc/PDG_2020/
 # flb was taken from page 7 of https://arxiv.org/pdf/1902.06794
 # --------------------
-fr: 
-  fu: 
+fr:
+  fu:
     - 0.408
     - 0.007
-  fd: 
+  fd:
     - 0.408
     - 0.007
-  fs: 
+  fs:
     - 0.1
     - 0.01
   flb:
-    - 0.211 
+    - 0.211
     - 0.015
-bf: 
+bf:
   # Lb -> pK J/\psi, from https://pdglive.lbl.gov/BranchingRatio.action?desig=33&parCode=S040&home=BXXX045
   lbpkjpsi:
     - 0.00032
@@ -30,29 +30,29 @@ bf:
     - 0.0000024
   # Bs -> K* \psi(2S), https://pdglive.lbl.gov/BranchingRatio.action?desig=119&parCode=S086&home=MXXX046
   bspkst:
-    - 0.000033 
-    - 0.000005 
-  # Bd -> K* \psi(2S), https://pdglive.lbl.gov/BranchingRatio.action?desig=69&parCode=S042&home=MXXX045 
+    - 0.000033
+    - 0.000005
+  # Bd -> K* \psi(2S), https://pdglive.lbl.gov/BranchingRatio.action?desig=69&parCode=S042&home=MXXX045
   bdpkst:
-    - 0.00059 
-    - 0.00004 
+    - 0.00059
+    - 0.00004
   # B+ -> J/psi pi+, from https://pdglive.lbl.gov/BranchingRatio.action?desig=222&parCode=S041&home=MXXX045
   bpjp:
     - 0.000041
     - 0.000004
   # B+ -> J/psi K+
-  bpjk: 
+  bpjk:
     - 0.00102
     - 0.00002
   # B+ -> psi(2S) K+
-  bppk: 
+  bppk:
     - 0.000624
     - 0.000020
   # B0 -> Jpsi Kst, from https://pdglive.lbl.gov/BranchingRatio.action?desig=22&parCode=S042&home=MXXX045
   bdjkst:
     - 0.00127
     - 0.00005
-  # J/psi -> mumu 
+  # J/psi -> mumu
   jpmm: # https://pdglive.lbl.gov/Particle.action?init=0&node=M070&home=MXXX025
     - 0.05961
     - 0.00033
@@ -64,7 +64,7 @@ bf:
   psee: # https://pdglive.lbl.gov/Particle.action?init=0&node=M071&home=MXXX025
     - 0.00795
     - 0.00022
-  # psi2S -> mm 
+  # psi2S -> mm
   psmm: # picked electron one
     - 0.00795
     - 0.00022
@@ -73,24 +73,24 @@ bf:
     - 4.53e-7
     - 3.5e-8
   # B+ -> K*+(-> K+pi0)ee
-  bpks: # https://pdglive.lbl.gov/BranchingRatio.action?desig=162&parCode=S041&home=MXXX045 
+  bpks: # https://pdglive.lbl.gov/BranchingRatio.action?desig=162&parCode=S041&home=MXXX045
     - 9.6e-7
     - 1e-7
   # Bd -> K*(-> K+pi-)ee
-  bdks: 
+  bdks:
     - 9.4e-7
     - 5e-8
   # Bs -> phi(-> K+K-)ee
-  bsph: 
+  bsph:
     - 8.4e-7
     - 4e-8
-  bpk1: 
+  bpk1:
     - 0.000044
     - 0.000007
-  bpk2: 
+  bpk2:
     - 0.000014
     - 0.000004
-  phkk: 
+  phkk:
     - 0.491
     - 0.005
   # K*0 -> K+pi-, from https://pdglive.lbl.gov/Particle.action?init=0&node=M018&home=MXXX020
@@ -98,14 +98,14 @@ bf:
     - 0.6670
     - 0.0002
   # K*+ -> K+pi0, from https://pdglive.lbl.gov/Particle.action?init=0&node=M018&home=MXXX020
-  k+kp: 
+  k+kp:
     - 0.3330
     - 0.0001
   # K1 -> K pipi
-  k13h: 
+  k13h:
     - 1
     - 0
   # K2 -> K pipi
-  k23h: 
+  k23h:
     - 1
     - 0
