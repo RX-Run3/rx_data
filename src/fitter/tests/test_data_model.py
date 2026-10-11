@@ -352,6 +352,11 @@ def test_simultaneous_rx(tmp_path : Path):
     for par in common_rkst:
         log.info(par.name)
 
-    assert len(common_rkst) == 2 # noqa: PLR2004
-    assert len(common     ) == 1
+    log.info('Common parameters for rk')
+    for par in common_rk:
+        log.info(par.name)
+
+    assert len(common_rkst) == 1
+    assert len(common_rk)   == 1
+    assert len(common   )   == 0
 # --------------------------
