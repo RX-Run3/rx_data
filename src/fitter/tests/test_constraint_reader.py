@@ -69,12 +69,12 @@ _RESO_MISID_RKST_CONSTRAINTS : Final[list[str]] = [
 _RESO_MISID_CONSTRAINTS = _RESO_MISID_RK_CONSTRAINTS + _RESO_MISID_RKST_CONSTRAINTS
 
 _CONSTRAINTS : Final[list[str]] = [
-    'sig_par', 
+    'sig_par',
     'reso_misid_rk',
     'reso_misid_rkst',
-    'rare_prec_rk', 
+    'rare_prec_rk',
     'rare_misid',
-    'combinatorial', 
+    'combinatorial',
     'brem_frac']
 # ----------------------
 @pytest.fixture(scope='module', autouse=True)
@@ -213,7 +213,7 @@ class Parameters:
         _ = is_yield
         _ = floating
 
-        return self._s_par 
+        return self._s_par
 # ----------------------
 def _get_fit_config(
     out_dir : Path,
@@ -239,7 +239,7 @@ def _get_fit_config(
     cfg = RXFitConfig(
         name    = 'test',
         group   = 'test',
-        mod_cfg = mod_cfg, 
+        mod_cfg = mod_cfg,
         mva_cmb = MVAWp(0.9),
         mva_prc = MVAWp(0.8),
         q2bin   = q2bin,
@@ -252,8 +252,8 @@ def _get_fit_config(
 @pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
 @pytest.mark.parametrize('kind' , _CONSTRAINTS)
 def test_all_but_cmb(
-    tmp_path : Path, 
-    kind     : str, 
+    tmp_path : Path,
+    kind     : str,
     q2bin    : Qsq,
     slow_mode: bool):
     '''
@@ -267,7 +267,7 @@ def test_all_but_cmb(
     brem = Brem.brx12
 
     obs = zfit.Space('dummy', limits=(4500, 6000))
-    nll = Parameters(kind = kind, obs = obs) 
+    nll = Parameters(kind = kind, obs = obs)
     nll = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
 
     cfg = _get_fit_config(
@@ -289,7 +289,7 @@ def test_all_but_cmb(
         obj        = ConstraintReader(
             brem   = brem,
             signal = Component.bpkpee,
-            nll    = nll, 
+            nll    = nll,
             cfg    = cfg)
         constraints= obj.get_constraints()
 
@@ -299,11 +299,11 @@ def test_all_but_cmb(
     if kind != 'rare_prec_rk':
         return
 
-    assert len(constraints.root) > 0 
+    assert len(constraints.root) > 0
 # --------------------------------------------------------------
 @pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
 def test_only_cmb(
-    tmp_path : Path, 
+    tmp_path : Path,
     q2bin    : Qsq):
     '''
     Tests all the constraints but the combinatorial shape
@@ -317,11 +317,11 @@ def test_only_cmb(
     obs = zfit.Space('B_Mass_smr', limits=(4500, 7000))
     cfg = _get_fit_config(
         out_dir = tmp_path,
-        q2bin   = q2bin, 
+        q2bin   = q2bin,
         project = Project.rk,
         channel = Channel.ee)
 
-    nll = Parameters(kind = 'combinatorial', obs = obs) 
+    nll = Parameters(kind = 'combinatorial', obs = obs)
     nll = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
 
     with ExitStack() as stack:
@@ -332,7 +332,7 @@ def test_only_cmb(
         obj         = ConstraintReader(
             brem    = brem,
             signal  = signal,
-            nll     = nll, 
+            nll     = nll,
             cfg     = cfg)
 
         constraints = obj.get_constraints(
@@ -343,12 +343,12 @@ def test_only_cmb(
 
     print_constraints(constraints = constraints)
 
-    assert len(constraints.root) > 0 
+    assert len(constraints.root) > 0
 # --------------------------------------------------------------
 @pytest.mark.skip(reason = 'Includes misID, too slow')
 @pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
 def test_rare_hadronic_misid(
-    tmp_path : Path, 
+    tmp_path : Path,
     q2bin    : Qsq):
     '''
     Test constraints for rare hadronic misID
@@ -359,12 +359,12 @@ def test_rare_hadronic_misid(
     '''
     brem = Brem.brx12
     obs  = zfit.Space('dummy', limits=(4500, 6000))
-    nll  = Parameters(kind = 'rare_misid', obs = obs) 
+    nll  = Parameters(kind = 'rare_misid', obs = obs)
     nll  = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
 
     cfg = _get_fit_config(
         out_dir = tmp_path,
-        q2bin   = q2bin, 
+        q2bin   = q2bin,
         project = Project.rk,
         channel = Channel.ee)
 
@@ -385,10 +385,10 @@ def test_rare_hadronic_misid(
 # --------------------------------------------------------------
 @pytest.mark.parametrize('kind', _RESO_MISID_CONSTRAINTS)
 def test_reso_misid(
-    tmp_path : Path, 
+    tmp_path : Path,
     kind     : str):
     '''
-    Tests resonant misID constraints 
+    Tests resonant misID constraints
 
     Parameters
     -------------
@@ -416,17 +416,17 @@ def test_reso_misid(
         is_rkst = True
     elif '_rk_' in kind:
         project = Project.rk
-        is_rkst = False 
+        is_rkst = False
     else:
         raise ValueError(f'Cannot determine project for: {kind}')
 
     obs = zfit.Space('dummy', limits=(4500, 6000))
-    nll = Parameters(kind = kind, obs = obs) 
+    nll = Parameters(kind = kind, obs = obs)
     nll = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
 
     cfg = _get_fit_config(
         out_dir = tmp_path,
-        q2bin   = q2bin, 
+        q2bin   = q2bin,
         project = project,
         channel = channel)
 
@@ -447,20 +447,20 @@ def test_reso_misid(
         obj        = ConstraintReader(
             brem   = brem,
             signal = signal,
-            nll    = nll, 
+            nll    = nll,
             cfg    = cfg)
         constraints= obj.get_constraints()
 
     print_constraints(constraints = constraints)
     log.info(nll)
 
-    assert len(constraints.root) > 0 
+    assert len(constraints.root) > 0
 # --------------------------------------------------------------
 @pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
 @pytest.mark.parametrize('brem' , [Brem.one, Brem.two, Brem.brx12])
 def test_rare_background_fraction(
     brem     : Brem,
-    tmp_path : Path, 
+    tmp_path : Path,
     q2bin    : Qsq):
     '''
     Tests scales for background fraction in rare mode
@@ -470,7 +470,7 @@ def test_rare_background_fraction(
     q2bin: q2 bin
     '''
     obs  = zfit.Space('dummy', limits=(4500, 6000))
-    nll  = Parameters(kind = f'rare_prec_rk_{brem}', obs = obs) 
+    nll  = Parameters(kind = f'rare_prec_rk_{brem}', obs = obs)
     nll  = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
     cfg  = _get_fit_config(
         out_dir = tmp_path,
@@ -482,7 +482,7 @@ def test_rare_background_fraction(
         obj         = ConstraintReader(
             brem    = brem,
             signal  = Component.bpkpee,
-            nll     = nll, 
+            nll     = nll,
             cfg     = cfg)
 
         constraints = obj.get_constraints(
@@ -514,7 +514,7 @@ def test_save(
         channel = Channel.ee,
         q2bin   = q2bin)
 
-    nll = Parameters(kind = 'sig_par', obs = obs) 
+    nll = Parameters(kind = 'sig_par', obs = obs)
     nll = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
 
     with ExitStack() as stack:
@@ -533,5 +533,5 @@ def test_save(
 
     print_constraints(constraints = constraints)
 
-    assert len(constraints.root) > 0 
+    assert len(constraints.root) > 0
 # --------------------------------------------------------------
