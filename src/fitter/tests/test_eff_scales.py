@@ -14,11 +14,16 @@ from dmu           import LogLevels
 log=LogStore.add_logger('fitter:test_eff_scales')
 # ----------------------
 @pytest.fixture(autouse=True)
-def initialize(monkeypatch):
+def initialize(
+    request : pytest.FixtureRequest, 
+    monkeypatch):
     '''
     This will run before any test
     '''
     LogStore.set_level('fitter:eff_scales', LogLevels.debug)
+
+    if request.node.get_closest_marker('integration'):
+        return
 
     monkeypatch.setattr(
         'fitter.eff_scales.EfficiencyCalculator',
@@ -43,3 +48,25 @@ def test_simple(tmp_path : Path):
 
     assert 0 < val < 1
     assert err < val
+# ----------------------
+@pytest.mark.integration
+def test_real(tmp_path : Path):
+    '''
+    Run with real simulation, e.g full chain
+    '''
+    obj = EffScales(
+        out_dir = tmp_path,
+        sample  = Component.bdkstkpiee,
+        source  = Trigger.rkst_ee_os,
+        target  = Trigger.rk_ee_os,
+        brem    = Brem.one,
+        q2bin   = Qsq.central)
+
+    val, err = obj.get_value()
+
+    log.info(f'Value: {val:.3f}')
+    log.info(f'Error: {err:.3f}')
+
+    assert 0 < val < 1
+    assert err < val
+# ----------------------
