@@ -277,14 +277,21 @@ class TestEfficiencyCalculator:
         self,
         out_dir : Any,
         q2bin   : Any,
-        sample  : Any,
-        trigger : Any):
+        sample  : Component,
+        trigger : Trigger):
         _ = out_dir
         _ = q2bin
         _ = sample
-        _ = trigger
+        trig = trigger
+
+        self._is_signal = trig.rare_signal == sample
+
         log.warning('Using TestEfficiencyCalculator')
     # --------------------
     def get_efficiency(self) -> tuple[float,float]:
-        return 0.8, 0.1
+        if self._is_signal:
+            return 0.8, 0.1
+
+        return 0.1, 0.1
+
 # ---------------------------------------------------
