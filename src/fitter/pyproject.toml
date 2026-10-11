@@ -30,3 +30,7 @@ summarize_toys = "fitter_scripts.summarize_toys:main"
 
 [tool.setuptools.package-data]
 'fitter_data' = ['**/*.yaml']
+
+[tool.pytest.ini_options]
+markers = ['integration: Slow tests that often require real MC or data']
+addopts = '-m "not integration" --strict-markers'
