@@ -106,26 +106,27 @@ class PrecScales:
 
         return self._mult_brs(l_bf)
     #------------------------------------------
-    def _get_ef(self, proc : str) -> tuple[float,float]:
+    def _get_ef(self, component : Component) -> tuple[float,float]:
         '''
         Parameters
         --------------
-        proc: Nickname to process, e.g. bpkpee
+        component: Represents sample whose efficiency is needed
 
         Returns
         --------------
         Tuple with efficiency value and error
         '''
-        sample = Component[proc]
+        log.debug(f'Calculating efficiencies for {component}')
 
-        log.debug(f'Calculating efficiencies for {sample}')
         with sel.update_selection(d_sel = self._brem.region.selection):
             obj = EfficiencyCalculator(
                 out_dir= self._out_dir,
                 q2bin  = self._q2bin, 
-                sample = sample, 
+                sample = component, 
                 trigger= self._trigger)
             val = obj.get_efficiency()
+
+        log.debug(f'Efficiency: {val}')
 
         return val
     #------------------------------------------
