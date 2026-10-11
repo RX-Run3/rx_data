@@ -15,8 +15,8 @@ from rx_common           import Brem, Component
 from zfit.loss           import ExtendedUnbinnedNLL
 
 from .configs            import CombinatorialConf, RXFitConfig
-from .prec_scales        import get_constraints as get_prec_constraints 
-from .misid_constraints  import MisIDConstraints 
+from .prec_scales        import get_constraints as get_prec_constraints
+from .misid_constraints  import MisIDConstraints
 from .cmb_constraints    import CmbConstraints
 from .signal_constraints import SignalConstraints
 
@@ -30,29 +30,29 @@ class ConstraintReader:
     '''
     # ----------------------
     def __init__(
-        self, 
+        self,
         brem  : Brem,
-        nll   : ParsHolder, 
+        nll   : ParsHolder,
         cfg   : RXFitConfig,
         signal: Component):
         '''
         Parameters
         -------------------
         Brem  : brem category
-        nll   : Likelihoood 
+        nll   : Likelihoood
         cfg   : Object storing fit configuration
         signal: Process considered as the signal when calculating denominator of rare Partially
                 reconstructed scale constraints
         '''
-        s_par         = nll.get_params(floating=True) 
+        s_par         = nll.get_params(floating=True)
         if not s_par:
             raise ValueError('No floating parameters found in parameters holder')
 
-        self._brem    = brem 
+        self._brem    = brem
         self._nll     = nll
-        self._l_par   = [ par.name for par in s_par ] 
+        self._l_par   = [ par.name for par in s_par ]
         self._cfg     = cfg
-        self._signal  = signal 
+        self._signal  = signal
 
         self._constraints : list[Constraint] = []
     # ----------------------
@@ -61,10 +61,10 @@ class ConstraintReader:
         Appends constraints to _constraints list for parameters in parameter holder
         whose names start with `s_{COMPONENT}_brem_...`
         '''
-        if skip: 
+        if skip:
             log.warning('Dropping part-reco constraints')
             return
-        
+
         log.info('Getting background fraction constraints')
         self._constraints += get_prec_constraints(
             cfg    = self._cfg,
@@ -77,7 +77,7 @@ class ConstraintReader:
         Appends constraints to _constraints list for parameters in parameter holder
         whose names start with `eff_{COMPONENT}_{source_trig}_{target_trig}...`
         '''
-        if skip: 
+        if skip:
             log.warning('Dropping efficiency ratio constraints')
             return
     # ----------------------
@@ -99,7 +99,7 @@ class ConstraintReader:
             return
 
         log.info('Adding MisID constraints')
-        
+
         cfg = self._cfg.mod_cfg.constraints.misid
         if cfg is None:
             log.debug('No MisID constraints config found, not adding constraints')
@@ -184,7 +184,7 @@ class ConstraintReader:
         path.write_text(yaml_string)
     # ----------------------
     def get_constraints(
-        self, 
+        self,
         skip_misid : bool        = False,
         skip_prec  : bool        = False,
         skip_comb  : bool        = False,
