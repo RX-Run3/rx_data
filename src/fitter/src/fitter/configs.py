@@ -157,8 +157,8 @@ class CCbarConf(ComponentConf, frozen = True):
             cfg_obs = cfg_obs,
             samples = samples,
             weights = weights,
-            merged  = {Qsq.central : False},
-            fit     = {Qsq.central : KDEConf.default()},
+            merged  = { qsq : False             for qsq in Qsq.for_physics() },
+            fit     = { qsq : KDEConf.default() for qsq in Qsq.for_physics() },
             plots   = ZFitPlotterConf.default(),
         )
 # ------------------------------
