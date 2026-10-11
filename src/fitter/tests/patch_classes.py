@@ -1,5 +1,6 @@
 import numpy
 
+from typing        import Any
 from contextlib    import contextmanager
 from typing        import Final
 from rx_common     import Trigger, Qsq, Project, Mass, Component
@@ -266,4 +267,23 @@ class TestPRec:
     def get_sum(self, name : str) -> zsum:
         _ = name
         return _get_model(trigger = self._trig)
+# ---------------------------------------------------
+class TestEfficiencyCalculator:
+    '''
+    Testing class meant to monkeypatch EfficiencyCalculator
+    '''
+    # --------------------
+    def __init__(
+        self,
+        out_dir : Any,
+        q2bin   : Any,
+        sample  : Any,
+        trigger : Any):
+        _ = out_dir
+        _ = q2bin
+        _ = sample
+        _ = trigger
+    # --------------------
+    def get_efficiency(self) -> tuple[float,float]:
+        return 0.8, 0.1
 # ---------------------------------------------------
