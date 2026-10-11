@@ -8,12 +8,14 @@ from pathlib             import Path
 from typing              import Final
 from dmu                 import LogStore
 from dmu.stats           import ConstraintAdder
+from dmu.stats           import ConstraintType
 from dmu.stats           import Constraint, ParsHolder, Constraints
 from dmu.stats           import ConstraintND
 from dmu.stats           import Constraint1D
-from rx_common           import Brem, Component
+from rx_common           import Brem, Component, Trigger
 from zfit.loss           import ExtendedUnbinnedNLL
 
+from .eff_scales         import EffScales
 from .configs            import CombinatorialConf, RXFitConfig
 from .prec_scales        import get_constraints as get_prec_constraints
 from .misid_constraints  import MisIDConstraints
@@ -72,14 +74,69 @@ class ConstraintReader:
             signal = self._signal,
             brem   = self._brem)
     # ----------------------
+    def _get_eff_constraint_inputs(self) -> tuple[str,Trigger,Trigger] | None:
+        '''
+        Returns tuple with:
+
+        - Efficiency ratio parameter to be constrained
+        - Trigger associated to signal region where original yield is measured
+        - Trigger associated to signal region where yield is needed
+        '''
+        pars     = self._nll.get_params(floating = True)
+        eff_pars = [ par for par in pars if par.name.startswith('eff_') ]
+
+        if not eff_pars:
+            log.debug('No efficiency ratio parameters to constraint')
+            return
+
+        if len(eff_pars) != 1:
+            raise ValueError(f'Multiple efficiency parameters to constraint: {eff_pars}')
+
+        eff_par = eff_pars[0]
+        name    = eff_par.name
+        parts   = name.split('_')
+
+        try:
+            source = Trigger(parts[1])
+            target = Trigger(parts[2])
+        except Exception as exc:
+            raise ValueError(f'Cannot extract source and target triggers from: {name}') from exc
+
+        return name, source, target
+    # ----------------------
     def _add_eff_constraints(self, skip : bool) -> None:
         '''
         Appends constraints to _constraints list for parameters in parameter holder
-        whose names start with `eff_{COMPONENT}_{source_trig}_{target_trig}...`
+        whose names start with `eff_{source_trig}_{target_trig}...`
         '''
         if skip:
             log.warning('Dropping efficiency ratio constraints')
             return
+
+        data = self._get_eff_constraint_inputs()
+        if data is None:
+            log.info('No parameters found for efficiency constraints')
+            return
+
+        var_name, source, target = data
+
+        obj = EffScales(
+            out_dir = self._cfg.output_directory,
+            sample  = self._signal,
+            source  = source,
+            target  = target,
+            brem    = self._brem,
+            q2bin   = self._cfg.q2bin)
+
+        val, err = obj.get_value()
+
+        cons = Constraint1D(
+            name = var_name,
+            kind = ConstraintType.gauss,
+            mu   = val,
+            sg   = err)
+
+        self._constraints.append(cons)
     # ----------------------
     def _add_misid_constraints(self, skip : bool) -> None:
         '''
