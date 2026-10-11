@@ -507,16 +507,24 @@ class Component(StrEnum):
                 return ['bdks', 'k+kp']
             case 'bdkstkpimm':
                 return ['bdks', 'k+kp']
+            case 'bpkstkpiee':
+                return ['bpks', 'kokp']
+            case 'bsphiee':
+                return ['bsph', 'phkk']
+            case 'bpk1kpipiee':
+                return ['bpk1', 'k13h']
+            case 'bpk2kpipiee':
+                return ['bpk2', 'k23h']
             # ------
             case 'bpkpjpsiee':
                 return ['bpjk', 'jpee']
             case 'bpkpjpsimm':
                 return ['bpjk', 'jpmm']
-            case 'bpkppsi2ee':
-                return ['bppsk', 'psee']
-            case 'bpkppsi2mm':
-                return ['bppsk', 'psmm']
             # ------
+            case 'bppijpsiee':
+                return ['bpjp'   , 'jpee']
+            case 'bppijpsimm':
+                return ['bpjp'   , 'jpmm']
             case 'bdkstkpijpsiee':
                 return ['bdjkst' , 'jpee', 'kokp']
             case 'bdkstjpsiee_had_swp':
@@ -525,41 +533,32 @@ class Component(StrEnum):
                 return ['bdjkst' , 'jpmm', 'kokp']
             case 'bdkstjpsimm_had_swp':
                 return ['bdjkst' , 'jpmm', 'kokp']
-            case 'bdkstkpipsi2ee':
-                return ['bdpkst' , 'psee', 'kokp']
-            case 'bdkstkpipsi2mm':
-                return ['bdpkst' , 'psmm', 'kokp']
-            # ------
             case 'bskstjpsiee':
                 return ['bsjkst' , 'jpee', 'kokp']
             case 'bskstjpsimm':
                 return ['bsjkst' , 'jpmm', 'kokp']
+            case 'bsphijpsiee':
+                return ['bsphjp' , 'jpee', 'phkk']
+            case 'bsphijpsimm':                 
+                return ['bsphjp' , 'jpmm', 'phkk']
+            case 'lbpkjpsiee':
+                return ['lbpkjpsi', 'jpee']
+            case 'lbpkjpsimm':
+                return ['lbpkjpsi', 'jpmm']
             # ------
+            case 'bpkppsi2ee':
+                return ['bppsk'  , 'psee']
+            case 'bpkppsi2mm':
+                return ['bppsk'  , 'psmm']
+            case 'bdkstkpipsi2ee':
+                return ['bdpkst' , 'psee', 'kokp']
+            case 'bdkstkpipsi2mm':
+                return ['bdpkst' , 'psmm', 'kokp']
             case 'bskstpsi2ee':
                 return ['bspkst' , 'psee', 'kokp']
             case 'bskstpsi2mm':
                 return ['bspkst' , 'psmm', 'kokp']
             # ------
-            case 'bsphiee':
-                return ['bsph', 'phkk']
-            case 'bpk1kpipiee':
-                return ['bpk1', 'k13h']
-            case 'bpk2kpipiee':
-                return ['bpk2', 'k23h']
-            case 'bpkstkpiee':
-                return ['bpks', 'kokp']
-            case 'lbpkjpsiee':
-                return ['lbpkjpsi', 'jpee']
-            case 'lbpkjpsimm':
-                return ['lbpkjpsi', 'jpmm']
-            case 'bsphijpsiee':
-                return ['bsphjp', 'phkk', 'jpee']
-            case 'bsphijpsimm':
-                return ['bsphjp', 'phkk', 'jpmm']
-            case 'bppijpsiee':
-                return ['bpjp', 'jpee']
-            case 'bppijpsimm':
-                return ['bpjp', 'jpmm']
             case _:
                 raise NotImplementedError(f'Cannot find subdecays for: {self.name}')
     # --------------------------------------------
