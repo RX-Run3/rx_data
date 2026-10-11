@@ -270,7 +270,7 @@ def test_simultaneous_electron(tmp_path : Path):
 
     q2bin  = Qsq.low
     region = Region.brem_x12
-    files  = {'rkst/rare_electron.yaml' : 'rkst/rare_electron_simultaneous.yaml'}
+    files  = {'rk/rare_electron.yaml' : 'rk/rare_electron_simultaneous.yaml'}
     with UnpackerModel.replacements(files = files):
         pdf_rk       = _get_model(
             q2bin    = q2bin,
@@ -305,9 +305,9 @@ def test_simultaneous_rx(tmp_path : Path):
 
     q2bin  = Qsq.low
     files  = {
-        'rkst/rare_muon.yaml'     : 'rkst/rare_muon_simultaneous.yaml',
-        'rkst/rare_electron.yaml' : 'rkst/rare_electron_simultaneous.yaml',
-        'rk/rare_muon.yaml'       : 'rk/rare_muon_simultaneous.yaml',
+        'rkst/rare_muon.yaml'   : 'rkst/rare_muon_simultaneous.yaml',
+        'rk/rare_muon.yaml'     : 'rk/rare_muon_simultaneous.yaml',
+        'rk/rare_electron.yaml' : 'rk/rare_electron_simultaneous.yaml',
     }
 
     with UnpackerModel.replacements(files = files):
