@@ -45,7 +45,7 @@ def test_electron(tmp_path : Path, trig : Trigger):
     '''
     Simplest test in electron channel
     '''
-    q2bin   = Qsq.jpsi
+    q2bin   = Qsq.central
     mass    = Mass.bp_dtf_jpsi
     obs     = zfit.Space(
         obs   = mass.latex, 
