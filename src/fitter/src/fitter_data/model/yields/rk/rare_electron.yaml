@@ -1,10 +1,10 @@
 # This config file defines the yields and the relationships between them
-# For the fit of the rare electron channel 
+# For the fit of the rare electron channel
 # --------------------
 fractions: &fractions
-  val : 0.5 
+  val : 0.5
   min : 0.0
-  max : 1.0 
+  max : 1.0
 # --------------------
 yields: &yields
   val : 10
@@ -23,7 +23,7 @@ yld_bpkpee_rk_brem_xx1:
     - bpkpee_fraction
     - yld_bpkpee
 yld_bpkpee_rk_brem_xx2:
-  kind : dif 
+  kind : dif
   pars :
     - yld_bpkpee
     - yld_bpkpee_brem_xx1
@@ -109,7 +109,7 @@ yld_comb_rk_brem_x12:
   <<      : *yields
 yld_bpkpjpsiee_rk_brem_x12:
   <<      : *yields
-yld_bpkppsi2ee_rk_brem_x12: 
+yld_bpkppsi2ee_rk_brem_x12:
   <<      : *yields
 yld_bpkpipi_rk_brem_x12:
   <<      : *yields
@@ -122,7 +122,7 @@ yld_comb_rk_brem_xx1:
   <<      : *yields
 yld_bpkpjpsiee_rk_brem_xx1:
   <<      : *yields
-yld_bpkppsi2ee_rk_brem_xx1: 
+yld_bpkppsi2ee_rk_brem_xx1:
   <<      : *yields
 yld_bpkpipi_rk_brem_xx1:
   <<      : *yields
@@ -135,7 +135,7 @@ yld_comb_rk_brem_xx2:
   <<      : *yields
 yld_bpkpjpsiee_rk_brem_xx2:
   <<      : *yields
-yld_bpkppsi2ee_rk_brem_xx2: 
+yld_bpkppsi2ee_rk_brem_xx2:
   <<      : *yields
 yld_bpkpipi_rk_brem_xx2:
   <<      : *yields
