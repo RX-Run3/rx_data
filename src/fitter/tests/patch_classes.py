@@ -292,6 +292,5 @@ class TestEfficiencyCalculator:
         if self._is_signal:
             return 0.8, 0.1
 
-        return 0.1, 0.1
-
+        return 0.1, 0.01
 # ---------------------------------------------------
