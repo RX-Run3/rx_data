@@ -34,7 +34,7 @@ class EffScales:
         channel      : E.g. electron or muon
         out_dir      : Directory where outputs will be saved
         sample       : Component associated to efficiency needed
-        source/target: Trigger associated to the signal region where the yield
+        source/target: Project associated to the signal region where the yield
                        will be measured/applied
         brem/q2bin   : Brem category and q2bin associated to regions
         '''
@@ -50,7 +50,7 @@ class EffScales:
         '''
         Parameters
         --------------
-        project: Trigger to which efficiencies are associated
+        project: Project to which efficiencies are associated
 
         Returns
         --------------
