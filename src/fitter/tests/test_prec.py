@@ -21,10 +21,12 @@ from fitter       import PRec
 from fitter       import CCbarConf
 from fitter       import CCbarWeight
 
+from patch_classes import TestEfficiencyCalculator
+
 log=LogStore.add_logger('fitter:test_prec')
 #-----------------------------------------------
-@pytest.fixture(scope='module', autouse=True)
-def initialize():
+@pytest.fixture(autouse=True)
+def initialize(monkeypatch):
     '''
     This runs before any test
     '''
@@ -32,7 +34,11 @@ def initialize():
     LogStore.set_level('rx_fitter:inclusive_sample_weights', 10)
     LogStore.set_level('rx_fitter:prec'                    , 10)
 
-    plt.style.use(mplhep.style.LHCb2) # type: ignore
+    plt.style.use(mplhep.style.LHCb2)
+
+    monkeypatch.setattr(
+        'fitter.prec_scales.EfficiencyCalculator',
+        TestEfficiencyCalculator)
 #-----------------------------------------------
 @pytest.mark.parametrize('trig', [Trigger.rk_ee_os, Trigger.rkst_ee_os])
 def test_electron(tmp_path : Path, trig : Trigger):
