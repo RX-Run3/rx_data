@@ -23,6 +23,7 @@ from .misid_constraints  import MisIDConstraints
 from .types              import CCbarWeight
 from .prec               import PRec
 from .prec_scales        import PrecScales
+from .eff_scales         import EffScales
 from .prefit_postfit     import run as plot_prefit_postfit
 from .constraint_reader  import ConstraintReader
 from .yields             import Yield, YieldGrid
@@ -89,6 +90,7 @@ __all__ = [
     'CombinatorialConfUnconstrained',
     'MisIDConf',
     'PrecScales',
+    'EffScales',
     'YieldCalculator',
     'YieldGrid',
     # ------------------

@@ -1,0 +1,45 @@
+'''
+Module holding tests for EffScales class
+'''
+import pytest
+
+from pathlib       import Path
+from rx_common     import Component
+from fitter        import EffScales
+from rx_common     import Trigger, Brem, Qsq
+from patch_classes import TestEfficiencyCalculator
+from dmu           import LogStore
+from dmu           import LogLevels
+
+log=LogStore.add_logger('fitter:test_eff_scales')
+# ----------------------
+@pytest.fixture(autouse=True)
+def initialize(monkeypatch):
+    '''
+    This will run before any test
+    '''
+    LogStore.set_level('fitter:eff_scales', LogLevels.debug)
+
+    monkeypatch.setattr(
+        'fitter.eff_scales.EfficiencyCalculator',
+        TestEfficiencyCalculator)
+# ----------------------
+def test_simple(tmp_path : Path):
+    '''
+    Simplest test
+    '''
+    obj = EffScales(
+        out_dir = tmp_path,
+        sample  = Component.bdkstkpiee,
+        source  = Trigger.rkst_ee_os,
+        target  = Trigger.rk_ee_os,
+        brem    = Brem.one,
+        q2bin   = Qsq.central)
+
+    val, err = obj.get_value()
+
+    log.info(f'Value: {val:.3f}')
+    log.info(f'Error: {err:.3f}')
+
+    assert 0 < val < 1
+    assert err < val
