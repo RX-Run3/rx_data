@@ -8,6 +8,7 @@ from rx_common     import Component
 from fitter        import EffScales
 from rx_common     import Trigger, Brem, Qsq
 from patch_classes import TestEfficiencyCalculator
+from dmu.workflow  import Cache
 from dmu           import LogStore
 from dmu           import LogLevels
 
@@ -54,19 +55,20 @@ def test_real(tmp_path : Path):
     '''
     Run with real simulation, e.g full chain
     '''
-    obj = EffScales(
-        out_dir = tmp_path,
-        sample  = Component.bdkstkpiee,
-        source  = Trigger.rkst_ee_os,
-        target  = Trigger.rk_ee_os,
-        brem    = Brem.one,
-        q2bin   = Qsq.central)
+    with Cache.cache_root(tmp_path):
+        obj = EffScales(
+            out_dir = tmp_path,
+            sample  = Component.bdkstkpiee,
+            source  = Trigger.rkst_ee_os,
+            target  = Trigger.rk_ee_os,
+            brem    = Brem.one,
+            q2bin   = Qsq.central)
 
-    val, err = obj.get_value()
+        val, err = obj.get_value()
 
-    log.info(f'Value: {val:.3f}')
-    log.info(f'Error: {err:.3f}')
+        log.info(f'Value: {val:.3f}')
+        log.info(f'Error: {err:.3f}')
 
-    assert 0 < val < 1
-    assert err < val
+        assert 0 < val < 1
+        assert err < val
 # ----------------------
