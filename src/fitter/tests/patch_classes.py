@@ -283,6 +283,7 @@ class TestEfficiencyCalculator:
         _ = q2bin
         _ = sample
         _ = trigger
+        log.warning('Using TestEfficiencyCalculator')
     # --------------------
     def get_efficiency(self) -> tuple[float,float]:
         return 0.8, 0.1
