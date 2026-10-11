@@ -69,11 +69,11 @@ bf:
     - 0.00795
     - 0.00022
   # B+ -> K+ee
-  bpkp: 
+  bpkp: # https://pdglive.lbl.gov/BranchingRatio.action?desig=10&parCode=S041&home=MXXX045
     - 4.53e-7
     - 3.5e-8
   # B+ -> K*+(-> K+pi0)ee
-  bpks: 
+  bpks: # https://pdglive.lbl.gov/BranchingRatio.action?desig=162&parCode=S041&home=MXXX045 
     - 9.6e-7
     - 1e-7
   # Bd -> K*(-> K+pi-)ee
