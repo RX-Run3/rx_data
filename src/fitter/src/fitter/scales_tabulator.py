@@ -12,7 +12,7 @@ from pydantic       import BaseModel, model_validator
 from dmu.pdataframe import utilities as put
 from dmu.generic    import utilities as gut
 from rx_common      import Brem, Component, Qsq, Trigger
-from fitter         import PrecScales
+from .prec_scales   import PrecScales
 
 log = LogStore.add_logger('fitter:scales_tabulator')
 
@@ -41,9 +41,11 @@ class ScalesCategory(BaseModel):
     # ------------------
     @model_validator(mode = 'before')
     @classmethod
-    def _validate(cls, data):
+    def _validate(cls, data : dict[str,str]):
         brem = data['brem']
-        data['brem'] = Brem.from_str(brem)
+        val  = Brem.from_str(brem)
+
+        data['brem'] = str(val)
 
         return data
 # ----------------------------------------
@@ -56,10 +58,10 @@ class ScalesTabulatorConf(BaseModel):
     # ------------------
     @model_validator(mode = 'before')
     @classmethod
-    def _validate(cls, data):
+    def _validate(cls, data : dict[str,str]):
         out_dir = data['output_directory']
         out_dir = _ANADIR / out_dir
-        data['output_directory'] = out_dir
+        data['output_directory'] = str(out_dir)
 
         return data
     # ------------------
@@ -141,10 +143,16 @@ class ScalesTabulator:
         --------------
         Pandas dataframe with values and errors for scales
         '''
+        def _sample_to_tex(sample : str) -> str:
+            return Component(sample).latex
+
+        def _scale_to_percent(value : float) -> float:
+            return value * 100
+
         df         = self._get_df(name = name, category = category)
-        df_for_tex = df.assign(Background=df['Background'].apply(lambda sample : Component(sample).latex))
-        df_for_tex = df_for_tex.assign(Value=df_for_tex['Value'].apply(lambda value : 100 * value))
-        df_for_tex = df_for_tex.assign(Error=df_for_tex['Error'].apply(lambda error : 100 * error))
+        df_for_tex = df.assign(Background=df['Background'].apply(_sample_to_tex))
+        df_for_tex = df_for_tex.assign(Value=df_for_tex['Value'].apply(_scale_to_percent))
+        df_for_tex = df_for_tex.assign(Error=df_for_tex['Error'].apply(_scale_to_percent))
 
         return df_for_tex
     # ----------------------------------------
