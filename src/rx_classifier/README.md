@@ -116,4 +116,34 @@ In the example above `(0.99, 0.6)`
 
 ### Background yields
 
+In order to pick the background yields one does
 
+```bash
+rxfitter fit-summary -n rare_fit_full_scan -k rare
+```
+
+In order to retrieve the fit information for the `rare`  mode fits stored in
+`rare_fit_full_scan`. These fits are assumed to exist and are made by:
+
+```
+snakemake/rules/fits/rare_fit.smk
+```
+
+Once the `parameters.json` is made through the `fit-summary` command do:
+
+```bash
+rxfitter fitted-background -n rare_fit_full_scan -t rk_ee_os -q high
+```
+
+Which will produce grids of background yields and store them as JSON files
+alongside PNG files.
+
+The significance grid is calculated with:
+
+```bash
+rxfitter significance -g full_scan -f rare_fit_full_scan -c 0.99 -p 0.6 -t rk_ee_os -q high 
+```
+
+Where `full_scan` specifies the grid needed through the `full_scan.yaml` config in order to
+get the signal yields. The fits needed for the background yields are in the `rare_fit_full_scan`
+directory.
