@@ -165,7 +165,7 @@ def _get_nll(
                 q2bin        = cfg.q2bin,
                 replacements = {'BREM' : brem.region})
 
-        with sel.update_selection(d_sel = brem.region.selection):
+        with sel.update_selection(d_sel = brem.selection):
             d_nll[brem.region] = _get_region_nll(brem = brem, cfg = cfg_brem)
 
     return d_nll

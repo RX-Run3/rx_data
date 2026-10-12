@@ -168,7 +168,7 @@ def _get_region_nll(brem : Brem, cfg : RXFitConfig) -> NLLConf:
         q2bin= cfg.q2bin,
         name = brem.region)
 
-    with sel.update_selection(d_sel = brem.region.selection):
+    with sel.update_selection(d_sel = brem.selection):
         replacements = {'BLOCK' : f'b{cfg.block}'}
         cfg.name     = brem.region
         cfg          = cfg.cfg_copy(

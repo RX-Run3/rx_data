@@ -62,7 +62,7 @@ class EffScales:
             channel = self.__channel, 
             project = project)
 
-        with sel.update_selection(d_sel = self.__brem.region.selection):
+        with sel.update_selection(d_sel = self.__brem.selection):
             obj = EfficiencyCalculator(
                 out_dir= self.__out_dir,
                 q2bin  = self.__q2bin, 
