@@ -6,7 +6,7 @@ from typing        import Final
 from rx_common     import Trigger, Qsq, Project, Mass, Component
 from dmu.stats     import zfit, ModelFactory, Model
 from dmu           import LogStore
-from fitter        import CCbarConfTF
+from pydantic      import BaseModel
 
 type zdat = zfit.data.Data
 type zsum = zfit.pdf.SumPDF
@@ -41,7 +41,7 @@ def _get_model(trigger : Trigger) -> zsum:
 
     return total_pdf
 # ----------------------
-class TestCCbarConfTF(CCbarConfTF, frozen = True):
+class TestCCbarConfTF(BaseModel, frozen = True):
     def get_pdf(
         self,
         obs_name: str,
