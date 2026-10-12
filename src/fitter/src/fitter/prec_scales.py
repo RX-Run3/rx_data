@@ -118,7 +118,7 @@ class PrecScales:
         '''
         log.debug(f'Calculating efficiencies for {component}')
 
-        with sel.update_selection(d_sel = self._brem.region.selection):
+        with sel.update_selection(d_sel = self._brem.selection):
             obj = EfficiencyCalculator(
                 out_dir= self._out_dir,
                 q2bin  = self._q2bin,
@@ -230,7 +230,7 @@ def get_constraints(
         return []
 
     components = cfg.mod_cfg.constraints.signal_fraction
-    scales     = {f's_{comp}_{brem.region}' : comp for comp in components}
+    scales     = {f's_{comp}_{brem}' : comp for comp in components}
     log.debug('Looking for scales:')
     for scale in scales:
         log.debug(scale)

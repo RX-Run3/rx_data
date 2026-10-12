@@ -299,7 +299,7 @@ def add_constraints(
         signal = signal,
         nll    = nll,
         cfg    = cfg)
-    cons = crd.get_constraints(save_to = cfg.output_directory / f'constraints/{brem.region}.json')
+    cons = crd.get_constraints(save_to = cfg.output_directory / f'constraints/{brem}.json')
 
     if not cons:
         log.warning('Not using any constraints')
