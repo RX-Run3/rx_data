@@ -393,10 +393,9 @@ class YieldGrid(Serializable, Patchable, RootModel[list[Yield]], frozen = True):
 
         raise ValueError(f'No yield found at WP: {wp}')
     # ---------------------
-    def patch(self) -> 'YieldGrid':
+    @property
+    def patched(self) -> 'YieldGrid':
         '''
-        Returns
-        -------------
         Patched version of current grid
         '''
         node_data = self.patch_yields(nodes = self.root)
