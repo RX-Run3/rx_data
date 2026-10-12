@@ -307,7 +307,12 @@ def fitted_background(
         tmp = summary.make_grid(var = variable, fall_back = 0.)
         __save_grid_plot(
             grid = tmp, 
-            kind = 'fitted_background',
+            kind = 'fitted_background/original',
+            name = f'{trigger}_{q2bin}_{variable}')
+
+        __save_grid_plot(
+            grid = tmp.patched, 
+            kind = 'fitted_background/patched',
             name = f'{trigger}_{q2bin}_{variable}')
 
         if grid is None:
@@ -321,7 +326,12 @@ def fitted_background(
     __save_grid_plot(
         grid = grid, 
         kind = 'fitted_background',
-        name = f'{trigger}_{q2bin}_total')
+        name = f'original/{trigger}_{q2bin}_total')
+
+    __save_grid_plot(
+        grid = grid.patched, 
+        kind = 'fitted_background',
+        name = f'patched/{trigger}_{q2bin}_total')
 # ----------------------
 @app.command()
 def significance(
