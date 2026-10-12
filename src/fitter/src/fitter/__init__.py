@@ -103,7 +103,6 @@ __all__ = [
     'FitSummarizer',
     'FitHarmonizer',
     'ParsLoader',
-    'RXFitConfig',
     'MisIDConstraints',
     'CmbConstraints',
     'DataPreprocessor',
