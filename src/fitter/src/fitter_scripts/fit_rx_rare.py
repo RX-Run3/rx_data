@@ -158,7 +158,7 @@ def _get_nll(
             cfg_brem         = cfg.cfg_clone(
                 prefix       = 'BREM', 
                 q2bin        = cfg.q2bin,
-                regions      = [ elm.region for elm in brem.components ])
+                brems        = [ brem for brem in brem.components ])
         else:
             # Pick only elementary region 
             cfg_brem         = cfg.cfg_copy(
