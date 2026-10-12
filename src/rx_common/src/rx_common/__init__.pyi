@@ -1,7 +1,6 @@
 from .types              import Correction
 from .types              import Parameter
 from .types              import Particle 
-from .types              import Trigger 
 from .types              import DataSet 
 from .types              import MisID
 from .types              import Brem 
@@ -15,6 +14,7 @@ from .component          import CCbarComponent
 from .component          import Component
 from .campaign           import Campaign
 from .mva_conf           import MVAConf, MVAWp
+from .trigger            import Trigger 
 from .process            import set_nproc, get_nproc 
 from .project            import Project, AlternativeProject
 from .channel            import Channel 
