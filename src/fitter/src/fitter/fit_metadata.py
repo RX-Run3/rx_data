@@ -119,8 +119,8 @@ class FitMetadata(BaseModel, frozen = True):
     # -------------------
     @property
     def as_str(self) -> str:
-        str_1 = f'{self.component:<20}{self.cmb:<10}{self.prc:<10}'
-        str_2 = f'{self.block:<5}{self.project:<10}{self.channel:<5}{self.q2bin:<10}{self.brem:<10}'
+        str_1 = f'{self.component:<20}{self.cmb:<15}{self.prc:<15}'
+        str_2 = f'{self.block:<5}{self.project:<10}{self.channel:<5}{self.q2bin:<10}{str(self.brem):<10}'
 
         return f'{str_1}{str_2}'
     # -------------------
