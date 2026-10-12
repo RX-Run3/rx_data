@@ -32,9 +32,9 @@ _SIGN_PATHS = [
 ]
 
 _DATA_RARE  = [
-    'rare_fit/0600-1000_0300-1000_all/rare/rk/ee/low/data_24/fit/brem_x12/brem_x12/parameters.json',
-    'rare_fit/0600-1000_0300-1000_all/rare/rk/ee/central/data_24/fit/brem_x12/brem_x12/parameters.json',
-    'rare_fit/0600-1000_0300-1000_all/rare/rk/ee/high/data_24/fit/brem_x12/brem_x12/parameters.json',
+    'rare_fit_full_scan-low-central/0600-1000_0300-1000_all/rare/rk/ee/low/data_24/fit/brem_x12/brem_x12/parameters.json',
+    'rare_fit_full_scan-low-central/0600-1000_0300-1000_all/rare/rk/ee/central/data_24/fit/brem_x12/brem_x12/parameters.json',
+    'rare_fit_full_scan-high/0600-1000_0300-1000_all/rare/rk/ee/high/data_24/fit/brem_x12/brem_x12/parameters.json',
 ]
 
 _ANADIR : Final[Path] = Path(os.environ['ANADIR'])
