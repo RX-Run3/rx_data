@@ -427,7 +427,7 @@ AnyModelConf = CombinatorialConf | CombinatorialConfUnconstrained | ParametricCo
 # ------------------------------
 class PlotConf(BaseModel):
     merging : dict[Region,    list[Region]]
-    regions : dict[Region, ZFitPlotterConf]
+    regions : dict[Brem  , ZFitPlotterConf]
     # -----------------------------
     @classmethod
     def default(cls) -> Self:
@@ -435,11 +435,11 @@ class PlotConf(BaseModel):
         Returns default config, useful for tests
         '''
         merging : dict[Region,list[Region]] = {}
-        regions = {Region.bpee_xx1 : ZFitPlotterConf.default()}
+        brems = {Brem.one : ZFitPlotterConf.default()}
 
         return cls(
             merging = merging,
-            regions = regions)
+            regions = brems)
 # ------------------------------
 # Fits
 # ------------------------------
