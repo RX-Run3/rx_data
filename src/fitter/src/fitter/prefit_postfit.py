@@ -102,7 +102,7 @@ def _relabel(name : str) -> str:
     if name == 's_bdkstkpiee': # Only rk parameter with rkstar substring
         return _LABELS[name]
 
-    if Component.bdkstkpiee not in str(name):
+    if Component.bdkstkpiee not in name:
         return _LABELS[name]
 
     name = name.replace(
@@ -117,7 +117,7 @@ def _add_entries_1D(
 
     val, err = res[cns.name]
 
-    data            = dict()
+    data : dict[str,Any] = dict()
     data['par_nam'] = cns.name
     data['pre_val'] = 0
     data['pre_err'] = err / cns.sg
@@ -133,7 +133,7 @@ def _add_entries_ND(
 
     values : list[dict[str,Any]] = []
     for name, mu, sg in zip(cns.parameters, cns.values, cns.errors, strict=True):
-        data            = dict()
+        data : dict[str,Any] = dict()
         norm            = abs(mu)
         val, err        = res[name]
 
@@ -260,7 +260,7 @@ def _plot(
     _plot_var(regex =         '^s_.*', out_path = out_path / 'scales.png', df_org = df, limits = (-3., +3.))
     _plot_var(regex =       '^yld_.*', out_path = out_path / 'yields.png', df_org = df, limits = (-3., +3.))
 # ---------------------------------------
-def run(update : bool) -> None:
+def plot_prefit_postfit(update : bool) -> None:
     '''
     Parameters
     --------------
