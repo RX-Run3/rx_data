@@ -6,8 +6,8 @@ from pydantic       import BaseModel, RootModel, model_validator
 from .working_point import WorkingPoint
 from .cuts          import Cut, Cuts
 
-_MULT_FACTOR : Final[float] = 1000. # Needed to go back and forth from string representation
-_LEN_STR     : Final[int  ] = 4     # String representation of MVAWp should be like 0100
+_MULT_FACTOR : Final[float]    = 1000.  # Needed to go back and forth from string representation
+_LEN_STR     : Final[set[int]] = {3, 4} # String representation of MVAWp should be like 0100 (new) or 100 (old)
 # ---------------------
 class MVAWp(RootModel[float|tuple[float,float]]):
     '''
@@ -109,7 +109,7 @@ class MVAWp(RootModel[float|tuple[float,float]]):
         if not val.isnumeric():
             raise ValueError(f'{val} is not numeric')
 
-        if len(val) != _LEN_STR:
+        if len(val) not in _LEN_STR:
             raise ValueError(f'{val} expected to have {_LEN_STR} decimals')
 
         return float(val) / _MULT_FACTOR
