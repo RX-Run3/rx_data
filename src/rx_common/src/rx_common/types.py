@@ -353,7 +353,7 @@ class Brem(IntEnum):
     @property
     def selection(self) -> dict[Cuts,str]:
         '''
-        Selection associated to this signal/control region
+        Selection associated to this brem category 
         '''
         match self:
             case Brem.zero:
