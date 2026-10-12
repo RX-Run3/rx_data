@@ -1,6 +1,6 @@
 uv
 gvar
-lazy-loader
+lazy-loader>=0.6
 sigal
 hepstats
 send2trash
