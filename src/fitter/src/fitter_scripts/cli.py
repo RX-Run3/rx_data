@@ -64,7 +64,7 @@ def __get_signal_grid(
     from fitter     import YieldCalculator
     from rx_common  import Cut, Cuts
     from rx_common  import WorkingPoint
-    from ROOT       import EnableImplicitMT # type: ignore
+    from ROOT       import EnableImplicitMT
 
     if proc > 1:
         log.info(f'Using {proc} threads')

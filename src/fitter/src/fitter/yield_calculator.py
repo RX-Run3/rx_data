@@ -37,13 +37,13 @@ class YieldCalculatorConf(BaseModel):
     grid : dict[Cuts,list[MVAWp]]
     # --------------------
     @model_validator(mode = 'before')
-    def _validate(cls, data):
+    def _validate(cls, data : dict[str,str]):
         path = data['path']
         path = _ANADIR / path
 
         path.mkdir(parents = True, exist_ok = True)
 
-        data['path'] = path
+        data['path'] = str(path)
 
         return data
     # --------------------
