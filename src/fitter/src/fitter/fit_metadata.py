@@ -153,7 +153,7 @@ class FitMetadata(BaseModel, frozen = True):
             raise ValueError(f'Cannot find {data_path}')
 
         string = data_path.read_text()
-        masses = json.loads(string)
+        masses : dict[str,list[float]] = json.loads(string)
         values = masses['Mass']
 
         value  = len(values)
