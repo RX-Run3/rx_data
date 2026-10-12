@@ -254,11 +254,9 @@ def test_patch_grids(tmp_path : Path):
 
             yields.append(yld)
 
-    grid_original= YieldGrid(root = yields)
-    grid_patched = grid_original.patch()
+    grid = YieldGrid(root = yields)
 
-    for name, grid in {'original' : grid_original, 'patched' : grid_patched}.items():
-        ptr = GridPlotter(grid = grid)
+    for name, this_grid in {'original' : grid, 'patched' : grid.patched}.items():
+        ptr = GridPlotter(grid = this_grid)
         ptr.plot(path = tmp_path / f'{name}.png', randomize = False)
 # -------------------------------------------
-
