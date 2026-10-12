@@ -8,6 +8,7 @@ from dmu.stats   import CorrectionImplementation
 from dmu         import LogStore
 from pydantic    import BaseModel, ConfigDict, model_validator
 
+from .cuts       import Cuts
 from .mass       import Mass
 from .region     import Region
 
@@ -348,6 +349,25 @@ class Brem(IntEnum):
                 return Region.brem_0x2
             case Brem.br012:
                 return Region.brem_012
+    # ----------------------
+    @property
+    def selection(self) -> dict[Cuts,str]:
+        '''
+        Selection associated to this signal/control region
+        '''
+        match self:
+            case Brem.zero:
+                return {Cuts.brem : 'nbrem == 0'}
+            case Brem.one:
+                return {Cuts.brem : 'nbrem == 1'}
+            case Brem.two:
+                return {Cuts.brem : 'nbrem == 2'}
+            case Brem.brx12:
+                return {Cuts.brem : '(nbrem == 1) || (nbrem == 2)'}
+            case Brem.br012:
+                return {Cuts.brem : 'true'}
+            case _:
+                raise ValueError(f'No cut defined for region: {self}')
     # ----------------------
     @property
     def color(self) -> str:
