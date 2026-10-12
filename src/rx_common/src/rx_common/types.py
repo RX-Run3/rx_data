@@ -330,27 +330,6 @@ class Brem(IntEnum):
         return True 
     # ----------------------
     @property
-    def region(self) -> Region:
-        '''
-        Signal region associated to category
-        '''
-        match self:
-            case Brem.zero:
-                return Region.brem_xx0
-            case Brem.one:
-                return Region.brem_xx1
-            case Brem.two:
-                return Region.brem_xx2
-            case Brem.brx12:
-                return Region.brem_x12
-            case Brem.br01x:
-                return Region.brem_01x
-            case Brem.br0x2:
-                return Region.brem_0x2
-            case Brem.br012:
-                return Region.brem_012
-    # ----------------------
-    @property
     def selection(self) -> dict[Cuts,str]:
         '''
         Selection associated to this brem category 
