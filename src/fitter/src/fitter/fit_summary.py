@@ -404,16 +404,25 @@ class SummaryProcessor:
 
         signal  = meta.signal
         brem    = meta.brem
+        proj    = meta.project
         total   = gvar(0, 0)
 
+        # NOTE: Below the new and old naming are needed due to
+        # the introduction of the project as part of the parameter name
+        # which is needed in order to build simulteneous fit likelihoods
         for meta, fres in summary.root:
-            name               = f'yld_{signal}_{brem}'
-            try:
-                val, err           = fres.get(name = name, fall_back = None)
-            except ValueError as exc:
-                log.error(meta)
-                raise ValueError('Cannot add block fractions') from exc
+            old_name = f'yld_{signal}_{brem}'
+            vals     = fres.opt_get(name = old_name)
 
+            if vals is None:
+                new_name = f'yld_{signal}_{proj}_{brem}'
+                vals     = fres.opt_get(name = new_name)
+
+            if vals is None:
+                log.error(meta)
+                raise ValueError('Cannot add block fractions')
+
+            val, err           = vals
             element            = gvar(val, err)
             yields[meta.block] = element
 
