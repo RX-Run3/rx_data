@@ -98,21 +98,22 @@ For this one needs:
 
 ### Signal yields
 
-To get the grid of signal yields do:
+For this run:
 
-```python
-from dmu.generic                     import utilities as gut
-from rx_classifier.signal_calculator import SignalCalculator
-
-q2bin = 'central'
-
-cfg = gut.load_data(package='rx_classifier_data', fpath='optimization/scanning.yaml')
-cal = SignalCalculator(cfg=cfg, q2bin=q2bin)
-df  = cal.get_signal()
+```bash
+rxfitter expected-signal -n full_scan -c 0.99 -p 0.6 -t rk_ee_os -q high
 ```
 
-which will provide a dataframe with the expected signal yield for each working point.
-I.e. with columns `mva_cmb`, `mva_prc` and `sig`.
+which will
 
-The settings are stored in the `scanning.yaml` config file.
+- Use the `full_scan.yaml` config specifying 
+    - The grid spacing
+    - The name of the resonant mode fits to be used as normalization
+    - The name of the directory in `ANADIR` where the yields will go
+- Specify the working point at which the resonant mode yields should be used.
+In the example above `(0.99, 0.6)`
+- Specify the trigger and `q2bin` for which the expected signal yields are needed
+
+### Background yields
+
 
