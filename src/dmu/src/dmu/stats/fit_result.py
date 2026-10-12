@@ -243,6 +243,20 @@ class FitResult(BaseModel, frozen = True):
 
         return fall_back, fall_back
     # ----------------------
+    def opt_get(self, name : str) -> tuple[float,float] | None:
+        '''
+        Parameters
+        ----------------
+        name: Name of parameter
+
+        Returns
+        ----------------
+        Tuple with value and error if found or None if not found
+        '''
+        for par in self.__all_parameters:
+            if par.name == name:
+                return par.value, par.error
+    # ----------------------
     def __str__(self) -> str:
         '''
         Returns
