@@ -34,7 +34,14 @@ class YieldCalculatorConf(BaseModel):
     Path to directory where outputs go
     '''
     fits : str
+    '''
+    Name of directory containing fits to resonant mode used
+    to normalize yields or rare mode through branching fraction
+    '''
     grid : dict[Cuts,list[MVAWp]]
+    '''
+    Grid of MVA working points where yield calculation has to be made
+    '''
     # --------------------
     @model_validator(mode = 'before')
     def _validate(cls, data : dict[str,str]):
