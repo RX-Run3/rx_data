@@ -51,6 +51,19 @@ class Region(StrEnum):
     brem_x12 = auto()
     brem_012 = auto()
     # ---------------------
+    def __str__(self) -> str:
+        match self:
+            case Region.brem_xx0:
+                return 'Brem 0'
+            case Region.brem_xx1:
+                return 'Brem 1'
+            case Region.brem_xx2:
+                return 'Brem 2'
+            case Region.brem_x12:
+                return 'Brem 1+2'
+            case _:
+                return self
+    # ---------------------
     @property
     def project(self) -> Project:
         '''
