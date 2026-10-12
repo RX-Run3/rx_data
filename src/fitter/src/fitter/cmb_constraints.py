@@ -54,16 +54,16 @@ class CmbConstraints(BaseFitter, Cache):
         self._mod_cfg   = self._cfg_cmb.constraints.mod_cfg.cfg_clone(
             prefix  = _SIG_PREFIX, 
             q2bin   = self._q2bin,
-            regions = [brem.region])
+            brems   = [brem])
 
-        self._reg       = brem.region 
+        self._brem      = brem
         self._component = _COMPONENT
         self._trigger   = Trigger(self._mod_cfg.trigger)
         self._obs       = self._mod_cfg.obs
 
         Cache.__init__(
             self,
-            out_path = Path(_COMPONENT) / 'fit' / self._reg,
+            out_path = Path(_COMPONENT) / 'fit' / str(self._brem),
             cfg      = cfg_cmb.model_dump())
     # ----------------------
     def __pick_parameter(self, name : str) -> bool:
@@ -89,7 +89,7 @@ class CmbConstraints(BaseFitter, Cache):
         Fit result object
         '''
         ftr = LikelihoodFactory(
-            name     = self._reg,
+            name     = str(self._brem),
             obs      = self._obs,
             q2bin    = self._q2bin,
             sample   = _DATA_SAMPLE,
@@ -108,7 +108,7 @@ class CmbConstraints(BaseFitter, Cache):
             cut_cfg = cfg_nll.selection,
             res     = res, 
             out_path= self._out_path,
-            plt_cfg = self._mod_cfg.plots[self._q2bin].regions[self._reg],
+            plt_cfg = self._mod_cfg.plots[self._q2bin].regions[self._brem],
         )
 
         return res
@@ -137,7 +137,7 @@ class CmbConstraints(BaseFitter, Cache):
         cov    = res.pars_covariance(pars = pars)
 
         cns = ConstraintND(
-            name       = self._reg, 
+            name       = str(self._brem),
             kind       = _CONST_TYPE,
             parameters = names, 
             values     = values, 
