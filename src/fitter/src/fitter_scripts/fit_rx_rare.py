@@ -124,7 +124,7 @@ def _cfg_from_args(args : argparse.Namespace) -> RXFitConfig:
 # ----------------------
 def _get_region_nll(brem : Brem, cfg : RXFitConfig) -> NLLConf:
     ftr = LikelihoodFactory(
-        name   = brem.region,
+        name   = str(brem),
         obs    = cfg.obs,
         q2bin  = cfg.q2bin,
         sample = _DATA_SAMPLE,
@@ -163,7 +163,7 @@ def _get_nll(
             # Pick only elementary region 
             cfg_brem         = cfg.cfg_copy(
                 q2bin        = cfg.q2bin,
-                replacements = {'BREM' : brem.region})
+                replacements = {'BREM' : str(brem)})
 
         with sel.update_selection(d_sel = brem.selection):
             d_nll[brem.region] = _get_region_nll(brem = brem, cfg = cfg_brem)
