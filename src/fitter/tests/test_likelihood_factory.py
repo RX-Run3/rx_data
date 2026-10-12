@@ -121,5 +121,5 @@ def test_simultaneous(tmp_path : Path):
             trigger = Trigger.rk_mm_os,
             tmp_path= tmp_path)
 
-        nll = nll_ee.nll + nll_mm.nll
+        _ = nll_ee.nll + nll_mm.nll
 # -------------------------------------------
