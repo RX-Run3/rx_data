@@ -16,7 +16,6 @@ from dmu          import LogStore
 from dmu.generic  import utilities as gut
 from rx_data      import RDFGetter
 from rx_common    import Channel, Component, Cuts, Project, Trigger, Qsq
-from rx_common    import info
 from rx_plotter   import CandidateRebuild
 from rx_plotter   import CandidateRebuildConf
 from rx_plotter   import refitting_plot
@@ -69,17 +68,13 @@ def refitting(
 # ----------------------
 @app.command()
 def control_region(
-    kind : str     = typer.Option(... , '--kind', '-k', help='E.g, OS, SS, EXT'),
     mass : str     = typer.Option(... , '--mass', '-m', help='E.g, B_Mass_hdkk, B_Mass_hdpipi'),
-    chan : Channel = typer.Option(... , '--chan', '-c', help='E.g. EE'      ),          # noqa: B008
-    proj : Project = typer.Option(... , '--proj', '-p', help='E.g. RK'      ),          # noqa: B008
+    trig : Trigger = typer.Option(... , '--trig', '-t', help='E.g. rk_ee_os'      ),          # noqa: B008
     qsq  : Qsq     = typer.Option(... , '--qsq' , '-q', help='E.g. central' )) -> None: # noqa: B008
     '''
     This can be used to plot control regions for data
     '''
-    trig   = info.get_trigger(project = proj, channel = chan, kind = kind)
-
-    gtr = RDFGetter(sample = Component.data_24, trigger = Trigger(trig))
+    gtr = RDFGetter(sample = Component.data_24, trigger = trig)
     rdf = gtr.get_rdf(per_file = False)
 
     if   mass == 'B_Mass_hdpipi':
@@ -109,7 +104,7 @@ def control_region(
     arr_mass = rdf.AsNumpy([mass])[mass]
 
     lmass = {'B_Mass_hdpipi' : r'$M_{e\to\pi}$', 'B_Mass_hdkk' : r'$M_{e\to K}$'}[mass]
-    label = {'RK' : f'{lmass}$(B^+)$[MeV]' , 'RKst' : f'{lmass}$(B^0)$[MeV]'}[proj]
+    label = {'RK' : f'{lmass}$(B^+)$[MeV]' , 'RKst' : f'{lmass}$(B^0)$[MeV]'}[trig.project]
 
     cmb_cut= selection[Cuts.cmb]
     prc_cut= selection[Cuts.prc]
@@ -120,7 +115,7 @@ def control_region(
     plt.xlabel(label)
     plt.legend()
 
-    name     = f'{chan}_{mass}_{proj}_{qsq}'
+    name     = f'{trig.channel}_{mass}_{trig.project}_{qsq}'
     ana_dir  = Path(os.environ['ANADIR'])
     out_path = ana_dir / f'plots/control_region/PID/{name}.png'
     out_path.parent.mkdir(parents = True, exist_ok = True)
