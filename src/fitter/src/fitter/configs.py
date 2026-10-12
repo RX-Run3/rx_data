@@ -8,7 +8,7 @@ from functools   import cached_property
 from pydantic    import BaseModel, field_validator, model_validator
 from pathlib     import Path
 from typing      import TYPE_CHECKING, Any, Callable, Literal, Self, Sequence
-from rx_common   import MVAWp
+from rx_common   import MVAWp, Brem
 from rx_common   import Channel, Mass, Project, Qsq, MisID, Region
 from rx_common   import Component, Trigger, CCbarComponent, Cuts
 from rx_misid    import MisIDSampleWeights
@@ -209,18 +209,18 @@ class ParametricConf(ComponentConf, frozen = True):
     # ----------------------
     def cfg_clone(
         self, 
-        prefix  : str, 
-        regions : list[Region]) -> Self:
+        prefix: str, 
+        brems : list[Brem]) -> Self:
         '''
         Parameters
         ---------------
-        prefix  : Initial part of category's original name
-        regions : List of signal regions for which prefixed section will be cloned 
+        prefix : Initial part of category's original name
+        brems  : List of signal brem categories for which prefixed section will be cloned 
 
         Returns
         ---------------
         Configuration with _cloned_ sections one for each
-        signal region, with selections updated
+        brem category, with selections updated
         '''
         new_categories : dict[str,CategoryConf] = dict()
         log.debug('Clonning categories')
@@ -229,11 +229,11 @@ class ParametricConf(ComponentConf, frozen = True):
                 raise ValueError(f'Category {name} does not start with prefix {prefix}')
 
             cloned_categories : dict[str,CategoryConf] = dict()
-            for region in regions:
-                new_name = name.replace(prefix, region)
+            for brem in brems:
+                new_name = name.replace(prefix, str(brem))
                 log.debug(f'{name:<20}{new_name:<20}')
                 sel = category.selection.copy()
-                sel.update(region.selection)
+                sel.update(brem.selection)
 
                 cloned_categories[new_name] = category.model_copy(
                     update = {'selection' : sel})
@@ -565,17 +565,17 @@ class FitModelConf(UnpackerModel, frozen = True):
         self, 
         prefix  : str, 
         q2bin   : Qsq,
-        regions : list[Region]) -> Self:
+        brems   : list[Brem]) -> Self:
         '''
         Parameters
         ---------------
-        prefix  : Initial part of category's original name
-        regions : List of signal regions for which prefixed section will be cloned 
+        prefix: Initial part of category's original name
+        brems : List of brem categories for which prefixed section will be cloned 
 
         Returns
         ---------------
         Configuration with _cloned_ sections one for each
-        signal region, with selections updated
+        brem category, with selections updated
         '''
         qsq_components = self.components[q2bin]
 
@@ -584,7 +584,7 @@ class FitModelConf(UnpackerModel, frozen = True):
             if not isinstance(conf, ParametricConf):
                 new_conf = conf.model_copy()
             else:
-                new_conf = conf.cfg_clone(prefix = prefix, regions = regions)
+                new_conf = conf.cfg_clone(prefix = prefix, brems = brems)
 
             new_components[comp] = new_conf
 
@@ -726,23 +726,23 @@ class RXFitConfig(BaseModel):
         self, 
         prefix  : str, 
         q2bin   : Qsq,
-        regions : list[Region]) -> Self:
+        brems   : list[Brem]) -> Self:
         '''
         Parameters
         ---------------
         q2bin   : Value of q2bin for which this config is needed
         prefix  : Initial part of category's original name
-        regions : List of signal regions for which prefixed section will be cloned 
+        brems   : List of brem categories for which prefixed section will be cloned 
 
         Returns
         ---------------
         Configuration with _cloned_ sections one for each
-        signal region, with selections updated
+        brem categories, with selections updated
         '''
         new_mod_cfg = self.mod_cfg.cfg_clone(
             prefix  = prefix, 
             q2bin   = q2bin,
-            regions = regions)
+            brems   = brems)
 
         return self.model_copy(update = {'mod_cfg' : new_mod_cfg})
     # ----------------------
