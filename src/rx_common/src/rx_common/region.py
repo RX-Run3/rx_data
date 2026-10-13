@@ -2,6 +2,7 @@
 Module with Region enum
 '''
 
+from pydantic   import model_validator
 from rx_common  import Particle
 from rx_common  import Trigger
 from rx_common  import Brem
@@ -18,6 +19,38 @@ class Region(BaseModel, frozen = True):
     brem    : Brem     | None = None
     trigger : Trigger  | None = None
     lepton  : Particle | None = None
+    # ---------------------
+    @model_validator(mode = 'after')
+    def _validate(self):
+        nobr = self.brem    is None
+        notr = self.trigger is None
+        nolp = self.lepton  is None
+
+        if nobr and notr and nolp:
+            raise ValueError('No field specified in region')
+
+        return self
+    # ---------------------
+    @property
+    def name(self) -> str:
+        '''
+        Name associated to current region
+        '''
+        parts : list[str] = []
+        if self.brem:
+            parts.append(str(self.brem))
+
+        if self.trigger:
+            parts.append(str(self.trigger))
+
+        if self.lepton:
+            parts.append(str(self.lepton))
+
+        return '_'.join(parts)
+    # ---------------------
+    @classmethod
+    def merge(cls, regions : list['Region']) -> 'Region':
+        raise NotImplementedError
     # ---------------------
     @classmethod
     def hadronic_misid(cls) -> list['Region']:
