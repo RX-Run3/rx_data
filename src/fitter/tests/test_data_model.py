@@ -18,6 +18,7 @@ from dmu.stats     import utilities as sut
 from dmu.workflow  import Cache
 from fitter        import DataModel
 from fitter        import FitModelConf
+from fitter        import CCbarConfTF
 
 from patch_classes import TestCCbarConfTF, TestSimFitter
 
@@ -144,7 +145,9 @@ def test_rare_electron(
 
     sut.print_pdf(pdf)
 # --------------------------
-def test_rare_electron_high(tmp_path : Path):
+def test_rare_electron_high(
+    monkeypatch : pytest.MonkeyPatch,
+    tmp_path    : Path):
     '''
     Simplest test for rare electron mode
     '''
@@ -161,11 +164,22 @@ def test_rare_electron_high(tmp_path : Path):
         cfg = cfg.specialize(q2bin = q2bin)
 
     cfg_qsq = cfg.components[q2bin]
-    cfg_qsq[Component.ccbar] = TestCCbarConfTF(kind = 'CCbarPDFTF')
 
-    with PL.parameter_schema(cfg=cfg.yields),\
-        Cache.cache_root(path = tmp_path),\
-        sel.custom_selection(d_sel = {Cuts.mass : '(1)', Cuts.brem : 'nbrem != 0'}):
+    cfg_qsq[Component.ccbar] = CCbarConfTF(kind = 'CCbarPDFTF')
+
+    ctx_1 = PL.parameter_schema(cfg=cfg.yields)
+    ctx_2 = Cache.cache_root(path = tmp_path)
+    ctx_3 = sel.custom_selection(d_sel = {Cuts.mass : '(1)', Cuts.brem : 'nbrem != 0'})
+    ctx_4 = monkeypatch.context()
+
+    with ExitStack() as stack: 
+        stack.enter_context(ctx_1)
+        stack.enter_context(ctx_2)
+        stack.enter_context(ctx_3)
+        mpatch = stack.enter_context(ctx_4)
+
+        mpatch.setattr(CCbarConfTF, 'get_pdf', TestCCbarConfTF.get_pdf)
+
         dmd = DataModel(
             name    = brem,
             cfg     = cfg,
