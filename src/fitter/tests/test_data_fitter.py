@@ -13,7 +13,7 @@ from dmu.stats       import gof_calculator   as goc
 from dmu.generic     import utilities        as gut
 from dmu.workflow    import Cache
 from dmu.testing     import get_model
-from rx_common       import Qsq, Region, Brem
+from rx_common       import Qsq, Region, Brem, Trigger
 from fitter          import DataFitter
 from fitter          import ToyMaker
 from fitter          import ToyPlotter
@@ -66,7 +66,11 @@ def test_single_region(tmp_path : Path) -> None:
         selection   = _SEL_CFG, 
         constraints = [])
 
-    d_nll= {Region.region_001 : cfg_nll}
+    rk_ee_br12  = Region(
+        brem    = Brem.brx12,
+        trigger = Trigger.rk_ee_os)
+
+    d_nll= {rk_ee_br12 : cfg_nll}
     data = gut.load_data(package='fitter_data', fpath='tests/fits/single_region.yaml')
     cfg  = FitModelConf(**data)
 
@@ -103,9 +107,17 @@ def test_two_regions(tmp_path : Path) -> None:
         selection   = _SEL_CFG, 
         constraints = [])
 
+    rk_ee_br1   = Region(
+        brem    = Brem.one,
+        trigger = Trigger.rk_ee_os)
+
+    rk_ee_br2   = Region(
+        brem    = Brem.two,
+        trigger = Trigger.rk_ee_os)
+
     d_nll   = {
-        Brem.one : cfg_nll_001,
-        Brem.two : cfg_nll_002,
+        rk_ee_br1 : cfg_nll_001,
+        rk_ee_br2 : cfg_nll_002,
     }
 
     q2bin = Qsq.low
@@ -151,9 +163,17 @@ def test_two_regions_shared(tmp_path : Path) -> None:
         selection   = _SEL_CFG, 
         constraints = [])
 
+    rk_ee_br1   = Region(
+        brem    = Brem.one,
+        trigger = Trigger.rk_ee_os)
+
+    rk_ee_br2   = Region(
+        brem    = Brem.two,
+        trigger = Trigger.rk_ee_os)
+
     d_nll   = {
-        Brem.one : cfg_nll_001,
-        Brem.two : cfg_nll_002,
+        rk_ee_br1 : cfg_nll_001,
+        rk_ee_br2 : cfg_nll_002,
     }
 
     q2bin = Qsq.low
@@ -188,7 +208,12 @@ def test_with_constraints(tmp_path : Path) -> None:
         selection   = _SEL_CFG, 
         constraints = [cons])
 
-    d_nll       = {Region.region_001 : cfg_nll}
+    rk_ee_br12  = Region(
+        brem    = Brem.brx12,
+        trigger = Trigger.rk_ee_os)
+
+    d_nll = {rk_ee_br12 : cfg_nll}
+
     constraints = Constraints(root = {'mu' : cons})
 
     adr   = cad.ConstraintAdder(nll=nll, constraints = constraints)
@@ -225,7 +250,11 @@ def test_with_toys(ntoys : int, tmp_path : Path) -> None:
         selection   = _SEL_CFG, 
         constraints = [])
 
-    d_nll   = {Region.region_001 : cfg_nll}
+    rk_ee_br12  = Region(
+        brem    = Brem.brx12,
+        trigger = Trigger.rk_ee_os)
+
+    d_nll   = {rk_ee_br12 : cfg_nll}
     data    = gut.load_data(package='fitter_data', fpath='tests/fits/single_region.yaml')
     cfg_fit = FitModelConf(**data)
 
