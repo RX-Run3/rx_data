@@ -1,5 +1,7 @@
-from zfit import ComposedParameter
-from zfit import Parameter
+from zfit   import ComposedParameter
+from zfit   import Parameter
+from typing import Sequence
+
 from .. import z as z
 from ..core.basepdf import BasePDF as BasePDF
 from ..core.serialmixin import SerializableMixin as SerializableMixin
@@ -18,6 +20,7 @@ from collections.abc import Iterable
 from typing import Literal
 from zfit._interfaces import ZfitData as ZfitData, ZfitPDF as ZfitPDF, ZfitSpace as ZfitSpace
 
+type zpar = Parameter | ComposedParameter
 class BaseFunctor(FunctorMixin, BasePDF):
     pdfs: Incomplete
     def __init__(self, pdfs, name: str = 'BaseFunctor', label=None, **kwargs) -> None: ...
@@ -29,7 +32,7 @@ class SumPDF(BaseFunctor, SerializableMixin):
     def __init__(
         self,
         pdfs: Iterable[ZfitPDF],
-        fracs: Iterable[Parameter] | Iterable[ComposedParameter] | Iterable[float] | None = None,
+        fracs: Sequence[zpar] | Sequence[float] | None = None,
         obs  : ztyping.ObsTypeInput = None,
         extended: ExtendedInputType = None,
         norm: NormInputType = None,
