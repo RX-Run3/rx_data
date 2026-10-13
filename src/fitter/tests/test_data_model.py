@@ -33,7 +33,7 @@ _TRIGGERS : list[tuple[Trigger,Trigger]] = [
 def _get_model(
     q2bin     : Qsq,
     trigger   : Trigger,
-    region    : Region,
+    brem      : Brem,
     cache_dir : Path) -> zpdf:
     '''
     Retrieves full PDF for signal region fit
@@ -56,7 +56,7 @@ def _get_model(
         stack.enter_context(ctx_3)
 
         dmd = DataModel(
-            name    = region,
+            name    = brem,
             cfg     = cfg,
             obs     = cfg.obs,
             trigger = trigger,
@@ -91,9 +91,8 @@ def test_resonant(kind : str, trigger : Trigger, tmp_path : Path):
     '''
     Simplest test
     '''
-    region = Region.brem_xx0 if trigger.is_muon else Region.brem_xx1
-
-    data= gut.load_data(
+    brem = Brem.zero if trigger.is_muon else Brem.one
+    data = gut.load_data(
         package='fitter_data',
         fpath  =f'{kind}/data.yaml')
 
@@ -105,7 +104,7 @@ def test_resonant(kind : str, trigger : Trigger, tmp_path : Path):
     with Cache.cache_root(path = tmp_path),\
         PL.parameter_schema(cfg=cfg.yields):
         dmd = DataModel(
-            name    = region,
+            name    = brem,
             cfg     = cfg,
             obs     = cfg.obs,
             trigger = trigger,
@@ -123,8 +122,8 @@ def test_rare_electron(
     '''
     Simplest test for rare electron mode
     '''
-    region     = Region.brem_x12
-    data       = gut.load_data(
+    brem     = Brem.brx12
+    data     = gut.load_data(
         package= 'fitter_data',
         fpath  =f'rare/{trigger.project}/ee/data.yaml')
 
@@ -136,7 +135,7 @@ def test_rare_electron(
         Cache.cache_root(path = tmp_path),\
         sel.custom_selection(d_sel = {Cuts.mass : '(1)', Cuts.brem : 'nbrem != 0'}):
         dmd = DataModel(
-            name    = region,
+            name    = brem,
             cfg     = cfg,
             obs     = cfg.obs,
             trigger = trigger,
@@ -228,24 +227,24 @@ def test_simultaneous_rk(
     '''
     PL.clear()
 
-    q2bin   = Qsq.low
-    region  = Region.brem_x12
+    q2bin = Qsq.low
+    brem  = Brem.brx12
 
     pdf_ee  = _get_model(
         q2bin    = q2bin,
         trigger  = etrig,
-        region   = region,
+        brem     = brem,
         cache_dir= tmp_path / 'ee')
 
-    region  = Region.brem_xx0
-    proj    = etrig.project
+    brem  = Brem.zero
+    proj  = etrig.project
 
     files = {f'{proj}/rare_muon.yaml' : f'{proj}/rare_muon_simultaneous.yaml'}
     with UnpackerModel.replacements(files = files):
         pdf_mm  = _get_model(
             q2bin    = q2bin,
             trigger  = mtrig,
-            region   = region,
+            brem     = brem,
             cache_dir= tmp_path / 'mm')
 
     pars_ee = pdf_ee.get_params()
@@ -268,20 +267,20 @@ def test_simultaneous_electron(tmp_path : Path):
     '''
     PL.clear()
 
-    q2bin  = Qsq.low
-    region = Region.brem_x12
-    files  = {'rk/rare_electron.yaml' : 'rk/rare_electron_simultaneous.yaml'}
+    q2bin = Qsq.low
+    brem  = Brem.brx12
+    files = {'rk/rare_electron.yaml' : 'rk/rare_electron_simultaneous.yaml'}
     with UnpackerModel.replacements(files = files):
         pdf_rk       = _get_model(
             q2bin    = q2bin,
             trigger  = Trigger.rk_ee_os,
-            region   = region,
+            brem     = brem,
             cache_dir= tmp_path / 'ee')
 
         pdf_rkst     = _get_model(
             q2bin    = q2bin,
             trigger  = Trigger.rkst_ee_os,
-            region   = region,
+            brem     = brem,
             cache_dir= tmp_path / 'ee')
 
     pars_rk   = pdf_rk.get_params()
@@ -314,25 +313,25 @@ def test_simultaneous_rx(tmp_path : Path):
         pdf_ee_rk    = _get_model(
             q2bin    = q2bin,
             trigger  = Trigger.rk_ee_os,
-            region   = Region.brem_x12,
+            brem     = Brem.brx12,
             cache_dir= tmp_path / 'ee')
 
         pdf_ee_rkst  = _get_model(
             q2bin    = q2bin,
             trigger  = Trigger.rkst_ee_os,
-            region   = Region.brem_x12,
+            brem     = Brem.brx12,
             cache_dir= tmp_path / 'ee')
 
         pdf_mm_rk    = _get_model(
             q2bin    = q2bin,
             trigger  = Trigger.rk_mm_os,
-            region   = Region.brem_xx0,
+            brem     = Brem.zero,
             cache_dir= tmp_path / 'mm')
 
         pdf_mm_rkst  = _get_model(
             q2bin    = q2bin,
             trigger  = Trigger.rkst_mm_os,
-            region   = Region.brem_xx0,
+            brem     = Brem.zero,
             cache_dir= tmp_path / 'mm')
 
     pars_ee_rk   = pdf_ee_rk.get_params()
