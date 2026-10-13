@@ -30,8 +30,8 @@ class Particle(StrEnum):
     '''
     Model meant to store particle properties
     '''
-    kaon = auto() 
-    pion = auto() 
+    kaon = auto()
+    pion = auto()
 # ------------------------------
 class Parameter(StrEnum):
     '''
@@ -56,7 +56,7 @@ class Block(BaseModel):
     '''
     model_config = ConfigDict(frozen=True)
 
-    value : int | set[int] 
+    value : int | set[int]
     # ----------------
     @model_validator(mode='before')
     @classmethod
@@ -88,11 +88,11 @@ class Block(BaseModel):
     # ----------------
     def to_int(self) -> int:
         '''
-        Integer version of block, e.g. 
+        Integer version of block, e.g.
 
         - b1     ->  1
         - b1, b2 -> 12
-        - all    -> -1 
+        - all    -> -1
         '''
         if isinstance(self.value, int):
             return self.value
@@ -131,7 +131,7 @@ class Block(BaseModel):
         if len(value) == 1:
             return cls(value = int(value))
 
-        val = { int(elm) for elm in value } 
+        val = { int(elm) for elm in value }
 
         return cls(value=val)
     # ----------------
@@ -140,7 +140,7 @@ class Block(BaseModel):
         Addition of block types. If blocks are the same
         sum will be the same as the input block.
 
-        Use case: Adding datasets from same block and different brem categories 
+        Use case: Adding datasets from same block and different brem categories
         '''
         if self == other:
             return self
@@ -214,7 +214,7 @@ class Correction(StrEnum):
         reso or scale
         '''
         if self in [Correction.mass_scale]:
-            return CorrectionImplementation.scale 
+            return CorrectionImplementation.scale
 
         if self in [Correction.mass_resolution, Correction.brem_fraction, Correction.blok_fraction]:
             return CorrectionImplementation.reso
@@ -233,7 +233,7 @@ class Correction(StrEnum):
         '''
         match self:
             case Correction.mass_scale:
-                return r'$\Delta\mu$[MeV]' 
+                return r'$\Delta\mu$[MeV]'
             case Correction.mass_resolution:
                 return r'$\frac{\sigma^{Data}}{\sigma^{MC}}$'
             case Correction.brem_fraction:
@@ -250,22 +250,22 @@ class Correction(StrEnum):
         '''
         match self:
             case Correction.mass_scale:
-                return 'dmu' 
+                return 'dmu'
             case Correction.mass_resolution:
-                return 'rsg' 
+                return 'rsg'
             case Correction.brem_fraction:
-                return 'brem' 
+                return 'brem'
             case Correction.blok_fraction:
-                return 'block' 
+                return 'block'
             case Correction.pid:
                 return 'weight'
 # ---------------------------------------
 class MVA(StrEnum):
     r'''
-    This class is meant to hold types representing kinds of MVA classifiers 
+    This class is meant to hold types representing kinds of MVA classifiers
 
-    cmb : Combinatorial 
-    prc : Partially reconstructed 
+    cmb : Combinatorial
+    prc : Partially reconstructed
     '''
     cmb = 'cmb'
     prc = 'prc'
@@ -274,9 +274,9 @@ class Brem(StrEnum):
     '''
     Enum meant to represent brem category
     '''
-    zero    = 'brem_xx0' 
-    one     = 'brem_xx1' 
-    two     = 'brem_xx2' 
+    zero    = 'brem_xx0'
+    one     = 'brem_xx1'
+    two     = 'brem_xx2'
     # ----------
     # Composite brem
     # ----------
@@ -305,7 +305,7 @@ class Brem(StrEnum):
                 return 1100
             case Brem.br012:
                 return 1110
-    # ----------------------   
+    # ----------------------
     @classmethod
     def _from_int_code(self, value : int) -> 'Brem':
         '''
@@ -334,7 +334,7 @@ class Brem(StrEnum):
                 return Brem.br012
             case _:
                 raise ValueError(f"Invalid int code for Brem: {value}")
-    # ----------------------   
+    # ----------------------
     def in_string(self, string : str) -> bool:
         '''
         Parameters
@@ -347,7 +347,7 @@ class Brem(StrEnum):
         '''
         substring = f'brem_{self}'
 
-        return substring in string 
+        return substring in string
     # ----------------------
     @property
     def components(self) -> list['Brem']:
@@ -374,14 +374,14 @@ class Brem(StrEnum):
     @property
     def is_composite(self) -> bool:
         if self in {Brem.zero, Brem.one, Brem.two}:
-            return False 
+            return False
 
-        return True 
+        return True
     # ----------------------
     @property
     def selection(self) -> dict[Cuts,str]:
         '''
-        Selection associated to this brem category 
+        Selection associated to this brem category
         '''
         match self:
             case Brem.zero:
@@ -459,11 +459,11 @@ class Brem(StrEnum):
         '''
         match self:
             case self.zero:
-                return 0 
+                return 0
             case self.one:
-                return 1 
+                return 1
             case self.two:
-                return 2 
+                return 2
             case _:
                 raise ValueError(f'Invalid brem: {self}')
     # ----------------------
@@ -480,7 +480,7 @@ class Brem(StrEnum):
         '''
         Parameters
         -------------
-        other: Value of brem to add to this one 
+        other: Value of brem to add to this one
 
         Returns
         -------------
@@ -503,7 +503,7 @@ class Brem(StrEnum):
         '''
         Returns string representation
         '''
-        match self: 
+        match self:
             case Brem.zero:
                 return 'brem_xx0'
             case Brem.one:
@@ -573,7 +573,7 @@ class Brem(StrEnum):
     # ----------------------
     def __eq__(self, other) -> bool:
         if isinstance(other, str):
-            return self.value == other 
+            return self.value == other
 
         if isinstance(other, Brem):
             return self.value == other.value
