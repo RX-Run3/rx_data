@@ -270,21 +270,71 @@ class MVA(StrEnum):
     cmb = 'cmb'
     prc = 'prc'
 # ---------------------------------------
-class Brem(IntEnum):
+class Brem(StrEnum):
     '''
     Enum meant to represent brem category
     '''
-    zero    = 10
-    one     = 100
-    two     = 1000
+    zero    = 'brem_xx0' 
+    one     = 'brem_xx1' 
+    two     = 'brem_xx2' 
     # ----------
     # Composite brem
     # ----------
-    br01x   =  110 
-    br0x2   = 1010 
-    brx12   = 1100 
-    br012   = 1110 
+    br01x   = 'br01x'
+    br0x2   = 'br0x2'
+    brx12   = 'brx12'
+    br012   = 'br012'
     # ----------------------
+    @property
+    def _int_code(self) -> int:
+        '''
+        Integer representation of brem category
+        '''
+        match self:
+            case Brem.zero:
+                return 10
+            case Brem.one:
+                return 100
+            case Brem.two:
+                return 1000
+            case Brem.br01x:
+                return 110
+            case Brem.br0x2:
+                return 1010
+            case Brem.brx12:
+                return 1100
+            case Brem.br012:
+                return 1110
+    # ----------------------   
+    @classmethod
+    def _from_int_code(self, value : int) -> 'Brem':
+        '''
+        Parameters
+        ---------------
+        Integer version of current category
+
+        Returns
+        ---------------
+        Brem category from integer value
+        '''
+        match value:
+            case 10:
+                return Brem.zero
+            case 100:
+                return Brem.one
+            case 1000:
+                return Brem.two
+            case 110:
+                return Brem.br01x
+            case 1010:
+                return Brem.br0x2
+            case 1100:
+                return Brem.brx12
+            case 1110:
+                return Brem.br012
+            case _:
+                raise ValueError(f"Invalid int code for Brem: {value}")
+    # ----------------------   
     def in_string(self, string : str) -> bool:
         '''
         Parameters
@@ -440,10 +490,10 @@ class Brem(IntEnum):
         if self == other:
             return self
 
-        total = self.value + other.value
+        total = self._int_code + other._int_code
 
         try:
-            brem = Brem(total)
+            brem = Brem._from_int_code(total)
         except Exception as exc:
             raise ValueError(f'Cannot add {self} to {other}') from exc
 
