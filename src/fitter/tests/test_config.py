@@ -34,6 +34,7 @@ def initialize():
 @pytest.mark.parametrize('project', [Project.rk, Project.rkst])
 @pytest.mark.parametrize('q2bin'  , Qsq.for_physics())
 def test_full_config(
+    monkeypatch,
     tmp_path: Path,
     q2bin   : Qsq,
     channel : Channel,
@@ -41,6 +42,8 @@ def test_full_config(
     '''
     Test fitting model for data
     '''
+    monkeypatch.setenv('ANADIR', str(tmp_path))
+
     path = f'{q2bin.kind}/{project}/{channel}/data.yaml'
     cfg  = FitModelConf.from_yaml(path = path, package = 'fitter_data')
     cfg.to_yaml(path = tmp_path / 'config.yaml')
