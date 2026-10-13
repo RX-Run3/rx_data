@@ -44,25 +44,25 @@ fit: {}
 plots:
   low:
     merging:
-      brem_x12:
-        - brem_xx1 
-        - brem_xx2 
+      brem_x12-rk_ee_os:
+        - brem_xx1-rk_ee_os 
+        - brem_xx2-rk_ee_os
     regions:
-      brem_x12:
+      brem_x12-rk_ee_os:
         title   : Region 1 and 2
         nbins   : 50
         stacked : True
         d_leg :
           Gauss_ext       : Signal
           Exponential_ext : Combinatorial
-      brem_xx1:
+      brem_xx1-rk_ee_os:
         title   : Region 1
         nbins   : 50
         stacked : True
         d_leg :
           Gauss_ext       : Signal
           Exponential_ext : Combinatorial
-      brem_xx2:
+      brem_xx2-rk_ee_os:
         title   : Region 2
         nbins   : 50
         stacked : True

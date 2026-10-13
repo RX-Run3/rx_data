@@ -39,7 +39,7 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
   low:
     merging : {}
     regions :
-      region_001:
+      brem_x12-rk_ee_os:
         nbins   : 50
         stacked : True
         d_leg :
