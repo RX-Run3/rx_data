@@ -27,8 +27,7 @@ from .component_conf import ComponentConf, ObservableConf
 from .types          import CCbarWeight
 from .toy_maker      import ToyConf
 
-log     = LogStore.add_logger('fitter:configs')
-_ANADIR = Path(os.environ['ANADIR'])
+log = LogStore.add_logger('fitter:configs')
 
 type zobs = zfit.Space
 type zpdf = zfit.pdf.BasePDF
@@ -889,7 +888,9 @@ class RXFitConfig(BaseModel):
             block_name = f'b{self.block}'
 
         trigger = self.mod_cfg.trigger
-        out_dir = _ANADIR / 'fits/data' / self.group / f'{self.fit_name}_{block_name}'
+
+        ana_dir = Path(os.environ['ANADIR'])
+        out_dir = ana_dir / 'fits/data' / self.group / f'{self.fit_name}_{block_name}'
         out_dir = out_dir / self.q2bin.kind / trigger.project / trigger.channel / self.q2bin
 
         log.debug(f'Using output directory: {out_dir}')
