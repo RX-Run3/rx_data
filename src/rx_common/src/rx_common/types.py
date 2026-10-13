@@ -503,21 +503,7 @@ class Brem(StrEnum):
         '''
         Returns string representation
         '''
-        match self:
-            case Brem.zero:
-                return 'brem_xx0'
-            case Brem.one:
-                return 'brem_xx1'
-            case Brem.two:
-                return 'brem_xx2'
-            case Brem.br01x:
-                return 'brem_01x'
-            case Brem.br0x2:
-                return 'brem_0x2'
-            case Brem.brx12:
-                return 'brem_x12'
-            case Brem.br012:
-                return 'brem_012'
+        return self.value
     # ----------------------
     @staticmethod
     def from_str(value : str) -> 'Brem':
