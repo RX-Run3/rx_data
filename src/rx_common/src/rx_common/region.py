@@ -2,16 +2,19 @@
 Module with Region enum
 '''
 
-from pydantic   import model_validator
-from rx_common  import Particle
-from rx_common  import Trigger
-from rx_common  import Brem
-from pydantic   import BaseModel
-from dmu        import LogStore
+from typing import Any
+from dmu.generic import Serializable
+from pydantic    import model_serializer
+from pydantic    import model_validator
+from rx_common   import Particle
+from rx_common   import Trigger
+from rx_common   import Brem
+from pydantic    import BaseModel
+from dmu         import LogStore
 
 log=LogStore.add_logger('rx_common:region')
 # ------------------------
-class Region(BaseModel, frozen = True):
+class Region(BaseModel, Serializable, frozen = True):
     '''
     Enum meant to symbolize control and signal regions, 
     e.g. hadronic misID control region
@@ -20,8 +23,41 @@ class Region(BaseModel, frozen = True):
     trigger : Trigger  | None = None
     lepton  : Particle | None = None
     # ---------------------
+    @model_validator(mode = 'before')
+    @classmethod
+    def _validate_before(cls, data : Any) -> Any:
+        '''
+        Allows to deserialize from name
+        '''
+        if isinstance(data, str):
+            return cls.from_string(name = data)
+
+        return data
+    # ---------------------
+    @classmethod
+    def from_string(cls, name : str) -> dict[str,Any]:
+        '''
+        Parameters
+        -----------------
+        name: String representing region, e.g. brem_xx1-rk_ee_os
+
+        Returns
+        -----------------
+        Dictionary representing data for current Region
+        '''
+        parts= name.split('-')
+
+        brem = Brem(parts[0]) 
+        trig = Trigger(parts[1])  if len(parts) > 1 else None
+        lept = Particle(parts[2]) if len(parts) > 2 else None # noqa: PLR2004
+
+        return {
+            'brem'   : brem,
+            'trigger': trig,
+            'lepton' : lept} 
+    # ---------------------
     @model_validator(mode = 'after')
-    def _validate(self):
+    def _validate_after(self):
         nobr = self.brem    is None
         notr = self.trigger is None
         nolp = self.lepton  is None
@@ -30,6 +66,10 @@ class Region(BaseModel, frozen = True):
             raise ValueError('No field specified in region')
 
         return self
+    # ---------------------
+    @model_serializer
+    def _serialize(self) -> str:
+        return self.name
     # ---------------------
     @property
     def name(self) -> str:
@@ -41,12 +81,12 @@ class Region(BaseModel, frozen = True):
             parts.append(str(self.brem))
 
         if self.trigger:
-            parts.append(str(self.trigger))
+            parts.append(self.trigger.name)
 
         if self.lepton:
             parts.append(str(self.lepton))
 
-        return '_'.join(parts)
+        return '-'.join(parts)
     # ---------------------
     @classmethod
     def merge(cls, regions : list['Region']) -> 'Region':
