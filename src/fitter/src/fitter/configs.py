@@ -424,9 +424,9 @@ class MisIDConf(NonParametricConf, frozen = True):
 # ------------------------------
 AnyModelConf = CombinatorialConf | CombinatorialConfUnconstrained | ParametricConf | CCbarConf | MisIDConf | NonParametricConf | CCbarConfTF
 # ------------------------------
-class PlotConf(BaseModel):
-    merging : dict[Brem,      list[Brem]]
-    regions : dict[Brem, ZFitPlotterConf]
+class PlotConf[T : Brem | Region](BaseModel):
+    merging : dict[Brem,   list[Brem]]
+    regions : dict[T, ZFitPlotterConf]
     # -----------------------------
     @classmethod
     def default(cls) -> Self:
