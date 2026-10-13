@@ -75,7 +75,7 @@ class Reader:
 
         raise ValueError(f'Invalid process: {proc}')
     #---------------------------
-    def _get_stats(self, path):
+    def _get_stats(self, path : str) -> tuple[str, pnd.DataFrame]:
         proc = os.path.basename(path).replace('.json', '')
         df   = pnd.read_json(path)
 
