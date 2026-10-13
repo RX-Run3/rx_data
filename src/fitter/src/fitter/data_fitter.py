@@ -10,7 +10,7 @@ from dmu.workflow    import Cache
 from dmu.stats       import AnealingMinimizer, FitResult, Retries
 from dmu.stats       import zfit
 from dmu.stats       import utilities as sut
-from rx_common       import Component, Qsq, Region
+from rx_common       import Component, Qsq, Region, Brem
 from zfit.exception  import ParamNameNotUniqueError
 from zfit.loss       import ExtendedUnbinnedNLL as NLL
 
@@ -138,24 +138,24 @@ class DataFitter(BaseFitter, Cache):
     # ---------------------------------------------
     def _save_merged_regions(
         self, 
-        region  : Region, 
-        fres    : FitResult,
-        regions : list[Region]) -> None:
+        fres  : FitResult,
+        brem  : Brem, 
+        brems : list[Brem]) -> None:
         '''
         Parameters
         ---------------
-        region : Merged region 
         fres   : Fit result
-        regions: List of regions associated
+        brem   : Merged brem category 
+        brems  : List of brem categories used to merge 
         '''
-        if len(regions) < _MIN_REGIONS_IN_CAT:
-            raise ValueError(f'Cannot create category with fewer than two regions, found: {regions}')
+        if len(brems) < _MIN_REGIONS_IN_CAT:
+            raise ValueError(f'Cannot create category with fewer than two regions, found: {brems}')
 
-        out_path = self._out_path / region 
+        out_path = self._out_path / brem 
 
         log.info(f'Saving fit to: {out_path}')
 
-        nlls     = [ cfg.nll for region, cfg in self._d_nll.items() if region in regions ]
+        nlls     = [ cfg.nll for region, cfg in self._d_nll.items() if region in brems ]
         datasets = [ nll.data[0]  for nll in nlls ]
 
         models : list[zfit.pdf.SumPDF]  = []
@@ -178,7 +178,7 @@ class DataFitter(BaseFitter, Cache):
 
         self._save_fit(
             cut_cfg  = dict(),
-            plt_cfg  = self._cfg.plots[self._q2bin].regions[region],
+            plt_cfg  = self._cfg.plots[self._q2bin].regions[brem],
             data     = zfit.data.concat(datasets),
             model    = model,
             res      = fres,
@@ -252,11 +252,11 @@ class DataFitter(BaseFitter, Cache):
             self._cache()
             return fres
 
-        for cat, regions in self._cfg.plots[self._q2bin].merging.items():
+        for brem, brems in self._cfg.plots[self._q2bin].merging.items():
             self._save_merged_regions(
-                region  = cat, 
+                brem    = brem, 
                 fres    = fres,
-                regions = regions)
+                brems = brems)
 
         self._cache()
 

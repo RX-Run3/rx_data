@@ -13,7 +13,7 @@ from dmu.stats       import gof_calculator   as goc
 from dmu.generic     import utilities        as gut
 from dmu.workflow    import Cache
 from dmu.testing     import get_model
-from rx_common       import Qsq, Region
+from rx_common       import Qsq, Region, Brem
 from fitter          import DataFitter
 from fitter          import ToyMaker
 from fitter          import ToyPlotter
@@ -104,8 +104,8 @@ def test_two_regions(tmp_path : Path) -> None:
         constraints = [])
 
     d_nll   = {
-        Region.region_001 : cfg_nll_001,
-        Region.region_002 : cfg_nll_002,
+        Brem.one : cfg_nll_001,
+        Brem.two : cfg_nll_002,
     }
 
     q2bin = Qsq.low
@@ -152,8 +152,8 @@ def test_two_regions_shared(tmp_path : Path) -> None:
         constraints = [])
 
     d_nll   = {
-        Region.region_001 : cfg_nll_001,
-        Region.region_002 : cfg_nll_002,
+        Brem.one : cfg_nll_001,
+        Brem.two : cfg_nll_002,
     }
 
     q2bin = Qsq.low
