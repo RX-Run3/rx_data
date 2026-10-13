@@ -9,7 +9,6 @@ from rx_selection  import selection as sel
 from rx_data       import RDFGetter
 from dmu           import LogStore
 from dmu.workflow  import Cache
-from dmu.stats     import print_constraints
 from dmu.generic   import UnpackerModel, utilities     as gut
 from fitter        import MisIDConstraints
 from fitter        import FitModelConf
@@ -46,5 +45,5 @@ def test_simple(q2bin : Qsq, tmp_path : Path) -> None:
                 q2bin    = q2bin)
             constraints = obj.get_constraints()
 
-    print_constraints(constraints)
+    print(constraints)
 # ----------------------
