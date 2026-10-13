@@ -3,6 +3,8 @@ Module holding CategoryMerger class
 '''
 import zfit
 
+from operator    import add
+from functools   import reduce
 from typing      import Literal, Sequence, Mapping
 from dmu         import LogStore
 from rx_common   import Brem, Block, Correction, Component, Cuts
@@ -190,7 +192,7 @@ class CategoryMerger[T: Category]:
             single_model= False,        # Different brem categories can have different models
             categories  = categories)
         sumw  = totalw 
-        brem  = sum(brems[:-1], brems[-1])
+        brem  = reduce(add, brems)
         pdf   = zfit.pdf.SumPDF(pdfs, fracs[:-1])
 
         blok  = categories[0].block
