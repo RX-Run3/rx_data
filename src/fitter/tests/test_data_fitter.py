@@ -75,7 +75,7 @@ def test_single_region(tmp_path : Path) -> None:
             q2bin= Qsq.low,
             d_nll= d_nll,
             cfg  = cfg)
-        ftr.run()
+        ftr.run(skip_fit = False)
 # ----------------------
 def test_two_regions(tmp_path : Path) -> None:
     '''
@@ -122,7 +122,7 @@ def test_two_regions(tmp_path : Path) -> None:
             q2bin= q2bin,
             d_nll= d_nll,
             cfg  = cfg)
-        ftr.run()
+        ftr.run(skip_fit = False)
 # ----------------------
 def test_two_regions_shared(tmp_path : Path) -> None:
     '''
@@ -170,7 +170,7 @@ def test_two_regions_shared(tmp_path : Path) -> None:
             q2bin= q2bin,
             d_nll= d_nll,
             cfg  = cfg)
-        ftr.run()
+        ftr.run(skip_fit = False)
 # ----------------------
 def test_with_constraints(tmp_path : Path) -> None:
     '''
@@ -203,7 +203,7 @@ def test_with_constraints(tmp_path : Path) -> None:
             d_nll= d_nll,
             cfg  = cfg)
 
-        ftr.run()
+        ftr.run(skip_fit = False)
 # ----------------------
 @pytest.mark.parametrize('ntoys', [20])
 def test_with_toys(ntoys : int, tmp_path : Path) -> None:
@@ -237,7 +237,7 @@ def test_with_toys(ntoys : int, tmp_path : Path) -> None:
             q2bin= q2bin,
             d_nll= d_nll,
             cfg  = cfg_fit)
-        res = ftr.run()
+        res = ftr.run(skip_fit = False)
 
     with gut.environment(mapping = {'ANADIR' : str(tmp_path)}):
         cfg_toy = cfg_toy.model_copy(update = {'ntoys' : ntoys, 'output' : tmp_path / 'toys.parquet'})
@@ -246,7 +246,7 @@ def test_with_toys(ntoys : int, tmp_path : Path) -> None:
             nll = nll,
             res = res,
             cfg = cfg_toy,
-            cns = [])
+            cns = Constraints.none())
         df  = mkr.get_parameter_information(name = 'nominal')
 
         cfg = gut.load_conf(package='fitter_data', fpath='tests/toys/toy_plotter_integration.yaml')
