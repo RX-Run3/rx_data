@@ -3,6 +3,9 @@ Script with functions meant to test Enums
 '''
 import pytest
 
+from functools import reduce
+from operator  import add
+
 from dmu       import LogStore
 from rx_common import Correction
 from rx_common import Component
@@ -66,6 +69,24 @@ def test_brem():
     assert Brem.one  + Brem.two == Brem.brx12
 
     assert Brem.zero + Brem.one + Brem.two == Brem.br012
+
+    brems : list[Brem]
+
+    with pytest.raises(TypeError):
+        brems = [] 
+        total = reduce(add, brems) 
+
+    brems = [Brem.one] 
+    total = reduce(add, brems) 
+    assert total == Brem.one
+
+    brems = [Brem.one, Brem.two] 
+    total = reduce(add, brems) 
+    assert total == Brem.brx12
+
+    brems = [Brem.zero, Brem.one, Brem.two] 
+    total = reduce(add, brems) 
+    assert total == Brem.br012
 # -------------------------------------------
 @pytest.mark.parametrize('sample', Component)
 def test_sample_properties(sample : Component):

@@ -2,7 +2,7 @@
 This module contains classes derived from Enum
 '''
 from pathlib     import Path
-from enum        import StrEnum, IntEnum, auto
+from enum        import StrEnum, auto
 from typing      import Final
 from dmu.stats   import CorrectionImplementation
 from dmu         import LogStore
