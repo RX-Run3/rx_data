@@ -11,7 +11,7 @@ from dmu.stats   import CompositeYieldConf
 from dmu.stats   import SimpleYieldConf
 from dmu.generic import UnpackerModel, utilities as gut
 from rx_misid    import MisIDSampleWeights, MisIDSampleSplitting
-from rx_common   import Channel, Component, Project, Mass, Qsq, Region
+from rx_common   import Channel, Component, Project, Mass, Qsq, Brem
 from fitter      import NonParametricConf
 from fitter      import CCbarConf, CombinatorialConf, MisIDConf, ObservableConf, RXFitConfig
 from fitter      import ParametricConf
@@ -167,7 +167,7 @@ def test_parametric_rk(component : Component):
 
     cfg = ParametricConf(**data)
     if component.channel == Channel.ee:
-        cfg = cfg.cfg_clone(prefix = 'BREM', regions = [Region.brem_xx1, Region.brem_xx2])
+        cfg = cfg.cfg_clone(prefix = 'BREM', brems = [Brem.one, Brem.two])
 # ----------------------
 @pytest.mark.parametrize('component', [Component.bdkstkpiee, Component.bdkstkpimm])
 def test_parametric_rkst(component : Component):
@@ -178,7 +178,7 @@ def test_parametric_rkst(component : Component):
 
     cfg = ParametricConf(**data)
     if component.channel == Channel.ee:
-        cfg = cfg.cfg_clone(prefix = 'BREM', regions = [Region.brem_xx1, Region.brem_xx2])
+        cfg = cfg.cfg_clone(prefix = 'BREM', brems = [Brem.one, Brem.two])
 # ----------------------
 def test_misid_weights():
     data = gut.load_data(
@@ -231,7 +231,7 @@ def test_full_model(
         cfg = cfg.cfg_clone(
             q2bin   = q2bin,
             prefix  = 'BREM',
-            regions = [Region.brem_xx1, Region.brem_xx2])
+            brems   = [Brem.one, Brem.two])
 
     cfg.to_yaml(path = tmp_path / 'config.yaml')
 # ----------------------
