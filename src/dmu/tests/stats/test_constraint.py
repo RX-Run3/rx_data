@@ -229,3 +229,23 @@ def test_serialization_1d(tmp_path : Path, data : dict[str,Any]):
 
     assert res == obj
 # ---------------------------------
+def test_serialize_constraints(tmp_path : Path):
+    '''
+    Test that container of constraints can be serialized
+    '''
+    data = gut.load_data(package='dmu_data', fpath='tests/stats/constraints/uncorrelated_gauss.yaml')
+    cn1d = Constraints[Constraint1D](root = data)
+
+    data = gut.load_data(package='dmu_data', fpath='tests/stats/constraints/correlated.yaml')
+    cnnd = Constraints[ConstraintND](root = data)
+
+    root = {**cn1d.root, **cnnd.root}
+    cons = Constraints[Constraint1D | ConstraintND](root = root)
+
+    json_path = tmp_path / 'constraints.json'
+    cons.to_json(json_path)
+
+    loaded = Constraints[Constraint1D | ConstraintND].from_json(json_path)
+
+    assert loaded == cons
+# ---------------------------------

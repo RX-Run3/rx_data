@@ -22,6 +22,8 @@ from pydantic        import BaseModel, model_validator, TypeAdapter
 from pydantic        import RootModel
 
 from dmu             import LogStore
+from dmu.generic     import Serializable
+
 from .fit_result     import FitResult
 from .protocols      import ParsHolder
 from .types          import ConstraintType
@@ -116,7 +118,7 @@ class Constraint(BaseModel):
         '''
         return self.name < other.name
 # ----------------------------------------
-class Constraints[C : Constraint](RootModel[Mapping[str,C]], frozen = True):
+class Constraints[C : Constraint](RootModel[Mapping[str,C]], Serializable, frozen = True):
     '''
     Class meant to be used as a container of constraint objects
 
