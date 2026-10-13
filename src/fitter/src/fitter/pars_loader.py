@@ -13,7 +13,10 @@ from dmu      import LogStore
 
 log = LogStore.add_logger('rx_stats:pars_loader')
 
-NOMINAL : Final[str] = 'nominal'
+_NOMINAL  : Final[str] = 'nominal'
+_NCOLUMNS : Final[int] = 2 # Number of columns
+
+Npaint = numpy.ndarray[tuple[int], numpy.dtype[numpy.float64]]
 # -------------------------------------------------
 class ParsLoader:
     '''
@@ -139,7 +142,7 @@ class ParsLoader:
         -------------
         Tuple with lower and upper variation
         '''
-        if len(strings) != 2:
+        if len(strings) != _NCOLUMNS:
             raise ValueError(f'Expected two column names, found: {strings}')
 
         neg_var = None
@@ -208,7 +211,7 @@ class ParsLoader:
                 log.warning(f'Could not read {path}')
                 continue
 
-            toy  = df['Toy'].to_numpy()
+            toy : Npaint = df['Toy'].to_numpy()
 
             # Seed used to make toy data was
             # built from rseed and toy index
@@ -431,7 +434,7 @@ class ParsLoader:
         for syst, df in self._df.groupby('syst'):
             syst       = str(syst)
             fixed      = syst.startswith('fix_')
-            is_nominal = syst == NOMINAL 
+            is_nominal = syst == _NOMINAL 
 
             if not fixed and not is_nominal:
                 continue
