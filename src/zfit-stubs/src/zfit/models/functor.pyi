@@ -1,3 +1,4 @@
+from zfit import ComposedParameter
 from zfit import Parameter
 from .. import z as z
 from ..core.basepdf import BasePDF as BasePDF
@@ -28,7 +29,7 @@ class SumPDF(BaseFunctor, SerializableMixin):
     def __init__(
         self,
         pdfs: Iterable[ZfitPDF],
-        fracs: Iterable[Parameter] | Iterable[float] | None = None,
+        fracs: Iterable[Parameter] | Iterable[ComposedParameter] | Iterable[float] | None = None,
         obs  : ztyping.ObsTypeInput = None,
         extended: ExtendedInputType = None,
         norm: NormInputType = None,
