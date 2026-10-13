@@ -60,8 +60,8 @@ def _read_values(path : str) -> tuple[float,float,float]:
             continue
 
         if name == Data.sig_yld:
-            nsig = d_pars['value']
-            esig = d_pars['error']
+            nsig : float = d_pars['value']
+            esig : float = d_pars['error']
 
             significance = 100 * esig / nsig
             continue
