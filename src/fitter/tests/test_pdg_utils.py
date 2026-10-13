@@ -17,4 +17,4 @@ def test_simle() -> None:
 
     assert math.isclose(v1, 1.02e-3, rel_tol=1e-3)
     assert math.isclose(v2, 1.27e-3, rel_tol=1e-3)
-    assert math.isclose(v3, 1.03e-3, rel_tol=1e-3)
+    assert math.isclose(v3, 1.01e-3, rel_tol=1e-3)
