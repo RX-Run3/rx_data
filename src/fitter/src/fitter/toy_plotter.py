@@ -13,12 +13,12 @@ from dmu          import LogStore
 from typing       import Final
 from pathlib      import Path
 from scipy.stats  import norm
-from ROOT         import RDF # type: ignore
+from ROOT         import RDF
 from omegaconf    import DictConfig, OmegaConf
 from dmu.plotting import Plotter1D
 
 log=LogStore.add_logger('fitter:toy_plotter')
-TOY_INDEX : Final[str] = 'Toy' # Name of column identifying different fits
+_TOY_INDEX : Final[str] = 'Toy' # Name of column identifying different fits
 # ----------------------
 class MissingVariableConfiguration(Exception):
     '''
@@ -203,7 +203,7 @@ class ToyPlotter:
         for name, df in df.groupby('Parameter'):
             name   = str(name)
             df_ref = self._reformat_df(df=df, name=name)
-            df_ref = df_ref.set_index(TOY_INDEX, drop=True)
+            df_ref = df_ref.set_index(_TOY_INDEX, drop=True)
             l_df.append(df_ref)
 
         # Extract toy-wise columns from any of the dataframes
