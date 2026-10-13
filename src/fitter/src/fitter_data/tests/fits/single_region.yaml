@@ -37,8 +37,7 @@ constraints:
 fit: {}
 plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#fit-plotting
   low:
-    merging : 
-      region_001 : []
+    merging : {}
     regions :
       region_001:
         nbins   : 50

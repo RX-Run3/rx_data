@@ -44,25 +44,25 @@ fit: {}
 plots:
   low:
     merging:
-      region_003:
-        - region_001
-        - region_002
+      brem_x12:
+        - brem_xx1 
+        - brem_xx2 
     regions:
-      region_003:
+      brem_x12:
         title   : Region 1 and 2
         nbins   : 50
         stacked : True
         d_leg :
           Gauss_ext       : Signal
           Exponential_ext : Combinatorial
-      region_001 :
+      brem_xx1:
         title   : Region 1
         nbins   : 50
         stacked : True
         d_leg :
           Gauss_ext       : Signal
           Exponential_ext : Combinatorial
-      region_002 :
+      brem_xx2:
         title   : Region 2
         nbins   : 50
         stacked : True
