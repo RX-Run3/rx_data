@@ -6,6 +6,7 @@ from typing              import Final
 from rx_common           import Component, Correction, Cuts, Qsq, Region
 from rx_selection        import selection as sel
 
+from dmu.stats           import Constraints
 from dmu.stats           import ConstraintType, FitResult, GofCalculator
 from dmu.stats           import ParameterLibrary as PL
 from dmu.stats           import Constraint1D
@@ -199,7 +200,7 @@ class MisIDConstraints(Cache):
 
         return nll
     # ----------------------
-    def get_constraints(self) -> list[Constraint1D]:
+    def get_constraints(self) -> Constraints[Constraint1D]:
         '''
         Returns
         -------------
@@ -237,7 +238,7 @@ class MisIDConstraints(Cache):
                     tconf = type(cfg)
                     raise ValueError(f'Config for {region} is of the wrong type: {tconf}')
 
-                res = ftr.run()
+                res = ftr.run(skip_fit = False)
                 l_res.append(res)
 
         pars  = FitResult.merge(results = l_res)
