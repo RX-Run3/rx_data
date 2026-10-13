@@ -54,6 +54,7 @@ python-slugify
 scikit-learn
 scipy
 seaborn
+types-seaborn
 types-tabulate
 tabulate>=0.9.0
 tensorflow>=2.21.0

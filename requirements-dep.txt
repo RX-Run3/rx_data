@@ -325,6 +325,7 @@ matplotlib==3.10.8
     #   mplhep
     #   seaborn
     #   tensorflow-graphics
+    #   types-seaborn
 mdit-py-plugins==0.6.1
     # via textual
 mdurl==0.1.2
@@ -401,6 +402,7 @@ numpy==2.3.5
     #   tensorflow-graphics
     #   tensorflow-probability
     #   trimesh
+    #   types-seaborn
     #   types-tensorflow
     #   uhi
     #   uproot
@@ -452,7 +454,9 @@ pandas==2.3.3
     #   seaborn
     #   zfit
 pandas-stubs==3.0.5.260914
-    # via -r requirements-dep.in
+    # via
+    #   -r requirements-dep.in
+    #   types-seaborn
 partd==1.4.2
     # via dask
 particle==0.26.0
@@ -756,6 +760,8 @@ types-pyyaml==6.0.12.20260906
     # via -r requirements-dep.in
 types-requests==2.32.4.20250913
     # via types-tensorflow
+types-seaborn==0.13.2.20261006
+    # via -r requirements-dep.in
 types-tabulate==0.10.0.20260508
     # via -r requirements-dep.in
 types-tensorflow==2.18.0.20251008
