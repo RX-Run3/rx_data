@@ -20,7 +20,6 @@ from zfit.data               import Data       as zdat
 from zfit.result             import FitResult  as zres
 from dmu                     import LogStore
 from dmu.generic             import utilities  as gut
-from dmu.stats               import utilities  as sut
 
 from .fit_result            import FitResult
 from .imports               import zfit, tensorflow as tf
@@ -40,6 +39,44 @@ _MAX_PULL       : Final[int  ] = 5    # If fit ull is beyond this, will print in
 _NXPOINTS       : Final[int  ] = 2000 
 '''Number of points to scan PDF for both plotting or calculating normalization'''
 _ALPHA          : Final[float] =  0.8 # Transparency of PDF plots when stacking
+_MIN_LIMITS     : Final[int]   = 2    # Need at least upper and lower limit in observable
+
+#-------------------------------------------------------
+def _range_from_obs(obs : zfit.Space) -> tuple[float,float]:
+    '''
+    Takes zfit observable, returns tuple with two floats, representing range
+    '''
+    if not isinstance(obs.limits, tuple):
+        raise ValueError(f'Cannot retrieve name for: {obs}')
+
+    if len(obs.limits) != _MIN_LIMITS:
+        raise ValueError(f'Observable has more than one range: {obs.limits}')
+
+    minx, maxx = obs.limits
+
+    if not isinstance(minx, np.ndarray):
+        raise ValueError(f'Minx is not an array but: {minx}')
+
+    if not isinstance(maxx, np.ndarray):
+        raise ValueError(f'Minx is not an array but: {maxx}')
+
+    lower : float = minx[0][0]
+    upper : float = maxx[0][0]
+
+    return lower, upper 
+#-------------------------------------------------------
+def _name_from_obs(obs : zfit.Space) -> str:
+    '''
+    Takes zfit observable, returns its name
+    It is assumed this is a 1D observable
+    '''
+    if not isinstance(obs.obs, tuple):
+        raise ValueError(f'Cannot retrieve name for: {obs}')
+
+    if len(obs.obs) != 1:
+        raise ValueError(f'Observable is not 1D: {obs.obs}')
+
+    return obs.obs[0]
 #----------------------------------------
 class EmptyDataSet(Exception):
     '''
@@ -94,7 +131,7 @@ class ZFitPlotter:
 
         self.obs               = model.space
         self.norm              = model.space if not isinstance(model.norm, zfit.Space) else model.norm
-        self._obs_name         = sut.name_from_obs(obs = self.obs)
+        self._obs_name         = _name_from_obs(obs = self.obs)
 
         self.data              = self._data_to_zdata(data, weights)
         self.total_model       = model
@@ -712,7 +749,7 @@ class ZFitPlotter:
         '''
         Range where PDF area is meant to be 1
         '''
-        return sut.range_from_obs(obs = self.norm)
+        return _range_from_obs(obs = self.norm)
     #----------------------------------------
     @property
     def plot_yield(self) -> float:
@@ -818,7 +855,7 @@ class ZFitPlotter:
         stacked                 = False if not isinstance(self.total_model, zfit.pdf.SumPDF) else stacked
         self._figsize           = figsize
         self._leg_loc           = leg_loc
-        self._plot_range        = sut.range_from_obs(self.norm) if plot_range      is None else plot_range
+        self._plot_range        = _range_from_obs(self.norm)    if plot_range      is None else plot_range
         self._l_plot_components = []                            if plot_components is None else plot_components
         self._leg               = {}                            if           d_leg is None else d_leg
         self._col               = {}                            if           d_col is None else d_col
