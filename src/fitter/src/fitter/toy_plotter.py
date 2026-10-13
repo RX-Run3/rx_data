@@ -1,3 +1,4 @@
+# pyrefly: ignore-errors[unknown-variable-type, unknown-argument-type]
 '''
 Module holding ToyPlotter class
 '''
@@ -10,7 +11,7 @@ import seaborn           as sns
 import matplotlib.pyplot as plt
 
 from dmu          import LogStore
-from typing       import Final
+from typing       import Final, Any
 from pathlib      import Path
 from scipy.stats  import norm
 from ROOT         import RDF
@@ -19,6 +20,8 @@ from dmu.plotting import Plotter1D
 
 log=LogStore.add_logger('fitter:toy_plotter')
 _TOY_INDEX : Final[str] = 'Toy' # Name of column identifying different fits
+
+# TODO: Remove omegaconf and use pydantic for proper typing
 # ----------------------
 class MissingVariableConfiguration(Exception):
     '''
@@ -119,7 +122,9 @@ class ToyPlotter:
         '''
         fail = False
         d_gen= {}
-        for par_name, df_par in df.groupby('Parameter'):
+
+        for key, df_par in df.groupby('Parameter'):
+            par_name = str(key)
             gen_vals = df_par['Gen'].unique().tolist()
             ngen     = len(gen_vals)
 
@@ -132,7 +137,8 @@ class ToyPlotter:
                 log.info(20 * '-')
                 continue
 
-            d_gen[par_name] = gen_vals[0]
+            gen_val : float = gen_vals[0]
+            d_gen[par_name] = gen_val
 
         if fail:
             raise ValueError('Multiple generating values')
@@ -200,9 +206,9 @@ class ToyPlotter:
         '''
         df   = df.sort_values(by = 'Parameter').reset_index(drop = True)
         l_df = []
-        for name, df in df.groupby('Parameter'):
-            name   = str(name)
-            df_ref = self._reformat_df(df=df, name=name)
+        for key, df_par in df.groupby('Parameter'):
+            name   = str(key)
+            df_ref = self._reformat_df(df=df_par, name=name)
             df_ref = df_ref.set_index(_TOY_INDEX, drop=True)
             l_df.append(df_ref)
 
@@ -336,7 +342,7 @@ class ToyPlotter:
         log.debug('Getting toys summary')
 
         cfg     = self._cfg.summary
-        summary = {}
+        summary : dict[str, Any] = {}
 
         for col_name in cfg.median:
             val=self._df[col_name].median()
