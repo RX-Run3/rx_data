@@ -10,7 +10,6 @@ from pydantic    import BaseModel, ConfigDict, model_validator
 
 from .cuts       import Cuts
 from .mass       import Mass
-from .region     import Region
 
 _ALL_BLOCKS : Final[set[int]] = {-1, 1, 2, 3, 4, 5, 6, 7, 8}
 log=LogStore.add_logger('rx_common:types')
