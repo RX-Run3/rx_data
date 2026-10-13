@@ -8,7 +8,7 @@ import pytest
 from contextlib    import ExitStack
 from pathlib       import Path
 from rx_common     import Cuts, Trigger, Qsq, Region
-from rx_common     import Component
+from rx_common     import Component, Brem
 from rx_selection  import selection as sel
 from dmu           import LogStore
 from dmu.stats     import ParameterLibrary as PL
@@ -149,9 +149,9 @@ def test_rare_electron_high(tmp_path : Path):
     '''
     Simplest test for rare electron mode
     '''
-    trigger    = Trigger.rk_ee_os
-    region     = Region.brem_x12
-    q2bin      = Qsq.high
+    trigger = Trigger.rk_ee_os
+    brem    = Brem.brx12
+    q2bin   = Qsq.high
 
     data       = gut.load_data(
         package= 'fitter_data',
@@ -168,7 +168,7 @@ def test_rare_electron_high(tmp_path : Path):
         Cache.cache_root(path = tmp_path),\
         sel.custom_selection(d_sel = {Cuts.mass : '(1)', Cuts.brem : 'nbrem != 0'}):
         dmd = DataModel(
-            name    = region,
+            name    = brem,
             cfg     = cfg,
             obs     = cfg.obs,
             trigger = trigger,
