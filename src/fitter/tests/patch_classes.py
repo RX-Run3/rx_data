@@ -42,6 +42,7 @@ def _get_model(trigger : Trigger) -> zsum:
     return total_pdf
 # ----------------------
 class TestCCbarConfTF(BaseModel, frozen = True):
+    from_sim_fit : int = False
     def get_pdf(
         self,
         obs_name: str,
