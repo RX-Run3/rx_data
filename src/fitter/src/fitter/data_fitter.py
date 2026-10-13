@@ -54,14 +54,12 @@ class DataFitter(BaseFitter, Cache):
         self._cfg     = cfg
         self._trigger = cfg.trigger
 
-        regions = '_'.join(d_nll)
-
         BaseFitter.__init__(self)
         # TODO: Is the likelihood hashable?
         # If so, it should be here
         Cache.__init__(
             self,
-            out_path = Path(Component.data_24) / 'fit' / regions,
+            out_path = Path(Component.data_24) / 'fit/merged',
             cfg      = cfg.model_dump())
     # ----------------------
     def _get_full_nll(self) -> NLL:
@@ -138,24 +136,24 @@ class DataFitter(BaseFitter, Cache):
     # ---------------------------------------------
     def _save_merged_regions(
         self, 
-        fres  : FitResult,
-        brem  : Brem, 
-        brems : list[Brem]) -> None:
+        fres    : FitResult,
+        region  : Region, 
+        regions : list[Region]) -> None:
         '''
         Parameters
         ---------------
         fres   : Fit result
-        brem   : Merged brem category 
-        brems  : List of brem categories used to merge 
+        region : Merged signal region 
+        regions: List of signal regions to merge 
         '''
-        if len(brems) < _MIN_REGIONS_IN_CAT:
-            raise ValueError(f'Cannot create category with fewer than two regions, found: {brems}')
+        if len(regions) < _MIN_REGIONS_IN_CAT:
+            raise ValueError(f'Cannot create category with fewer than two regions, found: {regions}')
 
-        out_path = self._out_path / brem 
+        out_path = self._out_path / region.name
 
         log.info(f'Saving fit to: {out_path}')
 
-        nlls     = [ cfg.nll for region, cfg in self._d_nll.items() if region in brems ]
+        nlls     = [ cfg.nll for region, cfg in self._d_nll.items() if region in regions ]
         datasets = [ nll.data[0]  for nll in nlls ]
 
         models : list[zfit.pdf.SumPDF]  = []
@@ -178,7 +176,7 @@ class DataFitter(BaseFitter, Cache):
 
         self._save_fit(
             cut_cfg  = dict(),
-            plt_cfg  = self._cfg.plots[self._q2bin].regions[brem],
+            plt_cfg  = self._cfg.plots[self._q2bin].regions[region],
             data     = zfit.data.concat(datasets),
             model    = model,
             res      = fres,
@@ -198,7 +196,7 @@ class DataFitter(BaseFitter, Cache):
         l_reg  = list(self._d_nll)
 
         for model, data, sel, region in zip(nll.model, nll.data, l_sel, l_reg, strict = True):
-            out_path = self._out_path / region
+            out_path = self._out_path / region.name
 
             log.info(f'Saving fit to: {out_path}')
 
@@ -252,11 +250,11 @@ class DataFitter(BaseFitter, Cache):
             self._cache()
             return fres
 
-        for brem, brems in self._cfg.plots[self._q2bin].merging.items():
+        for region, regions in self._cfg.plots[self._q2bin].merging.items():
             self._save_merged_regions(
-                brem    = brem, 
-                fres    = fres,
-                brems = brems)
+                region = region, 
+                fres   = fres,
+                regions  = regions)
 
         self._cache()
 
