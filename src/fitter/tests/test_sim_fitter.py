@@ -14,7 +14,7 @@ from dmu.generic   import UnpackerModel, utilities as gut
 from dmu.stats     import zfit, utilities as sut
 from dmu.workflow  import Cache
 
-from rx_common     import Component, Cuts, Mass, Qsq, Region
+from rx_common     import Component, Cuts, Mass, Qsq, Brem 
 from rx_common     import Trigger
 from rx_data       import RDFGetter
 from rx_selection  import selection as sel
@@ -98,7 +98,7 @@ def test_nomc(tmp_path : Path):
         cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
 
         ftr = SimFitter(
-            name     = Region.brem_x12,
+            name     = Brem.brx12,
             component= Component.comb,
             cfg      = cfg,
             trigger  = Trigger.rk_ee_os,
@@ -148,7 +148,7 @@ def test_param_clone(
     data = gut.load_data(package='fitter_data', fpath=fpath)
     cfg  = ParametricConf(**data)
     cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
-    cfg  = cfg.cfg_clone(prefix = 'BREM', regions = [Region.brem_xx1, Region.brem_xx2])
+    cfg  = cfg.cfg_clone(prefix = 'BREM', brems = [Brem.one, Brem.two])
     cfg  = cfg.filter_category(func = _filter_category)
 
     d_sel : dict[Cuts, str] = {
@@ -158,7 +158,7 @@ def test_param_clone(
          RDFGetter.max_entries(value = -1),\
         sel.custom_selection(d_sel = d_sel):
         ftr = SimFitter(
-            name     = Region.brem_x12,
+            name     = Brem.brx12,
             component= cfg.component,
             cfg      = cfg,
             trigger  = trigger,
@@ -169,12 +169,12 @@ def test_param_clone(
 
     print_pdf(pdf = pdf)
 # ---------------------------------------------------
-@pytest.mark.parametrize('region' , [Region.brem_xx1 ,    Region.brem_xx2])
+@pytest.mark.parametrize('brem'   , [Brem.one, Brem.two])
 @pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rkst_ee_os])
 def test_param_region(
     tmp_path : Path,
     trigger  : Trigger,
-    region   : Region):
+    brem     : Brem):
     '''
     Test fit to parametrized model in a single signal region
     '''
@@ -192,20 +192,20 @@ def test_param_region(
 
     data = gut.load_data(package='fitter_data', fpath=fpath)
     cfg  = ParametricConf(**data)
-    cfg  = cfg.cfg_copy(replacements = {'BREM' : region})
+    cfg  = cfg.cfg_copy(replacements = {'BREM' : brem})
     cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
     cfg  = cfg.filter_category(func = _filter_category)
 
     d_sel : dict[Cuts, str] = {
         Cuts.cmb : 'mva_cmb > 0.9',
         Cuts.prc : 'mva_prc > 0.5'}
-    d_sel.update(region.selection)
+    d_sel.update(brem.selection)
 
     with Cache.cache_root(path = tmp_path),\
          RDFGetter.max_entries(value = -1),\
         sel.custom_selection(d_sel = d_sel):
         ftr = SimFitter(
-            name     = region,
+            name     = brem,
             component= cfg.component,
             cfg      = cfg,
             trigger  = trigger,
@@ -217,12 +217,12 @@ def test_param_region(
 
     print_pdf(pdf = pdf)
 # ---------------------------------------------------
-@pytest.mark.parametrize('region' , [Region.brem_xx1 ,    Region.brem_xx2])
+@pytest.mark.parametrize('brem'   , [Brem.one, Brem.two])
 @pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rkst_ee_os])
 def test_param_region_constrained(
     tmp_path : Path,
     trigger  : Trigger,
-    region   : Region):
+    brem     : Brem):
     '''
     Test fit to parametrized model in a single signal region and with constraints
     '''
@@ -240,14 +240,14 @@ def test_param_region_constrained(
 
     data = gut.load_data(package='fitter_data', fpath=fpath)
     cfg  = ParametricConf(**data)
-    cfg  = cfg.cfg_copy(replacements = {'BREM' : region})
+    cfg  = cfg.cfg_copy(replacements = {'BREM' : brem})
     cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
     cfg  = cfg.filter_category(func = _filter_category)
 
     with Cache.cache_root(path = tmp_path),\
          RDFGetter.max_entries(value = -1):
         ftr = SimFitter(
-            name     = region,
+            name     = brem,
             component= cfg.component,
             cfg      = cfg,
             trigger  = trigger,
