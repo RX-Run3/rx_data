@@ -280,10 +280,10 @@ class Brem(StrEnum):
     # ----------
     # Composite brem
     # ----------
-    br01x   = 'br01x'
-    br0x2   = 'br0x2'
-    brx12   = 'brx12'
-    br012   = 'br012'
+    br01x   = 'brem_01x'
+    br0x2   = 'brem_0x2'
+    brx12   = 'brem_x12'
+    br012   = 'brem_012'
     # ----------------------
     @property
     def _int_code(self) -> int:
