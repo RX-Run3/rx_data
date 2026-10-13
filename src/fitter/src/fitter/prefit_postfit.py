@@ -3,20 +3,17 @@ Script used to plot prefit and postfit parameters
 '''
 
 import os
-import yaml
 import mplhep
 import pandas            as pnd
 import matplotlib.pyplot as plt
 
 from typing    import Any, Final
 from pathlib   import Path
-from pydantic  import TypeAdapter
 from rx_common import Component
 
 from dmu       import LogStore
-from dmu.stats import Constraint1D, ConstraintND
+from dmu.stats import Constraints, Constraint1D, ConstraintND
 from dmu.stats import FitResult
-from dmu.stats import ConstraintType
 
 plt.style.use(mplhep.style.LHCb2) # type: ignore
 _NLINES : Final[int]           = 4
@@ -148,16 +145,6 @@ def _add_entries_ND(
 
     return values 
 # ---------------------------------------
-def constraint_type_constructor(loader, node):
-    values = loader.construct_sequence(node)
-    return ConstraintType(values[0])
-
-yaml.add_constructor(
-    'tag:yaml.org,2002:python/object/apply:dmu.stats.types.ConstraintType',
-    constraint_type_constructor,
-    Loader=yaml.SafeLoader
-)
-# ---------------------------------------
 def _plot_var(
     out_path : Path,
     regex    : str, 
@@ -228,14 +215,10 @@ def _plot(
     xxx_path: Path to prefit/postfit files
     '''
     res = FitResult.from_json(path = pst_path)
-    with open(pre_path) as ifile:
-        all_cons_data = yaml.safe_load(ifile)
+    cos = Constraints.from_json(path = pre_path)
     
     data : list[dict] = []
-    adapter = TypeAdapter(Constraint1D | ConstraintND)
-    for name, cons_data in all_cons_data.items():
-        cns = adapter.validate_python(cons_data)
-    
+    for cns in cos.root:
         if   isinstance(cns, Constraint1D):
             val = _add_entries_1D(cns = cns, res = res)
             data.append(val)
@@ -243,7 +226,8 @@ def _plot(
             vals = _add_entries_ND(cns = cns, res = res)
             data+= vals
         else:
-            raise ValueError(f'Invalid entry for: {name}')
+            ctype = type(cns)
+            raise ValueError(f'Invalid constraint of type: {ctype}')
     
     df = pnd.DataFrame(data)
     df = df.dropna(subset=['par_nam'])
