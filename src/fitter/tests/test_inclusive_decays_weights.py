@@ -8,10 +8,10 @@ import pandas            as pnd
 import matplotlib.pyplot as plt
 
 from pathlib                         import Path
-from ROOT                            import RDF # type: ignore
+from ROOT                            import RDF
 from dmu                             import LogStore
 from rx_data                         import RDFGetter
-from rx_common                       import Trigger, info
+from rx_common                       import Trigger
 from rx_common                       import Component
 from fitter.inclusive_decays_weights import read_weight 
 
@@ -103,8 +103,7 @@ def test_simple(
             sample = sample, 
             trigger = trigger)
 
-    project      = info.project_from_trigger(trigger=trigger, lower_case=True)
-    df['weight'] = df.apply(read_weight, args=(project,), axis=1)
+    df['weight'] = df.apply(read_weight, args=(trigger.project,), axis=1)
 
     _plot_mass(df, sample, f'{sample}_{trigger}', tmp_path = tmp_path)
 #-----------------------------------------------
