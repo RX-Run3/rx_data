@@ -424,17 +424,18 @@ class MisIDConf(NonParametricConf, frozen = True):
 # ------------------------------
 AnyModelConf = CombinatorialConf | CombinatorialConfUnconstrained | ParametricConf | CCbarConf | MisIDConf | NonParametricConf | CCbarConfTF
 # ------------------------------
-class PlotConf[T : Brem | Region](BaseModel):
-    merging : dict[Brem,   list[Brem]]
-    regions : dict[T, ZFitPlotterConf]
+class PlotConf(BaseModel):
+    merging : dict[Region,    list[Region]]
+    regions : dict[Region, ZFitPlotterConf]
     # -----------------------------
     @classmethod
     def default(cls) -> Self:
         '''
         Returns default config, useful for tests
         '''
-        merging : dict[Brem,list[Region]] = {}
-        brems = {Brem.one : ZFitPlotterConf.default()}
+        merging : dict[Region,list[Region]] = {}
+        region = Region.model_validate('brem_xx1-rk_ee_os')
+        brems  = {region : ZFitPlotterConf.default()}
 
         return cls(
             merging = merging,
