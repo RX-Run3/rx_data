@@ -4,8 +4,8 @@ Module containing Q2SmearCalculator class
 import pandas as pnd
 
 from typing      import Final
-from ROOT        import RDF # type: ignore
-from rx_common   import Block, Brem, Channel, Correction, info
+from ROOT        import RDF
+from rx_common   import Block, Brem, Channel, Correction
 from dmu         import LogStore
 
 from .scale_reader import ScaleReader
@@ -204,6 +204,23 @@ class Q2SmearCorrector:
 
         return masses
     # ----------------------
+    def _is_rdf_data(self, rdf : RDF.RNode) -> bool:
+        '''
+        Parameters
+        -------------
+        rdf: ROOT dataframe
+
+        Returns
+        -------------
+        True for real data and false for MC
+        '''
+        log.debug('Checking for data')
+
+        names = [ name.c_str() for name in rdf.GetColumnNames() ]
+        trueid= [ name         for name in names if name.endswith('TRUEID')]
+
+        return not trueid
+    # ----------------------
     def get_rdf(self, rdf : RDF.RNode) -> RDF.RNode:
         '''
         Parameters
@@ -214,7 +231,7 @@ class Q2SmearCorrector:
         -------------
         ROOT dataframe with data to be smeared
         '''
-        if info.is_rdf_data(rdf=rdf):
+        if self._is_rdf_data(rdf=rdf):
             log.info('DataFrame from real data, will return unsmeared variables')
             return self._process_data(rdf=rdf)
 
