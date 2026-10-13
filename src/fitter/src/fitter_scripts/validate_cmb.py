@@ -22,7 +22,6 @@ from fitter       import CmbValidatorConf
 from fitter       import CmbInputConfig
 from fitter       import CmbValidator
 from fitter       import CmbOutputConfig
-from rx_common    import MVAWp
 
 log=LogStore.add_logger('rx_fitter:validate_cmb')
 _IHEP_ANADIR        : Final[str] = '/publicfs/ucas/user/campoverde/Data'
@@ -262,21 +261,10 @@ def _get_os_df(
 
     with ExitStack() as stack:
         stack.enter_context(gut.environment(mapping = {'ANADIR' : _IHEP_ANADIR}))
-
-        smr= FitSummary(
-            name   = 'rare_fix_cmb_pars',
-            data   = Component.data_24,
-            signal = None)
-        df = smr.get_df(
-            by_fit       = False,
-            force_update = True)
-
-        df = _preprocess_os_df(
-            df       = df,
-            cfg      = cfg,
-            prefixes = prefixes)
-
-        l_df.append(df)
+        raise NotImplementedError(
+            '''
+            Implementation here needs to take into account new desing for FitSummary
+            ''')
 
     return l_df
 # --------------------------------
