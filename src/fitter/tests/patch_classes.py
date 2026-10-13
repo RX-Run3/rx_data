@@ -228,7 +228,7 @@ class TestDataPreprocessor:
             return 30
 
         if self._q2bin.is_rare:
-            return 100
+            return 70
 
         return 20
     # --------------------------
