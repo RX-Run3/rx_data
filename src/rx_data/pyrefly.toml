@@ -1,5 +1,5 @@
 project-includes = ["**/*.py*"]
-project-excludes = ["**/__pycache__/**"]
+project-excludes = ["**/__pycache__/**", "**/build/**"]
 search-path      = ["src", "tests"]
 
 [errors]
