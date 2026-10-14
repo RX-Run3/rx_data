@@ -192,7 +192,7 @@ class MisIDConstraints(Cache):
 
             ftr = LikelihoodFactory(
                 obs    = region.obs,
-                name   = region,
+                name   = region.name,
                 sample = self._data_sample, 
                 q2bin  = self._q2bin,
                 cfg    = self._cfg)
