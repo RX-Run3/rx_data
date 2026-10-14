@@ -21,7 +21,7 @@ from fitter       import RXFitConfig, FitModelConf
 
 log=LogStore.add_logger('test_cmb_constraints')
 # ----------------------
-@pytest.fixture(scope='module', autouse=True)
+@pytest.fixture(autouse=True)
 def initialize():
     '''
     This will run before any test
