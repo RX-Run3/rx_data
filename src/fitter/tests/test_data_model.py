@@ -199,7 +199,6 @@ def test_misid_rare(
     '''
     Test getting model for misid control region
     '''
-    obs = zfit.Space(region.mass, limits=region.mass.limits)
     data= gut.load_data(
         package='fitter_data',
         fpath  ='misid/rk/ee/data_misid.yaml')
@@ -222,9 +221,9 @@ def test_misid_rare(
         stack.enter_context(ctx_4)
 
         dmd = DataModel(
-            name    = region,
+            name    = region.hadron,
             cfg     = cfg,
-            obs     = obs,
+            obs     = region.obs,
             trigger = Trigger.rk_ee_nopid,
             q2bin   = q2bin)
         pdf = dmd.get_model()

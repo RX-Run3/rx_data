@@ -27,4 +27,4 @@ yld_bdkkk_rkst_no_pid_kaon:
 yld_bdkpipi_rkst_no_pid_kaon:     # Kpipi yield in Kpipi region
   <<: *cns_yields
 yld_bdkkk_rkst_no_pid_pion:     # KKK yield in Kpipi region
- <<: *cns_yields
+  <<: *cns_yields
