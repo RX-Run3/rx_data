@@ -321,13 +321,16 @@ class Trigger(StrEnum):
         '''
         Either 'muon' or 'electron'
         '''
-        if 'ee' in self.name:
+        if '_ee_' in self.name:
             return Channel.ee
     
-        if 'mm' in self.name:
+        if '_mm_' in self.name:
             return Channel.mm
     
-        raise ValueError(f'Cannot determine channel for trigger: {self}')
+        if '_me_' in self.name:
+            return Channel.me
+
+        raise ValueError(f'Cannot determine channel for trigger: {self.name}')
     # -----------
     @property
     def is_ss(self) -> bool:
