@@ -138,18 +138,22 @@ class Region(BaseModel, Serializable, frozen = True):
         Returns list of hadronic misid regions
         '''
         mid_rk_k    = cls(
+            brem    = Brem.br012,
             trigger = Trigger.rk_ee_nopid,
             lepton  = Particle.kaon)
 
         mid_rk_p    = cls(
+            brem    = Brem.br012,
             trigger = Trigger.rk_ee_nopid,
             lepton  = Particle.pion)
 
         mid_rkst_k  = cls(
+            brem    = Brem.br012,
             trigger = Trigger.rkst_ee_nopid,
             lepton  = Particle.kaon)
 
         mid_rkst_p  = cls(
+            brem    = Brem.br012,
             trigger = Trigger.rkst_ee_nopid,
             lepton  = Particle.pion)
 
