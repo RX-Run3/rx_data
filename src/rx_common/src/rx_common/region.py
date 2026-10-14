@@ -7,6 +7,7 @@ from dmu.generic import Serializable
 from dmu.stats   import zfit
 from pydantic    import model_serializer
 from pydantic    import model_validator
+from rx_common   import Component
 from rx_common   import Particle
 from rx_common   import Trigger
 from rx_common   import Brem
@@ -25,6 +26,31 @@ class Region(BaseModel, Serializable, frozen = True):
     brem    : Brem     | None = None
     trigger : Trigger  | None = None
     lepton  : Particle | None = None
+    # ---------------------
+    @property
+    def signal(self) -> Component:
+        '''
+        Signal component that this region targets
+        '''
+        if not self.trigger:
+            raise ValueError(f'Need triger to find signal in: {self.name}')
+
+        if self.trigger.has_pid:
+            raise NotImplementedError(f'No signal implemented for: {self.name}')
+
+        if self.hadron == Particle.kaon and self.trigger.project == Project.rk:
+            return Component.bpkkk
+            
+        if self.hadron == Particle.pion and self.trigger.project == Project.rk:
+            return Component.bpkpipi
+
+        if self.hadron == Particle.kaon and self.trigger.project == Project.rkst:
+            return Component.bdkstkk
+            
+        if self.hadron == Particle.pion and self.trigger.project == Project.rkst:
+            return Component.bdkstpipi
+
+        raise NotImplementedError(f'No signal implemented for: {self.name}')
     # ---------------------
     @property
     def hadron(self) -> Particle:
