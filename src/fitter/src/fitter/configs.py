@@ -900,19 +900,12 @@ class RXFitConfig(BaseModel):
 
         return out_dir
     # ----------------------
-    def data_fit_directory(self, regions : Sequence[str]) -> Path:
+    @property
+    def fit_directory(self) -> Path:
         '''
-        Parameters
-        ------------------
-        regions: Sequence of fitting regions, e.g. brem_xx1, brem_xx2
-
-        Returns
-        ------------------
         Directory where region directories go 
         '''
-        regs = '_'.join(regions)
-
-        return self.output_directory / Path(Component.data_24) / 'fit' / regs
+        return self.output_directory / Path(Component.data_24) / 'fit/merged'
     # ----------------------
     @cached_property
     def obs(self) -> zobs:

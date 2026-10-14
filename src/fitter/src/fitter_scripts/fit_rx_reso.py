@@ -264,9 +264,8 @@ def main():
         else:
             d_nll = _fit_muon(cfg=cfg)
 
-    reg_dir = cfg.data_fit_directory(regions = 'regions')
     for region, nll_cfg in d_nll.items():
-        out_path = reg_dir / region.name / 'nll.bytes'
+        out_path = cfg.fit_directory / region.name / 'nll.bytes'
         log.info(f'Saving: {out_path}')
         sut.save_nll(loss = nll_cfg.nll, path = out_path)
 # ----------------------
