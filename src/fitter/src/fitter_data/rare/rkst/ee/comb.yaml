@@ -50,13 +50,13 @@ reg_cfg: &reg_cfg
 
 plt_cfg: &plt_cfg
   merging:
-    brem_x12:
-      - brem_xx1
-      - brem_xx2
+    brem_x12-rkst_ee_ss:
+      - brem_xx1-rkst_ee_ss
+      - brem_xx2-rkst_ee_ss
   regions:
-    brem_x12 : *reg_cfg
-    brem_xx1 : *reg_cfg
-    brem_xx2 : *reg_cfg
+    brem_x12-rkst_ee_ss : *reg_cfg
+    brem_xx1-rkst_ee_ss : *reg_cfg
+    brem_xx2-rkst_ee_ss : *reg_cfg
 # ----------------------------------------------------
 mod_cfg: &mod_cfg
   trigger          : rkst_ee_ss

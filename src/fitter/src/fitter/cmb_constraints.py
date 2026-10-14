@@ -8,7 +8,7 @@ from dmu          import LogStore
 from dmu.stats    import ConstraintType, FitParameter, FitResult, zfit
 from dmu.workflow import Cache
 from dmu.stats    import ConstraintND
-from rx_common    import Brem, Trigger, Component
+from rx_common    import Brem, Trigger, Component, Region
 from rx_selection import selection           as sel
 
 from .configs            import CombinatorialConf, RXFitConfig 
@@ -102,13 +102,15 @@ class CmbConstraints(BaseFitter, Cache):
         zres.hesse(method = _ERR_METHOD, name = _ERR_METHOD)
         res       = FitResult.from_zfit(res = zres)
 
+        region = Region(brem = self._brem, trigger = self._trigger)
+
         self._save_fit(
             data    = cfg_nll.nll.data[0],   # Likelihood factory makes NLL for one single region
             model   = cfg_nll.nll.model[0],  # Pick the data and model for that region
             cut_cfg = cfg_nll.selection,
             res     = res, 
             out_path= self._out_path,
-            plt_cfg = self._mod_cfg.plots[self._q2bin].regions[self._brem],
+            plt_cfg = self._mod_cfg.plots[self._q2bin].regions[region],
         )
 
         return res
