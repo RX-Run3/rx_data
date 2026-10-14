@@ -19,9 +19,11 @@ from dmu.stats     import utilities as sut
 from dmu.generic   import utilities as gut
 from dmu.generic   import UnpackerModel
 
+from fitter        import DataPreprocessor
 from fitter        import add_constraints 
 from fitter        import NLLConf
 from rx_common     import MVAWp
+from rx_common     import Trigger
 from fitter        import FitModelConf
 from fitter        import ToyConf
 from fitter        import RXFitConfig
@@ -187,17 +189,20 @@ def _fit_electron(cfg : RXFitConfig) -> dict[Region, NLLConf]:
     -------------
     Dictionary with fitting region mapped to NLLConf
     '''
+    br_1 = Region(brem = Brem.one, trigger = cfg.mod_cfg.trigger)
+    br_2 = Region(brem = Brem.two, trigger = cfg.mod_cfg.trigger)
+
     d_nll : dict[Region,NLLConf] = {}
 
-    d_nll[Region.brem_xx1] = _get_region_nll(brem = Brem.one, cfg = cfg)
-    d_nll[Region.brem_xx2] = _get_region_nll(brem = Brem.two, cfg = cfg)
+    d_nll[br_1] = _get_region_nll(brem = Brem.one, cfg = cfg)
+    d_nll[br_2] = _get_region_nll(brem = Brem.two, cfg = cfg)
 
     with GofCalculator.disabled(value=True):
         ftr = DataFitter(
             q2bin = cfg.q2bin,
             d_nll = d_nll,
             cfg   = cfg.mod_cfg)
-        res = ftr.run()
+        res = ftr.run(skip_fit = False)
 
     log.info(res)
 
@@ -214,15 +219,17 @@ def _fit_muon(cfg : RXFitConfig) -> dict[Region,NLLConf]:
     Dictionary with fitting region mapped to NLLConf
     '''
     d_nll : dict[Region,NLLConf] = {}
-    cfg.name = Region.brem_xx0
-    d_nll[cfg.name] = _get_brem_nll(cfg=cfg, brem = Brem.zero)
+
+    region   = Region(brem = Brem.zero, trigger = cfg.mod_cfg.trigger)
+    cfg.name = region.name 
+    d_nll[region] = _get_brem_nll(cfg=cfg, brem = Brem.zero)
 
     with GofCalculator.disabled(value=True):
         ftr = DataFitter(
             q2bin= cfg.q2bin,
             d_nll= d_nll,
             cfg  = cfg.mod_cfg)
-        res = ftr.run()
+        res = ftr.run(skip_fit=False)
 
     log.info(res)
 
@@ -241,19 +248,25 @@ def main():
         EnableImplicitMT(cfg.ncores)
         log.info(f'Using {cfg.ncores} cores')
 
+    ctx_1 = Cache.cache_root(path=cfg.output_directory)
+    ctx_2 = PL.parameter_schema(cfg=cfg.mod_cfg.yields)
+    ctx_3 = sel.custom_selection(d_sel=cfg.overriding_selection)
+    ctx_4 = DataPreprocessor.use_database()
+
     with ExitStack() as stack:
-        stack.enter_context(Cache.cache_root(path=cfg.output_directory))
-        stack.enter_context(PL.parameter_schema(cfg=cfg.mod_cfg.yields))
-        stack.enter_context(sel.custom_selection(d_sel=cfg.overriding_selection))
+        stack.enter_context(ctx_1)
+        stack.enter_context(ctx_2)
+        stack.enter_context(ctx_3)
+        stack.enter_context(ctx_4)
 
         if cfg.is_electron:
             d_nll = _fit_electron(cfg=cfg)
         else:
             d_nll = _fit_muon(cfg=cfg)
 
-    reg_dir = cfg.data_fit_directory(regions = list(d_nll.keys()))
+    reg_dir = cfg.data_fit_directory(regions = 'regions')
     for region, nll_cfg in d_nll.items():
-        out_path = reg_dir / region / 'nll.bytes'
+        out_path = reg_dir / region.name / 'nll.bytes'
         log.info(f'Saving: {out_path}')
         sut.save_nll(loss = nll_cfg.nll, path = out_path)
 # ----------------------
