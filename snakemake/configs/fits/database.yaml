@@ -1,19 +1,62 @@
 samples:
-  - [data_24    , rk_ee_os   ]
-  - [data_24    , rk_ee_ss   ]
-  - [bpkpee     , rk_ee_os   ]
-  - [bdkstkpiee , rk_ee_os   ]
-  - [bsphiee    , rk_ee_os   ]
-  - [bpk1kpipiee, rk_ee_os   ]
-  - [bpk2kpipiee, rk_ee_os   ]
-  - [bpkstkpiee , rk_ee_os   ]
-  - [bdjpsixee  , rk_ee_os   ]
-  - [bsjpsixee  , rk_ee_os   ]
-  - [bpjpsixee  , rk_ee_os   ]
-  - [bpkpjpsiee , rk_ee_os   ]
-  - [bpkppsi2ee , rk_ee_os   ]
-  - [bpkpipi    , rk_ee_nopid]
-  - [bpkkk      , rk_ee_nopid]
   # ----
-  - [data_24    , rk_mm_os]
-  - [bpkpmm     , rk_mm_os]
+  # Electron rare rk
+  # ----
+  - [data_24       , rk_ee_os   ]
+  - [data_24       , rk_ee_ss   ]
+  - [bpkpee        , rk_ee_os   ]
+  - [bdkstkpiee    , rk_ee_os   ]
+  - [bsphiee       , rk_ee_os   ]
+  - [bpk1kpipiee   , rk_ee_os   ]
+  - [bpk2kpipiee   , rk_ee_os   ]
+  - [bpkstkpiee    , rk_ee_os   ]
+  - [bpkpjpsiee    , rk_ee_os   ]
+  - [bpkppsi2ee    , rk_ee_os   ]
+  - [bpkpipi       , rk_ee_nopid]
+  - [bpkkk         , rk_ee_nopid]
+  # ----
+  # Electron rare rkst
+  # ----
+  - [data_24       , rkst_ee_os   ]
+  - [data_24       , rkst_ee_ss   ]
+  - [bdkstkpiee    , rkst_ee_os   ]
+  - [bpk1kpipiee   , rkst_ee_os   ]
+  - [bpk2kpipiee   , rkst_ee_os   ]
+  - [bdkstkpijpsiee, rkst_ee_os   ]
+  - [bpkstkpipsi2ee, rkst_ee_os   ]
+  - [bdkstpipi     , rkst_ee_nopid]
+  # ----
+  # Muon rare rk
+  # ----
+  - [data_24       , rk_mm_os]
+  - [bpkpmm        , rk_mm_os]
+  # ----
+  # Muon rare rkst
+  # ----
+  - [data_24       , rkst_mm_os]
+  - [bdkstkpimm    , rkst_mm_os]
+  # ----
+  # Resonant electron rk
+  # ----
+  - [bdjpsixee     , rk_ee_os   ]
+  - [bsjpsixee     , rk_ee_os   ]
+  - [bpjpsixee     , rk_ee_os   ]
+  - [bppijpsiee    , rk_ee_os   ]
+  # ----
+  # Resonant muon rk
+  # ----
+  - [bppijpsimm    , rk_mm_os   ]
+  # ----
+  # Resonant electron rkst
+  # ----
+  - [lbpkjpsiee    , rkst_ee_os ]
+  - [bsphijpsiee   , rkst_ee_os ]
+  - [bskstjpsiee   , rkst_ee_os ]
+  - [bdkstkpijpsiee, rkst_ee_os ]
+  # ----
+  # Resonant muon rkst
+  # ----
+  - [lbpkjpsimm    , rkst_mm_os ]
+  - [bsphijpsimm   , rkst_mm_os ]
+  - [bskstjpsimm   , rkst_mm_os ]
+  - [bdkstkpijpsimm, rkst_mm_os ]
