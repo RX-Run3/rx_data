@@ -46,6 +46,7 @@ samples:
   # Resonant muon rk
   # ----
   - [bppijpsimm    , rk_mm_os   ]
+  - [bpkpjpsimm    , rk_mm_os   ]
   # ----
   # Resonant electron rkst
   # ----
