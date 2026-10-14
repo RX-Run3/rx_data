@@ -2,7 +2,9 @@
 Module with functions needed to test EfficiencyCalculator class
 '''
 import pytest
+
 from pathlib         import Path
+from contextlib      import ExitStack
 from dmu.workflow    import Cache
 from dmu             import LogStore
 from rx_common       import Cuts, Qsq, Trigger, Component
@@ -24,7 +26,7 @@ _SAMPLES_NOPID = [
 
 log = LogStore.add_logger('rx_efficiencies:test_efficiency_calculator')
 #-------------------------------------------------
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(autouse=True)
 def initialize():
     '''
     This will run before tests
@@ -47,8 +49,13 @@ def test_rx_efficiency(
     '''
     Calculates efficiency over one sample at a time
     '''
-    with Cache.cache_root(path = tmp_path),\
-         sel.custom_selection(d_sel={Cuts.cmb : '(1)'}):
+    ctx_1 = Cache.cache_root(path = tmp_path)
+    ctx_2 = sel.custom_selection(d_sel={Cuts.cmb : 'true'})
+
+    with ExitStack() as stack:
+        stack.enter_context(ctx_1)
+        stack.enter_context(ctx_2)
+
         obj = EfficiencyCalculator(
             out_dir = tmp_path,
             q2bin   = q2bin, 
