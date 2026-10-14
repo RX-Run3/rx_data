@@ -49,13 +49,13 @@ reg_cfg: &reg_cfg
     bpkpipi_brem_xx2    : $B^+\to K^+\pi^+\pi^-$
 plt_cfg: &plt_cfg
   merging:
-    brem_x12:
-      - brem_xx1
-      - brem_xx2
+    brem_x12-rk_ee_os:
+      - brem_xx1-rk_ee_os
+      - brem_xx2-rk_ee_os
   regions:
-    brem_x12 : *reg_cfg
-    brem_xx1 : *reg_cfg
-    brem_xx2 : *reg_cfg
+    brem_x12-rk_ee_os: *reg_cfg
+    brem_xx1-rk_ee_os: *reg_cfg
+    brem_xx2-rk_ee_os: *reg_cfg
 default_components: &comp
   comb       : rare/rk/ee/comb.yaml
   bdkstkpiee : rare/rk/ee/bdkstkpiee_np.yaml
