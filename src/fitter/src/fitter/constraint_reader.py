@@ -167,7 +167,8 @@ class ConstraintReader:
             cfg   = cfg,
             q2bin = self._cfg.q2bin)
 
-        self._constraints += mrd.get_constraints()
+        cns = mrd.get_constraints()
+        self._constraints += list(cns.root.values())
     # ----------------------
     def _add_combinatorial_constraints(self, skip : bool) -> None:
         '''

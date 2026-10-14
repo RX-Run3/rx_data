@@ -8,7 +8,6 @@ from typing         import Final, cast
 from pathlib        import Path
 from dmu.workflow   import Cache
 from dmu            import LogStore
-from dmu.stats      import print_constraints
 from dmu.stats      import zfit
 from dmu.stats      import ParameterLibrary as PL
 from dmu.generic    import UnpackerModel, utilities           as gut
@@ -293,7 +292,7 @@ def test_all_but_cmb(
             cfg    = cfg)
         constraints= obj.get_constraints()
 
-    print_constraints(constraints = constraints)
+    print(constraints)
 
     # TODO: Needs to be updated when other parameter constraints be implemented
     if kind != 'rare_prec_rk':
@@ -341,7 +340,7 @@ def test_only_cmb(
             skip_prec   = True,
         )
 
-    print_constraints(constraints = constraints)
+    print(constraints)
 
     assert len(constraints.root) > 0
 # --------------------------------------------------------------
@@ -381,7 +380,7 @@ def test_rare_hadronic_misid(
             skip_prec   = True,
     )
 
-    print_constraints(constraints = constraints)
+    print(constraints)
 # --------------------------------------------------------------
 @pytest.mark.parametrize('kind', _RESO_MISID_CONSTRAINTS)
 def test_reso_misid(
@@ -451,7 +450,7 @@ def test_reso_misid(
             cfg    = cfg)
         constraints= obj.get_constraints()
 
-    print_constraints(constraints = constraints)
+    print(constraints)
     log.info(nll)
 
     assert len(constraints.root) > 0
@@ -492,7 +491,7 @@ def test_rare_background_fraction(
     )
 
     log.error('-------------------------------')
-    print_constraints(constraints = constraints)
+    print(constraints)
     log.error('-------------------------------')
 
     assert len(constraints.root) == len(_PRC_COMPONENTS)
@@ -531,7 +530,7 @@ def test_save(
             skip_misid = True,
             save_to    = tmp_path / 'constraints.yaml')
 
-    print_constraints(constraints = constraints)
+    print(constraints)
 
     assert len(constraints.root) > 0
 # --------------------------------------------------------------
