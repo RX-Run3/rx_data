@@ -292,6 +292,9 @@ class Component(StrEnum):
         True if there is a sample, MC or Data, associated to component
         '''
         components = {
+            # ---------------
+            Component.bdkstkk,
+            # ---------------
             Component.bppsi2xee,
             Component.bdpsi2xee,
             Component.bspsi2xee,
