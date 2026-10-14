@@ -220,8 +220,8 @@ def _fit_muon(cfg : RXFitConfig) -> dict[Region,NLLConf]:
     d_nll : dict[Region,NLLConf] = {}
 
     region   = Region(brem = Brem.zero, trigger = cfg.mod_cfg.trigger)
-    cfg.name = region.name 
-    d_nll[region] = _get_brem_nll(cfg=cfg, brem = Brem.zero)
+    cfg.name = str(region.brem)
+    d_nll[region] = _get_brem_nll(cfg=cfg, brem = region.brem)
 
     with GofCalculator.disabled(value=True):
         ftr = DataFitter(
