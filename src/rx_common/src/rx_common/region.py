@@ -27,6 +27,20 @@ class Region(BaseModel, Serializable, frozen = True):
     lepton  : Particle | None = None
     # ---------------------
     @property
+    def hadron(self) -> Particle:
+        '''
+        Hadron name that is used in this hadron MisID region
+        If this is not a misID region, will raise ValueError
+        '''
+        if not self.lepton:
+            raise ValueError(f'No lepton name defined for region {self.name}')
+
+        if not self.lepton.is_hadron:
+            raise ValueError(f'Particle is not a hadron, but: {self.lepton}')
+
+        return self.lepton
+    # ---------------------
+    @property
     def mass(self) -> Mass:
         '''
         Mass used to describe signal/control region

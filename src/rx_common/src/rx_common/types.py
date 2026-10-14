@@ -32,6 +32,10 @@ class Particle(StrEnum):
     '''
     kaon = auto()
     pion = auto()
+    # -----------------------
+    @property
+    def is_hadron(self) -> bool:
+        return self in {Particle.kaon, Particle.pion}
 # ------------------------------
 class Parameter(StrEnum):
     '''
