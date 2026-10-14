@@ -2,11 +2,7 @@
 Script used to interact with DataFitter tool
 and run fits to the resonant mode
 '''
-
-import os
 import argparse
-
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 from typing        import Final
 from ROOT          import EnableImplicitMT # type: ignore
