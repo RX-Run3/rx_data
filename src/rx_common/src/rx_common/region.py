@@ -27,41 +27,48 @@ class Region(BaseModel, Serializable, frozen = True):
     lepton  : Particle | None = None
     # ---------------------
     @property
-    def obs(self) -> zfit.Space:
+    def mass(self) -> Mass:
         '''
-        Observable needed in given signal/control region
+        Mass used to describe signal/control region
         '''
         if self.trigger is None:
             raise ValueError('Cannot provide observable without trigger')
 
         # Muon
         if self.trigger.is_muon and self.trigger.project == Project.rkst:
-            return Mass.bd.obs
+            return Mass.bd
 
         if self.trigger.is_muon and self.trigger.project == Project.rk:
-            return Mass.bp.obs
+            return Mass.bp
 
         # PID
         if self.trigger.has_pid and self.trigger.project == Project.rkst:
-            return Mass.bd_bcor.obs
+            return Mass.bd_bcor
 
         if self.trigger.has_pid and self.trigger.project == Project.rk:
-            return Mass.bp_bcor.obs
+            return Mass.bp_bcor
 
         # No PID
         if self.lepton == Particle.kaon and self.trigger.project == Project.rkst_no_pid:
-            return Mass.bd_kk.obs
+            return Mass.bd_kk
 
         if self.lepton == Particle.pion and self.trigger.project == Project.rkst_no_pid:
-            return Mass.bd_pipi.obs
+            return Mass.bd_pipi
 
         if self.lepton == Particle.kaon and self.trigger.project == Project.rk_no_pid:
-            return Mass.bp_kk.obs
+            return Mass.bp_kk
 
         if self.lepton == Particle.pion and self.trigger.project == Project.rk_no_pid:
-            return Mass.bp_pipi.obs
+            return Mass.bp_pipi
 
         raise ValueError(f'Cannot find observable for region: {self.name}')
+    # ---------------------
+    @property
+    def obs(self) -> zfit.Space:
+        '''
+        Zfit observable associated to region
+        '''
+        return self.mass.obs
     # ---------------------
     @model_validator(mode = 'before')
     @classmethod
