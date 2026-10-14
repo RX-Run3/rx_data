@@ -211,7 +211,7 @@ def test_misid_rare(
     ctx_3 = TestSimFitter.mass(value = region.mass)
     ctx_4 = sel.custom_selection(d_sel = {
         Cuts.brem : 'nbrem != 0',
-        Cuts.mass : '(1)',
+        Cuts.mass : 'true',
         Cuts.cmb  : 'mva_cmb > 0.80 && mva_prc > 0.60'})
 
     with ExitStack() as stack:
