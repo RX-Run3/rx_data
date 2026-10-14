@@ -55,7 +55,9 @@ class Component(StrEnum):
     bpkkk          = auto()
     bpkpik         = auto()
     bpkpipi        = auto()
-    bdkpipi        = auto()
+
+    bdkstpipi      = auto()
+    bdkstkk        = auto()
     # -----
     bpkpee         = auto()
     bpkpjpsiee     = auto()
@@ -488,7 +490,7 @@ class Component(StrEnum):
             return 'Bd_Denu_Kstenu_eq_VIA_HVM_EGDWC'
           case Component.bdkpimunumunu:
             return 'Bd_Dmunu_Kstmunu_eq_DPC'
-          case Component.bdkpipi:
+          case Component.bdkstpipi:
             return 'Bd_piplpimnKst_eq_sqDalitz_DPC'
           case _:
             raise ValueError(f'No sample defined for: {self}')
@@ -704,7 +706,7 @@ class Component(StrEnum):
                 return r'$B^+ \to K^+\pi^-\pi^+$'
             case Component.bpkpik:
                 return r'$B^+ \to K^+\pi^-K^+$'
-            case Component.bdkpipi:
+            case Component.bdkstpipi:
                 return r'$B_d \to K^*(\to K^+\pi^-)\pi^+\pi^-$'
             # -------------------------------------------------
             # Semileptonic
