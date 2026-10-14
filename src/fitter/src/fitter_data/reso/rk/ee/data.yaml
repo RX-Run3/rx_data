@@ -83,19 +83,19 @@ fit: {}
 plots:
   jpsi:
     merging:
-      brem_x12:
-        - brem_xx1
-        - brem_xx2
+      brem_x12-rk_ee_os:
+        - brem_xx1-rk_ee_os
+        - brem_xx2-rk_ee_os
     regions:
-      brem_x12 : *plots_settings_jpsi
-      brem_xx1 : *plots_settings_jpsi
-      brem_xx2 : *plots_settings_jpsi
+      brem_x12-rk_ee_os : *plots_settings_jpsi
+      brem_xx1-rk_ee_os : *plots_settings_jpsi
+      brem_xx2-rk_ee_os : *plots_settings_jpsi
   psi2:
     merging:
-      brem_x12:
-        - brem_xx1
-        - brem_xx2
+      brem_x12-rk_ee_os:
+        - brem_xx1-rk_ee_os
+        - brem_xx2-rk_ee_os
     regions:
-      brem_x12 : *plots_settings_psi2
-      brem_xx1 : *plots_settings_psi2
-      brem_xx2 : *plots_settings_psi2
+      brem_x12-rk_ee_os : *plots_settings_psi2
+      brem_xx1-rk_ee_os : *plots_settings_psi2
+      brem_xx2-rk_ee_os : *plots_settings_psi2
