@@ -2,13 +2,16 @@
 Module with Region enum
 '''
 
-from typing import Any
+from typing      import Any
 from dmu.generic import Serializable
+from dmu.stats   import zfit
 from pydantic    import model_serializer
 from pydantic    import model_validator
 from rx_common   import Particle
 from rx_common   import Trigger
 from rx_common   import Brem
+from rx_common   import Project
+from rx_common   import Mass
 from pydantic    import BaseModel
 from dmu         import LogStore
 
@@ -22,6 +25,43 @@ class Region(BaseModel, Serializable, frozen = True):
     brem    : Brem     | None = None
     trigger : Trigger  | None = None
     lepton  : Particle | None = None
+    # ---------------------
+    @property
+    def obs(self) -> zfit.Space:
+        '''
+        Observable needed in given signal/control region
+        '''
+        if self.trigger is None:
+            raise ValueError('Cannot provide observable without trigger')
+
+        # Muon
+        if self.trigger.is_muon and self.trigger.project == Project.rkst:
+            return Mass.bd.obs
+
+        if self.trigger.is_muon and self.trigger.project == Project.rk:
+            return Mass.bp.obs
+
+        # PID
+        if self.trigger.has_pid and self.trigger.project == Project.rkst:
+            return Mass.bd_bcor.obs
+
+        if self.trigger.has_pid and self.trigger.project == Project.rk:
+            return Mass.bp_bcor.obs
+
+        # No PID
+        if self.lepton == Particle.kaon and self.trigger.project == Project.rkst_no_pid:
+            return Mass.bd_kk.obs
+
+        if self.lepton == Particle.pion and self.trigger.project == Project.rkst_no_pid:
+            return Mass.bd_pipi.obs
+
+        if self.lepton == Particle.kaon and self.trigger.project == Project.rk_no_pid:
+            return Mass.bp_kk.obs
+
+        if self.lepton == Particle.pion and self.trigger.project == Project.rk_no_pid:
+            return Mass.bp_pipi.obs
+
+        raise ValueError(f'Cannot find observable for region: {self.name}')
     # ---------------------
     @model_validator(mode = 'before')
     @classmethod
