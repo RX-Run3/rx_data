@@ -23,7 +23,7 @@ samples:
   - [bpk1kpipiee   , rkst_ee_os   ]
   - [bpk2kpipiee   , rkst_ee_os   ]
   - [bdkstkpijpsiee, rkst_ee_os   ]
-  - [bpkstkpipsi2ee, rkst_ee_os   ]
+  - [bdkstkpipsi2ee, rkst_ee_os   ]
   #- [bdkstpipi     , rkst_ee_nopid]
   # ----
   # Muon rare rk
