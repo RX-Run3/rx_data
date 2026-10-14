@@ -10,7 +10,7 @@ from dmu.workflow    import Cache
 from dmu.stats       import AnealingMinimizer, FitResult, Retries
 from dmu.stats       import zfit
 from dmu.stats       import utilities as sut
-from rx_common       import Component, Qsq, Region, Brem
+from rx_common       import Component, Qsq, Region
 from zfit.exception  import ParamNameNotUniqueError
 from zfit.loss       import ExtendedUnbinnedNLL as NLL
 

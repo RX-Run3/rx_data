@@ -23,7 +23,6 @@ from fitter        import DataPreprocessor
 from fitter        import add_constraints 
 from fitter        import NLLConf
 from rx_common     import MVAWp
-from rx_common     import Trigger
 from fitter        import FitModelConf
 from fitter        import ToyConf
 from fitter        import RXFitConfig
