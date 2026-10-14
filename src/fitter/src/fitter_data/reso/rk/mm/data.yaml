@@ -34,7 +34,7 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
   jpsi:
     merging : {}
     regions :
-      brem_xx0:
+      brem_xx0-rk_mm_os:
         nbins           : 400
         stacked         : True
         d_leg :
@@ -50,7 +50,7 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
   psi2:
     merging : {}
     regions :
-      brem_xx0:
+      brem_xx0-rk_mm_os:
         nbins           : 80
         stacked         : True
         d_leg :
