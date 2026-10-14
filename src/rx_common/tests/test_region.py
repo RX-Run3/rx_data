@@ -13,12 +13,9 @@ from rx_common import Region
 def test_simple():
     brem = Brem.one
     trig = Trigger.rk_ee_os
+    rg   = Region(brem = brem, trigger = trig)
 
-    rg1  = Region(brem = brem)
-    rg2  = Region(brem = brem, trigger = trig)
-
-    assert rg1.name == str(brem)
-    assert rg2.name == f'{brem}-{trig.name}' 
+    assert rg.name == f'{brem}-{trig.name}' 
 # ----------------------------------------
 def test_serialize(tmp_path : Path):
     brem = Brem.one

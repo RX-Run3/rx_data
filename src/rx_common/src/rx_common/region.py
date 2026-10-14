@@ -23,8 +23,8 @@ class Region(BaseModel, Serializable, frozen = True):
     Enum meant to symbolize control and signal regions, 
     e.g. hadronic misID control region
     '''
-    brem    : Brem     | None = None
-    trigger : Trigger  | None = None
+    brem    : Brem
+    trigger : Trigger
     lepton  : Particle | None = None
     # ---------------------
     @property
@@ -135,7 +135,7 @@ class Region(BaseModel, Serializable, frozen = True):
         parts= name.split('-')
 
         brem = Brem(parts[0]) 
-        trig = Trigger(parts[1])  if len(parts) > 1 else None
+        trig = Trigger(parts[1])
         lept = Particle(parts[2]) if len(parts) > 2 else None # noqa: PLR2004
 
         return {
@@ -147,9 +147,8 @@ class Region(BaseModel, Serializable, frozen = True):
     def _validate_after(self):
         nobr = self.brem    is None
         notr = self.trigger is None
-        nolp = self.lepton  is None
 
-        if nobr and notr and nolp:
+        if nobr or notr:
             raise ValueError('No field specified in region')
 
         return self
