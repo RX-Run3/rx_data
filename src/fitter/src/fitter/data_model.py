@@ -169,7 +169,7 @@ class DataModel:
             for pdf in l_pdf:
                 log.error('-----------------')
                 print_pdf(pdf = pdf, level = LogLevels.error)
-            raise ValueError('Cannot add PDFs') from exc
+            raise ValueError(f'Cannot add PDFs with obs: {self._obs}') from exc
 
         return pdf
     # ------------------------
