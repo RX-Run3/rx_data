@@ -26,7 +26,7 @@ def test_properties(brem : Brem, block : Block):
         pdf       = pdf,
         sumw      = 1000.,
         model     = [Model.gauss],
-        selection = {Cuts.mass : '(1)'})
+        selection = {Cuts.mass : 'true'})
 
     assert cat.pdf  == pdf
     assert cat.brem == brem
