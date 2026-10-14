@@ -33,7 +33,7 @@ def initialize():
     '''
     LogStore.set_level('fitter:data_preprocessor', 10)
 # -------------------------------------------------
-@pytest.mark.fixture(autouse=True)
+@pytest.fixture(autouse=True)
 def max_entries():
     '''
     This fixture runs for all the tests in this module
@@ -203,16 +203,14 @@ def test_brem_cat_data(
 
     _validate_data(data=dat, tmp_path = tmp_path)
 # -------------------------------------------------
-@pytest.mark.parametrize('component', [
-    Component.bpkkk,
-    Component.bpkpipi])
-@pytest.mark.parametrize('region', [Region.bpkk, Region.bppipi])
-@pytest.mark.parametrize('kind'  , ['signal'   ,     'control'])
+@pytest.mark.parametrize('component', [ Component.bpkkk, Component.bpkpipi])
+@pytest.mark.parametrize('region'   , Region.hadronic_misid())
+@pytest.mark.parametrize('kind'     , ['signal', 'control'])
 def test_with_pid_weights(
-    tmp_path : Path,
-    component: Component,
-    region   : Region, 
-    kind     : str) -> None:
+    tmp_path  : Path,
+    component : Component,
+    region    : Region, 
+    kind      : str) -> None:
     '''
     Parameters
     -------------
