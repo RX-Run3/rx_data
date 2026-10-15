@@ -3,6 +3,9 @@ Script used to interact with DataFitter tool
 and run fits to the resonant mode
 '''
 import argparse
+import os
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 from typing        import Final
 from ROOT          import EnableImplicitMT # type: ignore
