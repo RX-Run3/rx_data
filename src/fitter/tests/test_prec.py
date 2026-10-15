@@ -89,7 +89,7 @@ def test_muon_reso(tmp_path : Path, trig : Trigger, q2bin : str, mass : str):
     fit_cfg = KDEConf.default()
     pad_cfg = PaddingConf(lowermirror=0.5)
     fit_cfg = fit_cfg.model_copy(update = {'padding' : pad_cfg})
-    cfg     = cfg.model_copy(update = {'fit' : fit_cfg})
+    cfg     = cfg.model_copy(update = {'fit' : {q2bin : fit_cfg}})
 
     with RDFGetter.max_entries(value = 100_000),\
          Cache.cache_root(tmp_path):
