@@ -525,8 +525,8 @@ class SimFitter(BaseFitter, Cache):
         - None, if no data was found
         '''
         ftr=PRec(
+            obs     = cfg.obs,
             name    = self._name,
-            obs     = self._cfg.obs,
             trig    = self._trigger,
             q2bin   = self._q2bin  ,
             cfg     = cfg)
