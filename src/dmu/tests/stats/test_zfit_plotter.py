@@ -1,10 +1,6 @@
 '''
 Module with tests for zutils.plot plot class
 '''
-import os
-
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-
 import numpy
 import pytest
 import matplotlib.pyplot as plt
@@ -148,13 +144,20 @@ def test_legend(tmp_path : Path):
 
     obj   = ZFitPlotter(data=sam, model=pdf)
     d_leg = {'gauss': 'New Gauss'}
-    obj.plot(nbins=50, d_leg=d_leg, stacked=False, plot_range=(0, 10), ext_text='Extra text here')
+    obj.plot(
+        nbins     =50, 
+        d_leg     =d_leg, 
+        stacked   =False, 
+        plot_range=(0, 10), 
+        ext_text  ='Extra text here')
 
     # add a line to pull hist
     obj.axs[1].plot([0, 10], [0, 0], linestyle='--', color='black')
+
+    obj.set_yscale('linear')
     plt.savefig(tmp_path / 'fit_lin.png', bbox_inches='tight')
 
-    obj.axs[0].set_yscale('log')
+    obj.set_yscale('log')
     plt.savefig(tmp_path / 'fit_log.png', bbox_inches='tight')
 #--------------------------------
 def test_size(tmp_path : Path):
