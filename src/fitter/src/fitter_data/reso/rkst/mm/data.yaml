@@ -2,7 +2,7 @@
 plt_cfg: &plt_cfg
   merging : {}
   regions :
-    brem_xx0:
+    brem_xx0-rkst_mm_os:
       nbins   : 210
       stacked : True
       d_leg :

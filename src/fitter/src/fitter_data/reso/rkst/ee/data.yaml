@@ -111,19 +111,19 @@ fit: {}
 plots:
   jpsi :
     merging :
-      brem_x12:
-        - brem_xx1
-        - brem_xx2
+      brem_x12-rkst_ee_os:
+        - brem_xx1-rkst_ee_os
+        - brem_xx2-rkst_ee_os
     regions :
-      brem_xx1 : *reg_cfg_jpsi
-      brem_xx2 : *reg_cfg_jpsi
-      brem_x12 : *reg_cfg_jpsi
+      brem_xx1-rkst_ee_os : *reg_cfg_jpsi
+      brem_xx2-rkst_ee_os : *reg_cfg_jpsi
+      brem_x12-rkst_ee_os : *reg_cfg_jpsi
   psi2 :
     merging :
-      brem_x12:
-        - brem_xx1
-        - brem_xx2
+      brem_x12-rkst_ee_os:
+        - brem_xx1-rkst_ee_os
+        - brem_xx2-rkst_ee_os
     regions :
-      brem_xx1 : *reg_cfg_psi2
-      brem_xx2 : *reg_cfg_psi2
-      brem_x12 : *reg_cfg_psi2
+      brem_xx1-rkst_ee_os : *reg_cfg_psi2
+      brem_xx2-rkst_ee_os : *reg_cfg_psi2
+      brem_x12-rkst_ee_os : *reg_cfg_psi2

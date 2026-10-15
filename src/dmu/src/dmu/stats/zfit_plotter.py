@@ -32,7 +32,8 @@ type zpar  = zfit.param.Parameter
 log = LogStore.add_logger('dmu:zfit_plotter')
 plt.style.use(mplhep.style.LHCb2)
 
-_Y_MIN_LOG      : Final[float] = 0.01
+_Y_MIN_LOG      : Final[float] = 0.001
+'''Minimum in y-axis when plotting in log scale'''
 _NORMAL_BINNING : Final[int  ] = 100
 _FINE_BINNING   : Final[int  ] = 200
 _MAX_PULL       : Final[int  ] = 5    # If fit ull is beyond this, will print info message

@@ -134,9 +134,12 @@ class Region(BaseModel, Serializable, frozen = True):
         '''
         parts= name.split('-')
 
-        brem = Brem(parts[0]) 
-        trig = Trigger(parts[1])
-        lept = Particle(parts[2]) if len(parts) > 2 else None # noqa: PLR2004
+        try:
+            brem = Brem(parts[0]) 
+            trig = Trigger(parts[1])
+            lept = Particle(parts[2]) if len(parts) > 2 else None # noqa: PLR2004
+        except Exception as exc:
+            raise ValueError(f'Cannot build region from: {name}') from exc
 
         return {
             'brem'   : brem,

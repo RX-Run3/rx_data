@@ -7,7 +7,7 @@ import numpy
 from contextlib     import contextmanager
 from pathlib        import Path
 from typing         import Any, overload, Literal
-from ROOT           import RDF, TFile # type: ignore
+from ROOT           import RDF, TFile
 from dmu            import LogStore
 from dmu.generic    import hashing
 from dmu.generic    import utilities as gut
@@ -166,8 +166,8 @@ class RDFGetter(SpecMaker):
             if substr not in definition:
                 continue
 
-            # Trees do not exist
-            if not self._ftree_was_excluded(ftree='brem_track_2'):
+            # Brem fixed trees do not exist AND this is the electron channel 
+            if not self._ftree_was_excluded(ftree='brem_track_2') and self._trigger.is_electron:
                 log.warning(f'Skipping definition {name}={definition}')
                 return True
 

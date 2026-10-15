@@ -116,7 +116,8 @@ class GoodnessOfFit(BaseModel, frozen = True):
         fpval = -1 if self.pval is None else self.pval
         indof = self.ndof
 
-        msg = f'chi2: {fchi2:.0f}\n'
+        msg = '\n'
+        msg+= f'chi2: {fchi2:.0f}\n'
         msg+= f'pval: {fpval:.3f}\n'
         msg+= f'Ndof: {indof:}\n'
 

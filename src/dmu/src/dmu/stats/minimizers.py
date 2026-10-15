@@ -264,6 +264,8 @@ class AnealingMinimizer:
         results     = sorted(results)
         best_result = results[-1]
 
+        log.info(f'Picking fit with GOF: {best_result.gof}')
+
         pdf  = self._pdf_from_nll(loss)
         pars = pdf.get_params()
         best_result.set_pars(pars = pars)
