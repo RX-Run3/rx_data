@@ -25,6 +25,7 @@ from fitter        import ParametricConf
 from fitter        import CCbarConf
 from fitter        import NonParametricConf
 from fitter        import MisIDConf
+from fitter        import DataPreprocessor
 from patch_classes import TestDataPreprocessor, TestPRec
 
 log=LogStore.add_logger('fitter:test_sim_fitter')
@@ -32,27 +33,32 @@ log=LogStore.add_logger('fitter:test_sim_fitter')
 type zdat = zfit.data.Data
 type zsum = zfit.pdf.SumPDF
 # ---------------------------------------------------
-@pytest.fixture(autouse=True)
-def initialize(monkeypatch):
+@pytest.fixture(scope = 'module', autouse=True)
+def loggers():
     '''
-    Runs before any test
+    This will run before any test
     '''
-    monkeypatch.setattr('fitter.sim_fitter.DataPreprocessor', TestDataPreprocessor)
-    monkeypatch.setattr('fitter.sim_fitter.PRec'            , TestPRec)
-
     LogStore.set_level('fitter:signal_constraints', 10)
     LogStore.set_level('fitter:data_preprocessor' , 10)
     LogStore.set_level('fitter:category_merger'   , 10)
     LogStore.set_level('fitter:sim_fitter'        , 10)
     LogStore.set_level('fitter:configs'           , 10)
+# ---------------------------------------------------
+@pytest.fixture(autouse=True)
+def patcher(
+    request     : pytest.FixtureRequest, 
+    monkeypatch : pytest.MonkeyPatch):
+    '''
+    Runs before every test
+    '''
+    is_not_integration : bool = request.node.get_closest_marker('integration') is None
 
-    # NOTE: Turn this on to run on real data instead of 
-    # monkey patching TestDataPreprocessor
+    if is_not_integration:
+        monkeypatch.setattr('fitter.sim_fitter.DataPreprocessor', TestDataPreprocessor)
+        monkeypatch.setattr('fitter.sim_fitter.PRec'            , TestPRec)
 
-    #from fitter import DataPreprocessor
-
-    #with DataPreprocessor.use_database():
-    #    yield
+    with DataPreprocessor.use_database():
+        yield
 # ----------------------
 def _filter_category(name : str) -> bool:
     c1 = name.endswith('_b1')
@@ -559,6 +565,36 @@ def test_reso_rkst_ee(
             component= cfg.component,
             cfg      = cfg,
             trigger  = Trigger.rkst_ee_os,
+            q2bin    = q2bin)
+        ftr.get_model()
+# ---------------------------------------------------
+@pytest.mark.integration
+@pytest.mark.parametrize('component', [Component.bdkstkpimm])
+@pytest.mark.parametrize('q2bin'    , Qsq.rare)
+def test_rare_rkst_mm(
+    component : Component,
+    q2bin     : Qsq,
+    tmp_path  : Path):
+    '''
+    Test resonant jpsi and psi2S in rkst muon channel
+    '''
+    cfg_obs   = ObservableConf(
+        name  = Mass.bd,
+        range = (5100, 5500))
+
+    data = gut.load_data(package='fitter_data', fpath=f'rare/rkst/mm/{component}.yaml')
+    cfg  = ParametricConf(**data)
+    cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
+
+    cache = Cache.cache_root(path = tmp_path)
+    with ExitStack() as stack:
+        stack.enter_context(cache)
+
+        ftr = SimFitter(
+            name     = 'main',
+            component= cfg.component,
+            cfg      = cfg,
+            trigger  = Trigger.rkst_mm_os,
             q2bin    = q2bin)
         ftr.get_model()
 # ---------------------------------------------------
