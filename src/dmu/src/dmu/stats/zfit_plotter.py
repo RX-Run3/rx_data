@@ -32,9 +32,9 @@ type zpar  = zfit.param.Parameter
 log = LogStore.add_logger('dmu:zfit_plotter')
 plt.style.use(mplhep.style.LHCb2)
 
-_Y_MIN_LOG      : Final[float] = 0.01
+_Y_MIN_LOG      : Final[float] = 0.1
 '''Minimum in y-axis when plotting in log scale'''
-_Y_MAX_LOG_SCALE: Final[float] = 1000
+_Y_MAX_LOG_SCALE: Final[float] = 10000
 '''Factory by which to multiply maximum of histogram when plotting in log scale'''
 
 _NORMAL_BINNING : Final[int  ] = 100
@@ -156,6 +156,8 @@ class ZFitPlotter:
         self._l_blind : tuple[str,float,float] | None = None
         self._figsize : tuple[int,int]         | None = None
         self._leg_loc : str                    | None = None
+        self._data_hist  : BaseHist | None            = None
+        self._ymax : float | None                     = None
 
         self._l_def_col = list(mcolors.TABLEAU_COLORS.keys())
     #----------------------------------------
@@ -330,6 +332,8 @@ class ZFitPlotter:
             histtype   = 'errorbar',
             label      = self._leg.get('Data', 'Data'),
             ax         = ax)
+
+        self._data_hist = data_hist
 
         return data_hist
     #----------------------------------------
@@ -726,16 +730,23 @@ class ZFitPlotter:
     #----------------------------------------
     def _set_yrange(
         self, 
-        yscale    : str,
         data_hist : BaseHist | None, 
         ymax      : float    | None) -> None:
+        axis = self.axs[0]
+        scale= axis.get_yscale()
+        ymin = _Y_MIN_LOG if scale == 'log' else 0
 
-        ymin = _Y_MIN_LOG if yscale == 'log' else 0
-        if data_hist and not ymax:
+        if data_hist and not ymax and scale == 'log':
             val = _Y_MAX_LOG_SCALE * data_hist.values()
             ymax= np.max(val)
 
-        self.axs[0].set_ylim(bottom = ymin, top = ymax)
+        axis.set_ylim(bottom = ymin, top = ymax)
+    #----------------------------------------
+    def set_yscale(self, scale : str) -> None:
+        self.axs[0].set_yscale(scale)
+        self._set_yrange(
+            ymax      = self._ymax,
+            data_hist = self._data_hist)
     #----------------------------------------
     @property
     def hist_area(self) -> float:
@@ -881,6 +892,7 @@ class ZFitPlotter:
         self.axs                = self._get_axis(add_pars, skip_pulls) if axs is None else axs
         self._l_blind           = blind
         self._nbins             = nbins
+        self._ymax              = ymax
 
         try:
             self.errors   = self._get_errors(ranges)
@@ -920,7 +932,6 @@ class ZFitPlotter:
 
         self._set_yrange(
             data_hist = data_hist, 
-            yscale    = yscale, 
             ymax      = ymax)
 
         if not skip_pulls:
