@@ -8,7 +8,7 @@ import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-from ROOT             import EnableImplicitMT # type: ignore
+from ROOT             import EnableImplicitMT
 from typing           import Final
 from contextlib       import ExitStack
 from dmu.generic      import UnpackerModel, utilities as gut
@@ -177,7 +177,10 @@ def _fit(cfg : RXFitConfig) -> None:
     This is where DataFitter is used
     '''
     #brems = [Brem.one, Brem.two]
-    brems = [Brem.brx12]
+    if cfg.mod_cfg.trigger.is_electron:
+        brems = [Brem.brx12]
+    else:
+        brems = [Brem.zero]
 
     d_nll = _get_nll(cfg = cfg, brems = brems)
     ftr   = DataFitter(
