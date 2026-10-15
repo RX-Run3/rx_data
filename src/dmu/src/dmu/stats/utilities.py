@@ -690,8 +690,16 @@ def pdf_to_tex(
         l_line = ifile.read().splitlines()
         l_line = l_line[_PARS_LINE:]
 
+    def _rename(name : str) -> str:
+        val = d_par.get(name)
+
+        if val is None:
+            return name
+
+        return val 
+
     df = _df_from_lines(l_line)
-    df['Parameter']=df.Parameter.apply(lambda x : d_par.get(x, x.replace('_', ' ')))
+    df['Parameter']=df.Parameter.apply(_rename)
 
     out_name = in_path.name.replace('.txt', '.tex')
 
