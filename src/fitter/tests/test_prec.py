@@ -34,6 +34,11 @@ def initialize():
 
     plt.style.use(mplhep.style.LHCb2)
 #-----------------------------------------------
+def _validate_pdf(pdf : zfit.pdf.SumPDF) -> None:
+    for comp in pdf.pdfs:
+        assert comp.norm
+        assert comp.norm == pdf.norm
+#-----------------------------------------------
 @pytest.mark.parametrize('trig', [Trigger.rk_ee_os, Trigger.rkst_ee_os])
 def test_electron(tmp_path : Path, trig : Trigger):
     '''
@@ -69,7 +74,7 @@ def test_electron(tmp_path : Path, trig : Trigger):
     (Trigger.rkst_mm_os, 'jpsi', 'B_const_mass_M'),
     (Trigger.rkst_mm_os, 'psi2', 'B_const_mass_psi2S_M'),
 ])
-def test_muon(tmp_path : Path, trig : Trigger, q2bin : str, mass : str):
+def test_muon_reso(tmp_path : Path, trig : Trigger, q2bin : str, mass : str):
     '''
     Simplest test in muon channel
     '''
@@ -95,7 +100,11 @@ def test_muon(tmp_path : Path, trig : Trigger, q2bin : str, mass : str):
             trig  = trig, 
             q2bin = q2bin)
 
-        obp.get_sum(name = 'ccbar')
+        pdf = obp.get_sum(name = 'ccbar')
+
+    assert isinstance(pdf, zfit.pdf.SumPDF)
+
+    _validate_pdf(pdf = pdf)
 #-----------------------------------------------
 @pytest.mark.parametrize('trig' , [Trigger.rk_ee_os, Trigger.rkst_ee_os])
 @pytest.mark.parametrize('block', range(1, 9))
