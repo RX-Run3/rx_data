@@ -571,13 +571,11 @@ def _save_fit_plot(
     ptr.plot(**cfg.model_dump())
 
     log.info(f'Saving fit to: {fit_path_lin}')
-    ptr.axs[0].set_yscale('linear')
-    ptr.axs[0].set_ylim(bottom=0.0)
+    ptr.set_yscale('linear')
     plt.savefig(fit_path_lin)
 
     log.info(f'Saving fit to: {fit_path_log}')
-    ptr.axs[0].set_yscale('log')
-    ptr.axs[0].set_ylim(bottom=0.01)
+    ptr.set_yscale('log')
     plt.savefig(fit_path_log)
 
     plt.close()
