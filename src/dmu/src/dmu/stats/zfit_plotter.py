@@ -10,7 +10,7 @@ import numpy                 as np
 import matplotlib.pyplot     as plt
 import matplotlib.colors     as mcolors
 
-from hist                    import Hist
+from hist                    import Hist, BaseHist
 from mplhep.error_estimation import poisson_interval
 from typing                  import Final, Self
 from pydantic                import BaseModel, Field
@@ -32,8 +32,11 @@ type zpar  = zfit.param.Parameter
 log = LogStore.add_logger('dmu:zfit_plotter')
 plt.style.use(mplhep.style.LHCb2)
 
-_Y_MIN_LOG      : Final[float] = 0.001
+_Y_MIN_LOG      : Final[float] = 0.01
 '''Minimum in y-axis when plotting in log scale'''
+_Y_MAX_LOG_SCALE: Final[float] = 1000
+'''Factory by which to multiply maximum of histogram when plotting in log scale'''
+
 _NORMAL_BINNING : Final[int  ] = 100
 _FINE_BINNING   : Final[int  ] = 200
 _MAX_PULL       : Final[int  ] = 5    # If fit ull is beyond this, will print info message
@@ -310,13 +313,13 @@ class ZFitPlotter:
     def _plot_data(
         self,
         ax      : Axes,
-        l_range : None | list[Range] = None):
+        l_range : None | list[Range] = None) -> BaseHist:
 
         dat, wgt     = self._get_range_data(l_range, blind=True)
         lower, upper = self.plot_range
 
-        data_hist = hist.Hist.new.Regular(self.nbins, lower, upper, name=self._obs_name, underflow=False, overflow=False)
-        data_hist = data_hist.Weight()
+        builder   = hist.Hist.new.Regular(self.nbins, lower, upper, name=self._obs_name, underflow=False, overflow=False)
+        data_hist = builder.Weight()
         data_hist.fill(dat, weight=wgt)
 
         mplhep.histplot(
@@ -327,6 +330,8 @@ class ZFitPlotter:
             histtype   = 'errorbar',
             label      = self._leg.get('Data', 'Data'),
             ax         = ax)
+
+        return data_hist
     #----------------------------------------
     def _pull_hist(
         self,
@@ -719,6 +724,19 @@ class ZFitPlotter:
 
         return np.linspace(lower, upper, _NXPOINTS)
     #----------------------------------------
+    def _set_yrange(
+        self, 
+        yscale    : str,
+        data_hist : BaseHist | None, 
+        ymax      : float    | None) -> None:
+
+        ymin = _Y_MIN_LOG if yscale == 'log' else 0
+        if data_hist and not ymax:
+            val = _Y_MAX_LOG_SCALE * data_hist.values()
+            ymax= np.max(val)
+
+        self.axs[0].set_ylim(bottom = ymin, top = ymax)
+    #----------------------------------------
     @property
     def hist_area(self) -> float:
         '''
@@ -877,9 +895,10 @@ class ZFitPlotter:
         log.debug('Plotting model components')
         self._plot_model_components(stacked = stacked)
 
+        data_hist : None | BaseHist = None
         if not no_data:
             log.debug('Plotting data')
-            self._plot_data(self.axs[0], ranges)
+            data_hist = self._plot_data(self.axs[0], ranges)
 
         if not skip_pulls and not no_data:
             log.debug('Plotting pulls')
@@ -899,9 +918,10 @@ class ZFitPlotter:
         if title is not None:
             self.axs[0].set_title(title)
 
-        if ymax is not None:
-            ymin = _Y_MIN_LOG if yscale == 'log' else 0
-            self.axs[0].set_ylim(bottom = ymin, top = ymax)
+        self._set_yrange(
+            data_hist = data_hist, 
+            yscale    = yscale, 
+            ymax      = ymax)
 
         if not skip_pulls:
             self.axs[1].set(xlabel=xlabel, ylabel="pulls")
