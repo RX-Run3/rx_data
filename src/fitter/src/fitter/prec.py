@@ -7,7 +7,7 @@ import pandas            as pnd
 import matplotlib.pyplot as plt
 
 from functools             import cached_property
-from ROOT                  import RDF # type: ignore
+from ROOT                  import RDF
 from typing                import Final
 from pathlib               import Path
 from pydantic              import BaseModel, model_validator, ConfigDict
@@ -24,7 +24,6 @@ from dmu.generic           import utilities as gut
 from dmu.workflow          import Cache
 
 from zfit                  import Space         as zobs
-from zfit.pdf              import BasePDF       as zpdf
 from zfit.pdf              import KDE1DimFFT, SumPDF
 
 from rx_data               import RDFGetter
@@ -630,19 +629,21 @@ class PRec(Cache):
         mass           : Mass,
         df             : pnd.DataFrame,
         component_name : str,
-        cfg            : KDEConf) -> CharmoniumComponent:
+        q2bin          : Qsq) -> CharmoniumComponent:
         '''
         Parameters
         ------------------
         name    : Latex name of PDF component
         mass    : Mass to be fitted
         df      : DataCorresponding to given ccbar component
-        cfg     : Fit configuration object
+        q2bin   : q2bin for which mdoel is needed 
 
         Returns
         ------------------
         Model object, holding PDF (or None) and arrays used to build it
         '''
+        cfg      = self._cfg.fit[q2bin]
+
         model    = self.__model_from_df(
             name = component_name,
             df   = df, 
@@ -732,14 +733,14 @@ class PRec(Cache):
             mass           = Mass(self._obs.label), 
             component_name = _MERGED_PDFNAME, 
             df             = df, 
-            cfg            = self._cfg.fit[self._q2bin])
+            q2bin          = self._q2bin)
 
-        model = CCbarModel(
+        merged_model = CCbarModel(
             obs       = self._obs,
             models    = [model], 
             fractions = [1])
 
-        return model
+        return merged_model
     #-----------------------------------------------------------
     def __get_full_split_model(
         self, 
@@ -749,7 +750,7 @@ class PRec(Cache):
                 mass           = Mass(self._obs.label), 
                 component_name = ltex, 
                 df             = df, 
-                cfg            = self._cfg.fit[self._q2bin]) for ltex, df in d_df.items() ]
+                q2bin          = self._q2bin) for ltex, df in d_df.items() ]
 
         models    : list[CharmoniumComponent] = [ model for model in all_models if model.pdf is not None ]
         yields    : list[float   ] = [ self.__yield_in_range(model=model) for    model in models ]
@@ -852,7 +853,7 @@ class PRec(Cache):
         text_path = f'{out_dir}/{name}.txt' 
         sut.print_pdf(model.pdf, txt_path=text_path)
     #-----------------------------------------------------------
-    def get_sum(self, name : str) -> zpdf | None:
+    def get_sum(self, name : str) -> zfit.pdf.SumPDF | _KDEPDF | None:
         '''
         Provides extended PDF that is the sum of multiple KDEs representing PRec background
 
