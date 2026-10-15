@@ -7,7 +7,7 @@ import copy
 from functools   import cached_property
 from pydantic    import BaseModel, field_validator, model_validator
 from pathlib     import Path
-from typing      import TYPE_CHECKING, Any, Callable, Literal, Self, Sequence
+from typing      import TYPE_CHECKING, Any, Callable, Literal, Self
 from rx_common   import MVAWp, Brem
 from rx_common   import Channel, Mass, Project, Qsq, MisID, Region
 from rx_common   import Component, Trigger, CCbarComponent, Cuts
@@ -311,7 +311,7 @@ class NonParametricConf(ComponentConf, frozen = True):
         '''
         Returns
         ----------------
-        Observable used to build KDE
+        Observable used to build KDE, i.e. using `events_range`
         '''
         if self.cfg_obs is None:
             raise ValueError('Observable configuration not set')
