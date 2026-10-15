@@ -329,7 +329,7 @@ def print_pdf(
     l_par_flt, l_par_fix = _get_pars(pdf, blind)
     l_msg : list[str]    = _get_messages(pdf, l_par_flt, l_par_fix, d_const)
     l_msg               += _print_component_pdfs(pdf = pdf)
-    l_msg               += _print_obs(obs = pdf.space)
+    l_msg               += _print_obs(pdf = pdf)
 
     text = '\n'.join(l_msg)
     text = f'\n{text}'
@@ -354,7 +354,7 @@ def print_pdf(
 
     return l_msg
 # ----------------------
-def _print_obs(obs : zobs) -> list[str]:
+def _print_obs(pdf : zpdf) -> list[str]:
     '''
     Parameters
     -------------
@@ -364,19 +364,24 @@ def _print_obs(obs : zobs) -> list[str]:
     -------------
     List of strings to print
     '''
-    val = obs.obs
+    val = pdf.space.obs
     if val is None:
         raise ValueError('Observable is None')
 
-    name         = val[0]
-    lower, upper = range_from_obs(obs = obs)  
+    name = val[0]
+    obs  = pdf.space
+    nrm  = obs if not isinstance(pdf.norm, zfit.Space) else pdf.norm
+
+    lo_ob, up_ob = range_from_obs(obs = obs)  
+    lo_no, up_no = range_from_obs(obs = nrm)  
 
     msg : list[str] = []
     msg.append('---------------------------')
     msg.append('Observable')
     msg.append('---------------------------')
     msg += [f'Name : {name}']
-    msg += [f'Range: {lower:.0f}; {upper:.0f}']
+    msg += [f'Obs  : {lo_ob:.0f}; {up_ob:.0f}']
+    msg += [f'Norm : {lo_no:.0f}; {up_no:.0f}']
 
     return msg
 # ----------------------
