@@ -224,10 +224,14 @@ class AnealingMinimizer:
 
             try:
                 obj = self._min.minimize(loss)
+
+                gcl     = GofCalculator(nll = loss)
+                fit_gof = gcl.get_gof()
+
                 res = _calculate_errors(
                     res = obj,
                     cfg = self._cfg,
-                    gof = GoodnessOfFit.none(),
+                    gof = fit_gof,
                     nll = loss)
             except (ErrorFailError, FailMinimizeNaN, ValueError, RuntimeError, MinimizerFailError):
                 for pdf in loss.model:
@@ -235,9 +239,6 @@ class AnealingMinimizer:
 
                 log.info(f'{i_try:02}/{self._strategy.ntries:02}{"Failed minimization":>25}')
                 continue
-
-            gcl = GofCalculator(nll = loss)
-            gof = gcl.get_gof()
 
             if not res.valid:
                 log.info(f'{i_try:02}/{self._strategy.ntries:02}{"Invalid minimum":>25}')
@@ -247,14 +248,14 @@ class AnealingMinimizer:
                 log.info(f'{i_try:02}/{self._strategy.ntries:02}{"Invalid covariance":>25}')
                 continue
 
-            log.info(f'{i_try:02}/{self._strategy.ntries:02}{gof.chi2:>25.3f}')
-            if gof < self._target_gof:
+            log.info(f'{i_try:02}/{self._strategy.ntries:02}{res.fit_gof.chi2:>25.3f}')
+            if res.fit_gof < self._target_gof:
                 results.append(res)
                 continue
 
-            if gof > self._target_gof:
+            if res.fit_gof > self._target_gof:
                 log.info('Found fit satisfying target GOF:')
-                log.info(gof)
+                log.info(res.fit_gof)
                 return res
 
         if not results:
