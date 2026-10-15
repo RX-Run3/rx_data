@@ -60,6 +60,17 @@ class FitResult(BaseModel, frozen = True):
         return self.model_copy( update = data )
     # ----------------------
     @property
+    def fit_gof(self) -> GoodnessOfFit:
+        '''
+        Goodness of fit object associated with fit
+        If None found will raise ValueError
+        '''
+        if self.gof is None:
+            raise ValueError('No GOF found for current fit result object')
+
+        return self.gof
+    # ----------------------
+    @property
     def __all_parameters(self) -> Sequence[FitParameter]:
         pars = list(self.parameters)
         pars.sort(key = lambda par : par.name)
