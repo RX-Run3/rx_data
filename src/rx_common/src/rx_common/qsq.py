@@ -5,14 +5,22 @@ import re
 
 from functools   import cache
 from pathlib     import Path
-from enum        import StrEnum, auto
+from enum        import StrEnum, auto, EnumMeta
 from typing      import Final
 from dmu.generic import utilities as gut
 
 _MAX_QSQ : Final[float] = 100e6 # Largest q2 value that makes sense
 _REGEX   : Final[str  ] = r'\(q2\s+>\s+(\d+)\)\s+&&\s+\(q2\s+<\s+(\d+)\)' # Used to extract bounds from q2 cut strings
 # -----------------------
-class Qsq(StrEnum):
+class QsqMeta[T : Qsq](EnumMeta):
+    @property
+    def rare(cls : T) -> list['Qsq']:
+        '''
+        List of q2 bins for rare mode
+        '''
+        return [cls.low, cls.central, cls.high]
+# -----------------------
+class Qsq(StrEnum, metaclass = QsqMeta):
     '''
     This class represents different q2 bins
     '''
