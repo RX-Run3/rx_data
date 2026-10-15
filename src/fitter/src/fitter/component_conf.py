@@ -86,10 +86,10 @@ class ComponentConf(UnpackerModel, frozen = True):
         '''
         Returns
         ----------------
-        Observable used to build PDF
+        Normalization observable
         '''
         if self.cfg_obs is None:
             raise ValueError('Normalization range was not initialized')
 
         return self.cfg_obs.obs
-
+# ------------------------------
