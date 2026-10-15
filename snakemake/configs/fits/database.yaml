@@ -61,3 +61,8 @@ samples:
   - [bsphijpsimm   , rkst_mm_os ]
   - [bskstjpsimm   , rkst_mm_os ]
   - [bdkstkpijpsimm, rkst_mm_os ]
+  # ----
+  # Electron resonant swap hadrons rkst
+  # ----
+  - [bdkstjpsimm_had_swp, rkst_mm_os]
+  - [bdkstjpsiee_had_swp, rkst_ee_os]
