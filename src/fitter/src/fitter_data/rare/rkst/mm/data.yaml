@@ -9,8 +9,8 @@ plt_cfg: &plt_cfg
       nbins   : 50
       stacked : True
       d_leg :
-        bdkstkpimm : $B^0\to K^0(\to K^+\pi^-)\mu^+\mu^-$ 
-        comb       : Combinatorial
+        bdkstkpimm_brem_xx0 : $B^0\to K^0(\to K^+\pi^-)\mu^+\mu^-$ 
+        comb_brem_xx0       : Combinatorial
 trigger          : rkst_mm_os
 yields           : model/yields/rkst/rare_muon.yaml
 selection        :
