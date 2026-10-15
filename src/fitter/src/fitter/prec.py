@@ -37,19 +37,17 @@ from .inclusive_sample_weights import Reader as SampleWeightReader
 
 log=LogStore.add_logger('fitter:prec')
 
-_KDEPDF                         = KDE1DimFFT
+_KDEPDF                            = KDE1DimFFT
 _MIN_ENTRIES    : Final[int]       =  40 # Will not build KDE if fewer entries than this are found
 _MODEL_ATTRS    : Final[list[str]] = ['mass', 'wgt', 'dec', 'sam']
 _MASSES         : Final[list[str]] = ['B_M', 'B_Mass', 'B_Mass_smr', 'B_const_mass_M', 'B_const_mass_psi2S_M']
 _MERGED_PDFNAME : Final[str]       = 'ccbar' # Name of KDE built from adding all candidates in a single dataset
 #-----------------------------------------------------------
-class CharmoniumComponent(BaseModel):
+class CharmoniumComponent(BaseModel, frozen = True):
     '''
     Class meant to represent a single charmonium component
     '''
-    model_config = ConfigDict(
-        arbitrary_types_allowed = True,
-        frozen                  = True)
+    model_config = ConfigDict(arbitrary_types_allowed = True)
 
     name: str
     cfg : KDEConf 
