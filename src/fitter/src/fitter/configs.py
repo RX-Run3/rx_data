@@ -103,8 +103,8 @@ class CCbarConf(ComponentConf, frozen = True):
     Class mean to control configuration to fit ccbar components
     '''
     samples : list[CCbarComponent]
-    weights : dict[CCbarWeight,bool]
-    merged  : dict[Qsq,bool]
+    weights : dict[CCbarWeight, bool]
+    merged  : dict[Qsq, bool]
     fit     : dict[Qsq, KDEConf]
     plots   : ZFitPlotterConf
 

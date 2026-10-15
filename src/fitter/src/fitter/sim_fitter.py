@@ -519,18 +519,17 @@ class SimFitter(BaseFitter, Cache):
         - PDF with KDEs added corresponding to different groups of ccbar decays
         - None, if no data was found
         '''
-        ftr=PRec(
+        ftr = PRec(
             obs     = cfg.obs,
             name    = self._name,
             trig    = self._trigger,
             q2bin   = self._q2bin  ,
             cfg     = cfg)
-
-        pdf =ftr.get_sum(name = r'$c\bar{c}+X$')
+        pdf = ftr.get_sum(name = r'$c\bar{c}+X$')
 
         return pdf
     # ------------------------
-    def get_model(self) -> zpdf | None: # noqa: PLR0911
+    def get_model(self) -> zpdf | None:
         '''
         Returns
         ------------
