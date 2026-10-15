@@ -9,8 +9,8 @@ plots_settings: &plots_settings
     - 4500
     - 7000
 # -------------------------------------
-trigger          : rk_ee_os
-yields           : model/yields/rk/reso_electron.yaml
+trigger   : rk_ee_os
+yields    : model/yields/rk/reso_electron.yaml
 selection : 
   jpsi :
     extra   : TMath::Abs(B_const_mass_M) > 5200
@@ -37,5 +37,5 @@ plots:
   jpsi:
     merging : {}
     regions :
-      brem_xx1 : *plots_settings
-      brem_xx2 : *plots_settings
+      brem_xx1-rk_ee_os : *plots_settings
+      brem_xx2-rk_ee_os : *plots_settings
