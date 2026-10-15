@@ -1,10 +1,6 @@
 '''
 Module with SimFitter class
 '''
-import os
-
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-
 from pathlib             import Path
 from typing              import overload, Literal, Final
 from dmu                 import LogStore
@@ -479,9 +475,8 @@ class SimFitter(BaseFitter, Cache):
         - KDE PDF after fit
         - None if there are fewer than _min_kde_entries
         '''
-
         data     = self._d_data[self._name]
-        nentries = self._entries_from_data(data = data, obs = self._cfg.obs)
+        nentries = self._entries_from_data(data = data, obs = cfg.obs)
         if nentries < _MIN_KDE_ENTRIES:
             log.warning(f'Not bulding KDE, found too few entries: {nentries} < {_MIN_KDE_ENTRIES}')
             return 
