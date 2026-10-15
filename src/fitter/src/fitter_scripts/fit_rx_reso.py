@@ -51,18 +51,6 @@ def _set_logs() -> None:
     LogStore.set_level('fitter:sim_fitter'        , 30)
     LogStore.set_level('fitter:likelihood_factory', 30)
 # ----------------------
-def _get_wp(val : str) -> MVAWp:
-    '''
-    Parameters
-    ------------
-    val: Float representing working point
-
-    Returns
-    ------------
-    MVA wp instance
-    '''
-    return MVAWp(float(val))
-# ----------------------
 def _parse_args() -> RXFitConfig:
     '''
     Returns
@@ -79,8 +67,9 @@ def _parse_args() -> RXFitConfig:
     parser.add_argument('-l', '--log_lvl', type=int    , help='Logging level', choices=[5, 10, 20, 30]          , default =20)
     parser.add_argument('-q', '--q2bin'  , type=Qsq    , help='q2 bin'      , choices=Qsq                       , required=True)
     parser.add_argument('-r', '--rawmass',               help='If used, will fit with non-DTF mass'             , action  ='store_true') 
-    parser.add_argument('-C', '--mva_cmb', type=_get_wp, help='Cut on combinatorial MVA working point'          , required=True)
-    parser.add_argument('-P', '--mva_prc', type=_get_wp, help='Cut on part reco MVA working point'              , required=True)
+    parser.add_argument('-C', '--mva_cmb', type=MVAWp.from_str, help='MVA working point, e.g. 0200; 0100-0300'  , required=True)
+    parser.add_argument('-P', '--mva_prc', type=MVAWp.from_str, help='MVA working point, e.g. 0200; 0100-0300'  , required=True)
+
     args = parser.parse_args()
 
     if args.rawmass:
