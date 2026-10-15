@@ -45,13 +45,13 @@ reg_cfg: &reg_cfg
     bdkstkpiee_brem_xx2     : $B^0\to K^*(\to K^+\pi^-)e^+e^-$
 plt_cfg: &plt_cfg
   merging:
-    brem_x12:
-      - brem_xx1
-      - brem_xx2
+    brem_x12-rkst_ee_os:
+      - brem_xx1-rkst_ee_os
+      - brem_xx2-rkst_ee_os
   regions:
-    brem_x12 : *reg_cfg
-    brem_xx1 : *reg_cfg
-    brem_xx2 : *reg_cfg
+    brem_x12-rkst_ee_os : *reg_cfg
+    brem_xx1-rkst_ee_os : *reg_cfg
+    brem_xx2-rkst_ee_os : *reg_cfg
 default_components: &comp
   comb           : rare/rkst/ee/comb.yaml
   ccbar          : rare/rkst/ee/ccbar.yaml

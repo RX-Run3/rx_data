@@ -5,7 +5,7 @@
 plt_cfg: &plt_cfg
   merging : {}
   regions :
-    brem_xx0:
+    brem_xx0-rkst_mm_os:
       nbins   : 50
       stacked : True
       d_leg :
@@ -13,7 +13,10 @@ plt_cfg: &plt_cfg
         comb       : Combinatorial
 trigger          : rkst_mm_os
 yields           : model/yields/rkst/rare_muon.yaml
-selection        : {}
+selection        :
+  low    : {}
+  central: {}
+  high   : {}
 observable:
   low:
     name : B_Mass
