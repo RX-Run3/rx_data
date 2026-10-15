@@ -52,6 +52,9 @@ class CharmoniumComponent(BaseModel, frozen = True):
     name: str
     cfg : KDEConf 
     obs : zobs
+    '''
+    Normalization observable
+    '''
     mass: numpy.ndarray
     wgt : numpy.ndarray # Full weight
     sam : numpy.ndarray # Sample weights
@@ -128,15 +131,16 @@ class CharmoniumComponent(BaseModel, frozen = True):
 
         return int(nentries)
 # ------------------------------
-class CCbarModel(BaseModel):
+class CCbarModel(BaseModel, frozen = True):
     '''
     Class meant to represent PDF meant to model all the charmonium components 
     '''
-    model_config = ConfigDict(
-        arbitrary_types_allowed = True,
-        frozen                  = True)
+    model_config = ConfigDict(arbitrary_types_allowed = True)
     # -------------------------
     obs       : zobs
+    '''
+    Normalization observable
+    '''
     models    : list[CharmoniumComponent] 
     fractions : list[float]
     # -------------------------
@@ -205,7 +209,7 @@ class CCbarModel(BaseModel):
         
         log.debug('Adding PDFs')
         pdf  = zfit.pdf.SumPDF(
-            obs  = self.obs,
+            norm = self.obs,
             pdfs = pdfs, 
             fracs= norm_fractions)
 
