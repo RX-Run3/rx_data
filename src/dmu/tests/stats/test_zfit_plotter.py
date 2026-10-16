@@ -676,7 +676,7 @@ def test_show_components(tmp_path : Path):
 #--------------------------------
 def test_plot_range(tmp_path : Path):
     '''
-    Testing plot of SumPDF (?)
+    Plot in reduced range
     '''
     obs = zfit.Space('m', limits=(0, 10))
 
@@ -694,9 +694,19 @@ def test_plot_range(tmp_path : Path):
     pdf = zfit.pdf.SumPDF([ebkg, esig], obs = obs)
     sam = pdf.create_sampler()
 
-    cfg = ZFitPlotterConf(plot_range = (3, 8), nbins = 40)
+    cfg = ZFitPlotterConf(
+        stacked    = False,
+        plot_range = (3, 8), 
+        nbins      = 40)
     obj = ZFitPlotter(data=sam, model=pdf)
     obj.plot(cfg)
+    plt.savefig(tmp_path / 'fit_ovr.png')
 
-    plt.savefig(tmp_path / 'fit.png')
+    cfg = ZFitPlotterConf(
+        stacked    = True,
+        plot_range = (3, 8), 
+        nbins      = 40)
+    obj = ZFitPlotter(data=sam, model=pdf)
+    obj.plot(cfg)
+    plt.savefig(tmp_path / 'fit_stk.png')
 #--------------------------------
