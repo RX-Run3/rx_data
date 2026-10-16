@@ -513,7 +513,7 @@ class ZFitPlotter:
 
             y, _  = l_y[-1]
 
-        l_y.reverse()
+        l_y.reverse() # puts next plot BEHIND last plot
         ax  = self.axs[0]
         xs  = self._get_xcoor(rng = self.plot_range)
         for ys, name in l_y:
@@ -540,7 +540,10 @@ class ZFitPlotter:
 
         Returns
         ---------------
-        List of arrays of y values paired with model name
+        List of tuples with:
+
+        - Array of normalized to data y values of PDF
+        - Component name
         '''
         l_y : list[tuple[Npaflt, str]] = []
 
@@ -587,6 +590,9 @@ class ZFitPlotter:
         return [ (outer_frac, model) ]
     #----------------------------------------
     def _float_from_par(self, par : zpar) -> float:
+        '''
+        Numerical value of parameter
+        '''
         return float(par.value().numpy())
     #----------------------------------------
     def _get_color(self, name : str) -> str:
@@ -620,8 +626,15 @@ class ZFitPlotter:
         pdf : zpdf,
         xs  : Npaflt) -> Npaflt:
         '''
-        Returns array of y coordinates for array of x corrdinates
-        and a given PDF
+        Parameters
+        -----------------
+        xs : Coordinates in x axis in the plotting range
+        pdf: PDF to scan
+
+        Returns 
+        -----------------
+        array of y coordinates for array of x corrdinates and a given PDF
+        in the plotting range
         '''
         try:
             tensor : tf.Tensor = pdf.pdf(x = xs)
@@ -632,7 +645,7 @@ class ZFitPlotter:
 
         rng= self.plot_range
         ys = tensor.numpy()
-        ys = ys / float(pdf.integrate(limits = rng).numpy())
+        ys = ys / self._integrate(pdf = pdf, rng = rng) 
 
         bin_area = ys * self.scan_width
         area = float(bin_area.sum())
@@ -640,6 +653,22 @@ class ZFitPlotter:
             raise ValueError(f'{pdf.name} not normalized to unity but {area:.3f} in {rng}')
 
         return ys
+    #----------------------------------------
+    def _integrate(self, pdf : zpdf, rng : Range) -> float:
+        '''
+        Parameters
+        ----------------
+        pdf: zfit PDF
+        rng: Tuple with range where to integrate
+
+        Returns
+        ----------------
+        Integral as a float
+        '''
+        tensor  = pdf.integrate(limits = rng)
+        integral= tensor.numpy()
+
+        return float(integral)
     #----------------------------------------
     def _plot_full_model(
         self,
@@ -780,7 +809,7 @@ class ZFitPlotter:
     @property
     def plot_width(self) -> float:
         '''
-        Width of region
+        Width of plotting region 
         '''
         lower, upper = self.plot_range
 
@@ -790,6 +819,7 @@ class ZFitPlotter:
     def scan_width(self) -> float:
         '''
         Distance between points when sampling PDFs
+        in plotting range
         '''
         return self.plot_width / _NXPOINTS
     #----------------------------------------
