@@ -674,3 +674,29 @@ def test_show_components(tmp_path : Path):
 
     plt.savefig(tmp_path / 'fit.png', bbox_inches='tight')
 #--------------------------------
+def test_plot_range(tmp_path : Path):
+    '''
+    Testing plot of SumPDF (?)
+    '''
+    obs = zfit.Space('m', limits=(0, 10))
+
+    mu  = zfit.Parameter("mu", 5.0,  0, 10)
+    sg  = zfit.Parameter("sg", 0.5,  0,  5)
+    sig = zfit.pdf.Gauss(obs=obs, mu=mu, sigma=sg, name='gauss')
+    nsg = zfit.Parameter('nsg', 10_000, 0, 100_000)
+    esig= sig.create_extended(nsg)
+
+    lm  = zfit.Parameter('lm', -0.1, -1, 0)
+    bkg = zfit.pdf.Exponential(obs=obs, lam=lm)
+    nbk = zfit.Parameter('nbk', 10_000, 0, 100_000)
+    ebkg= bkg.create_extended(nbk)
+
+    pdf = zfit.pdf.SumPDF([ebkg, esig], obs = obs)
+    sam = pdf.create_sampler()
+
+    cfg = ZFitPlotterConf(plot_range = (3, 8), nbins = 40)
+    obj = ZFitPlotter(data=sam, model=pdf)
+    obj.plot(cfg)
+
+    plt.savefig(tmp_path / 'fit.png')
+#--------------------------------
