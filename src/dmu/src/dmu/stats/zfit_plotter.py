@@ -487,7 +487,7 @@ class ZFitPlotter:
 
         return yld
     #----------------------------------------
-    def _plot_model_components(self, *, stacked : bool) -> None:
+    def _plot_model_components(self) -> None:
         if not isinstance(self.total_model, zfit.pdf.SumPDF):
             return
 
@@ -505,7 +505,6 @@ class ZFitPlotter:
             models = self._get_components(model = model, frac = frac)
             l_y   += self._scan_subcomponents(
                 y       = y,
-                stacked = stacked,
                 l_model = models)
 
             nsubcomp = len(l_y)
@@ -518,7 +517,7 @@ class ZFitPlotter:
         xs  = self._get_xcoor(rng = self.plot_range)
         for ys, name in l_y:
             log.debug(f'Plotting {name}')
-            if stacked:
+            if self.cfg.stacked:
                 ax.fill_between(xs, ys * self.hist_area, alpha=_ALPHA, label=self.cfg.d_leg.get(name, name), color=self._get_color(name))
             else:
                 ax.plot(xs, ys * self.hist_area, ':',                  label=self.cfg.d_leg.get(name, name), color=self.cfg.d_col.get(name))
@@ -533,16 +532,21 @@ class ZFitPlotter:
         self,
         *,
         y       : Npaflt | None,
-        stacked : bool,
         l_model : list[tuple[float,zpdf]]) -> list[tuple[Npaflt, str]]:
         '''
-        Will split model component into sub components, if needed.
+        Parameters
+        ---------------
+        y      : Array of floats with PDF values for last model, None if this is
+                 the first model
+        l_model: List of tuples with:
+            - Fraction of this PDF in plotting range
+            - PDF representing component of fit
 
         Returns
         ---------------
         List of tuples with:
 
-        - Array of normalized to data y values of PDF
+        - Array of y values of PDF normalized to data in plotting range
         - Component name
         '''
         l_y : list[tuple[Npaflt, str]] = []
@@ -551,7 +555,7 @@ class ZFitPlotter:
         for frc, model in l_model:
             ys = self._evaluate_pdf(pdf = model, xs = xs) * frc
 
-            if stacked:
+            if self.cfg.stacked:
                 y = ys if y is None else y + ys
             else:
                 y = ys 
@@ -846,7 +850,7 @@ class ZFitPlotter:
             self._plot_full_model(self.axs[0], self.total_model)
 
         log.debug('Plotting model components')
-        self._plot_model_components(stacked = self.cfg.stacked)
+        self._plot_model_components()
 
         data_hist : None | BaseHist = None
         if not self.cfg.no_data:
