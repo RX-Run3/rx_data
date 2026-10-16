@@ -517,10 +517,11 @@ class ZFitPlotter:
         xs  = self._get_xcoor(rng = self.plot_range)
         for ys, name in l_y:
             log.debug(f'Plotting {name}')
+
             if self.cfg.stacked:
-                ax.fill_between(xs, ys * self.hist_area, alpha=_ALPHA, label=self.cfg.d_leg.get(name, name), color=self._get_color(name))
+                ax.fill_between(xs, ys, alpha=_ALPHA, label=self.cfg.d_leg.get(name, name), color=self._get_color(name))
             else:
-                ax.plot(xs, ys * self.hist_area, ':',                  label=self.cfg.d_leg.get(name, name), color=self.cfg.d_col.get(name))
+                ax.plot(xs, ys, ':',                  label=self.cfg.d_leg.get(name, name), color=self.cfg.d_col.get(name))
 
         if (blind_name is not None) and (was_blinded is False):
             for model in self.total_model.pdfs:
@@ -578,7 +579,7 @@ class ZFitPlotter:
         - Fraction of this component WRT full model
         - Component
         '''
-        outer_frac = self._float_from_par(frac)
+        outer_frac = self._float_from_par(par = frac)
         split_model= model.name in self.cfg.plot_components
 
         if split_model and isinstance(model, zfit.pdf.SumPDF):
@@ -647,16 +648,23 @@ class ZFitPlotter:
             self._print_data()
             raise ValueError('Cannot evaluate PDF') from exc
 
-        rng= self.plot_range
         ys = tensor.numpy()
-        ys = ys / self._integrate(pdf = pdf, rng = rng) 
-
-        bin_area = ys * self.scan_width
-        area = float(bin_area.sum())
-        if not math.isclose(area, 1, abs_tol=0.01):
-            raise ValueError(f'{pdf.name} not normalized to unity but {area:.3f} in {rng}')
+        ys = ys * self.scale
 
         return ys
+    #----------------------------------------
+    @property
+    def scale(self) -> float:
+        '''
+        Scale factor needed to normalize PDF to data
+        '''
+        rng      = self.plot_range
+        pdf_area = self._integrate(pdf = self.total_model, rng = rng)
+        value    = self.hist_area / pdf_area 
+
+        log.debug(f'Scale: {value:.0f}')
+
+        return value
     #----------------------------------------
     def _integrate(self, pdf : zpdf, rng : Range) -> float:
         '''
@@ -692,7 +700,7 @@ class ZFitPlotter:
 
         ax.plot(
             xs, 
-            ys * self.hist_area, 
+            ys, 
             ls   = linestyle, 
             label= self.cfg.d_leg.get(name, name), 
             color= self.cfg.d_col.get(name))
