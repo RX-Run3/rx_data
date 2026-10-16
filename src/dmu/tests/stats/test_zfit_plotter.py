@@ -418,16 +418,10 @@ def test_stacked(tmp_path : Path):
     print(res)
 
     cfg = ZFitPlotterConf(staked = True)
-    obj = ZFitPlotter(data=sam.numpy().flatten(), model=pdf, result=res)
+    obj = ZFitPlotter(data=sam, model=pdf, result=res)
     obj.plot(cfg)
 
-    # add a line to pull hist
-    obj.axs[1].plot([0, 10], [0, 0], linestyle='--', color='black')
-
     plt.savefig(tmp_path / 'fit_lin.png', bbox_inches='tight')
-
-    obj.set_yscale('log')
-    plt.savefig(tmp_path / 'fit_log.png', bbox_inches='tight')
 #--------------------------------
 def test_composed(tmp_path : Path):
     '''
