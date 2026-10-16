@@ -801,9 +801,9 @@ class ZFitPlotter:
         ----------------
         cfg : ZFitPlotterConf object storing plotting configuration
         '''
-        stacked         = False if not isinstance(self.total_model, zfit.pdf.SumPDF) else cfg.stacked
-        self.cfg        = cfg.model_copy(update={'stacked': stacked})
-        self.axs        = self._get_axis()
+        stacked  = False if not isinstance(self.total_model, zfit.pdf.SumPDF) else cfg.stacked
+        self.cfg = cfg.model_copy(update={'stacked': stacked})
+        self.axs = self._get_axis()
 
         try:
             self.errors   = self._get_errors(self.cfg.ranges)
