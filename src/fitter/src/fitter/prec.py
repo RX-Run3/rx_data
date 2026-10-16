@@ -208,6 +208,7 @@ class CCbarModel(BaseModel, frozen = True):
         
         log.debug('Adding PDFs')
         pdf  = zfit.pdf.SumPDF(
+            obs  = self.obs,
             norm = self.obs,
             pdfs = pdfs, 
             fracs= norm_fractions)
