@@ -15,7 +15,8 @@ from .utilities           import print_pdf
 from .utilities           import save_fit
 from .utilities           import pdf_to_tex
 from .utilities           import is_pdf_usable
-from .zfit_plotter        import ZFitPlotter, ZFitPlotterConf
+from .zfit_plotter        import ZFitPlotter
+from .zfit_plotter_conf   import ZFitPlotterConf
 # ----------------------------------------------
 # PDFs
 # ----------------------------------------------

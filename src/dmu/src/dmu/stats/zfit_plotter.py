@@ -12,8 +12,7 @@ import matplotlib.colors     as mcolors
 
 from hist                    import Hist, BaseHist
 from mplhep.error_estimation import poisson_interval
-from typing                  import Final, Self
-from pydantic                import BaseModel, Field
+from typing                  import Final
 from matplotlib.axes         import Axes
 from zfit.pdf                import BasePDF    as zpdf
 from zfit.data               import Data       as zdat
@@ -21,6 +20,7 @@ from zfit.result             import FitResult  as zres
 from dmu                     import LogStore
 from dmu.generic             import utilities  as gut
 
+from .zfit_plotter_conf     import ZFitPlotterConf
 from .fit_result            import FitResult
 from .imports               import zfit, tensorflow as tf
 
@@ -87,29 +87,6 @@ class EmptyDataSet(Exception):
     Meant to be used when there is no data to be plotted
     '''
     ...
-#----------------------------------------
-class ZFitPlotterConf(BaseModel, frozen = True):
-    '''
-    Class meant to hold configuration for ZFitPlotter
-    '''
-    nbins           : int
-    stacked         : bool
-    plot_components : list[str]                 = Field(default_factory=list)
-    plot_range      : tuple[float,float] | None = None
-    ext_text        : str                       = ''
-    title           : str | None                = None
-    skip_pulls      : bool                      = False
-    d_leg           : dict[str,str]             = Field(default_factory=dict)
-    # ---------------------------
-    @classmethod
-    def default(cls, stacked : bool = True) -> Self:
-        '''
-        Returns default instance of current class
-        '''
-        return cls(
-            nbins           = 50,
-            plot_components = [],
-            stacked         = stacked)
 #----------------------------------------
 class ZFitPlotter:
     '''
