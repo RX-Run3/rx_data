@@ -46,9 +46,11 @@ def test_simple(tmp_path : Path):
     nev = zfit.Parameter('nev', 1000, 0, 10000)
     pdf = pdf.create_extended(nev,)
 
-    obj   = ZFitPlotter(data=arr, model=pdf, result=None)
     d_leg = {'gauss': 'New Gauss'}
-    obj.plot(nbins=50, d_leg=d_leg, plot_range=(-10, 10), ext_text='Extra text here')
+    cfg   = ZFitPlotterConf(d_leg = d_leg)
+
+    obj   = ZFitPlotter(data=arr, model=pdf, result=None)
+    obj.plot(cfg)
     obj.axs[1].set_ylim(-5, 5)
 
     plt.savefig(tmp_path / 'fit.png', bbox_inches='tight')
@@ -67,9 +69,11 @@ def test_high_binning(tmp_path : Path):
     nev = zfit.Parameter('nev', 100_000, 0, 1000_000)
     pdf = pdf.create_extended(nev,)
 
-    obj   = ZFitPlotter(data=arr, model=pdf, result=None)
     d_leg = {'gauss_ext': 'New Gauss'}
-    obj.plot(nbins=400, d_leg=d_leg, plot_range=(-10, 10), ext_text='Extra text here')
+    cfg   = ZFitPlotterConf(d_leg = d_leg)
+
+    obj   = ZFitPlotter(data=arr, model=pdf, result=None)
+    obj.plot(cfg)
     obj.axs[1].set_ylim(-5, 5)
 
     plt.savefig(tmp_path / 'fit.png', bbox_inches='tight')
@@ -115,9 +119,9 @@ def test_title(tmp_path : Path):
     nev = zfit.Parameter('nev', 1000, 0, 10000)
     pdf = pdf.create_extended(nev,)
 
-    obj   = ZFitPlotter(data=arr, model=pdf, result=None)
-    d_leg = {'gauss': 'New Gauss'}
-    obj.plot(title='title here', nbins=50, d_leg=d_leg, plot_range=(-10, 10), ext_text='Extra text here')
+    cfg = ZFitPlotterConf()
+    obj = ZFitPlotter(data=arr, model=pdf, result=None)
+    obj.plot(cfg)
     obj.axs[1].set_ylim(-5, 5)
 
     plt.savefig(tmp_path / 'fit.png', bbox_inches='tight')
@@ -142,14 +146,10 @@ def test_legend(tmp_path : Path):
     pdf = zfit.pdf.SumPDF([ebkg, esig])
     sam = pdf.create_sampler()
 
-    obj   = ZFitPlotter(data=sam, model=pdf)
     d_leg = {'gauss': 'New Gauss'}
-    obj.plot(
-        nbins     =50, 
-        d_leg     =d_leg, 
-        stacked   =False, 
-        plot_range=(0, 10), 
-        ext_text  ='Extra text here')
+    cfg   = ZFitPlotterConf(d_leg = d_leg)
+    obj   = ZFitPlotter(data=sam, model=pdf)
+    obj.plot(cfg)
 
     # add a line to pull hist
     obj.axs[1].plot([0, 10], [0, 0], linestyle='--', color='black')
@@ -174,9 +174,10 @@ def test_size(tmp_path : Path):
     nev = zfit.Parameter('nev', 1000, 0, 10000)
     pdf = pdf.create_extended(nev,)
 
-    obj   = ZFitPlotter(data=arr, model=pdf, result=None)
-    d_leg = {'gauss': 'New Gauss'}
-    obj.plot(nbins=50, d_leg=d_leg, plot_range=(-10, 10), ext_text='Extra text here', figsize=(30, 10))
+    cfg = ZFitPlotterConf(figsize = (30, 10))
+    obj = ZFitPlotter(data=arr, model=pdf, result=None)
+    obj.plot(cfg)
+
     obj.axs[1].set_ylim(-5, 5)
 
     plt.savefig(tmp_path / 'fit.png', bbox_inches='tight')
@@ -195,9 +196,10 @@ def test_leg_loc(tmp_path : Path):
     nev = zfit.Parameter('nev', 1000, 0, 10000)
     pdf = pdf.create_extended(nev,)
 
-    obj   = ZFitPlotter(data=arr, model=pdf, result=None)
-    d_leg = {'gauss': 'New Gauss'}
-    obj.plot(nbins=50, d_leg=d_leg, plot_range=(-10, 10), ext_text='Extra text here', leg_loc='upper left')
+    cfg = ZFitPlotterConf(leg_loc = 'upper left')
+    obj = ZFitPlotter(data=arr, model=pdf, result=None)
+    obj.plot(cfg)
+
     obj.axs[1].set_ylim(-5, 5)
 
     plt.savefig(tmp_path / 'fit.png', bbox_inches='tight')
@@ -234,15 +236,9 @@ def test_weights(tmp_path : Path):
     mnm = zfit.minimize.Minuit()
     res = mnm.minimize(nll)
 
-    #Fake GOF for ploting purposes
-    setattr(res, 'gof', (11, 10, 0.5)) # noqa: B010
-
-    obj   = ZFitPlotter(data=dat, model=pdf, result=res)
-    obj.plot(nbins=50)
-
-    # add a line to pull hist
-    [[lower]], [[upper]] = obs.limits
-    obj.axs[1].plot([lower, upper], [0, 0], linestyle='--', color='black')
+    cfg = ZFitPlotterConf()
+    obj = ZFitPlotter(data=dat, model=pdf, result=res)
+    obj.plot(cfg)
 
     plt.savefig(tmp_path / 'fit_lin.png', bbox_inches='tight')
 #--------------------------------
@@ -270,9 +266,9 @@ def test_low_stat(tmp_path : Path):
     #Fake GOF for ploting purposes
     setattr(res, 'gof', (11, 10, 0.5)) # noqa: B010
 
-    obj   = ZFitPlotter(data=arr, model=pdf, result=res)
-    d_leg = {'gauss': 'New Gauss'}
-    obj.plot(nbins=50, d_leg=d_leg, plot_range=(0, 10), ext_text='Extra text here')
+    cfg = ZFitPlotterConf()
+    obj = ZFitPlotter(data=arr, model=pdf, result=res)
+    obj.plot(cfg)
 
     # add a line to pull hist
     lower, upper = dat.data_range.limit1d
@@ -280,7 +276,7 @@ def test_low_stat(tmp_path : Path):
 
     plt.savefig(tmp_path / 'fit_lin.png', bbox_inches='tight')
 
-    obj.axs[0].set_yscale('log')
+    obj.set_yscale('log')
     plt.savefig(tmp_path / 'fit_log.png', bbox_inches='tight')
 #--------------------------------
 def test_skip_pulls(tmp_path : Path):
@@ -306,8 +302,9 @@ def test_skip_pulls(tmp_path : Path):
 
     setattr(res, 'gof', (11, 10, 0.5)) # noqa: B010
 
-    obj   = ZFitPlotter(data=arr, model=pdf, result=res)
-    obj.plot(plot_range=(0, 10), skip_pulls=True)
+    cfg = ZFitPlotterConf(skip_pulls = True)
+    obj = ZFitPlotter(data=arr, model=pdf, result=res)
+    obj.plot(cfg)
 
     plt.savefig(tmp_path / 'fit_lin.png', bbox_inches='tight')
 #--------------------------------
@@ -332,8 +329,9 @@ def test_nodata(tmp_path : Path):
     mnm = zfit.minimize.Minuit()
     res = mnm.minimize(nll)
 
+    cfg = ZFitPlotterConf(no_data = True)
     obj = ZFitPlotter(data=arr, model=pdf, result=res)
-    obj.plot(nbins=50, plot_range=(0, 10), no_data=True)
+    obj.plot(cfg)
 
     plt.savefig(tmp_path / 'fit_lin.png', bbox_inches='tight')
 #--------------------------------
@@ -360,8 +358,9 @@ def test_empty_region(tmp_path : Path):
 
     wgt = numpy.ones_like(arr, dtype = float)
 
+    cfg = ZFitPlotterConf(plot_range = (0, 10))
     obj = ZFitPlotter(data=arr, model=pdf, result=res, weights=wgt)
-    obj.plot(nbins=50, plot_range=(0, 10))
+    obj.plot(cfg)
 
     plt.savefig(tmp_path / 'fit.png')
 #--------------------------------
@@ -376,14 +375,16 @@ def test_axs(tmp_path : Path):
     sg  = zfit.Parameter("sg", 1.0,  0, 5)
     sg1 = zfit.Parameter("sg1", 1.7,  0, 5)
 
-    pdf = zfit.pdf.Gauss(obs=obs, mu=mu, sigma=sg , name='gauss')
-    pdf1= zfit.pdf.Gauss(obs=obs, mu=mu, sigma=sg1, name='gauss')
+    pdf = zfit.pdf.Gauss(obs=obs, mu=mu, sigma=sg , name='gauss_1')
+    pdf1= zfit.pdf.Gauss(obs=obs, mu=mu, sigma=sg1, name='gauss_2')
 
-    obj   = ZFitPlotter(data=arr, model=pdf)
-    obj.plot(nbins=50, plot_range=(0, 10), ext_text='Extra text here')
+    cfg = ZFitPlotterConf()
+    obj = ZFitPlotter(data=arr, model=pdf)
+    obj.plot(cfg)
 
-    obj1  = ZFitPlotter(data=arr, model=pdf1)
-    obj1.plot(nbins=50, plot_range=(0, 10), ext_text='Extra text here', axs=obj.axs)
+    cfg_1 = ZFitPlotterConf(axs = obj.axs)
+    obj_1 = ZFitPlotter(data=arr, model=pdf1)
+    obj_1.plot(cfg_1)
 
     obj.axs[1].set_ylim(-5, 5)
     obj.axs[1].plot(linestyle='--', color='black')
@@ -416,16 +417,16 @@ def test_stacked(tmp_path : Path):
 
     print(res)
 
-    obj   = ZFitPlotter(data=sam.numpy().flatten(), model=pdf, result=res)
-    d_leg = {'gauss': 'New Gauss'}
-    obj.plot(stacked=True, nbins=50, d_leg=d_leg, plot_range=(0, 10), ext_text='Extra text here')
+    cfg = ZFitPlotterConf(staked = True)
+    obj = ZFitPlotter(data=sam.numpy().flatten(), model=pdf, result=res)
+    obj.plot(cfg)
 
     # add a line to pull hist
     obj.axs[1].plot([0, 10], [0, 0], linestyle='--', color='black')
 
     plt.savefig(tmp_path / 'fit_lin.png', bbox_inches='tight')
 
-    obj.axs[0].set_yscale('log')
+    obj.set_yscale('log')
     plt.savefig(tmp_path / 'fit_log.png', bbox_inches='tight')
 #--------------------------------
 def test_composed(tmp_path : Path):
@@ -448,21 +449,15 @@ def test_composed(tmp_path : Path):
     pdf = zfit.pdf.SumPDF([ebkg, esig])
     sam = pdf.create_sampler()
 
-    obj   = ZFitPlotter(data=sam, model=pdf)
-    d_leg = {'gauss': 'New Gauss'}
-    obj.plot(
-        stacked    = False, 
-        nbins      = 50, 
-        d_leg      = d_leg, 
-        plot_range = (0, 10), 
-        ext_text   = 'Extra text here')
+    cfg = ZFitPlotterConf()
+    obj = ZFitPlotter(data=sam, model=pdf)
+    obj.plot(cfg)
 
     # add a line to pull hist
     obj.axs[1].plot([0, 10], [0, 0], linestyle='--', color='black')
-
     plt.savefig(tmp_path / 'fit_lin.png', bbox_inches='tight')
 
-    obj.axs[0].set_yscale('log')
+    obj.set_yscale('log')
     obj.axs[0].set_ylim(bottom = 0.1)
     plt.savefig(tmp_path / 'fit_log.png', bbox_inches='tight')
 #--------------------------------
@@ -486,8 +481,9 @@ def test_composed_nonextended(tmp_path : Path):
 
     dat = pdf.create_sampler(n=1000)
 
+    cfg = ZFitPlotterConf()
     obj = ZFitPlotter(data=dat, model=pdf)
-    obj.plot(nbins=50, plot_range=(0, 10), stacked=True)
+    obj.plot(cfg)
 
     plt.savefig(tmp_path / 'fit.png', bbox_inches='tight')
 #--------------------------------
@@ -521,20 +517,15 @@ def test_composed_blind(tmp_path : Path):
 
     print(res)
 
-    obj   = ZFitPlotter(data=dat, model=pdf, result=res)
-    obj.plot(
-        nbins     = 50,
-        blind     = ('signal', 4, 5),
-        stacked   = False,
-        plot_range= (0, 10),
-        ext_text  = 'Extra text here')
+    cfg = ZFitPlotterConf(blind = ('signal', 4, 5))
+    obj = ZFitPlotter(data=dat, model=pdf, result=res)
+    obj.plot(cfg)
 
     # add a line to pull hist
     obj.axs[1].plot([0, 10], [0, 0], linestyle='--', color='black')
-
     plt.savefig(tmp_path / 'fit_lin.png', bbox_inches='tight')
 
-    obj.axs[0].set_yscale('log')
+    obj.set_yscale('log')
     plt.savefig(tmp_path / 'fit_log.png', bbox_inches='tight')
 #--------------------------------
 def test_composed_ranges(tmp_path : Path):
@@ -573,13 +564,14 @@ def test_composed_ranges(tmp_path : Path):
 
     print(res)
 
-    obj   = ZFitPlotter(data=sam, model=pdf, result=res)
-    obj.plot(nbins=50, ranges=[(0, 4), (6, 10)], stacked=False)
+    cfg = ZFitPlotterConf(ranges = [(0, 4), (6, 10)])
+    obj = ZFitPlotter(data=sam, model=pdf, result=res)
+    obj.plot(cfg)
     obj.axs[1].set_ylim(-5, 5)
 
     plt.savefig(tmp_path / 'fit_lin.png', bbox_inches='tight')
 
-    obj.axs[0].set_yscale('log')
+    obj.set_yscale('log')
     plt.savefig(tmp_path / 'fit_log.png', bbox_inches='tight')
 #--------------------------------
 def test_plot_pars(tmp_path : Path):
@@ -600,14 +592,16 @@ def test_plot_pars(tmp_path : Path):
     res = mnm.minimize(nll)
 
     plt_path= tmp_path / 'fit_all.png'
-    obj_1=ZFitPlotter(model=pdf, data=dat, result=res)
-    obj_1.plot(add_pars='all')
+    cfg_2 = ZFitPlotterConf(add_pars = 'all')
+    obj_1 = ZFitPlotter(model=pdf, data=dat, result=res)
+    obj_1.plot(cfg_2)
     log.info(f'Saving to: {plt_path}')
     plt.savefig(f'{plt_path}')
 
     plt_path= tmp_path / 'fit_some.png'
-    obj_2=ZFitPlotter(model=pdf, data=dat, result=res)
-    obj_2.plot(add_pars=['mu', 'sg'])
+    cfg_2 = ZFitPlotterConf(add_pars = ['mu', 'sg'])
+    obj_2 = ZFitPlotter(model=pdf, data=dat, result=res)
+    obj_2.plot(cfg_2)
     log.info(f'Saving to: {plt_path}')
     plt.savefig(f'{plt_path}')
 
@@ -640,19 +634,17 @@ def test_blind(tmp_path : Path):
     #Fake GOF for ploting purposes
     setattr(res, 'gof', (11, 10, 0.5)) # noqa: B010
 
-    obj   = ZFitPlotter(data=dat, model=pdf, result=res)
-    d_leg = {'gauss': 'New Gauss'}
-    l_bld = ['gauss_ext', -2, +2]
-    #l_bld = None
-    obj.plot(nbins=50, d_leg=d_leg, stacked=True, blind=l_bld, plot_range=(-5, 5), ext_text='Extra text here')
+    cfg = ZFitPlotterConf(blind = ['gauss_ext', -2, +2])
+    obj = ZFitPlotter(data=dat, model=pdf, result=res)
+    obj.plot(cfg)
 
     # add a line to pull hist
     lower, upper = dat.data_range.limit1d
-    obj.axs[1].plot([lower, upper], [0, 0], linestyle='--', color='black')
 
+    obj.axs[1].plot([lower, upper], [0, 0], linestyle='--', color='black')
     plt.savefig(tmp_path / 'fit_lin.png', bbox_inches='tight')
 
-    obj.axs[0].set_yscale('log')
+    obj.set_yscale('log')
     plt.savefig(tmp_path / 'fit_log.png', bbox_inches='tight')
 #--------------------------------
 def test_show_components(tmp_path : Path):
@@ -681,9 +673,9 @@ def test_show_components(tmp_path : Path):
     #-----------------------------------------
     pdf   = zfit.pdf.SumPDF([bkg, sig])
     #-----------------------------------------
-    obj   = ZFitPlotter(data=pdf.create_sampler(), model=pdf, result=None)
-    d_leg = {'gauss': 'New Gauss'}
-    obj.plot(stacked=True, nbins=50, d_leg=d_leg, plot_range=(-10, 10), plot_components=['bkg'], ext_text='Extra text here')
+    cfg = ZFitPlotterConf(plot_components=['bkg'])
+    obj = ZFitPlotter(data=pdf.create_sampler(), model=pdf, result=None)
+    obj.plot(cfg)
     obj.axs[1].set_ylim(-5, 5)
 
     plt.savefig(tmp_path / 'fit.png', bbox_inches='tight')

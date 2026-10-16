@@ -18,7 +18,6 @@ from zfit.pdf                import BasePDF    as zpdf
 from zfit.data               import Data       as zdat
 from zfit.result             import FitResult  as zres
 from dmu                     import LogStore
-from dmu.generic             import utilities  as gut
 
 from .zfit_plotter_conf     import ZFitPlotterConf
 from .fit_result            import FitResult
@@ -122,19 +121,9 @@ class ZFitPlotter:
         self._result           = result
 
         self.errors : list[tuple[float,float]] = []
-        self._leg   : dict[str,str]            = {}
-        self._col   : dict[str,str]            = {}
-        self._l_plot_components : list[str]    = []
         self.axs                : tuple[Axes,...]
-
-        self._nbins      : int    | None              = None
-        self._xcoords    : Npaflt | None              = None
-        self._plot_range : Range  | None              = None
-        self._l_blind : tuple[str,float,float] | None = None
-        self._figsize : tuple[int,int]         | None = None
-        self._leg_loc : str                    | None = None
         self._data_hist  : BaseHist | None            = None
-        self._ymax : float | None                     = None
+        self.cfg                : ZFitPlotterConf             = ZFitPlotterConf()
 
         self._l_def_col = list(mcolors.TABLEAU_COLORS.keys())
     #----------------------------------------
@@ -240,9 +229,9 @@ class ZFitPlotter:
         swgt  = self.data_weight_np
         dmat  = np.array([sdat, swgt]).T
 
-        if blind and self._l_blind is not None:
-            log.debug(f'Blinding data with: {self._l_blind}')
-            _, min_val, max_val = self._l_blind
+        if blind and self.cfg.blind is not None:
+            log.debug(f'Blinding data with: {self.cfg.blind}')
+            _, min_val, max_val = self.cfg.blind
             mask                = (dmat.T[0] < min_val) | (dmat.T[0] > max_val)
             dmat                = dmat[mask]
 
@@ -307,7 +296,7 @@ class ZFitPlotter:
             markersize = self._get_marker_size(),
             color      = 'black',
             histtype   = 'errorbar',
-            label      = self._leg.get('Data', 'Data'),
+            label      = self.cfg.d_leg.get('Data', 'Data'),
             ax         = ax)
 
         self._data_hist = data_hist
@@ -453,38 +442,33 @@ class ZFitPlotter:
 
         plt.text(0.65, 0.75, line, fontsize=12, transform=plt.gcf().transFigure)
     #----------------------------------------
-    def _get_axis(
-        self,
-        add_pars   : list[str] | None | str,
-        skip_pulls : bool) -> tuple[Axes,...]:
+    def _get_axis(self) -> tuple[Axes,...]:
         '''
-        Parameters
-        ----------------
-        add_pars  : Parameters with values to add in figure, by default None, can be 'all' or list of strings
-        skip_pulls: If true will only draw fit
-
         Returns
         ----------------
         Tuple with axes for main fit and pull
         '''
-        if skip_pulls:
-            _, (ax) = plt.subplots(1)
-            return (ax,)
+        if self.cfg.axs:
+            return self.cfg.axs
 
-        if add_pars is None:
-            fig       = plt.figure(figsize = self._figsize)
+        if self.cfg.skip_pulls:
+            _, ax = plt.subplots(1)
+            return ax,
+
+        if self.cfg.add_pars is None:
+            fig       = plt.figure(figsize = self.cfg.figsize)
             gs        = fig.add_gridspec(nrows=2, ncols=1, hspace=0.1, height_ratios=[4, 1])
             axs       = gs.subplots(sharex=True)
             taxs      = tuple(axs.flat) # type: ignore
 
             return taxs
 
-        fig = plt.figure(figsize=self._figsize)
+        fig = plt.figure(figsize=self.cfg.figsize)
         ax1 = plt.subplot2grid((4,40),(0, 0), rowspan=3, colspan=25)
         ax2 = plt.subplot2grid((4,40),(3, 0), rowspan=1, colspan=25)
         plt.subplots_adjust(hspace=0.2)
 
-        self._add_pars_box(add_pars)
+        self._add_pars_box(self.cfg.add_pars)
 
         return ax1, ax2
     #----------------------------------------
@@ -507,7 +491,7 @@ class ZFitPlotter:
         if not isinstance(self.total_model, zfit.pdf.SumPDF):
             return
 
-        blind_name = None if self._l_blind is None else self._l_blind[0]
+        blind_name = None if self.cfg.blind is None else self.cfg.blind[0]
 
         y   : None | Npaflt            = None
         l_y : list[tuple[Npaflt, str]] = []
@@ -535,9 +519,9 @@ class ZFitPlotter:
         for ys, name in l_y:
             log.debug(f'Plotting {name}')
             if stacked:
-                ax.fill_between(xs, ys * self.hist_area, alpha=_ALPHA, label=self._leg.get(name, name), color=self._get_color(name))
+                ax.fill_between(xs, ys * self.hist_area, alpha=_ALPHA, label=self.cfg.d_leg.get(name, name), color=self._get_color(name))
             else:
-                ax.plot(xs, ys * self.hist_area, ':',                  label=self._leg.get(name, name), color=self._col.get(name))
+                ax.plot(xs, ys * self.hist_area, ':',                  label=self.cfg.d_leg.get(name, name), color=self.cfg.d_col.get(name))
 
         if (blind_name is not None) and (was_blinded is False):
             for model in self.total_model.pdfs:
@@ -588,7 +572,7 @@ class ZFitPlotter:
         - Component
         '''
         outer_frac = self._float_from_par(frac)
-        split_model= model.name in self._l_plot_components
+        split_model= model.name in self.cfg.plot_components
 
         if split_model and isinstance(model, zfit.pdf.SumPDF):
             log.debug(f'Plotting subcomponents for {model.name}')
@@ -610,8 +594,8 @@ class ZFitPlotter:
         Returns name of color associated to PDF component
         OR default color
         '''
-        if name in self._col:
-            return self._col[name]
+        if name in self.cfg.d_col:
+            return self.cfg.d_col[name]
 
         col = self._l_def_col[0]
         del self._l_def_col[0]
@@ -665,7 +649,7 @@ class ZFitPlotter:
         '''
         Plots full model when running in stack = False mode
         '''
-        if self._l_blind is not None:
+        if self.cfg.blind is not None:
             log.debug(f'Blinding: {model.name}')
             return
 
@@ -677,8 +661,8 @@ class ZFitPlotter:
             xs, 
             ys * self.hist_area, 
             ls   = linestyle, 
-            label= self._leg.get(name, name), 
-            color= self._col.get(name))
+            label= self.cfg.d_leg.get(name, name), 
+            color= self.cfg.d_col.get(name))
     #----------------------------------------
     def _get_labels(self, xlabel : str, ylabel : str, unit : str) -> tuple[str,str]:
         if not xlabel:
@@ -721,8 +705,9 @@ class ZFitPlotter:
     #----------------------------------------
     def set_yscale(self, scale : str) -> None:
         self.axs[0].set_yscale(scale)
+
         self._set_yrange(
-            ymax      = self._ymax,
+            ymax      = self.cfg.ymax,
             data_hist = self._data_hist)
     #----------------------------------------
     @property
@@ -780,20 +765,17 @@ class ZFitPlotter:
         '''
         Tuple with lower, upper bound of plots
         '''
-        if self._plot_range is None:
-            raise ValueError('Plot range not initialized')
+        if self.cfg.plot_range is None:
+            return _range_from_obs(self.norm)
 
-        return self._plot_range
+        return self.cfg.plot_range
     #----------------------------------------
     @property
     def nbins(self) -> int:
         '''
         Number of bins meant for plots
         '''
-        if self._nbins is None:
-            raise ValueError('Number of bins not initialized')
-
-        return self._nbins
+        return self.cfg.nbins
     #----------------------------------------
     @property
     def plot_width(self) -> float:
@@ -811,114 +793,66 @@ class ZFitPlotter:
         '''
         return self.plot_width / _NXPOINTS
     #----------------------------------------
-    @gut.timeit
     def plot(
         self,
-        title           : None | str                    = None,
-        stacked         : bool                          = False,
-        blind           : tuple[str,float,float] | None = None,
-        no_data         : bool                          = False,
-        ranges          : None | list[Range]            = None,
-        nbins           : int                           = 100,
-        unit            : str                           = r'$\rm{MeV}/\it{c}^{2}$',
-        xlabel          : str                           = '',
-        ylabel          : str                           = '',
-        d_leg           : dict[str,str] | None          = None,
-        d_col           : dict[str,str] | None          = None,
-        plot_range      : Range | None                  = None,
-        plot_components : list[str]          | None     = None,
-        ext_text        : None | str                    = None,
-        add_pars        : None | str | list[str]        = None,
-        ymax            : None | float                  = None,
-        skip_pulls      : bool                          = False,
-        pull_styling    : bool                          = True,
-        yscale          : str                           = 'linear',
-        axs             : None | tuple[Axes,...]        = None,
-        figsize         : tuple[int,int]                = (13, 7),
-        leg_loc         : str                           = 'best'):
+        cfg : ZFitPlotterConf) -> None:
         '''
-        title (str)           : Title
-        stacked (bool)        : If true will stack the PDFs
-        ranges                : List of tuples with ranges if any was used for the fit, e.g. [(0, 3), (7, 10)]
-        nbins                 : Bin numbers
-        unit                  : Unit for x axis, default is MeV/c^2
-        no_data (bool)        : If true data won't be plotted as well as pull
-        xlabel                : xlabel
-        ylabel                : ylabel
-        d_leg                 : Customize legend
-        d_col                 : Customize color
-        plot_range            : Tuple with lower and upper bound for plot
-        pull_styling(bool)    : Will add lines at +/-3 and set range to +/-5 for pull plots, by default True
-        plot_components (list): List of strings, with names of PDFs, which are expected to be sums of PDFs and whose components should be plotted separately
-        ext_text              : Text that can be added to plot
-        add_pars (list|str)   : List of names of parameters to be added or string with value 'all' to add all fit parameters. If this is used, plot won't use LHCb style.
-        skip_pulls(bool)      : Will not draw pulls if True, default False
-        ymax (float)          : Optional, if specified will be used to set the maximum in plot
-        blind                 : PDF name for the signal if blinding is needed, followed by blinding range, min and max.
-        figsize (tuple)       : Tuple with figure size, default (13, 7)
-        leg_loc (str)         : Location of legend, default 'best'
-        yscale (str)          : Scale for y axis of main plot, either log or linear
+        Parameters
+        ----------------
+        cfg : ZFitPlotterConf object storing plotting configuration
         '''
-        stacked                 = False if not isinstance(self.total_model, zfit.pdf.SumPDF) else stacked
-        self._figsize           = figsize
-        self._leg_loc           = leg_loc
-        self._plot_range        = _range_from_obs(self.norm)    if plot_range      is None else plot_range
-        self._l_plot_components = []                            if plot_components is None else plot_components
-        self._leg               = {}                            if           d_leg is None else d_leg
-        self._col               = {}                            if           d_col is None else d_col
-        self.axs                = self._get_axis(add_pars, skip_pulls) if axs is None else axs
-        self._l_blind           = blind
-        self._nbins             = nbins
-        self._ymax              = ymax
+        stacked         = False if not isinstance(self.total_model, zfit.pdf.SumPDF) else cfg.stacked
+        self.cfg        = cfg.model_copy(update={'stacked': stacked})
+        self.axs        = self._get_axis()
 
         try:
-            self.errors   = self._get_errors(ranges)
+            self.errors   = self._get_errors(self.cfg.ranges)
         except EmptyDataSet:
             log.warning('Found empty dataset, skipping plot')
             return
 
-        if not stacked:
+        if not self.cfg.stacked:
             log.debug('Plotting full model, for non-stacked case')
             self._plot_full_model(self.axs[0], self.total_model)
 
         log.debug('Plotting model components')
-        self._plot_model_components(stacked = stacked)
+        self._plot_model_components(stacked = self.cfg.stacked)
 
         data_hist : None | BaseHist = None
-        if not no_data:
+        if not self.cfg.no_data:
             log.debug('Plotting data')
-            data_hist = self._plot_data(self.axs[0], ranges)
+            data_hist = self._plot_data(self.axs[0], self.cfg.ranges)
 
-        if not skip_pulls and not no_data:
+        if not self.cfg.skip_pulls and not self.cfg.no_data:
             log.debug('Plotting pulls')
-            self._plot_pulls(ax = self.axs[1], l_range = ranges)
+            self._plot_pulls(ax = self.axs[1], l_range = self.cfg.ranges)
 
-        text           = self._get_text(ext_text)
-        xlabel, ylabel = self._get_labels(xlabel, ylabel, unit)
+        text           = self._get_text(self.cfg.ext_text)
+        xlabel, ylabel = self._get_labels(self.cfg.xlabel, self.cfg.ylabel, self.cfg.unit)
 
-        self.axs[0].legend(title=text, fontsize=20, title_fontsize=20, loc=self._leg_loc)
+        self.axs[0].legend(title=text, fontsize=20, title_fontsize=20, loc=self.cfg.leg_loc)
         self.axs[0].set(xlabel=xlabel, ylabel=ylabel)
 
-        self.axs[0].set_xlim(self._plot_range)
+        self.axs[0].set_xlim(self.plot_range)
 
-        if yscale is not None:
-            self.axs[0].set_yscale(yscale)
+        if self.cfg.yscale is not None:
+            self.axs[0].set_yscale(self.cfg.yscale)
 
-        if title is not None:
-            self.axs[0].set_title(title)
+        if self.cfg.title is not None:
+            self.axs[0].set_title(self.cfg.title)
 
         self._set_yrange(
             data_hist = data_hist, 
-            ymax      = ymax)
+            ymax      = self.cfg.ymax)
 
-        if not skip_pulls:
+        if not self.cfg.skip_pulls:
             self.axs[1].set(xlabel=xlabel, ylabel="pulls")
             self.axs[1].set_xlim(*self.plot_range)
 
         for ax in self.axs:
             ax.label_outer()
 
-        if pull_styling and not skip_pulls:
+        if self.cfg.pull_styling and not self.cfg.skip_pulls:
             self.axs[1].axhline(y=-3, color='red' , linestyle='-', lw=2)
             self.axs[1].axhline(y= 0, color='gray', linestyle='-', lw=1)
             self.axs[1].axhline(y=+3, color='red' , linestyle='-', lw=2)
@@ -932,5 +866,5 @@ class ZFitPlotter:
         ----------------
         cfg: Object storing plotting configuration
         '''
-        self.plot(**cfg.model_dump())
+        self.plot(cfg)
 #----------------------------------------
