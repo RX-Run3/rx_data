@@ -20,6 +20,7 @@ from dmu.stats   import GofCalculator
 from dmu.stats   import zfit
 from dmu.stats   import Fitter
 from dmu.stats   import ZFitPlotter
+from dmu.stats   import ZFitPlotterConf
 from dmu.generic import rxran
 from ROOT        import RDF, gInterpreter # type: ignore
 
@@ -211,8 +212,9 @@ def test_ranges(tmp_path : Path):
     print(res)
     assert res.valid
 
-    obj   = ZFitPlotter(data=sam, model=pdf)
-    obj.plot(nbins=50, stacked=True, ranges=rng)
+    cfg = ZFitPlotterConf(nbins = 50, stacked = True, ranges = rng)
+    obj = ZFitPlotter(data=sam, model=pdf)
+    obj.plot(cfg)
 
     _save_fit(test='ranges', kind='fit', out_path = tmp_path)
 #-------------------------------------

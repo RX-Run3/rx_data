@@ -29,6 +29,7 @@ from dmu.stats       import Fitter
 from dmu.stats       import ParameterLibrary as PL
 from dmu.stats       import ModelFactory
 from dmu.stats       import ZFitPlotter
+from dmu.stats       import ZFitPlotterConf
 
 from rx_selection    import selection as sel
 from rx_common       import Trigger
@@ -60,13 +61,13 @@ def _parse_args() -> argparse.Namespace:
 def _load_config() -> Config:
     args = _parse_args() if _ARGS is None else _ARGS
 
-    input            = {}
-    input['year']    = args.year
-    input['brem']    = args.brem
-    input['block']   = 'all' if args.block == -1 else str(args.block)
-    input['kind']    = args.kind
+    vals            = {}
+    vals['year']    = args.year
+    vals['brem']    = args.brem
+    vals['block']   = 'all' if args.block == -1 else str(args.block)
+    vals['kind']    = args.kind
 
-    fitting          = {'skip' : args.skip_fit}
+    fitting         = {'skip' : args.skip_fit}
 
     data = gut.load_data(package='rx_q2_data', fpath=f'config/{args.vers}.yaml')
     data['ana_dir'] = os.environ['ANADIR']
@@ -74,7 +75,7 @@ def _load_config() -> Config:
     data['syst'   ] = args.syst
     data['logl'   ] = args.logl
     data['project'] = args.proj
-    data['input'  ].update(input)
+    data['input'  ].update(vals)
     data['fitting'].update(fitting)
 
     zfit.settings.changed_warnings.hesse_name = False
@@ -353,13 +354,14 @@ def _plot_fit(
             pars  = None if add_pars == 'no_pars' else 'all'
             text, title = _get_text(data = dat)
 
-            obj.plot(
+            cfg_plt = ZFitPlotterConf(
                 nbins     = cfg.plots.nbins,
                 d_leg     = cfg.plots.d_leg,
                 plot_range= cfg.obs_range,
                 yscale    = yscale,
                 ext_text  = text,
                 add_pars  = pars)
+            obj.plot(cfg_plt)
 
             _add_q2_region_lines(obj)
 

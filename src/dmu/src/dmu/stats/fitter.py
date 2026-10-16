@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 
 from typing          import Protocol
 from dmu             import LogStore
+from dmu.stats       import ZFitPlotterConf
 from zfit.loss       import ExtendedUnbinnedNLL, UnbinnedNLL
 from zfit.pdf        import BasePDF       as zpdf
 from zfit.param      import Parameter     as zpar
@@ -245,8 +246,9 @@ class Fitter:
         data = nll.data[0]
         pdf  = nll.model[0]
 
+        cfg  = ZFitPlotterConf(nbins = 50)
         obj  = ZFitPlotter(data=data, model=pdf, result=None)
-        obj.plot(nbins=50)
+        obj.plot(cfg)
         plt.show()
     #------------------------------
     def _update_par_bounds(

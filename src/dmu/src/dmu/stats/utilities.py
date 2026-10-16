@@ -568,7 +568,7 @@ def _save_fit_plot(
         return
 
     ptr = ZFitPlotter(data=data, model=model)
-    ptr.plot(**cfg.model_dump())
+    ptr.plot(cfg)
 
     log.info(f'Saving fit to: {fit_path_lin}')
     ptr.set_yscale('linear')
@@ -740,7 +740,7 @@ def _reformat_values(d_par : dict, fall_back_error : float|None = None) -> dict:
     '''
 
     try:
-        error = d_par['minuit_hesse']['error']
+        error : float = d_par['minuit_hesse']['error']
     except KeyError as exc:
         if fall_back_error is not None:
             error = fall_back_error
@@ -750,7 +750,7 @@ def _reformat_values(d_par : dict, fall_back_error : float|None = None) -> dict:
 
     error = float(error)
 
-    value = d_par['value']
+    value : float = d_par['value']
 
     return {'value' : value, 'error' : error}
 #-------------------------------------------------------

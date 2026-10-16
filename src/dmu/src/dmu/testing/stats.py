@@ -351,8 +351,9 @@ def placeholder_fit(
 
     log.debug('Saving placeholder fit')
     if plot_fit:
-        obj   = ZFitPlotter(data=data, model=pdf)
-        obj.plot(nbins=50, stacked=True)
+        cfg = ZFitPlotterConf(nbins = 50, stacked = True)
+        obj = ZFitPlotter(data=data, model=pdf)
+        obj.plot(cfg)
 
     save_fit(
         data   =data,
