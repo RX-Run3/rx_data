@@ -932,13 +932,5 @@ class ZFitPlotter:
         ----------------
         cfg: Object storing plotting configuration
         '''
-        self.plot(
-            nbins           = cfg.nbins,
-            stacked         = cfg.stacked,
-            plot_components = cfg.plot_components,
-            plot_range      = cfg.plot_range,
-            ext_text        = cfg.ext_text,
-            title           = cfg.title,
-            skip_pulls      = cfg.skip_pulls,
-            d_leg           = cfg.d_leg)
+        self.plot(**cfg.model_dump())
 #----------------------------------------
