@@ -27,3 +27,11 @@
 - Do not modify files that are outside the codebase
 - Do not modify files in the codebase that you haven't been
   explicitly prompted to modify.
+
+## Serena
+
+- Use Serena for semantic code navigation and targeted symbol inspection.
+- Prefer symbol lookup over reading entire files.
+- Do not explore unrelated files.
+- Do not execute shell commands or run tests unless explicitly requested.
+- Ask before reading additional files when the current context is insufficient.

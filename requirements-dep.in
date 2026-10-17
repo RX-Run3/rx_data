@@ -8,6 +8,7 @@ pydantic-settings
 snakemake-logger-plugin-rich
 junit2html
 junitparser
+serena-agent
 ihep-utilities>=0.0.3
 htcondor
 snakemake-logger-plugin-flowo
