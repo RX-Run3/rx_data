@@ -39,7 +39,7 @@ _Y_MAX_LOG_SCALE: Final[float] = 10000
 _NORMAL_BINNING : Final[int  ] = 100
 _FINE_BINNING   : Final[int  ] = 200
 _MAX_PULL       : Final[int  ] = 5    # If fit ull is beyond this, will print info message
-_NXPOINTS       : Final[int  ] = 2000 
+_NXPOINTS       : Final[int  ] = 2000
 '''Number of points to scan PDF for both plotting or calculating normalization'''
 _ALPHA          : Final[float] =  0.8 # Transparency of PDF plots when stacking
 _MIN_LIMITS     : Final[int]   = 2    # Need at least upper and lower limit in observable
@@ -66,7 +66,7 @@ def _range_from_obs(obs : zfit.Space) -> tuple[float,float]:
     lower : float = minx[0][0]
     upper : float = maxx[0][0]
 
-    return lower, upper 
+    return lower, upper
 #-------------------------------------------------------
 def _name_from_obs(obs : zfit.Space) -> str:
     '''
@@ -559,7 +559,7 @@ class ZFitPlotter:
             if self.cfg.stacked:
                 y = ys if y is None else y + ys
             else:
-                y = ys 
+                y = ys
 
             l_y.append((y, model.name))
 
@@ -636,7 +636,7 @@ class ZFitPlotter:
         xs : Coordinates in x axis in the plotting range
         pdf: PDF to scan
 
-        Returns 
+        Returns
         -----------------
         array of y coordinates for array of x corrdinates and a given PDF
         in the plotting range
@@ -660,7 +660,7 @@ class ZFitPlotter:
         '''
         rng      = self.plot_range
         pdf_area = self._integrate(pdf = self.total_model, rng = rng)
-        value    = self.hist_area / pdf_area 
+        value    = self.hist_area / pdf_area
 
         log.debug(f'Scale: {value:.0f}')
 
@@ -699,10 +699,10 @@ class ZFitPlotter:
         name = model.name
 
         ax.plot(
-            xs, 
-            ys, 
-            ls   = linestyle, 
-            label= self.cfg.d_leg.get(name, name), 
+            xs,
+            ys,
+            ls   = linestyle,
+            label= self.cfg.d_leg.get(name, name),
             color= self.cfg.d_col.get(name))
     #----------------------------------------
     def _get_labels(self, xlabel : str, ylabel : str, unit : str) -> tuple[str,str]:
@@ -731,8 +731,8 @@ class ZFitPlotter:
         return np.linspace(lower, upper, _NXPOINTS)
     #----------------------------------------
     def _set_yrange(
-        self, 
-        data_hist : BaseHist | None, 
+        self,
+        data_hist : BaseHist | None,
         ymax      : float    | None) -> None:
         axis = self.axs[0]
         scale= axis.get_yscale()
@@ -759,7 +759,7 @@ class ZFitPlotter:
         bin_size  = self.plot_width / self.nbins
         hist_area = bin_size * self.plot_yield
 
-        return hist_area 
+        return hist_area
     #----------------------------------------
     @property
     def norm_yield(self) -> float:
@@ -789,7 +789,7 @@ class ZFitPlotter:
         '''
         Returns yield of data in plotting range
         '''
-        obs_plt = zfit.Space(self._obs_name, limits = self.plot_range) 
+        obs_plt = zfit.Space(self._obs_name, limits = self.plot_range)
         data    = self.data.with_obs(obs_plt)
 
         if data.has_weights:
@@ -821,7 +821,7 @@ class ZFitPlotter:
     @property
     def plot_width(self) -> float:
         '''
-        Width of plotting region 
+        Width of plotting region
         '''
         lower, upper = self.plot_range
 
@@ -884,7 +884,7 @@ class ZFitPlotter:
             self.axs[0].set_title(self.cfg.title)
 
         self._set_yrange(
-            data_hist = data_hist, 
+            data_hist = data_hist,
             ymax      = self.cfg.ymax)
 
         if not self.cfg.skip_pulls:
