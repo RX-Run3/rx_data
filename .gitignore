@@ -175,3 +175,4 @@ poetry.toml
 .snakemake/
 .home/
 .statistics*.json
+.serena/
