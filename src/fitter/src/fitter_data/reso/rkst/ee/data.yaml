@@ -26,7 +26,9 @@ reg_cfg_psi2: &reg_cfg_psi2
   nbins           : 40 
   stacked         : True
   d_leg :
-    ccbar_ccbar                  : $B_{s,d,u}\to c\bar{c} X$
+    ccbar                        : $B_{s,d,u}\to c\bar{c} X$
+    ccbar_brem_xx1               : $B_{s,d,u}\to c\bar{c} X$
+    ccbar_brem_xx2               : $B_{s,d,u}\to c\bar{c} X$
     comb                         : Combinatorial
     comb_brem_xx1                : Combinatorial
     comb_brem_xx2                : Combinatorial
