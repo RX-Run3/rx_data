@@ -21,6 +21,7 @@ dependencies = [
 [project.scripts]
 rxfitter       = "fitter_scripts.cli:app"
 fit_rx_rare    = "fitter_scripts.fit_rx_rare:main"
+fit_rx_rare_sim= "fitter_scripts.fit_rx_rare_sim:main"
 fit_rx_reso    = "fitter_scripts.fit_rx_reso:main"
 fit_grid       = "fitter_scripts.fit_grid:main"
 navigate_fits  = "fitter_scripts.navigate_fits:main"
