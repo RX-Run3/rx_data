@@ -53,9 +53,10 @@ samples:
   - [lbpkjpsiee    , rkst_ee_os ]
   - [bsphijpsiee   , rkst_ee_os ]
   - [bskstjpsiee   , rkst_ee_os ]
+  - [bskstpsi2ee   , rkst_ee_os ]
   - [bdkstkpijpsiee, rkst_ee_os ]
-  - [bpkxkpipiee   , rkst_ee_os ]
   - [bdkstkpipsi2ee, rkst_ee_os ]
+  - [bpkxkpipiee   , rkst_ee_os ]
   # ----
   # Resonant muon rkst
   # ----
