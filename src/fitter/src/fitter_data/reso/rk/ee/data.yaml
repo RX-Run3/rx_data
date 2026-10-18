@@ -27,9 +27,12 @@ plots_settings: &plots_settings_psi2
   nbins           : 80
   stacked         : True
   d_leg :
+    comb                : Combinatorial
     comb_brem_xx1       : Combinatorial
     comb_brem_xx2       : Combinatorial
-    comb_brem_x12       : Combinatorial
+    ccbar               : $B_{s,d,u}\to c\bar{c} X$
+    ccbar_brem_xx1      : $B_{s,d,u}\to c\bar{c} X$
+    ccbar_brem_xx2      : $B_{s,d,u}\to c\bar{c} X$
     bppijpsiee_brem_xx1 : $B^+\to J/\psi(\to e^+e^-)\pi^+$
     bppijpsiee_brem_xx2 : $B^+\to J/\psi(\to e^+e^-)\pi^+$
     # ---------
