@@ -95,7 +95,7 @@ def _cfg_from_args(
     '''
     data_mod= gut.load_data(
         package= 'fitter_data',
-        fpath  = f'rare/{region.trigger.channel}/data.yaml')
+        fpath  = f'rare/{region.trigger.project}/{region.trigger.channel}/data.yaml')
 
     mod_cfg = FitModelConf(**data_mod)
 
