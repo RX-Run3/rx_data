@@ -279,6 +279,7 @@ def _get_messages(
     l_msg.append('-' * 20)
     l_msg.append(f'Name : {pdf.name}')
     l_msg.append(f'Label: {pdf.label}')
+    l_msg.append(f'TYPE : {type(pdf)}')
     l_msg.append(f'OBS  : {str_space}')
     l_msg.append('-' * 20)
     l_msg.append(f'{"Parameter":<50}{"Value":<15}{"Low":<15}{"High":<15}{"Floating":<10}{"Constraint":<25}')
