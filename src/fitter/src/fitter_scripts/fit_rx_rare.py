@@ -3,9 +3,6 @@ Script used to interact with DataFitter tool
 and run fits
 '''
 import argparse
-import os
-
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 from ROOT             import EnableImplicitMT
 from typing           import Final
