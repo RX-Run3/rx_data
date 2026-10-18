@@ -62,6 +62,7 @@ samples:
   - [lbpkjpsimm    , rkst_mm_os ]
   - [bsphijpsimm   , rkst_mm_os ]
   - [bskstjpsimm   , rkst_mm_os ]
+  - [bskstpsi2mm   , rkst_mm_os ]
   - [bdkstkpijpsimm, rkst_mm_os ]
   - [bdkstkpipsi2mm, rkst_mm_os ]
   # ----
@@ -69,3 +70,5 @@ samples:
   # ----
   - [bdkstjpsimm_had_swp, rkst_mm_os]
   - [bdkstjpsiee_had_swp, rkst_ee_os]
+  - [bdkstpsi2mm_had_swp, rkst_mm_os]
+  - [bdkstpsi2ee_had_swp, rkst_ee_os]
