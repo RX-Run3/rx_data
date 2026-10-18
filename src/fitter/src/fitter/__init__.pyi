@@ -20,7 +20,7 @@ from .pars_loader        import ParsLoader
 from .holders            import ChannelHolder
 from .holders            import ComponentHolder
 from .misid_constraints  import MisIDConstraints
-from .types              import CCbarWeight
+from .types              import CCbarWeight, SimFit
 from .prec               import PRec
 from .prec_scales        import PrecScales
 from .eff_scales         import EffScales
@@ -95,7 +95,6 @@ __all__ = [
     'YieldGrid',
     # ------------------
     'PRec',
-    'CCbarWeight',
     'ChannelHolder',
     'ComponentHolder',
     'DataModel',
@@ -112,4 +111,9 @@ __all__ = [
     'ToyMaker',
     'ToyConf',
     'ToyPlotter',
-    'LikelihoodFactory']
+    'LikelihoodFactory',
+    # ------------------
+    # Types
+    # ------------------
+    'CCbarWeight',
+    'SimFit']

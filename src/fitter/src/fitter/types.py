@@ -2,7 +2,7 @@
 Module holding enums needed for fitting models
 '''
 
-from enum import StrEnum
+from enum import StrEnum, auto
 
 # ------------------------------
 class CCbarWeight(StrEnum):
@@ -17,4 +17,23 @@ class CCbarWeight(StrEnum):
     '''
     dec = 'dec'
     sam = 'sam' 
+# ------------------------------
+class SimFit(StrEnum):
+    '''
+    Enum meant to describe type of
+    simultaneous fit
+    '''
+    rk = auto()
+    '''
+    Simultaneous between rare electron and muon for rk
+    '''
+    rkst = auto()
+    '''
+    Simultaneous between rare electron and muon for rkst
+    '''
+    rx = auto()
+    '''
+    Fully simultaneous fit in rare mode, putting together 
+    electron and muon rk and rkst
+    '''
 # ------------------------------
