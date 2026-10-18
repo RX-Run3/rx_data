@@ -47,9 +47,9 @@ components:
     bdkstkpijpsimm        : reso/rkst/mm/bdkstkpijpsimm.yaml
   psi2:
     comb                  : reso/rkst/mm/comb.yaml
-    ccbar                 : reso/rkst/mm/ccbar.yaml
+    # ccbar                : reso/rkst/mm/ccbar.yaml
     bskstpsi2mm           : reso/rkst/mm/bskstpsi2mm.yaml
-    # bdkstpsi2mm_had_swp : reso/rkst/mm/bdkstjpsimm_had_swp_np.yaml
+    # bdkstpsi2mm_had_swp  : reso/rkst/mm/bdkstjpsimm_had_swp_np.yaml
     bdkstkpipsi2mm        : reso/rkst/mm/bdkstkpipsi2mm.yaml
 constraints:
   signal_fraction:

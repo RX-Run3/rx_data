@@ -15,7 +15,7 @@ fit:
     padding   :
       flag : False
   psi2:
-    kind      : KDE1DimFFT
+    kind      : KDE1DimExact
     bandwidth : 20
     padding   :
       flag : False
