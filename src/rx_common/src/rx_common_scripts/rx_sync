@@ -86,17 +86,23 @@ check_environment()
 # -----------------------------------------
 run_sync()
 {
-    local SOURCE_PATH="$SOURCE_SERVER"/"$DPATH"
-    local TARGET_PATH="$TARGET_SERVER"/"$DPATH"
+    local SOURCE_PATH="$SOURCE_SERVER"/./"$DPATH"
 
     if [[ ! -e $SOURCE_PATH ]];then
         echo "Cannot find: $SOURCE_PATH"
+        exit 1
     fi
 
+    echo "------------------"
+    echo "Transferring"
+    echo "------------------"
+    echo "Source: $SOURCE_PATH"
+    echo "Target: $TARGET_SERVER"
+
     if [[ $DRY_RUN -eq 1 ]];then
-        rsync -avz --dry-run        -e "ssh -o ForwardX11=no" $SOURCE_PATH $TARGET_PATH
+        rsync -avz --dry-run        -R -e "ssh -o ForwardX11=no" $SOURCE_PATH $TARGET_SERVER
     else
-        rsync -aP  --info=progress2 -e "ssh -o ForwardX11=no" $SOURCE_PATH $TARGET_PATH
+        rsync -aP  --info=progress2 -R -e "ssh -o ForwardX11=no" $SOURCE_PATH $TARGET_SERVER
     fi
 }
 # -----------------------------------------
