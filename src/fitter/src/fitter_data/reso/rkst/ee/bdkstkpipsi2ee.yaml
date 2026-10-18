@@ -31,7 +31,7 @@ categories:
       fix           : {}
       values        :
         sg : [20  ,    8,   30]
-        mu : [5240, 4500, 5300]
+        mu : [5240, 5100, 5300]
 fit:
   strategy  :
     ntries : 10
