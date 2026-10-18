@@ -94,7 +94,7 @@ class ConstraintReader:
 
         eff_par = eff_pars[0]
         name    = eff_par.name
-        parts   = name.split('_')
+        parts   = name.split('-')
 
         try:
             source = Trigger(parts[1])
