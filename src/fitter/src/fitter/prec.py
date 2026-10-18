@@ -136,6 +136,7 @@ class CCbarModel(BaseModel, frozen = True):
     '''
     model_config = ConfigDict(arbitrary_types_allowed = True)
     # -------------------------
+    name      : str
     obs       : zobs
     '''
     Normalization observable
@@ -187,7 +188,7 @@ class CCbarModel(BaseModel, frozen = True):
         if len(pdfs) == 1:
             kde      = pdfs[0]
             kde_copy = kde.copy(
-                name      = f'{_MERGED_PDFNAME}_{kde.name}',
+                name      = self.name,
                 bandwidth = kde._bandwidth, # type: ignore
                 data      = kde._data)      # type: ignore see: https://github.com/zfit/zfit/issues/736
 
@@ -264,6 +265,7 @@ class PRec(Cache):
         q2bin : q2 bin
         '''
         self._obs      = obs
+        self._name     = name
         self._cfg      = cfg
         self._trig     = trig
         self._q2bin    = q2bin
@@ -737,6 +739,7 @@ class PRec(Cache):
             q2bin          = self._q2bin)
 
         merged_model = CCbarModel(
+            name      = f'{_MERGED_PDFNAME}_{self._name}',
             obs       = self._obs,
             models    = [model], 
             fractions = [1])
@@ -758,6 +761,7 @@ class PRec(Cache):
         fractions : list[float   ] = [ wgt_yld / sum(yields)              for  wgt_yld in yields ]
 
         model = CCbarModel(
+            name      = f'{_MERGED_PDFNAME}_{self._name}',
             obs       = self._obs,
             models    = models, 
             fractions = fractions)
