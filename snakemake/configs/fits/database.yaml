@@ -11,7 +11,6 @@ samples:
   - [bpk2kpipiee   , rk_ee_os   ]
   - [bpkstkpiee    , rk_ee_os   ]
   - [bpkpjpsiee    , rk_ee_os   ]
-  - [bpkppsi2ee    , rk_ee_os   ]
   - [bpkpipi       , rk_ee_nopid]
   - [bpkkk         , rk_ee_nopid]
   # ----
@@ -23,7 +22,6 @@ samples:
   - [bpk1kpipiee   , rkst_ee_os   ]
   - [bpk2kpipiee   , rkst_ee_os   ]
   - [bdkstkpijpsiee, rkst_ee_os   ]
-  - [bdkstkpipsi2ee, rkst_ee_os   ]
   #- [bdkstpipi     , rkst_ee_nopid]
   # ----
   # Muon rare rk
@@ -42,11 +40,13 @@ samples:
   - [bsjpsixee     , rk_ee_os   ]
   - [bpjpsixee     , rk_ee_os   ]
   - [bppijpsiee    , rk_ee_os   ]
+  - [bpkppsi2ee    , rk_ee_os   ]
   # ----
   # Resonant muon rk
   # ----
   - [bppijpsimm    , rk_mm_os   ]
   - [bpkpjpsimm    , rk_mm_os   ]
+  - [bpkppsi2mm    , rk_mm_os   ]
   # ----
   # Resonant electron rkst
   # ----
@@ -55,6 +55,7 @@ samples:
   - [bskstjpsiee   , rkst_ee_os ]
   - [bdkstkpijpsiee, rkst_ee_os ]
   - [bpkxkpipiee   , rkst_ee_os ]
+  - [bdkstkpipsi2ee, rkst_ee_os ]
   # ----
   # Resonant muon rkst
   # ----
@@ -62,6 +63,7 @@ samples:
   - [bsphijpsimm   , rkst_mm_os ]
   - [bskstjpsimm   , rkst_mm_os ]
   - [bdkstkpijpsimm, rkst_mm_os ]
+  - [bdkstkpipsi2mm, rkst_mm_os ]
   # ----
   # Electron resonant swap hadrons rkst
   # ----
