@@ -96,7 +96,7 @@ run_sync()
     if [[ $DRY_RUN -eq 1 ]];then
         rsync -avz --dry-run        -e "ssh -o ForwardX11=no" $SOURCE_PATH $TARGET_PATH
     else
-        rsync -aL  --info=progress2 -e "ssh -o ForwardX11=no" $SOURCE_PATH $TARGET_PATH
+        rsync -aP  --info=progress2 -e "ssh -o ForwardX11=no" $SOURCE_PATH $TARGET_PATH
     fi
 }
 # -----------------------------------------
