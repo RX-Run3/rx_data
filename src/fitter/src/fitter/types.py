@@ -2,7 +2,10 @@
 Module holding enums needed for fitting models
 '''
 
-from enum import StrEnum, auto
+from rx_common import Brem
+from rx_common import Region
+from rx_common import Trigger 
+from enum      import StrEnum, auto
 
 # ------------------------------
 class CCbarWeight(StrEnum):
@@ -36,4 +39,23 @@ class SimFit(StrEnum):
     Fully simultaneous fit in rare mode, putting together 
     electron and muon rk and rkst
     '''
+    # ------------------------------------
+    @property
+    def regions(self) -> list[Region]:
+        '''
+        List of signal regions associated to this fit
+        '''
+        rkst_ee = Region(brem = Brem.brx12, trigger = Trigger.rkst_ee_os)
+        rkst_mm = Region(brem = Brem.zero , trigger = Trigger.rkst_mm_os)
+
+        rk_ee   = Region(brem = Brem.brx12, trigger = Trigger.rk_ee_os)
+        rk_mm   = Region(brem = Brem.zero , trigger = Trigger.rk_mm_os)
+
+        match self:
+            case SimFit.rk:
+                return [rk_ee, rk_mm] 
+            case SimFit.rkst:
+                return [rkst_ee, rkst_mm] 
+            case SimFit.rx:
+                return [rkst_ee, rkst_mm, rk_ee, rk_mm] 
 # ------------------------------
