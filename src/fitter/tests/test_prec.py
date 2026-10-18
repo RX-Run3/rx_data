@@ -6,7 +6,7 @@ import mplhep
 import pytest
 import matplotlib.pyplot as plt
 
-from ROOT         import EnableImplicitMT # type: ignore
+from ROOT         import EnableImplicitMT
 from pathlib      import Path
 from dmu          import LogStore
 from dmu.stats    import PaddingConf, ZFitPlotterConf

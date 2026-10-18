@@ -4,7 +4,7 @@ reg_cfg_jpsi: &reg_cfg_jpsi
   nbins           : 325 
   stacked         : True
   d_leg :
-    ccbar_ccbar            : $B_{s,d,u}\to c\bar{c} X$
+    ccbar_brem_x12         : $B_{s,d,u}\to c\bar{c} X$
     ccbar_brem_xx1         : $B_{s,d,u}\to c\bar{c} X$
     ccbar_brem_xx2         : $B_{s,d,u}\to c\bar{c} X$
     comb_brem_xx1          : Combinatorial
@@ -16,7 +16,9 @@ reg_cfg_jpsi: &reg_cfg_jpsi
     bskstjpsiee            : $B_s\to J/\psi K^{*0}(\to K^+\pi^-)$
     bdkstkpijpsiee         : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$ 
   plot_components : 
-    - ccbar
+    - ccbar_brem_xx1
+    - ccbar_brem_xx2
+    - ccbar_brem_x12
   plot_range :
     - 4900
     - 6200

@@ -18,8 +18,7 @@ plt_cfg: &plt_cfg
       plot_range:
         - 5180
         - 5600
-      plot_components:
-        - ccbar
+      plot_components: []
 # ----------------------------------------------
 trigger   : rkst_mm_os
 yields    : model/yields/rkst/reso_muon.yaml

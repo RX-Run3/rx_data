@@ -3,9 +3,9 @@ plots_settings: &plots_settings_jpsi
   stacked         : True
   d_leg :
     ccbar               : $B_{s,d,u}\to c\bar{c} X$
-    comb                : Combinatorial
     comb_brem_xx1       : Combinatorial
     comb_brem_xx2       : Combinatorial
+    comb_brem_x12       : Combinatorial
     bppijpsiee_brem_xx1 : $B^+\to J/\psi(\to e^+e^-)\pi^+$
     bppijpsiee_brem_xx2 : $B^+\to J/\psi(\to e^+e^-)\pi^+$
     # ---------
@@ -27,9 +27,9 @@ plots_settings: &plots_settings_psi2
   stacked         : True
   d_leg :
     ccbar               : $B_{s,d,u}\to c\bar{c} X$
-    comb                : Combinatorial
     comb_brem_xx1       : Combinatorial
     comb_brem_xx2       : Combinatorial
+    comb_brem_x12       : Combinatorial
     bppijpsiee_brem_xx1 : $B^+\to J/\psi(\to e^+e^-)\pi^+$
     bppijpsiee_brem_xx2 : $B^+\to J/\psi(\to e^+e^-)\pi^+$
     # ---------
@@ -87,15 +87,15 @@ plots:
         - brem_xx1-rk_ee_os
         - brem_xx2-rk_ee_os
     regions:
-      brem_x12-rk_ee_os : *plots_settings_jpsi
       brem_xx1-rk_ee_os : *plots_settings_jpsi
       brem_xx2-rk_ee_os : *plots_settings_jpsi
+      brem_x12-rk_ee_os : *plots_settings_jpsi
   psi2:
     merging:
       brem_x12-rk_ee_os:
         - brem_xx1-rk_ee_os
         - brem_xx2-rk_ee_os
     regions:
-      brem_x12-rk_ee_os : *plots_settings_psi2
       brem_xx1-rk_ee_os : *plots_settings_psi2
       brem_xx2-rk_ee_os : *plots_settings_psi2
+      brem_x12-rk_ee_os : *plots_settings_psi2

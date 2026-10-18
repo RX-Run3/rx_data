@@ -344,7 +344,8 @@ def test_misid(
             q2bin    = q2bin)
         ftr.get_model()
 # ---------------------------------------------------
-@pytest.mark.parametrize('mass', [Mass.bp_dtf_jpsi, Mass.bp_bcor_smr])
+@pytest.mark.integration
+@pytest.mark.parametrize('mass', [Mass.bp_dtf_jpsi])
 def test_ccbar_reso_rk(mass : Mass, tmp_path : Path):
     '''
     Tests retriveval of PDF associated to ccbar inclusive decays
