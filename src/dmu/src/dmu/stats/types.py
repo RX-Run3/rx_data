@@ -5,7 +5,8 @@ Module meant to store types relevant for statistical analysis
 from enum      import StrEnum, auto
 from .imports  import zfit
 
-type Fft = type[zfit.pdf.KDE1DimFFT]
+Fft = type[zfit.pdf.KDE1DimFFT]
+Exc = type[zfit.pdf.KDE1DimExact]
 # ---------------------------------------
 class ConstraintType(StrEnum):
     '''
@@ -48,12 +49,15 @@ class KDEModel(StrEnum):
     '''
     Enum meant to represent KDE PDFs
     '''
-    KDE1DimFFT = 'KDE1DimFFT'
+    KDE1DimFFT   = 'KDE1DimFFT'
+    KDE1DimExact = 'KDE1DimExact'
     # -----------------------
     @property
-    def cls(self) -> Fft:
+    def cls(self) -> Fft | Exc:
         match self:
             case KDEModel.KDE1DimFFT:
                 return zfit.pdf.KDE1DimFFT
+            case KDEModel.KDE1DimExact:
+                return zfit.pdf.KDE1DimExact
 # --------------------------
 
