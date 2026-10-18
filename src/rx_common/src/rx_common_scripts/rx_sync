@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 
+IHEP_ANADIR="campoverde@lxlogin.ihep.ac.cn:/publicfs/ucas/user/campoverde/Data"
+CERN_ANADIR="acampove@lxplus.cern.ch:/eos/lhcb/wg/RD/RX_run3"
 # -----------------------------------------
 display_help()
 {
     echo "This script is used to copy files from remote servers to the current one"
     echo ""
-    echo "-s: Server from which to download, e.g. IHEP, CERN"
-    echo "-k: Type of data to download e.g. FITS"
+    echo "-s: Server from which to transfer, e.g. IHEP, CERN, LOCAL"
+    echo "-t: Server to which to upload, e.g. IHEP, CERN, LOCAL"
+    echo "-p: Path to directory to be transferred in $ANADIR"
     echo "-d: If 1, dry run (default), 0 for real run"
 }
 # -----------------------------------------
@@ -15,47 +18,55 @@ get_opts()
     if [[ $# -eq 0 ]]; then
         display_help
         exit 1
-    fi  
+    fi
 
     DRY_RUN=1
-    while getopts :hf:s:k:d: option; do 
+    while getopts :hf:s:t:p:d: option; do
         case "${option}" in
-            h)  
+            h)
                 display_help
                 exit 0
-                ;;  
-            s)  SERVER=${OPTARG};;
-            k)  KIND=${OPTARG};;
+                ;;
+            s)  SOURCE=${OPTARG};;
+            t)  TARGET=${OPTARG};;
+            p)  DPATH=${OPTARG};;
             d)  DRY_RUN=${OPTARG};;
            \?)  echo "Invalid option: -${OPTARG}"
                 display_help
                 exit 1
-                ;;  
+                ;;
             :)  echo "$0: Arguments needed"
                 display_help
                 exit 1
-                ;;  
+                ;;
         esac
     done
 }
 # -----------------------------------------
-set_remote()
+set_source()
 {
-    if [[ "$SERVER" == "IHEP" ]];then
-        REMOTE=campoverde@lxlogin.ihep.ac.cn:/publicfs/ucas/user/campoverde/Data
+    if   [[ "$SOURCE" == "IHEP"  ]];then
+        SOURCE_SERVER=$IHEP_ANADIR
+    elif [[ "$SOURCE" == "LOCAL" ]];then
+        SOURCE_SERVER=$ANADIR
+    elif [[ "$SOURCE" == "CERN"  ]];then
+        SOURCE_SERVER=$CERN_ANADIR
     else
-        echo "Invalid server: $SERVER"
+        echo "Invalid source: $SOURCE"
         exit 1
     fi
 }
 # -----------------------------------------
-set_data()
+set_target()
 {
-    if [[ "$KIND" == "FITS" ]];then
-        SOURCE=fits/data
-        TARGET=fits
+    if   [[ "$TARGET" == "IHEP"  ]];then
+        TARGET_SERVER=$IHEP_ANADIR
+    elif [[ "$TARGET" == "LOCAL" ]];then
+        TARGET_SERVER=$ANADIR
+    elif [[ "$TARGET" == "CERN"  ]];then
+        TARGET_SERVER=$CERN_ANADIR
     else
-        echo "Invalid kind of file: $KIND"
+        echo "Invalid server: $TARGET"
         exit 1
     fi
 }
@@ -75,29 +86,22 @@ check_environment()
 # -----------------------------------------
 run_sync()
 {
+    local SOURCE_PATH="$SOURCE_SERVER"/"$DPATH"
+    local TARGET_PATH="$TARGET_SERVER"/"$DPATH"
+
+    if [[ ! -e $SOURCE_PATH ]];then
+        echo "Cannot find: $SOURCE_PATH"
+    fi
+
     if [[ $DRY_RUN -eq 1 ]];then
-        rsync -avz --dry-run        -e "ssh -o ForwardX11=no" "$REMOTE"/"$SOURCE" "$ANADIR"/"$TARGET"
+        rsync -avz --dry-run        -e "ssh -o ForwardX11=no" $SOURCE_PATH $TARGET_PATH
     else
-        rsync -aL  --info=progress2 -e "ssh -o ForwardX11=no" "$REMOTE"/"$SOURCE" "$ANADIR"/"$TARGET"
+        rsync -aL  --info=progress2 -e "ssh -o ForwardX11=no" $SOURCE_PATH $TARGET_PATH
     fi
 }
 # -----------------------------------------
 check_environment
 get_opts "$@"
-set_remote
-set_data
+set_source
+set_target
 run_sync
-
-
-
-
-
-
-
-
-
-
-
-
-
-
