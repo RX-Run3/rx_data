@@ -52,6 +52,7 @@ from .configs  import RXFitConfig
 from .configs  import ObservableConf
 from .configs  import CmbConstraintConf
 from .configs  import CCbarConfTF
+from .configs  import PlotConf
 # ----------
 from .scales_tabulator import ScalesTabulator
 from .scales_tabulator import ScalesTabulatorConf
@@ -114,6 +115,7 @@ __all__ = [
     'ToyConf',
     'ToyPlotter',
     'LikelihoodFactory',
+    'PlotConf',
     # ------------------
     # Types
     # ------------------

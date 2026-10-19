@@ -3,7 +3,6 @@ Module containing DataFitterSim class
 '''
 from typing          import Literal
 from typing          import overload
-from typing          import Final
 from dmu             import LogStore
 from dmu.stats       import FitResult
 from dmu.stats       import zfit
@@ -18,7 +17,6 @@ from .base_fitter        import BaseFitter
 from .configs            import RXFitConfig
 
 log=LogStore.add_logger('fitter:data_fitter_sim')
-_MIN_REGIONS_IN_CAT : Final[int] = 2 # Minimum number of signal regions to plot when merging them
 # ----------------------
 class DataFitterSim(BaseFitter):
     '''
