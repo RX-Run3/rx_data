@@ -63,6 +63,9 @@ class Systematic(StrEnum):
     '''
     Enum meant to represent systematics
     '''
+    nominal   = auto()
+    '''Nominal model'''
+
     rk_mm_sig = auto()
     '''
     Systematic associated to signal model in rk muon region

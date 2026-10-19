@@ -23,6 +23,8 @@ from fitter           import LikelihoodFactory
 from fitter           import FitModelConf
 from fitter           import NLLConf
 from fitter           import SimFit
+from fitter           import ModelSystematics
+from fitter           import Systematic
 
 log=LogStore.add_logger('fitter:fit_rx_rare_sim')
 
@@ -72,6 +74,7 @@ def _parse_args() -> dict[Region, RXFitConfig]:
     parser.add_argument('-n', '--ncores' , type=int           , help='Number of processes'                             , default =1)
     parser.add_argument('-l', '--log_lvl', type=LogLevels     , help='Logging level'                                   , default =20)
     parser.add_argument('-q', '--q2bin'  , type=Qsq           , help='q2 bin'       , choices=Qsq.rare                 , required=True)
+    parser.add_argument('-s', '--syst'   , type=Systematic    , help='Systematic variation used for this fit'          , required=True)
     parser.add_argument('-C', '--mva_cmb', type=MVAWp.from_str, help='MVA working point, e.g. 0200; 0100-0300'         , required=True)
     parser.add_argument('-P', '--mva_prc', type=MVAWp.from_str, help='MVA working point, e.g. 0200; 0100-0300'         , required=True)
     args = parser.parse_args()
@@ -80,7 +83,7 @@ def _parse_args() -> dict[Region, RXFitConfig]:
 
     return { region : _cfg_from_args(region = region, args = args) for region in regions }
 # ----------------------
-def _get_replacements(kind : SimFit) -> dict[str,str]:
+def _get_replacements(kind : SimFit, syst : Systematic) -> dict[str,str]:
     '''
     Parameters
     ------------------
@@ -91,6 +94,9 @@ def _get_replacements(kind : SimFit) -> dict[str,str]:
     Replacements needed for config files describing yields.
     Needed in order to reparametrize in function of rk, rkst or both
     '''
+    msys = ModelSystematics.load()
+    replacements = msys.get(syst = syst)
+
     if kind == SimFit.rk:
         return  {'rk/rare_muon.yaml' : 'rk/rare_muon_simultaneous.yaml'}
 
@@ -122,7 +128,7 @@ def _cfg_from_args(
         package= 'fitter_data',
         fpath  = f'rare/{region.trigger.project}/{region.trigger.channel}/data.yaml')
 
-    config_replacements = _get_replacements(kind = args.kind)
+    config_replacements = _get_replacements(kind = args.kind, syst = args.syst)
     with UnpackerModel.replacements(files = config_replacements):
         mod_cfg = FitModelConf(**data_mod)
 
