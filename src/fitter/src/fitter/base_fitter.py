@@ -68,6 +68,10 @@ class BaseFitter:
             log.debug('Missing result object, cannot get sensitivity')
             return -1
 
+        if not hasattr(self, '_trigger'):
+            log.debug('No trigger found, not gettign sensitivity')
+            return
+
         sig_name = self._trigger.project.signal_name
         if sig_name not in res:
             log.debug(f'Missing {sig_name} entry, cannot get sensitivity')
