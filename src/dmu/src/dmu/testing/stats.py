@@ -239,12 +239,15 @@ def _get_signal_yield(
     -------------
     Signal yield
     '''
+    name = f'{prefix}nsig{suffix}'
+
     if pars is None:
-        return zfit.param.Parameter(f'{prefix}nsig{suffix}', nsample, 0, 1000_000)
+        return zfit.param.Parameter(name, nsample, 0, 1000_000)
 
-    channel = suffix.lstrip('_')
+    if name in pars:
+        return pars[name]
 
-    return pars[channel]
+    return zfit.param.Parameter(name, nsample, 0, 1000_000)
 # ----------------------
 @overload
 def get_nll(
@@ -279,9 +282,13 @@ def get_nll(
     -------------
     Extended NLL from a gaussian plus exponential model
     '''
-    pdf = get_model(
+    # signal and background yield in model are half of
+    # requested dataset
+    nsample = int(nentries / 2.) 
+    pdf     = get_model(
         kind   = kind,
         pars   = pars,
+        nsample= nsample,
         prefix = prefix,
         suffix = suffix)
 
