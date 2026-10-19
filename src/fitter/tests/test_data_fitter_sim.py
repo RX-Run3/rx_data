@@ -130,6 +130,13 @@ def test_single_ratio(
 
     res = ftr.run(skip_fit = False)
 
+    if project == Project.rk:
+        val, _ = res.get('rk', fall_back=None)
+    else:
+        val, _ = res.get('rkst', fall_back=None)
+
+    assert numpy.isclose(val, 3.041844)
+
     print(res)
 # -------------------------------
 def test_double_ratio(monkeypatch, tmp_path : Path):
