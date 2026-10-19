@@ -8,7 +8,7 @@ from dmu.stats       import FitResult
 from dmu.stats       import zfit
 from dmu.stats       import utilities as sut
 from dmu.generic     import utilities as gut
-from rx_common       import Qsq, Region
+from rx_common       import Qsq, Region, Component
 from zfit.exception  import ParamNameNotUniqueError
 from zfit.loss       import ExtendedUnbinnedNLL as NLL
 
@@ -107,7 +107,7 @@ class DataFitterSim(BaseFitter):
         cfg : Configuration for region
         fres: Fit result object
         '''
-        out_dir = cfg.output_directory / reg.name
+        out_dir = cfg.output_directory / Component.data_24 / reg.name
         self._save_fit(
             cut_cfg  = nll.selection,
             plt_cfg  = cfg.mod_cfg.plots[self._q2bin].regions[reg],
