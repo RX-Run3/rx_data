@@ -21,8 +21,11 @@ class FitParameter(BaseModel, frozen = True):
     Class meant to represent fitting parameter
     '''
     name : str
+    '''Name of parameter'''
     value: float
+    '''Value of parameter'''
     error: float
+    '''Error of parameter'''
     # ----------------------
     def rename(self, original : str, new : str) -> Self:
         '''
