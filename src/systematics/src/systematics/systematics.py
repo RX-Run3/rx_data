@@ -12,6 +12,7 @@ from dmu.stats     import Constraints
 from fitter        import ToyConf, ToyMaker
 from fitter        import ChannelHolder
 
+Nll    = zfit.loss.ExtendedUnbinnedNLL
 pdf    = zfit.pdf
 loss   = zfit.loss
 param  = zfit.param
@@ -30,7 +31,7 @@ class Calculator[PDF : pdf.BasePDF ]:
     # ----------------------
     def __init__(
         self,
-        obj  : 'ChannelHolder[zfit.loss.ExtendedUnbinnedNLL] | loss.ExtendedUnbinnedNLL',
+        obj  : ChannelHolder[Nll] | Nll,
         poi  : str,
         res  : FitResult,
         cfg  : ToyConf):
@@ -43,7 +44,7 @@ class Calculator[PDF : pdf.BasePDF ]:
         rseed: Random seed for current toys
         '''
         self._obj = obj
-        self._nll = obj if isinstance(obj, loss.ExtendedUnbinnedNLL) else obj.mm + obj.ee
+        self._nll = obj if isinstance(obj, Nll) else obj.mm + obj.ee
         self._poi = poi
         self._res = res
         self._cfg = cfg
