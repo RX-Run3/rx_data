@@ -3,6 +3,8 @@ Module with tests for DataFitterSim class
 '''
 import pytest
 
+from typing      import Final
+from functools   import cache
 from rx_common   import Project
 from pathlib     import Path
 from dmu.stats   import ZFitPlotterConf
@@ -21,18 +23,43 @@ from fitter      import NLLConf
 from fitter      import DataFitterSim
 from fitter      import PlotConf
 from dmu.testing import get_nll 
+from dmu.stats   import zfit
 
+zpar = zfit.Parameter | zfit.ComposedParameter
+
+_NEE : Final[int] = 10_000
+_NMM : Final[int] = 30_000
+# -------------------------------
+@cache
+def _get_pars() -> dict[str, zpar]:
+    rat  = _NMM / _NEE
+    rk   = zfit.Parameter('rk'  , rat, 0, 5)
+    rkst = zfit.Parameter('rkst', rat, 0, 5)
+
+    nkee   = zfit.Parameter('nsig_brem_x12-rk_ee_os'  , _NEE, 0, 100_000)
+    nkstee = zfit.Parameter('nsig_brem_x12-rkst_ee_os', _NEE, 0, 100_000)
+
+    def prod(pars : list[zpar]) -> zpar:
+        return pars[0] * pars[1]
+
+    nkmm   = zfit.ComposedParameter('nsig_brem_xx0-rk_mm_os'  , prod, params = [rk  , nkee  ])
+    nkstmm = zfit.ComposedParameter('nsig_brem_xx0-rkst_mm_os', prod, params = [rkst, nkstee])
+
+    pars = [nkee, nkstee, nkmm, nkstmm]
+
+    return {par.name : par for par in pars} 
 # -------------------------------
 def _get_nll(region : Region) -> NLLConf:
     if region.trigger.is_electron:
-        nentries = 10_000
+        nentries = 2 * _NEE 
     else:
-        nentries = 30_000
+        nentries = 2 * _NMM 
 
     nll  = get_nll(
         nentries= nentries,
         kind    = 's+b',
-        prefix  = region.name)
+        pars    = _get_pars(),
+        suffix  = region.name)
 
     return NLLConf(
         nll         = nll,
