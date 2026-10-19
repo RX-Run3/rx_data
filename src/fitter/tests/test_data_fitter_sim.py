@@ -98,3 +98,33 @@ def test_single_ratio(
 
     print(res)
 # -------------------------------
+def test_double_ratio(monkeypatch, tmp_path : Path):
+    '''
+    Test electron and muon NLL combined
+    '''
+    monkeypatch.setenv('ANADIR', tmp_path)
+
+    rk_ee   = Region(brem = Brem.brx12, trigger = Trigger.rk_ee_os)
+    rk_mm   = Region(brem = Brem.zero , trigger = Trigger.rk_mm_os)
+
+    rkst_ee = Region(brem = Brem.brx12, trigger = Trigger.rkst_ee_os)
+    rkst_mm = Region(brem = Brem.zero , trigger = Trigger.rkst_mm_os)
+
+    regions = [rk_ee, rk_mm, rkst_ee, rkst_mm]
+
+    d_nll : dict[Region, NLLConf] = {}
+    for region in regions:
+        d_nll[region] = _get_nll(region = region)
+
+    d_cfg : dict[Region, RXFitConfig] = {}
+    for region in regions:
+        d_cfg[region] = _get_cfg(region = region)
+
+    ftr = DataFitterSim(
+        d_cfg = d_cfg,
+        d_nll = d_nll, 
+        q2bin = Qsq.central)
+    res = ftr.run(skip_fit = False)
+
+    print(res)
+# -------------------------------
