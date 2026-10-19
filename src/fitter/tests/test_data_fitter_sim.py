@@ -2,6 +2,7 @@
 Module with tests for DataFitterSim class
 '''
 import pytest
+import numpy
 
 from typing      import Final
 from functools   import cache
@@ -24,11 +25,17 @@ from fitter      import DataFitterSim
 from fitter      import PlotConf
 from dmu.testing import get_nll 
 from dmu.stats   import zfit
+from dmu.generic import rxran
 
 zpar = zfit.Parameter | zfit.ComposedParameter
 
 _NEE : Final[int] = 10_000
 _NMM : Final[int] = 30_000
+# -------------------------------
+@pytest.fixture(autouse = True)
+def random_seed():
+    with rxran.seed(value = 42):
+        yield
 # -------------------------------
 @cache
 def _get_pars() -> dict[str, zpar]:
@@ -152,6 +159,12 @@ def test_double_ratio(monkeypatch, tmp_path : Path):
         d_nll = d_nll, 
         q2bin = Qsq.central)
     res = ftr.run(skip_fit = False)
+
+    rk  , _ = res.get('rk'  , fall_back=None)
+    rkst, _ = res.get('rkst', fall_back=None)
+
+    assert numpy.isclose(rk  , 3.04176)
+    assert numpy.isclose(rkst, 2.99603)
 
     print(res)
 # -------------------------------
