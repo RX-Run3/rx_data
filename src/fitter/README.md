@@ -235,72 +235,26 @@ which will:
 - Pick the resonant fits and simulation for the $R_K$ analysis in the electron channel to calculate the efficiencies
 - Calculate the efficiencies for the rare mode in the `central` $q^2$ bin.
 
-## Toys
+## Simultaneous fits
 
-### Making them
-
-In order to run toys do:
+For this run:
 
 ```bash
-fit_rx_data -c rare/electron -q central -C 0.98 -P 0.60 -t toys/maker.yaml -N 30
+fit_rx_rare_sim -b -1 -g test -k rk -q low -C 0900 -P 0600
 ```
+Which will do the muon and electron channel fits needed to extract $R_K$. For $R_{K^*}$ run with
+`-k rkst` and for the full fit with both extracted simultaneously do `-k rx`.
 
-this will:
+The fits will parametrize:
 
-- Run the fit to the actual data using:
+- **$R_K$**: The muon signal yield is parametrized as a function of the electron signal yield and $R_K$:
+  $$
+  N(B^+\to K^+\mu^+\mu^-) = N(B^+\to K^+e^+e^-) \times R_K
+  $$
+- **$R_{K^*}$**: Similarly, for the $K^*0$ modes:
+  $$
+  N(B^0\to K^{*0}\mu^+\mu^-) = N(B^0\to K^{*0}e^+e^-) \times R_{K^*}
+  $$
+- **Part-reconstructed backgrounds**: Linked between channels using efficiency ratios and scaling factors (e.g., $B^0 \to K^{*0}\mu^+\mu^-$ relative to $B^0 \to K^{*0}e^+e^-$ and $B^+ \to K^+ e^+e^-$ cross-feed components).
+- **Categorization**: Handled across different bremsstrahlung categories (`x12`, `xx1`, `xx2`) and MVA working points.
 
-```bash
-src/fitter_data/rare/electron/data.yaml
-```
-
-as the configuration. This file includes paths to configurations needed by the
-fits to the simulation, needed to get the components of the fit.
-
-- Run fits for the `central` $q^2$ bin at the $(0.98, 0.60)$ working point.
-- Once the fit to the real data is finished, it will run `30` toy fits
-following the configuration in:
-
-```bash
-src/fitter_data/toys/maker.yaml
-```
-
-which will decide how to do the minimization itself. 
-The toys output will be saved as a pandas dataframe in a `parquet` file
-
-### Plotting them
-
-In order to plot the toys run:
-
-```bash
-plot_toys -v v3 -n 10
-```
-
-This will:
-
-- Run over the version `v3` of the toys
-- Use processes to run in parallel
-
-The outputs will go next to the `toys.parquet` file in the `plots` directory
-
-A summary of the toy fits will be saved in the `summary.yaml` file within the
-`v3` directory, plots can be made from it by running:
-
-```bash
-summarize_toys -v v3
-```
-## Tables
-
-The `rxfitter` CLI can create latex tables with:
-
-```bash
-rxfitter tabulate-scales
-```
-
-for normalization scales between signal and background components.
-
-```bash
-rxfitter tabulate-mc-stats -t rkst_ee_os -n reso_dtf-latest-990-600
-```
-
-to create tables with statics for simulated samples associated to the 
-`reso_dtf-latest-990-600` in the `rkst_ee_os` triggered candidate fits.
