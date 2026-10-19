@@ -2,15 +2,14 @@
 Module with Holder class
 '''
 import copy
+
 from dmu           import LogStore
-from typing        import Generic, TypeVar
 from rx_common     import Component
 from pydantic      import BaseModel, ConfigDict
 
 log = LogStore.add_logger('rx_generic:holder')
 # ----------------------
-T = TypeVar('T')
-class ComponentHolder(Generic[T]):
+class ComponentHolder[T]:
     '''
     Class meant to be used to store datasets, __getattr__ has been overriden
     to be an accesssor to the underlying elements. Therefore there are no public methods can be
@@ -45,10 +44,10 @@ class ComponentHolder(Generic[T]):
         self._data[component] = value
     # ----------------------
     def __iter__(self):
-        return iter(self._data) 
+        return iter(self._data)
     # ----------------------
     def items(self):
-        return self._data.items() 
+        return self._data.items()
     # ----------------------
     def __getitem__(self, component : Component) -> T:
         '''
@@ -75,7 +74,7 @@ class ComponentHolder(Generic[T]):
         return new_value
     # ----------------------
     def __call__(
-        self, 
+        self,
         update : dict[Component,T] | None = None) -> 'ComponentHolder[T]':
         '''
         Parameters
@@ -105,13 +104,12 @@ class ComponentHolder(Generic[T]):
 
         return new_holder
 # ----------------------
-T = TypeVar('T')
-class ChannelHolder(BaseModel, Generic[T]):
+class ChannelHolder[T](BaseModel, frozen = True):
     '''
     Class mean to hold objects per channel
     '''
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    ee : T 
-    mm : T 
+    ee : T
+    mm : T
 # ----------------------
