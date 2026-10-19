@@ -50,6 +50,8 @@ class DataFitterSim(BaseFitter):
         self._q2bin   = q2bin
         self._d_nll   = d_nll
         self._d_cfg   = d_cfg
+
+        BaseFitter.__init__(self)
     # ----------------------
     def _get_full_nll(self) -> NLL:
         '''
