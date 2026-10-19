@@ -1,6 +1,9 @@
 '''
 Module with tests for DataFitterSim class
 '''
+import pytest
+
+from rx_common   import Project
 from pathlib     import Path
 from dmu.stats   import ZFitPlotterConf
 from rx_common   import Channel
@@ -61,17 +64,22 @@ def _get_cfg(region : Region) -> RXFitConfig:
         mva_prc = mva,
         mod_cfg = mod_cfg)
 # -------------------------------
-def test_rk(
+@pytest.mark.parametrize('project', [Project.rk, Project.rkst])
+def test_single_ratio(
     monkeypatch,
+    project  : Project,
     tmp_path : Path):
     '''
-    Simplest test
+    Test electron and muon NLL combined
     '''
     monkeypatch.setenv('ANADIR', tmp_path)
 
-    rk_ee   = Region(brem = Brem.brx12, trigger = Trigger.rk_ee_os)
-    rk_mm   = Region(brem = Brem.zero , trigger = Trigger.rk_mm_os)
-    regions = [rk_ee, rk_mm]
+    trg_ee  = Trigger.get_main_trigger(project = project, channel = Channel.ee)
+    trg_mm  = Trigger.get_main_trigger(project = project, channel = Channel.mm)
+
+    reg_ee  = Region(brem = Brem.brx12, trigger = trg_ee)
+    reg_mm  = Region(brem = Brem.zero , trigger = trg_mm)
+    regions = [reg_ee, reg_mm]
 
     d_nll : dict[Region, NLLConf] = {}
     for region in regions:
