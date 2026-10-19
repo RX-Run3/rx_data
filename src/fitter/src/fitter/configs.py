@@ -5,9 +5,9 @@ import os
 import copy
 
 from functools   import cached_property
-from pydantic    import BaseModel, field_validator, model_validator
+from pydantic    import BaseModel, field_validator, model_validator, RootModel
 from pathlib     import Path
-from typing      import TYPE_CHECKING, Any, Callable, Literal, Self
+from typing      import TYPE_CHECKING, Any, Callable, Literal, Self, Final
 from rx_common   import MVAWp, Brem
 from rx_common   import Channel, Mass, Project, Qsq, MisID, Region
 from rx_common   import Component, Trigger, CCbarComponent, Cuts
@@ -21,6 +21,7 @@ from dmu.stats   import YieldsConf
 from dmu.stats   import zfit
 from dmu.generic import hashing
 from dmu.generic import UnpackerModel
+from dmu.generic import utilities as gut
 
 from .ccbar_conftf   import CCbarConfTF
 from .component_conf import ComponentConf, ObservableConf
@@ -33,6 +34,9 @@ type zobs = zfit.Space
 type zpdf = zfit.pdf.BasePDF
 type zsum = zfit.pdf.SumPDF
 type zpar = zfit.param.Parameter
+
+_MIN_MODELS_SYST : Final[int] = 2
+'''Need at least to models, nominal and variation'''
 # ------------------------------
 def _validate_mod_cfg(value) -> 'FitModelConf | None':
     '''
@@ -50,6 +54,48 @@ def _validate_mod_cfg(value) -> 'FitModelConf | None':
         return FitModelConf(**value)
 
     raise ValueError('Invalid value for mod_cfg field')
+# ------------------------------
+# Systematics
+# ------------------------------
+class ModelSystematics(RootModel[dict[str,list[str]]], frozen = True):
+    '''
+    Class meant to represent variations in models needed
+    to account for systematics
+    '''
+    # ------------------------------------
+    @model_validator(mode = 'after')
+    def _validate(self) -> 'ModelSystematics':
+        fail = False
+        for systematic, paths in self.root.items():
+            if len(paths) < _MIN_MODELS_SYST:
+                log.error(f'Found fewer than two models for systematic {systematic}')
+                fail = True
+
+            self._validate_paths(paths)
+
+        if fail:
+            raise ValueError('Model systematics validation failed')
+
+        return self
+    # ------------------------------------
+    def _validate_paths(self, paths : list[str]) -> None:
+        '''
+        Makes sure that all the paths exist and are a valid ParametricConf
+        '''
+        for path in paths:
+            data = gut.load_data(package = 'fitter_data', fpath = path)
+            ParametricConf(**data)
+    # ------------------------------------
+    @classmethod
+    def load(cls) -> 'ModelSystematics':
+        '''
+        Loads instance of class from `model.yaml`
+        '''
+        data = gut.load_data(
+            package = 'fitter_data', 
+            fpath   = 'systematics/models.yaml')
+
+        return cls(**data)
 # ------------------------------
 # Constraints
 # ------------------------------

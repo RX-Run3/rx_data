@@ -30,6 +30,7 @@ from .constraint_reader  import ConstraintReader
 from .yields             import Yield, YieldGrid
 from .yield_calculator   import YieldCalculator
 from .fit_metadata       import FitMetadata
+from .configs            import ModelSystematics
 # ----------
 # Combinatorial
 # ----------
@@ -95,6 +96,10 @@ __all__ = [
     'EffScales',
     'YieldCalculator',
     'YieldGrid',
+    # ------------------
+    # Systematics
+    # ------------------
+    'ModelSystematics',
     # ------------------
     'PRec',
     'ChannelHolder',

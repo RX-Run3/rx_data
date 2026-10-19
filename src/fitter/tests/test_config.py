@@ -12,11 +12,12 @@ from dmu.stats   import SimpleYieldConf
 from dmu.generic import UnpackerModel, utilities as gut
 from rx_misid    import MisIDSampleWeights, MisIDSampleSplitting
 from rx_common   import Channel, Component, Project, Mass, Qsq, Brem
+from rx_common   import MVAWp
 from fitter      import NonParametricConf
 from fitter      import CCbarConf, CombinatorialConf, MisIDConf, ObservableConf, RXFitConfig
 from fitter      import ParametricConf
 from fitter      import FitModelConf
-from rx_common   import MVAWp
+from fitter      import ModelSystematics
 from fitter      import CmbConstraintConf
 from fitter      import CombinatorialConfUnconstrained
 
@@ -237,4 +238,10 @@ def test_full_model(
             brems   = [Brem.one, Brem.two])
 
     cfg.to_yaml(path = tmp_path / 'config.yaml')
+# ----------------------
+def test_model_systematics():
+    '''
+    Test ModelSystematics class
+    '''
+    obj = ModelSystematics.load()
 # ----------------------

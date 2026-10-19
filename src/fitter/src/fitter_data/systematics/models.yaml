@@ -1,0 +1,3 @@
+rk_mm_sig:
+  - rare/rk/mm/bpkpmm.yaml
+  - rare/rk/mm/bpkpmm_alt_1.yaml 
