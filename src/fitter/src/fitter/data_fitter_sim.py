@@ -3,12 +3,11 @@ Module containing DataFitterSim class
 '''
 from typing          import Literal
 from typing          import overload
-from dmu             import LogStore
+from dmu             import LogStore, LogLevels
 from dmu.stats       import FitResult
 from dmu.stats       import zfit
 from dmu.stats       import utilities as sut
 from dmu.generic     import utilities as gut
-from rx_common       import Trigger
 from rx_common       import Qsq, Region
 from zfit.exception  import ParamNameNotUniqueError
 from zfit.loss       import ExtendedUnbinnedNLL as NLL
@@ -64,7 +63,7 @@ class DataFitterSim(BaseFitter):
         except ParamNameNotUniqueError as exc:
             for nll in l_nll:
                 pdf = nll.model[0]
-                sut.print_pdf(pdf=pdf)
+                sut.print_pdf(pdf=pdf, level=LogLevels.error)
 
             raise ParamNameNotUniqueError('Models contain multiple parameters with the same name') from exc
 
