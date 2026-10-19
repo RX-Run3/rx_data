@@ -80,6 +80,31 @@ def _parse_args() -> dict[Region, RXFitConfig]:
 
     return { region : _cfg_from_args(region = region, args = args) for region in regions }
 # ----------------------
+def _get_replacements(kind : SimFit) -> dict[str,str]:
+    '''
+    Parameters
+    ------------------
+    kind: Symbolizes measurement been made 
+
+    Returns
+    ------------------
+    Replacements needed for config files describing yields.
+    Needed in order to reparametrize in function of rk, rkst or both
+    '''
+    if kind == SimFit.rk:
+        return  {'rk/rare_muon.yaml' : 'rk/rare_muon_simultaneous.yaml'}
+
+    if kind == SimFit.rkst:
+        return  {'rkst/rare_muon.yaml' : 'rkst/rare_muon_simultaneous.yaml'}
+
+    if kind == SimFit.rx:
+        return {
+        'rk/rare_electron.yaml' : 'rk/rare_electron_simultaneous.yaml', # nkstee -> nkee * eff_ratio
+        'rk/rare_muon.yaml'     : 'rk/rare_muon_simultaneous.yaml',     # nmumu  -> rk   * nee / ck
+        'rkst/rare_muon.yaml'   : 'rkst/rare_muon_simultaneous.yaml'}   # nmumu  -> rkst * nee / ck*
+
+    raise ValueError(f'Invalid kind of simultaneous fit: {kind}')
+# ----------------------
 def _cfg_from_args(
     region : Region,
     args   : argparse.Namespace) -> RXFitConfig:
@@ -97,7 +122,9 @@ def _cfg_from_args(
         package= 'fitter_data',
         fpath  = f'rare/{region.trigger.project}/{region.trigger.channel}/data.yaml')
 
-    mod_cfg = FitModelConf(**data_mod)
+    config_replacements = _get_replacements(kind = args.kind)
+    with UnpackerModel.replacements(files = config_replacements):
+        mod_cfg = FitModelConf(**data_mod)
 
     if mod_cfg.trigger.is_electron:
         name = 'brem_x12'
@@ -191,18 +218,10 @@ def _get_conf() -> dict[Region, RXFitConfig]:
     '''
     Returns dictionary mapping signal region to configuration in region
     '''
-    config_replacements = {
-        'rk/rare_electron.yaml'   : 'rk/rare_electron_simultaneous.yaml',
-        'rkst/rare_electron.yaml' : 'rkst/rare_electron_simultaneous.yaml',
-        'rk/rare_muon.yaml'       : 'rk/rare_muon_simultaneous.yaml',
-        'rkst/rare_muon.yaml'     : 'rkst/rare_muon_simultaneous.yaml',
-    }
 
     ctx_1 = UnpackerModel.package(name = 'fitter_data')
-    ctx_2 = UnpackerModel.replacements(files = config_replacements)
     with ExitStack() as stack:
         stack.enter_context(ctx_1)
-        stack.enter_context(ctx_2)
         cfgs = _parse_args()
 
     return cfgs
