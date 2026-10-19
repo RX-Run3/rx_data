@@ -3,14 +3,14 @@ Module holding Calculator class
 '''
 import pandas as pnd
 
-from dmu.stats     import zfit 
+from dmu.stats     import zfit
 from dmu.stats     import FitResult
 from zfit.data     import SamplerData
 from typing        import Literal
 from dmu           import LogStore
 from dmu.stats     import Constraints
 from fitter        import ToyConf, ToyMaker
-from fitter        import ChannelHolder 
+from fitter        import ChannelHolder
 
 pdf    = zfit.pdf
 loss   = zfit.loss
@@ -64,11 +64,11 @@ class Calculator[PDF : pdf.BasePDF ]:
         '''
         Parameters
         -------------
-        model : Zfit PDF 
+        model : Zfit PDF
 
         Returns
         -------------
-        Sampler corresponding to argument PDF 
+        Sampler corresponding to argument PDF
         '''
         sampler            = model.create_sampler()
         setattr(sampler, model.name, 'model_name')
@@ -76,7 +76,7 @@ class Calculator[PDF : pdf.BasePDF ]:
         return sampler
     # ----------------------
     def _make_toys(
-        self, 
+        self,
         label   : str,
         model   : pdf.SumPDF | None,
         channel : Channel| None) -> pnd.DataFrame:
@@ -84,7 +84,7 @@ class Calculator[PDF : pdf.BasePDF ]:
         Parameters
         -------------
         label   : Systematic label
-        model   : Dictionary mapping channel to PDF that needs to be switched 
+        model   : Dictionary mapping channel to PDF that needs to be switched
         channel : ee or mm, needed to
 
         Returns
@@ -95,8 +95,8 @@ class Calculator[PDF : pdf.BasePDF ]:
         nll = self._get_new_nll(model = model, channel = channel)
 
         mkr = ToyMaker(
-            nll = nll, 
-            cns = cns, 
+            nll = nll,
+            cns = cns,
             cfg = self._cfg,
             res = self._res)
 
@@ -105,7 +105,7 @@ class Calculator[PDF : pdf.BasePDF ]:
         return df
     # ----------------------
     def _get_new_nll(
-        self, 
+        self,
         model  : pdf.SumPDF | None,
         channel: Channel| None) -> loss.ExtendedUnbinnedNLL:
         '''
@@ -184,14 +184,14 @@ class Calculator[PDF : pdf.BasePDF ]:
         return self._df_nom
     # ----------------------
     def switch_model(
-        self, 
+        self,
         label  : str,
         model  : pdf.SumPDF | None,
         channel: Channel | None = None) -> pnd.DataFrame:
         '''
         Parameters
         -------------
-        label  : Label for model, used for naming outputs, meant to be systematic, e.g. sig_dscb 
+        label  : Label for model, used for naming outputs, meant to be systematic, e.g. sig_dscb
         model  : Alternative model to do fits with. If None, will use nominal model
         channel: When using simultaneous fits, this will define signal region where replacement will be made
 
@@ -204,21 +204,21 @@ class Calculator[PDF : pdf.BasePDF ]:
         log.debug(model)
         log.info(30 * '-')
         df = self._make_toys(
-            model   = model, 
+            model   = model,
             label   = label,
-            channel = channel) 
+            channel = channel)
 
         return df
     # ----------------------
     def fix_parameter(
-        self, 
+        self,
         name  : str,
         label : str) -> pnd.DataFrame:
         '''
         Parameters
         -------------
         name : Name of parameter to be fixed
-        label: Label for model, used for naming outputs, meant to be systematic, e.g. sig_dscb 
+        label: Label for model, used for naming outputs, meant to be systematic, e.g. sig_dscb
 
         Returns
         -------------
@@ -239,9 +239,9 @@ class Calculator[PDF : pdf.BasePDF ]:
             param.floating = False
 
         df = self._make_toys(
-            model   = None, 
-            channel = None, 
-            label   = label) 
+            model   = None,
+            channel = None,
+            label   = label)
 
         return df
 # ------------------------------------
