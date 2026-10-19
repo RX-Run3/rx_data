@@ -10,17 +10,21 @@ import inspect
 import importlib.util
 import yaml
 
+from functools             import reduce
+from operator              import add
 from pathlib               import Path
 from jinja2                import Template
 from importlib.resources   import files
 from importlib.util        import find_spec
-from typing                import Callable, Any
+from typing                import Callable, Any, Sequence
 from functools             import cache, wraps
 from contextlib            import contextmanager
 from yaml.constructor      import ConstructorError
 from omegaconf.errors      import ConfigKeyError
 from omegaconf             import ListConfig, OmegaConf, DictConfig, ValidationError
 from dmu.logging.log_store import LogStore
+
+from .protocols            import SupportsAddition
 
 TIMER_ON=False
 log = LogStore.add_logger('dmu:generic:utilities')
@@ -43,6 +47,23 @@ class BlockStyleDumper(yaml.SafeDumper):
     '''
     def increase_indent(self, flow=False, indentless=False):
         return super().increase_indent(flow=flow, indentless=False)
+# ------------------------------------
+def add_container[T : SupportsAddition](elements : Sequence[T]) -> T:
+    '''
+    Parameters
+    -------------------
+    elements: Container with elements that implement __add__
+
+    Returns
+    -------------------
+    Result from adding all elements
+    '''
+    if not elements:
+        raise ValueError('Cannot add empty container')
+
+    val = reduce(add, elements)
+
+    return val
 # ------------------------------------
 def object_to_string(obj : Any, sort_keys=False) -> str:
     '''
