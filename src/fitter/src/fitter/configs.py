@@ -36,8 +36,8 @@ type zpdf = zfit.pdf.BasePDF
 type zsum = zfit.pdf.SumPDF
 type zpar = zfit.param.Parameter
 
-_MIN_MODELS_SYST : Final[int] = 2
-'''Need at least to models, nominal and variation'''
+_NUM_MODELS_SYST : Final[int] = 2
+'''Need nominal and variation of model'''
 # ------------------------------
 def _validate_mod_cfg(value) -> 'FitModelConf | None':
     '''
@@ -58,7 +58,7 @@ def _validate_mod_cfg(value) -> 'FitModelConf | None':
 # ------------------------------
 # Systematics
 # ------------------------------
-class ModelSystematics(RootModel[dict[Systematic,list[str]]], frozen = True):
+class ModelSystematics(RootModel[dict[Systematic,tuple[str,str]]], frozen = True):
     '''
     Class meant to represent variations in models needed
     to account for systematics
@@ -68,7 +68,7 @@ class ModelSystematics(RootModel[dict[Systematic,list[str]]], frozen = True):
     def _validate(self) -> 'ModelSystematics':
         fail = False
         for systematic, paths in self.root.items():
-            if len(paths) < _MIN_MODELS_SYST:
+            if len(paths) != _NUM_MODELS_SYST:
                 log.error(f'Found fewer than two models for systematic {systematic}')
                 fail = True
 
@@ -79,7 +79,7 @@ class ModelSystematics(RootModel[dict[Systematic,list[str]]], frozen = True):
 
         return self
     # ------------------------------------
-    def _validate_paths(self, paths : list[str]) -> None:
+    def _validate_paths(self, paths : tuple[str,str]) -> None:
         '''
         Makes sure that all the paths exist and are a valid ParametricConf
         '''
@@ -97,6 +97,23 @@ class ModelSystematics(RootModel[dict[Systematic,list[str]]], frozen = True):
             fpath   = 'systematics/models.yaml')
 
         return cls(**data)
+    # ------------------------------------
+    def get(self, syst : Systematic) -> dict[str,str]:
+        '''
+        Parameters
+        ---------------
+        syst: Systematic variation
+
+        Returns
+        ---------------
+        Dictionary mapping paths to config files that need to
+        be replaced to perform variation
+        '''
+        paths            = self.root[syst]
+        nominal_path     = paths[0]
+        alternative_path = paths[1]
+
+        return {nominal_path : alternative_path}
 # ------------------------------
 # Constraints
 # ------------------------------
