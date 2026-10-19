@@ -18,13 +18,13 @@ from rx_common        import MVAWp, Qsq
 from fitter           import DataPreprocessor
 from fitter           import RXFitConfig
 from fitter           import add_constraints 
-from fitter           import DataFitter
+from fitter           import DataFitterSim
 from fitter           import LikelihoodFactory
 from fitter           import FitModelConf
 from fitter           import NLLConf
 from fitter           import SimFit
 
-log=LogStore.add_logger('fitter:fit_rx_rare')
+log=LogStore.add_logger('fitter:fit_rx_rare_sim')
 
 _DATA_SAMPLE : Final[Component] = Component.data_24
 # ----------------------
@@ -181,10 +181,10 @@ def _fit(cfgs : dict[Region, RXFitConfig]) -> None:
     for region, cfg in cfgs.items():
         d_nll[region] = _get_nll(cfg = cfg, brem = region.brem)
 
-    ftr   = DataFitter(
+    ftr = DataFitterSim(
         q2bin = cfg.q2bin,
         d_nll = d_nll,
-        cfg   = cfg.mod_cfg)
+        d_cfg = cfgs)
     ftr.run(skip_fit = False)
 # ----------------------
 def _get_conf() -> dict[Region, RXFitConfig]:

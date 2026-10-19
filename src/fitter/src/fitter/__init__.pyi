@@ -7,6 +7,7 @@ from .toy_maker          import ToyMaker
 from .toy_maker          import ToyConf
 from .toy_plotter        import ToyPlotter
 from .data_fitter        import DataFitter
+from .data_fitter_sim    import DataFitterSim
 from .data_model         import DataModel
 from .data_fitter        import NLLConf
 from .sim_fitter         import SimFitter
@@ -108,6 +109,7 @@ __all__ = [
     'ParameterReader',
     'SimFitter',
     'DataFitter',
+    'DataFitterSim',
     'ToyMaker',
     'ToyConf',
     'ToyPlotter',
