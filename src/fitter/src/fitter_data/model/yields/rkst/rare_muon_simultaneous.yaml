@@ -5,9 +5,9 @@ yields: &yields
   min : 0
   max : 1000000
 rkst:
-  val : 1
-  min : 0
-  max : 2
+  val :  1
+  min :  0
+  max : 10
 yld_bdkstkpimm_rkst_brem_xx0:
   kind : mul
   pars :

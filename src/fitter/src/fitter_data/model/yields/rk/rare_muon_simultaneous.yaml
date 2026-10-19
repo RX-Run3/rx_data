@@ -6,9 +6,9 @@ yields: &yields
   min : 0
   max : 1000000
 rk:
-  val : 1
-  min : 0
-  max : 2
+  val :  1
+  min :  0
+  max : 10
 yld_bpkpee_rk_brem_x12:
   <<      : *yields
 yld_bpkpmm_rk_brem_xx0:
