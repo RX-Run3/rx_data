@@ -25,6 +25,7 @@ from dmu.generic import utilities as gut
 
 from .ccbar_conftf   import CCbarConfTF
 from .component_conf import ComponentConf, ObservableConf
+from .types          import Systematic
 from .types          import CCbarWeight
 from .toy_maker      import ToyConf
 
@@ -57,7 +58,7 @@ def _validate_mod_cfg(value) -> 'FitModelConf | None':
 # ------------------------------
 # Systematics
 # ------------------------------
-class ModelSystematics(RootModel[dict[str,list[str]]], frozen = True):
+class ModelSystematics(RootModel[dict[Systematic,list[str]]], frozen = True):
     '''
     Class meant to represent variations in models needed
     to account for systematics

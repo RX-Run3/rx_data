@@ -59,3 +59,12 @@ class SimFit(StrEnum):
             case SimFit.rx:
                 return [rkst_ee, rkst_mm, rk_ee, rk_mm] 
 # ------------------------------
+class Systematic(StrEnum):
+    '''
+    Enum meant to represent systematics
+    '''
+    rk_mm_sig = auto()
+    '''
+    Systematic associated to signal model in rk muon region
+    '''
+# ------------------------------

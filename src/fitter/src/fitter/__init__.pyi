@@ -21,7 +21,7 @@ from .pars_loader        import ParsLoader
 from .holders            import ChannelHolder
 from .holders            import ComponentHolder
 from .misid_constraints  import MisIDConstraints
-from .types              import CCbarWeight, SimFit
+from .types              import CCbarWeight, SimFit, Systematic
 from .prec               import PRec
 from .prec_scales        import PrecScales
 from .eff_scales         import EffScales
@@ -100,6 +100,7 @@ __all__ = [
     # Systematics
     # ------------------
     'ModelSystematics',
+    'Systematic',
     # ------------------
     'PRec',
     'ChannelHolder',
