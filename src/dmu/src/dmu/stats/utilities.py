@@ -637,8 +637,11 @@ def _info_from_line(line : str) -> tuple|None:
 
     [par, _, low, high, floating, cons] = mtch.groups()
 
-    low  = _format_float_str(low)
-    high = _format_float_str(high)
+    try:
+        low  = _format_float_str(low)
+        high = _format_float_str(high)
+    except Exception as exc:
+        raise ValueError(f'Cannot extract bounds from: {line}') from exc
 
     if cons != 'none':
         [mu, sg] = cons.split('___')
