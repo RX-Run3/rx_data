@@ -84,6 +84,8 @@ def test_parameter_fixing(
     tmp_path : Path,
     ntoys    : int | None) -> None:
     '''
+    Test fixing nuisance parameters
+
     Parameters
     -------------
     tmp_path : Where output plots will go
@@ -139,6 +141,8 @@ def test_sim_model_switch(
     tmp_path : Path,
     ntoys    : int | None) -> None:
     '''
+    Switch models in simultaneous fit
+
     Parameters
     -------------
     tmp_path : Where output plots will go
@@ -197,6 +201,9 @@ def test_sim_parameter_fixing(
     tmp_path : Path,
     ntoys    : int | None) -> None:
     '''
+    Test fixing one parameter after another with 
+    simultaneous fits
+
     Parameters
     -------------
     tmp_path : Where output plots will go
