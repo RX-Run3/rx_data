@@ -28,6 +28,7 @@ SingleLiteral = Literal['signal', 'signal_alt', 'bkg']
 SumLiteral    = Literal['s+b', 's+b+x', 's_alt+b']
 AllLiteral    = Literal['signal', 'signal_alt', 'bkg', 's+b', 's+b+x', 's_alt+b']
 SumPDF        = zfit.pdf.SumPDF
+xpar          = zfit.param.Parameter | zfit.param.ComposedParameter
 
 log = LogStore.add_logger('rx_testing:stats')
 #---------------------------------------------
@@ -39,7 +40,7 @@ def get_model(
     nsig   : zpar| None            = None,
     nsample: int                   = 1000,
     obs    : zobs           | None = None,
-    pars   : dict[str,zpar] | None = None,
+    pars   : dict[str,xpar] | None = None,
     suffix : str            | None = None,
     prefix : str            | None = None,
     suffix_pdfs : bool             = False,
@@ -50,17 +51,17 @@ def get_model(
     nsig   : zpar| None            = None,
     nsample: int            | None = None,
     obs    : zobs           | None = None,
-    pars   : dict[str,zpar] | None = None,
+    pars   : dict[str,xpar] | None = None,
     suffix : str            | None = None,
     prefix : str            | None = None,
     suffix_pdfs : bool             = False,
     lam    : float                 = -0.0001) -> zpdf:...
 def get_model(
     kind   : AllLiteral,
-    nsig   : zpar| None            = None,
+    nsig   : xpar| None            = None,
     nsample: int | None            = None,
     obs    : zobs           | None = None,
-    pars   : dict[str,zpar] | None = None,
+    pars   : dict[str,xpar] | None = None,
     suffix : str            | None = None,
     prefix : str            | None = None,
     suffix_pdfs : bool             = False,
@@ -223,10 +224,10 @@ def get_model(
     raise NotImplementedError(f'Invalid kind of fit: {kind}')
 # ----------------------
 def _get_signal_yield(
-    pars   : dict[str,zpar] | None,
+    pars   : dict[str,xpar] | None,
     nsample: int,
     prefix : str,
-    suffix : str) -> zpar:
+    suffix : str) -> xpar:
     '''
     Parameters
     -------------
@@ -248,20 +249,20 @@ def _get_signal_yield(
 @overload
 def get_nll(
     kind     : SumLiteral,
-    pars     : dict[str,zpar] | None = None,
+    pars     : dict[str,xpar] | None = None,
     suffix   : str                   = '_gaus_test_1',
     prefix   : str | None            = None,
     nentries : int                   = 1000) -> ExtendedUnbinnedNLL:...
 @overload
 def get_nll(
     kind     : SingleLiteral,
-    pars     : dict[str,zpar] | None = None,
+    pars     : dict[str,xpar] | None = None,
     suffix   : str                   = '_gaus_test_1',
     prefix   : str | None            = None,
     nentries : int                   = 1000) -> UnbinnedNLL:...
 def get_nll(
     kind     : AllLiteral,
-    pars     : dict[str,zpar] | None = None,
+    pars     : dict[str,xpar] | None = None,
     suffix   : str                   = '_gaus_test_1',
     prefix   : str | None            = None,
     nentries : int                   = 1000) -> Loss:
