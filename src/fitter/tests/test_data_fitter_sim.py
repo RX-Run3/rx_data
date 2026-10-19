@@ -1,7 +1,8 @@
 '''
 Module with tests for DataFitterSim class
 '''
-from dmu.stats import ZFitPlotterConf
+from pathlib     import Path
+from dmu.stats   import ZFitPlotterConf
 from rx_common   import Channel
 from rx_common   import Component
 from rx_common   import Trigger
@@ -20,10 +21,15 @@ from dmu.testing import get_nll
 
 # -------------------------------
 def _get_nll(region : Region) -> NLLConf:
-    name = str(region)
+    if region.trigger.is_electron:
+        nentries = 10_000
+    else:
+        nentries = 30_000
+
     nll  = get_nll(
-        kind   = 's+b',
-        suffix = name)
+        nentries= nentries,
+        kind    = 's+b',
+        prefix  = region.name)
 
     return NLLConf(
         nll         = nll,
@@ -43,6 +49,8 @@ def _get_cfg(region : Region) -> RXFitConfig:
     }
 
     mod_cfg = FitModelConf.default()
+    mod_cfg = mod_cfg.model_copy(update = {'trigger' : region.trigger})
+
     mod_cfg = mod_cfg.model_copy(update = new_fields)
 
     return RXFitConfig(
@@ -53,10 +61,14 @@ def _get_cfg(region : Region) -> RXFitConfig:
         mva_prc = mva,
         mod_cfg = mod_cfg)
 # -------------------------------
-def test_simple():
+def test_rk(
+    monkeypatch,
+    tmp_path : Path):
     '''
     Simplest test
     '''
+    monkeypatch.setenv('ANADIR', tmp_path)
+
     rk_ee   = Region(brem = Brem.brx12, trigger = Trigger.rk_ee_os)
     rk_mm   = Region(brem = Brem.zero , trigger = Trigger.rk_mm_os)
     regions = [rk_ee, rk_mm]
