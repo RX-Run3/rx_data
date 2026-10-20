@@ -34,10 +34,8 @@ plots:
   stacked : True
   d_leg   :
 {% for block in range(1, 9) %}
-    dscb_bpkpee_brem_xx1_b{{ block }}_1  : '$B^+\to K^+e^+e^-$, $1\gamma$, Block {{ block }} (DSCB)'
-    dscb_bpkpee_brem_xx2_b{{ block }}_1  : '$B^+\to K^+e^+e^-$, $2\gamma$, Block {{ block }} (DSCB)'
-    gauss_bpkpee_brem_xx1_b{{ block }}_1 : '$B^+\to K^+e^+e^-$, $1\gamma$, Block {{ block }} (Gauss)'
-    gauss_bpkpee_brem_xx2_b{{ block }}_1 : '$B^+\to K^+e^+e^-$, $2\gamma$, Block {{ block }} (Gauss)'
+    bpkpee_brem_xx1_b{{ block }}_1  : '$B^+\to K^+e^+e^-$, $1\gamma$, Block {{ block }} (DSCB)'
+    bpkpee_brem_xx2_b{{ block }}_1  : '$B^+\to K^+e^+e^-$, $2\gamma$, Block {{ block }} (DSCB)'
 {% endfor %}
   plot_range:
     - 4600
