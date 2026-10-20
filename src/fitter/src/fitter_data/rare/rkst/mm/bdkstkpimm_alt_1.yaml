@@ -1,0 +1,36 @@
+component : bdkstkpimm
+categories:
+  brem_xx0:
+    selection : {}
+    model :
+      pdfs:
+        - cbl
+        - cbr
+      shared        :
+        - mu
+        - sg
+      floating      :
+        - mu
+        - sg
+      reparametrize : {}
+      fix           : {}
+      values        :
+        mu:
+          - 5279
+          - 5200
+          - 5350
+        sg:
+          - 15 
+          - 10 
+          - 20 
+fit:
+  strategy  :
+    ntries : 10
+    pvalue : 0.05
+plots:
+  nbins     : 50
+  stacked   : True
+  plot_range: [5180, 5500]
+  d_leg     :
+    cbl_bdkstkpimm_brem_xx0_1 : Crystal Ball (left tail)
+    cbr_bdkstkpimm_brem_xx0_1 : Crystal Ball (right tail)

@@ -1,0 +1,39 @@
+component : bpkpee
+categories:
+{% for block in range(1, 9) %}
+  BREM_b{{ block }}:
+    selection :
+      block: block == {{ block }}
+    model:
+      pdfs :
+        - cbl
+        - cbr
+      fix           : {}
+      reparametrize :
+        mu : scale
+        sg : reso
+      shared        :
+        - mu
+        - sg
+      floating      : []
+      values        :
+        mu :
+          - 5240
+          - 5220
+          - 5280
+        sg :
+          -  50
+          -  20
+          - 100
+{% endfor %}
+fit:
+  strategy  :
+    pvalue : 0.05
+    ntries : 10
+plots:
+  nbins   : 30
+  stacked : True
+  d_leg   : {}
+  plot_range:
+    - 4600
+    - 6000
