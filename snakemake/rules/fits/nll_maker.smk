@@ -18,14 +18,14 @@ MODE      = 'rare'
 paths = []
 for qsq in qsq_bin:
     for syst in systs:
-        path = f'{OUT_PATH}/nll_{syst}/{CMB}_{PRC}_all/{MODE}/nll_{qsq}_{syst}.bytes'
+        path = f'{OUT_PATH}/nll/{CMB}_{PRC}_all/{MODE}/nll_{qsq}_{syst}.bytes'
         paths.append(path)
 # ---------------------------------------
 rule all:
     input : paths
 # ---------------------
 rule nlls:
-    output: f'{OUT_PATH}/nll_{{syst}}/{CMB}_{PRC}_all/{MODE}/nll_{{qsq}}_{{syst}}.bytes'
+    output: f'{OUT_PATH}/nll/{CMB}_{PRC}_all/{MODE}/nll_{{qsq}}_{{syst}}.bytes'
     log:
         prc = f'{LOGDIR}/{{qsq}}_{{syst}}.prc',
         err = f'{LOGDIR}/{{qsq}}_{{syst}}.err',
@@ -39,7 +39,7 @@ rule nlls:
         cmb  = CMB,
         prc  = PRC,
     resources:
-        htcondor_request_mem_mb = 4000,
+        htcondor_request_mem_mb = 6000,
         htcondor_request_disk_mb= 2000,
     shell :
         '''
