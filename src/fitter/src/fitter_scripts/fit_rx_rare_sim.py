@@ -170,12 +170,10 @@ def _cfg_from_args(
     else:
         name = 'brem_xx0'
 
-    group = args.group if args.syst.is_nominal else f'{args.group}-{args.syst}'
-
     cfg = RXFitConfig(
         name    = name,
         mod_cfg = mod_cfg,
-        group   = group,
+        group   = f'{args.group}/{args.syst}',
         block   = args.block,
         q2bin   = args.q2bin,
         ncores  = args.ncores,
