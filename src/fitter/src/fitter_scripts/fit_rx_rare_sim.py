@@ -5,6 +5,7 @@ import argparse
 
 from typing           import Final
 from pydantic         import BaseModel
+from pathlib          import Path
 from contextlib       import ExitStack
 from dmu.generic      import UnpackerModel, utilities as gut
 from dmu.stats        import ParameterLibrary as PL
@@ -43,6 +44,21 @@ class Conf(BaseModel, frozen=True):
     '''q2 bin for which fit is done'''
     dry_run: bool
     '''If true will not fit data, but will build NLL'''
+    # ---------------------------
+    @property
+    def out_dir(self) -> Path:
+        '''
+        Path to directory containing rk and rkst directories
+        '''
+        s_path : set[Path] = set()
+        for cfg in self.cfgs.values():
+            path = cfg.output_directory.parent.parent.parent
+            s_path.add(path)
+
+        if len(s_path) != 1:
+            raise ValueError(f'Not found one and only one output directory: {s_path}')
+
+        return list(s_path)[0]
 # ----------------------
 def _set_logs() -> None:
     '''
@@ -225,6 +241,19 @@ def _get_nll(
 
     return _get_region_nll(brem = brem, cfg = cfg_brem)
 # ----------------------
+def _save_nll(nlls : dict[Region,NLLConf], cfg : Conf) -> None:
+    '''
+    Parameters
+    ----------------
+    nlls: Dictionary mapping region with likelihood holder
+    cfg : Object holding configuration
+    '''
+    _nlls = [ nll_cfg.nll for nll_cfg in nlls.values() ]
+    nll   = gut.add_container(elements = _nlls)
+    path  = cfg.out_dir / 'nll_pre_fit.bytes'
+
+    sut.save_nll(loss = nll, path = path)
+# ----------------------
 def _fit(cfg : Conf) -> None:
     '''
     This is where DataFitter is used
@@ -232,6 +261,8 @@ def _fit(cfg : Conf) -> None:
     d_nll : dict[Region, NLLConf] = {}
     for region, region_cfg in cfg.cfgs.items():
         d_nll[region] = _get_nll(cfg = region_cfg, brem = region.brem)
+
+    _save_nll(nlls = d_nll, cfg = cfg)
 
     if cfg.dry_run:
         log.info('Skipping fit to data, dry run')
