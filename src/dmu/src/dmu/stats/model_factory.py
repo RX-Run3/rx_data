@@ -79,7 +79,7 @@ class MethodRegistry:
         '''
         Decorator in charge of registering method for given nickname
         '''
-        def decorator(method):
+        def decorator(method : Callable):
             cls._d_method[nickname] = method
             return method
 
