@@ -32,5 +32,5 @@ plots:
   stacked   : True
   plot_range: [5180, 5500]
   d_leg     :
-    gauss_bdkstkpimm_brem_xx0_1 : Gauss
-    dscb_bdkstkpimm_brem_xx0_1  : DSCB 
+    gauss_bdkstkpimm_brem_xx0_rkst_mm_1 : Gauss
+    dscb_bdkstkpimm_brem_xx0_rkst_mm_1  : DSCB

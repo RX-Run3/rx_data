@@ -32,5 +32,5 @@ plots:
   stacked   : True
   plot_range: [5180, 5500]
   d_leg     :
-    cbl_bdkstkpimm_brem_xx0_1 : Crystal Ball (left tail)
-    cbr_bdkstkpimm_brem_xx0_1 : Crystal Ball (right tail)
+    cbl_bdkstkpimm_brem_xx0_rkst_mm_1 : Crystal Ball (left tail)
+    cbr_bdkstkpimm_brem_xx0_rkst_mm_1 : Crystal Ball (right tail)

@@ -35,10 +35,10 @@ plots:
   stacked : True
   d_leg   :
 {% for block in range(1, 9) %}
-    cbl_bpkpee_brem_xx1_b{{ block }}_1 : '$B^+\to K^+e^+e^-$, $1\gamma$, Block {{ block }} (Left tail)'
-    cbr_bpkpee_brem_xx1_b{{ block }}_1 : '$B^+\to K^+e^+e^-$, $1\gamma$, Block {{ block }} (Right tail)'
-    cbl_bpkpee_brem_xx2_b{{ block }}_1 : '$B^+\to K^+e^+e^-$, $2\gamma$, Block {{ block }} (Left tail)'
-    cbr_bpkpee_brem_xx2_b{{ block }}_1 : '$B^+\to K^+e^+e^-$, $2\gamma$, Block {{ block }} (Right tail)'
+    cbl_bpkpee_brem_xx1_b{{ block }}_rk_ee_1  : '$B^+\to K^+e^+e^-$, $1\gamma$, Block {{ block }} (Left tail)'
+    cbl_bpkpee_brem_xx2_b{{ block }}_rk_ee_1  : '$B^+\to K^+e^+e^-$, $2\gamma$, Block {{ block }} (Left tail)'
+    cbr_bpkpee_brem_xx1_b{{ block }}_rk_ee_1  : '$B^+\to K^+e^+e^-$, $1\gamma$, Block {{ block }} (Right tail)'
+    cbr_bpkpee_brem_xx2_b{{ block }}_rk_ee_1  : '$B^+\to K^+e^+e^-$, $2\gamma$, Block {{ block }} (Right tail)'
 {% endfor %}
   plot_range:
     - 4600
