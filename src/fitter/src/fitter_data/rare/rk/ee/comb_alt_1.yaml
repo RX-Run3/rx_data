@@ -109,15 +109,13 @@ models:
     shared        : []
     floating      : []
     reparametrize : {}
-    fix           :
-      mu : 4800
+    fix           : {}
   central:
     pdfs          : [modexp]
     shared        : []
     floating      : []
     reparametrize : {}
-    fix           :
-      mu : 4700
+    fix           : {}
   high:
     pdfs          : [hypexp]
     shared        : []
