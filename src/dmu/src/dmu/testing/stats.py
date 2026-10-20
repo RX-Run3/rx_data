@@ -373,11 +373,11 @@ def get_nll(
         prefix = prefix,
         suffix = suffix)
 
-    if kind in ['s+b', 's_alt+b']:
+    if kind in get_args(SumLiteral):
         dat = pdf.create_sampler(n=nentries)
         return zfit.loss.ExtendedUnbinnedNLL(model=pdf, data=dat)
 
-    if kind in ['signal', 'signal_alt']:
+    if kind in get_args(SingleLiteral):
         dat = pdf.create_sampler(n=nentries)
         return zfit.loss.UnbinnedNLL(model=pdf, data=dat)
 
