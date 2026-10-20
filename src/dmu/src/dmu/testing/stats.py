@@ -6,7 +6,7 @@ import numpy
 import pandas as pnd
 
 from pathlib          import Path
-from typing           import overload, Literal
+from typing           import overload, Literal, get_args
 from dmu.stats        import zfit
 from dmu.stats        import Fitter
 from dmu.stats        import FitConf
@@ -99,6 +99,15 @@ def get_model(
     if obs is None:
         obs  = zfit.Space(f'{prefix}mass{suffix}', limits=(4500, 7000))
 
+    if kind == 'signal_kde':
+        return _get_kde_signal(
+            suffix_pdfs = suffix_pdfs,
+            suffix      = suffix,
+            prefix      = prefix,
+            nsig        = nsig,
+            kind        = kind,
+            obs         = obs)
+
     if kind in ['signal', 'signal_alt']:
         return _get_parametric_signal(
             suffix_pdfs = suffix_pdfs,
@@ -122,7 +131,7 @@ def get_model(
     if nsample is None:
         nsample = 1000
 
-    if kind in ['s+b', 's_alt+b', 's+b+x']:
+    if kind in get_args(SumLiteral):
         return _get_composite_model(
             kind       = kind,
             pars       = pars,
@@ -151,6 +160,7 @@ def _get_composite_model(
 
     models : dict[AllLiteral, AllLiteral] = {
         's+b'     : 'signal', 
+        'skde+b'  : 'signal_kde', 
         's+b+x'   : 'signal', 
         's_alt+b' : 'signal_alt'}
     signal_name = models[kind]
@@ -172,7 +182,11 @@ def _get_composite_model(
         suffix_pdfs = suffix_pdfs)
 
     bkg = bkg.create_extended(nbkg)
-    sig = sig.create_extended(nsig)
+
+    if kind == 'skde+b':
+        sig.set_yield(nsig)
+    else:
+        sig = sig.create_extended(nsig)
 
     if kind in ['s+b', 's_alt+b']:
         return zfit.pdf.SumPDF([bkg, sig])
@@ -263,6 +277,32 @@ def _get_parametric_signal(
     nevt = zfit.param.Parameter(f'{prefix}n{pdf_name}', nsig, 0, 1000_000)
 
     return pdf.create_extended(nevt, name = pdf_name)
+# ----------------------
+def _get_kde_signal(
+    kind        : str, 
+    prefix      : str, 
+    suffix      : str, 
+    nsig        : xpar | None,
+    suffix_pdfs : bool,
+    obs         : zobs) -> zpdf:
+
+    pdf_suffix = suffix if suffix_pdfs else ''
+    pdf_name   = f'{kind}{pdf_suffix}'
+
+    masses = numpy.random.normal(loc = 5280, scale = 150, size = 1000)
+    pdf    = zfit.pdf.KDE1DimFFT(
+        name = pdf_name,
+        data = masses, 
+        obs  = obs)
+
+    if nsig is None:
+        return pdf
+
+    nevt = zfit.param.Parameter(f'{prefix}n{pdf_name}', nsig, 0, 1000_000)
+
+    pdf.set_yield(nevt)
+
+    return pdf
 # ----------------------
 def _get_signal_yield(
     pars   : dict[str,xpar] | None,
