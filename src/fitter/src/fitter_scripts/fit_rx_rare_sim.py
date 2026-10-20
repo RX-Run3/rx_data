@@ -4,6 +4,7 @@ Script used to run simultaneous fits for rk, rkst and rx
 import argparse
 
 from typing           import Final
+from pydantic         import BaseModel
 from contextlib       import ExitStack
 from dmu.generic      import UnpackerModel, utilities as gut
 from dmu.stats        import ParameterLibrary as PL
@@ -29,6 +30,17 @@ from fitter           import Systematic
 log=LogStore.add_logger('fitter:fit_rx_rare_sim')
 
 _DATA_SAMPLE : Final[Component] = Component.data_24
+# ----------------------
+class Conf(BaseModel, frozen=True):
+    '''
+    Config holding all the information needed in current script
+    '''
+    cfgs : dict[Region,RXFitConfig]
+    '''Dictionary mapping fitting region and corresponding configuration'''
+    syst : Systematic
+    '''Systematic variation used for fit'''
+    q2bin: Qsq
+    '''q2 bin for which fit is done'''
 # ----------------------
 def _set_logs() -> None:
     '''
@@ -61,7 +73,7 @@ def _set_logs() -> None:
     LogStore.set_level('fitter:sim_fitter'       , 20)
     LogStore.set_level('fitter:data_preprocessor', 20)
 # ----------------------
-def _parse_args() -> dict[Region, RXFitConfig]:
+def _parse_args() -> Conf:
     '''
     Returns
     --------------
@@ -81,7 +93,9 @@ def _parse_args() -> dict[Region, RXFitConfig]:
 
     regions : list[Region] = args.kind.regions
 
-    return { region : _cfg_from_args(region = region, args = args) for region in regions }
+    cfgs = { region : _cfg_from_args(region = region, args = args) for region in regions }
+
+    return Conf(cfgs=cfgs, syst=args.syst, q2bin=args.q2bin)
 # ----------------------
 def _get_replacements(kind : SimFit, syst : Systematic) -> dict[str,str]:
     '''
@@ -206,25 +220,27 @@ def _get_nll(
 
     return _get_region_nll(brem = brem, cfg = cfg_brem)
 # ----------------------
-def _fit(cfgs : dict[Region, RXFitConfig]) -> None:
+def _fit(cfg : Conf) -> None:
     '''
     This is where DataFitter is used
     '''
     d_nll : dict[Region, NLLConf] = {}
-    for region, cfg in cfgs.items():
-        d_nll[region] = _get_nll(cfg = cfg, brem = region.brem)
+    for region, region_cfg in cfg.cfgs.items():
+        d_nll[region] = _get_nll(cfg = region_cfg, brem = region.brem)
+
+    if not cfg.syst.is_nominal:
+        return
 
     ftr = DataFitterSim(
-        q2bin = cfg.q2bin,
         d_nll = d_nll,
-        d_cfg = cfgs)
+        q2bin = cfg.q2bin,
+        d_cfg = cfg.cfgs)
     ftr.run(skip_fit = False)
 # ----------------------
-def _get_conf() -> dict[Region, RXFitConfig]:
+def _get_conf() -> Conf:
     '''
     Returns dictionary mapping signal region to configuration in region
     '''
-
     ctx_1 = UnpackerModel.package(name = 'fitter_data')
     with ExitStack() as stack:
         stack.enter_context(ctx_1)
@@ -236,7 +252,7 @@ def main():
     '''
     Entry point
     '''
-    cfgs = _get_conf()
+    cfg = _get_conf()
     _set_logs()
 
     ctx_1 = DataPreprocessor.use_database()
@@ -245,7 +261,7 @@ def main():
         stack.enter_context(ctx_1)
         stack.enter_context(ctx_2)
 
-        _fit(cfgs=cfgs)
+        _fit(cfg=cfg)
 # ----------------------
 if __name__ == '__main__':
     main()
