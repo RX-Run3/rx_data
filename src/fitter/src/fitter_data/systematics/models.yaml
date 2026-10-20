@@ -1,3 +1,31 @@
 rk_mm_sig:
   - rare/rk/mm/bpkpmm.yaml
   - rare/rk/mm/bpkpmm_alt_1.yaml 
+
+rk_ee_sig:
+  - rare/rk/ee/bpkpee.yaml
+  - rare/rk/ee/bpkpee_alt_1.yaml
+
+rkst_mm_sig:
+  - rare/rkst/mm/bdkstkpimm.yaml
+  - rare/rkst/mm/bdkstkpimm_alt_1.yaml
+
+rkst_ee_sig:
+  - rare/rkst/ee/bdkstkpiee.yaml
+  - rare/rkst/ee/bdkstkpiee_alt_1.yaml
+
+rk_mm_cmb:
+  - rare/rk/mm/comb.yaml
+  - rare/rk/mm/comb_alt_1.yaml
+
+rk_ee_cmb:
+  - rare/rk/ee/comb.yaml
+  - rare/rk/ee/comb_alt_1.yaml
+
+rkst_mm_cmb:
+  - rare/rkst/mm/comb.yaml
+  - rare/rkst/mm/comb_alt_1.yaml
+
+rkst_ee_cmb:
+  - rare/rkst/ee/comb.yaml
+  - rare/rkst/ee/comb_alt_1.yaml

@@ -1,0 +1,23 @@
+# -----------------
+constraints: null
+# -----------------
+models:
+  low:
+    pdfs          : [pol1]
+    shared        : []
+    floating      : []
+    reparametrize : {}
+    fix           : {}
+  central:
+    pdfs          : [pol1]
+    shared        : []
+    floating      : []
+    reparametrize : {}
+    fix           : {}
+  high:
+    pdfs          : [pol1]
+    shared        : []
+    floating      : []
+    reparametrize : {}
+    fix           : {}
+# -----------------
