@@ -26,6 +26,9 @@ rule all:
 # ---------------------
 rule nlls:
     output: f'{OUT_PATH}/nll/{CMB}_{PRC}_all/{MODE}/nll_{{qsq}}_{{syst}}.bytes'
+    wildcard_constraints:
+        qsq  = '|'.join(qsq_bin),
+        syst = '|'.join(systs),
     log:
         prc = f'{LOGDIR}/{{qsq}}_{{syst}}.prc',
         err = f'{LOGDIR}/{{qsq}}_{{syst}}.err',
