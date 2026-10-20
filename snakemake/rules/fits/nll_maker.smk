@@ -49,14 +49,14 @@ rule nlls:
         (
         source setup.sh {params.env} {params.home}
 
-        fit_rx_rare_sim                         \
-                        -b -1                   \
-                        -k {params.kind}        \
-                        -C {params.cmb}         \
-                        -P {params.prc}         \
-                        -g nll_{wildcards.syst} \
-                        -q {wildcards.qsq}      \
-                        -s {wildcards.syst}     \
+        fit_rx_rare_sim                     \
+                        -b -1               \
+                        -k {params.kind}    \
+                        -C {params.cmb}     \
+                        -P {params.prc}     \
+                        -g nll              \
+                        -q {wildcards.qsq}  \
+                        -s {wildcards.syst} \
                         -d  || true
         ) > {log.prc} 2>&1
 
