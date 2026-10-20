@@ -1,0 +1,14 @@
+q2bin:
+  - low
+  - central
+  - high
+systematic:
+  - nominal
+  - rk_mm_sig
+  - rk_ee_sig
+  - rkst_mm_sig
+  - rkst_ee_sig
+  - rk_mm_cmb
+  - rk_ee_cmb
+  - rkst_mm_cmb
+  - rkst_ee_cmb
