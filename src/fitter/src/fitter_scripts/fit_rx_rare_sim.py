@@ -74,7 +74,7 @@ def _parse_args() -> dict[Region, RXFitConfig]:
     parser.add_argument('-n', '--ncores' , type=int           , help='Number of processes'                             , default =1)
     parser.add_argument('-l', '--log_lvl', type=LogLevels     , help='Logging level'                                   , default =20)
     parser.add_argument('-q', '--q2bin'  , type=Qsq           , help='q2 bin'       , choices=Qsq.rare                 , required=True)
-    parser.add_argument('-s', '--syst'   , type=Systematic    , help='Systematic variation used for this fit'          , required=True)
+    parser.add_argument('-s', '--syst'   , type=Systematic    , help='Systematic variation used for this fit', choices=Systematic, required=True)
     parser.add_argument('-C', '--mva_cmb', type=MVAWp.from_str, help='MVA working point, e.g. 0200; 0100-0300'         , required=True)
     parser.add_argument('-P', '--mva_prc', type=MVAWp.from_str, help='MVA working point, e.g. 0200; 0100-0300'         , required=True)
     args = parser.parse_args()
@@ -94,22 +94,22 @@ def _get_replacements(kind : SimFit, syst : Systematic) -> dict[str,str]:
     Replacements needed for config files describing yields.
     Needed in order to reparametrize in function of rk, rkst or both
     '''
+    match kind:
+        case SimFit.rk:
+            repl = {'rk/rare_muon.yaml' : 'rk/rare_muon_simultaneous.yaml'}
+        case SimFit.rkst:
+            repl = {'rkst/rare_muon.yaml' : 'rkst/rare_muon_simultaneous.yaml'}
+        case SimFit.rx:
+            repl = {
+                'rk/rare_electron.yaml' : 'rk/rare_electron_simultaneous.yaml', # nkstee -> nkee * eff_ratio
+                'rk/rare_muon.yaml'     : 'rk/rare_muon_simultaneous.yaml',     # nmumu  -> rk   * nee / ck
+                'rkst/rare_muon.yaml'   : 'rkst/rare_muon_simultaneous.yaml'}   # nmumu  -> rkst * nee / ck*
+
     msys = ModelSystematics.load()
     replacements = msys.get(syst = syst)
+    replacements.update(repl)
 
-    if kind == SimFit.rk:
-        return  {'rk/rare_muon.yaml' : 'rk/rare_muon_simultaneous.yaml'}
-
-    if kind == SimFit.rkst:
-        return  {'rkst/rare_muon.yaml' : 'rkst/rare_muon_simultaneous.yaml'}
-
-    if kind == SimFit.rx:
-        return {
-        'rk/rare_electron.yaml' : 'rk/rare_electron_simultaneous.yaml', # nkstee -> nkee * eff_ratio
-        'rk/rare_muon.yaml'     : 'rk/rare_muon_simultaneous.yaml',     # nmumu  -> rk   * nee / ck
-        'rkst/rare_muon.yaml'   : 'rkst/rare_muon_simultaneous.yaml'}   # nmumu  -> rkst * nee / ck*
-
-    raise ValueError(f'Invalid kind of simultaneous fit: {kind}')
+    return replacements
 # ----------------------
 def _cfg_from_args(
     region : Region,
