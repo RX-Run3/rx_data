@@ -240,7 +240,7 @@ which will:
 For this run:
 
 ```bash
-fit_rx_rare_sim -b -1 -g test -k rk -q low -C 0900 -P 0600
+fit_rx_rare_sim -b -1 -g test -k rk -q low -C 0900 -P 0600 -s nominal
 ```
 Which will do the muon and electron channel fits needed to extract $R_K$. For $R_{K^*}$ run with
 `-k rkst` and for the full fit with both extracted simultaneously do `-k rx`.
@@ -258,3 +258,12 @@ The fits will parametrize:
 - **Part-reconstructed backgrounds**: Linked between channels using efficiency ratios and scaling factors (e.g., $B^0 \to K^{*0}\mu^+\mu^-$ relative to $B^0 \to K^{*0}e^+e^-$ and $B^+ \to K^+ e^+e^-$ cross-feed components).
 - **Categorization**: Handled across different bremsstrahlung categories (`x12`, `xx1`, `xx2`) and MVA working points.
 
+## Systematic variations
+
+For this vary the `-s` argument, as in:
+
+```bash
+fit_rx_rare_sim -b -1 -g test -k rk -q low -C 0900 -P 0600 -s rk_mm_sig 
+```
+
+which will switch the signal model based on the contents of `fitter/systematics/model.yaml`
