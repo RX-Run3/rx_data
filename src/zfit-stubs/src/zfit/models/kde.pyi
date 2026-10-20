@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 import zfit.z.numpy as znp
+import zfit
 from .. import z as z
 from ..core.basepdf import BasePDF as BasePDF
 from ..core.serialmixin import SerializableMixin as SerializableMixin
@@ -72,7 +73,23 @@ class KDE1DimGridRepr(BasePDFRepr):
     def validate_all(cls, values): ...
 
 class KDE1DimFFT(KDEHelper, BasePDF, SerializableMixin):
-    def __init__(self, data: ztyping.XTypeInput, *, obs: ztyping.ObsTypeInput | None = None, bandwidth: ztyping.ParamTypeInput | str | Callable | None = None, kernel: tfd.Distribution = None, num_grid_points: int | None = None, binning_method: str | None = None, support=None, fft_method: str | None = None, padding: callable | str | bool | None = None, weights: np.ndarray | tf.Tensor | None = None, extended: ExtendedInputType = None, norm: NormInputType = None, name: str = 'KDE1DimFFT', label: str | None = None) -> None: ...
+    def __init__(
+        self, 
+        data: np.ndarray | tf.Tensor | "zfit.Data", 
+        *, 
+        obs: ztyping.ObsTypeInput | None = None, 
+        bandwidth: ztyping.ParamTypeInput | str | Callable | None = None, 
+        kernel: tfd.Distribution = None, 
+        num_grid_points: int | None = None, 
+        binning_method: str | None = None, 
+        support=None, 
+        fft_method: str | None = None, 
+        padding: Callable | str | bool | None = None, 
+        weights: np.ndarray | tf.Tensor | None = None, 
+        extended: ExtendedInputType = None, 
+        norm: NormInputType = None, 
+        name: str = 'KDE1DimFFT', 
+        label: str | None = None) -> None: ...
 
 class KDE1DimFFTRepr(BasePDFRepr):
     hs3_type: Literal['KDE1DimFFT']
