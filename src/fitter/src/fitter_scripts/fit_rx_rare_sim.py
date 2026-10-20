@@ -41,6 +41,8 @@ class Conf(BaseModel, frozen=True):
     '''Systematic variation used for fit'''
     q2bin: Qsq
     '''q2 bin for which fit is done'''
+    dry_run: bool
+    '''If true will not fit data, but will build NLL'''
 # ----------------------
 def _set_logs() -> None:
     '''
@@ -89,13 +91,14 @@ def _parse_args() -> Conf:
     parser.add_argument('-s', '--syst'   , type=Systematic    , help='Systematic variation used for this fit', choices=Systematic, required=True)
     parser.add_argument('-C', '--mva_cmb', type=MVAWp.from_str, help='MVA working point, e.g. 0200; 0100-0300'         , required=True)
     parser.add_argument('-P', '--mva_prc', type=MVAWp.from_str, help='MVA working point, e.g. 0200; 0100-0300'         , required=True)
+    parser.add_argument('-d', '--dry_run', action='store_true', help='If used, will not fit the data')
     args = parser.parse_args()
 
     regions : list[Region] = args.kind.regions
 
     cfgs = { region : _cfg_from_args(region = region, args = args) for region in regions }
 
-    return Conf(cfgs=cfgs, syst=args.syst, q2bin=args.q2bin)
+    return Conf(cfgs=cfgs, syst=args.syst, q2bin=args.q2bin, dry_run=args.dry_run)
 # ----------------------
 def _get_replacements(kind : SimFit, syst : Systematic) -> dict[str,str]:
     '''
@@ -230,7 +233,8 @@ def _fit(cfg : Conf) -> None:
     for region, region_cfg in cfg.cfgs.items():
         d_nll[region] = _get_nll(cfg = region_cfg, brem = region.brem)
 
-    if not cfg.syst.is_nominal:
+    if cfg.dry_run:
+        log.info('Skipping fit to data, dry run')
         return
 
     ftr = DataFitterSim(
