@@ -4,45 +4,45 @@
 reg_cfg: &reg_cfg
   nbins   : 30
   stacked : True
-  plot_range : 
+  plot_range :
     - 4600
     - 6900
   d_leg :
-    bpkpjpsiee_brem_x12 : $B^+\to K^+ J/\psi(\to e^+e^-)$ 
-    bpkpjpsiee_brem_xx1 : $B^+\to K^+ J/\psi(\to e^+e^-)$ 
-    bpkpjpsiee_brem_xx2 : $B^+\to K^+ J/\psi(\to e^+e^-)$ 
+    bpkpjpsiee_brem_x12 : $B^+\to K^+ J/\psi(\to e^+e^-)$
+    bpkpjpsiee_brem_xx1 : $B^+\to K^+ J/\psi(\to e^+e^-)$
+    bpkpjpsiee_brem_xx2 : $B^+\to K^+ J/\psi(\to e^+e^-)$
     # ---------
-    bpkppsi2ee_brem_x12 : $B^+\to K^+ \psi(2S)(\to e^+e^-)$ 
-    bpkppsi2ee_brem_xx1 : $B^+\to K^+ \psi(2S)(\to e^+e^-)$ 
-    bpkppsi2ee_brem_xx2 : $B^+\to K^+ \psi(2S)(\to e^+e^-)$ 
+    bpkppsi2ee_brem_x12 : $B^+\to K^+ \psi(2S)(\to e^+e^-)$
+    bpkppsi2ee_brem_xx1 : $B^+\to K^+ \psi(2S)(\to e^+e^-)$
+    bpkppsi2ee_brem_xx2 : $B^+\to K^+ \psi(2S)(\to e^+e^-)$
     # ---------
-    bpkstkpiee_brem_x12 : $B^+\to K^{*+}(\to K^+\pi^0)e^+e^-$ 
-    bpkstkpiee_brem_xx1 : $B^+\to K^{*+}(\to K^+\pi^0)e^+e^-$ 
-    bpkstkpiee_brem_xx2 : $B^+\to K^{*+}(\to K^+\pi^0)e^+e^-$ 
+    bpkstkpiee_brem_x12 : $B^+\to K^{*+}(\to K^+\pi^0)e^+e^-$
+    bpkstkpiee_brem_xx1 : $B^+\to K^{*+}(\to K^+\pi^0)e^+e^-$
+    bpkstkpiee_brem_xx2 : $B^+\to K^{*+}(\to K^+\pi^0)e^+e^-$
     # ---------
-    bdkstkpiee_brem_x12 : $B^0\to K^{*0}(\to K^+\pi^-)e^+e^-$ 
-    bdkstkpiee_brem_xx1 : $B^0\to K^{*0}(\to K^+\pi^-)e^+e^-$ 
-    bdkstkpiee_brem_xx2 : $B^0\to K^{*0}(\to K^+\pi^-)e^+e^-$ 
+    bdkstkpiee_brem_x12 : $B^0\to K^{*0}(\to K^+\pi^-)e^+e^-$
+    bdkstkpiee_brem_xx1 : $B^0\to K^{*0}(\to K^+\pi^-)e^+e^-$
+    bdkstkpiee_brem_xx2 : $B^0\to K^{*0}(\to K^+\pi^-)e^+e^-$
     # ---------
-    bsphiee_brem_x12    : $B_s\to \phi(\to K^+K^-)e^+e^-$ 
-    bsphiee_brem_xx1    : $B_s\to \phi(\to K^+K^-)e^+e^-$ 
-    bsphiee_brem_xx2    : $B_s\to \phi(\to K^+K^-)e^+e^-$ 
+    bsphiee_brem_x12    : $B_s\to \phi(\to K^+K^-)e^+e^-$
+    bsphiee_brem_xx1    : $B_s\to \phi(\to K^+K^-)e^+e^-$
+    bsphiee_brem_xx2    : $B_s\to \phi(\to K^+K^-)e^+e^-$
     # ---------
     comb_brem_x12       : Combinatorial
     comb_brem_xx1       : Combinatorial
     comb_brem_xx2       : Combinatorial
     # ---------
-    bpkpee_brem_x12     : $B^+\to K^+ e^+e^-$ 
-    bpkpee_brem_xx1     : $B^+\to K^+ e^+e^-$ 
-    bpkpee_brem_xx2     : $B^+\to K^+ e^+e^-$ 
+    bpkpee_brem_x12     : $B^+\to K^+ e^+e^-$
+    bpkpee_brem_xx1     : $B^+\to K^+ e^+e^-$
+    bpkpee_brem_xx2     : $B^+\to K^+ e^+e^-$
     # ---------
     ccbar_brem_x12      : $B\to c\bar{c}(\to e^+e^-) + X$
     ccbar_brem_xx1      : $B\to c\bar{c}(\to e^+e^-) + X$
     ccbar_brem_xx2      : $B\to c\bar{c}(\to e^+e^-) + X$
     # ---------
-    bpkkk_brem_x12      : $B^+\to K^+K^+K^-$ 
-    bpkkk_brem_xx1      : $B^+\to K^+K^+K^-$ 
-    bpkkk_brem_xx2      : $B^+\to K^+K^+K^-$ 
+    bpkkk_brem_x12      : $B^+\to K^+K^+K^-$
+    bpkkk_brem_xx1      : $B^+\to K^+K^+K^-$
+    bpkkk_brem_xx2      : $B^+\to K^+K^+K^-$
     # ---------
     bpkpipi_brem_x12    : $B^+\to K^+\pi^+\pi^-$
     bpkpipi_brem_xx1    : $B^+\to K^+\pi^+\pi^-$
@@ -69,17 +69,17 @@ mod_cfg: &mod_cfg
     low:
       name : B_Mass
       range:
-        - 4600 
+        - 4600
         - 6996
     central:
       name : B_Mass
       range:
-        - 4600 
+        - 4600
         - 6996
     high:
       name : B_Mass
       range:
-        - 4600 
+        - 4600
         - 6996
   components:
     low:
@@ -89,10 +89,10 @@ mod_cfg: &mod_cfg
     high:
       comb : rare/rkst/ee/comb_ss.yaml
   constraints:
-    misid        : null 
+    misid        : null
     signal_fraction     : []
-    combinatorial: false 
-    signal_shape : false 
+    combinatorial: false
+    signal_shape : false
   fit  :
     strategy:
       ntries : 10
@@ -108,15 +108,13 @@ models:
     shared        : []
     floating      : []
     reparametrize : {}
-    fix           :
-      mu : 4800
+    fix           : {}
   central:
     pdfs          : [modexp]
     shared        : []
     floating      : []
     reparametrize : {}
-    fix           :
-      mu : 4700
+    fix           : {}
   high:
     pdfs          : [hypexp]
     shared        : []
@@ -127,12 +125,14 @@ models:
 constraints:
   parameters :
     low:
-      - ap      
+      - ap
       - bt
+      - mu
     central:
-      - ap      
+      - ap
       - bt
+      - mu
     high:
-      - mu      
-      - sg      
+      - ap
+      - bt
   mod_cfg: *mod_cfg

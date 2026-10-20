@@ -165,7 +165,7 @@ class MVAWp(RootModel[float|tuple[float,float]]):
         '''
         if isinstance(self.root, (float, int)):
             val = int(_MULT_FACTOR * self.root)
-            return str(val)
+            return f'{val:04d}'
 
         low = int(_MULT_FACTOR * self.root[0])
         hig = int(_MULT_FACTOR * self.root[1])
