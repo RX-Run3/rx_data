@@ -29,4 +29,10 @@ fit:
 plots:
   nbins   : 30
   stacked : True
-  d_leg   : {}
+  d_leg   :
+{% for block in range(1, 9) %}
+    cbl_bdkstkpiee_brem_xx1_b{{ block }}_1 : '$B^0\to K^{*0}(\to K^+\pi^-)e^+e^-$, $1\gamma$, Block {{ block }} (Left tail)'
+    cbl_bdkstkpiee_brem_xx2_b{{ block }}_1 : '$B^0\to K^{*0}(\to K^+\pi^-)e^+e^-$, $2\gamma$, Block {{ block }} (Left tail)'
+    cbr_bdkstkpiee_brem_xx1_b{{ block }}_1 : '$B^0\to K^{*0}(\to K^+\pi^-)e^+e^-$, $1\gamma$, Block {{ block }} (Right tail)'
+    cbr_bdkstkpiee_brem_xx2_b{{ block }}_1 : '$B^0\to K^{*0}(\to K^+\pi^-)e^+e^-$, $2\gamma$, Block {{ block }} (Right tail)'
+{% endfor %}
