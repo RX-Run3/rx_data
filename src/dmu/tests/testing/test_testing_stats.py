@@ -34,3 +34,15 @@ def test_get_pdfs_prefix(kind : Literal['s+b', 's+b+x', 's_alt+b']):
 
     print_pdf(pdf)
 # ----------------------------------------------
+@pytest.mark.parametrize('kind', ['signal_kde', 'skde+b'])
+def test_get_pdf_kde(kind : Literal['signal_kde', 'skde+b']):
+    '''
+    Test creating model which uses a KDE
+    '''
+    pdf = stats.get_model(
+        kind        = kind, 
+        prefix      = 'test',
+        suffix_pdfs = False)
+
+    print_pdf(pdf)
+
