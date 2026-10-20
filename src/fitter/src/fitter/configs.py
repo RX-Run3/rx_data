@@ -5,7 +5,7 @@ import os
 import copy
 
 from functools   import cached_property
-from pydantic    import BaseModel, field_validator, model_validator, RootModel
+from pydantic    import BaseModel, field_validator, model_validator, RootModel, TypeAdapter
 from pathlib     import Path
 from typing      import TYPE_CHECKING, Any, Callable, Literal, Self, Final
 from rx_common   import MVAWp, Brem
@@ -68,6 +68,7 @@ class ModelSystematics(RootModel[dict[Systematic,tuple[str,str]]], frozen = True
     def _validate(self) -> 'ModelSystematics':
         fail = False
         for systematic, paths in self.root.items():
+            log.debug(f'Validating: {systematic}')
             if len(paths) != _NUM_MODELS_SYST:
                 log.error(f'Found fewer than two models for systematic {systematic}')
                 fail = True
@@ -83,9 +84,10 @@ class ModelSystematics(RootModel[dict[Systematic,tuple[str,str]]], frozen = True
         '''
         Makes sure that all the paths exist and are a valid ParametricConf
         '''
+        adapter = TypeAdapter(ParametricConf | CombinatorialConf | CombinatorialConfUnconstrained)
         for path in paths:
             data = gut.load_data(package = 'fitter_data', fpath = path)
-            ParametricConf(**data)
+            adapter.validate_python(data)
     # ------------------------------------
     @classmethod
     def load(cls) -> 'ModelSystematics':
