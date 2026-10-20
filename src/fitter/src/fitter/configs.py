@@ -691,6 +691,32 @@ class RXFitConfig(BaseModel):
 
         return self
     # ----------------------
+    def _get_output_directory(self) -> Path:
+        '''
+        Returns
+        -----------------
+        Directory WRT which the `output_directory` key in the fit config will be defined
+        '''
+        if not isinstance(self.block, int):
+            raise ValueError(f'Block is not an int but {type(self.block)} = {self.block}')
+
+        if self.block == -1:
+            block_name = 'all'
+        else:
+            block_name = f'b{self.block}'
+
+        trigger = self.mod_cfg.trigger
+
+        ana_dir = Path(os.environ['ANADIR'])
+        out_dir = ana_dir / 'fits/data' / self.group / f'{self.fit_name}_{block_name}'
+        out_dir = out_dir / self.q2bin.kind / trigger.project / trigger.channel / self.q2bin
+
+        log.debug(f'Using output directory: {out_dir}')
+
+        out_dir.mkdir(parents = True, exist_ok = True)
+
+        return out_dir
+    # ----------------------
     def model_post_init(self, _):
         '''
         This runs after initialization
@@ -942,32 +968,6 @@ class RXFitConfig(BaseModel):
         name = f'{self.mva_cmb.name}_{self.mva_prc.name}'
 
         return name
-    # ----------------------
-    def _get_output_directory(self) -> Path:
-        '''
-        Returns
-        -----------------
-        Directory WRT which the `output_directory` key in the fit config will be defined
-        '''
-        if not isinstance(self.block, int):
-            raise ValueError(f'Block is not an int but {type(self.block)} = {self.block}')
-
-        if self.block == -1:
-            block_name = 'all'
-        else:
-            block_name = f'b{self.block}'
-
-        trigger = self.mod_cfg.trigger
-
-        ana_dir = Path(os.environ['ANADIR'])
-        out_dir = ana_dir / 'fits/data' / self.group / f'{self.fit_name}_{block_name}'
-        out_dir = out_dir / self.q2bin.kind / trigger.project / trigger.channel / self.q2bin
-
-        log.debug(f'Using output directory: {out_dir}')
-
-        out_dir.mkdir(parents = True, exist_ok = True)
-
-        return out_dir
     # ----------------------
     @property
     def fit_directory(self) -> Path:
