@@ -6,7 +6,7 @@ import pytest
 from typing      import Any
 from pydantic    import TypeAdapter
 from pathlib     import Path
-from dmu         import LogStore
+from dmu         import LogStore, LogLevels
 from dmu.stats   import CompositeYieldConf
 from dmu.stats   import SimpleYieldConf
 from dmu.generic import UnpackerModel, utilities as gut
@@ -28,6 +28,7 @@ def initialize():
     '''
     This will run before any test
     '''
+    LogStore.set_level('fitter:configs', LogLevels.debug)
     with UnpackerModel.package(name = 'fitter_data'):
         yield
 # ----------------------
