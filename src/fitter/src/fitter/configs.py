@@ -109,6 +109,9 @@ class ModelSystematics(RootModel[dict[Systematic,tuple[str,str]]], frozen = True
         Dictionary mapping paths to config files that need to
         be replaced to perform variation
         '''
+        if syst == Systematic.nominal:
+            return {}
+
         paths            = self.root[syst]
         nominal_path     = paths[0]
         alternative_path = paths[1]
