@@ -40,5 +40,5 @@ plots:
   stacked    : True
   plot_range : [5180, 5500]
   d_leg   :
-    gauss_bpkpmm_brem_xx0_1 : Gauss
-    dscb_bpkpmm_brem_xx0_1  : DSCB 
+    cbr_bpkpmm_brem_xx0_1 : Crystal Ball (right tail) 
+    cbl_bpkpmm_brem_xx0_1 : Crystal Ball (left tail) 
