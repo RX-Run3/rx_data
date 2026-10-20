@@ -250,7 +250,7 @@ def _save_nll(nlls : dict[Region,NLLConf], cfg : Conf) -> None:
     '''
     _nlls = [ nll_cfg.nll for nll_cfg in nlls.values() ]
     nll   = gut.add_container(elements = _nlls)
-    path  = cfg.out_dir / 'nll_pre_fit.bytes'
+    path  = cfg.out_dir / f'nll_{cfg.syst}.bytes'
 
     sut.save_nll(loss = nll, path = path)
 # ----------------------
