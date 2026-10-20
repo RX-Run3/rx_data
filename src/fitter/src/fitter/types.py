@@ -70,6 +70,34 @@ class Systematic(StrEnum):
     '''
     Systematic associated to signal model in rk muon region
     '''
+    rk_ee_sig = auto()
+    '''
+    Systematic associated to signal model in rk electron region
+    '''
+    rkst_mm_sig = auto()
+    '''
+    Systematic associated to signal model in rkst muon region
+    '''
+    rkst_ee_sig = auto()
+    '''
+    Systematic associated to signal model in rkst electron region
+    '''
+    rk_mm_cmb = auto()
+    '''
+    Systematic associated to combinatorial model in rk muon region
+    '''
+    rk_ee_cmb = auto()
+    '''
+    Systematic associated to combinatorial model in rk electron region
+    '''
+    rkst_mm_cmb = auto()
+    '''
+    Systematic associated to combinatorial model in rkst muon region
+    '''
+    rkst_ee_cmb = auto()
+    '''
+    Systematic associated to combinatorial model in rkst electron region
+    '''
     # --------------------------------
     @property
     def is_nominal(self) -> bool:
