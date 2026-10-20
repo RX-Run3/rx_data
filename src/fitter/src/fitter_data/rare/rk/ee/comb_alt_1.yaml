@@ -1,0 +1,141 @@
+# ----------------------------------------------------
+# Aliases
+# ----------------------------------------------------
+reg_cfg: &reg_cfg
+  nbins   : 30
+  stacked : True
+  plot_range : 
+    - 4600
+    - 6900
+  d_leg :
+    bpkpjpsiee_brem_x12 : $B^+\to K^+ J/\psi(\to e^+e^-)$ 
+    bpkpjpsiee_brem_xx1 : $B^+\to K^+ J/\psi(\to e^+e^-)$ 
+    bpkpjpsiee_brem_xx2 : $B^+\to K^+ J/\psi(\to e^+e^-)$ 
+    # ---------
+    bpkppsi2ee_brem_x12 : $B^+\to K^+ \psi(2S)(\to e^+e^-)$ 
+    bpkppsi2ee_brem_xx1 : $B^+\to K^+ \psi(2S)(\to e^+e^-)$ 
+    bpkppsi2ee_brem_xx2 : $B^+\to K^+ \psi(2S)(\to e^+e^-)$ 
+    # ---------
+    bpkstkpiee_brem_x12 : $B^+\to K^{*+}(\to K^+\pi^0)e^+e^-$ 
+    bpkstkpiee_brem_xx1 : $B^+\to K^{*+}(\to K^+\pi^0)e^+e^-$ 
+    bpkstkpiee_brem_xx2 : $B^+\to K^{*+}(\to K^+\pi^0)e^+e^-$ 
+    # ---------
+    bdkstkpiee_brem_x12 : $B^0\to K^{*0}(\to K^+\pi^-)e^+e^-$ 
+    bdkstkpiee_brem_xx1 : $B^0\to K^{*0}(\to K^+\pi^-)e^+e^-$ 
+    bdkstkpiee_brem_xx2 : $B^0\to K^{*0}(\to K^+\pi^-)e^+e^-$ 
+    # ---------
+    bsphiee_brem_x12    : $B_s\to \phi(\to K^+K^-)e^+e^-$ 
+    bsphiee_brem_xx1    : $B_s\to \phi(\to K^+K^-)e^+e^-$ 
+    bsphiee_brem_xx2    : $B_s\to \phi(\to K^+K^-)e^+e^-$ 
+    # ---------
+    comb_brem_x12       : Combinatorial
+    comb_brem_xx1       : Combinatorial
+    comb_brem_xx2       : Combinatorial
+    # ---------
+    bpkpee_brem_x12     : $B^+\to K^+ e^+e^-$ 
+    bpkpee_brem_xx1     : $B^+\to K^+ e^+e^-$ 
+    bpkpee_brem_xx2     : $B^+\to K^+ e^+e^-$ 
+    # ---------
+    ccbar_brem_x12      : $B\to c\bar{c}(\to e^+e^-) + X$
+    ccbar_brem_xx1      : $B\to c\bar{c}(\to e^+e^-) + X$
+    ccbar_brem_xx2      : $B\to c\bar{c}(\to e^+e^-) + X$
+    # ---------
+    bpkkk_brem_x12      : $B^+\to K^+K^+K^-$ 
+    bpkkk_brem_xx1      : $B^+\to K^+K^+K^-$ 
+    bpkkk_brem_xx2      : $B^+\to K^+K^+K^-$ 
+    # ---------
+    bpkpipi_brem_x12    : $B^+\to K^+\pi^+\pi^-$
+    bpkpipi_brem_xx1    : $B^+\to K^+\pi^+\pi^-$
+    bpkpipi_brem_xx2    : $B^+\to K^+\pi^+\pi^-$
+
+plt_cfg: &plt_cfg
+  merging:
+    brem_x12-rk_ee_ss:
+      - brem_xx1-rk_ee_ss
+      - brem_xx2-rk_ee_ss
+  regions:
+    brem_x12-rk_ee_ss : *reg_cfg
+    brem_xx1-rk_ee_ss : *reg_cfg
+    brem_xx2-rk_ee_ss : *reg_cfg
+# ----------------------------------------------------
+mod_cfg: &mod_cfg
+  trigger          : rk_ee_ss
+  yields           : model/yields/rk/rare_electron.yaml
+  selection        : # Put here whavever needs to be added ON TOP of the signal region
+    low    : {}
+    central:
+      leakage : TMath::Abs(B_const_mass_M - 5280) > 200
+    high   : {}
+  observable:
+    low:
+      name : B_Mass
+      range:
+        - 4500 
+        - 6896
+    central:
+      name : B_Mass
+      range:
+        - 4500 
+        - 6896
+    high:
+      name : B_Mass
+      range:
+        - 4500 
+        - 6896
+  components:
+    low:
+      comb : rare/rk/ee/comb_ss.yaml
+    central:
+      comb : rare/rk/ee/comb_ss.yaml
+    high:
+      comb : rare/rk/ee/comb_ss.yaml
+  constraints:
+    misid        : misid/rk/ee/data_misid.yaml
+    signal_fraction     : []
+    combinatorial: false 
+    signal_shape : false 
+  fit  :
+    strategy:
+      ntries : 10
+      pvalue :  0.05
+  plots:
+    low     : *plt_cfg
+    central : *plt_cfg
+    high    : *plt_cfg
+# ----------------------------------------------------
+models:
+  low:
+    pdfs          : [modexp]
+    shared        : []
+    floating      : []
+    reparametrize : {}
+    fix           :
+      mu : 4800
+  central:
+    pdfs          : [modexp]
+    shared        : []
+    floating      : []
+    reparametrize : {}
+    fix           :
+      mu : 4700
+  high:
+    pdfs          : [suj]
+    shared        : []
+    floating      : []
+    reparametrize : {}
+    fix           :
+      dl_suj :  2.5
+      gm_suj : -1.5
+# -----------------
+constraints:
+  parameters :
+    low:
+      - ap      
+      - bt
+    central:
+      - ap      
+      - bt
+    high:
+      - mu      
+      - sg      
+  mod_cfg: *mod_cfg
