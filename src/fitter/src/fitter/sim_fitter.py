@@ -180,8 +180,13 @@ class SimFitter(BaseFitter, Cache):
         '''
         log.info(f'Building {self._component} for category {category} with: {cfg.pdfs}')
 
+        # Need project and channel to distinguish rk from rkst components in simultaneous fits
+        # Cannot use trigger because combinatorial uses SS data -> SS parameters in model
+        # which cannot be used to constraint OS parameters in actual model
+        prefix = f'{self._component}_{category}_{self._trigger.project}_{self._trigger.channel}'
+
         mod         = ModelFactory(
-            preffix = f'{self._component}_{category}',
+            preffix = prefix,
             obs     = self._cfg.obs,
             l_pdf   = cfg.pdfs,
             l_reuse = cfg.reuse,
