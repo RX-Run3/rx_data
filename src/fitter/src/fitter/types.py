@@ -70,4 +70,9 @@ class Systematic(StrEnum):
     '''
     Systematic associated to signal model in rk muon region
     '''
+    # --------------------------------
+    @property
+    def is_nominal(self) -> bool:
+        '''True if nominal model'''
+        return self == Systematic.nominal
 # ------------------------------
