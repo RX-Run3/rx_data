@@ -7,7 +7,6 @@ from dmu.stats import utilities as sut
 
 _KDE_CLASSES = [
     zfit.pdf.KDE1DimExact,
-    zfit.pdf.KDE1DimGrid,
     zfit.pdf.KDE1DimFFT,
     zfit.pdf.KDE1DimISJ,
 ]
