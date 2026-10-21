@@ -200,9 +200,10 @@ class Calculator[PDF : zpdf.BasePDF ]:
         - Nominal likelihood with model replaced with bootstrapped version
         - Sampler associated to KDE that needs bootstrapping
         '''
-        models = self._nll.model
-
-        pdf = sut.find_model(
+        # Need a copy of the list of models to dissentable
+        # bootstrapped model from original one
+        models = [ model for model in self._nll.model ]
+        pdf    = sut.find_model(
             models = models, 
             name   = name)
 
