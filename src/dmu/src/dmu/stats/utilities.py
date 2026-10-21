@@ -949,6 +949,8 @@ def replace_model(
             fracs = _pdf.fracs, # pyrefly: ignore
             name  = _pdf.name)
 
+        return models
+
     raise ValueError(f'PDF {name} not found')
 #---------------------------------------------
 # Mergers
