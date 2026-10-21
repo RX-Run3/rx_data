@@ -98,8 +98,6 @@ def test_bootstrap(
         res = res, 
         cfg = cfg) 
 
-    return
-
     df_bts  = scal.bootstrap(
         nboot = 10,
         model = 'signal_kde',
