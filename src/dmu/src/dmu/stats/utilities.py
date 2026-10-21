@@ -35,6 +35,7 @@ from .zfit_plotter    import ZFitPlotter, ZFitPlotterConf
 log           = LogStore.add_logger('dmu:stats:utilities')
 type Loss     = ExtendedUnbinnedNLL | UnbinnedNLL
 type SumPDF   = zfit.pdf.SumPDF
+type AnyKDE   = zfit.pdf.KDE1DimExact | zfit.pdf.KDE1DimFFT | zfit.pdf.KDE1DimISJ
 
 SingleLiteral = Literal['signal', 'signal_alt', 'bkg']
 SumLiteral    = Literal['s+b', 's_alt+b']
@@ -843,6 +844,40 @@ def val_from_zres(
     log.error(res)
 
     raise ValueError(f'Parameter {name} not found in results')
+# ----------------------
+def bootstrap_kde[KDE: AnyKDE](pdf: KDE, index: int) -> KDE:
+    """Build one Poisson-bootstrap replica of a 1D zfit KDE from scratch.
+
+    Every event gets an integer weight drawn from Poisson(1), multiplied into
+    its original weight (if any). Events that draw zero are dropped. A new KDE
+    of the same class is then built on what is left, so the replica's sample
+    size fluctuates like a real counting experiment.
+
+    Args:
+        pdf: a 1D zfit KDE.
+        index: replica index. Used as the random seed, so the same index
+            always gives the same replica and different indices give
+            different ones.
+
+    Returns:
+        The rebuilt KDE.
+    """
+    values = pdf._data.numpy()  # pyrefly: ignore
+    weights= None if pdf._weights is None else pdf._weights.numpy()  # pyrefly: ignore
+
+    rng    = numpy.random.default_rng(index)
+    counts = rng.poisson(lam=1.0, size=len(values))
+
+    weights= counts if weights is None else weights * counts
+
+    data = zfit.Data.from_numpy(
+        obs    =pdf.space,
+        array  =values,
+        weights=weights,
+    )
+
+    kwargs = {} if isinstance(pdf, zfit.pdf.KDE1DimISJ) else {"bandwidth": float(pdf._bandwidth)}  # pyrefly: ignore
+    return type(pdf)(data, obs=pdf.space, **kwargs)
 #---------------------------------------------
 # Mergers
 #---------------------------------------------
