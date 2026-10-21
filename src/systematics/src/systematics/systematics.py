@@ -154,6 +154,85 @@ class Calculator[PDF : zpdf.BasePDF ]:
 
         return self._df_nom
     # ----------------------
+    def bootstrap(self, nboot : int, model : str, label : str) -> pnd.DataFrame:
+        '''
+        Parameters
+        ------------
+        nboot: Number of times a model is bootstrapped for a given nominal toy data
+        model: Model component to be bootstrapped
+        label: String used for naming of outputs
+
+        Returns
+        ------------
+        Dataframe with each row representing a toy sample from nominal model fit
+        '''
+        l_df = []
+        for index in range(nboot):
+            nll = self._bootstrap_model(name = model, index = index)
+            mkr = ToyMaker(
+                nll = nll,
+                cns = self._cns,
+                cfg = self._cfg,
+                res = self._res)
+
+            df = mkr.get_parameter_information(
+                name     = f'{label}_b{index:03d}', 
+                samplers = self._sam)
+
+            df['bts'] = index
+
+            l_df.append(df)
+
+        df = pnd.concat(l_df)
+
+        return self._merge_bootstrapped_pars(df = df)
+    # ----------------------
+    def _bootstrap_model(self, name : str, index : int) -> Nll:
+        '''
+        Parameters
+        --------------
+        name : Name of component model to be bootstrapped in nominal likelihood
+        index: Index used to calculate random seed
+
+        Return
+        --------------
+        Tuple with:
+        - Nominal likelihood with model replaced with bootstrapped version
+        - Sampler associated to KDE that needs bootstrapping
+        '''
+        models = self._nll.model
+
+        pdf = sut.find_model(
+            models = models, 
+            name   = name)
+
+        pdf   = sut.bootstrap_kde(pdf = pdf, index = index)
+        models= sut.replace_model(
+            models = models, 
+            name   = name, 
+            pdf    = pdf)
+
+        nll = self._nll.create_new(model = models)
+
+        return nll
+    # ----------------------
+    def _merge_bootstrapped_pars(self, df : pnd.DataFrame) -> pnd.DataFrame:
+        '''
+        Parameters
+        ----------------
+        dfs: List of dataframes each with parameter values corresponding to a fit to bootstrapped model.
+
+        Returns
+        ----------------
+        Dataframe where the parameters are the median of the bootrapped parameters
+        '''
+        df    = df[df['Valid'] == 1]
+        df    = df.drop(labels = ['Valid', 'Hash'])
+        group = df.groupby(by = ['Toy', 'Parameter'])
+        df    = group[['Value', 'Error', 'GOF', 'Gen']].median()
+
+        return df
+    # ----------------------
     def switch_model(
         self,
         nll   : Nll,
