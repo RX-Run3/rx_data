@@ -39,6 +39,7 @@ class GaussianKDE1DimV1(KDEHelper, WrapDistribution):
     def __init__(self, obs: ztyping.ObsTypeInput, data: ztyping.ParamTypeInput, bandwidth: ztyping.ParamTypeInput | str = None, weights: None | np.ndarray | tf.Tensor = None, truncate: bool = False, *, extended: ExtendedInputType = None, norm: NormInputType = None, name: str = 'GaussianKDE1DimV1', label: str | None = None) -> None: ...
 
 class KDE1DimExact(KDEHelper, WrapDistribution, SerializableMixin):
+    bandwidth : float
     def __init__(self, data: ztyping.XTypeInput, *, obs: ztyping.ObsTypeInput | None = None, bandwidth: ztyping.ParamTypeInput | str | Callable | None = None, kernel: tfd.Distribution = None, padding: callable | str | bool | None = None, weights: np.ndarray | tf.Tensor | None = None, extended: ExtendedInputType = None, norm: NormInputType = None, name: str | None = 'ExactKDE1DimV1', label: str | None = None) -> None: ...
 
 class KDE1DimExactRepr(BasePDFRepr):
@@ -54,6 +55,7 @@ class KDE1DimExactRepr(BasePDFRepr):
     def validate_all(cls, values): ...
 
 class KDE1DimGrid(KDEHelper, WrapDistribution, SerializableMixin):
+    bandwidth : float
     def __init__(self, data: ztyping.XTypeInput, *, bandwidth: ztyping.ParamTypeInput | str | Callable | None = None, kernel: tfd.Distribution = None, padding: callable | str | bool | None = None, num_grid_points: int | None = None, binning_method: str | None = None, obs: ztyping.ObsTypeInput | None = None, weights: np.ndarray | tf.Tensor | None = None, extended: ExtendedInputType = None, norm: NormInputType = None, name: str = 'GridKDE1DimV1', label: str | None = None) -> None: ...
 
 def bw_is_arraylike(bw, allow1d): ...
@@ -73,6 +75,7 @@ class KDE1DimGridRepr(BasePDFRepr):
     def validate_all(cls, values): ...
 
 class KDE1DimFFT(KDEHelper, BasePDF, SerializableMixin):
+    bandwidth : float
     def __init__(
         self, 
         data: np.ndarray | tf.Tensor | "zfit.Data", 
