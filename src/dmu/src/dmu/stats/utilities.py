@@ -883,7 +883,7 @@ def bootstrap_kde[T : zfit.pdf.BasePDF](pdf: T, index: int) -> T:
     kwargs = {} if isinstance(pdf, zfit.pdf.KDE1DimISJ) else {"bandwidth": float(pdf._bandwidth)}  # pyrefly: ignore
     return type(pdf)(data, obs=pdf.space, **kwargs)
 # ----------------------
-def find_model(models : list[zpdf], name : str) -> zpdf:
+def find_model(models : Sequence[zpdf], name : str) -> zpdf:
     '''
     Parameters
     -----------------
@@ -907,6 +907,7 @@ def find_model(models : list[zpdf], name : str) -> zpdf:
         except ValueError:
             continue
 
+    raise ValueError(f'PDF {name} not found')
     raise ValueError(f'PDF {name} not found')
 #---------------------------------------------
 # Mergers
