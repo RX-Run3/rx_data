@@ -908,6 +908,40 @@ def find_model(models : Sequence[zpdf], name : str) -> zpdf:
             continue
 
     raise ValueError(f'PDF {name} not found')
+# ----------------------
+def replace_model(
+    models : list[zpdf], 
+    name   : str,
+    pdf    : zpdf) -> list[zpdf]:
+    '''
+    Parameters
+    -----------------
+    models: List of models, each potentially a sum of models
+    name  : Name of model to be found
+    pdf   : PDF to be used as replacement
+
+    Returns
+    -----------------
+    Input list of PDFs with target replaced
+    '''
+    for idx, _pdf in enumerate(models):
+        if _pdf.name == name:
+            models[idx] = pdf
+            return models
+
+        if not isinstance(_pdf, zfit.pdf.SumPDF):
+            continue
+
+        try:
+            pdfs = replace_model(models = _pdf.pdfs, name = name, pdf = pdf)
+        except ValueError:
+            continue
+
+        models[idx] = zfit.pdf.SumPDF(
+            pdfs, 
+            fracs = _pdf.fracs, # pyrefly: ignore
+            name  = _pdf.name)
+
     raise ValueError(f'PDF {name} not found')
 #---------------------------------------------
 # Mergers
