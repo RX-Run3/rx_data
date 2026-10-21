@@ -5,9 +5,10 @@ import pandas as pnd
 
 from dmu.stats     import zfit
 from dmu.stats     import FitResult
-from typing        import Literal, overload
+from typing        import overload
 from dmu           import LogStore
 from dmu.stats     import Constraints
+from dmu.stats     import utilities as sut
 from fitter        import ToyConf, ToyMaker
 
 Nll    = zfit.loss.ExtendedUnbinnedNLL
