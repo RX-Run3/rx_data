@@ -35,7 +35,8 @@ from .zfit_plotter    import ZFitPlotter, ZFitPlotterConf
 log           = LogStore.add_logger('dmu:stats:utilities')
 type Loss     = ExtendedUnbinnedNLL | UnbinnedNLL
 type SumPDF   = zfit.pdf.SumPDF
-type AnyKDE   = zfit.pdf.KDE1DimExact | zfit.pdf.KDE1DimFFT | zfit.pdf.KDE1DimISJ
+
+AnyKDE   = zfit.pdf.KDE1DimExact | zfit.pdf.KDE1DimFFT | zfit.pdf.KDE1DimISJ
 
 SingleLiteral = Literal['signal', 'signal_alt', 'bkg']
 SumLiteral    = Literal['s+b', 's_alt+b']
@@ -845,7 +846,7 @@ def val_from_zres(
 
     raise ValueError(f'Parameter {name} not found in results')
 # ----------------------
-def bootstrap_kde[KDE: AnyKDE](pdf: KDE, index: int) -> KDE:
+def bootstrap_kde[T : zfit.pdf.BasePDF](pdf: T, index: int) -> T:
     """Build one Poisson-bootstrap replica of a 1D zfit KDE from scratch.
 
     Every event gets an integer weight drawn from Poisson(1), multiplied into
@@ -862,6 +863,9 @@ def bootstrap_kde[KDE: AnyKDE](pdf: KDE, index: int) -> KDE:
     Returns:
         The rebuilt KDE.
     """
+    if not isinstance(pdf, AnyKDE):
+        raise ValueError(f'PDF is not a KDE, but {type(pdf)}')
+
     values = pdf._data.numpy()  # pyrefly: ignore
     weights= None if pdf._weights is None else pdf._weights.numpy()  # pyrefly: ignore
 
