@@ -931,6 +931,10 @@ def replace_model(
     -----------------
     Input list of PDFs with target replaced
     '''
+    # Need a copy of the list of models to dissentable
+    # bootstrapped NLL from original one
+    models = [ model for model in models ]
+
     for idx, _pdf in enumerate(models):
         if _pdf.name == name:
             models[idx] = pdf
@@ -946,7 +950,6 @@ def replace_model(
 
         models[idx] = zfit.pdf.SumPDF(
             pdfs, 
-            fracs = _pdf.fracs, # pyrefly: ignore
             name  = _pdf.name)
 
         return models
