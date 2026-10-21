@@ -881,7 +881,14 @@ def bootstrap_kde[T : zfit.pdf.BasePDF](pdf: T, index: int) -> T:
     )
 
     kwargs = {} if isinstance(pdf, zfit.pdf.KDE1DimISJ) else {"bandwidth": float(pdf._bandwidth)}  # pyrefly: ignore
-    return type(pdf)(data, obs=pdf.space, **kwargs)
+    pdf_bts= type(pdf)(data, obs=pdf.space, **kwargs)
+    nevs   = pdf.get_yield()
+    if nevs is None:
+        return pdf
+
+    pdf_bts.set_yield(nevs)
+
+    return pdf_bts
 # ----------------------
 def find_model(models : Sequence[zpdf], name : str) -> zpdf:
     '''
