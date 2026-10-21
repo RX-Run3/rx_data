@@ -221,16 +221,20 @@ class Calculator[PDF : zpdf.BasePDF ]:
         '''
         Parameters
         ----------------
-        dfs: List of dataframes each with parameter values corresponding to a fit to bootstrapped model.
+        df: DataFrame with bootstrapping column added ('bts') to keep track of fits
+            to bootstrapped models
 
         Returns
         ----------------
-        Dataframe where the parameters are the median of the bootrapped parameters
+        Dataframe where the parameters are the median of the bootsrapped parameters
+        output should contain columns:
+
+        ['Parameter', 'Value', 'Error', 'Gen', 'Toy', 'GOF']
         '''
         df    = df[df['Valid'] == 1]
-        df    = df.drop(labels = ['Valid', 'Hash'])
         group = df.groupby(by = ['Toy', 'Parameter'])
         df    = group[['Value', 'Error', 'GOF', 'Gen']].median()
+        df    = df.reset_index(inplace = False)
 
         return df
     # ----------------------

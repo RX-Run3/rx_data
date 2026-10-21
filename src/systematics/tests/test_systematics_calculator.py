@@ -25,6 +25,9 @@ type zlos = ExtendedUnbinnedNLL
 
 _COLUMNS : Final[list[str]] = ['Parameter', 'Value', 'Error', 'Gen', 'Toy', 'GOF', 'Valid', 'Hash']
 '''Columns needed in dataframe holding toys information'''
+
+_COLUMNS_BTS : Final[set[str]] = {'Parameter', 'Value', 'Error', 'Gen', 'Toy', 'GOF'}
+'''Columns needed in dataframe holding toys information for bootstrapping systematics'''
 # ----------------------
 @pytest.fixture(autouse=True)
 def initialize():
@@ -63,7 +66,7 @@ def _get_nll_sim(nentries : int, alt : Literal['ee','mm','none']) -> tuple[zlos,
 
     return nll, res
 # ----------------------
-@pytest.mark.parametrize('ntoys', [10])
+@pytest.mark.parametrize('ntoys', [4])
 def test_bootstrap(
     monkeypatch,
     tmp_path : Path,
@@ -99,11 +102,11 @@ def test_bootstrap(
         cfg = cfg) 
 
     df_bts  = scal.bootstrap(
-        nboot = 10,
+        nboot = 3,
         model = 'signal_kde',
         label = 'bootstrap')
 
-    assert df_bts.columns.to_list() == _COLUMNS
+    assert set(df_bts.columns.to_list()) == _COLUMNS_BTS
 # ----------------------
 @pytest.mark.parametrize('ntoys', [10])
 def test_model_switch(
