@@ -77,10 +77,9 @@ class ToyMaker:
         nll  : Zfit negativve log likelihood instance
         res  : Result of actual fit to data. Used to make sure
                toys are generaged with the correct initial parameters
-        cfg  : omegaconf dictionary controlling configuration
-        cns  : List of constraints, needed for resampling between toys
+        cns  : Object holding constraints needed for resampling
+        cfg  : Configuration object specifying how to make toys
         '''
-
         self._ana_dir = Path(os.environ['ANADIR'])
 
         self._nll   = nll
@@ -129,12 +128,12 @@ class ToyMaker:
             fit_val, fit_err = res[name]
             gen_val, _       = self._res.get(name = name, fall_back = math.nan)
             df.loc[nrows]    = [
-                name, 
+                name,
                 fit_val,
                 fit_err,
-                gen_val, 
-                itoy, 
-                pvalue, 
+                gen_val,
+                itoy,
+                pvalue,
                 res.valid,
                 hsh]
 
@@ -169,7 +168,7 @@ class ToyMaker:
         log.debug(30 * '-')
     # ----------------------
     def _resample(
-        self, 
+        self,
         samplers : list[SamplerData]) -> int:
         '''
         Parameters
@@ -224,7 +223,7 @@ class ToyMaker:
 
         Returns
         -------------
-        Number uniquely identifying sampler 
+        Number uniquely identifying sampler
         '''
         val = sampler.numpy().sum()
 
@@ -308,7 +307,7 @@ class ToyMaker:
         return sorted_samplers
     # ----------------------
     def _print_samplers(
-        self, 
+        self,
         samplers : list[SamplerData],
         msg      : str | None = None) -> None:
         '''
@@ -325,7 +324,7 @@ class ToyMaker:
         log.debug(40 * '-')
         for sampler in samplers:
             size = sampler.n_events
-            name = self._sampler_name(sampler = sampler) 
+            name = self._sampler_name(sampler = sampler)
 
             log.debug(f'{name:<20}{size:<20}')
     # ----------------------
@@ -353,7 +352,7 @@ class ToyMaker:
 
             try:
                 res = minimizers.minimize(
-                    nll = nll, 
+                    nll = nll,
                     cfg = self._cfg.fit_conf)
             except (MinimizerFailError, ErrorFailError):
                 n_lost += 1
@@ -386,7 +385,7 @@ class ToyMaker:
         return df
     # ----------------------
     def get_parameter_information(
-        self, 
+        self,
         name     : str,
         update   : bool = True,
         samplers : list[SamplerData] | None = None) -> pnd.DataFrame:
