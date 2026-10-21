@@ -201,7 +201,7 @@ class Calculator[PDF : zpdf.BasePDF ]:
         - Sampler associated to KDE that needs bootstrapping
         '''
         # Need a copy of the list of models to dissentable
-        # bootstrapped model from original one
+        # bootstrapped NLL from original one
         models = [ model for model in self._nll.model ]
         pdf    = sut.find_model(
             models = models, 
