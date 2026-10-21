@@ -188,7 +188,7 @@ def _get_composite_model(
     else:
         sig = sig.create_extended(nsig)
 
-    if kind in ['s+b', 's_alt+b']:
+    if kind in ['s+b', 'skde+b', 's_alt+b']:
         return zfit.pdf.SumPDF([bkg, sig])
 
     suffix = f'{suffix}_x'
