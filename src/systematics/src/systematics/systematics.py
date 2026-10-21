@@ -5,22 +5,19 @@ import pandas as pnd
 
 from dmu.stats     import zfit
 from dmu.stats     import FitResult
-from zfit.data     import SamplerData
-from typing        import Literal
+from typing        import Literal, overload
 from dmu           import LogStore
 from dmu.stats     import Constraints
 from fitter        import ToyConf, ToyMaker
-from fitter        import ChannelHolder
 
 Nll    = zfit.loss.ExtendedUnbinnedNLL
-pdf    = zfit.pdf
-loss   = zfit.loss
-param  = zfit.param
+zpdf   = zfit.pdf
+zloss  = zfit.loss
+zparam = zfit.param
 
 log    = LogStore.add_logger('rx_stats:systematics')
-Channel= Literal['mm', 'ee']
 # ------------------------------------
-class Calculator[PDF : pdf.BasePDF ]:
+class Calculator[PDF : zpdf.BasePDF ]:
     '''
     Class meant to:
 
@@ -31,115 +28,87 @@ class Calculator[PDF : pdf.BasePDF ]:
     # ----------------------
     def __init__(
         self,
-        obj  : ChannelHolder[Nll] | Nll,
-        poi  : str,
-        res  : FitResult,
-        cfg  : ToyConf):
+        poi : str,
+        nll : Nll,
+        res : FitResult,
+        cns : Constraints,
+        cfg : ToyConf):
         '''
         Parameters
         ---------------
-        nll  : Holder of likelihoods for each channel or likelihood for given channel
-        poi  : Parameter of interest
-        res  : Zfit result object with result of fit to real data
-        rseed: Random seed for current toys
+        poi : Parameter of interest
+        nll : Holder of likelihoods for each channel or likelihood for given channel
+        res : Zfit result object with result of fit to real data
+        cns : Object holding parameter constraints
+        cfg : Config object controlling toy generation
         '''
-        self._obj = obj
-        self._nll = obj if isinstance(obj, Nll) else obj.mm + obj.ee
         self._poi = poi
+        self._nll = nll 
         self._res = res
+        self._cns = cns
         self._cfg = cfg
+
         # Sampler is made with nominal model.
         # This calculator fits alternative model to toy data from nominal
         # i.e. sampler will be re-used
-        self._sam = [ self._sampler_from_model(model = model) for model in self._nll.model ]
+        self._sam = [ model.create_sampler() for model in self._nll.model ]
 
-        self._df_nom : None | pnd.DataFrame      = None
-        self._params : dict[str,param.Parameter] = { par.name : par for par in self._nll.get_params(floating = True) }
+        self._df_nom : None | pnd.DataFrame       = None
+        self._params : dict[str,zparam.Parameter] = { par.name : par for par in self._nll.get_params(floating = True) }
 
         if self._poi not in self._params:
             for name in self._params:
                 log.error(name)
             raise ValueError(f'POI {poi} not found as floating parameter in NLL')
     # ----------------------
-    def _sampler_from_model(self, model : pdf.BasePDF) -> SamplerData:
-        '''
-        Parameters
-        -------------
-        model : Zfit PDF
-
-        Returns
-        -------------
-        Sampler corresponding to argument PDF
-        '''
-        sampler            = model.create_sampler()
-        setattr(sampler, model.name, 'model_name')
-
-        return sampler
-    # ----------------------
+    @overload
     def _make_toys(
         self,
-        label   : str,
-        model   : pdf.SumPDF | None,
-        channel : Channel| None) -> pnd.DataFrame:
+        *,
+        label : str,
+        res   : None,
+        cns   : None,
+        nll   : None) -> pnd.DataFrame: ...
+    @overload
+    def _make_toys(
+        self,
+        *,
+        label : str,
+        res   : FitResult,
+        cns   : Constraints,
+        nll   : Nll) -> pnd.DataFrame: ...
+    def _make_toys(
+        self,
+        *,
+        label : str,
+        res   : FitResult   | None,
+        cns   : Constraints | None,
+        nll   : Nll         | None) -> pnd.DataFrame:
         '''
         Parameters
         -------------
-        label   : Systematic label
-        model   : Dictionary mapping channel to PDF that needs to be switched
-        channel : ee or mm, needed to
+        label : Systematic label
+        cns   : Constraints
 
         Returns
         -------------
         DataFrame with fitting parameters
         '''
-        cns = Constraints.none()
-        nll = self._get_new_nll(model = model, channel = channel)
+        # If None passed, use nominal everything, for toys
+        # If overriden, use alternative model with nominal data (sampler)
+        res = self._res if res is None else res
+        cns = self._cns if cns is None else cns
+        nll = self._nll if nll is None else nll.create_new(data = self._sam)
 
         mkr = ToyMaker(
-            nll = nll,
-            cns = cns,
+            nll = self._nll,
+            cns = self._cns,
             cfg = self._cfg,
             res = self._res)
 
         df = mkr.get_parameter_information(name = label, samplers = self._sam)
 
         return df
-    # ----------------------
-    def _get_new_nll(
-        self,
-        model  : pdf.SumPDF | None,
-        channel: Channel| None) -> loss.ExtendedUnbinnedNLL:
-        '''
-        Parameters
-        -------------
-        model  : Replacement model, if None, will use nominal model to make toys
-        channel: Channel where the model will be replaced, if non-simultaneous fit, channel will be None
-
-        Returns
-        -------------
-        NLL after model replacement
-        '''
-        if model is None:
-            log.debug('Using nominal model')
-            return self._nll
-
-        if isinstance(self._obj, loss.ExtendedUnbinnedNLL) and isinstance(model, pdf.SumPDF):
-            log.debug('Found NLL for non-simultaneous fit, replacing model')
-            return self._obj.create_new(model = model)
-
-        if channel is None:
-            raise ValueError('Channel not specified but using multichannel likelihood')
-
-        if isinstance(self._obj, ChannelHolder) and isinstance(model, pdf.SumPDF):
-            other_channel = 'ee' if channel == 'mm' else 'mm'
-            nll_other     = getattr(self._obj, other_channel)
-
-            nll_this : loss.ExtendedUnbinnedNLL = getattr(self._obj,       channel)
-            nll_new = nll_this.create_new(model = model)
-
-            return nll_new + nll_other
-
-        raise ValueError(f'Cannot retrieve new NLL for channel {channel}')
     # ----------------------
     @property
     def poi(self) -> str:
@@ -164,7 +133,7 @@ class Calculator[PDF : pdf.BasePDF ]:
         return models # type: ignore
     # ----------------------
     @property
-    def parameters(self) -> dict[str, param.Parameter]:
+    def parameters(self) -> dict[str, zparam.Parameter]:
         '''
         Returns
         ------------
@@ -186,28 +155,47 @@ class Calculator[PDF : pdf.BasePDF ]:
     # ----------------------
     def switch_model(
         self,
-        label  : str,
-        model  : pdf.SumPDF | None,
-        channel: Channel | None = None) -> pnd.DataFrame:
+        nll   : Nll,
+        cns   : Constraints,
+        res   : FitResult,
+        label : str) -> pnd.DataFrame:
         '''
         Parameters
         -------------
+        nll    : Alternative model likelihood
+        cns    : Object holding constraints, under alternative model
+        res    : Fit result associated to real data fit to alternative model
         label  : Label for model, used for naming outputs, meant to be systematic, e.g. sig_dscb
-        model  : Alternative model to do fits with. If None, will use nominal model
-        channel: When using simultaneous fits, this will define signal region where replacement will be made
 
         Returns
         -------------
         Dataframe with fit parameters, with each row corresponding to one toy
         '''
         log.info(30 * '-')
-        log.info(f'Making toys for \"{label}" model in channel: \"{channel}\"')
-        log.debug(model)
+        log.info(f'Making toys for \"{label}"')
         log.info(30 * '-')
         df = self._make_toys(
-            model   = model,
-            label   = label,
-            channel = channel)
+            nll   = nll,
+            res   = res,
+            cns   = cns,
+            label = label)
+
+        return df
+    # ----------------------
+    def make_toys(self) -> pnd.DataFrame:
+        '''
+        Returns
+        -------------
+        Dataframe with fit parameters, with each row corresponding to one toy
+        '''
+        log.info(30 * '-')
+        log.info('Making nominal toys')
+        log.info(30 * '-')
+        df = self._make_toys(
+            nll   = None,
+            res   = None,
+            cns   = None,
+            label = 'nominal')
 
         return df
     # ----------------------
@@ -233,16 +221,17 @@ class Calculator[PDF : pdf.BasePDF ]:
 
         if not param.floating:
             log.warning(f'Parameter {name} is already fixed')
-        else:
-            log.info(30 * '-')
-            log.info(f'Fixing {name}')
-            log.info(30 * '-')
-            param.floating = False
+
+        log.info(30 * '-')
+        log.info(f'Fixing {name}')
+        log.info(30 * '-')
+        param.floating = False
 
         df = self._make_toys(
-            model   = None,
-            channel = None,
-            label   = label)
+            nll   = None,
+            cns   = None,
+            res   = None,
+            label = label)
 
         return df
 # ------------------------------------
