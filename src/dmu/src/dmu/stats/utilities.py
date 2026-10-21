@@ -882,6 +882,32 @@ def bootstrap_kde[T : zfit.pdf.BasePDF](pdf: T, index: int) -> T:
 
     kwargs = {} if isinstance(pdf, zfit.pdf.KDE1DimISJ) else {"bandwidth": float(pdf._bandwidth)}  # pyrefly: ignore
     return type(pdf)(data, obs=pdf.space, **kwargs)
+# ----------------------
+def find_model(models : list[zpdf], name : str) -> zpdf:
+    '''
+    Parameters
+    -----------------
+    models: List of models, each potentially a sum of models
+    name  : Name of model to be found
+
+    Returns
+    -----------------
+    Found model or will raise value error if not found 
+    '''
+    for pdf in models:
+        if pdf.name == name:
+            return pdf
+
+        if not isinstance(pdf, zfit.pdf.SumPDF):
+            continue
+
+        try:
+            model = find_model(models = pdf.pdfs, name = name)
+            return model
+        except ValueError:
+            continue
+
+    raise ValueError(f'PDF {name} not found')
 #---------------------------------------------
 # Mergers
 #---------------------------------------------
