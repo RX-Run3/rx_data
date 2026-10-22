@@ -11,6 +11,8 @@ from dmu.generic      import UnpackerModel, utilities as gut
 from dmu.stats        import ParameterLibrary as PL
 from dmu.stats        import utilities as sut
 from dmu.stats        import ConstraintAdder
+from dmu.stats        import Constraints
+from dmu.stats        import FitResult
 from dmu.workflow     import Cache
 from dmu              import LogStore, LogLevels
 from rx_selection     import selection as sel
@@ -19,7 +21,7 @@ from rx_common        import MVAWp, Qsq
 
 from fitter           import DataPreprocessor
 from fitter           import RXFitConfig
-from fitter           import add_constraints 
+from fitter           import add_constraints
 from fitter           import DataFitterSim
 from fitter           import LikelihoodFactory
 from fitter           import FitModelConf
@@ -120,7 +122,7 @@ def _get_replacements(kind : SimFit, syst : Systematic) -> dict[str,str]:
     '''
     Parameters
     ------------------
-    kind: Symbolizes measurement been made 
+    kind: Symbolizes measurement been made
 
     Returns
     ------------------
@@ -218,7 +220,7 @@ def _get_nll(
     '''
     Parameters
     -----------------
-    brem: Brem category 
+    brem: Brem category
     cfg : Configuration for fit
 
     Returns
@@ -228,29 +230,39 @@ def _get_nll(
     if brem.is_composite:
         # Put all the elementary regions in same config
         cfg_brem         = cfg.cfg_clone(
-            prefix       = 'BREM', 
+            prefix       = 'BREM',
             q2bin        = cfg.q2bin,
             brems        = [ brem for brem in brem.components ])
     else:
-        # Pick only elementary region 
+        # Pick only elementary region
         cfg_brem         = cfg.cfg_copy(
             q2bin        = cfg.q2bin,
             replacements = {'BREM' : str(brem)})
 
     return _get_region_nll(brem = brem, cfg = cfg_brem)
 # ----------------------
-def _save_nll(nlls : dict[Region,NLLConf], cfg : Conf) -> None:
+def _save_results(
+    nlls : dict[Region,NLLConf],
+    res  : FitResult,
+    cfg  : Conf) -> None:
     '''
     Parameters
     ----------------
     nlls: Dictionary mapping region with likelihood holder
+    res : Fit result
     cfg : Object holding configuration
     '''
-    _nlls = [ nll_cfg.nll for nll_cfg in nlls.values() ]
-    nll   = gut.add_container(elements = _nlls)
-    path  = cfg.out_dir / f'nll_{cfg.q2bin}_{cfg.syst}.bytes'
+    _nlls = [ nll_cfg.nll    for nll_cfg in nlls.values() ]
+    _cnss = { cns.name : cns for nll_cfg in nlls.values() for cns in nll_cfg.constraints }
 
-    sut.save_nll(loss = nll, path = path)
+    nll   = gut.add_container(elements = _nlls)
+    cns   = Constraints(root = _cnss)
+
+    dir_path = cfg.out_dir / f'{cfg.q2bin}_{cfg.syst}'
+
+    sut.save_nll(loss = nll, path = dir_path / 'nll.bytes')
+    cns.to_json(path = dir_path / 'constraints.json')
+    res.to_json(path = dir_path / 'result.json')
 # ----------------------
 def _fit(cfg : Conf) -> None:
     '''
@@ -260,17 +272,24 @@ def _fit(cfg : Conf) -> None:
     for region, region_cfg in cfg.cfgs.items():
         d_nll[region] = _get_nll(cfg = region_cfg, brem = region.brem)
 
-    _save_nll(nlls = d_nll, cfg = cfg)
-
     if cfg.dry_run:
         log.info('Skipping fit to data, dry run')
         return
+
+    log.info(30 * '-')
+    log.info('Fitting data')
+    log.info(30 * '-')
 
     ftr = DataFitterSim(
         d_nll = d_nll,
         q2bin = cfg.q2bin,
         d_cfg = cfg.cfgs)
-    ftr.run(skip_fit = False)
+    res = ftr.run(skip_fit = False)
+
+    _save_results(
+        nlls = d_nll,
+        res  = res,
+        cfg  = cfg)
 # ----------------------
 def _get_conf() -> Conf:
     '''

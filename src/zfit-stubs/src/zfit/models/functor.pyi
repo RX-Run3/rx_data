@@ -28,7 +28,9 @@ class BaseFunctor(FunctorMixin, BasePDF):
     def pdfs_extended(self): ...
 
 class SumPDF(BaseFunctor, SerializableMixin):
-    pdfs: list[BasePDF]
+    pdfs : list[BasePDF]
+    '''PDFs making up this sum'''
+    fracs: zpar  
     def __init__(
         self,
         pdfs: Iterable[ZfitPDF],

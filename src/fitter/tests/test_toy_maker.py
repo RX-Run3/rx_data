@@ -5,7 +5,7 @@ import pytest
 import mplhep
 import matplotlib.pyplot as plt
 
-from typing      import Any
+from typing      import Any, Final
 from pathlib     import Path
 from zfit.loss   import ExtendedUnbinnedNLL
 from fitter      import ToyPlotter
@@ -23,6 +23,8 @@ from dmu         import LogStore
 
 log=LogStore.add_logger('fitter:test_toymaker')
 plt.style.use(mplhep.style.LHCb2)
+
+_COLUMNS : Final[list[str]] = ['Parameter', 'Value', 'Error', 'Gen', 'Toy', 'GOF', 'Valid', 'Hash']
 # ----------------------
 @pytest.fixture(scope='module', autouse=True)
 def initialize():
@@ -66,16 +68,14 @@ def test_simple(
     res = minimizer.minimize(loss = nll)
     res.hesse(name = 'minuit_hesse')
 
-    mkr   = ToyMaker(
+    mkr = ToyMaker(
         nll=nll, 
         res=FitResult.from_zfit(res), 
         cfg=cfg, 
         cns=cons)
-    df    = mkr.get_parameter_information(name = 'test')
+    df = mkr.get_parameter_information(name = 'test')
 
-    l_col = ['Parameter', 'Value', 'Error', 'Gen', 'Toy', 'GOF', 'Valid', 'Hash']
-
-    assert df.columns.to_list() == l_col
+    assert df.columns.to_list() == _COLUMNS 
 
     pars  = nll.get_params()
     assert len(df) == cfg.ntoys * len(pars) 

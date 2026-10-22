@@ -36,6 +36,8 @@ log           = LogStore.add_logger('dmu:stats:utilities')
 type Loss     = ExtendedUnbinnedNLL | UnbinnedNLL
 type SumPDF   = zfit.pdf.SumPDF
 
+AnyKDE   = zfit.pdf.KDE1DimExact | zfit.pdf.KDE1DimFFT | zfit.pdf.KDE1DimISJ
+
 SingleLiteral = Literal['signal', 'signal_alt', 'bkg']
 SumLiteral    = Literal['s+b', 's_alt+b']
 AllLiteral    = Literal['signal', 'signal_alt', 'bkg', 's+b', 's_alt+b']
@@ -843,6 +845,116 @@ def val_from_zres(
     log.error(res)
 
     raise ValueError(f'Parameter {name} not found in results')
+# ----------------------
+def bootstrap_kde[T : zfit.pdf.BasePDF](pdf: T, index: int) -> T:
+    """Build one Poisson-bootstrap replica of a 1D zfit KDE from scratch.
+
+    Every event gets an integer weight drawn from Poisson(1), multiplied into
+    its original weight (if any). Events that draw zero are dropped. A new KDE
+    of the same class is then built on what is left, so the replica's sample
+    size fluctuates like a real counting experiment.
+
+    Args:
+        pdf: a 1D zfit KDE.
+        index: replica index. Used as the random seed, so the same index
+            always gives the same replica and different indices give
+            different ones.
+
+    Returns:
+        The rebuilt KDE.
+    """
+    if not isinstance(pdf, AnyKDE):
+        raise ValueError(f'PDF is not a KDE, but {type(pdf)}')
+
+    values = pdf._data.numpy()  # pyrefly: ignore
+    weights= None if pdf._weights is None else pdf._weights.numpy()  # pyrefly: ignore
+
+    rng    = numpy.random.default_rng(index)
+    counts = rng.poisson(lam=1.0, size=len(values))
+
+    weights= counts if weights is None else weights * counts
+
+    data = zfit.Data.from_numpy(
+        obs    =pdf.space,
+        array  =values,
+        weights=weights,
+    )
+
+    kwargs = {} if isinstance(pdf, zfit.pdf.KDE1DimISJ) else {"bandwidth": float(pdf._bandwidth)}  # pyrefly: ignore
+    pdf_bts= type(pdf)(data, obs=pdf.space, **kwargs)
+    nevs   = pdf.get_yield()
+    if nevs is None:
+        return pdf
+
+    pdf_bts.set_yield(nevs)
+
+    return pdf_bts
+# ----------------------
+def find_model(models : Sequence[zpdf], name : str) -> zpdf:
+    '''
+    Parameters
+    -----------------
+    models: List of models, each potentially a sum of models
+    name  : Name of model to be found
+
+    Returns
+    -----------------
+    Found model or will raise value error if not found 
+    '''
+    for pdf in models:
+        if pdf.name == name:
+            return pdf
+
+        if not isinstance(pdf, zfit.pdf.SumPDF):
+            continue
+
+        try:
+            model = find_model(models = pdf.pdfs, name = name)
+            return model
+        except ValueError:
+            continue
+
+    raise ValueError(f'PDF {name} not found')
+# ----------------------
+def replace_model(
+    models : list[zpdf], 
+    name   : str,
+    pdf    : zpdf) -> list[zpdf]:
+    '''
+    Parameters
+    -----------------
+    models: List of models, each potentially a sum of models
+    name  : Name of model to be found
+    pdf   : PDF to be used as replacement
+
+    Returns
+    -----------------
+    Input list of PDFs with target replaced
+    '''
+    # Need a copy of the list of models to dissentable
+    # bootstrapped NLL from original one
+    models = [ model for model in models ]
+
+    for idx, _pdf in enumerate(models):
+        if _pdf.name == name:
+            models[idx] = pdf
+            return models
+
+        if not isinstance(_pdf, zfit.pdf.SumPDF):
+            continue
+
+        try:
+            pdfs = replace_model(models = _pdf.pdfs, name = name, pdf = pdf)
+        except ValueError:
+            continue
+
+        models[idx] = zfit.pdf.SumPDF(
+            pdfs, 
+            name  = _pdf.name)
+
+        return models
+
+    raise ValueError(f'PDF {name} not found')
 #---------------------------------------------
 # Mergers
 #---------------------------------------------

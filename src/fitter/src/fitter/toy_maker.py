@@ -21,6 +21,7 @@ from dmu.stats   import Constraints
 from dmu.stats   import ConstraintND
 from dmu.stats   import Constraint1D
 
+from typing      import Final
 from pathlib     import Path
 from pydantic    import BaseModel
 from zfit.data   import SamplerData
@@ -29,6 +30,9 @@ log = LogStore.add_logger('fitter:toy_maker')
 
 type zlos = zfit.loss.ExtendedUnbinnedNLL | zfit.loss.UnbinnedNLL
 type zres = zfit.result.FitResult
+
+_COLUMNS : Final[list[str]] = ['Parameter', 'Value', 'Error', 'Gen', 'Toy', 'GOF', 'Valid', 'Hash']
+'''Columns needed in dataframe holding toys information'''
 # ----------------------
 class ToyConf(BaseModel, frozen = True):
     '''
@@ -73,10 +77,9 @@ class ToyMaker:
         nll  : Zfit negativve log likelihood instance
         res  : Result of actual fit to data. Used to make sure
                toys are generaged with the correct initial parameters
-        cfg  : omegaconf dictionary controlling configuration
-        cns  : List of constraints, needed for resampling between toys
+        cns  : Object holding constraints needed for resampling
+        cfg  : Configuration object specifying how to make toys
         '''
-
         self._ana_dir = Path(os.environ['ANADIR'])
 
         self._nll   = nll
@@ -125,12 +128,12 @@ class ToyMaker:
             fit_val, fit_err = res[name]
             gen_val, _       = self._res.get(name = name, fall_back = math.nan)
             df.loc[nrows]    = [
-                name, 
+                name,
                 fit_val,
                 fit_err,
-                gen_val, 
-                itoy, 
-                pvalue, 
+                gen_val,
+                itoy,
+                pvalue,
                 res.valid,
                 hsh]
 
@@ -165,7 +168,7 @@ class ToyMaker:
         log.debug(30 * '-')
     # ----------------------
     def _resample(
-        self, 
+        self,
         samplers : list[SamplerData]) -> int:
         '''
         Parameters
@@ -220,7 +223,7 @@ class ToyMaker:
 
         Returns
         -------------
-        Number uniquely identifying sampler 
+        Number uniquely identifying sampler
         '''
         val = sampler.numpy().sum()
 
@@ -304,7 +307,7 @@ class ToyMaker:
         return sorted_samplers
     # ----------------------
     def _print_samplers(
-        self, 
+        self,
         samplers : list[SamplerData],
         msg      : str | None = None) -> None:
         '''
@@ -321,12 +324,68 @@ class ToyMaker:
         log.debug(40 * '-')
         for sampler in samplers:
             size = sampler.n_events
-            name = self._sampler_name(sampler = sampler) 
+            name = self._sampler_name(sampler = sampler)
 
             log.debug(f'{name:<20}{size:<20}')
     # ----------------------
+    def _get_df(self, samplers : list[SamplerData], nll : zlos) -> pnd.DataFrame:
+        '''
+        Parameters
+        -------------
+        samplers: List of proxies to toy data
+        nll     : Likelihood
+
+        Returns
+        -------------
+        Dataframe with fit parameters information for each toy
+        '''
+        l_total : list[int] = []
+        df      = pnd.DataFrame(columns=_COLUMNS)
+
+        n_lost  = 0
+        for itoy in tqdm.tqdm(range(1, self._cfg.ntoys + 1), ascii=' -'):
+            seed = self._cfg.rseed
+            with rxran.seed(value = seed, index = itoy):
+                log.debug(f'Resampling with: {seed}/{itoy}')
+                total = self._resample(samplers = samplers)
+                l_total.append(total)
+
+            try:
+                res = minimizers.minimize(
+                    nll = nll,
+                    cfg = self._cfg.fit_conf)
+            except (MinimizerFailError, ErrorFailError):
+                n_lost += 1
+                continue
+
+            if log.getEffectiveLevel() < LogLevels.info:
+                self._print_result(res = res, msg = 'Toy fit')
+
+            hashes = [ self._sampler_identifier(sampler = sam) for sam in samplers ]
+            hsh    = sum(hashes)
+            log.debug(30 * '-')
+            log.debug(f'Hash: {hsh}')
+            log.debug(f'Toy : {itoy}')
+            log.debug(f'Seed: {self._cfg.rseed}')
+            log.debug(30 * '-')
+
+            df = self._add_parameters(
+                df  = df,
+                res = res,
+                hsh = hsh,
+                itoy= itoy)
+
+        if n_lost:
+            log.warning(f'Found {n_lost}/{self._cfg.ntoys} failed fits')
+        else:
+            log.info('No failed fits')
+
+        self._print_yield_stats(yields = l_total)
+
+        return df
+    # ----------------------
     def get_parameter_information(
-        self, 
+        self,
         name     : str,
         update   : bool = True,
         samplers : list[SamplerData] | None = None) -> pnd.DataFrame:
@@ -357,7 +416,7 @@ class ToyMaker:
             log.warning('Using custom sampler for toys')
             samplers = self._sort_samplers(samplers = samplers)
 
-        zfit_cns  = [ cons.zfit_cons(holder = self._nll) for cons in self._cns ]
+        zfit_cns = [ cons.zfit_cons(holder = self._nll) for cons in self._cns ]
 
         self._print_samplers(samplers = samplers, msg = 'Samplers before recreating NLL')
         nll = self._nll.create_new(
@@ -371,50 +430,8 @@ class ToyMaker:
         log.debug('Running toys with config:')
         log.debug(self._cfg)
 
-        l_total : list[int] = []
-        columns = ['Parameter', 'Value', 'Error', 'Gen', 'Toy', 'GOF', 'Valid', 'Hash']
-        df      = pnd.DataFrame(columns=columns)
-
-        n_lost  = 0
-        for itoy in tqdm.tqdm(range(1, self._cfg.ntoys + 1), ascii=' -'):
-            seed = self._cfg.rseed
-            with rxran.seed(value = seed, index = itoy):
-                log.debug(f'Resampling with: {seed}/{itoy}')
-                total = self._resample(samplers = samplers)
-                l_total.append(total)
-
-            with GofCalculator.disabled(value = not self._cfg.fit_conf.run_gof):
-                try:
-                    res = minimizers.minimize(
-                        nll = nll, 
-                        cfg = self._cfg.fit_conf)
-                except (MinimizerFailError, ErrorFailError):
-                    n_lost += 1
-                    continue
-
-                if log.getEffectiveLevel() < LogLevels.info:
-                    self._print_result(res = res, msg = 'Toy fit')
-
-            hashes = [ self._sampler_identifier(sampler = sam) for sam in samplers ]
-            hsh    = sum(hashes)
-            log.debug(30 * '-')
-            log.debug(f'Hash: {hsh}')
-            log.debug(f'Toy : {itoy}')
-            log.debug(f'Seed: {self._cfg.rseed}')
-            log.debug(30 * '-')
-
-            df = self._add_parameters(
-                df  = df,
-                res = res,
-                hsh = hsh,
-                itoy= itoy)
-
-        if n_lost:
-            log.warning(f'Found {n_lost}/{self._cfg.ntoys} failed fits')
-        else:
-            log.info('No failed fits')
-
-        self._print_yield_stats(yields = l_total)
+        with GofCalculator.disabled(value = not self._cfg.fit_conf.run_gof):
+            df = self._get_df(samplers = samplers, nll = nll)
 
         fpath.parent.mkdir(parents = True, exist_ok = True)
 
