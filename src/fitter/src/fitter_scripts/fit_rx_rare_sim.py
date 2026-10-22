@@ -276,6 +276,10 @@ def _fit(cfg : Conf) -> None:
         log.info('Skipping fit to data, dry run')
         return
 
+    log.info(30 * '-')
+    log.info('Fitting data')
+    log.info(30 * '-')
+
     ftr = DataFitterSim(
         d_nll = d_nll,
         q2bin = cfg.q2bin,
