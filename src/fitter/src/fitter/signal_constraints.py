@@ -12,10 +12,10 @@ from rx_q2         import ScaleReader
 
 log=LogStore.add_logger('fitter:signal_constraints')
 
-# Regex for non-fractions
-_RGXPR : Final[str] = r'brem_(xx\d)_b(\d)_(scale|reso)_flt'
-# Regex for fractions
+_RGXPR : Final[str] = r'brem_(xx\d)_b(\d)_(?:rk|rkst)_(?:ee|mm)_(scale|reso)_flt'
+'''Regex for non-fractions'''
 _RGXFR : Final[str] = r'(brem|block)_brem_([x012]{3})_b(\d)(_reso)?_flt'
+'''Regex for fractions'''
 # ------------------------------------------
 class SignalConstraints:
     '''
