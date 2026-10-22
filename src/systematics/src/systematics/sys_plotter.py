@@ -2,7 +2,6 @@
 Module holding SysPlotter class
 '''
 import os
-import mplhep
 import pandas            as pnd
 import matplotlib.pyplot as plt
 
@@ -21,9 +20,13 @@ switching to stepfilled. Used for systematics histograms'''
 # ---------------------------------
 class LineCfg(BaseModel):
     style : str
+    '''Line style'''
     width : float
+    '''line width'''
     color : str
+    '''line color'''
     skip  : bool = False
+    '''If true will skip drawing this line, default False'''
 # ---------------------------------
 class SysAxis(BaseModel):
     '''
@@ -36,18 +39,25 @@ class SysAxis(BaseModel):
 class SysPlotterCfg(BaseModel):
     '''
     Data class meant to hold configurations for plotting of systematics
-    Attributes:
-        - out_path : Full path to output plot
-        - nominal  : Name of nominal column in dataframes from toys, usually 'nominal'
-        - systematics: Dictionary where:
-            - Key: Label used for systematic variation, for plots, usually latex.
-            - Value: Column name in dataframe, e.g. alt_sig
-        - Axes : Object describing, binning, ranges, etc
     '''
     name        : str
+    '''
+    String used to name output in {ANADIR}/toys/{NAME}/plots
+    '''
     nominal     : str
+    '''
+    Name of nominal column in dataframes from toys, usually 'nominal'
+    '''
     systematics : dict[str,str]
+    '''
+    systematics: Dictionary where:
+        - Key: Label used for systematic variation, for plots, usually latex.
+        - Value: Column name in dataframe, e.g. alt_sig
+    '''
     axes        : dict[str,SysAxis]
+    '''
+    Object describing, binning, ranges, etc
+    '''
     vline       : LineCfg
     # ---------------------------------
     @cached_property
@@ -87,8 +97,6 @@ class SysPlotter:
         '''
         self._df = df
         self._cfg= cfg
-
-        plt.style.use(mplhep.style.LHCb2)
     # ----------------------
     def _to_latex(self, data : dict[str,list[float|str]]) -> None:
         '''
