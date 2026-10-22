@@ -18,14 +18,14 @@ MODE      = 'rare'
 paths = []
 for qsq in qsq_bin:
     for syst in systs:
-        path = f'{OUT_PATH}/nll/{CMB}_{PRC}_all/{MODE}/nll_{qsq}_{syst}.bytes'
+        path = f'{OUT_PATH}/nll/{syst}/{CMB}_{PRC}_all/{MODE}/{qsq}/nll.bytes'
         paths.append(path)
 # ---------------------------------------
 rule all:
     input : paths
 # ---------------------
 rule nlls:
-    output: f'{OUT_PATH}/nll/{CMB}_{PRC}_all/{MODE}/nll_{{qsq}}_{{syst}}.bytes'
+    output: f'{OUT_PATH}/nll/{{syst}}/{CMB}_{PRC}_all/{MODE}/{{qsq}}/nll.bytes'
     wildcard_constraints:
         qsq  = '|'.join(qsq_bin),
         syst = '|'.join(systs),
@@ -56,8 +56,7 @@ rule nlls:
                         -P {params.prc}     \
                         -g nll              \
                         -q {wildcards.qsq}  \
-                        -s {wildcards.syst} \
-                        -d  || true
+                        -s {wildcards.syst}
         ) > {log.prc} 2>&1
 
         JOBID=$(grep -m1 '^ClusterId' $_CONDOR_JOB_AD | awk '{{print $3}}')
