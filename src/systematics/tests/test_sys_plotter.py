@@ -13,7 +13,7 @@ from rx_common   import Project
 from dmu.generic import rxran
 from systematics import SysPlotter, SysPlotterCfg
 
-_SIZE : Final[int] = 1000
+_SIZE : Final[int] = 5000
 # -------------------------------------
 @pytest.fixture(autouse = True)
 def initialize():
@@ -33,9 +33,9 @@ def _get_df() -> pnd.DataFrame:
     Returns dataframe as expected from outputs of systematic toys
     '''
     df           = pnd.DataFrame()
-    df['rk_nom'] = numpy.random.normal(loc = 1.0, scale = 0.1, size = _SIZE)
-    df['rk_s1' ] = numpy.random.normal(loc = 1.1, scale = 0.1, size = _SIZE)
-    df['rk_s2' ] = numpy.random.normal(loc = 0.9, scale = 0.1, size = _SIZE)
+    df['rk_nom'] = numpy.random.normal(loc = 1.00, scale = 0.1, size = _SIZE)
+    df['rk_s1' ] = numpy.random.normal(loc = 1.03, scale = 0.1, size = _SIZE)
+    df['rk_s2' ] = numpy.random.normal(loc = 0.90, scale = 0.1, size = _SIZE)
 
     return df
 # -------------------------------------

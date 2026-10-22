@@ -6,7 +6,7 @@ systematics:
 axes:
   x:
     label : $\Delta R_{K}/R_{K}$[%]
-    limits: [0, 3]
+    limits: [0, 20]
     bins  : 50
   y:
     label : Entries 
@@ -16,4 +16,4 @@ vline:
   style : '-'
   width : 2
   color : gray
-  skip  : true
+  skip  : False
