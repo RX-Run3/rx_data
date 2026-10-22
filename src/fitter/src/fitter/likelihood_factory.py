@@ -25,7 +25,7 @@ class NLLConf(BaseModel, frozen = True):
     '''
     model_config = ConfigDict(arbitrary_types_allowed = True)
 
-    nll        : ExtendedUnbinnedNLL 
+    nll        : ExtendedUnbinnedNLL
     selection  : dict[str, dict[Cuts,str]]
     constraints: Sequence[Constraint]
 # ------------------------
@@ -58,7 +58,7 @@ class LikelihoodFactory:
         ph_sample: Physical sample. Represents what sample will be used for.
                      E.g. data_24 -> comb, data_24 -> misID, etc. Only makes sense for data
         '''
-        self._name      = name 
+        self._name      = name
         self._obs       = obs
         self._sample    = sample
         self._trigger   = cfg.trigger
@@ -136,8 +136,8 @@ class LikelihoodFactory:
 
         cfg = NLLConf(
             selection   = self._get_config(),
-            nll         = nll, 
+            nll         = nll,
             constraints = [])
 
-        return cfg 
+        return cfg
 # ------------------------
