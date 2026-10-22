@@ -5,6 +5,7 @@ import pytest
 import mplhep
 import matplotlib.pyplot as plt
 
+from rx_common   import Project
 from systematics import SysPlotter, SysPlotterCfg
 
 # -------------------------------------
@@ -12,9 +13,10 @@ from systematics import SysPlotter, SysPlotterCfg
 def style():
     plt.style.use(mplhep.style.LHCb2)
 # -------------------------------------
-def test_load_config():
+@pytest.mark.parametrize('project', [Project.rk, Project.rkst])
+def test_load_config(project : Project):
     '''
     Test loading configuration
     '''
-    SysPlotterCfg.from_location(loc = 'tests/syst_plot.yaml')
+    SysPlotterCfg.from_location(loc = f'tests/{project}_syst_plot.yaml')
 

@@ -1,8 +1,8 @@
 name     : test
-nominal  : nominal
+nominal  : rk_nom 
 systematics:
-  $R_K^{Nom}$     : a_nom
-  $R_{K^*}^{Nom}$ : a_nom
+  $R_K^{s1}$ : rk_s1
+  $R_K^{s2}$ : rk_s2
 axes:
   x:
     label : $\Delta R_{K}/R_{K}$[%]

@@ -1,0 +1,19 @@
+name     : test
+nominal  : rkst_nom 
+systematics:
+  $R_{K^*}^{s1}$ : rkst_s1
+  $R_{K^*}^{s2}$ : rkst_s2
+axes:
+  x:
+    label : $\Delta R_{K^*}/R_{K^*}$[%]
+    limits: [0, 3]
+    bins  : 50
+  y:
+    label : Entries 
+    limits: null 
+    bins  : 0
+vline:
+  style : '-'
+  width : 2
+  color : gray
+  skip  : true
