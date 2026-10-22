@@ -212,7 +212,11 @@ def _get_region_nll(brem : Brem, cfg : RXFitConfig) -> NLLConf:
             nll   = cfg_nll.nll,
             cfg   = cfg)
 
-    return cfg_nll.model_copy(update = {'nll' : nll, 'constraints' : cons})
+        data = {
+            'nll'         : nll, 
+            'constraints' : cons.to_list()}
+
+    return cfg_nll.model_copy(update = data)
 # ----------------------
 def _get_nll(
     brem: Brem,
