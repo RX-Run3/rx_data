@@ -12,20 +12,20 @@ ENV       = 'rx_run3'
 HOME      = '/afs/ihep.ac.cn/users/c/campoverde'
 ANADIR    = '/publicfs/ucas/user/campoverde/Data'
 LOGDIR    = '/publicfs/ucas/user/campoverde/Jobs/snakemake'
-OUT_PATH  = f'{ANADIR}/nlls/data'
+OUT_PATH  = f'{ANADIR}/fits/data/nll'
 MODE      = 'rare'
 # ---------------------------------------
 paths = []
 for qsq in qsq_bin:
     for syst in systs:
-        path = f'{OUT_PATH}/nll/{syst}/{CMB}_{PRC}_all/{MODE}/{qsq}/nll.bytes'
+        path = f'{OUT_PATH}/{syst}/{CMB}_{PRC}_all/{MODE}/{qsq}/nll.bytes'
         paths.append(path)
 # ---------------------------------------
 rule all:
     input : paths
 # ---------------------
 rule nlls:
-    output: f'{OUT_PATH}/nll/{{syst}}/{CMB}_{PRC}_all/{MODE}/{{qsq}}/nll.bytes'
+    output: f'{OUT_PATH}/{{syst}}/{CMB}_{PRC}_all/{MODE}/{{qsq}}/nll.bytes'
     wildcard_constraints:
         qsq  = '|'.join(qsq_bin),
         syst = '|'.join(systs),
