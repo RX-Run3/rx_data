@@ -153,6 +153,12 @@ class Constraints[C : Constraint](RootModel[Mapping[str,C]], Serializable, froze
 
         return Constraints(root = root)
     # -------------------------------------------
+    def to_list(self) -> list[Constraint]:
+        '''
+        Returns list of constraints
+        '''
+        return [ cons for cons in self.root.values() ]
+    # -------------------------------------------
     def __str__(self) -> str:
         header_1d = f'{"Parameter":<50}{"Value":<20}{"Error":<20}{"Kind":<20}\n'
         header_1d+= '-' * 110
