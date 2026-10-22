@@ -10,9 +10,14 @@ from matplotlib.axes import Axes
 from functools       import cached_property
 from pydantic        import BaseModel
 from pathlib         import Path
-from rpk_log_store   import log_store as LogStore
+from typing          import Final
+from dmu             import LogStore
 
 log = LogStore.add_logger('rx_stats:sys_plotter')
+
+_MAX_FILLED_STYLE : Final[int] = 4
+'''Make up to this number of histograms with fill style until
+switching to stepfilled. Used for systematics histograms'''
 # ---------------------------------
 class LineCfg(BaseModel):
     style : str
@@ -161,7 +166,7 @@ class SysPlotter:
         for label, sys in self._cfg.systematics.items():
             df[f'sys_{sys}'] = 100 * abs(df[nom] - df[sys]) / df[nom]
 
-            if counter > 4:
+            if counter > _MAX_FILLED_STYLE:
                 htype = 'step'
                 alpha = 1
 
