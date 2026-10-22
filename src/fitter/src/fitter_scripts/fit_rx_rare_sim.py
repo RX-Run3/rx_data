@@ -11,6 +11,8 @@ from dmu.generic      import UnpackerModel, utilities as gut
 from dmu.stats        import ParameterLibrary as PL
 from dmu.stats        import utilities as sut
 from dmu.stats        import ConstraintAdder
+from dmu.stats        import Constraints
+from dmu.stats        import FitResult
 from dmu.workflow     import Cache
 from dmu              import LogStore, LogLevels
 from rx_selection     import selection as sel
@@ -239,18 +241,28 @@ def _get_nll(
 
     return _get_region_nll(brem = brem, cfg = cfg_brem)
 # ----------------------
-def _save_nll(nlls : dict[Region,NLLConf], cfg : Conf) -> None:
+def _save_results(
+    nlls : dict[Region,NLLConf],
+    res  : FitResult,
+    cfg  : Conf) -> None:
     '''
     Parameters
     ----------------
     nlls: Dictionary mapping region with likelihood holder
+    res : Fit result
     cfg : Object holding configuration
     '''
-    _nlls = [ nll_cfg.nll for nll_cfg in nlls.values() ]
-    nll   = gut.add_container(elements = _nlls)
-    path  = cfg.out_dir / f'nll_{cfg.q2bin}_{cfg.syst}.bytes'
+    _nlls = [ nll_cfg.nll    for nll_cfg in nlls.values() ]
+    _cnss = { cns.name : cns for nll_cfg in nlls.values() for cns in nll_cfg.constraints }
 
-    sut.save_nll(loss = nll, path = path)
+    nll   = gut.add_container(elements = _nlls)
+    cns   = Constraints(root = _cnss)
+
+    dir_path = cfg.out_dir / f'{cfg.q2bin}_{cfg.syst}'
+
+    sut.save_nll(loss = nll, path = dir_path / 'nll.bytes')
+    cns.to_json(path = dir_path / 'constraints.json')
+    res.to_json(path = dir_path / 'result.json')
 # ----------------------
 def _fit(cfg : Conf) -> None:
     '''
@@ -260,8 +272,6 @@ def _fit(cfg : Conf) -> None:
     for region, region_cfg in cfg.cfgs.items():
         d_nll[region] = _get_nll(cfg = region_cfg, brem = region.brem)
 
-    _save_nll(nlls = d_nll, cfg = cfg)
-
     if cfg.dry_run:
         log.info('Skipping fit to data, dry run')
         return
@@ -270,7 +280,12 @@ def _fit(cfg : Conf) -> None:
         d_nll = d_nll,
         q2bin = cfg.q2bin,
         d_cfg = cfg.cfgs)
-    ftr.run(skip_fit = False)
+    res = ftr.run(skip_fit = False)
+
+    _save_results(
+        nlls = d_nll,
+        res  = res,
+        cfg  = cfg)
 # ----------------------
 def _get_conf() -> Conf:
     '''
