@@ -258,7 +258,7 @@ def _save_results(
     nll   = gut.add_container(elements = _nlls)
     cns   = Constraints(root = _cnss)
 
-    dir_path = cfg.out_dir / f'{cfg.q2bin}_{cfg.syst}'
+    dir_path = cfg.out_dir / f'{cfg.q2bin}'
 
     sut.save_nll(loss = nll, path = dir_path / 'nll.bytes')
     cns.to_json(path = dir_path / 'constraints.json')
