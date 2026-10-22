@@ -76,7 +76,7 @@ _CONSTRAINTS : Final[list[str]] = [
     'combinatorial',
     'brem_frac']
 # ----------------------
-@pytest.fixture(scope='module', autouse=True)
+@pytest.fixture(autouse=True)
 def initialize():
     '''
     This will run before any test
@@ -96,7 +96,7 @@ class Parameters:
     They are needed in tests
     '''
     # ----------------------
-    def __init__(self, kind : str, obs : zobs) -> None:
+    def __init__(self, comp : Component, obs : zobs) -> None:
         '''
         Parameters
         -------------
@@ -104,7 +104,7 @@ class Parameters:
         obs : Observable
         '''
         self._obs   = obs
-        self._s_par = self._get_pars(kind=kind)
+        self._s_par = self._get_pars(comp = comp)
     # ----------------------
     @property
     def space(self) -> zobs:
@@ -115,7 +115,7 @@ class Parameters:
         '''
         return self._obs
     # ----------------------
-    def _get_pars(self, kind : str) -> set[zpar]:
+    def _get_pars(self, comp : Component) -> set[zpar]:
         '''
         Parameters
         -------------
@@ -125,71 +125,77 @@ class Parameters:
         -------------
         Set of zfit parameters
         '''
-        if   kind == 'dummy':
+        if   comp == 'dummy':
             return set()
         # -----------------------------
-        elif kind == f'reso_misid_rkst_{Brem.zero}':
+        elif comp == f'reso_misid_rkst_{Brem.zero}':
             l_par_name = [ f's_{comp}_{Brem.zero}'  for comp in _RESO_MISID_RKST_MM_COMPONENTS ]
         # -----------------------------
-        elif kind == f'reso_misid_rkst_{Brem.brx12}':
+        elif comp == f'reso_misid_rkst_{Brem.brx12}':
             l_par_name = [ f's_{comp}_{Brem.brx12}' for comp in _RESO_MISID_RKST_EE_COMPONENTS ]
-        elif kind == f'reso_misid_rkst_{Brem.one}':
+        elif comp == f'reso_misid_rkst_{Brem.one}':
             l_par_name = [ f's_{comp}_{Brem.one}'   for comp in _RESO_MISID_RKST_EE_COMPONENTS ]
-        elif kind == f'reso_misid_rkst_{Brem.two}':
+        elif comp == f'reso_misid_rkst_{Brem.two}':
             l_par_name = [ f's_{comp}_{Brem.two}'   for comp in _RESO_MISID_RKST_EE_COMPONENTS ]
         # -----------------------------
-        elif kind == f'reso_misid_rk_{Brem.zero}':
+        elif comp == f'reso_misid_rk_{Brem.zero}':
             l_par_name = [ f's_{comp}_{Brem.zero}'  for comp in _RESO_MISID_RK_MM_COMPONENTS ]
         # -----------------------------
-        elif kind == f'reso_misid_rk_{Brem.brx12}':
+        elif comp == f'reso_misid_rk_{Brem.brx12}':
             l_par_name = [ f's_{comp}_{Brem.brx12}' for comp in _RESO_MISID_RK_EE_COMPONENTS ]
-        elif kind == f'reso_misid_rk_{Brem.one}':
+        elif comp == f'reso_misid_rk_{Brem.one}':
             l_par_name = [ f's_{comp}_{Brem.one}'   for comp in _RESO_MISID_RK_EE_COMPONENTS ]
-        elif kind == f'reso_misid_rk_{Brem.two}':
+        elif comp == f'reso_misid_rk_{Brem.two}':
             l_par_name = [ f's_{comp}_{Brem.two}'   for comp in _RESO_MISID_RK_EE_COMPONENTS ]
         # -----------------------------
-        elif kind == f'rare_prec_rk_{Brem.brx12}':
+        elif comp == f'rare_prec_rk_{Brem.brx12}':
             l_par_name = [ f's_{comp}_{Brem.brx12}' for comp in _PRC_COMPONENTS ]
-        elif kind == f'rare_prec_rk_{Brem.one}':
+        elif comp == f'rare_prec_rk_{Brem.one}':
             l_par_name = [ f's_{comp}_{Brem.one}'   for comp in _PRC_COMPONENTS ]
-        elif kind == f'rare_prec_rk_{Brem.two}':
+        elif comp == f'rare_prec_rk_{Brem.two}':
             l_par_name = [ f's_{comp}_{Brem.two}'   for comp in _PRC_COMPONENTS ]
         # -----------------------------
-        elif kind == 'rare_prec_rkst':
+        elif comp == 'rare_prec_rkst':
             l_par_name = []
-        elif kind == 'rare_misid':
+        elif comp == 'rare_misid':
             l_par_name = [
                 'yld_bpkpipi',
                 'yld_bpkkk']
-        elif kind == 'brem_frac':
+        elif comp == Component.bpkpee:
             l_par_name = [
-                'fr_brem_xx1_b1_reso_flt',
-                'fr_brem_xx1_b2_reso_flt',
-                'fr_brem_xx1_b3_reso_flt',
-                'fr_brem_xx1_b4_reso_flt',
-                'fr_brem_xx1_b5_reso_flt',
-                'fr_brem_xx1_b6_reso_flt',
-                'fr_brem_xx1_b7_reso_flt',
-                'fr_brem_xx1_b8_reso_flt']
-        elif kind == 'sig_par':
+                f'mu_{comp}_brem_xx1_b1_rk_ee_scale_flt',
+                f'sg_{comp}_brem_xx1_b1_rk_ee_reso_flt',
+                f'mu_{comp}_brem_xx2_b1_rk_ee_scale_flt',
+                f'sg_{comp}_brem_xx2_b1_rk_ee_reso_flt',
+                # ------
+                # Brem fraction
+                # ------
+                f'fr_{comp}_brem_brem_xx1_b1_reso_flt',
+                f'fr_{comp}_brem_brem_xx1_b2_reso_flt',
+                f'fr_{comp}_brem_brem_xx1_b3_reso_flt',
+                f'fr_{comp}_brem_brem_xx1_b4_reso_flt',
+                f'fr_{comp}_brem_brem_xx1_b5_reso_flt',
+                f'fr_{comp}_brem_brem_xx1_b6_reso_flt',
+                f'fr_{comp}_brem_brem_xx1_b7_reso_flt',
+                f'fr_{comp}_brem_brem_xx1_b8_reso_flt',
+                # ------
+                # Block fraction
+                # ------
+                f'fr_{comp}_block_brem_x12_b1_flt',
+                f'fr_{comp}_block_brem_x12_b2_flt',
+                f'fr_{comp}_block_brem_x12_b3_flt',
+                f'fr_{comp}_block_brem_x12_b4_flt',
+                f'fr_{comp}_block_brem_x12_b5_flt',
+                f'fr_{comp}_block_brem_x12_b6_flt',
+                f'fr_{comp}_block_brem_x12_b7_flt',
+                f'fr_{comp}_block_brem_x12_b8_flt']
+        elif comp == Component.comb:
             l_par_name = [
-                'mu_bpkpee_brem_xx1_b1_scale_flt',
-                'sg_bpkpee_brem_xx1_b1_reso_flt',
-                'mu_bpkpee_brem_xx2_b1_scale_flt',
-                'sg_bpkpee_brem_xx2_b1_reso_flt',
-                'al_dscb_Signal_xx2_1_reso_flt',
-                'ar_dscb_Signal_xx2_1_reso_flt',
-                'nl_dscb_Signal_xx1_1_reso_flt',
-                'nr_dscb_Signal_xx2_1_reso_flt']
-        elif kind == 'combinatorial':
-            l_par_name = [
-                'mu_hypexp_comb_main_1',
-                'ap_hypexp_comb_main_1',
-                'bt_hypexp_comb_main_1',
-                'ncmb',
-                'nsig']
+                'mu_hypexp_comb_brem_x12_rk_ee_1',
+                'ap_hypexp_comb_brem_x12_rk_ee_1',
+                'bt_hypexp_comb_brem_x12_rk_ee_1']
         else:
-            raise ValueError(f'Invalid kind of parameters: {kind}')
+            raise ValueError(f'Invalid kind of parameters: {comp}')
 
         return { zfit.Parameter(name, 0, 0, 1) for name in l_par_name }
     # ----------------------
@@ -199,7 +205,7 @@ class Parameters:
 
         return f'\n{msg}'
     # ----------------------
-    def get_params(self, floating : bool, is_yield : bool = False) -> set[zpar]:
+    def get_params(self, floating : bool = True, is_yield : bool = False) -> set[zpar]:
         '''
         Parameters
         -------------
@@ -246,6 +252,27 @@ def _get_fit_config(
     )
 
     return cfg.model_copy(update = {'output_directory' : out_dir})
+# --------------------------------------------------------------
+def _get_component_config(
+    comp  : Component,
+    path  : Path, 
+    q2bin : Qsq) -> RXFitConfig:
+    '''
+    Provides fit configuration for fit with specific component
+    parameters constrained
+    '''
+    cfg = _get_fit_config(
+        out_dir = path,
+        project = Project.rk,
+        channel = Channel.ee,
+        q2bin   = q2bin)
+
+    components = cfg.mod_cfg.components[q2bin]
+    dropped    = [ component for component in components if component != comp ]
+    for component in dropped: 
+        del components[component]
+
+    return cfg
 # --------------------------------------------------------------
 @pytest.mark.skip(reason = 'Includes misID, too slow')
 @pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
@@ -533,4 +560,36 @@ def test_save(
     print(constraints)
 
     assert len(constraints.root) > 0
+# --------------------------------------------------------------
+@pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
+@pytest.mark.parametrize('comp' , [Component.bpkpee])
+def test_signal(
+    tmp_path : Path,
+    comp     : Component,
+    q2bin    : Qsq):
+    '''
+    Check signal shape constraints
+    '''
+    brem = Brem.brx12
+
+    obs  = zfit.Space('dummy', limits=(4500, 6000))
+    nll  = Parameters(comp = comp, obs = obs)
+    nll  = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
+    cfg  = _get_component_config(
+        comp = comp,
+        path = tmp_path, 
+        q2bin= q2bin)
+
+    with Cache.cache_root(path = tmp_path):
+        obj        = ConstraintReader(
+            brem   = brem,
+            signal = comp,
+            nll    = nll,
+            cfg    = cfg)
+        constraints= obj.get_constraints()
+
+    print(constraints)
+
+    pars = nll.get_params()
+    assert len(constraints.root) == len(pars) 
 # --------------------------------------------------------------
