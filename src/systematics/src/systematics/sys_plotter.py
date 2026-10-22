@@ -6,6 +6,7 @@ import pandas            as pnd
 import matplotlib.pyplot as plt
 
 from matplotlib.axes import Axes
+from dmu.generic     import Serializable, utilities as gut
 from functools       import cached_property
 from pydantic        import BaseModel
 from pathlib         import Path
@@ -18,7 +19,7 @@ _MAX_FILLED_STYLE : Final[int] = 4
 '''Make up to this number of histograms with fill style until
 switching to stepfilled. Used for systematics histograms'''
 # ---------------------------------
-class LineCfg(BaseModel):
+class LineCfg(BaseModel, frozen = True):
     style : str
     '''Line style'''
     width : float
@@ -28,7 +29,7 @@ class LineCfg(BaseModel):
     skip  : bool = False
     '''If true will skip drawing this line, default False'''
 # ---------------------------------
-class SysAxis(BaseModel):
+class SysAxis(BaseModel, frozen = True):
     '''
     Class meant to represent an axis when plotting systematics for POI
     '''
@@ -36,7 +37,7 @@ class SysAxis(BaseModel):
     limits: tuple[float,float] | None 
     bins  : int 
 # ---------------------------------
-class SysPlotterCfg(BaseModel):
+class SysPlotterCfg(BaseModel, Serializable, frozen = True):
     '''
     Data class meant to hold configurations for plotting of systematics
     '''
@@ -51,7 +52,7 @@ class SysPlotterCfg(BaseModel):
     systematics : dict[str,str]
     '''
     systematics: Dictionary where:
-        - Key: Label used for systematic variation, for plots, usually latex.
+        - Key  : Label used for systematic variation, for plots, usually latex.
         - Value: Column name in dataframe, e.g. alt_sig
     '''
     axes        : dict[str,SysAxis]
@@ -59,6 +60,21 @@ class SysPlotterCfg(BaseModel):
     Object describing, binning, ranges, etc
     '''
     vline       : LineCfg
+    # ---------------------------------
+    @classmethod
+    def from_location(cls, loc : str) -> 'SysPlotterCfg':
+        '''
+        Parameters
+        --------------
+        log: String defining location of config WRT systematics_data
+
+        Returns
+        --------------
+        Config object
+        '''
+        data = gut.load_data(package = 'systematics_data', fpath = loc)
+
+        return cls(**data)
     # ---------------------------------
     @cached_property
     def out_dir(self) -> Path:

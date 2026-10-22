@@ -1,0 +1,19 @@
+name     : test
+nominal  : nominal
+systematics:
+  $R_K^{Nom}$     : a_nom
+  $R_{K^*}^{Nom}$ : a_nom
+axes:
+  x:
+    label : $\Delta R_{K}/R_{K}$[%]
+    limits: [0, 3]
+    bins  : 50
+  y:
+    label : Entries 
+    limits: null 
+    bins  : 0
+vline:
+  style : '-'
+  width : 2
+  color : gray
+  skip  : true
