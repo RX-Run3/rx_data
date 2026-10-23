@@ -121,6 +121,20 @@ def test_combinatorial_sr(
 
     assert isinstance(obj.models, dict)
 # ----------------------
+@pytest.mark.parametrize('analysis', ['rk'  , 'rkst'])
+@pytest.mark.parametrize('name'    , ['comb_ss', 'comb_ss_alt_1'])
+def test_combinatorial_ss(
+    name     : str,
+    analysis : str):
+    '''
+    Test for combinatorial in signal region
+    '''
+    data = gut.load_data(
+        package = 'fitter_data',
+        fpath   = f'rare/{analysis}/ee/{name}.yaml')
+
+    CombinatorialConfUnconstrained(**data)
+# ----------------------
 def test_combinatorial_cr():
     '''
     Test for combinatorial in misid control region
