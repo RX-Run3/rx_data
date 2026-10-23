@@ -1,8 +1,12 @@
-name            : some-name
-alpha           : 0.8
-xlabel          : Parameter fixed 
-ylabel          : Uncertainty
-yrange          : [0, 10]
-title           : Title 
-labels          : {}
+name   : some-name
+alpha  : 0.7
+xlabel : Parameter fixed 
+ylabel : Uncertainty
+yrange : [0, 30]
+title  : Title 
+labels :
+  a : $\alpha$
+  b : $\beta$
+  c : $\gamma$
+  d : $\delta$
 xlabel_rotation : 45
