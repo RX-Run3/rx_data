@@ -7,7 +7,7 @@ import copy
 from functools   import cached_property
 from pydantic    import BaseModel, field_validator, model_validator, RootModel, TypeAdapter
 from pathlib     import Path
-from typing      import TYPE_CHECKING, Any, Callable, Literal, Self, Final
+from typing      import Callable, Literal, Self, Final
 from rx_common   import MVAWp, Brem
 from rx_common   import Channel, Mass, Project, Qsq, MisID, Region
 from rx_common   import Component, Trigger, CCbarComponent, Cuts
@@ -129,10 +129,7 @@ class ConstraintsCfg(UnpackerModel, frozen = True):
     signal_fraction : list[Component]
     combinatorial   : bool
     signal_shape    : bool
-    if TYPE_CHECKING:
-        misid : 'FitModelConf | None' = None
-    else:
-        misid : Any = None
+    misid           : 'FitModelConf | None' = None
     # --------------------------------------
     @field_validator('misid')
     @classmethod
@@ -414,10 +411,7 @@ class CmbConstraintConf(BaseModel, frozen = True):
     parameters: Parameters that will be constrained
     '''
     parameters : dict[Qsq,list[str]]
-    if TYPE_CHECKING:
-        mod_cfg : 'FitModelConf'
-    else:
-        mod_cfg : Any
+    mod_cfg    : 'FitModelConf'
     # --------------------------------------
     @field_validator('mod_cfg')
     @classmethod
