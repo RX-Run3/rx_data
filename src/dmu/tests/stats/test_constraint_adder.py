@@ -11,7 +11,6 @@ from dmu         import LogStore
 from dmu.stats   import zfit
 from dmu.stats   import Constraint1D, ConstraintND, Constraints
 from dmu.stats   import ConstraintAdder
-from dmu.stats   import print_constraints
 from dmu.generic import utilities as gut
 from dmu.generic import rxran
 from dmu.testing import get_nll
@@ -138,7 +137,7 @@ def test_toy(_fix_or_constrain) -> None:
     cons = Constraints[Constraint1D](root = data)
 
     log.info('')
-    print_constraints(cons)
+    print(cons)
 
     mnm = zfit.minimize.Minuit()
     cad = ConstraintAdder(nll=nll, constraints=cons)
