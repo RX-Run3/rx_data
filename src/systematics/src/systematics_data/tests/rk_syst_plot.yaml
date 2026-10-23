@@ -1,5 +1,5 @@
 name     : test
-nominal  : rk_nom 
+nominal  : rk_nom
 systematics:
   $R_K^{s1}$ : rk_s1
   $R_K^{s2}$ : rk_s2
@@ -9,8 +9,8 @@ axes:
     limits: [0, 20]
     bins  : 50
   y:
-    label : Entries 
-    limits: null 
+    label : Entries
+    limits: null
     bins  : 0
 vline:
   style : '-'
