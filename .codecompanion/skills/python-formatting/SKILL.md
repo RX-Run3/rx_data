@@ -96,3 +96,21 @@ Functions should also have docstrings and they should look like:
 
 ```
 
+# Separation between methods, functions, etc
+
+Separate functions and methods with a hash and dashes as in:
+
+```python
+# ----------------------
+@pytest.fixture(scope='session', autouse=True)
+def initialize():
+    '''
+    This will run before any test
+    '''
+    LogStore.set_level('dmu:fsystem:fcopy', 10)
+# ----------------------
+def _make_paths(
+    dir_path  : Path, 
+    make_file : bool,
+```
+
