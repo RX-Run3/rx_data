@@ -29,6 +29,8 @@ class WorkingPoint(RootModel[list[Cut]], frozen = True):
 
 i.e. do not use `ConfigDict`
 
+- Do not add imports that are not needed
+
 ## Workflow
 - Make only the changes requested.
 - Run relevant tests after modifying code.
