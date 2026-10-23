@@ -50,5 +50,13 @@ def test_plotter(monkeypatch, tmp_path : Path):
     ptr = SysPlotter(
         cfg = cfg,
         df  = df)
-    ptr.run()
+    syst = ptr.run()
+
+    s1_exp = 2.978417768181100
+    s2_exp = 9.958889599473252
+
+    assert numpy.isclose(syst['rk_s1'], s1_exp)
+    assert numpy.isclose(syst['rk_s2'], s2_exp)
+
+    print(syst)
 # -------------------------------------
