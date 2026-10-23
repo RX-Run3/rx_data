@@ -9,6 +9,7 @@ from dmu                 import LogStore
 from .pydantic_protocols import NodeProtocol
 from .pydantic_protocols import SerializableProtocol 
 from .regular_graph      import RegularGraphMaker, LinkedNode
+from .utilities          import load_data
 
 log=LogStore.add_logger('dmu::generic::pydantic_mixins')
 TSerializable = TypeVar('TSerializable', bound=SerializableProtocol)
@@ -17,9 +18,25 @@ class Serializable:
     '''
     Implements:
 
-    to_json
-    from_json
+    to_json     : Dump object to JSON
+    from_json   : Load config from path to JSON file
+    from_package: Load a config from data package, not absolute path
     '''
+     # ---------------------------------
+    @classmethod
+    def from_package(cls : type[TSerializable], package : str, loc : str) -> TSerializable:
+        '''
+        Parameters
+        --------------
+        log: String defining location of config WRT systematics_data
+
+        Returns
+        --------------
+        Config object
+        '''
+        data = load_data(package = package, fpath = loc)
+
+        return cls(**data)
     # ---------------------------
     @classmethod
     def from_json(cls : type[TSerializable], path : Path) -> TSerializable:
