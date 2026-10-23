@@ -314,9 +314,11 @@ def main():
 
     ctx_1 = DataPreprocessor.use_database()
     ctx_2 = ConstraintAdder.fixed_parameters(value = False)
+    ctx_3 = sut.root_directory(root_dir=cfg.out_dir / 'failed_nll')
     with ExitStack() as stack:
         stack.enter_context(ctx_1)
         stack.enter_context(ctx_2)
+        stack.enter_context(ctx_3)
 
         _fit(cfg=cfg)
 # ----------------------
