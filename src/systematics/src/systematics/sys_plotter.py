@@ -59,7 +59,8 @@ class SysPlotterCfg(BaseModel, Serializable, frozen = True):
     '''
     Object describing, binning, ranges, etc
     '''
-    vline       : LineCfg
+    median_line : LineCfg
+    '''Configuration for line representing the median of a systematic across toys'''
     # ---------------------------------
     @classmethod
     def from_location(cls, loc : str) -> 'SysPlotterCfg':
@@ -155,7 +156,7 @@ class SysPlotter:
         val: Value of x axis coordinate where to put the line
         ax : Axis where line has to be added
         '''
-        cfg = self._cfg.vline
+        cfg = self._cfg.median_line
         if cfg.skip:
             return
 
@@ -206,7 +207,7 @@ class SysPlotter:
             med= df[f'sys_{sys}'].median()
             self._add_vline(val = med, ax = ax)
 
-            syst[sys         ]= med
+            syst[sys         ]= float(med)
             data['Value'     ].append(float(med))
             data['Systematic'].append(label)
 

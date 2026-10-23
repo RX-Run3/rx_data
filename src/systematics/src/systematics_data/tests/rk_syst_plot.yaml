@@ -12,7 +12,7 @@ axes:
     label : Entries
     limits: null
     bins  : 0
-vline:
+median_line:
   style : '-'
   width : 2
   color : gray
