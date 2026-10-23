@@ -5,6 +5,7 @@ from contextlib    import contextmanager
 from typing        import Final
 from rx_common     import Trigger, Qsq, Project, Mass, Component
 from dmu           import LogStore
+from dmu.stats     import Constraint1D, Constraints
 from dmu.stats     import zfit, ModelFactory, Model
 from dmu.stats     import ConstraintType
 from dmu.stats     import ConstraintND
@@ -42,6 +43,25 @@ def _get_model(trigger : Trigger) -> zsum:
         name = f"{trigger}_sum")
 
     return total_pdf
+# ----------------------
+def get_test_prec_constraints(
+        brem  : Any,
+        pars  : list[str],
+        signal: Any,
+        cfg   : Any) -> list[Constraint1D]:
+
+    _ = brem
+    _ = signal
+    _ = cfg
+
+    def _get_cons(par: str):
+        return Constraint1D(
+            name = par,
+            kind = ConstraintType.gauss,
+            mu   = 0,
+            sg   = 1)
+
+    return [ _get_cons(par) for par in pars ]
 # ----------------------
 class TestCCbarConfTF(BaseModel, frozen = True):
     from_sim_fit : int = False
@@ -318,4 +338,30 @@ class TestCmbConstraints:
             parameters = ['a', 'b'],
             values     = [1, 2],
             cov        = [[1,0], [0,1]])
+# ---------------------------------------------------
+class TestMisIDConstraints:
+    '''
+    Test used to monkeypatch MisIDConstraints
+    '''
+    # ------------------------
+    def __init__(cfg : Any, q2bin : Any):
+        _ = cfg
+        _ = q2bin
+    # ------------------------
+    def get_constraints(self) -> Constraints[Constraint1D]:
+        ca = Constraint1D(
+            name = 'ca',
+            kind = ConstraintType.gauss,
+            mu   = 100,
+            sg   = 10)
+
+        cb = Constraint1D(
+            name = 'cb',
+            kind = ConstraintType.gauss,
+            mu   = 100,
+            sg   = 10)
+
+        data = {'ca' : ca, 'cb' : cb}
+
+        return Constraints[Constraint1D](root = data)
 # ---------------------------------------------------
