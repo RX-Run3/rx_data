@@ -2,7 +2,6 @@
 Module holding UncertaintyChecker class
 '''
 import os
-import numpy
 import pandas            as pnd
 import matplotlib.pyplot as plt
 
