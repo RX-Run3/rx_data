@@ -1,3 +1,8 @@
+---
+name       : python-formatting
+description: Python formatting and coding conventions for this project.
+---
+
 # Spaces and alignment
 
 The following instructions are meant to improve readability of generated code.
