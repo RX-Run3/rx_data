@@ -11,7 +11,7 @@ from dmu.stats    import ConstraintND
 from rx_common    import Brem, Trigger, Component, Region
 from rx_selection import selection           as sel
 
-from .configs            import CombinatorialConf, RXFitConfig 
+from .configs            import CombinatorialConf, RXFitConfig
 from .base_fitter        import BaseFitter
 from .likelihood_factory import LikelihoodFactory
 
@@ -28,14 +28,14 @@ class CmbConstraints(BaseFitter, Cache):
     '''
     # ----------------------
     def __init__(
-        self, 
+        self,
         brem    : Brem,
         signal  : Component,
         cfg_fit : RXFitConfig) -> None:
         '''
         Parameters
         -------------
-        brem    : Brem category to fit 
+        brem    : Brem category to fit
         signal  : Signal component, needed to get constraints for CR fit
         cfg_fit : Full fit configuration
         '''
@@ -50,9 +50,9 @@ class CmbConstraints(BaseFitter, Cache):
             raise ValueError(f'Config for {_COMPONENT} is of type {ctype}')
 
         self._cfg_cmb   = cfg_cmb
-        self._signal    = signal 
+        self._signal    = signal
         self._mod_cfg   = self._cfg_cmb.constraints.mod_cfg.cfg_clone(
-            prefix  = _SIG_PREFIX, 
+            prefix  = _SIG_PREFIX,
             q2bin   = self._q2bin,
             brems   = [brem])
 
@@ -108,7 +108,7 @@ class CmbConstraints(BaseFitter, Cache):
             data    = cfg_nll.nll.data[0],   # Likelihood factory makes NLL for one single region
             model   = cfg_nll.nll.model[0],  # Pick the data and model for that region
             cut_cfg = cfg_nll.selection,
-            res     = res, 
+            res     = res,
             out_path= self._out_path,
             plt_cfg = self._mod_cfg.plots[self._q2bin].regions[region],
         )
@@ -141,8 +141,8 @@ class CmbConstraints(BaseFitter, Cache):
         cns = ConstraintND(
             name       = str(self._brem),
             kind       = _CONST_TYPE,
-            parameters = names, 
-            values     = values, 
+            parameters = names,
+            values     = values,
             cov        = cov,
         )
 
