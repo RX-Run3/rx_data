@@ -34,8 +34,8 @@ class SysAxis(BaseModel, frozen = True):
     Class meant to represent an axis when plotting systematics for POI
     '''
     label : str
-    limits: tuple[float,float] | None 
-    bins  : int 
+    limits: tuple[float,float] | None
+    bins  : int
 # ---------------------------------
 class SysPlotterCfg(BaseModel, Serializable, frozen = True):
     '''
@@ -97,18 +97,18 @@ class SysPlotter:
     Class in charge of plotting for each systematic:
 
     - Distributions of Delta POI in percent and the median across toys
-    - Evolution of the median uncertainty in POI (error divided by value) 
-      as the nuisance parameters are fixed 
+    - Evolution of the median uncertainty in POI (error divided by value)
+      as the nuisance parameters are fixed
     '''
     # ----------------------
     def __init__(
-        self, 
-        df : pnd.DataFrame, 
+        self,
+        df : pnd.DataFrame,
         cfg: SysPlotterCfg):
         '''
         Parameters
         -------------
-        df : DataFrame with POI for each systematic and nominal 
+        df : DataFrame with POI for each systematic and nominal
         cfg: Configuration needed for plotting
         '''
         self._df = df
@@ -131,7 +131,7 @@ class SysPlotter:
 
         formatters = {
             'Value' : perc_func,
-        } 
+        }
 
         # TODO: Remove ignore when:
         # https://github.com/pandas-dev/pandas-stubs/issues/1647
@@ -141,12 +141,12 @@ class SysPlotter:
         log.info(f'Saving to: {tex_path}')
         with open(tex_path, 'w') as ofile:
             df.to_latex(                # type: ignore
-                buf        = ofile, 
-                index      = False, 
+                buf        = ofile,
+                index      = False,
                 formatters = formatters) # type: ignore
     # ----------------------
     def _add_vline(
-        self, 
+        self,
         ax  : Axes,
         val : float) -> None:
         '''
@@ -160,9 +160,9 @@ class SysPlotter:
             return
 
         ax.axvline(
-            x         = val, 
+            x         = val,
             color     = cfg.color,
-            linestyle = cfg.style, 
+            linestyle = cfg.style,
             linewidth = cfg.width)
     # ----------------------
     def run(self) -> dict[str,float]:
@@ -185,7 +185,7 @@ class SysPlotter:
         data : dict[str,list[float|str]] = {'Systematic' : [], 'Value' : []}
         ax   = None
         counter = 1
-        htype   = 'stepfilled' 
+        htype   = 'stepfilled'
         alpha   = 0.7
         for label, sys in self._cfg.systematics.items():
             df[f'sys_{sys}'] = 100 * abs(df[nom] - df[sys]) / df[nom]
@@ -195,11 +195,11 @@ class SysPlotter:
                 alpha = 1
 
             ax = df[f'sys_{sys}'].plot.hist(
-                x     = f'sys_{sys}', 
-                range = xaxis.limits, 
-                bins  = xaxis.bins, 
-                alpha = alpha, 
-                label = label, 
+                x     = f'sys_{sys}',
+                range = xaxis.limits,
+                bins  = xaxis.bins,
+                alpha = alpha,
+                label = label,
                 histtype = htype,
                 ax    = ax)
 
