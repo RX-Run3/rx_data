@@ -1,19 +1,17 @@
 '''
 Module with functions needed to test ConstraintReader class
 '''
+import tempfile
 import pytest
 
 from pytest         import MonkeyPatch
-from contextlib     import ExitStack
 from typing         import Final, cast
 from pathlib        import Path
 from dmu.workflow   import Cache
 from dmu            import LogStore
 from dmu.stats      import zfit
-from dmu.stats      import ParameterLibrary as PL
 from dmu.generic    import UnpackerModel, utilities           as gut
 from rx_common      import Brem, Channel, Project, Qsq, Component
-from rx_selection   import selection           as sel
 from fitter         import RXFitConfig
 from zfit.loss      import ExtendedUnbinnedNLL
 from zfit.param     import Parameter           as zpar
@@ -21,7 +19,8 @@ from zfit           import Space               as zobs
 from fitter         import ConstraintReader
 from fitter         import FitModelConf
 from rx_common      import MVAWp
-from patch_classes  import TestCmbConstraints
+from patch_classes  import TestCmbConstraints, get_test_prec_constraints
+from patch_classes  import TestMisIDConstraints
 
 log=LogStore.add_logger('fitter:test_constraint_reader')
 
@@ -79,10 +78,13 @@ _CONSTRAINTS : Final[list[str]] = [
     'brem_frac']
 # ----------------------
 @pytest.fixture(autouse=True)
-def initialize():
+def initialize(monkeypatch : MonkeyPatch):
     '''
     This will run before any test
     '''
+    with tempfile.TemporaryDirectory(delete = False) as tmp_dir:
+        monkeypatch.setenv('ANADIR', tmp_dir)
+
     LogStore.set_level('fitter:prec_scales'       , 10)
     LogStore.set_level('fitter:constraint_reader' , 10)
     LogStore.set_level('fitter:signal_constraints', 10)
@@ -127,42 +129,14 @@ class Parameters:
         -------------
         Set of zfit parameters
         '''
-        if   comp == 'dummy':
-            return set()
-        # -----------------------------
-        elif comp == f'reso_misid_rkst_{Brem.zero}':
-            l_par_name = [ f's_{comp}_{Brem.zero}'  for comp in _RESO_MISID_RKST_MM_COMPONENTS ]
-        # -----------------------------
-        elif comp == f'reso_misid_rkst_{Brem.brx12}':
-            l_par_name = [ f's_{comp}_{Brem.brx12}' for comp in _RESO_MISID_RKST_EE_COMPONENTS ]
-        elif comp == f'reso_misid_rkst_{Brem.one}':
-            l_par_name = [ f's_{comp}_{Brem.one}'   for comp in _RESO_MISID_RKST_EE_COMPONENTS ]
-        elif comp == f'reso_misid_rkst_{Brem.two}':
-            l_par_name = [ f's_{comp}_{Brem.two}'   for comp in _RESO_MISID_RKST_EE_COMPONENTS ]
-        # -----------------------------
-        elif comp == f'reso_misid_rk_{Brem.zero}':
-            l_par_name = [ f's_{comp}_{Brem.zero}'  for comp in _RESO_MISID_RK_MM_COMPONENTS ]
-        # -----------------------------
-        elif comp == f'reso_misid_rk_{Brem.brx12}':
-            l_par_name = [ f's_{comp}_{Brem.brx12}' for comp in _RESO_MISID_RK_EE_COMPONENTS ]
-        elif comp == f'reso_misid_rk_{Brem.one}':
-            l_par_name = [ f's_{comp}_{Brem.one}'   for comp in _RESO_MISID_RK_EE_COMPONENTS ]
-        elif comp == f'reso_misid_rk_{Brem.two}':
-            l_par_name = [ f's_{comp}_{Brem.two}'   for comp in _RESO_MISID_RK_EE_COMPONENTS ]
-        # -----------------------------
-        elif comp == f'rare_prec_rk_{Brem.brx12}':
-            l_par_name = [ f's_{comp}_{Brem.brx12}' for comp in _PRC_COMPONENTS ]
-        elif comp == f'rare_prec_rk_{Brem.one}':
-            l_par_name = [ f's_{comp}_{Brem.one}'   for comp in _PRC_COMPONENTS ]
-        elif comp == f'rare_prec_rk_{Brem.two}':
-            l_par_name = [ f's_{comp}_{Brem.two}'   for comp in _PRC_COMPONENTS ]
-        # -----------------------------
-        elif comp == 'rare_prec_rkst':
-            l_par_name = []
-        elif comp == 'rare_misid':
-            l_par_name = [
-                'yld_bpkpipi',
-                'yld_bpkkk']
+        if   comp in {Component.bppijpsiee, Component.bppijpsimm}:
+            l_par_name = f's_{comp}_{Brem.two}'
+        elif comp in {Component.bdkstkpiee}:
+            l_par_name = [ f's_{comp}_{Brem.two}' for comp in _PRC_COMPONENTS ]
+        elif comp == Component.bpkpipi:
+            l_par_name = ['yld_bpkpipi']
+        elif comp == Component.bpkkk:
+            l_par_name = ['yld_bpkkk']
         elif comp == Component.bpkpee:
             l_par_name = [
                 f'mu_{comp}_brem_xx1_b1_rk_ee_scale_flt',
@@ -276,11 +250,11 @@ def _get_component_config(
 
     return cfg
 # --------------------------------------------------------------
-@pytest.mark.skip(reason = 'Includes misID, too slow')
 @pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
 def test_rare_hadronic_misid(
-    tmp_path : Path,
-    q2bin    : Qsq):
+    monkeypatch : MonkeyPatch,
+    tmp_path    : Path,
+    q2bin       : Qsq):
     '''
     Test constraints for rare hadronic misID
 
@@ -288,9 +262,13 @@ def test_rare_hadronic_misid(
     -------------
     q2bin: q2 bin
     '''
+    monkeypatch.setattr(
+        'fitter.constraint_reader.MisIDConstraints',
+        TestMisIDConstraints)
+
     brem = Brem.brx12
     obs  = zfit.Space('dummy', limits=(4500, 6000))
-    nll  = Parameters(kind = 'rare_misid', obs = obs)
+    nll  = Parameters(comp = Component.bpkpipi, obs = obs)
     nll  = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
 
     cfg = _get_fit_config(
@@ -299,100 +277,24 @@ def test_rare_hadronic_misid(
         project = Project.rk,
         channel = Channel.ee)
 
-    del cfg.mod_cfg.components[q2bin][Component.comb]
-
-    with Cache.cache_root(path = tmp_path):
-        obj         = ConstraintReader(
-            brem    = brem,
-            signal  = Component.bpkpee,
-            nll     = nll, cfg=cfg)
-        constraints = obj.get_constraints(
-            skip_comb   = True,
-            skip_signal = True,
-            skip_prec   = True,
-    )
+    obj         = ConstraintReader(
+        brem    = brem,
+        signal  = Component.bpkpee,
+        nll     = nll, cfg=cfg)
+    constraints = obj.get_constraints(
+        skip_comb   = True,
+        skip_signal = True,
+        skip_prec   = True)
 
     print(constraints)
-# --------------------------------------------------------------
-@pytest.mark.parametrize('kind', _RESO_MISID_CONSTRAINTS)
-def test_reso_misid(
-    tmp_path : Path,
-    kind     : str):
-    '''
-    Tests resonant misID constraints
-
-    Parameters
-    -------------
-    kind : Type of parameters
-    '''
-    q2bin= Qsq.jpsi
-
-    if   kind.endswith(str(Brem.zero)):
-        channel = Channel.mm
-        brem    = Brem.zero
-    elif kind.endswith(str(Brem.one)):
-        channel = Channel.ee
-        brem    = Brem.one
-    elif kind.endswith(str(Brem.two)):
-        channel = Channel.ee
-        brem    = Brem.two
-    elif kind.endswith(str(Brem.brx12)):
-        channel = Channel.ee
-        brem    = Brem.brx12
-    else:
-        raise ValueError(f'Invalid kind: {kind}')
-
-    if '_rkst_' in kind:
-        project = Project.rkst
-        is_rkst = True
-    elif '_rk_' in kind:
-        project = Project.rk
-        is_rkst = False
-    else:
-        raise ValueError(f'Cannot determine project for: {kind}')
-
-    obs = zfit.Space('dummy', limits=(4500, 6000))
-    nll = Parameters(kind = kind, obs = obs)
-    nll = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
-
-    cfg = _get_fit_config(
-        out_dir = tmp_path,
-        q2bin   = q2bin,
-        project = project,
-        channel = channel)
-
-    del cfg.mod_cfg.components[q2bin][Component.comb]
-
-    if   is_rkst     and channel == Channel.ee:
-        signal = Component.bdkstkpijpsiee
-    elif is_rkst     and channel == Channel.mm:
-        signal = Component.bdkstkpijpsimm
-    elif not is_rkst and channel == Channel.ee:
-        signal = Component.bpkpjpsiee
-    elif not is_rkst and channel == Channel.mm:
-        signal = Component.bpkpjpsimm
-    else:
-        raise ValueError(f'Invalid kind: {kind}')
-
-    with Cache.cache_root(path = tmp_path):
-        obj        = ConstraintReader(
-            brem   = brem,
-            signal = signal,
-            nll    = nll,
-            cfg    = cfg)
-        constraints= obj.get_constraints()
-
-    print(constraints)
-    log.info(nll)
-
-    assert len(constraints.root) > 0
 # --------------------------------------------------------------
 @pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
 @pytest.mark.parametrize('brem' , [Brem.one, Brem.two, Brem.brx12])
-def test_rare_background_fraction(
-    brem     : Brem,
-    tmp_path : Path,
-    q2bin    : Qsq):
+def test_background_fraction(
+    monkeypatch: MonkeyPatch,
+    brem       : Brem,
+    tmp_path   : Path,
+    q2bin      : Qsq):
     '''
     Tests scales for background fraction in rare mode
 
@@ -400,8 +302,12 @@ def test_rare_background_fraction(
     -------------
     q2bin: q2 bin
     '''
+    monkeypatch.setattr(
+        'fitter.constraint_reader.get_prec_constraints', 
+        get_test_prec_constraints)
+
     obs  = zfit.Space('dummy', limits=(4500, 6000))
-    nll  = Parameters(kind = f'rare_prec_rk_{brem}', obs = obs)
+    nll  = Parameters(comp = Component.bdkstkpiee, obs = obs)
     nll  = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
     cfg  = _get_fit_config(
         out_dir = tmp_path,
@@ -409,22 +315,20 @@ def test_rare_background_fraction(
         channel = Channel.ee,
         q2bin   = q2bin)
 
-    with Cache.cache_root(path = tmp_path):
-        obj         = ConstraintReader(
-            brem    = brem,
-            signal  = Component.bpkpee,
-            nll     = nll,
-            cfg     = cfg)
+    obj         = ConstraintReader(
+        brem    = brem,
+        signal  = Component.bpkpee,
+        nll     = nll,
+        cfg     = cfg)
 
-        constraints = obj.get_constraints(
-            skip_comb   = True,
-            skip_signal = True,
-            skip_misid  = True,
-    )
+    constraints = obj.get_constraints(
+        skip_comb   = True,
+        skip_signal = True,
+        skip_misid  = True)
 
-    log.error('-------------------------------')
+    log.info('-------------------------------')
     print(constraints)
-    log.error('-------------------------------')
+    log.info('-------------------------------')
 
     assert len(constraints.root) == len(_PRC_COMPONENTS)
 # --------------------------------------------------------------
