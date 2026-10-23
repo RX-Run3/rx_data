@@ -9,7 +9,7 @@ from dmu.stats    import ConstraintType, FitParameter, FitResult, zfit
 from dmu.workflow import Cache
 from dmu.stats    import ConstraintND
 from rx_common    import Brem, Trigger, Component, Region
-from rx_selection import selection           as sel
+from rx_selection import selection as sel
 
 from .configs            import CombinatorialConf, RXFitConfig
 from .base_fitter        import BaseFitter
