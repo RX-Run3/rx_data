@@ -47,9 +47,14 @@ class UncertaintyCheckerCfg(BaseModel, Serializable, frozen = True):
 # -----------------------------
 class UncertaintyChecker:
     '''
-    Class meant to use toys made by SystematicsCalculator to:
+    Class meant to use toys made by SystematicsCalculator to
+    check how uncertainty evolves as parameters are fixed.
+    The following are the relevant columns in the dataframe:
 
-    - Assess source of uncertainties in nominal model
+    Error : Error in POI value for given toy
+    Gen   : Value used to generate toy
+    Fixed : Name of parameter fixed. Parameters are fixed cumulatively
+    nFixed: Number of fixed parameters used for toy fit
     '''
     # ----------------------
     def __init__(
@@ -132,13 +137,14 @@ class UncertaintyChecker:
 
         _, ax = plt.subplots()
 
-        plt.plot(par_fixed, med_unc)
         ax.fill_between(
             x    = par_fixed,
             y1   = low_unc,
             y2   = upper_unc,
             alpha= self._cfg.alpha,
             label= None)
+
+        plt.plot(par_fixed, med_unc, color = 'red')
 
         ax.set_title(self._cfg.title)
         ax.set_xlabel(self._cfg.xlabel)
