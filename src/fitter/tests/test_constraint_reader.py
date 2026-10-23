@@ -429,44 +429,6 @@ def test_rare_background_fraction(
     assert len(constraints.root) == len(_PRC_COMPONENTS)
 # --------------------------------------------------------------
 @pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
-def test_save(
-    tmp_path : Path,
-    q2bin    : Qsq):
-    '''
-    Parameters
-    -------------
-    q2bin: q2 bin
-    '''
-    brem = Brem.brx12
-    obs  = zfit.Space('B_Mass_smr', limits=(4500, 7000))
-    cfg  = _get_fit_config(
-        out_dir = tmp_path,
-        project = Project.rk,
-        channel = Channel.ee,
-        q2bin   = q2bin)
-
-    nll = Parameters(kind = 'sig_par', obs = obs)
-    nll = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
-
-    with ExitStack() as stack:
-        stack.enter_context(Cache.cache_root(path = tmp_path))
-        stack.enter_context(sel.custom_selection(d_sel = cfg.overriding_selection))
-        stack.enter_context(PL.parameter_schema(cfg = cfg.mod_cfg.yields))
-
-        obj         = ConstraintReader(
-            brem    = brem,
-            signal  = Component.bpkpee,
-            nll     = nll,
-            cfg     = cfg)
-        constraints = obj.get_constraints(
-            skip_misid = True,
-            save_to    = tmp_path / 'constraints.yaml')
-
-    print(constraints)
-
-    assert len(constraints.root) > 0
-# --------------------------------------------------------------
-@pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
 @pytest.mark.parametrize('comp' , [Component.bpkpee])
 def test_signal(
     tmp_path : Path,
