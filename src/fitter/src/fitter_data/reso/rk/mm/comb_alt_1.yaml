@@ -1,0 +1,21 @@
+# -----------------
+constraints: null
+# -----------------
+models:
+  jpsi:
+    pdfs          : [exp]
+    shared        : []
+    floating      : []
+    reparametrize : {}
+    fix           : {}
+    values        :
+      c : [-0.0001, -0.08, 0.0]
+  psi2:
+    pdfs          : [exp]
+    shared        : []
+    floating      : []
+    reparametrize : {}
+    fix           : {}
+    values        :
+      c : [0.0, -0.08, 0.001]
+# -----------------
