@@ -26,7 +26,9 @@ def test_load_config(project : Project):
     '''
     Test loading configuration
     '''
-    SysPlotterCfg.from_location(loc = f'tests/{project}_syst_plot.yaml')
+    SysPlotterCfg.from_package(
+        package = 'systematics_data',
+        loc     = f'tests/{project}_syst_plot.yaml')
 # -------------------------------------
 def _get_df() -> pnd.DataFrame:
     '''
@@ -46,7 +48,10 @@ def test_plotter(monkeypatch, tmp_path : Path):
     monkeypatch.setenv('ANADIR', tmp_path)
 
     df  = _get_df()
-    cfg = SysPlotterCfg.from_location(loc = 'tests/rk_syst_plot.yaml')
+    cfg = SysPlotterCfg.from_package(
+        package = 'systematics_data',
+        loc     = 'tests/rk_syst_plot.yaml')
+
     ptr = SysPlotter(
         cfg = cfg,
         df  = df)

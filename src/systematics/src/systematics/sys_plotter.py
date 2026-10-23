@@ -62,21 +62,6 @@ class SysPlotterCfg(BaseModel, Serializable, frozen = True):
     median_line : LineCfg
     '''Configuration for line representing the median of a systematic across toys'''
     # ---------------------------------
-    @classmethod
-    def from_package(cls, loc : str) -> 'SysPlotterCfg':
-        '''
-        Parameters
-        --------------
-        log: String defining location of config WRT systematics_data
-
-        Returns
-        --------------
-        Config object
-        '''
-        data = gut.load_data(package = 'systematics_data', fpath = loc)
-
-        return cls(**data)
-    # ---------------------------------
     @cached_property
     def out_dir(self) -> Path:
         '''
