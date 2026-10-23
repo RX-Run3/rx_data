@@ -4,8 +4,10 @@ from typing        import Any
 from contextlib    import contextmanager
 from typing        import Final
 from rx_common     import Trigger, Qsq, Project, Mass, Component
-from dmu.stats     import zfit, ModelFactory, Model
 from dmu           import LogStore
+from dmu.stats     import zfit, ModelFactory, Model
+from dmu.stats     import ConstraintType
+from dmu.stats     import ConstraintND
 from pydantic      import BaseModel
 
 type zdat = zfit.data.Data
@@ -294,4 +296,26 @@ class TestEfficiencyCalculator:
             return 0.8, 0.1
 
         return 0.1, 0.01
+# ---------------------------------------------------
+class TestCmbConstraints:
+    '''
+    Class meant to monkey patch CmbConstraints
+    '''
+    def __init__(
+        self,
+        brem    : Any,
+        signal  : Any,
+        cfg_fit : Any) -> None:
+        _ = brem
+        _ = signal 
+        _ = cfg_fit 
+        log.warning('Using patch version of CmbConstraints')
+    # ---------------------
+    def get_constraint(self) -> ConstraintND:
+        return ConstraintND(
+            name       = 'test',
+            kind       = ConstraintType.gauss,
+            parameters = ['a', 'b'],
+            values     = [1, 2],
+            cov        = [[1,0], [0,1]])
 # ---------------------------------------------------
