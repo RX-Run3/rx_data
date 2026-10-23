@@ -3,6 +3,7 @@ Module with functions needed to test ConstraintReader class
 '''
 import pytest
 
+from pytest         import MonkeyPatch
 from contextlib     import ExitStack
 from typing         import Final, cast
 from pathlib        import Path
@@ -20,6 +21,7 @@ from zfit           import Space               as zobs
 from fitter         import ConstraintReader
 from fitter         import FitModelConf
 from rx_common      import MVAWp
+from patch_classes  import TestCmbConstraints
 
 log=LogStore.add_logger('fitter:test_constraint_reader')
 
@@ -276,103 +278,6 @@ def _get_component_config(
 # --------------------------------------------------------------
 @pytest.mark.skip(reason = 'Includes misID, too slow')
 @pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
-@pytest.mark.parametrize('kind' , _CONSTRAINTS)
-def test_all_but_cmb(
-    tmp_path : Path,
-    kind     : str,
-    q2bin    : Qsq,
-    slow_mode: bool):
-    '''
-    Tests all the constraints but the combinatorial shape
-
-    Parameters
-    -------------
-    kind : Type of parameters
-    q2bin: q2 bin
-    '''
-    brem = Brem.brx12
-
-    obs = zfit.Space('dummy', limits=(4500, 6000))
-    nll = Parameters(kind = kind, obs = obs)
-    nll = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
-
-    cfg = _get_fit_config(
-        out_dir = tmp_path,
-        project = Project.rk,
-        channel = Channel.ee,
-        q2bin   = q2bin)
-
-    del cfg.mod_cfg.components[q2bin][Component.comb]
-
-    if not slow_mode:
-        log.info('Skipping misid constraints')
-        del cfg.mod_cfg.components[q2bin][Component.bpkkk  ]
-        del cfg.mod_cfg.components[q2bin][Component.bpkpipi]
-    else:
-        log.info('Running full test')
-
-    with Cache.cache_root(path = tmp_path):
-        obj        = ConstraintReader(
-            brem   = brem,
-            signal = Component.bpkpee,
-            nll    = nll,
-            cfg    = cfg)
-        constraints= obj.get_constraints()
-
-    print(constraints)
-
-    # TODO: Needs to be updated when other parameter constraints be implemented
-    if kind != 'rare_prec_rk':
-        return
-
-    assert len(constraints.root) > 0
-# --------------------------------------------------------------
-@pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
-def test_only_cmb(
-    tmp_path : Path,
-    q2bin    : Qsq):
-    '''
-    Tests all the constraints but the combinatorial shape
-
-    Parameters
-    -------------
-    q2bin: q2 bin
-    '''
-    brem   = Brem.brx12
-    signal = Component.bpkpee
-    obs = zfit.Space('B_Mass_smr', limits=(4500, 7000))
-    cfg = _get_fit_config(
-        out_dir = tmp_path,
-        q2bin   = q2bin,
-        project = Project.rk,
-        channel = Channel.ee)
-
-    nll = Parameters(kind = 'combinatorial', obs = obs)
-    nll = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
-
-    with ExitStack() as stack:
-        stack.enter_context(Cache.cache_root(path = tmp_path))
-        stack.enter_context(sel.custom_selection(d_sel = cfg.overriding_selection))
-        stack.enter_context(PL.parameter_schema(cfg = cfg.mod_cfg.yields))
-
-        obj         = ConstraintReader(
-            brem    = brem,
-            signal  = signal,
-            nll     = nll,
-            cfg     = cfg)
-
-        constraints = obj.get_constraints(
-            skip_misid  = True,
-            skip_signal = True,
-            skip_prec   = True,
-        )
-
-    print(constraints)
-
-    assert len(constraints.root) > 0
-# --------------------------------------------------------------
-@pytest.mark.skip(reason = 'Includes misID, too slow')
-@pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
 def test_rare_hadronic_misid(
     tmp_path : Path,
     q2bin    : Qsq):
@@ -592,4 +497,47 @@ def test_signal(
 
     pars = nll.get_params()
     assert len(constraints.root) == len(pars) 
+# --------------------------------------------------------------
+@pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
+def test_combinatorial(
+    monkeypatch : MonkeyPatch,
+    tmp_path    : Path,
+    q2bin       : Qsq):
+    '''
+    Tests all the constraints but the combinatorial shape
+
+    Parameters
+    -------------
+    q2bin: q2 bin
+    '''
+    monkeypatch.setattr('fitter.constraint_reader.CmbConstraints', TestCmbConstraints)
+
+    brem   = Brem.brx12
+    signal = Component.bpkpee
+
+    obs = zfit.Space('B_Mass_smr', limits=(4500, 7000))
+    cfg = _get_fit_config(
+        out_dir = tmp_path,
+        q2bin   = q2bin,
+        project = Project.rk,
+        channel = Channel.ee)
+
+    nll = Parameters(comp = Component.comb, obs = obs)
+    nll = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
+
+    obj         = ConstraintReader(
+        brem    = brem,
+        signal  = signal,
+        nll     = nll,
+        cfg     = cfg)
+
+    constraints = obj.get_constraints(
+        skip_misid  = True,
+        skip_signal = True,
+        skip_prec   = True,
+    )
+
+    print(constraints)
+
+    assert len(constraints.root) > 0
 # --------------------------------------------------------------
