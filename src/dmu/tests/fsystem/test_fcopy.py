@@ -19,7 +19,7 @@ def initialize():
     LogStore.set_level('dmu:fsystem:fcopy', 10)
 # ----------------------
 def _make_paths(
-    dir       : Path, 
+    dir_path  : Path, 
     make_file : bool,
     number    : int,
     size      : int = 1) -> list[Path]:
@@ -35,11 +35,11 @@ def _make_paths(
     -------------
     List of paths
     '''
-    dir.mkdir(parents=True, exist_ok=True)
+    dir_path.mkdir(parents=True, exist_ok=True)
 
     l_path = []
     for index in range(number):
-        path = dir / f'{index:03}'
+        path = dir_path / f'{index:03}'
 
         if make_file:
             with open(path, 'wb') as f:
@@ -54,8 +54,8 @@ def test_local(tmp_path : Path) -> None:
     '''
     Simplest test
     '''
-    l_source = _make_paths(dir=tmp_path / 'source', make_file= True, number=10)
-    l_target = _make_paths(dir=tmp_path / 'target', make_file=False, number=10)
+    l_source = _make_paths(dir_path=tmp_path / 'source', make_file= True, number=10)
+    l_target = _make_paths(dir_path=tmp_path / 'target', make_file=False, number=10)
 
     fcp = FCopy(server=Server.local.host)
     for source, target in zip(l_source, l_target, strict = True):
