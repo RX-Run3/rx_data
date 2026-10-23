@@ -9,6 +9,25 @@
 - Follow existing project conventions.
 - Avoid unnecessary abstractions.
 - Write tests for new functionality.
+- Do not use magic numbers or magic strings, whenever a
+non-trivial value (non-zero, not one, etc) is neede
+make it a module constant and document it as in:
+
+```python
+_RGXPR : Final[str] = r'brem_(xx\d)_b(\d)_(?:rk|rkst)_(?:ee|mm)_(scale|reso)_flt'
+'''Regex for non-fractions'''
+_RGXFR : Final[str] = r'(brem|block)_brem_([x012]{3})_b(\d)(_reso)?_flt'
+'''Regex for fractions'''
+```
+- When creating pydantic data models or dataclasses always
+freeze them, unless they have to be mutable. Use the following
+format:
+
+```python
+class WorkingPoint(RootModel[list[Cut]], frozen = True):
+```
+
+i.e. do not use `ConfigDict`
 
 ## Workflow
 - Make only the changes requested.
