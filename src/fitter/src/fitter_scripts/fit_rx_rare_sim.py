@@ -8,6 +8,7 @@ from pydantic         import BaseModel
 from pathlib          import Path
 from contextlib       import ExitStack
 from dmu.generic      import UnpackerModel, utilities as gut
+from dmu.generic      import Serializable
 from dmu.stats        import ParameterLibrary as PL
 from dmu.stats        import utilities as sut
 from dmu.stats        import ConstraintAdder
@@ -34,7 +35,7 @@ log=LogStore.add_logger('fitter:fit_rx_rare_sim')
 
 _DATA_SAMPLE : Final[Component] = Component.data_24
 # ----------------------
-class Conf(BaseModel, frozen=True):
+class Conf(BaseModel, Serializable, frozen=True):
     '''
     Config holding all the information needed in current script
     '''
@@ -311,6 +312,8 @@ def main():
     '''
     cfg = _get_conf()
     _set_logs()
+
+    cfg.to_json(path = cfg.out_dir / cfg.q2bin / 'config.json')
 
     ctx_1 = DataPreprocessor.use_database()
     ctx_2 = ConstraintAdder.fixed_parameters(value = False)
