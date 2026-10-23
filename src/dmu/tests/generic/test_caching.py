@@ -3,12 +3,11 @@ This file is meant to hold tests for the caching
 utilities in generic/caching.py
 '''
 import math
-from typing import Any
-
 import pytest
 
-from dmu.logging.log_store import LogStore
-from dmu.generic           import caching
+from dmu         import LogStore
+from typing      import Any
+from dmu.generic import caching
 
 log=LogStore.add_logger('dmu:test_caching')
 # ----------------------

@@ -2,7 +2,7 @@
 Module holding 
 '''
 from functools     import cached_property, lru_cache
-from ROOT          import RDF # type: ignore
+from ROOT          import RDF
 from dmu.generic   import hashing
 from pydantic      import RootModel, model_validator
 from .cuts         import Cut, Cuts
