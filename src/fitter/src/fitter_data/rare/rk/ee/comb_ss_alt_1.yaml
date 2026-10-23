@@ -1,0 +1,20 @@
+models:
+  low:
+    pdfs          : [modexp]
+    shared        : []
+    floating      : []
+    reparametrize : {}
+    fix           : {}
+  central:
+    pdfs          : [modexp]
+    shared        : []
+    floating      : []
+    reparametrize : {}
+    fix           : {}
+  high:
+    pdfs          : [hypexp]
+    shared        : []
+    floating      : []
+    reparametrize : {}
+    fix           : {}
+constraints : null

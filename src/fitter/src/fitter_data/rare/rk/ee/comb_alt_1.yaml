@@ -84,11 +84,11 @@ mod_cfg: &mod_cfg
         - 6896
   components:
     low:
-      comb : rare/rk/ee/comb_ss.yaml
+      comb : rare/rk/ee/comb_ss_alt_1.yaml
     central:
-      comb : rare/rk/ee/comb_ss.yaml
+      comb : rare/rk/ee/comb_ss_alt_1.yaml
     high:
-      comb : rare/rk/ee/comb_ss.yaml
+      comb : rare/rk/ee/comb_ss_alt_1.yaml
   constraints:
     misid        : misid/rk/ee/data_misid.yaml
     signal_fraction     : []
