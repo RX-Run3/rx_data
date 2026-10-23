@@ -40,7 +40,19 @@ class GaussianKDE1DimV1(KDEHelper, WrapDistribution):
 
 class KDE1DimExact(KDEHelper, WrapDistribution, SerializableMixin):
     bandwidth : float
-    def __init__(self, data: ztyping.XTypeInput, *, obs: ztyping.ObsTypeInput | None = None, bandwidth: ztyping.ParamTypeInput | str | Callable | None = None, kernel: tfd.Distribution = None, padding: callable | str | bool | None = None, weights: np.ndarray | tf.Tensor | None = None, extended: ExtendedInputType = None, norm: NormInputType = None, name: str | None = 'ExactKDE1DimV1', label: str | None = None) -> None: ...
+    def __init__(
+            self, 
+            data: ztyping.XTypeInput, 
+            *, 
+            obs: ztyping.ObsTypeInput | None = None, 
+            bandwidth: ztyping.ParamTypeInput | str | Callable | None = None, 
+            kernel: tfd.Distribution = None, 
+            padding: Callable | str | bool | dict[str,float] | None = None, 
+            weights: np.ndarray | tf.Tensor | None = None, 
+            extended: ExtendedInputType = None, 
+            norm: NormInputType = None, 
+            name: str | None = 'ExactKDE1DimV1', 
+            label: str | None = None) -> None: ...
 
 class KDE1DimExactRepr(BasePDFRepr):
     hs3_type: Literal['KDE1DimExact']
@@ -87,7 +99,7 @@ class KDE1DimFFT(KDEHelper, BasePDF, SerializableMixin):
         binning_method: str | None = None, 
         support=None, 
         fft_method: str | None = None, 
-        padding: Callable | str | bool | None = None, 
+        padding: Callable | str | bool | dict[str,float] | None = None, 
         weights: np.ndarray | tf.Tensor | None = None, 
         extended: ExtendedInputType = None, 
         norm: NormInputType = None, 
