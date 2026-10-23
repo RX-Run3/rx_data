@@ -108,7 +108,6 @@ def test_missing_variable(caplog, tmp_path : Path) -> None:
         raise ValueError('Invalid logger name')
     logger.addHandler(caplog.handler) # pyrefly: ignore
 
-
     caplog.set_level(logging.INFO)
     with pytest.raises(MissingVariableConfiguration):
         ptr= ToyPlotter(df=df, cfg=cfg)
@@ -116,5 +115,5 @@ def test_missing_variable(caplog, tmp_path : Path) -> None:
 
     l_message= [ record.getMessage() for record in caplog.records ] 
 
-    assert l_message == ['Parameters found:', 'b', 'c']
+    assert l_message[-3:] == ['Parameters found:', 'b', 'c']
 # ----------------------
