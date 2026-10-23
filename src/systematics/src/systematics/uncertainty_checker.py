@@ -2,18 +2,19 @@
 Module holding UncertaintyChecker class
 '''
 import os
-import mplhep
+import numpy
 import pandas            as pnd
 import matplotlib.pyplot as plt
 
-from functools     import cached_property
-from pathlib       import Path
-from pydantic      import BaseModel
-from rpk_log_store import log_store as LogStore
+from functools   import cached_property
+from pathlib     import Path
+from pydantic    import BaseModel
+from dmu         import LogStore
+from dmu.generic import Serializable
 
 log=LogStore.add_logger('rx_stats:uncertainty_checker')
 # -----------------------------
-class UncertaintyCheckerCfg(BaseModel):
+class UncertaintyCheckerCfg(BaseModel, Serializable, frozen = True):
     '''
     Class meant to hold configuration
     '''
@@ -60,7 +61,7 @@ class UncertaintyChecker:
         -------------
         df: DataFrame with information of POI as parameters were fixed.
         Should have columns:
-        {'Value', 'Error', 'Gen', 'Fixed', 'nFixed', 'Valid'}
+        {'Error', 'Gen', 'Fixed', 'nFixed'}
 
         cfg: Object holding configuration
         '''
@@ -68,8 +69,6 @@ class UncertaintyChecker:
 
         self._df = df
         self._cfg= cfg
-
-        plt.style.use(mplhep.style.LHCb2)
     # ----------------------
     def _check_df(self, df : pnd.DataFrame) -> None:
         '''
@@ -91,49 +90,49 @@ class UncertaintyChecker:
 
         raise ValueError('Columns missing')
     # ----------------------
-    def _get_uncertainty(self, df : pnd.DataFrame) -> tuple[float,float]:
+    def _get_uncertainty(self, df : pnd.DataFrame) -> tuple[float,float,float]:
         '''
         Parameters
         -------------
         df: Pandas dataframe for a set of toys ran with a given number of floating parameters 
         i.e. with columns:
-        {'Value', 'Error', 'Gen', 'Fixed', 'nFixed', 'Valid'}
+        {'Error', 'Gen', 'Fixed', 'nFixed'}
     
         Returns
         -------------
         Uncertainty in POI, upper and lower 68% CL in %
         '''
-        v1 = abs(df['Value'] + df['Error'] - df['Gen']) / df['Gen']
-        v2 = abs(df['Value'] - df['Error'] - df['Gen']) / df['Gen']
-    
-        m1 = 100 * v1.median()
-        m2 = 100 * v2.median()
+        unc = 100 * df['Error'] / df['Gen']
+        sdt = unc.std()
+        med = unc.median()
+        lo  = med - sdt
+        hi  = med + sdt
 
-        up = max(m1, m2)
-        lo = min(m1, m2)
-    
-        return float(lo), float(up)
+        return lo, hi, med
     # ----------------------
     def run(self) -> None:
         '''
         Makes plots
         '''
+        med_unc   = []
         low_unc   = []
         upper_unc = []
         par_fixed = []
 
         df = self._df.sort_values(by = 'nFixed', ascending = True)
         for fix_par, df_fix in df.groupby('Fixed', sort = False):
-            low, upper = self._get_uncertainty(df = df_fix)
-            fix_par    = str(fix_par)
-            par_label  = self._cfg.labels.get(fix_par, fix_par)
+            low, upper, median = self._get_uncertainty(df = df_fix)
+            fix_par_str        = str(fix_par)
+            par_label          = self._cfg.labels.get(fix_par_str, fix_par_str)
 
+            med_unc.append(median)
             low_unc.append(low)
             upper_unc.append(upper)
             par_fixed.append(par_label)
 
         _, ax = plt.subplots()
 
+        plt.plot(par_fixed, med_unc)
         ax.fill_between(
             x    = par_fixed,
             y1   = low_unc,
