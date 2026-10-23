@@ -4,9 +4,9 @@ Module with functions needed to test functions in generic/hashing.py module
 
 import pandas as pnd
 
-from omegaconf             import OmegaConf
-from dmu.generic           import hashing
-from dmu.logging.log_store import LogStore
+from omegaconf   import OmegaConf
+from dmu.generic import hashing
+from dmu         import LogStore
 
 log=LogStore.add_logger('dmu:test_hashing')
 # --------------------------------------
@@ -32,8 +32,7 @@ def test_hash_pandas():
         'City': ['New York', 'London', 'Paris']
         }
 
-    df = pnd.DataFrame(data)
-
+    df  = pnd.DataFrame(data)
     val = hashing.hash_object(obj=df)
 
     log.info(f'Hash: {val}')
