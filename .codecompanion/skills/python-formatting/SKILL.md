@@ -38,6 +38,15 @@ In dictionaries using colons:
         }
 ```
 
+Use at least one space between the code and the return statement as in:
+
+```python
+        '''
+        data = load_data(package = package, fpath = loc)
+
+        return cls(**data)
+```
+
 # Imports
 
 When importing make sure that the `import` statements come first, then the

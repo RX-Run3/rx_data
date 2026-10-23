@@ -2,7 +2,7 @@
 
 ## Python
 - Use Python 3.13.
-- Use type annotations.
+- Use type annotations, `Any` is NOT an acceptable annotation.
 - Use pyrefly for type checking and Ruff for linting.
 
 ## Code Quality
@@ -19,6 +19,8 @@ _RGXPR : Final[str] = r'brem_(xx\d)_b(\d)_(?:rk|rkst)_(?:ee|mm)_(scale|reso)_flt
 _RGXFR : Final[str] = r'(brem|block)_brem_([x012]{3})_b(\d)(_reso)?_flt'
 '''Regex for fractions'''
 ```
+i.e. use `Final` to declare these variables as constant.
+
 - When creating pydantic data models or dataclasses always
 freeze them, unless they have to be mutable. Use the following
 format:
