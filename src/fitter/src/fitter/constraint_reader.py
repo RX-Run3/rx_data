@@ -224,37 +224,17 @@ class ConstraintReader:
 
         self._constraints += cons
     # ----------------------
-    def _save_constraints(self, path : Path) -> None:
-        '''
-        Parameters
-        -------------
-        path: Path to JSON file to save constraints to
-        '''
-        log.info(f'Saving constraints to: {path}')
-
-        if not self._constraints:
-            return
-
-        path.parent.mkdir(parents = True, exist_ok = True)
-
-        data = { cons.name : cons.model_dump() for cons in self._constraints }
-
-        yaml_string = json.dumps(data, indent = 2)
-        path.write_text(yaml_string)
-    # ----------------------
     def get_constraints(
         self,
-        skip_misid : bool        = False,
-        skip_prec  : bool        = False,
-        skip_comb  : bool        = False,
-        skip_signal: bool        = False,
-        skip_eff   : bool        = False,
-        save_to    : Path | None = None) -> Constraints[Constraint1D | ConstraintND]:
+        skip_misid : bool = False,
+        skip_prec  : bool = False,
+        skip_comb  : bool = False,
+        skip_signal: bool = False,
+        skip_eff   : bool = False) -> Constraints[Constraint1D | ConstraintND]:
         '''
         Parameters
         ---------------
         skip_xx: By default false, if true, will skip constraints, meant for tests
-        save_to: Path to yaml file where constraints are save, default None
 
         Returns
         ---------------
@@ -268,11 +248,6 @@ class ConstraintReader:
 
         data : dict[str,Constraint] = { constraint.name : constraint for constraint in self._constraints }
         constraints = Constraints[Constraint1D | ConstraintND](root = data)
-
-        if save_to is None:
-            return constraints
-
-        self._save_constraints(path = save_to)
 
         return constraints
 # -------------------------------------------------------------
@@ -300,7 +275,9 @@ def add_constraints(
         signal = signal,
         nll    = nll,
         cfg    = cfg)
-    cons = crd.get_constraints(save_to = cfg.output_directory / f'constraints/{brem}.json')
+    cons = crd.get_constraints()
+
+    cons.to_json(path = cfg.output_directory / f'constraints/{brem}.json')
 
     if not cons:
         log.warning('Not using any constraints')
