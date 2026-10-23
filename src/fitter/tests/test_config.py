@@ -98,7 +98,9 @@ def test_yield_conf(
 @pytest.mark.parametrize('analysis', ['rk'  , 'rkst'])
 @pytest.mark.parametrize('kind'    , ['reso', 'rare'])
 @pytest.mark.parametrize('channel' , ['ee'  ,   'mm'])
+@pytest.mark.parametrize('name'    , ['comb', 'comb_alt_1'])
 def test_combinatorial_sr(
+    name     : str,
     analysis : str,
     channel  : str,
     kind     : str):
@@ -107,7 +109,7 @@ def test_combinatorial_sr(
     '''
     data = gut.load_data(
         package = 'fitter_data',
-        fpath   = f'{kind}/{analysis}/{channel}/comb.yaml')
+        fpath   = f'{kind}/{analysis}/{channel}/{name}.yaml')
 
     if   kind == 'rare' and channel == 'ee':
         obj = CombinatorialConf(**data)
