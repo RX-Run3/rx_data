@@ -63,7 +63,7 @@ class SysPlotterCfg(BaseModel, Serializable, frozen = True):
     '''Configuration for line representing the median of a systematic across toys'''
     # ---------------------------------
     @classmethod
-    def from_location(cls, loc : str) -> 'SysPlotterCfg':
+    def from_package(cls, loc : str) -> 'SysPlotterCfg':
         '''
         Parameters
         --------------
