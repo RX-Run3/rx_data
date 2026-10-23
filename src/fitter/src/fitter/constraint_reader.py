@@ -1,10 +1,6 @@
 '''
 Script holding ConstraintReader class
 '''
-
-import json
-
-from pathlib             import Path
 from typing              import Final
 from dmu                 import LogStore
 from dmu.stats           import ConstraintAdder
