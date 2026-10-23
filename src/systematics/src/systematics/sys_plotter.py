@@ -183,7 +183,7 @@ class SysPlotter:
 
         syst = dict()
         data : dict[str,list[float|str]] = {'Systematic' : [], 'Value' : []}
-        ax   = None
+        ax      = None
         counter = 1
         htype   = 'stepfilled'
         alpha   = 0.7
@@ -195,13 +195,13 @@ class SysPlotter:
                 alpha = 1
 
             ax = df[f'sys_{sys}'].plot.hist(
-                x     = f'sys_{sys}',
-                range = xaxis.limits,
-                bins  = xaxis.bins,
-                alpha = alpha,
-                label = label,
+                x        = f'sys_{sys}',
+                range    = xaxis.limits,
+                bins     = xaxis.bins,
+                alpha    = alpha,
+                label    = label,
                 histtype = htype,
-                ax    = ax)
+                ax       = ax)
 
             med= df[f'sys_{sys}'].median()
             self._add_vline(val = med, ax = ax)
