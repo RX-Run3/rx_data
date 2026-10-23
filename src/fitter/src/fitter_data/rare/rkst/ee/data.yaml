@@ -4,7 +4,7 @@
 reg_cfg: &reg_cfg
   nbins   : 30
   stacked : True
-  plot_range : 
+  plot_range :
     - 4600
     - 6900
   d_leg :
@@ -62,9 +62,9 @@ default_components: &comp
 # ----------------------------------------------------
 trigger          : rkst_ee_os
 yields           : model/yields/rkst/rare_electron.yaml
-selection        : 
+selection        :
   low    : {}
-  central: 
+  central:
     leakage : TMath::Abs(B_const_mass_M - 5280) > 200
   high   : {}
 observable:
@@ -92,8 +92,8 @@ components:
     <<: *comp
 constraints :
   signal_fraction      : []
-  combinatorial : true 
-  signal_shape  : true 
+  combinatorial : true
+  signal_shape  : true
 fit: {}
 plots:
   low     : *plt_cfg
