@@ -24,6 +24,7 @@ from patch_classes  import TestMisIDConstraints
 
 log=LogStore.add_logger('fitter:test_constraint_reader')
 
+# TODO: Improve these tests
 _PRC_COMPONENTS : Final[list[Component]] = [
     Component.bsphiee,
     Component.bpkstkpiee,

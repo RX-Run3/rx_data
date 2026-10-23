@@ -5,7 +5,7 @@ from .parameter_reader   import ParameterReader
 from .likelihood_factory import LikelihoodFactory
 from .toy_maker          import ToyMaker
 from .toy_maker          import ToyConf
-from .toy_plotter        import ToyPlotter
+from .toy_plotter        import ToyPlotter, MissingVariableConfiguration
 from .data_fitter        import DataFitter
 from .data_fitter_sim    import DataFitterSim
 from .data_model         import DataModel
@@ -120,6 +120,7 @@ __all__ = [
     'ToyMaker',
     'ToyConf',
     'ToyPlotter',
+    'MissingVariableConfiguration',
     'LikelihoodFactory',
     'PlotConf',
     # ------------------

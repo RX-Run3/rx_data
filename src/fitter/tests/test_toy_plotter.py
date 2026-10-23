@@ -10,14 +10,14 @@ import pytest
 import numpy
 import pandas as pnd
 
-from pathlib               import Path
-from functools             import lru_cache
-from dmu.generic           import utilities as gut
-from dmu.logging.log_store import LogStore
-from fitter.toy_plotter    import ToyPlotter, MissingVariableConfiguration
+from pathlib     import Path
+from functools   import lru_cache
+from dmu.generic import utilities as gut
+from dmu         import LogStore
+from fitter      import ToyPlotter, MissingVariableConfiguration
 
 log=LogStore.add_logger('fitter:test_toy_plotter')
-plt.style.use(mplhep.style.LHCb2) # type: ignore
+plt.style.use(mplhep.style.LHCb2)
 # ----------------------
 @pytest.fixture(scope='session', autouse=True)
 def initialize():
@@ -88,8 +88,8 @@ def test_simple(tmp_path : Path) -> None:
     assert math.isclose(cfg.median_b_unc, 2.998985959009677, rel_tol=1e-5)
     assert math.isclose(cfg.mean_Valid  , 0.948            , rel_tol=1e-5)
 
-    assert math.isclose(cfg.a_pul.mu, 0.02316429312808755, rel_tol=1e-5)
-    assert math.isclose(cfg.a_pul.sg, 0.982856552637077  , rel_tol=1e-5)
+    assert math.isclose(cfg.a_pul.mu, 0.02316429312808755, rel_tol=1e-5) # pyrefly: ignore
+    assert math.isclose(cfg.a_pul.sg, 0.982856552637077  , rel_tol=1e-5) # pyrefly: ignore
 # ----------------------
 def test_missing_variable(caplog, tmp_path : Path) -> None:
     '''
@@ -106,7 +106,8 @@ def test_missing_variable(caplog, tmp_path : Path) -> None:
     logger = LogStore.get_logger(name='fitter:toy_plotter')
     if logger is None:
         raise ValueError('Invalid logger name')
-    logger.addHandler(caplog.handler)
+    logger.addHandler(caplog.handler) # pyrefly: ignore
+
 
     caplog.set_level(logging.INFO)
     with pytest.raises(MissingVariableConfiguration):
