@@ -1,0 +1,8 @@
+name            : some-name
+alpha           : 0.8
+xlabel          : Parameter fixed 
+ylabel          : Uncertainty
+yrange          : [0, 10]
+title           : Title 
+labels          : {}
+xlabel_rotation : 45
