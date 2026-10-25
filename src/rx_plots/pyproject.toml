@@ -1,5 +1,5 @@
 [project]
-name            = "rx_plotter"
+name            = "rx_plots"
 version         = "0.0.0"
 description     = "Project meant to create simple plots for RX studies"
 readme          = "README.md"
