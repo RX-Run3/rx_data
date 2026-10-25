@@ -96,6 +96,7 @@ tf-keras                              = '*'
 types-tensorflow                      = '*'
 typer                                 = '*'
 uproot                                = '*'
+uv                                    = ">=0.13.5,<0.14"
 vector                                = '*'
 zfit                                  = '*'
 pytest-cov                            = '*'
