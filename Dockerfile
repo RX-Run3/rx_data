@@ -13,8 +13,10 @@ FROM quay.io/fedora/python-313 AS final
 USER 0
 WORKDIR /workspace
 COPY --from=builder /opt/app-root /opt/app-root
-COPY pixi.toml .
-COPY src       ./src
-RUN curl -fsSL https://pixi.sh/install.sh | sh \
-    && source ~/.bashrc \
-    && pixi install
+RUN  curl -fsSL https://pixi.sh/install.sh | sh
+ENV  PATH="$HOME/.pixi/bin:${PATH}"
+COPY pixi.toml pixi.lock .
+RUN  pixi install --frozen
+COPY src/             ./src
+COPY requirements.txt .
+RUN  pixi run uv pip install -r requirements.txt
