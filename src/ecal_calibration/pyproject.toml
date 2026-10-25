@@ -1,24 +1,8 @@
 [project]
-name            = "ecal_calibration"
-version         = '1.7.4'
-description     = "Project meant to apply offline corrections to electrons in LHCb"
-readme          = "README.md"
-dependencies    = [
-    "pandas",
-    "bokeh",
-    "tqdm",
-    "mplhep",
-    "scipy",
-    "uproot",
-    "vector",
-    "pyarrow",
-    "numpy",
-    "dask[distributed]",
-]
-
-[project.optional-dependencies]
-dev = ["pytest"]
-ml  = ["torch"]
+name        = "ecal_calibration"
+version     = '1.7.4'
+description = "Project meant to apply offline corrections to electrons in LHCb"
+readme      = "README.md"
 
 [project.scripts]
 make_toy_decays = "ecal_calibration_scripts.make_toy_decays:main"

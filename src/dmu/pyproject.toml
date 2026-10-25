@@ -4,35 +4,6 @@ version         = '0.3.2'
 description     = 'Project storing utilities needed to reduce boilerplate code when analyzing data'
 readme          = 'README.md'
 
-dependencies = [
-    'awkward',
-    'awkward-pandas',
-    'colorama',
-    'jinja2',
-    'hist[plot]',
-    'matplotlib',
-    'mplhep',
-    'numpy',
-    'omegaconf',
-    'pandas',
-    'PyYAML',
-    'scipy',
-    'tabulate',
-    'tqdm',
-    'toml',
-    'uproot',
-    'dask[dataframe,distributed]',
-    'scikit-learn', 
-    'joblib', 
-    'optuna',
-    'zfit', 
-    'tensorflow',
-    'pytest', 
-    'pytest-xdist', 
-    'pandas-stubs', 
-    'memory-profiler',
-]
-
 [project.scripts]
 check_truth         = 'dmu_scripts.physics.check_truth:main'
 print_trees         = 'dmu_scripts.rfile.print_trees:main'

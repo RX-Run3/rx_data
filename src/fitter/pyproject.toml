@@ -3,19 +3,6 @@ name = "fitter"
 version = "0.0.1"
 description = "Framework used to handle fits to data and simulation"
 readme = "README.md"
-dependencies = [
-    "typer",
-    "pdg",
-    "omegaconf",
-    "numpy",
-    "seaborn",
-    "mplhep",
-    "matplotlib",
-    "pandas-stubs",
-    "python-slugify",
-    "zfit",
-    "types-tensorflow",
-]
 
 # Scripts / CLI entry points
 [project.scripts]

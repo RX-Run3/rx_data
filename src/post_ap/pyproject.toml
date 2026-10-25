@@ -3,7 +3,6 @@ name        = 'post_ap'
 description = 'Project with code needed to filter, trim and slim ntuples produced by AP'
 version     = '0.3.8'
 readme      = 'README.md'
-dependencies= []
 
 [tools.setuptools.packages.find]
 where   = ['src']

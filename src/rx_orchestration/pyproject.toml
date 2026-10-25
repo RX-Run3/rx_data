@@ -9,8 +9,6 @@ authors         = [
   { name = "angel.campoverde@cern.ch" }
 ]
 
-dependencies = []
-
 [project.scripts]
 # ----------------
 # Plotting

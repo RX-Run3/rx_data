@@ -3,8 +3,6 @@ name            = "rx_tests"
 version         = "0.0.1"
 description     = "Project used to offer testing utilities" 
 readme          = "README.md"
-dependencies    = [
-]
 
 [tool.setuptools.package-data]
 'rx_tests_data' = ['**/*.yaml', '**/*.html']

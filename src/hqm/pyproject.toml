@@ -6,13 +6,6 @@ build-backend = 'setuptools.build_meta'
 name         = 'hqm'
 version      = '0.0.1'
 description  = 'Used to build fitting model for high-q2 bin'
-dependencies = [
-    'matplotlib',
-    'jacobi',
-    'numpy',
-    'zfit',
-    'typer',
-]
 
 [tool.setuptools]
 package-dir = {'' = 'src'}

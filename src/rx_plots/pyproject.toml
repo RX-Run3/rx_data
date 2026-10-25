@@ -3,19 +3,6 @@ name            = "rx_plots"
 version         = "0.0.0"
 description     = "Project meant to create simple plots for RX studies"
 readme          = "README.md"
-dependencies    = [
-    "typer",
-    "apd",
-    "hist",
-    "boost-histogram",
-    "mplhep",
-    "matplotlib",
-    "pandas",
-    "numpy",
-    "numexpr",
-    "omegaconf",
-    "formulate",
-]
 
 # Scripts / CLI entry points
 [project.scripts]

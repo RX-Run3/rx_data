@@ -3,8 +3,6 @@ name            = "systematics"
 version         = "0.0.1"
 description     = "Project used to calculate systematics for LFU type of measurements"
 readme          = "README.md"
-dependencies    = [
-]
 
 [tool.setuptools.package-data]
 'rx_selection_data' = ['**/*.yaml']

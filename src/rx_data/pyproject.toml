@@ -3,21 +3,6 @@ name            = "rx_data"
 description     = "Project with lists of LFNs and utilities needed to download filtered ntuples"
 version         = "0.0.0"
 readme          = "README.md"
-dependencies    = [
-    "tqdm",
-    "dask",
-    "uproot",
-    "tabulate", # Or pandas will fail
-    "mplhep",
-    "particle",
-    "vector",
-    "pandas",
-    'typer',
-    "numpy",
-]
-
-[project.optional-dependencies]
-net = ["xrootd>=0.0.0"]  # When doing things that require access to remote files
 
 [project.scripts]
 rxdata               = "rx_data.cli:app"

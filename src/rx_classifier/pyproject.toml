@@ -3,14 +3,6 @@ name            = 'rx_classifier'
 version         = '0.0.2'
 description     = 'Project used to train classifiers'
 readme          = "README.md"
-dependencies    = [
-    'mplhep',
-    'matplotlib',
-    'numpy',
-    'scikit-learn',
-    'joblib',
-    'PyYAML',
-]
 
 [project.scripts]
 diagnose_classifier='rx_classifier_scripts.diagnose_classifier:main'

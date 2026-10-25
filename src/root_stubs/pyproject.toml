@@ -2,5 +2,3 @@
 name            = "root_stubs"
 version         = "0.1.0"
 description     = "Project implementing stubs for ROOT"
-dependencies    = []
-

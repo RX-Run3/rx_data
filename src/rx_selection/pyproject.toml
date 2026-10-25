@@ -3,14 +3,6 @@ name            = "rx_selection"
 version         = "0.1.9"
 description     = "Project used to apply selection to ntuples used for RX measurements filtered and skimmed by post_ap project"
 readme          = "README.md"
-dependencies    = [
-    "numexpr",
-    "jacobi",
-    "joblib",
-    "pandas",
-    "numpy",
-    "matplotlib",
-]
 
 # Scripts / CLI entry points
 [project.scripts]

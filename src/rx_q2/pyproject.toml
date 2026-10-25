@@ -3,15 +3,6 @@ name            = "rx_q2"
 version         = "0.0.1"
 description     = "Project used to study mass scales and resolutions"
 readme          = "README.md"
-dependencies    = [
-    "matplotlib",
-    "pydantic",
-    "pandas",
-    "numpy",
-    "zfit",
-    "typer",
-    "jacobi",
-]
 
 # Scripts / CLI entry points
 [project.scripts]

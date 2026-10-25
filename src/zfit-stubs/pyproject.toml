@@ -3,4 +3,3 @@ name            = "zfit-stubs"
 description     = "Project with stub files for zfit"
 readme          = "README.md"
 version         = '0.0.1'
-dependencies    = []

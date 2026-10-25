@@ -3,12 +3,6 @@ name        = 'rx_misid'
 description = 'Project used to calculate fully hadronic misid shapes'
 version     = '0.0.1'
 readme      = 'README.md'
-dependencies= [
-'PyYAML',
-'mplhep',
-'pyarrow',
-'boost-histogram',
-]
 
 [project.scripts]
 plot_samples='rx_misid_scripts.plot_samples:main'

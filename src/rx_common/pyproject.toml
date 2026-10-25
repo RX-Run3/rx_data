@@ -3,7 +3,6 @@ name        = 'rx_common'
 description = 'Project used to find and load libraries in cal-rx-run3 c++ code'
 version     = '0.0.6'
 readme      = 'README.md'
-dependencies= ['PyYAML']
 
 [tools.setuptools.packages.find]
 where= ['src']

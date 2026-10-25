@@ -4,5 +4,3 @@ version         = "0.0.1"
 description     = "Type stubs for the scikit-hep/vector package"
 readme          = "README.md"
 license         = {text = "MIT"}
-dependencies    = []
-

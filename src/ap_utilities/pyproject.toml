@@ -1,14 +1,8 @@
 [project]
-name            = 'ap_utilities'
-description     = 'Utilities needed for analysis productions in LHCb'
-version         = '0.3.0'
-readme          = 'README.md'
-dependencies    = [
-    'apd',
-    'PyYAML', 
-    'tqdm',
-    'omegaconf',
-    'logzero'] 
+name        = 'ap_utilities'
+description = 'Utilities needed for analysis productions in LHCb'
+version     = '0.3.0'
+readme      = 'README.md'
 
 [tools.setuptools.packages.find]
 where= ['src']

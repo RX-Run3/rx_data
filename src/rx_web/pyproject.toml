@@ -2,7 +2,6 @@
 name        = 'rx_web'
 version     = '0.0.1'
 readme      = 'README.md'
-dependencies= ['sigal']
 
 [project.scripts]
 rxweb = 'rx_web.cli:app'
