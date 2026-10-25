@@ -198,7 +198,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/svt-av1-4.2.0-hd2095e1_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/tbb-2023.1.0-haa8c3ee_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/tk-8.6.13-noxft_h1df4ec4_4.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/tmux-3.8_-hd13ee6d_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/tmux-3.7_-hb764a82_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/tornado-6.5.10-py313h995f894_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/unibilium-2.1.2-h280c20c_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/vdt-0.4.4-h59595ed_0.conda
@@ -3669,21 +3669,19 @@ packages:
     - tk >=8.6.13,<8.7.0a0
   size: 3566806
   timestamp: 1787272857910
-- conda: https://conda.anaconda.org/conda-forge/linux-64/tmux-3.8_-hd13ee6d_0.conda
-  sha256: 155010f0b5ec8b6a367a92118d0689331c847d9bd045745397735333c256605a
-  md5: 8d6fdd6eccbc64f6db8d96b9bd621d02
+- conda: https://conda.anaconda.org/conda-forge/linux-64/tmux-3.7_-hb764a82_0.conda
+  sha256: 85ceb30aac28ae1ca2d54ae3d3ce0b67c785e06edefcc08ce14d7589e0b31900
+  md5: b23d2a61f38629ca9e488122464fe765
   depends:
-  - libevent
-  - ncurses
-  - libgcc >=15
   - __glibc >=2.17,<3.0.a0
   - libevent >=2.1.12,<2.1.13.0a0
+  - libgcc >=14
   - ncurses >=6.6,<7.0a0
   license: ISC
   purls: []
   run_exports: {}
-  size: 679185
-  timestamp: 1791448667477
+  size: 530869
+  timestamp: 1782588694639
 - conda: https://conda.anaconda.org/conda-forge/linux-64/tornado-6.5.10-py313h995f894_0.conda
   sha256: 66d85753b02254ae528eed5c1908829c685f1c33fb3b58b023bf2bc7557a7cd0
   md5: 94985bd39e52fedc2270adb00e4779e6
