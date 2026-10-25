@@ -19,4 +19,4 @@ COPY pixi.toml pixi.lock .
 RUN  pixi install --frozen
 COPY src/             ./src
 COPY requirements.txt .
-RUN  pixi run uv pip install -r requirements.txt
+RUN  pixi run uv pip install --no-deps -r requirements.txt
