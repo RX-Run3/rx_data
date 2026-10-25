@@ -1,40 +1,26 @@
 # Installation
 
-## For use as a library
+This project uses [Pixi](https://pixi.sh/) for dependency management and environment setup.
 
-For this, install micromamba, following the instructions [here](https://mamba.readthedocs.io/en/latest/user_guide/micromamba.html)
-Then create a micromamba environment and install the code inside it.
-```bash
-# create an environment with ROOT and python
-micromamba create -n rx_run3 root==6.32.10 python==3.12.11
+1. Install Pixi, following the instructions [here](https://pixi.sh/)
+2. Clone the repository and navigate into the directory:
+   ```bash
+   git clone git@github.com:acampove/cal-rx-run3.git
+   cd cal-rx-run3
+   ```
+3. Install the environment and dependencies:
+   ```bash
+   pixi install
+   ```
 
-# Activate it
-micromamba activate rx_run3
+4. Enter the Pixi environment shell:
+   ```bash
+   pixi shell
+   ```
 
-git clone git@github.com:acampove/rx_run3.git
+5. Install the pre-commit hooks:
+   ```bash
+   pre-commit install
+   ```
 
-# go to the directory with the code
-cd rx_run3
-
-# And install it
-pip install -r requirements.txt
-```
-
-## For development
-For development use `requirements_dev.txt`, which
-
-- Will install stub files to hide type annotation errors
-- Will install in editable mode
-- Will also install packages for development like `pytest`, `pre-commit`, etc
-
-For development also do:
-
-```bash
-pre-commit install
-```
-
-after the code installation, to install pre-commit hooks. These hooks live in `hooks/`
-and will:
-
-- When running in the master branch, rename the image tag as the SHA. Thus, the container 
-used to run the workflow in REANA will contain the latest version of the code.
+These hooks live in `hooks/` and will:
