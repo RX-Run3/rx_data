@@ -451,6 +451,8 @@ def test_reso_rk_ee(
         range = (4500, 6000))
 
     data = gut.load_data(package='fitter_data', fpath=f'reso/rk/ee/{component}.yaml')
+    data['categories']['brem_xx1']['model']['pdfs'] = ['gauss']
+    data['categories']['brem_xx2']['model']['pdfs'] = ['gauss']
     cfg  = ParametricConf(**data)
     cfg.add_category_suffix(suffix = 'b1')
     cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
@@ -490,6 +492,7 @@ def test_reso_rkst_mm(
         range = (4800, 6000))
 
     data = gut.load_data(package='fitter_data', fpath=f'reso/rkst/mm/{component}.yaml')
+    data['categories']['brem_xx0']['model']['pdfs'] = ['gauss']
     cfg  = ParametricConf(**data)
     cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
 
@@ -524,6 +527,7 @@ def test_reso_rk_mm(
         range = (4800, 6000))
 
     data = gut.load_data(package='fitter_data', fpath=f'reso/rk/mm/{component}.yaml')
+    data['categories']['brem_xx0']['model']['pdfs'] = ['gauss']
     cfg  = ParametricConf(**data)
     cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
 
@@ -561,6 +565,8 @@ def test_reso_rkst_ee(
         range = (4500, 6000))
 
     data = gut.load_data(package='fitter_data', fpath=f'reso/rkst/ee/{component}.yaml')
+    data['categories']['brem_xx1']['model']['pdfs'] = ['gauss']
+    data['categories']['brem_xx2']['model']['pdfs'] = ['gauss']
     cfg  = ParametricConf(**data)
     cfg.add_category_suffix(suffix = 'b1')
     cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
@@ -589,6 +595,7 @@ def test_rare_rkst_mm(
         range = (5100, 5500))
 
     data = gut.load_data(package='fitter_data', fpath=f'rare/rkst/mm/{component}.yaml')
+    data['categories']['brem_xx0']['model']['pdfs'] = ['gauss']
     cfg  = ParametricConf(**data)
     cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
 
