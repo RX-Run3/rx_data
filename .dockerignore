@@ -1,0 +1,32 @@
+**/*.egg-info
+
+# Python packaging artifacts
+**/*.egg-info/
+**/__pycache__/
+**/*.py[cod]
+**/build/
+**/dist/
+
+# Virtual environments
+.venv/
+venv/
+
+# Version control
+.git/
+
+# Pixi environment
+.pixi/
+
+# Test and tool caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.serena/
+.snakemake/
+htmlcov/
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
