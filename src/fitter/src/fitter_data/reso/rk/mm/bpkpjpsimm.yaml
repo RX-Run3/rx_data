@@ -25,5 +25,5 @@ plots:
     - 5200
     - 5400
   d_leg :
-    cbl_bpkpjpsimm_brem_xx0_1  : Crystal Ball 
-    dscb_bpkpjpsimm_brem_xx0_1 : DSCB 
+    cbl_bpkpjpsimm_brem_xx0_rk_mm_1  : Crystal Ball 
+    dscb_bpkpjpsimm_brem_xx0_rk_mm_1 : DSCB 
