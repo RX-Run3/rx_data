@@ -3,6 +3,6 @@ repos:
     hooks:
       - id      : replace-sha
         name    : Latest -> SHA 
-        entry   : hooks/replace_with_sha.sh
+        entry   : hooks/copy_conf.sh
         language: script
         stages  : [pre-commit]
