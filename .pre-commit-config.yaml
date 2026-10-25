@@ -1,7 +1,7 @@
 repos:
   - repo: local
     hooks:
-      - id      : replace-sha
+      - id      : copy_conf
         name    : Latest -> SHA 
         entry   : hooks/copy_conf.sh
         language: script
