@@ -128,8 +128,7 @@ def test_nocat(tmp_path : Path):
     cfg   = ParametricConf(**data)
     cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
 
-    with Cache.cache_root(path = tmp_path),\
-         RDFGetter.max_entries(value=30_000):
+    with Cache.cache_root(path = tmp_path):
         ftr = SimFitter(
             name     = 'main',
             component= cfg.component,
