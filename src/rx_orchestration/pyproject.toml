@@ -9,9 +9,7 @@ authors         = [
   { name = "angel.campoverde@cern.ch" }
 ]
 
-dependencies = [
-  "law",
-]
+dependencies = []
 
 [project.scripts]
 # ----------------
