@@ -49,6 +49,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/freetype-2.14.3-ha770c72_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/fribidi-1.0.17-h7cc23a3_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/ftgl-2.4.0-hbcb1f35_0.tar.bz2
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/fzf-0.67.0-ha8f183a_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc-14.4.0-hc6a0c74_7.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc_impl_linux-64-14.4.0-h4b2a866_7.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc_linux-64-14.4.0-hc469d41_2.conda
@@ -1194,6 +1195,15 @@ packages:
     - ftgl >=2.4.0,<2.4.1.0a0
   size: 114778
   timestamp: 1607158895544
+- conda: https://conda.anaconda.org/conda-forge/linux-64/fzf-0.67.0-ha8f183a_1.conda
+  sha256: 9aea3f3932bbb896a5630e9609602c11855b2f9315a1cbc1f1f4fcb3f3eca7d1
+  md5: 9e214a4641be25bba513d3b00ea7b10d
+  license: MIT
+  license_family: MIT
+  purls: []
+  run_exports: {}
+  size: 3327530
+  timestamp: 1770406439571
 - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc-14.4.0-hc6a0c74_7.conda
   sha256: 75f254e0fd3f77f7c334e3c12f57e69d2078f87161f668c11531eb7d99d88252
   md5: d4a420e188128b1f3473648ec32c4761
