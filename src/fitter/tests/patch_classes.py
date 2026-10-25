@@ -247,7 +247,7 @@ class TestDataPreprocessor:
     # --------------------------
     def _get_sigma(self) -> float:
         if self._trigger.is_muon:
-            return 30
+            return 15
 
         if self._q2bin.is_rare:
             return 70
