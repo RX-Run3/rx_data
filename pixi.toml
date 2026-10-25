@@ -23,6 +23,7 @@ tmux = "==3.7_"
 xrootd = "==5.9.1"
 yazi = "==26.5.6"
 zoxide = "*"
+pre-commit = ">=4.7.0,<5"
 
 [pypi-dependencies]
 apd = "*"
