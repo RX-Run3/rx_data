@@ -36,6 +36,19 @@ class Project(StrEnum):
     rkst_bad_ecal = auto()
     # --------------------------------------------
     @property
+    def main(self) -> 'Project':
+        '''
+        Main project associated to current project
+        '''
+        match self:
+            case Project.rk | Project.rk_no_pid | Project.rk_no_refit | Project.rk_sim10d | Project.rk_bad_ecal:
+                return Project.rk
+            case Project.rkst | Project.rkst_no_pid | Project.rkst_no_refit | Project.rkst_sim10d | Project.rkst_bad_ecal:
+                return Project.rkst
+            case Project.test:
+                return self
+    # --------------------------------------------
+    @property
     def color(self) -> str:
         '''
         Color associated to project, for plots
