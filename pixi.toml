@@ -86,7 +86,6 @@ snakemake-interface-storage-plugins   = '*'
 snakemake-logger-plugin-flowo         = '*'
 snakemake-logger-plugin-rich          = '*'
 snakemake-logger-plugin-snkmt         = '*'
-tensorflow                            = { version = '*', extras = ['and-cuda'] }
 tensorflow-datasets                   = '*'
 tensorflow-graphics                   = '*'
 tensorflow-metadata                   = '*'
@@ -104,3 +103,13 @@ pytest-mock                           = '*'
 pytest-split                          = '*'
 pytest-xdist                          = '*'
 pytest-benchmark                      = '*'
+
+[feature.gpu.pypi-dependencies]
+tensorflow = { version = "*", extras = ["and-cuda"] }
+
+[feature.cpu.pypi-dependencies]
+tensorflow = "*"
+
+[environments]
+default = { features = ["gpu"] }
+cpu     = { features = ["cpu"] }
