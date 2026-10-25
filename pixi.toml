@@ -10,21 +10,21 @@ TF_CPP_MIN_LOG_LEVEL      = '2'
 TF_FORCE_GPU_ALLOW_GROWTH = 'true'
 
 [dependencies]
-python     = '==3.13'
 btop       = '*'
 chafa      = '*'
 eza        = '*'
+fzf        = '==0.67.0'
 go         = '*'
 nvim       = '==0.11.0'
 pip        = '*'
+pre-commit = '>=4.7.0,<5'
 pysocks    = '*'
-fzf        = '==0.67.0'
+python     = '==3.13'
 root       = '==6.38'
 tmux       = '==3.7_'
 xrootd     = '==5.9.1'
 yazi       = '==26.5.6'
 zoxide     = '*'
-pre-commit = '>=4.7.0,<5'
 
 [pypi-dependencies]
 apd                                   = '*'
@@ -33,7 +33,11 @@ awkward-cpp                           = '*'
 awkward-pandas                        = '*'
 bokeh                                 = '>=3.5.2'
 boost-histogram                       = '*'
+colorama                              = '*'
 dask                                  = '*'
+deprecated                            = '*'
+dill                                  = '*'
+distributed                           = '*'
 formulate                             = '*'
 gvar                                  = '>=13.1.10, <14'
 hepstats                              = '*'
@@ -57,9 +61,13 @@ pandas                                = '*'
 pandas-stubs                          = '*'
 particle                              = '*'
 pdg                                   = '*'
+pidcalib2                             = '*'
 pyarrow                               = '*'
 pydantic                              = '*'
+pyrefly                               = '*'
+python-slugify                        = '*'
 pyyaml                                = '*'
+ruff                                  = '*'
 scikit-learn                          = '*'
 scipy                                 = '*'
 scipy-stubs                           = '*'
@@ -83,37 +91,15 @@ tensorflow-datasets                   = '*'
 tensorflow-graphics                   = '*'
 tensorflow-metadata                   = '*'
 tensorflow-probability                = '*'
+texttable                             = '*'
+tf-keras                              = '*'
+types-tensorflow                      = '*'
 typer                                 = '*'
 uproot                                = '*'
 vector                                = '*'
+zfit                                  = '*'
 pytest-cov                            = '*'
 pytest-mock                           = '*'
 pytest-split                          = '*'
 pytest-xdist                          = '*'
 pytest-benchmark                      = '*'
-ruff                                  = '*'
-pyrefly                               = '*'
-
-ap-utilities           = { path = 'src/ap_utilities',           editable = true }
-dmu                    = { path = 'src/dmu',                    editable = true }
-hqm                    = { path = 'src/hqm',                    editable = true }
-ecal-calibration       = { path = 'src/ecal_calibration',       editable = true }
-fitter                 = { path = 'src/fitter',                 editable = true }
-post-ap                = { path = 'src/post_ap',                editable = true }
-root-stubs             = { path = 'src/root_stubs',             editable = true }
-gvar-stubs             = { path = 'src/gvar-stubs',             editable = true }
-rx-classifier          = { path = 'src/rx_classifier',          editable = true }
-rx-common              = { path = 'src/rx_common',              editable = true }
-rx-data                = { path = 'src/rx_data',                editable = true }
-rx-efficiencies        = { path = 'src/rx_efficiencies',        editable = true }
-rx-misid               = { path = 'src/rx_misid',               editable = true }
-rx-orchestration       = { path = 'src/rx_orchestration',       editable = true }
-rx-pid                 = { path = 'src/rx_pid',                 editable = true }
-rx-plots               = { path = 'src/rx_plots',               editable = true }
-rx-q2                  = { path = 'src/rx_q2',                  editable = true }
-rx-selection           = { path = 'src/rx_selection',           editable = true }
-rx-tests               = { path = 'src/rx_tests',               editable = true }
-rx-web                 = { path = 'src/rx_web',                 editable = true }
-vector-stubs           = { path = 'src/vector_stubs',           editable = true }
-zfit-stubs             = { path = 'src/zfit-stubs',             editable = true }
-systematics            = { path = 'src/systematics',            editable = true }
