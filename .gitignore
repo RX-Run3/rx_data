@@ -176,3 +176,6 @@ poetry.toml
 .home/
 .statistics*.json
 .serena/
+# pixi environments
+.pixi/*
+!.pixi/config.toml
