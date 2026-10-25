@@ -73,7 +73,7 @@ snakemake-interface-storage-plugins = "*"
 snakemake-logger-plugin-flowo = "*"
 snakemake-logger-plugin-rich = "*"
 snakemake-logger-plugin-snkmt = "*"
-tensorflow = "*"
+tensorflow          = { version = "*", extras = ["and-cuda"] }
 tensorflow-datasets = "*"
 tensorflow-graphics = "*"
 tensorflow-metadata = "*"
