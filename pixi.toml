@@ -5,7 +5,9 @@ name      = "cal-rx-run3"
 platforms = ["linux-64"]
 version   = "0.1.0"
 
-[tasks]
+[activation.env]
+TF_CPP_MIN_LOG_LEVEL      = '2'
+TF_FORCE_GPU_ALLOW_GROWTH = "true"
 
 [dependencies]
 python = "==3.13"
