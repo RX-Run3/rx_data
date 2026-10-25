@@ -23,4 +23,8 @@ This project uses [Pixi](https://pixi.sh/) for dependency management and environ
    pre-commit install
    ```
 
-These hooks live in `hooks/` and will:
+These hooks live in `hooks/` and will
+
+- Copy the `pyrefly.toml` of the project to each package.
+This is done in order to make sure all the packages follow the same
+static analysis configuration.
