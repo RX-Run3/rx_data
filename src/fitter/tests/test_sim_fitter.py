@@ -9,6 +9,7 @@ from dmu           import LogStore
 from dmu.stats     import ParsHolder, print_pdf
 from dmu.generic   import UnpackerModel, utilities as gut
 from dmu.stats     import zfit, utilities as sut
+from dmu.generic   import rxran
 from dmu.workflow  import Cache
 
 from rx_common     import Component, Cuts, Mass, Qsq, Brem 
@@ -29,6 +30,14 @@ log=LogStore.add_logger('fitter:test_sim_fitter')
 
 type zdat = zfit.data.Data
 type zsum = zfit.pdf.SumPDF
+# ---------------------------------------------------
+@pytest.fixture(autouse=True)
+def random():
+    '''
+    Sets random seed, etc
+    '''
+    with rxran.seed(value = 42):
+        yield
 # ---------------------------------------------------
 @pytest.fixture(scope = 'module', autouse=True)
 def loggers():
