@@ -39,6 +39,7 @@ ihep-utilities = "==0.0.3"
 iminuit = "*"
 jacobi = "*"
 jinja2 = "*"
+lazy_loader = ">=0.6,<0.7"
 matplotlib = "*"
 mplhep = "*"
 numba = "*"
@@ -111,3 +112,4 @@ rx-web = { path = "src/rx_web", editable = true }
 vector-stubs = { path = "src/vector_stubs", editable = true }
 zfit-stubs = { path = "src/zfit-stubs", editable = true }
 systematics = { path = "src/systematics", editable = true }
+gvar = ">=13.1.10, <14"
