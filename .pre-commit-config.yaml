@@ -1,10 +1,9 @@
 repos:
   - repo: local
     hooks:
-      - id      : copy_conf
-        name    : Latest -> SHA 
-        entry   : hooks/copy_conf.sh
-        language: script
-        stages  : [pre-commit]
+      - id            : copy_conf
+        name          : Latest -> SHA 
+        entry         : hooks/copy_conf.sh
+        language      : script
+        stages        : [pre-commit]
         pass_filenames: false
-        verbose : true
