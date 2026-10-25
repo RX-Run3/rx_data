@@ -1,0 +1,113 @@
+[workspace]
+authors   = ["Angel Campoverde <angel.campoverde@cern.ch>"]
+channels  = ["conda-forge"]
+name      = "cal-rx-run3"
+platforms = ["linux-64"]
+version   = "0.1.0"
+
+[tasks]
+
+[dependencies]
+python = "==3.13"
+btop = "*"
+chafa = "*"
+eza = "*"
+go = "*"
+nvim = "==0.11.0"
+pip = "*"
+pysocks = "*"
+root = "==6.38"
+tmux = "*"
+xrootd = "==5.9.1"
+yazi = "==26.5.6"
+zoxide = "*"
+
+[pypi-dependencies]
+apd = "*"
+awkward = "*"
+awkward-cpp = "*"
+awkward-pandas = "*"
+bokeh = ">=3.5.2"
+boost-histogram = "*"
+dask = "*"
+formulate = "*"
+hepstats = "*"
+hepunits = "*"
+hist = "*"
+htcondor = "*"
+ihep-utilities = "==0.0.3"
+iminuit = "*"
+jacobi = "*"
+jinja2 = "*"
+matplotlib = "*"
+mplhep = "*"
+numba = "*"
+numdifftools = "*"
+numexpr = "*"
+numpy = "*"
+omegaconf = "*"
+optuna = "*"
+pandas = "*"
+pandas-stubs = "*"
+particle = "*"
+pdg = "*"
+pyarrow = "*"
+pydantic = "*"
+pyyaml = "*"
+scikit-learn = "*"
+scipy = "*"
+scipy-stubs = "*"
+seaborn = "*"
+serena-agent = "*"
+sigal = "*"
+snakemake = "*"
+snakemake-executor-plugin-htcondor = "*"
+snakemake-executor-plugin-ihep = "*"
+snakemake-interface-common = "*"
+snakemake-interface-executor-plugins = "*"
+snakemake-interface-logger-plugins = "*"
+snakemake-interface-report-plugins = "*"
+snakemake-interface-scheduler-plugins = "*"
+snakemake-interface-storage-plugins = "*"
+snakemake-logger-plugin-flowo = "*"
+snakemake-logger-plugin-rich = "*"
+snakemake-logger-plugin-snkmt = "*"
+tensorflow = "*"
+tensorflow-datasets = "*"
+tensorflow-graphics = "*"
+tensorflow-metadata = "*"
+tensorflow-probability = "*"
+typer = "*"
+uproot = "*"
+vector = "*"
+pytest-cov = "*"
+pytest-mock = "*"
+pytest-split = "*"
+pytest-xdist = "*"
+pytest-benchmark = "*"
+ruff = "*"
+pyrefly = "*"
+
+ap-utilities = { path = "src/ap_utilities", editable = true }
+dmu = { path = "src/dmu", editable = true }
+hqm = { path = "src/hqm", editable = true }
+ecal-calibration = { path = "src/ecal_calibration", editable = true }
+fitter = { path = "src/fitter", editable = true }
+post-ap = { path = "src/post_ap", editable = true }
+root-stubs = { path = "src/root_stubs", editable = true }
+gvar-stubs = { path = "src/gvar-stubs", editable = true }
+rx-classifier = { path = "src/rx_classifier", editable = true }
+rx-common = { path = "src/rx_common", editable = true }
+rx-data = { path = "src/rx_data", editable = true }
+rx-efficiencies = { path = "src/rx_efficiencies", editable = true }
+rx-misid = { path = "src/rx_misid", editable = true }
+rx-orchestration = { path = "src/rx_orchestration", editable = true }
+rx-pid = { path = "src/rx_pid", editable = true }
+rx-plots = { path = "src/rx_plots", editable = true }
+rx-q2 = { path = "src/rx_q2", editable = true }
+rx-selection = { path = "src/rx_selection", editable = true }
+rx-tests = { path = "src/rx_tests", editable = true }
+rx-web = { path = "src/rx_web", editable = true }
+vector-stubs = { path = "src/vector_stubs", editable = true }
+zfit-stubs = { path = "src/zfit-stubs", editable = true }
+systematics = { path = "src/systematics", editable = true }
