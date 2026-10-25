@@ -18,7 +18,13 @@ This project uses [Pixi](https://pixi.sh/) for dependency management and environ
    pixi shell
    ```
 
-5. Install the pre-commit hooks:
+5. Install package:
+
+    ```bash
+    uv pip install -r requirements.txt
+    ```
+
+6. Install the pre-commit hooks:
    ```bash
    pre-commit install
    ```
