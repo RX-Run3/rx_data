@@ -4,22 +4,26 @@ Module in charge of plotting refitted vs non-refitted data
 
 import os
 
-from ROOT                    import RDF # type: ignore
-from pathlib                 import Path
-from dmu.generic             import utilities as gut
-from dmu.plotting.plotter_1d import Plotter1D as Plotter
-from rx_common.types         import Qsq, Trigger 
-from rx_data.rdf_getter      import RDFGetter
-from rx_selection            import selection as sel
-
-from dmu.logging.log_store import LogStore
+from typing        import Final
+from ROOT          import RDF
+from pathlib       import Path
+from dmu           import LogStore
+from dmu.generic   import utilities as gut
+from dmu.plotting  import Plotter1D as Plotter
+from rx_common     import Qsq, Trigger
+from rx_common     import Project
+from rx_common     import Component
+from rx_data       import RDFGetter
+from rx_selection  import selection as sel
 
 log=LogStore.add_logger('rx_plots:refitting')
+
+_DATA : Final[Component] = Component.data_24
 # ----------------------
 def _get_rdf(
-    trigger : Trigger, 
-    qsq     : Qsq, 
-    project : str,
+    trigger : Trigger,
+    qsq     : Qsq,
+    project : Project,
     out_path: Path) -> RDF.RNode:
     '''
     Parameters
@@ -32,34 +36,41 @@ def _get_rdf(
     -------------
     Dataframe after full selection
     '''
-    sample = 'DATA_24*'
-
-    with RDFGetter.project(name = project):
-        gtr = RDFGetter(sample = sample, trigger = trigger)
+    with RDFGetter.project(project = project):
+        gtr = RDFGetter(sample = _DATA, trigger = trigger)
         rdf = gtr.get_rdf(per_file = False)
 
     rdf = sel.apply_full_selection(
-        rdf     = rdf, 
-        process = sample, 
-        q2bin   = qsq, 
+        rdf     = rdf,
+        process = _DATA,
+        q2bin   = qsq,
         trigger = trigger,
         out_path= out_path / project)
 
     return rdf
 # ----------------------
-def plot(project : str, qsq : Qsq, trigger : Trigger):
+def plot(project : Project, qsq : Qsq, trigger : Trigger):
     '''
     Parameters
     -----------------
-    project: E.g. rk or rkst
+    project: E.g. rk_no_refit
     qsq    : q2 bin
-    channel: Electron or muon channel 
+    channel: Electron or muon channel
     '''
     ana_dir = Path(os.environ['ANADIR'])
     plt_dir = ana_dir / 'plots/refitting' / trigger / qsq
 
-    rdf_org = _get_rdf(trigger = trigger, qsq = qsq, out_path = plt_dir, project = f'{project}_no_refit')
-    rdf_rft = _get_rdf(trigger = trigger, qsq = qsq, out_path = plt_dir, project =    project)
+    rdf_org = _get_rdf(
+        trigger  = trigger,
+        qsq      = qsq,
+        out_path = plt_dir,
+        project  = project)
+
+    rdf_rft = _get_rdf(
+        trigger  = trigger,
+        qsq      = qsq,
+        out_path = plt_dir,
+        project  = project.main)
 
     d_rdf   = {'Original' : rdf_org, 'Refitted' : rdf_rft}
     cfg = gut.load_conf(package='rx_plotter_data', fpath = 'refitting/v1.yaml')
