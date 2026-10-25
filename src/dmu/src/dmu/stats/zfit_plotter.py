@@ -680,7 +680,7 @@ class ZFitPlotter:
         tensor  = pdf.integrate(limits = rng)
         integral= tensor.numpy()
 
-        return float(integral)
+        return float(integral[0])
     #----------------------------------------
     def _plot_full_model(
         self,
