@@ -82,7 +82,6 @@ class ChecksTask(law.Task):
         '''
         Runs comparison
         '''
-        os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
         if self.kind not in _KIND_TO_MODULE: 
             raise ValueError(f'Invalid kind: {self.kind}')
 

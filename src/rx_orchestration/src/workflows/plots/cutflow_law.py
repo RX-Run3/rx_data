@@ -74,7 +74,6 @@ class CutflowTask(law.Task):
         '''
         Runs comparison
         '''
-        os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
         from rx_plotter_scripts.cutflow import main as cutflow 
 
         cfg  = self._get_config() 

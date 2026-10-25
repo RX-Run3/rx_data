@@ -5,8 +5,6 @@ import os
 import mplhep
 import argparse
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-
 from typing       import Final
 from rx_common    import Component, Cuts, Qsq, Trigger
 from dataclasses  import dataclass

@@ -1,10 +1,7 @@
 '''
 Module used to test bias corrections
 '''
-
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = '1'
-
 import copy
 import yaml
 import numpy

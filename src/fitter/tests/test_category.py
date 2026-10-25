@@ -1,9 +1,6 @@
 '''
 Module with tests for the Category class
 '''
-import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-
 import pytest
 
 from fitter      import Category

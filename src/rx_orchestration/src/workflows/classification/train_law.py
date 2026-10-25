@@ -62,7 +62,6 @@ class TrainTask(law.Task):
         '''
         Runs comparison
         '''
-        os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
         from rx_classifier_scripts.train_classifier import main as runner
 
         cfg = self._get_config() 

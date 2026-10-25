@@ -1,8 +1,6 @@
 '''
 Module used to test CategoryMerger class
 '''
-import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 import pytest
 
 from dmu         import LogStore

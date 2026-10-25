@@ -1,9 +1,7 @@
 '''
 This module will configure pytest tests
 '''
-import os
 import pytest
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 pytest_plugins = ['patch_classes']
 # -----------------------------------

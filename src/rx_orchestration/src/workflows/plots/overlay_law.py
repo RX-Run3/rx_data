@@ -73,7 +73,6 @@ class OverlayTask(law.Task):
         '''
         Runs comparison
         '''
-        os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
         from rx_plotter_scripts.overlay import main as overlay
 
         cfg = self._get_config() 

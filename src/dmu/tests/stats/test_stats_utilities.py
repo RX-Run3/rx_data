@@ -1,9 +1,6 @@
 '''
 Module with unit tests for functions in dmu.stat.utilities
 '''
-import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-
 import re
 import pytest
 import numpy

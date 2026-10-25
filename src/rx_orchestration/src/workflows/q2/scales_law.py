@@ -87,7 +87,6 @@ class Fit(law.Task):
         '''
         Runs comparison
         '''
-        os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
         from rx_q2_scripts.get_q2_tables import main as runner
 
         cfg = self._get_config() 

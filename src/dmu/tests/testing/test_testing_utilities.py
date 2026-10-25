@@ -1,12 +1,9 @@
 '''
 Module with unit tests for testing/utilities.py functions
 '''
-
-import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 import pytest
 
-from ROOT        import RDF # type:ignore
+from ROOT        import RDF
 from dmu         import LogStore
 from dmu.testing import utilities as ut
 
