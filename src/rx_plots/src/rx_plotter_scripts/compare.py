@@ -10,7 +10,7 @@ from rx_common    import Component, Cuts, Qsq, Trigger
 from dataclasses  import dataclass
 from pathlib      import Path
 from omegaconf    import DictConfig
-from ROOT         import RDF, EnableImplicitMT # type: ignore
+from ROOT         import RDF, EnableImplicitMT
 from dmu          import LogLevels, LogStore
 from dmu.generic  import utilities as gut
 from dmu.plotting import Plotter1D
