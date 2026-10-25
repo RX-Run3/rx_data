@@ -3,19 +3,18 @@ FROM quay.io/fedora/python-313 AS builder
 USER 0
 RUN dnf makecache \
     && dnf install -y gcc gcc-c++ make cmake libuuid-devel \
+    && dnf install -y libuuid xrootd-client krb5-workstation \
     && dnf clean all
-
-WORKDIR /build
-COPY requirements-dep.txt .
-
-RUN pip install --no-cache-dir -r requirements-dep.txt
 
 # ---
 
 FROM quay.io/fedora/python-313 AS final
 
+USER 0
 WORKDIR /workspace
 COPY --from=builder /opt/app-root /opt/app-root
-
-USER 0
-RUN dnf install -y libuuid xrootd-client krb5-workstation && dnf clean all
+COPY pixi.toml .
+COPY src       ./src
+RUN curl -fsSL https://pixi.sh/install.sh | sh \
+    && source ~/.bashrc \
+    && pixi install
