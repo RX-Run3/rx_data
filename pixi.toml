@@ -25,6 +25,7 @@ tmux       = '==3.7_'
 xrootd     = '==5.9.1'
 yazi       = '==26.5.6'
 zoxide     = '*'
+lazygit    = ">=0.66.2,<0.67"
 
 [pypi-dependencies]
 apd                                   = '*'
