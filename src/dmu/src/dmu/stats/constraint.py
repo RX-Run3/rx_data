@@ -424,9 +424,16 @@ class ConstraintND(Constraint):
         s_flt   = holder.get_params(floating =  True)
         s_fix   = holder.get_params(floating = False)
         s_all   = s_flt | s_fix
-        d_param = { par.name : par for par in s_all if par.name in self.parameters }
+        d_holder_params = { par.name : par for par in s_all if par.name in self.parameters }
 
-        return [ d_param[name] for name in self.parameters ] 
+        try:
+            pars = [ d_holder_params[name] for name in self.parameters ] 
+        except Exception as exc:
+            for name in d_holder_params:
+                log.error(name)
+            raise ValueError(f'Cannot find at least one parameter associated to a constraint in: {self}') from exc
+
+        return pars
     # ----------------------
     @cached_property
     def observations(self) -> dict[str,zpar]:
