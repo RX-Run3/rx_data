@@ -6,6 +6,5 @@ ENV  PATH="$HOME/.pixi/bin:${PATH}"
 COPY pixi.toml pixi.lock ./
 RUN  pixi install --frozen -e ci-cd
 COPY src/             ./src
-COPY requirements.txt .
-RUN  pixi run -e cpu uv pip install --no-deps -r requirements.txt
+RUN pixi run --as-is -e ci-cd sh -c 'uv pip install --no-deps $(for d in src/*/; do printf -- "-e %s " "$d"; done)'
 CMD  ["pixi", "shell", "-e", "ci-cd"]
