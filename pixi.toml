@@ -100,5 +100,6 @@ zoxide           = '*'
 lazygit          = ">=0.66.2,<0.67"
 
 [environments]
-gpu = { features = ["gpu", 'dev'] }
-cpu = { features = ["cpu", 'dev'] }
+gpu   = { features = ["gpu", 'dev'] }
+cpu   = { features = ["cpu", 'dev'] }
+ci-cd = { features = ["cpu"] }
