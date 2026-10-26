@@ -114,11 +114,16 @@ class ModelSystematics(RootModel[dict[Systematic,tuple[str,str]]], frozen = True
         if syst == Systematic.nominal:
             return {}
 
-        paths            = self.root[syst]
-        nominal_path     = paths[0]
-        alternative_path = paths[1]
+        replacements : dict[str,str] = dict()
 
-        return {nominal_path : alternative_path}
+        for entry in syst.entries:
+            paths            = self.root[entry]
+            nominal_path     = paths[0]
+            alternative_path = paths[1]
+
+            replacements[nominal_path] = alternative_path
+
+        return replacements 
 # ------------------------------
 # Constraints
 # ------------------------------
