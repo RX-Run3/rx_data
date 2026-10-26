@@ -47,7 +47,7 @@ rule nlls:
     shell :
         '''
         (
-        source setup.sh {params.env} {params.home}
+        source snakemake/setup.sh {params.env} {params.home}
 
         fit_rx_rare_sim                     \
                         -b -1               \

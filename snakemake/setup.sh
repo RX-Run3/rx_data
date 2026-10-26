@@ -16,16 +16,7 @@ activate_env()
     source $HOME/.bashrc
     set -euo pipefail
 
-    if command -v micromamba &>/dev/null; then
-        micromamba activate $ENVNAME
-    elif command -v mamba &>/dev/null; then
-        mamba activate $ENVNAME
-    elif command -v conda &>/dev/null; then
-        conda activate $ENVNAME
-    else
-        echo "Error: no conda-compatible tool found (micromamba, mamba, or conda)" >&2
-        return 1
-    fi
+    pixi shell
 }
 
 check_env()
