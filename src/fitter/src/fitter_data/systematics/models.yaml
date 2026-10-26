@@ -22,6 +22,10 @@ rk_ee_cmb:
   - rare/rk/ee/comb.yaml
   - rare/rk/ee/comb_alt_1.yaml
 
+rk_ee_cmb_ss:
+  - rare/rk/ee/comb_ss.yaml
+  - rare/rk/ee/comb_ss_alt_1.yaml
+
 rkst_mm_cmb:
   - rare/rkst/mm/comb.yaml
   - rare/rkst/mm/comb_alt_1.yaml
@@ -29,3 +33,7 @@ rkst_mm_cmb:
 rkst_ee_cmb:
   - rare/rkst/ee/comb.yaml
   - rare/rkst/ee/comb_alt_1.yaml
+
+rkst_ee_cmb_ss:
+  - rare/rkst/ee/comb_ss.yaml
+  - rare/rkst/ee/comb_ss_alt_1.yaml

@@ -90,6 +90,11 @@ class Systematic(StrEnum):
     '''
     Systematic associated to combinatorial model in rk electron region
     '''
+    rk_ee_cmb_ss = auto()
+    '''
+    Variation in SameSign model used to calculate constraints associated to
+    systematic variation in OpossiteSign model
+    '''
     rkst_mm_cmb = auto()
     '''
     Systematic associated to combinatorial model in rkst muon region
@@ -98,6 +103,28 @@ class Systematic(StrEnum):
     '''
     Systematic associated to combinatorial model in rkst electron region
     '''
+    rkst_ee_cmb_ss = auto()
+    '''
+    Variation in SameSign model used to calculate constraints associated to
+    systematic variation in OpossiteSign model
+    '''
+    # --------------------------------
+    @property
+    def entries(self) -> list['Systematic']:
+        '''
+        List of systematics needed to perform config replacements
+        for current systematic.
+
+        E.g. if combinatorial model changes for OS fit, SS fit needed
+        to extract constraints has to have the model changed too.
+        '''
+        match self:
+            case Systematic.rk_ee_cmb:
+                return [Systematic.rk_ee_cmb  , Systematic.rk_ee_cmb_ss]
+            case Systematic.rkst_ee_cmb:
+                return [Systematic.rkst_ee_cmb, Systematic.rkst_ee_cmb_ss]
+            case _:
+                return [self]
     # --------------------------------
     @property
     def is_nominal(self) -> bool:
