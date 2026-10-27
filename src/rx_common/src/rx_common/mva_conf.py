@@ -6,6 +6,9 @@ from pydantic       import BaseModel, RootModel, model_validator
 from .working_point import WorkingPoint
 from .cuts          import Cut, Cuts
 
+_UNINIT_NAME : Final[str]     = 'default'
+'''Label associated to value of MVAWp when no custom value was used'''
+
 UNINIT_VAL  : Final[float]    = -999.
 '''Value used as placeholder for MVAWp that are meant to
 represent the absence of a working point, e.g. such that 
@@ -183,6 +186,9 @@ class MVAWp(RootModel[float|tuple[float,float]]):
         '''
         Friendlier name for working point, e.g. 0523 for 0.523
         '''
+        if self == MVAWp.none():
+            return _UNINIT_NAME
+
         if isinstance(self.root, (float, int)):
             val = int(_MULT_FACTOR * self.root)
             return f'{val:04d}'
