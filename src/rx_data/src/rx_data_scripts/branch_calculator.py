@@ -10,6 +10,7 @@ from pydantic     import BaseModel
 from pathlib      import Path
 from ROOT         import TFile, TTree, RDF
 from dmu          import LogStore, LogLevels
+from dmu.generic  import Mode
 from rx_q2        import Q2SmearCorrector
 from rx_common    import Component, Project, Trigger, MissingComponent
 from rx_data      import utilities
@@ -321,7 +322,7 @@ def main():
     spt   = SampleSplitter(
         version = cfg.vmain,
         project = cfg.proj)
-    files = spt.run(out_path = out_path)
+    files = spt.run(out_path = out_path, mode = Mode.read)
 
     batches = files.split(entries = cfg.entries)
     batch   = batches.at(cfg.index)

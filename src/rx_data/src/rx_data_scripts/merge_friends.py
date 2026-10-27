@@ -4,13 +4,14 @@ Script with code needed to merge outputs from branch_calculator
 import os
 import argparse
 
-from typing    import Final
-from ROOT      import TFileMerger # type: ignore
-from pathlib   import Path
-from pydantic  import BaseModel, RootModel
-from rx_common import Project
-from rx_data   import SampleSplitter # type: ignore
-from dmu       import LogStore
+from typing      import Final
+from ROOT        import TFileMerger
+from pathlib     import Path
+from pydantic    import BaseModel, RootModel
+from rx_common   import Project
+from rx_data     import SampleSplitter
+from dmu         import LogStore
+from dmu.generic import Mode
 
 log=LogStore.add_logger('rx_data:merge_friends')
 _ANADIR : Final[Path] = Path(os.environ['ANADIR'])
@@ -111,7 +112,7 @@ def main():
         version = cfg.vmain)
 
     out_path = _ANADIR / f'DB/statistics/{cfg.vmain}/{cfg.proj}.json'
-    files    = spt.run(out_path = out_path)
+    files    = spt.run(out_path = out_path, mode = Mode.read)
     batches  = files.split(entries = cfg.entries)
 
     to_merge : dict[Path,Paths] = {}
