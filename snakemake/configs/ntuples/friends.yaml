@@ -2,6 +2,9 @@ defaults:
   home       : /afs/ihep.ac.cn/users/c/campoverde
   smklog     : /publicfs/ucas/user/campoverde/Jobs/snakemake
   anadir     : /publicfs/ucas/user/campoverde/Data
+  pkgdir     : /publicfs/ucas/user/campoverde/Packages/cal-rx-run3
+  env        : rx_run3
+  main_vers  : v1
 # ------------
 projects:
   rk:
@@ -43,7 +46,7 @@ projects:
       version     : v2
       entries     : 100_000
     swp_jpsi_misid:
-      version     : v2
+      version     : v3
       entries     : 100_000
     mva           : 
       version     : v5
