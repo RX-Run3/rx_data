@@ -10,9 +10,8 @@ from ROOT      import RDataFrame
 from rx_common import Project
 from pydantic  import BaseModel, RootModel, model_validator
 
-_ANADIR   : Final[Path ] = Path(os.environ['ANADIR'])
-_TREE     : Final[str  ] = 'main'
-_TREE_NAME: Final[str  ] = 'DecayTree'
+_TREE     : Final[str] = 'main'
+_TREE_NAME: Final[str] = 'DecayTree'
 
 log=LogStore.add_logger('rx_data:sample_splitter')
 # ------------------------------------
@@ -309,7 +308,8 @@ class SampleSplitter:
         ---------------
         List of object representing ROOT files
         '''
-        dir_path = _ANADIR / 'Data' / self._project / _TREE / self._version
+        ana_dir  = Path(os.environ['ANADIR'])
+        dir_path = ana_dir / 'Data' / self._project / _TREE / self._version
         paths    = list(dir_path.glob(pattern = '*.root'))
         if not paths:
             raise ValueError(f'No ROOT file found in {dir_path}')
