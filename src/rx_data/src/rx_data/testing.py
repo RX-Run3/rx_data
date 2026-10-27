@@ -75,7 +75,7 @@ def get_rdf(kind : str, prefix : str) -> RDF.RNode:
 
     Returns
     ------------------
-    ROOT dataframe
+    ROOT dataframe with actual data or MC
     '''
     if   kind == 'dt_ss':
         sample = Component.data_24 
