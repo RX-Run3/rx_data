@@ -4,7 +4,7 @@ Module holding SampleSplitter class and other helper classes
 import os
 
 from dmu       import LogStore
-from typing    import Final
+from typing    import Final, Any
 from pathlib   import Path
 from ROOT      import RDataFrame
 from rx_common import Project
@@ -207,7 +207,7 @@ class File(BaseModel):
     # ------------------------------------
     @model_validator(mode = 'before')
     @classmethod
-    def _validate(cls, data) -> 'File':
+    def _validate(cls, data : dict[str, Any]) -> dict[str,Any]:
         path = Path(data['path'])
 
         if not path.exists():
