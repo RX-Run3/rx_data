@@ -8,7 +8,7 @@ import argparse
 from typing       import Final
 from pydantic     import BaseModel
 from pathlib      import Path
-from ROOT         import TFile, TTree, RDF # type: ignore
+from ROOT         import TFile, TTree, RDF
 from dmu          import LogStore
 from rx_q2        import Q2SmearCorrector
 from rx_common    import Component, Project, Trigger, MissingComponent
@@ -228,7 +228,7 @@ def _get_input_rdf(
 
     return rdf
 # ---------------------------------
-def _skip_file(input : Path, output : Path) -> bool:
+def _skip_file(input_path : Path, output_path : Path) -> bool:
     '''
     Parameters
     ----------------
@@ -239,17 +239,17 @@ def _skip_file(input : Path, output : Path) -> bool:
     ----------------
     True, if output exists and is newer than input, false otherwise.
     '''
-    if not output.exists():
-        log.debug(f'Creating: {output}')
+    if not output_path.exists():
+        log.debug(f'Creating: {output_path}')
         return False
 
-    is_stale = input.stat().st_mtime > output.stat().st_mtime
+    is_stale = input_path.stat().st_mtime > output_path.stat().st_mtime
 
     if is_stale:
-        log.debug(f'Stale friend, processing: {input}')
+        log.debug(f'Stale friend, processing: {input_path}')
         return False
 
-    log.debug(f'Skipping, friend found: {output}')
+    log.debug(f'Skipping, friend found: {output_path}')
 
     return True
 # ---------------------------------
@@ -263,7 +263,7 @@ def _create_file(
     part: ROOT file part
     '''
     output_path = part.friend_path(friend = cfg.kind, version = cfg.vfrnd)
-    if _skip_file(input = part.path, output = output_path):
+    if _skip_file(input_path = part.path, output_path = output_path):
         return
 
     try:
@@ -277,7 +277,7 @@ def _create_file(
         log.warning(f'Found empty dataframe for: {part.path}')
         log.info(f'Saving empty output to: {output_path}')
 
-        ofile=TFile(output_path, 'recreate')
+        ofile=TFile(str(output_path), 'recreate')
         ttree=TTree('DecayTree', '')
         ttree.Write()
         ofile.Close()
