@@ -117,7 +117,13 @@ def _parse_args() -> Conf:
 
     cfgs = { region : _cfg_from_args(region = region, args = args) for region in regions }
 
-    return Conf(cfgs=cfgs, syst=args.syst, q2bin=args.q2bin, dry_run=args.dry_run)
+    cfg  = Conf(
+        cfgs   = cfgs, 
+        syst   = args.syst, 
+        q2bin  = args.q2bin, 
+        dry_run= args.dry_run)
+
+    return cfg
 # ----------------------
 def _get_replacements(kind : SimFit, syst : Systematic) -> dict[str,str]:
     '''
