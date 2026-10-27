@@ -3,6 +3,7 @@ import glob
 from pathlib   import Path
 from functools import cache
 
+PKGDIR = '/publicfs/ucas/user/campoverde/Packages/cal-rx-run3'
 ENV    = 'rx_run3'
 ANADIR = config['defaults']['anadir']
 HOME   = config['defaults']['home']
@@ -90,20 +91,28 @@ rule merge:
         LOGD    = LOGDIR,
         home    = HOME,
         env     = ENV,
+        pkg     = PKGDIR,
         entries = lambda wc : _get_setting(wc, 'entries'),
         fvers   = lambda wc : _get_setting(wc, 'version'),
         mvers   = MAIN_VERSION,
     shell:
         '''
         (
-        source setup.sh {params.env} {params.home}
+        export USER={params.env}
+        export HOME={params.home}
+        set +euo pipefail
+        source {params.home}/.bashrc
+        set -euo pipefail
+        cd {params.pkg}
+
         echo $_CONDOR_JOB_AD > {log.prc}
 
-        merge_friends -p {wildcards.project}\
-                      -f {wildcards.friend} \
-                      -F {params.fvers} \
-                      -M {params.mvers}   \
-                      -e {params.entries}
+        pixi run merge_friends    \
+            -p {wildcards.project}\
+            -f {wildcards.friend} \
+            -F {params.fvers}     \
+            -M {params.mvers}     \
+            -e {params.entries}
 
         ) >> {log.prc} 2>&1
 
@@ -133,13 +142,20 @@ rule _calculate:
         LOGD      = LOGDIR,
         home      = HOME,
         env       = ENV,
+        pkg       = PKGDIR,
     shell:
         '''
         (
-        source setup.sh {params.env} {params.home}
+        export USER={params.env}
+        export HOME={params.home}
+        set +euo pipefail
+        source {params.home}/.bashrc
+        set -euo pipefail
+        cd {params.pkg}
+
         echo $_CONDOR_JOB_AD > {log.prc}
 
-        branch_calculator           \
+        pixi run branch_calculator  \
             -g {params.phot_veto}   \
             -k {wildcards.friend}   \
             -p {wildcards.project}  \
