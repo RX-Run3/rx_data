@@ -107,9 +107,9 @@ def _parse_args() -> Conf:
     parser.add_argument('-n', '--ncores' , type=int           , help='Number of processes'                             , default =1)
     parser.add_argument('-l', '--log_lvl', type=LogLevels     , help='Logging level'                                   , default =20)
     parser.add_argument('-q', '--q2bin'  , type=Qsq           , help='q2 bin'       , choices=Qsq.rare                 , required=True)
-    parser.add_argument('-s', '--syst'   , type=Systematic    , help='Systematic variation used for this fit', choices=Systematic, required=True)
-    parser.add_argument('-C', '--mva_cmb', type=MVAWp.from_str, help='MVA working point, e.g. 0200; 0100-0300'         , required=True)
-    parser.add_argument('-P', '--mva_prc', type=MVAWp.from_str, help='MVA working point, e.g. 0200; 0100-0300'         , required=True)
+    parser.add_argument('-s', '--syst'   , type=Systematic    , help='Systematic variation used for this fit'          , default = Systematic.nominal, choices=Systematic)
+    parser.add_argument('-C', '--mva_cmb', type=MVAWp.from_str, help='MVA working point, e.g. 0200; 0100-0300'         , default = MVAWp.none())
+    parser.add_argument('-P', '--mva_prc', type=MVAWp.from_str, help='MVA working point, e.g. 0200; 0100-0300'         , default = MVAWp.none())
     parser.add_argument('-d', '--dry_run', action='store_true', help='If used, will not fit the data')
     args = parser.parse_args()
 
