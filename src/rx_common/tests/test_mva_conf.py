@@ -4,7 +4,7 @@ Test for MVAConf class
 import pytest
 
 from typing    import Final
-from rx_common import MVAConf, MVAWp
+from rx_common import MVAConf, MVAWp, UNINIT_VAL
 from dmu       import LogStore
 
 log = LogStore.add_logger('rx_common:test_mva_conf')
@@ -105,8 +105,11 @@ def test_none():
     '''
     Tests none class property meant to symbolize no cut
     '''
-    wp = MVAWp.none()
+    wp_none = MVAWp.none()
+    wp_valid= MVAWp(root = 0.5)
 
-    assert wp.lower == _MIN_BOUND
-    assert wp.upper == _MAX_BOUND
+    assert wp_none.lower == UNINIT_VAL
+    assert wp_none.upper == UNINIT_VAL
+    assert wp_none       == MVAWp.none()
+    assert wp_none       != wp_valid
 # ----------------------------------------

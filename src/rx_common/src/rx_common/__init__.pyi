@@ -13,7 +13,7 @@ from .component          import MissingComponent
 from .component          import CCbarComponent
 from .component          import Component
 from .campaign           import Campaign
-from .mva_conf           import MVAConf, MVAWp
+from .mva_conf           import MVAConf, MVAWp, UNINIT_VAL
 from .trigger            import Trigger 
 from .process            import set_nproc, get_nproc 
 from .project            import Project, AlternativeProject
@@ -39,6 +39,7 @@ __all__ = [
     'Channel', 
     'MVAConf',
     'MVAWp',
+    'UNINIT_VAL',
     'Project', 
     'DataSet',
     'Region',

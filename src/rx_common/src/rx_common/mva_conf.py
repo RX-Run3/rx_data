@@ -6,8 +6,16 @@ from pydantic       import BaseModel, RootModel, model_validator
 from .working_point import WorkingPoint
 from .cuts          import Cut, Cuts
 
-_MULT_FACTOR : Final[float]    = 1000.  # Needed to go back and forth from string representation
-_LEN_STR     : Final[set[int]] = {3, 4} # String representation of MVAWp should be like 0100 (new) or 100 (old)
+UNINIT_VAL  : Final[float]    = -999.
+'''Value used as placeholder for MVAWp that are meant to
+represent the absence of a working point, e.g. such that 
+default analysis values are used'''
+
+_MULT_FACTOR : Final[float]    = 1000.
+'''Needed to go back and forth from string representation'''
+
+_LEN_STR     : Final[set[int]] = {3, 4}
+'''String representation of MVAWp should be like 0100 (new) or 100 (old)'''
 # ---------------------
 class MVAWp(RootModel[float|tuple[float,float]]):
     '''
@@ -22,7 +30,9 @@ class MVAWp(RootModel[float|tuple[float,float]]):
         '''
         Instance of WP meant to represent no cut
         '''
-        return cls(root = 0)
+        val = UNINIT_VAL, UNINIT_VAL
+
+        return cls(root = val)
     # ----------------------
     @classmethod
     def from_wp(cls, wp : WorkingPoint, is_cmb : bool) -> 'MVAWp':
@@ -134,6 +144,9 @@ class MVAWp(RootModel[float|tuple[float,float]]):
     def validate_value(self) -> 'MVAWp':
         if isinstance(self.root, (float, int)):
             self._validate_prob(prob = self.root)
+            return self
+
+        if self.lower == UNINIT_VAL and self.upper == UNINIT_VAL:
             return self
 
         low, high = self.root
