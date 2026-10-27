@@ -46,8 +46,8 @@ class BinConf(RootModel[dict[str,tuple[float,float,int]]], frozen = True):
         are the bin indexes
         '''
         parts = []
-        for var, (_,_,bin) in self.root.items():
-            parts.append(f'{var}-{bin}')
+        for var, (_,_,binning) in self.root.items():
+            parts.append(f'{var}-{binning}')
 
         return ' '.join(parts)
     # ---------------------------------------------
@@ -238,9 +238,9 @@ class BinningConf(RootModel[dict[str,list[tuple[float,float]]]], frozen = True):
         bins = self.__bins_from_str(binning = binning)
         data = dict()
 
-        for var, bin in bins.items():
-            lower, upper = self.root[var][bin - 1]
-            data[var]    = lower, upper, bin
+        for var, ibin in bins.items():
+            lower, upper = self.root[var][ibin - 1]
+            data[var]    = lower, upper, ibin
 
         return BinConf(root = data)
 # -------------------------------------------
