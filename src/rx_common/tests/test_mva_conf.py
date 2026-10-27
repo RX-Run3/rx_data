@@ -17,6 +17,9 @@ _WPS : Final[list[tuple[str,str]]] = [
 _STR_VALS : Final[list[str]] = [val for val, _ in _WPS]
 '''Working point string values for tests'''
 
+_MIN_BOUND : Final[float] = 0.0
+'''Minimum possible lower bound test value'''
+
 _LOWER_BOUND : Final[float] = 0.1
 '''Lower bound test value'''
 
@@ -97,4 +100,13 @@ def test_get_cut(val : str, expr : str):
     expr = expr.replace('VAR', var)
 
     assert expr == cut
+# ----------------------------------------
+def test_none():
+    '''
+    Tests none class property meant to symbolize no cut
+    '''
+    wp = MVAWp.none()
+
+    assert wp.lower == _MIN_BOUND
+    assert wp.upper == _MAX_BOUND
 # ----------------------------------------

@@ -18,6 +18,13 @@ class MVAWp(RootModel[float|tuple[float,float]]):
     '''
     # ----------------------
     @classmethod
+    def none(cls) -> 'MVAWp':
+        '''
+        Instance of WP meant to represent no cut
+        '''
+        return cls(root = 0)
+    # ----------------------
+    @classmethod
     def from_wp(cls, wp : WorkingPoint, is_cmb : bool) -> 'MVAWp':
         '''
         Parameters
