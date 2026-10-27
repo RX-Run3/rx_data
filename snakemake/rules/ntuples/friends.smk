@@ -1,19 +1,20 @@
 import os
 import glob
-from pathlib   import Path
-from functools import cache
+from pathlib     import Path
+from functools   import cache
+from dmu.generic import Mode
 
-PKGDIR = '/publicfs/ucas/user/campoverde/Packages/cal-rx-run3'
-ENV    = 'rx_run3'
-ANADIR = config['defaults']['anadir']
-HOME   = config['defaults']['home']
+ENV          = config['defaults']['env'      ]
+PKGDIR       = config['defaults']['pkgdir'   ]
+ANADIR       = config['defaults']['anadir'   ]
+HOME         = config['defaults']['home'     ]
+MAIN_VERSION = config['defaults']['main_vers']
+LOGDIR       = config['defaults']['smklog'   ]
 
 os.environ['USER']   = ENV
 os.environ['HOME']   = HOME 
 os.environ['ANADIR'] = ANADIR 
 
-MAIN_VERSION = 'v1'
-LOGDIR = config['defaults']['smklog']
 _MERGE = f'{ANADIR}/tmp/sentinels/friends/{{project}}/{{friend}}/{{vers}}.merge'
 _CALC  = f'{ANADIR}/tmp/sentinels/friends/{{project}}/{{friend}}/{{vers}}_{{index}}.calc'
 
@@ -22,12 +23,12 @@ from rx_data   import SampleSplitter
 # ──────────────────────────────────────────────────────────────────────
 @cache
 def _get_parts(project, entries):
+    fpath = Path(f'{ANADIR}/DB/statistics/v1/{project}.json')
     spt   = SampleSplitter(
         version = MAIN_VERSION,
         project = project)
+    files = spt.run(out_path = fpath, mode = Mode.read)
 
-    fpath   = Path(f'{ANADIR}/DB/statistics/v1/{project}.json')
-    files   = spt.run(out_path = fpath)
     batches = files.split(entries = entries)
     nbatch  = batches.size
     print(f'Found {nbatch} batches for {project} with {entries} entries')
@@ -64,13 +65,13 @@ def merge_sentinels(friend):
 rule all:
     '''Request all sentinel files for every combination.'''
     input:
-        merge_sentinels(friend = 'mass'                    ) +
-        merge_sentinels(friend = 'swp_jpsi_misid'          ) +
-        merge_sentinels(friend = 'swp_cascade'             ) +
-        merge_sentinels(friend = 'brem_track_2'            ) +
-        merge_sentinels(friend = 'hop'                     ) +
-        merge_sentinels(friend = 'mva'                     ) +
-        merge_sentinels(friend = 'smear'                   )
+        merge_sentinels(friend = 'mass'          ) +
+        merge_sentinels(friend = 'swp_jpsi_misid') +
+        merge_sentinels(friend = 'swp_cascade'   ) +
+        merge_sentinels(friend = 'brem_track_2'  ) +
+        merge_sentinels(friend = 'hop'           ) +
+        merge_sentinels(friend = 'mva'           ) +
+        merge_sentinels(friend = 'smear'         )
 # ───────────────────────────────────────────────────────────────────
 rule merge:
     output:
