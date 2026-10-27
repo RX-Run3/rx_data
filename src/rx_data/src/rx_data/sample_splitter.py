@@ -131,7 +131,7 @@ class FileBatch(RootModel[list[FilePart]]):
     def __str__(self) -> str:
         nfiles = len(self.root)
         name   = self.root[0].path.name if nfiles == 1 else 'multiple'
-        msg    = f'{nfiles:<20}{self.size:<20}{name}'
+        msg    = f'{nfiles:<20}{self.size:<20,}{name}'
 
         return msg
 # ------------------------------------
