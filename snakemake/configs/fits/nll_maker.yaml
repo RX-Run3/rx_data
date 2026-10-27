@@ -1,7 +1,7 @@
 qsq_bin:
   - low
   - central
-  - high
+  #- high
 systematic:
   - nominal
   - rk_mm_sig
