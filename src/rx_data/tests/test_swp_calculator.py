@@ -5,7 +5,7 @@ import mplhep
 import pytest
 import matplotlib.pyplot as plt
 
-from ROOT      import RDF # type: ignore
+from ROOT      import RDF
 from pathlib   import Path
 from dmu       import LogStore
 from rx_common import Project, Component, Trigger
