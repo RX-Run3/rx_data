@@ -9,7 +9,7 @@ from typing       import Final
 from pydantic     import BaseModel
 from pathlib      import Path
 from ROOT         import TFile, TTree, RDF
-from dmu          import LogStore
+from dmu          import LogStore, LogLevels
 from rx_q2        import Q2SmearCorrector
 from rx_common    import Component, Project, Trigger, MissingComponent
 from rx_data      import utilities
@@ -48,14 +48,14 @@ def _parse_args() -> Config:
     Parse arguments
     '''
     parser = argparse.ArgumentParser(description='Script used to create ROOT files with trees with extra branches by picking up inputs from directory and patitioning them')
-    parser.add_argument('-g', '--photon_veto', type=str, help='Version of photon veto', required=True)
+    parser.add_argument('-g', '--photon_veto', type=str, help='Version of photon veto, default no veto'  , default='v0')
     parser.add_argument('-k', '--kind'       , type=str, help='Kind of branch to create', choices=_KINDS, required=True)
-    parser.add_argument('-p', '--proj'       , type=str, help='Project'                 , choices=['rk', 'rkst', 'rk_nopid', 'rkst_nopid', 'rk_no_refit'], required=True)
+    parser.add_argument('-p', '--proj'       , type=str, help='Project'                 , choices=Project, required=True)
     parser.add_argument('-M', '--vmain'      , type=str, help='Version of main tree'    , required=True)
     parser.add_argument('-F', '--vfrnd'      , type=str, help='Version of friend trees' , required=True)
     parser.add_argument('-i', '--index'      , type=int, help='Index of batch of file parts to use in calculation', required = True)
     parser.add_argument('-e', '--entries'    , type=int, help='Number of entries to split dataset into', required = True)
-    parser.add_argument('-l', '--lvl'        , type=int, help='log level', choices=[5, 10, 20, 30], default=20)
+    parser.add_argument('-l', '--lvl'        , type=int, help='log level', choices=LogLevels, default=20)
     parser.add_argument('-b', '--pbar'       ,           help='If used, will show progress bar whenever it is available', action='store_true')
     parser.add_argument('-d', '--dry'        ,           help='If used, will do dry drun, e.g. stop before processing', action='store_true')
     args = parser.parse_args()
