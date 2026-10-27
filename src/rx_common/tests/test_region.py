@@ -4,7 +4,6 @@ Module holding tests for Region
 import pytest
 
 from pathlib   import Path
-from rx_common import Particle
 from rx_common import Trigger
 from rx_common import Brem
 from rx_common import Region
@@ -32,8 +31,13 @@ def test_serialize(tmp_path : Path):
 # ----------------------------------------
 @pytest.mark.parametrize("brem", Brem)
 @pytest.mark.parametrize("trigger", Trigger)
-@pytest.mark.parametrize("lepton", [Particle.kaon, Particle.pion])
-def test_obs(brem : Brem, trigger : Trigger, lepton : Particle):
-    region = Region(brem=brem, trigger=trigger, lepton=lepton)
+def test_obs(brem : Brem, trigger : Trigger):
+    if not trigger.has_pid:
+        return
+
+    region      = Region(
+        brem    = brem, 
+        trigger = trigger)
+
     _ = region.obs
 # ----------------------------------------
