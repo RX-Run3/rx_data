@@ -7,7 +7,7 @@ import os
 import tqdm
 import typer
 
-from ROOT        import EnableImplicitMT # type: ignore
+from ROOT        import EnableImplicitMT
 from typing      import Final
 from pathlib     import Path
 from dmu         import LogLevels, LogStore
@@ -224,7 +224,7 @@ def store_sample_db(
         project = project)
 
     cache_path = _ANADIR / f'DB/statistics/{version}/{project}.json'
-    spt.run(out_path = cache_path)
+    spt.run(out_path = cache_path, mode = Mode.write)
 # ----------------------
 if __name__ == '__main__':
     app()

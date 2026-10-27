@@ -3,12 +3,13 @@ Module holding SampleSplitter class and other helper classes
 '''
 import os
 
-from dmu       import LogStore
-from typing    import Final, Any
-from pathlib   import Path
-from ROOT      import RDataFrame
-from rx_common import Project
-from pydantic  import BaseModel, RootModel, model_validator
+from dmu         import LogStore
+from typing      import Final, Any
+from pathlib     import Path
+from ROOT        import RDataFrame
+from rx_common   import Project
+from dmu.generic import Mode
+from pydantic    import BaseModel, RootModel, model_validator
 
 _TREE     : Final[str] = 'main'
 _TREE_NAME: Final[str] = 'DecayTree'
@@ -322,10 +323,14 @@ class SampleSplitter:
 
         return Files(files)
     # ------------------------------------
-    def run(self, out_path : Path | None = None) -> Files:
+    def run(
+        self, 
+        mode     : Mode,
+        out_path : Path) -> Files:
         '''
         Parameters
         -----------------
+        mode    : Specifies what to do with the path passed 
         out_path: Path to database with samples information
                   If passed JSON path will load it, if not
                   will calculate it, cache it and return files object
@@ -334,13 +339,9 @@ class SampleSplitter:
         -----------------
         Container with object representing ntuples 
         '''
-        if out_path is not None and not out_path.exists():
-            raise ValueError(f'Missing {out_path}')
+        mode.validate(path = out_path)
 
-        if not out_path:
-            out_path = self._out_path 
-
-        if out_path.exists():
+        if out_path.exists() and not mode.skip_reading:
             log.info(f'Found cached: {out_path}')
             return Files.from_json(path = out_path)
 
