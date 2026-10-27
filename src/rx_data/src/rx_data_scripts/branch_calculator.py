@@ -169,22 +169,11 @@ def _get_swap_rdf(
     -------------
     ROOT dataframe with the swap masses
     '''
-    lep_id  = 11 if trigger.is_electron else 13
-    project = trigger.project
-
-    log.info(f'Found project {project} for trigger {trigger}')
-
-    # Pion is the one that gets misidentified as electron
-    # pi(-> e/mu) + e/mu combinations
-    kaon_name = {'rk' : 'H', 'rkst' : 'H2'}[project]
     if cfg.kind == 'swp_jpsi_misid':
-        obj = SWPCalculator(rdf=rdf, d_lep={'L1' : lep_id, 'L2' : lep_id}, d_had={kaon_name : lep_id})
-        rdf = obj.get_rdf(preffix=cfg.kind, progress_bar=cfg.pbar, use_ss=trigger.is_ss)
-
-        return rdf
+        return _get_charmonium_swap_rdf(rdf, cfg, trigger)
 
     # These are Kpi combinations
-    kaon_name = {'rk' : 'H', 'rkst' : 'H1'}[project]
+    kaon_name = {'rk' : 'H', 'rkst' : 'H1'}[trigger.project]
     if cfg.kind == 'swp_cascade':
         obj = SWPCalculator(rdf=rdf, d_lep={'L1' : 211, 'L2' : 211}, d_had={kaon_name : 321})
         rdf = obj.get_rdf(preffix=cfg.kind, progress_bar=cfg.pbar, use_ss=trigger.is_ss)
@@ -192,6 +181,66 @@ def _get_swap_rdf(
         return rdf
 
     raise ValueError(f'Invalid kind: {cfg.kind}')
+# ---------------------------------
+def _get_charmonium_swap_rdf(
+    rdf     : RDF.RNode, 
+    cfg     : Config, 
+    trigger : Trigger) -> RDF.RNode:
+    '''
+    Parameters
+    -------------
+    rdf    : ROOT dataframe
+    cfg    : Config object
+    trigger: HLT2 trigger
+
+    Returns
+    -------------
+    ROOT dataframe with the swap masses
+    '''
+    lep_id = 11 if trigger.is_electron else 13
+
+    log.info(f'Found project {trigger.project} for trigger {trigger}')
+
+    if trigger.project == Project.rk:
+        obj = SWPCalculator(
+            rdf  = rdf, 
+            d_lep= {'L1' : lep_id, 'L2' : lep_id}, 
+            d_had= {'H' : lep_id})
+
+        rdf = obj.get_rdf(
+            preffix     =cfg.kind, 
+            progress_bar=cfg.pbar, 
+            use_ss      =trigger.is_ss)
+
+    if trigger.project == Project.rkst:
+        obj_kaon = SWPCalculator(
+            rdf  = rdf, 
+            d_lep= {'L1' : lep_id, 'L2' : lep_id}, 
+            d_had= {'H1' : lep_id})
+
+        rdf_kaon        = obj_kaon.get_rdf(
+            preffix     = f'{cfg.kind}_kaon', 
+            progress_bar= cfg.pbar, 
+            use_ss      = trigger.is_ss)
+
+        obj_kaon = SWPCalculator(
+            rdf  = rdf, 
+            d_lep= {'L1' : lep_id, 'L2' : lep_id}, 
+            d_had= {'H2' : lep_id})
+
+        rdf_pion        = obj_kaon.get_rdf(
+            preffix     = f'{cfg.kind}_pion', 
+            progress_bar= cfg.pbar, 
+            use_ss      = trigger.is_ss)
+
+        data_kaon = rdf_kaon.AsNumpy()
+        data_pion = rdf_pion.AsNumpy()
+
+        data_kaon.update(data_pion)
+
+        return RDF.FromNumpy(data_kaon)
+
+    raise ValueError(f'Invalid project {trigger.project}')
 # ---------------------------------
 def _get_input_rdf(
     cfg  : Config,
