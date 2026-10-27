@@ -21,36 +21,36 @@ jpsi_misid_common: &jmd_common
 # MVA
 # ----------------------------------
 cmb_rkst_common: &cmb_rkst_common
-  low     : mva_cmb > 0.98
-  central : mva_cmb > 0.98
-  jpsi    : mva_cmb > 0.98
-  psi2    : mva_cmb > 0.98
-  high    : mva_cmb > 0.60
-  none    : mva_cmb > 0.60
+  low     : mva_cmb >= 0.98 && mva_cmb < 1.00
+  central : mva_cmb >= 0.98 && mva_cmb < 1.00
+  jpsi    : mva_cmb >= 0.98 && mva_cmb < 1.00
+  psi2    : mva_cmb >= 0.98 && mva_cmb < 1.00
+  high    : mva_cmb >= 0.60 && mva_cmb < 1.00
+  none    : mva_cmb >= 0.60 && mva_cmb < 1.00
 
 prc_rkst_common: &prc_rkst_common
-  low     : mva_prc > 0.60
-  central : mva_prc > 0.40
-  jpsi    : mva_prc > 0.40
-  psi2    : mva_prc > 0.40
-  high    : mva_prc > 0.80
-  none    : mva_prc > 0.80
+  low     : mva_prc >= 0.60 && mva_prc < 1.00
+  central : mva_prc >= 0.40 && mva_prc < 1.00
+  jpsi    : mva_prc >= 0.40 && mva_prc < 1.00
+  psi2    : mva_prc >= 0.40 && mva_prc < 1.00
+  high    : mva_prc >= 0.80 && mva_prc < 1.00
+  none    : mva_prc >= 0.80 && mva_prc < 1.00
 # ----------------------------------
 cmb_rk_common: &cmb_rk_common
-  low     : mva_cmb > 0.90
-  central : mva_cmb > 0.95
-  jpsi    : mva_cmb > 0.95
-  psi2    : mva_cmb > 0.95
-  high    : mva_cmb > 0.60
-  none    : mva_cmb > 0.60
+  low     : mva_cmb >= 0.90 && mva_cmb < 1.00
+  central : mva_cmb >= 0.95 && mva_cmb < 1.00
+  jpsi    : mva_cmb >= 0.95 && mva_cmb < 1.00
+  psi2    : mva_cmb >= 0.95 && mva_cmb < 1.00
+  high    : mva_cmb >= 0.60 && mva_cmb < 1.00
+  none    : mva_cmb >= 0.60 && mva_cmb < 1.00
 
 prc_rk_common: &prc_rk_common
-  low     : mva_prc > 0.60
-  central : mva_prc > 0.60
-  jpsi    : mva_prc > 0.60
-  psi2    : mva_prc > 0.60
-  high    : mva_prc > 0.80
-  none    : mva_prc > 0.80
+  low     : mva_prc >= 0.60 && mva_prc < 1.00
+  central : mva_prc >= 0.60 && mva_prc < 1.00
+  jpsi    : mva_prc >= 0.60 && mva_prc < 1.00
+  psi2    : mva_prc >= 0.60 && mva_prc < 1.00
+  high    : mva_prc >= 0.80 && mva_prc < 1.00
+  none    : mva_prc >= 0.80 && mva_prc < 1.00
 # ----------------------------------
 q2_common: &q2_common
   low     : (q2       >   100000) && (q2 <  1100000)
