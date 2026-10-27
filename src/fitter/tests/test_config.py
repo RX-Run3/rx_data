@@ -35,10 +35,12 @@ def initialize():
 @pytest.mark.parametrize('channel', [Channel.ee, Channel.mm  ])
 @pytest.mark.parametrize('project', [Project.rk, Project.rkst])
 @pytest.mark.parametrize('q2bin'  , Qsq.for_physics())
+@pytest.mark.parametrize('mva_wp' , [MVAWp(root = 0.5), MVAWp.none()])
 def test_full_config(
     monkeypatch,
     tmp_path: Path,
     q2bin   : Qsq,
+    mva_wp  : MVAWp,
     channel : Channel,
     project : Project):
     '''
@@ -53,13 +55,22 @@ def test_full_config(
     cfg = RXFitConfig(
         name    = 'test',
         group   = 'test',
-        mva_cmb = MVAWp(0.5),
-        mva_prc = MVAWp(0.5),
+        mva_cmb = mva_wp,
+        mva_prc = mva_wp,
         q2bin   = q2bin,
         mod_cfg = cfg)
 
     for cfg_cmp in cfg.mod_cfg.components[q2bin].values():
         assert isinstance(cfg_cmp.cfg_obs, ObservableConf)
+
+    if mva_wp != MVAWp.none():
+        return
+
+    with pytest.raises(ValueError):
+        _ = cfg.cmb_cut
+
+    with pytest.raises(ValueError):
+        _ = cfg.prc_cut
 # ----------------------
 @pytest.mark.parametrize('mass', Mass)
 def test_observable_conf(mass : Mass):

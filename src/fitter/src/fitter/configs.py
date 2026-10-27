@@ -671,15 +671,15 @@ class RXFitConfig(BaseModel):
     mva_cmb : MVAWp
     mva_prc : MVAWp
     q2bin   : Qsq
-
     mod_cfg : FitModelConf
+
     output_directory : Path   = Path('/tmp')
     ncores  : int             = 1
     block   : int             = -1
     ncores  : int             = 1
     log_lvl : int             = 20
     ntoys   : int             = 0
-    toy_cfg : ToyConf |  None = None
+    toy_cfg : ToyConf | None  = None
     # ----------------------
     @model_validator(mode = 'after')
     def _validate(self) -> 'RXFitConfig':
@@ -884,6 +884,9 @@ class RXFitConfig(BaseModel):
         -------------
         Cut used for combinatorial MVA
         '''
+        if self.mva_cmb == MVAWp.none():
+            raise ValueError('Requesting custom combinatorial WP cut when no custom WP was specified')
+
         return self.mva_cmb.get_cut(name = 'mva_cmb')
     # ----------------------
     @cached_property
@@ -893,6 +896,9 @@ class RXFitConfig(BaseModel):
         -------------
         Cut used for part-reco MVA
         '''
+        if self.mva_prc == MVAWp.none():
+            raise ValueError('Requesting custom part-reco WP cut when no custom WP was specified')
+
         return self.mva_prc.get_cut(name = 'mva_prc')
     # ----------------------
     @cached_property
@@ -942,9 +948,15 @@ class RXFitConfig(BaseModel):
         selection : dict[Cuts,str] = {
             Cuts.block : self.block_cut,
             Cuts.brem  : self.brem_cut,
-            Cuts.cmb   : self.cmb_cut,
-            Cuts.prc   : self.prc_cut,
         }
+
+        wp_none = MVAWp.none()
+
+        if self.cmb_cut != wp_none:
+            selection[Cuts.cmb] = self.cmb_cut
+
+        if self.prc_cut != wp_none:
+            selection[Cuts.prc] = self.prc_cut
 
         selection.update(self.mod_cfg.selection[self.q2bin])
 
