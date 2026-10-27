@@ -952,10 +952,10 @@ class RXFitConfig(BaseModel):
 
         wp_none = MVAWp.none()
 
-        if self.cmb_cut != wp_none:
+        if self.mva_cmb != wp_none:
             selection[Cuts.cmb] = self.cmb_cut
 
-        if self.prc_cut != wp_none:
+        if self.mva_prc != wp_none:
             selection[Cuts.prc] = self.prc_cut
 
         selection.update(self.mod_cfg.selection[self.q2bin])
