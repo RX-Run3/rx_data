@@ -212,6 +212,8 @@ def _get_charmonium_swap_rdf(
             progress_bar=cfg.pbar, 
             use_ss      =trigger.is_ss)
 
+        return rdf
+
     if trigger.project == Project.rkst:
         obj_kaon = SWPCalculator(
             rdf  = rdf, 
