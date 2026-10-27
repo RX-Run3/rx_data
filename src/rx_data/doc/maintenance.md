@@ -237,16 +237,15 @@ Given the files produced by `post_ap`, new branches can be attached. These branc
 
 ### Create ntuple statistics databases
 
-In order to do this we assume that all the ntuples live in `$DATADIR/main/vx`, where `DATADIR` needs to be exported
-such that the code will pick it up. `vx` represents a version of the ntuples (e.g. `v1`, `v2`, etc), the code will 
-pick up the latest. Then run:
+In order to do this we assume that all the ntuples live in `$ANADIR/Data/rkst/main/vx`, where `ANADIR` needs to be exported
+such that the code will pick it up. `vx` represents a version of the ntuples (e.g. `v1`, `v2`, etc). Then run:
 
 ```bash
 rxdata store-sample-db -v v1 -p rk
 rxdata store-sample-db -v v1 -p rkst
 ```
 
-`v1` is the version of the main trees. This will create a database in a path starting at `$ANADIR`. This database will contain all the names of the files
+`v1` is the version of the main trees. This will create a database in `$ANADIR/DB/statistics`. This database will contain all the names of the files
 used in the analysis as well as the number of entries. This is needed in order for the code to know how to split the
 files to load balance effectively the processing of the ntuples.
 
