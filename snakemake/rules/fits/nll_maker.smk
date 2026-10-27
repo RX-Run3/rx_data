@@ -6,8 +6,6 @@ qsq_bin   = config['qsq_bin'   ]
 systs     = config['systematic']
 # -------------
 KIND      = 'rx'
-CMB       = '0900-1000'
-PRC       = '0600-1000'
 ENV       = 'rx_run3'
 HOME      = '/afs/ihep.ac.cn/users/c/campoverde'
 ANADIR    = '/publicfs/ucas/user/campoverde/Data'
@@ -59,8 +57,6 @@ rule nlls:
         pixi run fit_rx_rare_sim            \
                         -b -1               \
                         -k {params.kind}    \
-                        -C {params.cmb}     \
-                        -P {params.prc}     \
                         -g nll              \
                         -q {wildcards.qsq}  \
                         -s {wildcards.syst}
