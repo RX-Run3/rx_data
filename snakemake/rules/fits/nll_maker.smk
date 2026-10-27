@@ -6,11 +6,12 @@ qsq_bin   = config['qsq_bin'   ]
 systs     = config['systematic']
 # -------------
 KIND      = 'rx'
-CMB       = '0900'
-PRC       = '0600'
+CMB       = '0900-1000'
+PRC       = '0600-1000'
 ENV       = 'rx_run3'
 HOME      = '/afs/ihep.ac.cn/users/c/campoverde'
 ANADIR    = '/publicfs/ucas/user/campoverde/Data'
+PACDIR    = '/publicfs/ucas/user/campoverde/Packages/cal-rx-run3'
 LOGDIR    = '/publicfs/ucas/user/campoverde/Jobs/snakemake'
 OUT_PATH  = f'{ANADIR}/fits/data/nll'
 MODE      = 'rare'
@@ -36,20 +37,26 @@ rule nlls:
         LOG = f'{LOGDIR}/{{qsq}}_{{syst}}.log',
     params:
         LOGD = LOGDIR,
+        pkg  = PACDIR,
         home = HOME,
         kind = KIND,
         env  = ENV,
         cmb  = CMB,
         prc  = PRC,
     resources:
-        htcondor_request_mem_mb = 6000,
+        htcondor_request_mem_mb = 4000,
         htcondor_request_disk_mb= 2000,
     shell :
         '''
         (
-        source snakemake/setup.sh {params.env} {params.home}
+        export USER={params.env}
+        export HOME={params.home}
+        set +euo pipefail
+        source {params.home}/.bashrc
+        set -euo pipefail
+        cd {params.pkg}
 
-        fit_rx_rare_sim                     \
+        pixi run fit_rx_rare_sim            \
                         -b -1               \
                         -k {params.kind}    \
                         -C {params.cmb}     \
