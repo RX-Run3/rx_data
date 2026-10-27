@@ -48,6 +48,8 @@ class Mass(StrEnum):
     bd_bcor_smr  = 'B_Mass_smr'
     bd_kk        = 'B_Mass_hdkk'
     bd_pipi      = 'B_Mass_hdpipi'
+
+    swp_swap     = 'swp_jpsi_misid_mass_swp'
     # ------------------------------
     @classmethod
     def dtf_from_qsq(cls, qsq : Qsq, project : Project) -> 'Mass':
@@ -229,6 +231,8 @@ class Mass(StrEnum):
                 return 4800, 6500
             case Mass.bd_pipi:
                 return Mass.bd_kk.limits
+            case Mass.swp_swap:
+                return 2600, 3300
             case _:
                 raise ValueError(f'Cannot determine mass range for: {self}')
 # ------------------------------
