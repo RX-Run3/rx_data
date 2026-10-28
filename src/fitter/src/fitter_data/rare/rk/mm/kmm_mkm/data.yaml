@@ -21,8 +21,8 @@ observable:
       - 3300
 components:
   high:
-    comb   : rare/rk/mm/kmm_mkm/comb.yaml
-    bpkpmm : rare/rk/mm/kmm_mkm/bpkpjpsimm.yaml
+    comb       : rare/rk/mm/kmm_mkm/comb.yaml
+    bpkpjpsimm : rare/rk/mm/kmm_mkm/bpkpjpsimm.yaml
 constraints:
   signal_fraction : []
   combinatorial   : false
