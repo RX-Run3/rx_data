@@ -27,14 +27,14 @@ from rx_data        import RDFGetter
 from rx_common      import Trigger
 
 _EMULATED : Final[list[tuple[Component, Component, Trigger]]] = [
-    (Component.bdkstkpijpsimm, Component.bskstjpsimm        , Trigger.rkst_mm_os),
-    (Component.bdkstkpijpsiee, Component.bskstjpsiee        , Trigger.rkst_ee_os),
+    (Component.bdkstkpijpsimm, Component.bskstjpsimm            , Trigger.rkst_mm_os),
+    (Component.bdkstkpijpsiee, Component.bskstjpsiee            , Trigger.rkst_ee_os),
     # -------------
-    (Component.bdkstkpijpsimm, Component.bdkstjpsimm_had_swp, Trigger.rkst_mm_os),
-    (Component.bdkstkpijpsiee, Component.bdkstjpsiee_had_swp, Trigger.rkst_ee_os),
+    (Component.bdkstkpijpsimm, Component.bdkstkpijpsimm_had_swp    , Trigger.rkst_mm_os),
+    (Component.bdkstkpijpsiee, Component.bdkstkpijpsiee_had_swp    , Trigger.rkst_ee_os),
     # -------------
-    (Component.bpkpjpsimm    , Component.bpkpjpsimm_mix_swp , Trigger.rk_mm_os  ),
-    (Component.bpkpjpsiee    , Component.bpkpjpsiee_mix_swp , Trigger.rk_ee_os  ),
+    (Component.bdkstkpijpsimm, Component.bdkstkpijpsimm_mix_swp , Trigger.rkst_mm_os),
+    (Component.bdkstkpijpsiee, Component.bdkstkpijpsiee_mix_swp , Trigger.rkst_ee_os),
 ]
 
 _MCSS : Final[list[tuple[Component,Trigger]]] = [
