@@ -466,9 +466,9 @@ class Component(StrEnum):
             return 'Bs_psi2SKst_ee_eq_DPC'
           # -------
           case Component.bdkstkpijpsimm_kpimm_pikmm:
-            return 'Bd_JpsiKst_mm_had_swp'
+            return 'Bd_JpsiKst_mm_kpimm_pikmm'
           case Component.bdkstkpijpsiee_kpiee_pikee:
-            return 'Bd_JpsiKst_ee_had_swp'
+            return 'Bd_JpsiKst_ee_kpiee_pikee'
           # -------
           case Component.bdkstkpijpsimm_mix_swp:
             return 'Bd_JpsiKst_mm_mix_swp'
@@ -524,11 +524,11 @@ class Component(StrEnum):
                 return ['bpjp'   , 'jpmm']
             case 'bdkstkpijpsiee':
                 return ['bdjkst' , 'jpee', 'kokp']
-            case 'bdkstkpijpsiee_had_swp':
+            case 'bdkstkpijpsiee_kpiee_pikee':
                 return ['bdjkst' , 'jpee', 'kokp']
             case 'bdkstkpijpsimm':
                 return ['bdjkst' , 'jpmm', 'kokp']
-            case 'bdkstkpijpsimm_had_swp':
+            case 'bdkstkpijpsimm_kpimm_pikmm':
                 return ['bdjkst' , 'jpmm', 'kokp']
             case 'bskstjpsiee':
                 return ['bsjkst' , 'jpee', 'kokp']

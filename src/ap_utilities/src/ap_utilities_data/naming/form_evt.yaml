@@ -5,8 +5,8 @@ Bu_KxKpipiee               : Bu_KxKpipiee
 Bs_psi2SKst_mm_eq_DPC      : Bs_psi2SKst_mm_eq_DPC
 Bs_psi2SKst_ee_eq_DPC      : Bs_psi2SKst_ee_eq_DPC
 Bs_JpsiKst_ee_eq_DPC       : Bs_JpsiKst_ee_eq_DPC
-Bd_JpsiKst_ee_had_swp      : Bd_JpsiKst_ee_had_swp
-Bd_JpsiKst_mm_had_swp      : Bd_JpsiKst_mm_had_swp
+Bd_JpsiKst_ee_kpiee_pikee      : Bd_JpsiKst_ee_kpiee_pikee
+Bd_JpsiKst_mm_kpimm_pikmm      : Bd_JpsiKst_mm_kpimm_pikmm
 Bd_JpsiKst_ee_mix_swp      : Bd_JpsiKst_ee_mix_swp
 Bd_JpsiKst_mm_mix_swp      : Bd_JpsiKst_mm_mix_swp
 Bu_JpsiK_mm_eq_DPC_mix_swp : Bu_JpsiK_mm_eq_DPC_mix_swp

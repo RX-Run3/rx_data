@@ -22,7 +22,7 @@ components:
   lbpkjpsiee      : reso/rkst/ee/lbpkjpsiee_np.yaml
   bsphijpsiee     : reso/rkst/ee/bsphijpsiee_np.yaml
   #bskstjpsiee     : reso/rkst/ee/bskstjpsiee.yaml
-  bdkstkpijpsiee_had_swp : reso/rkst/ee/bdkstkpijpsiee_had_swp_np.yaml
+  bdkstkpijpsiee_kpiee_pikee : reso/rkst/ee/bdkstkpijpsiee_kpiee_pikee_np.yaml
   bdkstkpijpsiee  : reso/rkst/ee/bdkstkpijpsiee.yaml
   bdkstkpipsi2ee  : reso/rkst/ee/bdkstkpipsi2ee.yaml
 constraints:
@@ -37,6 +37,6 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
     lbjpsipkee      : $\Lambda_b \to J/\psi pK$
     bsphijpsiee     : $B_s \to J/\psi\phi(\to KK)$
     bskstjpsiee     : $B_s\to J/\psi K^{*0}(\to K^+\pi^-)$
-    bdkstkpijpsiee_had_swp : $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$ 
+    bdkstkpijpsiee_kpiee_pikee : $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$ 
     bdkstkpijpsiee  : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$ 
     bdkstkpipsi2ee  : $B^0\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 

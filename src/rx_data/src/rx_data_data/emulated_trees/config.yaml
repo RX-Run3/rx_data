@@ -47,10 +47,10 @@ bskstpsi2ee:
 # These samples are meant to represent
 # hadronic swapped (K -> pi and pi -> K) decays
 # ----------------------------------------
-bdkstkpijpsimm_had_swp:
+bdkstkpijpsimm_kpimm_pikmm:
   samples   : 
     bdkstkpijpsimm : 1.0
-bdkstkpijpsiee_had_swp:
+bdkstkpijpsiee_kpiee_pikee:
   samples   : 
     bdkstkpijpsiee : 1.0
 # ----------------------------------------
