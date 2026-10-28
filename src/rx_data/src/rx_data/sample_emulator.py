@@ -192,39 +192,6 @@ class SampleEmulator:
 
         return rdf
     # ----------------------
-    def extend_redefinitions(self, redefinitions : dict[str,str]) -> None:
-        '''
-        Add extra entries to redefinition section of config
-
-        Parameters
-        -------------
-        redefinitions: Dictionary mapping column name to new definition
-
-        Raises 
-        -------------
-        ValueError: If a column re-definition is already present in config
-        '''
-        if not redefinitions:
-            log.info('Not using extra redefinitions')
-            return
-
-        fail = False
-        log.info('Extending columns redefinitions')
-        for name, expr in redefinitions.items():
-            log.debug(f'{name:<20}{expr}')
-
-        for name, expression in redefinitions.items():
-            if name in self._cfg.redefine:
-                log.error(f'Cannot redefine {name}, already in redefine block')
-                fail = True
-                continue
-
-            log.debug(name)
-            self._cfg.redefine[name] = expression
-
-        if fail:
-            raise ValueError('Cannot redefine, some columns are already found in config')
-    # ----------------------
     def post_process(self, rdf : RDF.RNode) -> RDF.RNode:
         '''
         Parameters
