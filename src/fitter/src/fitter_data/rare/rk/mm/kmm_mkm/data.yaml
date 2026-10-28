@@ -10,7 +10,7 @@ plots_cfg: &plt_cfg
         comb_brem_xx0   : Combinatorial
 # -------------------------------
 trigger          : rk_mm_os
-yields           : model/yields/rk/rare_muon_jpsi_swap.yaml
+yields           : model/yields/rk/rare_muon_kmm_mkm.yaml
 selection        :
   high   : {}
 observable:
@@ -21,9 +21,12 @@ observable:
       - 3300
 components:
   high:
-    comb   : rare/rk/jpsi_swap/comb.yaml
-    bpkpmm : rare/rk/jpsi_swap/bpkpjpsimm.yaml
-constraints: {}
+    comb   : rare/rk/mm/kmm_mkm/comb.yaml
+    bpkpmm : rare/rk/mm/kmm_mkm/bpkpjpsimm.yaml
+constraints:
+  signal_fraction : []
+  combinatorial   : false
+  signal_shape    : false
 fit: {}
 plots:
   high : *plt_cfg
