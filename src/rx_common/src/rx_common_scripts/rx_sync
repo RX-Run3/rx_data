@@ -101,9 +101,9 @@ run_sync()
 
     if [[ $DRY_RUN -eq 1 ]];then
         echo "Running dry run"
-        rsync -avz --dry-run        -R -e "ssh -o ForwardX11=no" $SOURCE_PATH $TARGET_SERVER
+        rsync -avz --dry-run        -R -e "ssh -o ForwardX11=no -o WarnWeakCrypto=no-pq-kex" $SOURCE_PATH $TARGET_SERVER
     else
-        rsync -a   --info=progress2 -R -e "ssh -o ForwardX11=no" $SOURCE_PATH $TARGET_SERVER
+        rsync -a   --info=progress2 -R -e "ssh -o ForwardX11=no -o WarnWeakCrypto=no-pq-kex" $SOURCE_PATH $TARGET_SERVER
     fi
 }
 # -----------------------------------------
