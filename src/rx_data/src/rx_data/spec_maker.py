@@ -61,7 +61,7 @@ class SpecMaker:
 
         self._component = component
         self._emulator  = SampleEmulator(sample=component)
-        self._cfg_samp  = self._emulator.get_samples()
+        self._cfg_samp  = self._emulator.samples
 
         prefix          = f'rx_data/spec_maker/cache/{component}_{trigger}_{tree}'
         self._cache_dir = get_tmp_dir(prefix = prefix) 

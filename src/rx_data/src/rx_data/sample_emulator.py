@@ -93,8 +93,15 @@ class EmulationConf(BaseModel, frozen=True, extra='forbid', strict=True):
     '''
     samples  : SamplesConf 
     patching : dict[Block, Block] = dict() 
+    '''Dictionary meant to allow patching blocks of data'''
+
     redefine : dict[str  ,   str] = dict() 
-    # trk_swap : dict[str  ,   str] = dict()
+    '''Dictionary used to update candidate information, e.g. B -> B + 30
+    meant to change mass hypotheses of particles or mother IDs'''
+
+    trk_swap : dict[str  ,   str] = dict()
+    '''Dictionary mapping particle prefixes, e.g. L1 -> H
+    meant to be used to swap values of columns'''
     # --------------------------------------
     def model_post_init(self, context : Any) -> None:
         '''
@@ -238,10 +245,9 @@ class SampleEmulator:
 
         return rdf
     # ---------------------
-    def get_samples(self) -> SamplesConf:
+    @property
+    def samples(self) -> SamplesConf:
         '''
-        Returns
-        -------------
         Object specifying how to build sample passed in initializer
         '''
         return self._cfg.samples

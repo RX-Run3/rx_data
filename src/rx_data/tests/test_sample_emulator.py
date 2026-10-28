@@ -111,9 +111,8 @@ def test_concatenate(sample : Component):
     Test with samples resulting from concatenation of other samples
     '''
     emu = SampleEmulator(sample=sample)
-    val = emu.get_samples()
 
-    assert len(val.root) > 1
+    assert len(emu.samples.root) > 1
 # --------------------------------------------
 @pytest.mark.parametrize('new_name, old_name', _SAMPLE_PAIRS)
 def test_rename(
@@ -126,9 +125,8 @@ def test_rename(
     old_name: Sample that will emulate sample requested 
     '''
     emu = SampleEmulator(sample=new_name)
-    val = emu.get_samples()
 
-    assert val.emulated_only_by(sample = old_name)
+    assert emu.samples.emulated_only_by(sample = old_name)
 # --------------------------------------------
 @pytest.mark.parametrize('sample', _SAMPLES_MOTHER_SWAP)
 @pytest.mark.parametrize('size'  , [0, 100])
