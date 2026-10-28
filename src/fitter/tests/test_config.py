@@ -279,7 +279,7 @@ def test_model_systematics():
     Test ModelSystematics class
     '''
     obj = ModelSystematics.load()
-    for sys_name in obj.root:
-        mod = obj.get(sys_name)
-        assert len(mod) == 1
+    for systematic in obj.root:
+        mod = obj.get(systematic)
+        assert len(mod) == len(systematic.entries)
 # ----------------------
