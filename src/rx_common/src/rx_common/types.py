@@ -65,7 +65,10 @@ class Block(BaseModel):
     @classmethod
     def coerce_from_primitive(
         cls,
-        data : dict[str,set[int] | int] | int):
+        data : dict[str,set[int] | int] | int | str):
+        if isinstance(data, str):
+            data = int(data)
+
         if isinstance(data, int):
             return {'value' : data}
 
