@@ -153,19 +153,17 @@ class SampleEmulator:
     # ----------------------
     def _run_redefine(
         self, 
-        rdf         : RDF.RNode, 
-        definitions : dict[str,str]) -> RDF.RNode:
+        rdf : RDF.RNode) -> RDF.RNode:
         '''
         Parameters
         -------------
         rdf : DataFrame before redefinitions
-        definitions: Dictionary between variable and new definition
 
         Returns
         -------------
         Dataframe after definitiions
         '''
-        for var, expr in definitions.items():
+        for var, expr in self._cfg.redefine.items():
             assert isinstance(var, str)
 
             log.debug(f'{var:<10}{"--->"}\n{expr}')
@@ -207,7 +205,7 @@ class SampleEmulator:
             log.warning('Not running emulation for empty dataframe')
             return rdf
 
-        rdf = self._run_redefine(rdf=rdf, definitions=self._cfg.redefine)
+        rdf = self._run_redefine(rdf=rdf)
         rdf = self._update_cocktail_weights(rdf = rdf)
 
         return rdf
