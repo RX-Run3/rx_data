@@ -8,6 +8,8 @@ This documentation explains:
 - How to run them in a computing cluster
 - How to setup a dashboard with [flowo](https://github.com/zhanghaomiao/flowo)
 
+**Note:** In order to run a workflow while another is already running use `--nolock` to bypass the lock mechanism.
+
 # Available workflows
 
 ## Friend trees
@@ -164,6 +166,22 @@ to run the ntuple tranfer from a remote server. The transfer will run:
 - To transfer a specific set of files from a specific server.
 This is configured both in the `yaml` file and with the first lines
 in the `smk` file:
+
+## Minimal datasets
+
+In order to do fits, etc files with a minimal set of entries and branches can be used
+in order to speed up the processing. These can be made with:
+
+```bash
+snakemake -s snakemake/rules/fits/make_databases.smk \
+--profile ihep --logger=flowo                        \
+--logger-flowo-name=database                         \
+--keep-going                                         \
+--configfile snakemake/configs/fits/database.yaml    \
+--nolock
+```
+
+the settings (datasets to process, branches to store, etc) are found in the `yaml` file.
 
 ```python
 SERVER = 'ihep'
