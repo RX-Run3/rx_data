@@ -150,7 +150,7 @@ class Region(BaseModel, Serializable, frozen = True, extra = 'forbid', strict = 
         try:
             brem = Brem(parts[0]) 
             trig = Trigger(parts[1])
-            misid= MisID(parts[2]) if len(parts) > 2 else MisID.none
+            misid= MisID(parts[2]) if len(parts) > 2 else MisID.none # noqa: PLR2004
         except Exception as exc:
             raise ValueError(f'Cannot build region from: {name}') from exc
 
