@@ -1,6 +1,7 @@
 '''
 Module holding tests for SampleEmulator class
 '''
+import json
 import numpy
 import pytest
 
@@ -98,7 +99,9 @@ def test_emulator_conf():
     data = gut.load_data(
         package = 'rx_data_data', 
         fpath   = 'emulated_trees/config.yaml')
-    obj  = EmulatorConf(**data)
+    data_str = json.dumps(data)
+
+    obj  = EmulatorConf.model_validate_json(data_str)
 
     assert obj is not None
 # --------------------------------------------

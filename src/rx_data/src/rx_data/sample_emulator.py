@@ -1,16 +1,18 @@
 '''
 Module holding SampleEmulator class
 '''
+import json
 
 from ROOT        import RDF
 from dmu         import LogStore
+from typing      import Any
 from dmu.generic import utilities as gut
 from pydantic    import BaseModel, RootModel
 from rx_common   import Block, Component 
 
 log=LogStore.add_logger('rx_data:sample_emulator')
 # ----------------------
-class SamplesConf(RootModel):
+class SamplesConf(RootModel[dict[Component,float]], frozen=True, strict=True):
     '''
     Class meant to represent a cocktail of samples
     and the fractions of each
@@ -20,7 +22,6 @@ class SamplesConf(RootModel):
     root: Dictionary mapping sample name (e.g. Bs_JpsiKst_ee_eq_DPC) to
           fraction of it in cocktail
     '''
-    root : dict[Component,float]
     # --------------------------------------
     def __str__(self):
         msg = '\n'
@@ -71,7 +72,7 @@ class SamplesConf(RootModel):
 
         return emulator == sample
     # --------------------------------------
-    def model_post_init(self, context) -> None:
+    def model_post_init(self, context : Any) -> None:
         self.__validate_fraction()
 
         return super().model_post_init(context)
@@ -85,7 +86,7 @@ class SamplesConf(RootModel):
         if sum(fractions) != 1:
             raise ValueError(f'Sum of sample fractions not 1: {fractions}')
 # ----------------------
-class EmulationConf(BaseModel):
+class EmulationConf(BaseModel, frozen=True, extra='forbid', strict=True):
     '''
     Class meant to represent configuration needed
     to emulate a sample
@@ -93,8 +94,9 @@ class EmulationConf(BaseModel):
     samples  : SamplesConf 
     patching : dict[Block, Block] = dict() 
     redefine : dict[str  ,   str] = dict() 
+    # trk_swap : dict[str  ,   str] = dict()
     # --------------------------------------
-    def model_post_init(self, context) -> None:
+    def model_post_init(self, context : Any) -> None:
         '''
         Validates fields
         '''
@@ -107,12 +109,11 @@ class EmulationConf(BaseModel):
             if init == fnal:
                 raise ValueError('Initial and final block cannot be the same')
 # ----------------------
-class EmulatorConf(RootModel):
+class EmulatorConf(RootModel[dict[Component, EmulationConf]], frozen=True, strict=True):
     '''
     Class meant to represent configuration needed to emulate
     samples
     '''
-    root : dict[Component,EmulationConf]
 # ----------------------
 class SampleEmulator:
     '''
@@ -129,9 +130,10 @@ class SampleEmulator:
         ---------------
         sample: Sample to emulate e.g. bpkpee 
         '''
-        fpath= 'emulated_trees/config.yaml'
-        data = gut.load_data(package='rx_data_data', fpath=fpath)
-        cfg  = EmulatorConf(**data)
+        fpath       = 'emulated_trees/config.yaml'
+        data        = gut.load_data(package='rx_data_data', fpath=fpath)
+        data_string = json.dumps(data)
+        cfg         = EmulatorConf.model_validate_json(data_string)
 
         if sample in cfg.root:
             log.warning(f'Emulating {sample}')
