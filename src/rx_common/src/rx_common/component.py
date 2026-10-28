@@ -117,8 +117,8 @@ class Component(StrEnum):
     bdkstkpijpsimm_kpimm_pikmm = auto()
     bdkstkpijpsiee_kpiee_pikee = auto()
 
-    bdkstkpijpsimm_mix_swp = auto()
-    bdkstkpijpsiee_mix_swp = auto()
+    bdkstkpijpsimm_kpimm_kmpim = auto()
+    bdkstkpijpsiee_kpiee_kepie = auto()
     # -----
     # Semileptonic
     # -----
@@ -470,9 +470,9 @@ class Component(StrEnum):
           case Component.bdkstkpijpsiee_kpiee_pikee:
             return 'Bd_JpsiKst_ee_kpiee_pikee'
           # -------
-          case Component.bdkstkpijpsimm_mix_swp:
+          case Component.bdkstkpijpsimm_kpimm_kmpim:
             return 'Bd_JpsiKst_mm_mix_swp'
-          case Component.bdkstkpijpsiee_mix_swp:
+          case Component.bdkstkpijpsiee_kpiee_pikee:
             return 'Bd_JpsiKst_ee_mix_swp'
           # -------
           case Component.bdkstpi0:
@@ -729,9 +729,9 @@ class Component(StrEnum):
                 return r'$B_d\to K^*(\to K^+_{\to\pi^+}\pi^-_{\to K^-})J/\psi(\to e^+e^-)$'
             case Component.bdkstkpijpsimm_kpimm_pikmm:
                 return r'$B_d\to K^*(\to K^+_{\to\pi^+}\pi^-_{\to K^-})J/\psi(\to \mu^+\mu^-)$'
-            case Component.bdkstkpijpsiee_mix_swp:
+            case Component.bdkstkpijpsiee_kpiee_pikee:
                 return r'$B_d\to K^*(\to K^+\pi^-_{\to e^-})J/\psi(\to e^+e^-_{\to \pi^-})$'
-            case Component.bdkstkpijpsimm_mix_swp:
+            case Component.bdkstkpijpsimm_kpimm_kmpim:
                 return r'$B_d\to K^*(\to K^+\pi^-_{\to \mu^-})J/\psi(\to \mu^+\mu^-_{\to \pi^-})$'
             # ---------------------------
             case Component.data_24:
