@@ -190,6 +190,21 @@ class SampleEmulator:
 
         return rdf
     # ----------------------
+    def _swap_tracks(self, rdf : RDF.RNode) -> RDF.RNode:
+        '''
+        Parameters
+        ----------------
+        rdf: ROOT dataframe
+
+        Returns
+        ----------------
+        Dataframe with track swapping, if requested through `trk_swap`
+        '''
+        if not self._cfg.trk_swap:
+            return rdf
+
+        return rdf
+    # ----------------------
     def post_process(self, rdf : RDF.RNode) -> RDF.RNode:
         '''
         Parameters
@@ -206,6 +221,7 @@ class SampleEmulator:
             return rdf
 
         rdf = self._run_redefine(rdf=rdf)
+        rdf = self._swap_tracks(rdf=rdf)
         rdf = self._update_cocktail_weights(rdf = rdf)
 
         return rdf

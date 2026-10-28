@@ -77,10 +77,14 @@ bdkstkpijpsiee_kpiee_epiek:
 bpkpjpsimm_kmm_mkm:
   samples   : 
     bpkpjpsimm     : 1.0
+  trk_swap  :
+    H : L1
 
 bpkpjpsiee_kee_eke:
   samples   : 
     bpkpjpsiee     : 1.0
+  trk_swap  :
+    H : L1
 # ----------------------------------------
 bsjpsixmm:
   samples : 

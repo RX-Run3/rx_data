@@ -5,6 +5,7 @@ import json
 import numpy
 import pytest
 
+from typing      import Final
 from ROOT        import RDataFrame, RDF
 from dmu         import LogStore
 from dmu.generic import utilities as gut
@@ -15,23 +16,30 @@ from rx_data     import SamplesConf
 
 log=LogStore.add_logger('rx_data:test_sample_emulator')
 
-_SAMPLES_CONCATENATE = [
+type Components = list[Component]
+type Pairs      = list[tuple[Component, Component]]
+
+_SWAPPED_TRACKS : Final[Components] = [
+    Component.bpkpjpsiee_kee_eke,
+]
+
+_SAMPLES_CONCATENATE : Final[Components] = [
     Component.bpkxkpipiee,
 ]
 
-_SAMPLES_MOTHER_SWAP=[
+_SAMPLES_MOTHER_SWAP : Final[Components] = [
     Component.bskstjpsimm,
     Component.bskstjpsiee,
 ]
 
-_SAMPLE_PAIRS : list[tuple[Component, Component]] = [
+_SAMPLE_PAIRS : Final[Pairs] = [
     (Component.bskstjpsimm, Component.bdkstkpijpsimm),
     (Component.bskstjpsiee, Component.bdkstkpijpsiee),
     (Component.bskstpsi2mm, Component.bdkstkpipsi2mm),
     (Component.bskstpsi2ee, Component.bdkstkpipsi2ee),
 ]
 
-_SWAPPED_MASSES = [
+_SWAPPED_MASSES : Final[list[str]] = [
     'B_M',
     'B_Mass',
     'B_const_mass_M',
@@ -66,9 +74,11 @@ def _get_rdf(size : int = 100) -> RDF.RNode:
     rdf = rdf.Define('Kst_MC_MOTHER_ID'    , '123')
     rdf = rdf.Define('Jpsi_MC_MOTHER_ID'   , '123')
     rdf = rdf.Define('H1_TRUEID'           , '321')
-    rdf = rdf.Define('H2_TRUEID'           , '211')
+    rdf = rdf.Define('H2_TRUEID'           , '-211')
     rdf = rdf.Define('H1_PT'               , '10000')
     rdf = rdf.Define('H2_PT'               , '20000')
+    rdf = rdf.Define('L1_TRUEID'           , '-11')
+    rdf = rdf.Define('L2_TRUEID'           , '+11')
 
     return rdf
 # --------------------------------------------
@@ -146,4 +156,16 @@ def test_swap_mother(sample : Component, size : int):
             continue
 
         assert numpy.isclose(arr_val, expected).all()
+# --------------------------------------------
+@pytest.mark.parametrize('sample', _SWAPPED_TRACKS)
+def test_swap_tracks(sample : Component):
+    '''
+    sample: Name of sample to emulate
+    '''
+    size    = 1000
+
+    log.info('')
+    rdf_old = _get_rdf(size = size)
+    emu     = SampleEmulator(sample=sample)
+    rdf_new = emu.post_process(rdf = rdf_old)
 # --------------------------------------------
