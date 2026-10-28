@@ -471,9 +471,9 @@ class Component(StrEnum):
             return 'Bd_JpsiKst_ee_kpiee_pikee'
           # -------
           case Component.bdkstkpijpsimm_kpimm_kmpim:
-            return 'Bd_JpsiKst_mm_mix_swp'
+            return 'Bd_JpsiKst_mm_kpimm_kmpim'
           case Component.bdkstkpijpsiee_kpiee_pikee:
-            return 'Bd_JpsiKst_ee_mix_swp'
+            return 'Bd_JpsiKst_ee_kpiee_kepie'
           # -------
           case Component.bdkstpi0:
             return 'Bd_Kstpi0_eq_TC_Kst982width100_HighPtPi0'

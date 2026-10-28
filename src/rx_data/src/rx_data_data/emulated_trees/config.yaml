@@ -56,18 +56,18 @@ bdkstkpijpsiee_kpiee_pikee:
 # ----------------------------------------
 # pi <-> mu/e swaps
 # ----------------------------------------
-bdkstkpijpsimm_mix_swp:
+bdkstkpijpsimm_kpimm_kmpim:
   samples   : 
     bdkstkpijpsimm : 1.0
-bdkstkpijpsiee_mix_swp:
+bdkstkpijpsiee_kpiee_kepie:
   samples   : 
     bdkstkpijpsiee : 1.0
 
-bpkpjpsimm_mix_swp:
+bpkpjpsimm_kpimm_kmpim:
   samples   : 
     bpkpjpsimm     : 1.0
 
-bpkpjpsiee_mix_swp:
+bpkpjpsiee_kpiee_kepie:
   samples   : 
     bpkpjpsiee     : 1.0
 # ----------------------------------------
