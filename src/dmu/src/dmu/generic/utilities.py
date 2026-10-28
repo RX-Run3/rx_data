@@ -46,6 +46,8 @@ class BlockStyleDumper(yaml.SafeDumper):
     dumping data to YAML files
     '''
     def increase_indent(self, flow=False, indentless=False):
+        _ = indentless
+
         return super().increase_indent(flow=flow, indentless=False)
 # ------------------------------------
 def add_container[T : SupportsAddition](elements : Sequence[T]) -> T:
@@ -83,7 +85,7 @@ def object_to_string(obj : Any, sort_keys=False) -> str:
         this_type = type(obj)
         raise ValueError(f'Cannot stringify object of type: {this_type}')
 
-    def default_encoder(x):
+    def default_encoder(x : Any):
         if isinstance(x, DictConfig):
             return OmegaConf.to_container(cfg=x, resolve=True)
 
@@ -344,7 +346,7 @@ def _get_module_name( fun : Callable) -> str:
 
     return mod.__name__
 # --------------------------------
-def timeit(f):
+def timeit(f : Callable[...,Any]):
     '''
     Decorator used to time functions, it is turned off by default, can be turned on with:
 
@@ -494,7 +496,7 @@ def load_json(path : str | Path):
 
         raise NotImplementedError(f'Cannot deduce format from extension in path: {path}')
 # --------------------------------
-def dump_pickle(data, path : str) -> None:
+def dump_pickle(data : Any, path : str) -> None:
     '''
     Saves data as pickle file
 
