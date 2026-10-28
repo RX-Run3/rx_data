@@ -183,8 +183,8 @@ def _get_swap_rdf(
     raise ValueError(f'Invalid kind: {cfg.kind}')
 # ---------------------------------
 def _get_charmonium_swap_rdf(
-    rdf     : RDF.RNode, 
-    cfg     : Config, 
+    rdf     : RDF.RNode,
+    cfg     : Config,
     trigger : Trigger) -> RDF.RNode:
     '''
     Parameters
@@ -203,34 +203,36 @@ def _get_charmonium_swap_rdf(
 
     if trigger.project == Project.rk:
         obj = SWPCalculator(
-            rdf  = rdf, 
-            d_lep= {'L1' : lep_id, 'L2' : lep_id}, 
+            rdf  = rdf,
+            d_lep= {'L1' : lep_id, 'L2' : lep_id},
             d_had= {'H' : lep_id})
 
         rdf = obj.get_rdf(
-            preffix     =cfg.kind, 
-            progress_bar=cfg.pbar, 
+            preffix     =cfg.kind,
+            progress_bar=cfg.pbar,
             use_ss      =trigger.is_ss)
+
+        return rdf
 
     if trigger.project == Project.rkst:
         obj_kaon = SWPCalculator(
-            rdf  = rdf, 
-            d_lep= {'L1' : lep_id, 'L2' : lep_id}, 
+            rdf  = rdf,
+            d_lep= {'L1' : lep_id, 'L2' : lep_id},
             d_had= {'H1' : lep_id})
 
         rdf_kaon        = obj_kaon.get_rdf(
-            preffix     = f'{cfg.kind}_kaon', 
-            progress_bar= cfg.pbar, 
+            preffix     = f'{cfg.kind}_kaon',
+            progress_bar= cfg.pbar,
             use_ss      = trigger.is_ss)
 
         obj_kaon = SWPCalculator(
-            rdf  = rdf, 
-            d_lep= {'L1' : lep_id, 'L2' : lep_id}, 
+            rdf  = rdf,
+            d_lep= {'L1' : lep_id, 'L2' : lep_id},
             d_had= {'H2' : lep_id})
 
         rdf_pion        = obj_kaon.get_rdf(
-            preffix     = f'{cfg.kind}_pion', 
-            progress_bar= cfg.pbar, 
+            preffix     = f'{cfg.kind}_pion',
+            progress_bar= cfg.pbar,
             use_ss      = trigger.is_ss)
 
         data_kaon = rdf_kaon.AsNumpy()

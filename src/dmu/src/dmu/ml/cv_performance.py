@@ -3,7 +3,7 @@ This module contains the class CVPerformance
 '''
 # pylint: disable=too-many-positional-arguments, too-many-arguments
 
-from ROOT                  import RDF # type: ignore
+from ROOT                  import RDF
 from dmu.ml.cv_classifier  import CVClassifier
 from dmu.ml.cv_predict     import CVPredict
 from dmu.ml.train_mva      import TrainMva

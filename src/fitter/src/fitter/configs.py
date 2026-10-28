@@ -681,6 +681,11 @@ class RXFitConfig(BaseModel):
     ntoys   : int             = 0
     toy_cfg : ToyConf | None  = None
     # ----------------------
+    @property
+    def trigger(self) -> Trigger:
+        '''HLT2 trigger associated to fit'''
+        return self.mod_cfg.trigger
+    # ----------------------
     @model_validator(mode = 'after')
     def _validate(self) -> 'RXFitConfig':
         if self.ncores < 1:

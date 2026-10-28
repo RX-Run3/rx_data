@@ -9,7 +9,7 @@ import mplhep
 from importlib.resources import files
 from dataclasses         import dataclass
 from dmu.generic         import utilities as gut
-from ROOT                import RDataFrame # type: ignore
+from ROOT                import RDataFrame
 from dmu.plotting        import Plotter1D
 from dmu                 import LogStore
 from rx_data             import RDFGetter

@@ -6,7 +6,7 @@ import pandas   as pnd
 
 from contextlib      import contextmanager
 from pathlib         import Path
-from ROOT            import RDF # type: ignore
+from ROOT            import RDF
 from typing          import Final
 
 from dmu             import LogStore

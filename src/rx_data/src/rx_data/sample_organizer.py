@@ -8,7 +8,7 @@ import tempfile
 
 from functools   import cached_property
 from typing      import Final, Protocol
-from ROOT        import TFileMerger, TFile, gSystem # type: ignore
+from ROOT        import TFileMerger, TFile, gSystem
 from pathlib     import Path
 from dmu         import LogStore
 from pydantic    import BaseModel

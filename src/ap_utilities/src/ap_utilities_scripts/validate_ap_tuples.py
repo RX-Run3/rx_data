@@ -7,7 +7,7 @@ import argparse
 
 from functools import cached_property
 from pathlib   import Path
-from ROOT      import RDF, RDataFrame # type: ignore
+from ROOT      import RDF, RDataFrame
 from typing    import Final, Generic, TypeVar
 from pydantic  import BaseModel, model_validator, ConfigDict
 

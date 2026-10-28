@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from pathlib      import Path
 from typing       import Final
 from contextlib   import ExitStack
-from ROOT         import RDF, EnableImplicitMT # type: ignore
+from ROOT         import RDF, EnableImplicitMT
 from omegaconf    import DictConfig, OmegaConf
 from pydantic     import model_validator
 from rx_data      import RDFGetter
@@ -23,7 +23,7 @@ from dmu          import LogStore
 _ANADIR : Final[Path] = Path(os.environ['ANADIR'])
 
 log = LogStore.add_logger('rx_plots:dset_overlay')
-plt.style.use(mplhep.style.LHCb2) # type: ignore
+plt.style.use(mplhep.style.LHCb2)
 # ----------------------
 class Config(DsetOverlayConf):
     selection: dict[Cuts,str]

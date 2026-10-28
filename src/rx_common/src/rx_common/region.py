@@ -2,13 +2,13 @@
 Module with Region enum
 '''
 
+from enum        import StrEnum, auto
 from typing      import Any
 from dmu.generic import Serializable
 from dmu.stats   import zfit
 from pydantic    import model_serializer
 from pydantic    import model_validator
 from rx_common   import Component
-from rx_common   import Particle
 from rx_common   import Trigger
 from rx_common   import Brem
 from rx_common   import Project
@@ -18,14 +18,41 @@ from dmu         import LogStore
 
 log=LogStore.add_logger('rx_common:region')
 # ------------------------
-class Region(BaseModel, Serializable, frozen = True):
+class MisID(StrEnum):
+    '''
+    Class meant to represent type of particle MisID 
+    '''
+    none = auto()
+    '''No misID, used for signal regions'''
+
+    kmm_mkm = auto()
+    '''Swap of kaon by muon in rk muon rare'''
+
+    kpiee_kpikk   = auto()
+    '''Hadronic misID in rkst to kaons'''
+
+    kpiee_kpipipi = auto()
+    '''Hadronic misID in rkst to pions'''
+
+    kee_kkk   = auto()
+    '''Hadronic misID in rk to kaons'''
+
+    kee_kpipi = auto()
+    '''Hadronic misID in rk to pions'''
+# ------------------------
+class Region(BaseModel, Serializable, frozen = True, extra = 'forbid', strict = True):
     '''
     Enum meant to symbolize control and signal regions, 
     e.g. hadronic misID control region
     '''
     brem    : Brem
+    '''Bremsstrahlung category'''
+
     trigger : Trigger
-    lepton  : Particle | None = None
+    '''HLT2 trigger'''
+
+    misid   : MisID   = MisID.none 
+    '''Identifies region by what tracks IDs were swapped'''
     # ---------------------
     @property
     def signal(self) -> Component:
@@ -38,33 +65,19 @@ class Region(BaseModel, Serializable, frozen = True):
         if self.trigger.has_pid:
             raise NotImplementedError(f'No signal implemented for: {self.name}')
 
-        if self.hadron == Particle.kaon and self.trigger.project == Project.rk:
+        if self.misid == MisID.kee_kkk       and self.trigger.project == Project.rk:
             return Component.bpkkk
             
-        if self.hadron == Particle.pion and self.trigger.project == Project.rk:
+        if self.misid == MisID.kee_kpipi     and self.trigger.project == Project.rk:
             return Component.bpkpipi
 
-        if self.hadron == Particle.kaon and self.trigger.project == Project.rkst:
+        if self.misid == MisID.kpiee_kpikk   and self.trigger.project == Project.rkst:
             return Component.bdkstkk
             
-        if self.hadron == Particle.pion and self.trigger.project == Project.rkst:
+        if self.misid == MisID.kpiee_kpipipi and self.trigger.project == Project.rkst:
             return Component.bdkstpipi
 
         raise NotImplementedError(f'No signal implemented for: {self.name}')
-    # ---------------------
-    @property
-    def hadron(self) -> Particle:
-        '''
-        Hadron name that is used in this hadron MisID region
-        If this is not a misID region, will raise ValueError
-        '''
-        if not self.lepton:
-            raise ValueError(f'No lepton name defined for region {self.name}')
-
-        if not self.lepton.is_hadron:
-            raise ValueError(f'Particle is not a hadron, but: {self.lepton}')
-
-        return self.lepton
     # ---------------------
     @property
     def mass(self) -> Mass:
@@ -89,16 +102,16 @@ class Region(BaseModel, Serializable, frozen = True):
             return Mass.bp_bcor
 
         # No PID
-        if self.lepton == Particle.kaon and self.trigger.project == Project.rkst_no_pid:
+        if self.misid == MisID.kpiee_kpikk   and self.trigger.project == Project.rkst_no_pid:
             return Mass.bd_kk
 
-        if self.lepton == Particle.pion and self.trigger.project == Project.rkst_no_pid:
+        if self.misid == MisID.kpiee_kpipipi and self.trigger.project == Project.rkst_no_pid:
             return Mass.bd_pipi
 
-        if self.lepton == Particle.kaon and self.trigger.project == Project.rk_no_pid:
+        if self.misid == MisID.kee_kkk       and self.trigger.project == Project.rk_no_pid:
             return Mass.bp_kk
 
-        if self.lepton == Particle.pion and self.trigger.project == Project.rk_no_pid:
+        if self.misid == MisID.kee_kpipi     and self.trigger.project == Project.rk_no_pid:
             return Mass.bp_pipi
 
         raise ValueError(f'Cannot find observable for region: {self.name}')
@@ -137,14 +150,14 @@ class Region(BaseModel, Serializable, frozen = True):
         try:
             brem = Brem(parts[0]) 
             trig = Trigger(parts[1])
-            lept = Particle(parts[2]) if len(parts) > 2 else None # noqa: PLR2004
+            misid= MisID(parts[2]) if len(parts) > 2 else MisID.none # noqa: PLR2004
         except Exception as exc:
             raise ValueError(f'Cannot build region from: {name}') from exc
 
         return {
             'brem'   : brem,
             'trigger': trig,
-            'lepton' : lept} 
+            'misid'  : misid} 
     # ---------------------
     @model_validator(mode = 'after')
     def _validate_after(self):
@@ -172,8 +185,8 @@ class Region(BaseModel, Serializable, frozen = True):
         if self.trigger:
             parts.append(self.trigger.name)
 
-        if self.lepton:
-            parts.append(str(self.lepton))
+        if self.misid != MisID.none:
+            parts.append(self.misid)
 
         return '-'.join(parts)
     # ---------------------
@@ -182,29 +195,29 @@ class Region(BaseModel, Serializable, frozen = True):
         raise NotImplementedError
     # ---------------------
     @classmethod
-    def hadronic_misid(cls) -> list['Region']:
+    def hadronic_misid(cls : type['Region']) -> list['Region']:
         '''
         Returns list of hadronic misid regions
         '''
         mid_rk_k    = cls(
             brem    = Brem.br012,
             trigger = Trigger.rk_ee_nopid,
-            lepton  = Particle.kaon)
+            misid   = MisID.kee_kkk)
 
         mid_rk_p    = cls(
             brem    = Brem.br012,
             trigger = Trigger.rk_ee_nopid,
-            lepton  = Particle.pion)
+            misid   = MisID.kee_kpipi)
 
         mid_rkst_k  = cls(
             brem    = Brem.br012,
             trigger = Trigger.rkst_ee_nopid,
-            lepton  = Particle.kaon)
+            misid   = MisID.kpiee_kpikk)
 
         mid_rkst_p  = cls(
             brem    = Brem.br012,
             trigger = Trigger.rkst_ee_nopid,
-            lepton  = Particle.pion)
+            misid   = MisID.kpiee_kpipipi)
 
         return [mid_rk_k, mid_rk_p, mid_rkst_k, mid_rkst_p]
 # ------------------------

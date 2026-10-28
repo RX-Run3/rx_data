@@ -5,7 +5,7 @@ import pandas as pnd
 import vector
 import numpy
 
-from ROOT         import RDF # type: ignore
+from ROOT         import RDF
 from typing       import Literal, overload
 from tqdm         import tqdm
 from particle     import Particle         as part

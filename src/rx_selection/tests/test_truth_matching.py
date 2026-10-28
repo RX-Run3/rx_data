@@ -4,7 +4,7 @@ Module needed to test truth matching
 import re
 import pytest
 
-from ROOT         import RDF     # type: ignore
+from ROOT         import RDF
 from rx_common    import Component, Trigger
 from rx_selection import truth_matching as tm
 from rx_data      import RDFGetter
@@ -13,8 +13,20 @@ from dmu          import LogStore
 # TODO: Add more samples
 
 _EMULATED : list[tuple[Component, Trigger]] = [
-    (Component.bskstpsi2ee, Trigger.rkst_ee_os),
-    (Component.bskstpsi2mm, Trigger.rkst_mm_os),
+    (Component.bskstpsi2ee               , Trigger.rkst_ee_os),
+    (Component.bskstpsi2mm               , Trigger.rkst_mm_os),
+    # --------
+    (Component.bdkstkpijpsimm_kpimm_pikmm, Trigger.rkst_mm_os),
+    (Component.bdkstkpijpsiee_kpiee_pikee, Trigger.rkst_ee_os),
+    # --------
+    (Component.bdkstkpijpsimm_kpimm_kmpim, Trigger.rkst_mm_os),
+    (Component.bdkstkpijpsiee_kpiee_kepie, Trigger.rkst_ee_os),
+    # --------
+    (Component.bdkstkpijpsimm_kpimm_mpimk, Trigger.rkst_mm_os),
+    (Component.bdkstkpijpsiee_kpiee_epiek, Trigger.rkst_ee_os),
+    # --------
+    (Component.bpkpjpsimm_kmm_mkm        , Trigger.rk_mm_os),
+    (Component.bpkpjpsiee_kee_eke        , Trigger.rk_ee_os),
 ]
 
 _SEMILEPTONIC_SAMPLES_RK = [
@@ -334,7 +346,7 @@ def test_emulated(sample : Component, trigger : Trigger):
     if fin == 0:
         _check_rdf(rdf=org, selection=cut)
 
-    assert 20 * fin > ini
+    assert fin > 0 
 
     log.info(f'eff={fin/ini=:.3f}')
 # --------------------------

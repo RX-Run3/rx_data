@@ -1,0 +1,23 @@
+component : bpkpjpsimm_kmm_mkm
+categories:
+  brem_xx0:
+    selection : {}
+    model :
+      pdfs :
+        - pol1 
+      shared        : []
+      floating      : []
+      reparametrize : {}
+      fix           : {}
+fit:
+  strategy  :
+    ntries : 10
+    pvalue : 0.05
+plots:
+  nbins     : 50
+  stacked   : True
+  plot_range:
+    - 2600 
+    - 3300
+  d_leg :
+    pol1_bpkpjpsimm_brem_xx0_rk_mm_1  : Crystal Ball 

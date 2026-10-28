@@ -6,7 +6,7 @@ import os
 import apd
 
 from datetime  import datetime
-from ROOT      import TFile # type: ignore
+from ROOT      import TFile
 from pathlib   import Path
 from functools import cached_property
 from typing    import Final, Literal

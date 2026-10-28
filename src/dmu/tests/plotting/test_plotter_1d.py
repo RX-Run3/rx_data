@@ -10,7 +10,7 @@ import mplhep
 from importlib.resources     import files
 from pathlib                 import Path
 from typing                  import cast, overload, Literal
-from ROOT                    import RDF # type: ignore
+from ROOT                    import RDF
 from omegaconf               import DictConfig, OmegaConf
 from dmu.plotting.plotter_1d import Plotter1D as Plotter
 from dmu.logging.log_store   import LogStore

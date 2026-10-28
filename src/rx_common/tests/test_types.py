@@ -50,8 +50,8 @@ def test_component():
     assert Component.bskstjpsimm.sample     == 'Bs_JpsiKst_mm_eq_DPC'
     assert Component.bskstjpsiee.sample     == 'Bs_JpsiKst_ee_eq_DPC'
 
-    assert Component.bdkstjpsimm_had_swp.sample == 'Bd_JpsiKst_mm_had_swp'
-    assert Component.bdkstjpsiee_had_swp.sample == 'Bd_JpsiKst_ee_had_swp'
+    assert Component.bdkstkpijpsimm_kpimm_pikmm.sample == 'Bd_JpsiKst_mm_kpimm_pikmm'
+    assert Component.bdkstkpijpsiee_kpiee_pikee.sample == 'Bd_JpsiKst_ee_kpiee_pikee'
 
     with pytest.raises(ValueError):
         assert Component.ccbar.sample           == 'ccbar'

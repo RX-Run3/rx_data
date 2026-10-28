@@ -14,7 +14,7 @@ import argparse
 import mplhep
 import matplotlib.pyplot as plt
 
-from ROOT                    import RDF # type: ignore
+from ROOT                    import RDF
 from dmu                     import LogStore
 from ap_utilities.decays     import utilities          as aput
 from dmu.plotting            import Plotter1D          as Plotter
@@ -38,7 +38,7 @@ class Data:
     samples : dict[Component,Trigger] # Dictionary with sample -> trigger name
     regex   = r'mc_\w+_\d{8}_(.*)_(Hlt2.*MVA)_\w+\.root' # Needed to extract sample and trigger name
 
-    plt.style.use(mplhep.style.LHCb2) # type: ignore
+    plt.style.use(mplhep.style.LHCb2)
 # ----------------------------
 def _parse_args() -> argparse.Namespace:
     '''

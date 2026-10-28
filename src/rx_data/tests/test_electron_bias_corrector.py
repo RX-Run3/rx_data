@@ -33,7 +33,7 @@ def initialize():
     '''
     LogStore.set_level('rx_data:electron_bias_corrector', 10)
     LogStore.set_level('rx_data:brem_bias_corrector'    , 10)
-    plt.style.use(mplhep.style.LHCb2) # type: ignore
+    plt.style.use(mplhep.style.LHCb2)
 
     os.makedirs(Data.plt_dir, exist_ok=True)
 #-----------------------------------------

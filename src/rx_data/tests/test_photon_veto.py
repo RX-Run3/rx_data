@@ -22,7 +22,7 @@ def initialize():
     This will run before any test
     '''
     LogStore.set_level('rx_data:photon_veto', 10)
-    plt.style.use(mplhep.style.LHCb2) # type: ignore
+    plt.style.use(mplhep.style.LHCb2)
 # --------------------------------
 def _plot_region(
     df        : pnd.DataFrame, 

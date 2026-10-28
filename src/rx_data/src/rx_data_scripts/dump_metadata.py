@@ -5,7 +5,7 @@ import json
 import argparse
 import yaml
 
-from ROOT import TFile # type: ignore
+from ROOT import TFile
 from dmu  import LogStore
 
 log=LogStore.add_logger('rx_data:dump_metadata')

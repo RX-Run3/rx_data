@@ -8,7 +8,7 @@ from rx_common    import Trigger
 from rx_common    import Qsq 
 from rx_selection import selection as sel
 from rx_data      import RDFGetter
-from ROOT         import RDF # type: ignore
+from ROOT         import RDF
 from dmu          import LogStore
 
 log=LogStore.add_logger('rx_data:testing')

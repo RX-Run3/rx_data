@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import pandas            as pnd
 
 from pathlib        import Path
-from ROOT           import RDF     # type: ignore
+from ROOT           import RDF
 
 from dmu            import LogStore
 from dmu.workflow   import Cache

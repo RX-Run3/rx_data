@@ -21,6 +21,8 @@ ll_mother         : '(({ll_is_jpsi} && {lep_from_jpsi}) || ({ll_is_psi2} && {lep
 either_lep_from_bzero: '((TMath::Abs(L1_MC_MOTHER_ID) == 511) || (TMath::Abs(L2_MC_MOTHER_ID) == 511))'
 either_lep_from_dplus: '((TMath::Abs(L1_MC_MOTHER_ID) == 411) || (TMath::Abs(L2_MC_MOTHER_ID) == 411))'
 # ----------
+h1_is_electron    : 'TMath::Abs(H1_TRUEID)       == 11'
+h1_is_muon        : 'TMath::Abs(H1_TRUEID)       == 13' 
 h1_is_pion        : 'TMath::Abs(H1_TRUEID)       == 211' 
 h1_is_kaon        : 'TMath::Abs(H1_TRUEID)       == 321' 
 h1_is_proton      : 'TMath::Abs(H1_TRUEID)       == 2212'
@@ -57,8 +59,13 @@ h2_from_k1plus    : 'TMath::Abs(H2_MC_MOTHER_ID) == 10323'
 
 had_are_muk       : '{h1_is_kaon}      && {h2_is_muon}'
 had_are_elk       : '{h1_is_kaon}      && {h2_is_electron}'
+
+had_are_mupi      : '{h1_is_muon}      && {h2_is_pion}'
+had_are_elpi      : '{h1_is_electron}  && {h2_is_pion}'
+
 had_are_kpi       : '{h1_is_kaon}      && {h2_is_pion}'
 had_are_pik       : '{h1_is_pion}      && {h2_is_kaon}'
+
 had_are_kk        : '{h1_is_kaon}      && {h2_is_kaon}'
 had_are_pk        : '{h1_is_proton}    && {h2_is_kaon}'
 had_are_kp        : '{h1_is_kaon}      && {h2_is_proton}'
@@ -106,16 +113,18 @@ hh_from_dplus_star: 'TMath::Abs(Kst_MC_MOTHER_ID) == 413'
 11144002             : '{b_is_bzero} && {lep_are_muons}     && {ll_is_jpsi} && {ll_from_bzero} && {lep_from_jpsi} && {had_are_kpi} && {hh_is_kstzero} && {hh_from_bzero} && {had_from_kstzero}'
 jpsi_mm_kstzero      : '{b_is_bzero} && {lep_are_muons}     && {ll_is_jpsi} && {ll_from_bzero} && {lep_from_jpsi} && {had_are_kpi} && {hh_is_kstzero} && {hh_from_bzero} && {had_from_kstzero}'
 jpsi_mm_kpi          : '{b_is_bzero} && {lep_are_muons}     && {ll_is_jpsi} && {ll_from_bzero} && {lep_from_jpsi} && {had_are_kpi}                    && {h1_from_bzero} &&  {h2_from_bzero}'
-Bd_JpsiKst_mm_had_swp: '{b_is_bzero} && {lep_are_muons}     && {ll_is_jpsi} && {ll_from_bzero} && {lep_from_jpsi} && {had_are_pik} && {hh_is_kstzero} && {hh_from_bzero} && {had_from_kstzero}'
-Bd_JpsiKst_mm_mix_swp: '{b_is_bzero} && {lep_are_mupio}                                                           && {had_are_muk}' 
+Bd_JpsiKst_mm_kpimm_pikmm: '{b_is_bzero} && {lep_are_muons}     && {ll_is_jpsi} && {ll_from_bzero} && {lep_from_jpsi} && {had_are_pik} && {hh_is_kstzero} && {hh_from_bzero} && {had_from_kstzero}'
+Bd_JpsiKst_mm_kpimm_kmpim: '{b_is_bzero} && {lep_are_mupio}                                                           && {had_are_muk}' 
+Bd_JpsiKst_mm_kpimm_mpimk: '{b_is_bzero} && {lep_are_mukao}                                                           && {had_are_mupi}' 
 
 # Bd -> Jpsi(ee) Kst(Kpi)
 11154001             : '{b_is_bzero} && {lep_are_electrons} && {ll_is_jpsi} && {ll_from_bzero} && {lep_from_jpsi} && {had_are_kpi} && {hh_is_kstzero} && {hh_from_bzero} && {had_from_kstzero}'
 11154002             : '{b_is_bzero} && {lep_are_electrons} && {ll_is_jpsi} && {ll_from_bzero} && {lep_from_jpsi} && {had_are_kpi} && {hh_is_kstzero} && {hh_from_bzero} && {had_from_kstzero}'
 jpsi_ee_kstzero      : '{b_is_bzero} && {lep_are_electrons} && {ll_is_jpsi} && {ll_from_bzero} && {lep_from_jpsi} && {had_are_kpi} && {hh_is_kstzero} && {hh_from_bzero} && {had_from_kstzero}'
 jpsi_ee_kpi          : '{b_is_bzero} && {lep_are_electrons} && {ll_is_jpsi} && {ll_from_bzero} && {lep_from_jpsi} && {had_are_kpi}                    && {h1_from_bzero} &&  {h2_from_bzero}'
-Bd_JpsiKst_ee_had_swp: '{b_is_bzero} && {lep_are_electrons} && {ll_is_jpsi} && {ll_from_bzero} && {lep_from_jpsi} && {had_are_pik} && {hh_is_kstzero} && {hh_from_bzero} && {had_from_kstzero}'
-Bd_JpsiKst_ee_mix_swp: '{b_is_bzero} && {lep_are_elpio}                                                           && {had_are_elk}' 
+Bd_JpsiKst_ee_kpiee_pikee: '{b_is_bzero} && {lep_are_electrons} && {ll_is_jpsi} && {ll_from_bzero} && {lep_from_jpsi} && {had_are_pik} && {hh_is_kstzero} && {hh_from_bzero} && {had_from_kstzero}'
+Bd_JpsiKst_ee_kpiee_kepie: '{b_is_bzero} && {lep_are_elpio}                                                           && {had_are_elk}' 
+Bd_JpsiKst_ee_kpiee_epiek: '{b_is_bzero} && {lep_are_elkao}                                                           && {had_are_elpi}' 
 
 # Bd -> psi2(mm) Kst(Kpi)
 11144011             : '{b_is_bzero} && {lep_are_muons}     && {ll_is_psi2} && {ll_from_bzero} && {lep_from_psi2} && {had_are_kpi} && {hh_is_kstzero} && {hh_from_bzero} && {had_from_kstzero}'

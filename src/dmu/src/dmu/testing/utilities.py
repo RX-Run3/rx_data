@@ -8,7 +8,7 @@ from typing              import Union
 from dataclasses         import dataclass
 from importlib.resources import files
 
-from ROOT import RDF, TFile, RDataFrame # type: ignore
+from ROOT import RDF, TFile, RDataFrame
 
 import uproot
 import joblib

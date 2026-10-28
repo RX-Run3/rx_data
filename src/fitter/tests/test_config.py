@@ -23,7 +23,7 @@ from fitter      import CombinatorialConfUnconstrained
 
 log=LogStore.add_logger('fitter:test_config')
 # ----------------------
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(autouse=True)
 def initialize():
     '''
     This will run before any test
@@ -31,6 +31,13 @@ def initialize():
     LogStore.set_level('fitter:configs', LogLevels.debug)
     with UnpackerModel.package(name = 'fitter_data'):
         yield
+# ----------------------
+def test_swap():
+    '''
+    Test loading config for track swapped control regions 
+    '''
+    data = gut.load_data(package = 'fitter_data', fpath = 'rare/rk/mm/kmm_mkm/data.yaml')
+    FitModelConf(**data)
 # ----------------------
 @pytest.mark.parametrize('channel', [Channel.ee, Channel.mm  ])
 @pytest.mark.parametrize('project', [Project.rk, Project.rkst])
@@ -272,7 +279,7 @@ def test_model_systematics():
     Test ModelSystematics class
     '''
     obj = ModelSystematics.load()
-    for sys_name in obj.root:
-        mod = obj.get(sys_name)
-        assert len(mod) == 1
+    for systematic in obj.root:
+        mod = obj.get(systematic)
+        assert len(mod) == len(systematic.entries)
 # ----------------------

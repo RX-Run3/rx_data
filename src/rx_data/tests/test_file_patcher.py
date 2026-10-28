@@ -3,7 +3,7 @@ Module meant to test FilePatcher class
 '''
 import pytest
 
-from ROOT    import RDataFrame, RDF # type: ignore 
+from ROOT    import RDataFrame, RDF
 from pathlib import Path
 from rx_data import FilePatcher
 from dmu     import LogStore

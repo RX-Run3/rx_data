@@ -6,7 +6,7 @@ import os
 from contextlib  import contextmanager
 from pathlib     import Path
 from typing      import Final
-from ROOT        import RDataFrame, RDF # type: ignore
+from ROOT        import RDataFrame, RDF
 from dmu         import LogLevels, LogStore
 from dmu.generic import utilities as gut
 

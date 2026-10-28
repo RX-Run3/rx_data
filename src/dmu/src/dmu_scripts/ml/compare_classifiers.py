@@ -11,7 +11,7 @@ import pandas            as pnd
 from sklearn.metrics import auc
 from dmu             import LogStore
 
-plt.style.use(mplhep.style.LHCb2) # type: ignore
+plt.style.use(mplhep.style.LHCb2)
 log=LogStore.add_logger('dmu:ml:compare_classifiers')
 # ------------------------------
 class Data:

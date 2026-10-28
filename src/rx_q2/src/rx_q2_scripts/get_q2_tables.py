@@ -15,7 +15,7 @@ from pathlib         import Path
 from typing          import Mapping, Any
 
 from omegaconf       import DictConfig
-from ROOT            import RDF # type: ignore
+from ROOT            import RDF
 from dmu.stats       import zfit
 from zfit.pdf        import BasePDF   as zpdf
 from zfit.data       import Data      as zdata

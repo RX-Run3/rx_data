@@ -3,7 +3,7 @@ Module holding MCVarsAdder class
 '''
 import re
 
-from ROOT      import RDF   # type: ignore
+from ROOT      import RDF
 from typing    import Final
 from functools import cached_property
 from dmu       import LogStore

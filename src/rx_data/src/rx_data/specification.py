@@ -1,7 +1,7 @@
 '''
 Module holding Specification and Sample classes
 '''
-from ROOT        import RDataFrame, RDF # type: ignore
+from ROOT        import RDataFrame, RDF
 from pathlib     import Path
 from typing      import Final, Literal, overload
 from pydantic    import BaseModel, ConfigDict, Field, model_serializer

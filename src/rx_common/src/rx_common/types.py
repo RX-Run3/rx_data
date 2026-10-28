@@ -9,7 +9,6 @@ from dmu         import LogStore
 from pydantic    import BaseModel, ConfigDict, model_validator
 
 from .cuts       import Cuts
-from .mass       import Mass
 
 _ALL_BLOCKS : Final[set[int]] = {-1, 1, 2, 3, 4, 5, 6, 7, 8}
 log=LogStore.add_logger('rx_common:types')
@@ -575,33 +574,4 @@ class Brem(StrEnum):
     # ----------------------
     def __hash__(self) -> int:
         return super().__hash__()
-# ---------------------------------------
-class MisID(StrEnum):
-    '''
-    Class meant to represent different
-    misID control regions
-    '''
-    bp_kk   = 'bp_kk'
-    bp_pipi = 'bp_pipi'
-
-    bd_kk   = 'bd_kk'
-    bd_pipi = 'bd_pipi'
-    # ----------------------------
-    def __str__(self):
-        return self.value
-    # ----------------------------
-    @property
-    def mass(self) -> Mass:
-        '''
-        Mass meant to be fitted in this region
-        '''
-        match self:
-            case MisID.bp_kk:
-                return Mass.bp_kk
-            case MisID.bp_pipi:
-                return Mass.bp_pipi
-            case MisID.bd_kk:
-                return Mass.bd_kk
-            case MisID.bd_pipi:
-                return Mass.bd_pipi
 # ---------------------------------------

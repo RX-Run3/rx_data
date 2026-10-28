@@ -9,7 +9,7 @@ from pathlib      import Path
 import ap_utilities.decays.utilities as aput
 import pandas                        as pnd
 
-from ROOT                   import RDF # type: ignore
+from ROOT                   import RDF
 from dmu                    import LogStore
 from rx_common              import Trigger
 

@@ -32,11 +32,12 @@ lep_are_muons     : '{l1_is_muon}      && {l2_is_muon}    '
 lep_are_electrons : '{l1_is_electron}  && {l2_is_electron}'
 lep_are_pions     : '{l1_is_pion}      && {l2_is_pion}    '
 lep_are_kaons     : '{l1_is_kaon}      && {l2_is_kaon}    '
+# ----------
 lep_are_mupio     : '({l1_is_muon}     && {l2_is_pion}) || ({l1_is_pion} && {l2_is_muon}    )'
 lep_are_elpio     : '({l1_is_electron} && {l2_is_pion}) || ({l1_is_pion} && {l2_is_electron})'
-lep_are_elkao     : '({l1_is_electron} && {l2_is_kaon}) && ({l1_is_kaon} && {l2_is_electron})'
-lep_are_mukao     : '({l1_is_muon}     && {l2_is_kaon}) && ({l1_is_kaon} && {l2_is_muon}    )'
-
+lep_are_mukao     : '({l1_is_muon}     && {l2_is_kaon}) || ({l1_is_kaon} && {l2_is_muon}    )'
+lep_are_elkao     : '({l1_is_electron} && {l2_is_kaon}) || ({l1_is_kaon} && {l2_is_electron})'
+# ----------
 lep_from_gamma    : 'TMath::Abs(L1_MC_MOTHER_ID)==    22 && TMath::Abs(L2_MC_MOTHER_ID) ==    22'
 lep_from_pizero   : 'TMath::Abs(L1_MC_MOTHER_ID)==   111 && TMath::Abs(L2_MC_MOTHER_ID) ==   111'
 lep_from_eta      : 'TMath::Abs(L1_MC_MOTHER_ID)==   221 && TMath::Abs(L2_MC_MOTHER_ID) ==   221'

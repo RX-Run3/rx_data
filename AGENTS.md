@@ -41,6 +41,11 @@ i.e. do not use `ConfigDict`
 
 - For finding symbols, definitions and references, 
   prefer the Serena tools over grep or reading whole files.
+- When grepping over the repository use `run_command` to execute:
+```bash
+git grep -n "string" -- "*.{EXTENSION}"
+```
+which will show you only files that are tracked with git of a given extension.
 - For all code edits, use the built-in insert_edit_into_file 
   tool so changes can be reviewed as a diff.
 - Do not read entire files when a symbol overview or a 

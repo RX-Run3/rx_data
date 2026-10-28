@@ -6,7 +6,7 @@ import argparse
 import mplhep
 
 from copy          import deepcopy
-from ROOT          import RDF, EnableImplicitMT # type: ignore
+from ROOT          import RDF, EnableImplicitMT
 from dmu           import LogStore
 from dmu.generic   import utilities as gut
 from dmu.plotting  import Plotter1D

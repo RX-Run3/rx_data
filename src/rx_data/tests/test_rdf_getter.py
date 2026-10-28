@@ -14,7 +14,7 @@ import numpy
 from contextlib     import ExitStack
 from typing         import cast, Final
 from pathlib        import Path
-from ROOT           import RDataFrame, RDF, EnableImplicitMT # type: ignore
+from ROOT           import RDataFrame, RDF, EnableImplicitMT
 from dmu            import LogStore
 from dmu.plotting   import Plotter2D
 from dmu.generic    import utilities as gut
@@ -27,14 +27,20 @@ from rx_data        import RDFGetter
 from rx_common      import Trigger
 
 _EMULATED : Final[list[tuple[Component, Component, Trigger]]] = [
-    (Component.bdkstkpijpsimm, Component.bskstjpsimm        , Trigger.rkst_mm_os),
-    (Component.bdkstkpijpsiee, Component.bskstjpsiee        , Trigger.rkst_ee_os),
+    (Component.bdkstkpijpsimm, Component.bskstjpsimm                , Trigger.rkst_mm_os),
+    (Component.bdkstkpijpsiee, Component.bskstjpsiee                , Trigger.rkst_ee_os),
     # -------------
-    (Component.bdkstkpijpsimm, Component.bdkstjpsimm_had_swp, Trigger.rkst_mm_os),
-    (Component.bdkstkpijpsiee, Component.bdkstjpsiee_had_swp, Trigger.rkst_ee_os),
+    (Component.bdkstkpijpsimm, Component.bdkstkpijpsimm_kpimm_pikmm , Trigger.rkst_mm_os),
+    (Component.bdkstkpijpsiee, Component.bdkstkpijpsiee_kpiee_pikee , Trigger.rkst_ee_os),
     # -------------
-    (Component.bpkpjpsimm    , Component.bpkpjpsimm_mix_swp , Trigger.rk_mm_os  ),
-    (Component.bpkpjpsiee    , Component.bpkpjpsiee_mix_swp , Trigger.rk_ee_os  ),
+    (Component.bdkstkpijpsimm, Component.bdkstkpijpsimm_kpimm_kmpim , Trigger.rkst_mm_os),
+    (Component.bdkstkpijpsiee, Component.bdkstkpijpsiee_kpiee_pikee , Trigger.rkst_ee_os),
+    # -------------
+    (Component.bdkstkpijpsimm, Component.bdkstkpijpsimm_kpimm_mpimk , Trigger.rkst_mm_os),
+    (Component.bdkstkpijpsiee, Component.bdkstkpijpsiee_kpiee_epiek , Trigger.rkst_ee_os),
+    # -------------
+    (Component.bpkpjpsimm    , Component.bpkpjpsimm_kmm_mkm         , Trigger.rk_mm_os),
+    (Component.bpkpjpsiee    , Component.bpkpjpsiee_kee_eke         , Trigger.rk_ee_os),
 ]
 
 _MCSS : Final[list[tuple[Component,Trigger]]] = [
@@ -144,7 +150,7 @@ def initialize():
     LogStore.set_level('rx_data:sample_emulator', 10)
     LogStore.set_level('rx_data:sample_patcher' , 10)
 
-    plt.style.use(mplhep.style.LHCb2) # type: ignore
+    plt.style.use(mplhep.style.LHCb2)
 
     with RDFGetter.alignment_check():
         EnableImplicitMT(2)

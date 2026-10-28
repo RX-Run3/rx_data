@@ -6,7 +6,7 @@ import pandas            as pnd
 import matplotlib.pyplot as plt
 
 from pathlib     import Path
-from ROOT        import RDF # type: ignore
+from ROOT        import RDF
 from typing      import Final
 from pydantic    import BaseModel, ConfigDict, model_validator
 from dmu         import LogStore

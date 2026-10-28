@@ -3,6 +3,7 @@ ENV    = 'rx_run3'
 HOME   = '/afs/ihep.ac.cn/users/c/campoverde'
 ANADIR = '/publicfs/ucas/user/campoverde/Data'
 LOGDIR = '/publicfs/ucas/user/campoverde/Jobs/snakemake'
+PACDIR = '/publicfs/ucas/user/campoverde/Packages/cal-rx-run3'
 # ---------------------
 rule all:
     input: [f'{ANADIR}/DB/fitter/{component}/{trigger}/data.root' for component, trigger in config['samples']]
@@ -19,17 +20,21 @@ rule database_making:
         LOGD    = LOGDIR,
         home    = HOME,
         env     = ENV,
+        pkg     = PACDIR,
     resources:
         htcondor_request_mem_mb = 4000,
         htcondor_request_disk_mb= 2000,
     shell :
         '''
         (
-        source setup.sh {params.env} {params.home}
+        export USER={params.env}
+        export HOME={params.home}
+        set +euo pipefail
+        source {params.home}/.bashrc
+        set -euo pipefail
+        cd {params.pkg}
 
-        set -e
-
-        rxdata make-database \
+        pixi run rxdata make-database \
                 -c {wildcards.component} -t {wildcards.trigger} \
                 -d cmb -d prc -d q2 -d mass -d jpsi_misid -d pid_l\
                 -d cascade -d hop

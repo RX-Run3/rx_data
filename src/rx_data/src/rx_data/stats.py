@@ -1,7 +1,7 @@
 '''
 Module with Stats class
 '''
-from ROOT        import RDF # type: ignore
+from ROOT        import RDF
 from dmu         import LogStore
 from rx_common   import Component, Trigger
 from .spec_maker import SpecMaker

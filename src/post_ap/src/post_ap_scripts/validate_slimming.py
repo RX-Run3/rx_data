@@ -21,7 +21,7 @@ import textwrap
 import argparse
 import tqdm
 import json
-from ROOT                  import TFile # type: ignore
+from ROOT                  import TFile
 from pathlib               import Path
 from dataclasses           import dataclass
 

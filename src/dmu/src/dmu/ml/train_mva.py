@@ -21,7 +21,7 @@ from sklearn.metrics         import roc_curve, auc
 from sklearn.model_selection import StratifiedKFold, cross_val_score
 from sklearn.ensemble        import GradientBoostingClassifier
 
-from ROOT import RDF # type: ignore
+from ROOT import RDF
 
 import dmu.ml.utilities         as ut
 import dmu.pdataframe.utilities as put

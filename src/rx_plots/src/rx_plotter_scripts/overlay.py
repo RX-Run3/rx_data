@@ -10,7 +10,7 @@ from typing        import Final
 from dataclasses   import dataclass
 from omegaconf     import DictConfig
 from dmu.generic   import utilities as gut
-from ROOT          import RDF, EnableImplicitMT # type: ignore
+from ROOT          import RDF, EnableImplicitMT
 from dmu.plotting  import Plotter1D
 from dmu           import LogLevels, LogStore
 from rx_data       import RDFGetter

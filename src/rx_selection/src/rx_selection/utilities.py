@@ -6,7 +6,7 @@ import json
 
 import numpy
 
-from ROOT                   import RDataFrame # type: ignore
+from ROOT                   import RDataFrame
 from dmu.rdataframe.atr_mgr import AtrMgr
 from dmu.logging.log_store  import LogStore
 

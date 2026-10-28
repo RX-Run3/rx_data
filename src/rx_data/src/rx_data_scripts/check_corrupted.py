@@ -6,7 +6,7 @@ import glob
 import argparse
 
 import tqdm
-from ROOT                  import TFile # type: ignore
+from ROOT                  import TFile
 from dmu.logging.log_store import LogStore
 
 log=LogStore.add_logger('rx_data:check_file')

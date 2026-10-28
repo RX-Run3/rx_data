@@ -4,7 +4,7 @@ Module containing tests for MCVarsAdder class
 import numpy
 import pytest
 
-from ROOT                    import RDF  # type: ignore
+from ROOT                    import RDF
 from dmu                     import LogStore
 from post_ap.mc_vars_adder   import MCVarsAdder
 

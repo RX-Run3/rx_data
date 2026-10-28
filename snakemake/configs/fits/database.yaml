@@ -67,9 +67,18 @@ samples:
   - [bdkstkpijpsimm, rkst_mm_os ]
   - [bdkstkpipsi2mm, rkst_mm_os ]
   # ----
-  # Electron resonant swap hadrons rkst
+  # Resonant swap hadrons rkst
   # ----
-  - [bdkstjpsimm_had_swp, rkst_mm_os]
-  - [bdkstjpsiee_had_swp, rkst_ee_os]
-  #- [bdkstpsi2mm_had_swp, rkst_mm_os]
-  #- [bdkstpsi2ee_had_swp, rkst_ee_os]
+  - [bdkstkpijpsimm_kpimm_pikmm, rkst_mm_os]
+  - [bdkstkpijpsiee_kpiee_pikee, rkst_ee_os]
+  # ----
+  - [bdkstkpijpsimm_kpimm_kmpim, rkst_mm_os]
+  - [bdkstkpijpsiee_kpiee_kepie, rkst_ee_os]
+  # ----
+  - [bdkstkpijpsimm_kpimm_mpimk, rkst_mm_os]
+  - [bdkstkpijpsiee_kpiee_epiek, rkst_ee_os]
+  # ----
+  # Resonant swap hadrons rk
+  # ----
+  - [bpkpjpsiee_kee_eke        , rk_ee_os]
+  - [bpkpjpsimm_kmm_mkm        , rk_mm_os]
