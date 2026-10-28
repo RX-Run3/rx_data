@@ -35,14 +35,14 @@ _RESO_MISID_RKST_EE_COMPONENTS : Final[list[Component]] = [
     Component.bskstjpsiee,
     Component.lbpkjpsiee,
     Component.bsphijpsiee,
-    Component.bdkstkpijpsiee_had_swp,
+    Component.bdkstkpijpsiee_kpiee_pikee,
 ]
 
 _RESO_MISID_RKST_MM_COMPONENTS : Final[list[Component]] = [
     Component.bskstjpsimm,
     Component.lbpkjpsimm,
     Component.bsphijpsimm,
-    Component.bdkstkpijpsiee_had_swp,
+    Component.bdkstkpijpsiee_kpiee_pikee,
 ]
 
 _RESO_MISID_RK_EE_COMPONENTS : Final[list[Component]] = [

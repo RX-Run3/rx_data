@@ -114,8 +114,8 @@ class Component(StrEnum):
     bskstpsi2mm    = auto()
     bskstpsi2ee    = auto()
 
-    bdkstkpijpsimm_had_swp = auto()
-    bdkstkpijpsiee_had_swp = auto()
+    bdkstkpijpsimm_kpimm_pikmm = auto()
+    bdkstkpijpsiee_kpiee_pikee = auto()
 
     bdkstkpijpsimm_mix_swp = auto()
     bdkstkpijpsiee_mix_swp = auto()
@@ -465,9 +465,9 @@ class Component(StrEnum):
           case Component.bskstpsi2ee:
             return 'Bs_psi2SKst_ee_eq_DPC'
           # -------
-          case Component.bdkstkpijpsimm_had_swp:
+          case Component.bdkstkpijpsimm_kpimm_pikmm:
             return 'Bd_JpsiKst_mm_had_swp'
-          case Component.bdkstkpijpsiee_had_swp:
+          case Component.bdkstkpijpsiee_kpiee_pikee:
             return 'Bd_JpsiKst_ee_had_swp'
           # -------
           case Component.bdkstkpijpsimm_mix_swp:
@@ -589,10 +589,10 @@ class Component(StrEnum):
         In case this is a derived sample (e.g. from double misID)
         this method will return the original version
         '''
-        if self == Component.bdkstkpijpsiee_had_swp:
+        if self == Component.bdkstkpijpsiee_kpiee_pikee:
             return Component.bdkstkpijpsiee
 
-        if self == Component.bdkstkpijpsimm_had_swp:
+        if self == Component.bdkstkpijpsimm_kpimm_pikmm:
             return Component.bdkstkpijpsimm
 
         return self
@@ -725,9 +725,9 @@ class Component(StrEnum):
             case Component.bpdnuknuee:
                 return r'$B^+ \to (\overline{D}{}^0 \to K^+ e^- \overline{\nu}_e) \, e^+ \nu_e$'
             # ---------------------------
-            case Component.bdkstkpijpsiee_had_swp:
+            case Component.bdkstkpijpsiee_kpiee_pikee:
                 return r'$B_d\to K^*(\to K^+_{\to\pi^+}\pi^-_{\to K^-})J/\psi(\to e^+e^-)$'
-            case Component.bdkstkpijpsimm_had_swp:
+            case Component.bdkstkpijpsimm_kpimm_pikmm:
                 return r'$B_d\to K^*(\to K^+_{\to\pi^+}\pi^-_{\to K^-})J/\psi(\to \mu^+\mu^-)$'
             case Component.bdkstkpijpsiee_mix_swp:
                 return r'$B_d\to K^*(\to K^+\pi^-_{\to e^-})J/\psi(\to e^+e^-_{\to \pi^-})$'

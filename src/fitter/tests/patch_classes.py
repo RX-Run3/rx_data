@@ -164,8 +164,8 @@ class TestSimFitter:
         log.warning('Using mock SimFitter PDF')
         skipped = {
             Component.ccbar, 
-            Component.bdkstkpijpsimm_had_swp,
-            Component.bdkstkpijpsiee_had_swp,
+            Component.bdkstkpijpsimm_kpimm_pikmm,
+            Component.bdkstkpijpsiee_kpiee_pikee,
             Component.bskstjpsiee,
             Component.bskstjpsimm,
             Component.bsphijpsiee,
