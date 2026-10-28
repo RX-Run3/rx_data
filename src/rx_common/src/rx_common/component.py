@@ -472,7 +472,7 @@ class Component(StrEnum):
           # -------
           case Component.bdkstkpijpsimm_kpimm_kmpim:
             return 'Bd_JpsiKst_mm_kpimm_kmpim'
-          case Component.bdkstkpijpsiee_kpiee_pikee:
+          case Component.bdkstkpijpsiee_kpiee_kepie:
             return 'Bd_JpsiKst_ee_kpiee_kepie'
           # -------
           case Component.bdkstpi0:
@@ -729,7 +729,7 @@ class Component(StrEnum):
                 return r'$B_d\to K^*(\to K^+_{\to\pi^+}\pi^-_{\to K^-})J/\psi(\to e^+e^-)$'
             case Component.bdkstkpijpsimm_kpimm_pikmm:
                 return r'$B_d\to K^*(\to K^+_{\to\pi^+}\pi^-_{\to K^-})J/\psi(\to \mu^+\mu^-)$'
-            case Component.bdkstkpijpsiee_kpiee_pikee:
+            case Component.bdkstkpijpsiee_kpiee_kepie:
                 return r'$B_d\to K^*(\to K^+\pi^-_{\to e^-})J/\psi(\to e^+e^-_{\to \pi^-})$'
             case Component.bdkstkpijpsimm_kpimm_kmpim:
                 return r'$B_d\to K^*(\to K^+\pi^-_{\to \mu^-})J/\psi(\to \mu^+\mu^-_{\to \pi^-})$'
