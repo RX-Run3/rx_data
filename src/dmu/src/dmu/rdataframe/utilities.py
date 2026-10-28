@@ -10,7 +10,7 @@ import numpy
 from dataclasses import dataclass
 from functools   import lru_cache
 from typing      import Union
-from ROOT        import RDF, Numba # type: ignore
+from ROOT        import RDF, Numba
 from dmu         import LogStore
 from dmu.generic import hashing 
 

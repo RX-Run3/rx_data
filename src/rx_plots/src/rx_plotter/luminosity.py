@@ -11,7 +11,7 @@ from ROOT      import RDataFrame
 from rx_common import Campaign
 
 # TODO: Clean this up
-plt.style.use(mplhep.style.LHCb2) # type: ignore
+plt.style.use(mplhep.style.LHCb2)
 _LUMI_PATH : Final[str] = '/home/acampove/Packages/lumi_calib/luminosity.root'
 _LUMI_TREE : Final[str] = 'offline_lumi'
 # ---------------------------------

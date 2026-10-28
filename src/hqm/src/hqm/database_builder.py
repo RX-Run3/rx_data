@@ -5,7 +5,7 @@ import pandas as pnd
 
 from typing         import Final
 from rx_selection   import selection as sel
-from ROOT           import RDF # type: ignore
+from ROOT           import RDF
 from rx_common      import Trigger, Component, Qsq
 from dmu            import LogStore
 from rx_data        import RDFGetter

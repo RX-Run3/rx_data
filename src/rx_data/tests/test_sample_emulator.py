@@ -4,7 +4,7 @@ Module holding tests for SampleEmulator class
 import numpy
 import pytest
 
-from ROOT        import RDataFrame, RDF # type: ignore
+from ROOT        import RDataFrame, RDF
 from dmu         import LogStore
 from dmu.generic import utilities as gut
 from rx_common   import Component

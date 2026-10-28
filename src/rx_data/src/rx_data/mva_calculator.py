@@ -11,7 +11,7 @@ import joblib
 import numpy
 import pandas as pnd
 
-from ROOT                  import RDF # type: ignore
+from ROOT                  import RDF
 from dmu.ml.cv_predict     import CVClassifier, CVPredict
 from dmu.logging.log_store import LogStore
 from dmu.generic           import version_management as vman

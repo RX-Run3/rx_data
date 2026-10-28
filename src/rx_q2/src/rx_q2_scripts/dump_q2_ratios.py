@@ -483,7 +483,7 @@ def main():
     parser.add_argument('-y', '--year'   , type=str           , help='Year for data whose corrections are needed', default='2024')
     args = parser.parse_args()
 
-    plt.style.use(mplhep.style.LHCb2) # type: ignore
+    plt.style.use(mplhep.style.LHCb2)
 
     cfg  = _load_config(args = args)
 

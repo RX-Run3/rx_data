@@ -9,7 +9,7 @@ import mplhep
 import matplotlib.pyplot as plt
 
 from hist               import Hist
-from ROOT               import RDF # type: ignore
+from ROOT               import RDF
 from matplotlib.colors  import LogNorm
 from dmu                import LogStore
 from .plotter           import Plotter

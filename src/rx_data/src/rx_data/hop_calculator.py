@@ -5,8 +5,8 @@ import math
 import numpy
 
 from typing     import Final
-from ROOT       import RDF  # type: ignore
-from ROOT.Math  import LorentzVector, XYZVector # type: ignore
+from ROOT       import RDF
+from ROOT.Math  import LorentzVector, XYZVector
 from dmu        import LogStore
 from rx_common  import Project, Trigger
 

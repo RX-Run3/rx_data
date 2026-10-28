@@ -7,7 +7,7 @@ import pandas   as pnd
 
 from contextlib   import ExitStack
 from typing       import Final
-from ROOT         import RDF # type: ignore
+from ROOT         import RDF
 from pathlib      import Path
 from dmu          import LogStore
 from dmu.stats    import ZFitPlotterConf

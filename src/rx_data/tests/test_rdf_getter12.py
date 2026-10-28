@@ -6,7 +6,7 @@ Script used to test RDFGetter12 class
 import pytest
 
 from typing   import Final
-from ROOT     import RDF # type: ignore
+from ROOT     import RDF
 from dmu      import LogStore
 from rx_data  import RDFGetter12
 

@@ -8,7 +8,7 @@ import pandas as pnd
 
 from pathlib      import Path
 from scipy.stats  import truncexpon
-from ROOT         import RDF # type: ignore
+from ROOT         import RDF
 from fitter       import CmbValidator
 from fitter       import CmbInputConfig, CmbValidatorConf, CmbValidationConfig
 from fitter       import CmbOutputConfig

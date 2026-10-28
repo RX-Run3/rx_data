@@ -9,7 +9,7 @@ import mplhep
 import matplotlib.pyplot as plt
 
 from importlib.resources   import files
-from ROOT                  import RDF # type: ignore 
+from ROOT                  import RDF
 from dmu                   import LogStore
 from dmu.ml                import CVPerformance
 from dmu.ml                import CVClassifier
@@ -20,7 +20,7 @@ from rx_selection          import selection as sel
 from rx_classifier         import utilities as cut
 
 log=LogStore.add_logger('rx_classifier:compare_classifier')
-plt.style.use(mplhep.style.LHCb2) # type: ignore
+plt.style.use(mplhep.style.LHCb2)
 # -------------------------------
 class Data:
     '''

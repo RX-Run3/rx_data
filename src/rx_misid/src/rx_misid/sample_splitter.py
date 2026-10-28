@@ -7,7 +7,7 @@ import pandas as pnd
 
 from typing          import Final
 from pathlib         import Path
-from ROOT            import RDF # type: ignore
+from ROOT            import RDF
 from dmu             import LogStore
 from dmu.rdataframe  import utilities as rut
 from dmu.workflow    import Cache     as Wcache

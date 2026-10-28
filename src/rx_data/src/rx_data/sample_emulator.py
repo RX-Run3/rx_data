@@ -2,7 +2,7 @@
 Module holding SampleEmulator class
 '''
 
-from ROOT        import RDF # type: ignore
+from ROOT        import RDF
 from dmu         import LogStore
 from dmu.generic import utilities as gut
 from pydantic    import BaseModel, RootModel

@@ -7,7 +7,7 @@ from contextlib   import ExitStack
 from typing       import Final
 from dmu.plotting import OverlayConf
 from dmu.plotting import Plotter1D
-from ROOT         import RDF # type: ignore
+from ROOT         import RDF
 from pydantic     import BaseModel, RootModel, model_validator
 from rx_common    import Component, Cuts, Qsq, Trigger
 from rx_data      import CandidateRebuilder, RDFGetter

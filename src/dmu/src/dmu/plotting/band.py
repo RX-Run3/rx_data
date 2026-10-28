@@ -53,7 +53,7 @@ class BandPlotter:
         self._cfg = cfg
         self._df  = df
 
-        plt.style.use(mplhep.style.LHCb2) # type: ignore
+        plt.style.use(mplhep.style.LHCb2)
     # ----------------------------
     def _style(self, parameter : str) -> tuple[float|None, str|None]:
         '''

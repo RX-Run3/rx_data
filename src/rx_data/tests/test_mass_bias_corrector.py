@@ -13,7 +13,7 @@ from typing              import Final
 from pathlib             import Path
 from importlib.resources import files
 from omegaconf           import OmegaConf
-from ROOT                import RDF # type: ignore
+from ROOT                import RDF
 from dmu                 import LogStore
 from dmu.plotting        import Plotter1D as Plotter
 from rx_data             import utilities as ut
@@ -75,7 +75,7 @@ def initialize():
     LogStore.set_level('rx_data:test_mass_bias_corrector', 10)
     LogStore.set_level('rx_data:rdf_getter'              , 10)
 
-    plt.style.use(mplhep.style.LHCb2) # type: ignore
+    plt.style.use(mplhep.style.LHCb2)
 #-----------------------------------------
 def _load_conf() -> dict:
     cfg_path = files('rx_data_data').joinpath('tests/mass_bias_corrector/mass_overlay.yaml')

@@ -12,7 +12,7 @@ from dataclasses         import dataclass
 import yaml
 import mplhep
 import dmu.generic.utilities as gut
-from ROOT                    import RDataFrame, EnableImplicitMT # type: ignore
+from ROOT                    import RDataFrame, EnableImplicitMT
 from dmu.plotting.plotter_1d import Plotter1D
 from dmu.logging.log_store   import LogStore
 from dmu.generic             import version_management as vmn

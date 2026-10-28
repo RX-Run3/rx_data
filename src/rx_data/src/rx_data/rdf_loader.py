@@ -7,7 +7,7 @@ import cppyy
 from contextlib       import contextmanager
 from dask.distributed import Client
 from pathlib          import Path
-from ROOT             import RDF  # type: ignore
+from ROOT             import RDF
 from dmu              import LogStore
 
 log=LogStore.add_logger('rx_data:rdf_loader')

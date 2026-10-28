@@ -6,7 +6,7 @@ import pandas as pnd
 import random
 import vector
 
-from ROOT        import RDF # type: ignore
+from ROOT        import RDF
 from tqdm        import tqdm
 from particle    import Particle         as part
 from vector      import MomentumObject3D as v3d

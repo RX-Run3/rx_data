@@ -1,7 +1,7 @@
 '''
 This script tests uses of typehinting with ROOT
 '''
-from ROOT import RDataFrame, RDF # type: ignore
+from ROOT import RDataFrame, RDF
 
 def test_rdf_type() -> RDF.RNode|None:
     '''

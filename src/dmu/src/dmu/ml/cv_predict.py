@@ -5,7 +5,7 @@ import pandas as pnd
 import numpy
 import tqdm
 
-from ROOT.RDF import RNode # type: ignore
+from ROOT.RDF import RNode
 
 import dmu.ml.utilities     as ut
 

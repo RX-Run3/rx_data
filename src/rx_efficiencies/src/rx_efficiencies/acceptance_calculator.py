@@ -5,7 +5,7 @@ Module holding AcceptanceCalculator class
 import os
 import matplotlib.pyplot as plt
 
-from ROOT      import RDF # type: ignore
+from ROOT      import RDF
 from dmu       import LogStore
 from typing    import Final
 from functools import cached_property

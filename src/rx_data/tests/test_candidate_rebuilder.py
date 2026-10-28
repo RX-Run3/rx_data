@@ -11,7 +11,7 @@ from rx_common import Component, Trigger
 
 from rx_data.rdf_getter import RDFGetter
 
-plt.style.use(mplhep.style.LHCb2) # type: ignore
+plt.style.use(mplhep.style.LHCb2)
 log = LogStore.add_logger('rx_data:test_mass_rebuilder')
 # ----------------------------------
 @pytest.fixture(scope='module', autouse=True)

@@ -22,7 +22,7 @@ from dmu.stats   import Fitter
 from dmu.stats   import ZFitPlotter
 from dmu.stats   import ZFitPlotterConf
 from dmu.generic import rxran
-from ROOT        import RDF, gInterpreter # type: ignore
+from ROOT        import RDF, gInterpreter
 
 _NSAMPLE : int = 10_000
 

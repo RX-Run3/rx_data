@@ -4,7 +4,7 @@ Module needed to test truth matching
 import re
 import pytest
 
-from ROOT         import RDF     # type: ignore
+from ROOT         import RDF
 from rx_common    import Component, Trigger
 from rx_selection import truth_matching as tm
 from rx_data      import RDFGetter

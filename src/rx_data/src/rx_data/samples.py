@@ -10,7 +10,7 @@ import pandas as pnd
 
 from colorama       import Fore
 from pathlib        import Path
-from ROOT           import RDF # type: ignore
+from ROOT           import RDF
 from rx_common      import Project, Component, Trigger
 from dmu            import LogStore
 from dmu.generic    import version_management as vm

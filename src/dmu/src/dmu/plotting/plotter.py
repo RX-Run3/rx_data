@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from typing            import Final
 from pathlib           import Path
 from matplotlib.figure import Figure
-from ROOT              import RDF # type: ignore
+from ROOT              import RDF
 from omegaconf         import DictConfig, OmegaConf
 from dmu               import LogStore
 

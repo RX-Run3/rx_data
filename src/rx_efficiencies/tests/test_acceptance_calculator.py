@@ -9,7 +9,7 @@ import mplhep
 import matplotlib.pyplot as plt
 
 from pathlib         import Path
-from ROOT            import RDataFrame # type: ignore
+from ROOT            import RDataFrame
 from dmu             import LogStore
 from dmu.generic     import version_management    as vmn
 from dmu.generic     import rxran

@@ -11,7 +11,7 @@ from dmu.ml import TrainMva, NoFeatureInfo
 
 log = LogStore.add_logger('dmu:ml:test_train_mva')
 
-plt.style.use(mplhep.style.LHCb2) # type: ignore
+plt.style.use(mplhep.style.LHCb2)
 # -------------------------------
 @pytest.fixture(scope='session', autouse=True)
 def initialize():

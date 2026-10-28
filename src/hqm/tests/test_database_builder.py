@@ -4,7 +4,7 @@ Module with tests for DatabaseBuilder class
 import pytest
 
 from dmu                  import LogStore
-from ROOT                 import RDF  # type: ignore
+from ROOT                 import RDF
 from typing               import Any
 from pathlib              import Path
 from rx_common            import Channel, Component, Trigger

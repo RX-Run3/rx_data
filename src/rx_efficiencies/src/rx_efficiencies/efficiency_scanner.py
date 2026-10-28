@@ -8,7 +8,7 @@ from typing        import Final
 from functools     import cached_property
 from pydantic      import BaseModel, ConfigDict, RootModel, model_validator
 from pathlib       import Path
-from ROOT          import RDF # type: ignore
+from ROOT          import RDF
 from dmu           import LogStore
 from dmu.workflow  import Cache
 from rx_data       import RDFGetter

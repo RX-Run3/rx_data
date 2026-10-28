@@ -5,7 +5,7 @@ import os
 import pytest
 import tqdm
 
-from ROOT         import TFile # type: ignore
+from ROOT         import TFile
 from pathlib      import Path
 from post_ap      import PFNReader, PFNReaderConf
 from post_ap      import Production

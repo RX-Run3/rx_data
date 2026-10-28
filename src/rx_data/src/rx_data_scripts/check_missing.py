@@ -8,7 +8,7 @@ import argparse
 from pathlib import Path
 
 import tqdm
-from ROOT import TFile  # type: ignore
+from ROOT import TFile
 from dmu.generic                    import utilities          as gut
 from dmu.generic.version_management import get_last_version
 from dmu.logging.log_store          import LogStore

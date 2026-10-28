@@ -9,7 +9,7 @@ from functools              import cache
 from pathlib                import Path
 from contextlib             import contextmanager
 from importlib.resources    import files
-from ROOT                   import RDF # type: ignore
+from ROOT                   import RDF
 from dmu                    import LogStore
 from dmu.generic            import hashing
 from dmu.rdataframe         import utilities          as rut

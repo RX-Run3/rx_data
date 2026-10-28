@@ -49,7 +49,7 @@ class EfficiencyCalculator(Cache):
         self._d_sel   = {'Sample' : [], 'Decay' : [], 'Value' : [], 'Error' : []}
         self._sample  = sample 
 
-        plt.style.use(mplhep.style.LHCb2) # type: ignore
+        plt.style.use(mplhep.style.LHCb2)
 
         super().__init__(
             out_path = out_dir / 'efficiencies' / f'{sample}_{q2bin}_{trigger.value}',

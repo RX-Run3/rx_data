@@ -5,7 +5,7 @@ import os
 import argparse
 
 import mplhep
-from ROOT                    import RDF # type: ignore
+from ROOT                    import RDF
 from omegaconf               import DictConfig
 from dmu.generic             import utilities as gut
 from dmu.logging.log_store   import LogStore

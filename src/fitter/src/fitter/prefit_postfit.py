@@ -15,7 +15,7 @@ from dmu       import LogStore
 from dmu.stats import Constraints, Constraint1D, ConstraintND
 from dmu.stats import FitResult
 
-plt.style.use(mplhep.style.LHCb2) # type: ignore
+plt.style.use(mplhep.style.LHCb2)
 _NLINES : Final[int]           = 4
 _LABELS : Final[dict[str,str]] = {
     'nd_mu_suj_comb_main_1'          : r'$\mu_{comb}$',

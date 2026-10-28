@@ -10,7 +10,7 @@ import mplhep
 import pandas              as pnd
 import matplotlib.pyplot   as plt
 
-from ROOT         import EnableImplicitMT # type: ignore
+from ROOT         import EnableImplicitMT
 from pathlib      import Path
 from dmu          import LogStore
 from dmu.generic  import utilities as gut
@@ -24,7 +24,7 @@ from rx_plotter   import BremRecovery
 from rx_plotter   import plot_luminosity
 from rx_plotter   import CopyPlots
 
-plt.style.use(mplhep.style.LHCb2) # type: ignore
+plt.style.use(mplhep.style.LHCb2)
 _ANADIR = Path(os.environ['ANADIR'])
 app     = typer.Typer(
     help            = __doc__,

@@ -6,7 +6,7 @@ import pytest
 
 from functools   import cached_property
 from ROOT        import RDataFrame
-from ROOT.RDF    import RSnapshotOptions # type: ignore
+from ROOT.RDF    import RSnapshotOptions
 from pathlib     import Path
 from rx_common   import Trigger
 from rx_data     import SampleOrganizer

@@ -11,7 +11,7 @@ import matplotlib.pyplot        as plt
 
 from typing         import Final
 from pathlib        import Path
-from ROOT           import RDataFrame # type: ignore
+from ROOT           import RDataFrame
 from dmu.pdataframe import utilities as put
 from dmu            import LogStore
 from rx_common      import Project, Component
@@ -20,7 +20,7 @@ from rx_efficiencies           import AcceptanceCalculator
 from rx_efficiencies.utilities import is_acceptance_defined
 
 log = LogStore.add_logger('rx_efficiencies:calculate_acceptance')
-plt.style.use(mplhep.style.LHCb2) # type: ignore
+plt.style.use(mplhep.style.LHCb2)
 
 _RARE_RK     : Final[list[Component]] = [
     Component.bsphiee, 

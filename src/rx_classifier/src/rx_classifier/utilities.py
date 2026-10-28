@@ -1,7 +1,7 @@
 '''
 Module used to store utility functions
 '''
-from ROOT                  import RDF # type: ignore
+from ROOT                  import RDF
 from dmu.logging.log_store import LogStore
 
 log=LogStore.add_logger('rx_classifier:utilities')

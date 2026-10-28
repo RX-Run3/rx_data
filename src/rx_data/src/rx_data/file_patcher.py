@@ -5,7 +5,7 @@ import array
 
 from pathlib     import Path
 from typing      import Final
-from ROOT        import RDataFrame, TFile # type: ignore
+from ROOT        import RDataFrame, TFile
 from dmu         import LogStore
 
 log=LogStore.add_logger('rx_data:file_patcher')

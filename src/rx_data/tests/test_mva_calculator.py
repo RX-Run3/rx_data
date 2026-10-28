@@ -5,7 +5,7 @@ import pytest
 import matplotlib.pyplot as plt
 
 from pathlib   import Path
-from ROOT      import RDF # type: ignore
+from ROOT      import RDF
 from dmu       import LogStore
 from rx_data   import RDFGetter
 from rx_data   import MVACalculator

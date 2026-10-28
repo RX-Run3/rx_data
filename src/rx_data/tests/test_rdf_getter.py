@@ -14,7 +14,7 @@ import numpy
 from contextlib     import ExitStack
 from typing         import cast, Final
 from pathlib        import Path
-from ROOT           import RDataFrame, RDF, EnableImplicitMT # type: ignore
+from ROOT           import RDataFrame, RDF, EnableImplicitMT
 from dmu            import LogStore
 from dmu.plotting   import Plotter2D
 from dmu.generic    import utilities as gut
@@ -144,7 +144,7 @@ def initialize():
     LogStore.set_level('rx_data:sample_emulator', 10)
     LogStore.set_level('rx_data:sample_patcher' , 10)
 
-    plt.style.use(mplhep.style.LHCb2) # type: ignore
+    plt.style.use(mplhep.style.LHCb2)
 
     with RDFGetter.alignment_check():
         EnableImplicitMT(2)

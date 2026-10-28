@@ -14,7 +14,7 @@ from pathlib      import Path
 from typing       import Final
 from hist         import Hist
 from hist.axis    import Regular
-from ROOT         import RDF # type: ignore
+from ROOT         import RDF
 from dmu          import LogStore
 from dmu.generic  import utilities as gut
 from pydantic     import BaseModel

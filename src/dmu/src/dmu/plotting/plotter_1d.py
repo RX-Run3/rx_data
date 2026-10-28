@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 from hist         import Hist
 from omegaconf    import DictConfig
-from ROOT         import RDF # type: ignore
+from ROOT         import RDF
 from scipy.stats  import norm
 from dmu          import LogStore
 from dmu.generic  import naming

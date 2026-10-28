@@ -10,7 +10,7 @@ from functools           import lru_cache
 import yaml
 import numpy
 import matplotlib.pyplot as plt
-from ROOT                    import RDataFrame, EnableImplicitMT # type: ignore
+from ROOT                    import RDataFrame, EnableImplicitMT
 from dmu.logging.log_store   import LogStore
 from rx_data.rdf_getter      import RDFGetter
 from rx_selection            import selection as sel

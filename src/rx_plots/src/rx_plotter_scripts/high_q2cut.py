@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 from pathlib               import Path
 from typing                import Final, cast
-from ROOT                  import RDF # type: ignore
+from ROOT                  import RDF
 from rx_common             import Component, Cuts, Qsq, Trigger
 from rx_data               import RDFGetter
 from rx_data.rdf_getter12  import RDFGetter12
@@ -19,7 +19,7 @@ from rx_selection          import selection as sel
 from dmu                   import LogLevels, LogStore
 
 log=LogStore.add_logger('rx_plots:high_q2cut')
-plt.style.use(mplhep.style.LHCb2) # type: ignore
+plt.style.use(mplhep.style.LHCb2)
 
 _COMPONENTS : Final[list[Component]] = [
     Component.data_24,

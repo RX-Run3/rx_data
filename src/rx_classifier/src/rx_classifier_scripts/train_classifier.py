@@ -16,7 +16,7 @@ import yaml
 import ROOT
 
 from omegaconf             import DictConfig
-from ROOT                  import RDataFrame, RDF, kWarning # type: ignore
+from ROOT                  import RDataFrame, RDF, kWarning
 from rx_selection          import selection as sel
 from rx_data.rdf_getter    import RDFGetter
 
@@ -25,7 +25,7 @@ from dmu.logging.log_store import LogStore
 from dmu.ml.train_mva      import TrainMva
 from dmu.rdataframe        import utilities as rut
 
-ROOT.gErrorIgnoreLevel = kWarning # type: ignore
+ROOT.gErrorIgnoreLevel = kWarning
 log = LogStore.add_logger('rx_classifier:train_classifier')
 #---------------------------------
 class Data:

@@ -90,7 +90,7 @@ def tabulate_scales(
     '''
     Makes table of signal over background scale factors
     '''
-    from ROOT      import EnableImplicitMT # type: ignore
+    from ROOT      import EnableImplicitMT
     from fitter    import ScalesTabulator
     from fitter    import ScalesTabulatorConf
 
@@ -251,7 +251,7 @@ def calculate_sweights(
         model = pdf, 
         x     = masses)
 
-    plt.style.use(mplhep.style.LHCb2) # type: ignore
+    plt.style.use(mplhep.style.LHCb2)
 
     for par, weights in sweights.items():
         swt_path = nll_path.parent / f'swt_{par.name}.json'
