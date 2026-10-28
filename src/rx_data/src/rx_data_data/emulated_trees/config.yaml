@@ -62,7 +62,18 @@ bdkstkpijpsimm_kpimm_kmpim:
 bdkstkpijpsiee_kpiee_kepie:
   samples   : 
     bdkstkpijpsiee : 1.0
-
+# ----------------------------------------
+# K <-> mu/e swaps
+# ----------------------------------------
+bdkstkpijpsimm_kpimm_mpimk:
+  samples   : 
+    bdkstkpijpsimm : 1.0
+bdkstkpijpsiee_kpiee_epiek:
+  samples   : 
+    bdkstkpijpsiee : 1.0
+# ----------------------------------------
+# k <-> mu/e swaps
+# ----------------------------------------
 bpkpjpsimm_kmm_mkm:
   samples   : 
     bpkpjpsimm     : 1.0

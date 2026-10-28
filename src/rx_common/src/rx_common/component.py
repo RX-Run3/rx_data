@@ -120,6 +120,9 @@ class Component(StrEnum):
     bdkstkpijpsimm_kpimm_kmpim = auto()
     bdkstkpijpsiee_kpiee_kepie = auto()
 
+    bdkstkpijpsimm_kpimm_mpimk = auto()
+    bdkstkpijpsiee_kpiee_epiek = auto()
+
     bpkpjpsiee_kee_eke         = auto()
     bpkpjpsimm_kmm_mkm         = auto()
     # -----
@@ -478,6 +481,11 @@ class Component(StrEnum):
           case Component.bdkstkpijpsiee_kpiee_kepie:
             return 'Bd_JpsiKst_ee_kpiee_kepie'
           # -------
+          case Component.bdkstkpijpsimm_kpimm_mpimk:
+            return 'Bd_JpsiKst_mm_kpimm_mpimk'
+          case Component.bdkstkpijpsiee_kpiee_epiek:
+            return 'Bd_JpsiKst_ee_kpiee_epiek'
+          # -------
           case Component.bpkpjpsimm_kmm_mkm:
             return 'Bu_JpsiK_mm_eq_DPC_kmm_mkm'
           case Component.bpkpjpsiee_kee_eke:
@@ -530,14 +538,25 @@ class Component(StrEnum):
                 return ['bpjp'   , 'jpee']
             case 'bppijpsimm':
                 return ['bpjp'   , 'jpmm']
+            # -------------
             case 'bdkstkpijpsiee':
                 return ['bdjkst' , 'jpee', 'kokp']
             case 'bdkstkpijpsiee_kpiee_pikee':
                 return ['bdjkst' , 'jpee', 'kokp']
+            case 'bdkstkpijpsiee_kpiee_epiek':
+                return ['bdjkst' , 'jpee', 'kokp']
+            case 'bdkstkpijpsiee_kpiee_kepie':
+                return ['bdjkst' , 'jpee', 'kokp']
+            # -------------
             case 'bdkstkpijpsimm':
                 return ['bdjkst' , 'jpmm', 'kokp']
             case 'bdkstkpijpsimm_kpimm_pikmm':
                 return ['bdjkst' , 'jpmm', 'kokp']
+            case 'bdkstkpijpsimm_kpimm_mpimk':
+                return ['bdjkst' , 'jpmm', 'kokp']
+            case 'bdkstkpijpsimm_kpimm_kmpim':
+                return ['bdjkst' , 'jpmm', 'kokp']
+            # -------------
             case 'bskstjpsiee':
                 return ['bsjkst' , 'jpee', 'kokp']
             case 'bskstjpsimm':
@@ -597,10 +616,13 @@ class Component(StrEnum):
         In case this is a derived sample (e.g. from double misID)
         this method will return the original version
         '''
-        if self == Component.bdkstkpijpsiee_kpiee_pikee:
+        ee_rkst_reso_misid = Component.bdkstkpijpsiee_kpiee_pikee, Component.bdkstkpijpsiee_kpiee_epiek, Component.bdkstkpijpsiee_kpiee_kepie
+        mm_rkst_reso_misid = Component.bdkstkpijpsimm_kpimm_pikmm, Component.bdkstkpijpsimm_kpimm_mpimk, Component.bdkstkpijpsimm_kpimm_kmpim
+
+        if self in ee_rkst_reso_misid:
             return Component.bdkstkpijpsiee
 
-        if self == Component.bdkstkpijpsimm_kpimm_pikmm:
+        if self in mm_rkst_reso_misid:
             return Component.bdkstkpijpsimm
 
         return self
@@ -741,6 +763,10 @@ class Component(StrEnum):
                 return r'$B_d\to K^*(\to K^+\pi^-_{\to e^-})J/\psi(\to e^+e^-_{\to \pi^-})$'
             case Component.bdkstkpijpsimm_kpimm_kmpim:
                 return r'$B_d\to K^*(\to K^+\pi^-_{\to \mu^-})J/\psi(\to \mu^+\mu^-_{\to \pi^-})$'
+            case Component.bdkstkpijpsimm_kpimm_mpimk:
+                return r'$B_d\to K^*(\to K^+_{\to \mu^+}\pi^-)J/\psi(\to \mu^+\mu^-_{\to K^-})$'
+            case Component.bdkstkpijpsiee_kpiee_epiek:
+                return r'$B_d\to K^*(\to K^+_{\to e^+}\pi^-)J/\psi(\to e^+e^-_{\to K^-})$'
             # ---------------------------
             case Component.bpkpjpsimm_kmm_mkm:
                 return r'$B^+\to K^+_{\to \mu^+}J/\psi(\to \mu^+\mu^-_{\to K^-})$'

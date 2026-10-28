@@ -9,6 +9,8 @@ Bd_JpsiKst_ee_kpiee_pikee      : Bd_JpsiKst_ee_kpiee_pikee
 Bd_JpsiKst_mm_kpimm_pikmm      : Bd_JpsiKst_mm_kpimm_pikmm
 Bd_JpsiKst_ee_kpiee_kepie      : Bd_JpsiKst_ee_kpiee_kepie
 Bd_JpsiKst_mm_kpimm_kmpim      : Bd_JpsiKst_mm_kpimm_kmpim
+Bd_JpsiKst_ee_kpiee_epiek      : Bd_JpsiKst_ee_kpiee_epiek
+Bd_JpsiKst_mm_kpimm_mpimk      : Bd_JpsiKst_mm_kpimm_mpimk
 Bu_JpsiK_mm_eq_DPC_kmm_mkm     : Bu_JpsiK_mm_eq_DPC_kmm_mkm
 Bu_JpsiK_ee_eq_DPC_kee_eke     : Bu_JpsiK_ee_eq_DPC_kee_eke
 # -----------------------------------
