@@ -56,10 +56,10 @@ bdkstkpijpsiee_had_swp:
 # ----------------------------------------
 # pi <-> mu/e swaps
 # ----------------------------------------
-bdkstjpsimm_mix_swp:
+bdkstkpijpsimm_mix_swp:
   samples   : 
     bdkstkpijpsimm : 1.0
-bdkstjpsiee_mix_swp:
+bdkstkpijpsiee_mix_swp:
   samples   : 
     bdkstkpijpsiee : 1.0
 
