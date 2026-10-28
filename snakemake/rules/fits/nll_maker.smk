@@ -6,8 +6,6 @@ qsq_bin   = config['qsq_bin'   ]
 systs     = config['systematic']
 # -------------
 KIND      = 'rx'
-CMB       = '0900-1000'
-PRC       = '0600-1000'
 ENV       = 'rx_run3'
 HOME      = '/afs/ihep.ac.cn/users/c/campoverde'
 ANADIR    = '/publicfs/ucas/user/campoverde/Data'
@@ -19,14 +17,14 @@ MODE      = 'rare'
 paths = []
 for qsq in qsq_bin:
     for syst in systs:
-        path = f'{OUT_PATH}/{syst}/{CMB}_{PRC}_all/{MODE}/{qsq}/nll.bytes'
+        path = f'{OUT_PATH}/{syst}/default_default_all/{MODE}/{qsq}/nll.bytes'
         paths.append(path)
 # ---------------------------------------
 rule all:
     input : paths
 # ---------------------
 rule nlls:
-    output: f'{OUT_PATH}/{{syst}}/{CMB}_{PRC}_all/{MODE}/{{qsq}}/nll.bytes'
+    output: f'{OUT_PATH}/{{syst}}/default_default_all/{MODE}/{{qsq}}/nll.bytes'
     wildcard_constraints:
         qsq  = '|'.join(qsq_bin),
         syst = '|'.join(systs),
@@ -41,8 +39,6 @@ rule nlls:
         home = HOME,
         kind = KIND,
         env  = ENV,
-        cmb  = CMB,
-        prc  = PRC,
     resources:
         htcondor_request_mem_mb = 4000,
         htcondor_request_disk_mb= 2000,
@@ -59,8 +55,6 @@ rule nlls:
         pixi run fit_rx_rare_sim            \
                         -b -1               \
                         -k {params.kind}    \
-                        -C {params.cmb}     \
-                        -P {params.prc}     \
                         -g nll              \
                         -q {wildcards.qsq}  \
                         -s {wildcards.syst}
