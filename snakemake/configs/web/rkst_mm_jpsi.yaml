@@ -11,7 +11,7 @@ components :
   - bsphijpsimm        
   - bskstjpsimm        
   - bskstpsi2mm
-  - bdkstjpsimm_had_swp
+  - bdkstkpijpsimm_had_swp
   - bdkstkpipsi2mm     
 blocks :
   - b4

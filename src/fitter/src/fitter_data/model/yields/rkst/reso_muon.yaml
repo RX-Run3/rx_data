@@ -21,7 +21,7 @@ yld_bdkstkpipsi2mm_rkst_brem_xx0:
 # -------------------------
 # J/psi scales
 # -------------------------
-s_bdkstjpsimm_had_swp_brem_xx0:
+s_bdkstkpijpsimm_had_swp_brem_xx0:
   <<: *fractions
 s_lbpkjpsimm_brem_xx0:
   <<: *fractions
@@ -46,7 +46,7 @@ s_bskstpsi2mm_brem_xx0:
 yld_bdkstjpsimm_rkst_had_swp_brem_xx0:
   kind: mul
   pars:
-    -  s_bdkstjpsimm_had_swp_brem_xx0
+    -  s_bdkstkpijpsimm_had_swp_brem_xx0
     - yld_bdkstkpijpsimm_rkst_brem_xx0
 yld_lbpkjpsimm_rkst_brem_xx0:
   kind: mul

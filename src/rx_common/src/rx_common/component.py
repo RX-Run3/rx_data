@@ -524,11 +524,11 @@ class Component(StrEnum):
                 return ['bpjp'   , 'jpmm']
             case 'bdkstkpijpsiee':
                 return ['bdjkst' , 'jpee', 'kokp']
-            case 'bdkstjpsiee_had_swp':
+            case 'bdkstkpijpsiee_had_swp':
                 return ['bdjkst' , 'jpee', 'kokp']
             case 'bdkstkpijpsimm':
                 return ['bdjkst' , 'jpmm', 'kokp']
-            case 'bdkstjpsimm_had_swp':
+            case 'bdkstkpijpsimm_had_swp':
                 return ['bdjkst' , 'jpmm', 'kokp']
             case 'bskstjpsiee':
                 return ['bsjkst' , 'jpee', 'kokp']

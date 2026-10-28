@@ -46,9 +46,9 @@ reg_cfg_psi2: &reg_cfg_psi2
     bskstjpsiee_brem_xx2         : $B_s\to J/\psi K^{*0}(\to K^+\pi^-)$
     bskstjpsiee_brem_x12         : $B_s\to J/\psi K^{*0}(\to K^+\pi^-)$
     bdkstjpsiee                  : $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$ 
-    bdkstjpsiee_had_swp_brem_xx1 : $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$ 
-    bdkstjpsiee_had_swp_brem_xx2 : $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$ 
-    bdkstjpsiee_had_swp_brem_x12 : $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$ 
+    bdkstkpijpsiee_had_swp_brem_xx1 : $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$ 
+    bdkstkpijpsiee_had_swp_brem_xx2 : $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$ 
+    bdkstkpijpsiee_had_swp_brem_x12 : $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$ 
     bdkstkpijpsiee               : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$ 
     bdkstkpijpsiee_brem_xx1      : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$ 
     bdkstkpijpsiee_brem_xx2      : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$ 
@@ -90,7 +90,7 @@ components:
     lbpkjpsiee          : reso/rkst/ee/lbpkjpsiee_np.yaml
     bsphijpsiee         : reso/rkst/ee/bsphijpsiee_np.yaml
     bskstjpsiee         : reso/rkst/ee/bskstjpsiee.yaml
-    bdkstjpsiee_had_swp : reso/rkst/ee/bdkstjpsiee_had_swp_np.yaml
+    bdkstkpijpsiee_had_swp : reso/rkst/ee/bdkstkpijpsiee_had_swp_np.yaml
     bdkstkpijpsiee      : reso/rkst/ee/bdkstkpijpsiee.yaml
     bdkstkpipsi2ee      : reso/rkst/ee/bdkstkpipsi2ee_np.yaml
   psi2:
@@ -98,7 +98,7 @@ components:
     ccbar               : reso/rkst/ee/ccbar.yaml
     lbpkjpsiee          : reso/rkst/ee/lbpkjpsiee_np.yaml
     bsphijpsiee         : reso/rkst/ee/bsphijpsiee_np.yaml
-    bdkstjpsiee_had_swp : reso/rkst/ee/bdkstjpsiee_had_swp_np.yaml
+    bdkstkpijpsiee_had_swp : reso/rkst/ee/bdkstkpijpsiee_had_swp_np.yaml
     bskstjpsiee         : reso/rkst/ee/bskstjpsiee_psi2.yaml
     bskstpsi2ee         : reso/rkst/ee/bskstpsi2ee.yaml
     bdkstkpijpsiee      : reso/rkst/ee/bdkstkpijpsiee_psi2.yaml
@@ -108,7 +108,7 @@ constraints:
     - bskstjpsiee 
     - bsphijpsiee
     - lbpkjpsiee
-    - bdkstjpsiee_had_swp
+    - bdkstkpijpsiee_had_swp
   combinatorial   : false
   signal_shape    : false
 fit: {}
