@@ -69,6 +69,8 @@ bdkstkpijpsiee_kpiee_pikee:
 # pi <-> mu/e swaps
 # ----------------------------------------
 bdkstkpijpsimm_kpimm_kmpim:
+  redefine  :
+    q2 : Jpsi_M * Jpsi_M
   samples   : 
     bdkstkpijpsimm : 1.0
   trk_swap  :
@@ -81,6 +83,8 @@ bdkstkpijpsimm_kpimm_kmpim:
       L1 :  13
       L2 : -13
 bdkstkpijpsiee_kpiee_kepie:
+  redefine  :
+    q2 : Jpsi_M * Jpsi_M
   samples   : 
     bdkstkpijpsiee : 1.0
   trk_swap  :
@@ -96,6 +100,8 @@ bdkstkpijpsiee_kpiee_kepie:
 # K <-> mu/e swaps
 # ----------------------------------------
 bdkstkpijpsimm_kpimm_mpimk:
+  redefine  :
+    q2 : Jpsi_M * Jpsi_M
   samples   : 
     bdkstkpijpsimm : 1.0
   trk_swap  :
@@ -108,6 +114,8 @@ bdkstkpijpsimm_kpimm_mpimk:
       L1 :  13
       L2 : -13
 bdkstkpijpsiee_kpiee_epiek:
+  redefine  :
+    q2 : Jpsi_M * Jpsi_M
   samples   : 
     bdkstkpijpsiee : 1.0
   trk_swap  :
@@ -123,6 +131,8 @@ bdkstkpijpsiee_kpiee_epiek:
 # k <-> mu/e swaps
 # ----------------------------------------
 bpkpjpsimm_kmm_mkm:
+  redefine  :
+    q2 : Jpsi_M * Jpsi_M
   samples   : 
     bpkpjpsimm     : 1.0
   trk_swap  :
@@ -135,6 +145,8 @@ bpkpjpsimm_kmm_mkm:
       L1 :  13
       L2 : -13
 bpkpjpsiee_kee_eke:
+  redefine  :
+    q2 : Jpsi_M * Jpsi_M
   samples   : 
     bpkpjpsiee     : 1.0
   trk_swap  :
