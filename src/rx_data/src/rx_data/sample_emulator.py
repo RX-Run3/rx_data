@@ -253,6 +253,13 @@ class SampleEmulator:
                 cols.append(tmp)
 
         return rdf
+    # ---------------------
+    @property
+    def samples(self) -> SamplesConf:
+        '''
+        Object specifying how to build sample passed in initializer
+        '''
+        return self._cfg.samples
     # ----------------------
     def post_process(self, rdf : RDF.RNode) -> RDF.RNode:
         '''
@@ -270,15 +277,8 @@ class SampleEmulator:
             return rdf
 
         rdf = self._run_redefine(rdf=rdf)
-        rdf = self._swap_tracks(rdf=rdf)
         rdf = self._update_cocktail_weights(rdf = rdf)
+        rdf = self._swap_tracks(rdf=rdf)
 
         return rdf
-    # ---------------------
-    @property
-    def samples(self) -> SamplesConf:
-        '''
-        Object specifying how to build sample passed in initializer
-        '''
-        return self._cfg.samples
 # ----------------------
