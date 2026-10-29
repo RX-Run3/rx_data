@@ -240,7 +240,7 @@ class SampleEmulator:
             col_2 = col_2 if f'tmp_{col_2}' not in cols else f'tmp_{col_2}'
 
             if col_2 not in cols:
-                log.warning(f'Cannot find {col_2} for swapping')
+                log.debug(f'Cannot find {col_2} for swapping')
                 continue
 
             rdf = rdf.Define(tmp, col_1)
