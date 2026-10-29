@@ -1,6 +1,8 @@
 '''
 Module containing SamplePatcher
 '''
+import json
+
 from typing           import Final
 from pathlib          import Path
 from dmu              import LogStore
@@ -47,7 +49,8 @@ class SamplePatcher:
         '''
         log.debug('Loading emulation configuration')
         data = gut.load_data(package='rx_data_data', fpath='emulated_trees/config.yaml')
-        cfg  = EmulatorConf(**data)
+        data_string = json.dumps(data)
+        cfg  = EmulatorConf.model_validate_json(data_string)
 
         associations : dict[Block,Block] = dict()
         if Component.mc in cfg.root:
