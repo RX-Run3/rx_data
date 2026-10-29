@@ -50,27 +50,40 @@ bskstpsi2ee:
 bdkstkpijpsimm_kpimm_pikmm:
   samples   : 
     bdkstkpijpsimm : 1.0
+  trk_swap  :
+    H1_ : H2_
 bdkstkpijpsiee_kpiee_pikee:
   samples   : 
     bdkstkpijpsiee : 1.0
+  trk_swap  :
+    H1_ : H2_
 # ----------------------------------------
 # pi <-> mu/e swaps
 # ----------------------------------------
 bdkstkpijpsimm_kpimm_kmpim:
   samples   : 
     bdkstkpijpsimm : 1.0
+  trk_swap  :
+    H2_ : L2_
 bdkstkpijpsiee_kpiee_kepie:
   samples   : 
     bdkstkpijpsiee : 1.0
+  trk_swap  :
+    H2_ : L2_
 # ----------------------------------------
 # K <-> mu/e swaps
 # ----------------------------------------
 bdkstkpijpsimm_kpimm_mpimk:
   samples   : 
     bdkstkpijpsimm : 1.0
+  trk_swap  :
+    H1_ : L1_
+
 bdkstkpijpsiee_kpiee_epiek:
   samples   : 
     bdkstkpijpsiee : 1.0
+  trk_swap  :
+    H1_ : L1_
 # ----------------------------------------
 # k <-> mu/e swaps
 # ----------------------------------------
