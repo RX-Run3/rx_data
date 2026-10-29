@@ -78,13 +78,13 @@ bpkpjpsimm_kmm_mkm:
   samples   : 
     bpkpjpsimm     : 1.0
   trk_swap  :
-    H : L1
+    H_ : L1_
 
 bpkpjpsiee_kee_eke:
   samples   : 
     bpkpjpsiee     : 1.0
   trk_swap  :
-    H : L1
+    H_ : L1_
 # ----------------------------------------
 bsjpsixmm:
   samples : 
