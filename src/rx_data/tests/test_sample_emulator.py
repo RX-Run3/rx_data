@@ -20,10 +20,14 @@ type Components = list[Component]
 type Pairs      = list[tuple[Component, Component]]
 
 _KAON_ID     : Final[int] = 321
+_PION_ID     : Final[int] = 211
 _ELECTRON_ID : Final[int] = 11
 
 _SWAPPED_TRACKS : Final[Components] = [
     Component.bpkpjpsiee_kee_eke,
+    Component.bdkstkpijpsiee_kpiee_pikee,
+    Component.bdkstkpijpsiee_kpiee_epiek,
+    Component.bdkstkpijpsiee_kpiee_kepie,
 ]
 
 _SAMPLES_CONCATENATE : Final[Components] = [
@@ -57,7 +61,7 @@ def initialize():
     LogStore.set_level('rx_data:sample_emulator', 10)
     LogStore.set_level('dmu:generic:utilities'  , 10)
 # ----------------------
-def _get_rdf(size : int = 100) -> RDF.RNode:
+def _get_rdf(size : int = 10) -> RDF.RNode:
     '''
     Returns
     -------------
@@ -69,6 +73,7 @@ def _get_rdf(size : int = 100) -> RDF.RNode:
         return rdf
 
     rdf = rdf.Define('B_M'                 ,   '0')
+    rdf = rdf.Define('Kst_M'               ,   '0')
     rdf = rdf.Define('B_Mass'              ,   '0')
     rdf = rdf.Define('B_const_mass_M'      ,   '0')
     rdf = rdf.Define('B_const_mass_psi2S_M',   '0')
@@ -76,13 +81,32 @@ def _get_rdf(size : int = 100) -> RDF.RNode:
     rdf = rdf.Define('B_ID'                , '123')
     rdf = rdf.Define('Kst_MC_MOTHER_ID'    , '123')
     rdf = rdf.Define('Jpsi_MC_MOTHER_ID'   , '123')
-    rdf = rdf.Define('H1_ID'               , '321')
-    rdf = rdf.Define('H2_ID'               , '-211')
-    rdf = rdf.Define('H1_PT'               , '10000')
-    rdf = rdf.Define('H2_PT'               , '20000')
+    # --------------------------
     rdf = rdf.Define('H_ID'                , '321')
+    rdf = rdf.Define('H_PT'                , '10000')
+    rdf = rdf.Define('H_ETA'               , '2.0')
+    rdf = rdf.Define('H_PHI'               , '1.0')
+    # --------------------------
+    rdf = rdf.Define('H1_ID'               , '321')
+    rdf = rdf.Define('H1_PT'               , '10000')
+    rdf = rdf.Define('H1_ETA'              , '2.0')
+    rdf = rdf.Define('H1_PHI'              , '1.0')
+    # --------------------------
+    rdf = rdf.Define('H2_ID'               , '-211')
+    rdf = rdf.Define('H2_PT'               , '20000')
+    rdf = rdf.Define('H2_ETA'              , '2.0')
+    rdf = rdf.Define('H2_PHI'              , '1.0')
+    # --------------------------
     rdf = rdf.Define('L1_ID'               , '-11')
-    rdf = rdf.Define('L2_ID'               , '+11')
+    rdf = rdf.Define('L1_PT'               , '10000')
+    rdf = rdf.Define('L1_ETA'              , '2.0')
+    rdf = rdf.Define('L1_PHI'              , '1.0')
+    # --------------------------
+    rdf = rdf.Define('L2_ID'               , '11')
+    rdf = rdf.Define('L2_PT'               , '20000')
+    rdf = rdf.Define('L2_ETA'              , '2.0')
+    rdf = rdf.Define('L2_PHI'              , '1.0')
+    # --------------------------
 
     return rdf
 # --------------------------------------------
@@ -177,6 +201,11 @@ def test_swap_tracks(sample : Component):
     for col in data:
         log.info(col)
 
-    assert all(data['L1_ID'] ==   _KAON_ID)
-    assert all(data['H_ID' ] == - _ELECTRON_ID)
+    if sample == Component.bdkstkpijpsiee_kpiee_pikee:
+        assert all(data['H1_ID'] == -_PION_ID)
+        assert all(data['H2_ID'] ==  _KAON_ID)
+
+    if sample == Component.bpkpjpsiee_kee_eke:
+        assert all(data['L1_ID'] ==   _KAON_ID)
+        assert all(data['H_ID' ] == - _ELECTRON_ID)
 # --------------------------------------------

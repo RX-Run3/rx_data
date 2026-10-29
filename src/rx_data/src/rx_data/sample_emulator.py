@@ -5,12 +5,20 @@ import json
 
 from ROOT        import RDF
 from dmu         import LogStore
-from typing      import Any
+from typing      import Any, Final
 from dmu.generic import utilities as gut
 from pydantic    import BaseModel, RootModel
 from rx_common   import Block, Component 
 
 log=LogStore.add_logger('rx_data:sample_emulator')
+
+_MASSES : Final[dict[int,float]] = {
+    11 : 0.51099895,     # Electron mass in MeV
+    13 : 105.6583755,    # Muon mass in MeV
+    321: 493.677,        # Charged Kaon mass in MeV
+    211: 139.57039,      # Charged Pion mass in MeV
+}
+'''Dictionary mapping PDG ID with particle mass in MeV'''
 # ----------------------
 class SamplesConf(RootModel[dict[Component,float]], frozen=True, strict=True):
     '''
@@ -92,6 +100,8 @@ class EmulationConf(BaseModel, frozen=True, extra='forbid', strict=True):
     to emulate a sample
     '''
     samples  : SamplesConf 
+    '''Used to configure build of sample cocktails'''
+
     patching : dict[Block, Block] = dict() 
     '''Dictionary meant to allow patching blocks of data'''
 
@@ -102,6 +112,9 @@ class EmulationConf(BaseModel, frozen=True, extra='forbid', strict=True):
     trk_swap : dict[str  ,   str] = dict()
     '''Dictionary mapping particle prefixes, e.g. L1 -> H
     meant to be used to swap values of columns'''
+
+    masses   : dict[str, dict[str,int]] = dict()
+    '''Dictionary describing how to rebuild mass columns'''
     # --------------------------------------
     def model_post_init(self, context : Any) -> None:
         '''
@@ -254,6 +267,82 @@ class SampleEmulator:
 
         return rdf
     # ---------------------
+    def _rebuild_masses(self, rdf : RDF.RNode) -> RDF.RNode:
+        '''
+        Parameters
+        ---------------
+        rdf: Dataframe before mass rebuilding
+
+        Returns
+        ---------------
+        Dataframe after mass rebuilding
+        '''
+        if not self._cfg.masses:
+            return rdf
+
+        for name, tracks in self._cfg.masses.items():
+            rdf = self._add_mass(rdf = rdf, name = name, tracks = tracks)
+
+        return rdf
+    # ---------------------
+    def _add_mass(self, rdf : RDF.RNode, name : str, tracks : dict[str,int]) -> RDF.RNode:
+        '''
+        Parameters
+        ---------------
+        rdf   : Dataframe before mass rebuilding
+        name  : Name of column storing mass, e.g. `Kstar_M`
+        tracks: Dictionary mapping particle names to PDG ID used to extract mass
+
+        Returns
+        ---------------
+        DataFrame with mass column added
+        '''
+        vec_str : list[str] = []
+        sum_str : list[str] = []
+
+        log.debug(f'Rebuilding: {name}')
+
+        counter = 1
+        for track, pdg_id in tracks.items():
+            trk_expr = self._get_vector_expr(track, pdg_id, counter)
+            vec_str.append(trk_expr)
+            sum_str.append(f't{counter}')
+
+            counter += 1
+
+        expr_1 = ';'.join(vec_str)
+        expr_2 = '+'.join(sum_str)
+        expr   = f'{expr_1}; auto sum = {expr_2}; return sum.M();'
+
+        log.debug('')
+        log.debug(f'{name}:\n{expr}')
+        log.debug('')
+
+        rdf = rdf.Redefine(name, expr)
+
+        return rdf
+    # ---------------------
+    def _get_vector_expr(
+        self, 
+        track  : str, 
+        pdg_id : int, 
+        counter: int) -> str:
+        '''
+        Parameters
+        ------------------
+        track  : Name of track, e.g. L1
+        pdg_id : E.g. 11 for electron, needed to pick mass
+        counter: Used as index for 4-vector
+
+        Returns
+        ------------------
+        Expression describing 4-vector for track
+        '''
+        pdg_id = abs(pdg_id)
+        mass   = _MASSES[pdg_id]
+
+        return f'ROOT::Math::PtEtaPhiMVector t{counter}({track}_PT, {track}_ETA, {track}_PHI, {mass})'
+    # ---------------------
     @property
     def samples(self) -> SamplesConf:
         '''
@@ -279,6 +368,7 @@ class SampleEmulator:
         rdf = self._run_redefine(rdf=rdf)
         rdf = self._update_cocktail_weights(rdf = rdf)
         rdf = self._swap_tracks(rdf=rdf)
+        rdf = self._rebuild_masses(rdf = rdf)
 
         return rdf
 # ----------------------
