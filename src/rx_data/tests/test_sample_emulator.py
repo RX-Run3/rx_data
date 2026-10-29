@@ -19,6 +19,9 @@ log=LogStore.add_logger('rx_data:test_sample_emulator')
 type Components = list[Component]
 type Pairs      = list[tuple[Component, Component]]
 
+_KAON_ID     : Final[int] = 321
+_ELECTRON_ID : Final[int] = 11
+
 _SWAPPED_TRACKS : Final[Components] = [
     Component.bpkpjpsiee_kee_eke,
 ]
@@ -73,12 +76,13 @@ def _get_rdf(size : int = 100) -> RDF.RNode:
     rdf = rdf.Define('B_ID'                , '123')
     rdf = rdf.Define('Kst_MC_MOTHER_ID'    , '123')
     rdf = rdf.Define('Jpsi_MC_MOTHER_ID'   , '123')
-    rdf = rdf.Define('H1_TRUEID'           , '321')
-    rdf = rdf.Define('H2_TRUEID'           , '-211')
+    rdf = rdf.Define('H1_ID'               , '321')
+    rdf = rdf.Define('H2_ID'               , '-211')
     rdf = rdf.Define('H1_PT'               , '10000')
     rdf = rdf.Define('H2_PT'               , '20000')
-    rdf = rdf.Define('L1_TRUEID'           , '-11')
-    rdf = rdf.Define('L2_TRUEID'           , '+11')
+    rdf = rdf.Define('H_ID'                , '321')
+    rdf = rdf.Define('L1_ID'               , '-11')
+    rdf = rdf.Define('L2_ID'               , '+11')
 
     return rdf
 # --------------------------------------------
@@ -168,4 +172,11 @@ def test_swap_tracks(sample : Component):
     rdf_old = _get_rdf(size = size)
     emu     = SampleEmulator(sample=sample)
     rdf_new = emu.post_process(rdf = rdf_old)
+
+    data = rdf_new.AsNumpy()
+    for col in data:
+        log.info(col)
+
+    assert all(data['L1_ID'] ==   _KAON_ID)
+    assert all(data['H_ID' ] == - _ELECTRON_ID)
 # --------------------------------------------

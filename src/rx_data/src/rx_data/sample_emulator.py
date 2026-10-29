@@ -203,6 +203,55 @@ class SampleEmulator:
         if not self._cfg.trk_swap:
             return rdf
 
+        cols = [ col.c_str() for col in rdf.GetColumnNames() ]
+
+        for col_1, col_2 in self._cfg.trk_swap.items():
+            rdf = self._swap_columns(rdf, cols, col_1, col_2)
+            rdf = self._swap_columns(rdf, cols, col_2, col_1)
+
+        return rdf
+    # ----------------------
+    def _swap_columns(
+        self,
+        rdf   : RDF.RNode,
+        cols  : list[str],
+        prf_1 : str,
+        prf_2 : str) -> RDF.RNode:
+        '''
+        Parameters
+        --------------
+        rdf  : ROOT dataframe
+        cols : All columns in dataframe
+        prf_x: Column prefixes for columns to be swapped, e.g. L1, H
+
+        Returns 
+        --------------
+        Dataframe with columns associated to prefix `prf_1` renamed to
+        `prf_2`, `tmp_{prf_1}_...` columns will be added as byproduct.
+
+        cols gets updated with `tmp_...` columns
+        '''
+        cols_1 = [ col for col in cols if col.startswith(prf_1) ]
+
+        for col_1 in cols_1:
+            tmp   = f'tmp_{col_1}'
+            stem  = col_1.removeprefix(prf_1)
+            col_2 = f'{prf_2}{stem}'
+            col_2 = col_2 if f'tmp_{col_2}' not in cols else f'tmp_{col_2}'
+
+            if col_2 not in cols:
+                log.warning(f'Cannot find {col_2} for swapping')
+                continue
+
+            rdf = rdf.Define(tmp, col_1)
+            cols.append(tmp)
+
+            if col_1 in cols:
+                rdf = rdf.Redefine(col_1, col_2)
+            else:
+                rdf = rdf.Define(col_1, col_2)
+                cols.append(tmp)
+
         return rdf
     # ----------------------
     def post_process(self, rdf : RDF.RNode) -> RDF.RNode:
