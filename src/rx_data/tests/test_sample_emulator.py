@@ -74,6 +74,8 @@ def _get_rdf(size : int = 10) -> RDF.RNode:
 
     rdf = rdf.Define('B_M'                 ,   '0')
     rdf = rdf.Define('Kst_M'               ,   '0')
+    rdf = rdf.Define('Jpsi_M'              ,   '0')
+    rdf = rdf.Define('q2'                  ,   '0')
     rdf = rdf.Define('B_Mass'              ,   '0')
     rdf = rdf.Define('B_const_mass_M'      ,   '0')
     rdf = rdf.Define('B_const_mass_psi2S_M',   '0')

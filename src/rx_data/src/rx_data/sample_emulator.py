@@ -365,10 +365,10 @@ class SampleEmulator:
             log.warning('Not running emulation for empty dataframe')
             return rdf
 
-        rdf = self._run_redefine(rdf=rdf)
         rdf = self._update_cocktail_weights(rdf = rdf)
         rdf = self._swap_tracks(rdf=rdf)
         rdf = self._rebuild_masses(rdf = rdf)
+        rdf = self._run_redefine(rdf=rdf)
 
         return rdf
 # ----------------------
