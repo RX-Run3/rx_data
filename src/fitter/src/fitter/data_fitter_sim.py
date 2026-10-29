@@ -67,6 +67,9 @@ class DataFitterSim(BaseFitter):
 
             raise ParamNameNotUniqueError('Models contain multiple parameters with the same name') from exc
 
+        if len(nll.constraints) == 0:
+            raise ValueError('Unconstrained likelihood found')
+
         return nll
     # ----------------------
     def _minimize_nll(self, nll : NLL) -> FitResult:

@@ -220,7 +220,7 @@ def _get_region_nll(brem : Brem, cfg : RXFitConfig) -> NLLConf:
             cfg   = cfg)
 
         return NLLConf(
-            nll         = cfg_nll.nll,
+            nll         = nll,
             selection   = cfg_nll.selection,
             constraints = cons.to_list())
 # ----------------------
