@@ -346,7 +346,7 @@ def test_emulated(sample : Component, trigger : Trigger):
     if fin == 0:
         _check_rdf(rdf=org, selection=cut)
 
-    assert fin > 0 
+    log.info(f'{sample}; eff={fin}/{ini}={fin/ini=:.3f}')
 
-    log.info(f'eff={fin/ini=:.3f}')
+    assert fin > 0 
 # --------------------------
