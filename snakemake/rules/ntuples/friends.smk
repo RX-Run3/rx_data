@@ -134,7 +134,7 @@ rule merge:
 # ───────────────────────────────────────────────────────────────────
 rule _calculate:
     resources:
-        htcondor_request_mem_mb  = 5000,
+        htcondor_request_mem_mb  = 4000,
         htcondor_request_disk_mb = 2000,
     log:
         prc = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}_{{index}}.prc',
