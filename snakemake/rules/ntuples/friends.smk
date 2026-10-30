@@ -15,8 +15,6 @@ os.environ['USER']   = ENV
 os.environ['HOME']   = HOME 
 os.environ['ANADIR'] = ANADIR 
 
-_CALC  = f'{ANADIR}/tmp/sentinels/friends/{{project}}/{{friend}}/{{vers}}_{{index}}.calc'
-
 from rx_common import Project
 from rx_data   import SampleSplitter
 # ──────────────────────────────────────────────────────────────────────
@@ -37,8 +35,10 @@ def _get_calc_list(wc):
     dir_name = f'{ANADIR}/tmp/sentinels/friends/{wc.project}'
     entries  = _get_setting(wc, 'entries')
     nparts   = _get_parts(wc.project, entries)
+    fstem    = wc.fname.removesuffix('.root')
+    file_dir = f'{ANADIR}/Data/{wc.project}/{wc.friend}/{wc.version}'
 
-    return [ f'{dir_name}/{wc.friend}/{wc.vers}_{index}.calc' for index in range(nparts) ]
+    return [ f'{file_dir}/{fstem}_{index:05d}_pre_merge.root' for index in range(nparts) ]
 def _get_setting(wc, name):
     friend = getattr(wc,  'friend')
     project= getattr(wc, 'project')
@@ -71,7 +71,7 @@ def merge_targets(friend):
 
     return paths
 rule all:
-    '''Request all sentinel files for every combination.'''
+    '''Request all merged files for every combination.'''
     input:
         merge_targets(friend = 'mass'          ) +
         merge_targets(friend = 'swp_jpsi_misid') +
@@ -82,8 +82,7 @@ rule all:
         merge_targets(friend = 'smear'         )
 # ───────────────────────────────────────────────────────────────────
 rule merge:
-    output:
-        done = f'{ANADIR}/Data/{{project}}/{{friend}}/{{vers}}/{{fname}}'
+    output: f'{ANADIR}/Data/{{project}}/{{friend}}/{{vers}}/{{fname}}'
     input :
         _get_calc_list
     resources:
@@ -131,20 +130,18 @@ rule merge:
         ln -s {params.LOGD}/$JOBID.err {log.err}
         ln -s {params.LOGD}/$JOBID.out {log.out}
         ln -s {params.LOGD}/$JOBID.log {log.LOG}
-
-        mkdir -p $(dirname {output.done})
-        touch {output.done}
         '''
 # ───────────────────────────────────────────────────────────────────
 rule _calculate:
+    output   : f'{ANADIR}/Data/{{project}}/{{friend}}/{{vers}}/{{fstem}}_{{index}}_pre_merge.root'
     resources:
         htcondor_request_mem_mb  = 4000,
         htcondor_request_disk_mb = 2000,
     log:
-        prc = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}_{{index}}.prc',
-        err = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}_{{index}}.err',
-        out = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}_{{index}}.out',
-        LOG = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}_{{index}}.log',
+        prc = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}_{{fstem}}_{{index}}.prc',
+        err = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}_{{fstem}}_{{index}}.err',
+        out = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}_{{fstem}}_{{index}}.out',
+        LOG = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}_{{fstem}}_{{index}}.log',
     params:
         phot_veto = lambda wc : _get_setting(wc, 'photon_veto'),
         entries   = lambda wc : _get_setting(wc,     'entries'),
@@ -180,32 +177,25 @@ rule _calculate:
         ln -s {params.LOGD}/$JOBID.err {log.err}
         ln -s {params.LOGD}/$JOBID.out {log.out}
         ln -s {params.LOGD}/$JOBID.log {log.LOG}
-
-        mkdir -p $(dirname {output.done})
-        touch {output.done}
         '''
 # ───────────────────────────────────────────────────────────────────
 # ───────────────────────────────────────────────────────────────────
 use rule _calculate as calculate_independent with:
     '''Request trees that do not depend on any other trees'''
-    output:
-        done   = _CALC
     wildcard_constraints:
         friend = 'mass|swp_jpsi_misid|swp_cascade|brem_track_2|hop',
         vers   = r'v\d+',
+        index  = r'\d+',
 use rule _calculate as calculate_smear with:
     '''Request trees with smeared masses'''
-    output:
-        done   = _CALC
     input :
         merge_targets(friend = 'brem_track_2')
     wildcard_constraints:
         friend = 'smear',
         vers   = r'v\d+',
+        index  = r'\d+',
 use rule _calculate as calculate_mva with:
     '''Request trees with mva scores'''
-    output:
-        done   = _CALC
     input :
         merge_targets(friend =        'smear') +
         merge_targets(friend =          'hop') +
@@ -213,4 +203,5 @@ use rule _calculate as calculate_mva with:
     wildcard_constraints:
         friend =   'mva',
         vers   = r'v\d+',
+        index  = r'\d+',
 # ───────────────────────────────────────────────────────────────────
