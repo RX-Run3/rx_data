@@ -56,7 +56,9 @@ def _get_fnames(project):
     if not paths:
         raise ValueError(f'No paths found in: {fname_wc}')
 
-    return paths
+    fnames = [ os.path.basename(path) for path in paths ]
+
+    return fnames 
 # ──────────────────────────────────────────────────────────────────────
 def merge_targets(friend):
     paths = []
@@ -71,13 +73,13 @@ def merge_targets(friend):
 rule all:
     '''Request all sentinel files for every combination.'''
     input:
-        merge_sentinels(friend = 'mass'          ) +
-        merge_sentinels(friend = 'swp_jpsi_misid') +
-        merge_sentinels(friend = 'swp_cascade'   ) +
-        merge_sentinels(friend = 'brem_track_2'  ) +
-        merge_sentinels(friend = 'hop'           ) +
-        merge_sentinels(friend = 'mva'           ) +
-        merge_sentinels(friend = 'smear'         )
+        merge_targets(friend = 'mass'          ) +
+        merge_targets(friend = 'swp_jpsi_misid') +
+        merge_targets(friend = 'swp_cascade'   ) +
+        merge_targets(friend = 'brem_track_2'  ) +
+        merge_targets(friend = 'hop'           ) +
+        merge_targets(friend = 'mva'           ) +
+        merge_targets(friend = 'smear'         )
 # ───────────────────────────────────────────────────────────────────
 rule merge:
     output:
@@ -89,11 +91,13 @@ rule merge:
         htcondor_request_disk_mb = 2000,
     wildcard_constraints:
         vers   = r'v\d+',
+        project= r'rk|rkst',
+        friend = r'mass|swp_jpsi_misid|swp_cascade|brem_track_2|hop|mva|smear',
     log:
-        prc = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}.prc',
-        err = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}.err',
-        out = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}.out',
-        LOG = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}.log',
+        prc = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}_{{fname}}.prc',
+        err = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}_{{fname}}.err',
+        out = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}_{{fname}}.out',
+        LOG = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}_{{fname}}.log',
     params:
         LOGD    = LOGDIR,
         home    = HOME,
@@ -194,7 +198,7 @@ use rule _calculate as calculate_smear with:
     output:
         done   = _CALC
     input :
-        merge_sentinels(friend = 'brem_track_2')
+        merge_targets(friend = 'brem_track_2')
     wildcard_constraints:
         friend = 'smear',
         vers   = r'v\d+',
@@ -203,9 +207,9 @@ use rule _calculate as calculate_mva with:
     output:
         done   = _CALC
     input :
-        merge_sentinels(friend =        'smear') +
-        merge_sentinels(friend =          'hop') +
-        merge_sentinels(friend = 'brem_track_2')
+        merge_targets(friend =        'smear') +
+        merge_targets(friend =          'hop') +
+        merge_targets(friend = 'brem_track_2')
     wildcard_constraints:
         friend =   'mva',
         vers   = r'v\d+',
