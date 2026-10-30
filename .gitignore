@@ -179,3 +179,5 @@ poetry.toml
 # pixi environments
 .pixi/*
 !.pixi/config.toml
+
+.*.json
