@@ -20,19 +20,18 @@ log=LogStore.add_logger('rx_data:sample_splitter')
 class FilePart(BaseModel):
     '''
     Class representing part of ROOT file
-
-    Attributes
-    ----------------
-    path : Path to ROOT file
-    range: Range of indices of entries in file, starting at zero, inclusive range 
-    index: Index of part within file, i.e. if file has not been split, it will be zero
-    split: True if this is just one part of a bigger file
     '''
+
     path : Path
+    '''Path to ROOT file'''
     vers : str
+    '''Version of the dataset'''
     range: tuple[int,int]
+    '''Range of indices of entries in file, starting at zero, inclusive range'''
     index: int
+    '''Index of part within file, i.e. if file has not been split, it will be zero'''
     split: bool
+    '''True if this is just one part of a bigger file'''
     # --------------------
     def friend_part_path(self, friend : str, version : str) -> Path:
         '''
