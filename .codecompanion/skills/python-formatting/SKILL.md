@@ -105,6 +105,17 @@ Functions should also have docstrings and they should look like:
 
 ```
 
+Pydantic attributes should be documented with a docstring, e.g:
+
+```python
+class User(BaseModel):
+    name: str
+    '''The user's full name.'''
+
+    age: int
+    '''The user's age in years.'''
+```
+
 # Separation between methods, functions, etc
 
 Separate functions and methods with a hash and dashes as in:
