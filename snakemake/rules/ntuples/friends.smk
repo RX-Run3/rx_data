@@ -3,6 +3,8 @@ import glob
 from pathlib     import Path
 from functools   import cache
 from dmu.generic import Mode
+from rx_common   import Project
+from rx_data     import SampleSplitter, FileBatches
 
 ENV          = config['defaults']['env'      ]
 PKGDIR       = config['defaults']['pkgdir'   ]
@@ -10,16 +12,15 @@ ANADIR       = config['defaults']['anadir'   ]
 HOME         = config['defaults']['home'     ]
 MAIN_VERSION = config['defaults']['main_vers']
 LOGDIR       = config['defaults']['smklog'   ]
+STATS_VERS   = 'v1'
 
 os.environ['USER']   = ENV
 os.environ['HOME']   = HOME 
 os.environ['ANADIR'] = ANADIR 
-
-from rx_common import Project
-from rx_data   import SampleSplitter
 # ──────────────────────────────────────────────────────────────────────
 @cache
 def _get_files(project):
+    fpath = Path(f'{ANADIR}/DB/statistics/{STATS_VERS}/{project}.json')
     spt   = SampleSplitter(
         version = MAIN_VERSION,
         project = project)
@@ -27,22 +28,40 @@ def _get_files(project):
 
     return files
 # ──────────────────────────────────────────────────────────────────────
-def _get_parts(project, entries):
-    fpath = Path(f'{ANADIR}/DB/statistics/v1/{project}.json')
-    files = _get_files(project)
+@cache
+def _get_batches(project, entries):
+    path = Path(f'.{project}_{entries}.json')
+    if path.exists():
+        print(f'Loading baches from: {path}')
+        return FileBatches.from_json(path)
 
+    files   = _get_files(project)
+    print(f'Finding batches for {project} with {entries}')
     batches = files.split(entries = entries)
-    nbatch  = batches.size
-    print(f'Found {nbatch} batches for {project} with {entries} entries')
+    print(f'Batches found, caching to: {path}')
+    batches.to_json(path)
 
-    return nbatch
+    return batches
+# ──────────────────────────────────────────────────────────────────────
+def _get_fnames(batches, fname):
+    freq = batches.file_multiplicity[fname]
+
+    if freq == 1:
+        return [fname]
+
+    fstem = fname.removesuffix('.root')
+
+    return [ f'{fstem}_{index:05d}_pre_merged.root' for index in range(freq) ]
+# ──────────────────────────────────────────────────────────────────────
 def _get_calc_list(wc):
     entries  = _get_setting(wc, 'entries')
-    nparts   = _get_parts(wc.project, entries)
-    fstem    = wc.fname.removesuffix('.root')
     file_dir = f'{ANADIR}/Data/{wc.project}/{wc.friend}/{wc.version}'
+    batches  = _get_batches(wc.project, entries)
+    fnames   = _get_fnames(batches, wc.fname)
+    parts    = [ f'{file_dir}/{fname}' for fname in fnames ]
 
-    return [ f'{file_dir}/{fstem}_{index:05d}_pre_merge.root' for index in range(nparts) ]
+    return parts
+# ──────────────────────────────────────────────────────────────────────
 def _get_setting(wc, name):
     friend = getattr(wc,  'friend')
     project= getattr(wc, 'project')
@@ -52,6 +71,7 @@ def _get_setting(wc, name):
         return cfg.get(name, 'none')
 
     return cfg[name]
+# ──────────────────────────────────────────────────────────────────────
 @cache
 def _get_fnames(project):
     fname_wc = f'{ANADIR}/Data/{project}/main/{MAIN_VERSION}/*.root'
@@ -73,7 +93,13 @@ def merge_targets(friend):
         fnames   = _get_fnames(project)
         paths   += [ f'{dir_path}/{fname}' for fname in fnames ]
 
+    paths = [ path for path in paths if not os.path.isfile(path) ]
+    ncalc = len(paths)
+    if ncalc != 0:
+        print(f'Need {ncalc} paths for tree {friend}')
+
     return paths
+# ──────────────────────────────────────────────────────────────────────
 rule all:
     '''Request all merged files for every combination.'''
     input:
@@ -86,9 +112,8 @@ rule all:
         merge_targets(friend = 'smear'         )
 # ───────────────────────────────────────────────────────────────────
 rule merge:
-    output: f'{ANADIR}/Data/{{project}}/{{friend}}/{{vers}}/{{fname}}'
-    input :
-        _get_calc_list
+    output   : f'{ANADIR}/Data/{{project}}/{{friend}}/{{version}}/{{fname}}'
+    input    : _get_calc_list
     resources:
         htcondor_request_mem_mb  = 4000,
         htcondor_request_disk_mb = 2000,
@@ -97,10 +122,10 @@ rule merge:
         project= r'rk|rkst',
         friend = r'mass|swp_jpsi_misid|swp_cascade|brem_track_2|hop|mva|smear',
     log:
-        prc = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}_{{fname}}.prc',
-        err = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}_{{fname}}.err',
-        out = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}_{{fname}}.out',
-        LOG = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}_{{fname}}.log',
+        prc = f'{LOGDIR}/{{project}}_{{friend}}_{{version}}_{{fname}}.prc',
+        err = f'{LOGDIR}/{{project}}_{{friend}}_{{version}}_{{fname}}.err',
+        out = f'{LOGDIR}/{{project}}_{{friend}}_{{version}}_{{fname}}.out',
+        LOG = f'{LOGDIR}/{{project}}_{{friend}}_{{version}}_{{fname}}.log',
     params:
         LOGD    = LOGDIR,
         home    = HOME,
@@ -149,8 +174,8 @@ rule _calculate:
     params:
         phot_veto = lambda wc : _get_setting(wc, 'photon_veto'),
         entries   = lambda wc : _get_setting(wc,     'entries'),
-        mvers     = MAIN_VERSION, 
         fvers     = lambda wc : _get_setting(wc,     'version'),
+        mvers     = MAIN_VERSION, 
         LOGD      = LOGDIR,
         home      = HOME,
         env       = ENV,
