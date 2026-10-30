@@ -164,7 +164,7 @@ class FileBatches(RootModel[list[FileBatch]], Serializable, frozen = True):
 
         return self.root[index]
     # -------------------------
-    @cached_property
+    @property
     def parts(self) -> list[FilePart]:
         '''
         List of file parts in all batches
@@ -175,7 +175,7 @@ class FileBatches(RootModel[list[FileBatch]], Serializable, frozen = True):
 
         return parts
     # -------------------------
-    @cached_property
+    @property
     def file_multiplicity(self) -> dict[str,int]:
         '''Dictionary mapping file name (not path) to 
         number of parts into which it is split'''
@@ -281,7 +281,7 @@ class Files(RootModel[list[File]], Serializable, frozen = True):
     '''
     # ------------------------------------
     @property
-    def size(self) -> int:
+    def nentries(self) -> int:
         '''
         Number of entries in all samples
         '''

@@ -33,9 +33,9 @@ def test_simple(tmp_path : Path):
     batches = files.split(entries = 1000_000)
 
     print(batches)
-    print(batches.nentries - files.size)
+    print(batches.nentries - files.nentries)
 
-    assert batches.nentries == files.size
+    assert batches.nentries == files.nentries
 
     # Cannot write, file already there
     with pytest.raises(ValueError):
