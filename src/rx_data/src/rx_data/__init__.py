@@ -31,7 +31,7 @@ from .pfn_downloader          import PFNDownloaderConf
 from .sample_organizer        import SampleOrganizer
 from .file_patcher            import FilePatcher
 from .used_samples            import UsedSamples
-from .sample_splitter         import SampleSplitter
+from .sample_splitter         import SampleSplitter, FileBatches
 from .sample_splitter         import FilePart 
 from .candidate_rebuilder     import CandidateRebuilder
 from .path_splitter           import Samples, NestedSamples
@@ -44,6 +44,7 @@ __all__ = [
     'RDFGetter12',
     'FilePart',
     'SampleSplitter',
+    'FileBatches',
     'UsedSamples',
     'FilePatcher',
     'SampleOrganizer',
