@@ -90,7 +90,7 @@ class FileBatch(RootModel[list[FilePart]]):
     '''
     # ------------------------------------
     @property
-    def size(self) -> int:
+    def nentries(self) -> int:
         '''
         Total number of entries in file batch
         '''
@@ -119,9 +119,9 @@ class FileBatch(RootModel[list[FilePart]]):
         for part in parts:
             this_batch.root.append(part)
 
-            if this_batch.size >= entries:
+            if this_batch.nentries >= entries:
                 batches.root.append(this_batch)
-                log.debug(f'Closing batch with {this_batch.size} >= {entries}')
+                log.debug(f'Closing batch with {this_batch.nentries} >= {entries}')
                 this_batch = FileBatch([])
 
         if this_batch.root:
@@ -132,7 +132,7 @@ class FileBatch(RootModel[list[FilePart]]):
     def __str__(self) -> str:
         nfiles = len(self.root)
         name   = self.root[0].path.name if nfiles == 1 else 'multiple'
-        msg    = f'{nfiles:<20}{self.size:<20,}{name}'
+        msg    = f'{nfiles:<20}{self.nentries:<20,}{name}'
 
         return msg
 # ------------------------------------
@@ -182,7 +182,7 @@ class FileBatches(RootModel[list[FileBatch]]):
         '''
         Number of events in all batches
         '''
-        sizes = [ batch.size for batch in self.root ]
+        sizes = [ batch.nentries for batch in self.root ]
 
         return sum(sizes)
     # -------------------------
