@@ -15,7 +15,6 @@ os.environ['USER']   = ENV
 os.environ['HOME']   = HOME 
 os.environ['ANADIR'] = ANADIR 
 
-_MERGE = f'{ANADIR}/tmp/sentinels/friends/{{project}}/{{friend}}/{{vers}}.merge'
 _CALC  = f'{ANADIR}/tmp/sentinels/friends/{{project}}/{{friend}}/{{vers}}_{{index}}.calc'
 
 from rx_common import Project
@@ -49,17 +48,24 @@ def _get_setting(wc, name):
         return cfg.get(name, 'none')
 
     return cfg[name]
+@cache
+def _get_fnames(project):
+    fname_wc = f'{ANADIR}/Data/{project}/main/{MAIN_VERSION}/*.root'
+    paths    = glob.glob(fname_wc)
+
+    if not paths:
+        raise ValueError(f'No paths found in: {fname_wc}')
+
+    return paths
 # ──────────────────────────────────────────────────────────────────────
-def merge_sentinels(friend):
+def merge_targets(friend):
     paths = []
     for project in config['projects']:
-        for val, settings in config['projects'][project].items():
-            if val != friend:
-                continue
-
-            vers = settings['version']
-            path = f'{ANADIR}/tmp/sentinels/friends/{project}/{friend}/{vers}.merge'
-            paths.append(path)
+        settings = config['projects'][project][friend]
+        vers     = settings['version']
+        dir_path = f'{ANADIR}/Data/{project}/{friend}/{vers}'
+        fnames   = _get_fnames(project)
+        paths   += [ f'{dir_path}/{fname}' for fname in fnames ]
 
     return paths
 rule all:
@@ -75,7 +81,7 @@ rule all:
 # ───────────────────────────────────────────────────────────────────
 rule merge:
     output:
-        done = _MERGE
+        done = f'{ANADIR}/Data/{{project}}/{{friend}}/{{vers}}/{{fname}}'
     input :
         _get_calc_list
     resources:
