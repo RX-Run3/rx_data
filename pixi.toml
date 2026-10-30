@@ -13,6 +13,7 @@ TF_FORCE_GPU_ALLOW_GROWTH = 'true'
 python = '==3.13'
 root   = '==6.38'
 xrootd = '==5.9.1'
+ripgrep= ">=15.2.0,<16"
 
 [pypi-dependencies]
 apd                            = '*'
