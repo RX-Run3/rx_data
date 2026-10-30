@@ -44,18 +44,15 @@ def _get_batches(project, entries):
     return batches
 # ──────────────────────────────────────────────────────────────────────
 def _get_fnames(batches, fname):
-    freq = batches.file_multiplicity[fname]
-
-    if freq == 1:
-        return [fname]
-
+    print(f'Reading at: {fname}')
+    freq  = batches.file_multiplicity[fname]
     fstem = fname.removesuffix('.root')
 
-    return [ f'{fstem}_{index:05d}_pre_merged.root' for index in range(freq) ]
+    return [ f'{fstem}_{index:05d}_pre_merge.root' for index in range(freq) ]
 # ──────────────────────────────────────────────────────────────────────
 def _get_calc_list(wc):
     entries  = _get_setting(wc, 'entries')
-    file_dir = f'{ANADIR}/Data/{wc.project}/{wc.friend}/{wc.version}'
+    file_dir = f'{ANADIR}/Data/{wc.project}/{wc.friend}/{wc.vers}'
     batches  = _get_batches(wc.project, entries)
     fnames   = _get_fnames(batches, wc.fname)
     parts    = [ f'{file_dir}/{fname}' for fname in fnames ]
@@ -93,11 +90,15 @@ def merge_targets(friend):
         paths   += [ f'{dir_path}/{fname}' for fname in fnames ]
 
     paths = [ path for path in paths if not os.path.isfile(path) ]
+    paths = sorted(paths)
     ncalc = len(paths)
     if ncalc != 0:
         print(f'Need {ncalc} paths for tree {friend}')
 
     return paths
+# ──────────────────────────────────────────────────────────────────────
+ruleorder: calculate_independent >  merge
+ruleorder: calculate_independent > _calculate 
 # ──────────────────────────────────────────────────────────────────────
 rule all:
     '''Request all merged files for every combination.'''
@@ -111,7 +112,7 @@ rule all:
         merge_targets(friend = 'smear'         )
 # ───────────────────────────────────────────────────────────────────
 rule merge:
-    output   : f'{ANADIR}/Data/{{project}}/{{friend}}/{{version}}/{{fname}}'
+    output   : f'{ANADIR}/Data/{{project}}/{{friend}}/{{vers}}/{{fname}}'
     input    : _get_calc_list
     resources:
         htcondor_request_mem_mb  = 4000,
@@ -120,11 +121,12 @@ rule merge:
         vers   = r'v\d+',
         project= r'rk|rkst',
         friend = r'mass|swp_jpsi_misid|swp_cascade|brem_track_2|hop|mva|smear',
+        fname  = r'(?!.*_pre_merge\.root$).+\.root'  
     log:
-        prc = f'{LOGDIR}/{{project}}_{{friend}}_{{version}}_{{fname}}.prc',
-        err = f'{LOGDIR}/{{project}}_{{friend}}_{{version}}_{{fname}}.err',
-        out = f'{LOGDIR}/{{project}}_{{friend}}_{{version}}_{{fname}}.out',
-        LOG = f'{LOGDIR}/{{project}}_{{friend}}_{{version}}_{{fname}}.log',
+        prc = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}_{{fname}}.prc',
+        err = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}_{{fname}}.err',
+        out = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}_{{fname}}.out',
+        LOG = f'{LOGDIR}/{{project}}_{{friend}}_{{vers}}_{{fname}}.log',
     params:
         LOGD    = LOGDIR,
         home    = HOME,
