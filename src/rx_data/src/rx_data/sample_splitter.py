@@ -17,7 +17,7 @@ _TREE_NAME: Final[str] = 'DecayTree'
 
 log=LogStore.add_logger('rx_data:sample_splitter')
 # ------------------------------------
-class FilePart(BaseModel):
+class FilePart(BaseModel, frozen = True):
     '''
     Class representing part of ROOT file
     '''
@@ -83,7 +83,7 @@ class FilePart(BaseModel):
 
         return hi - lo + 1
 # ------------------------------------
-class FileBatch(RootModel[list[FilePart]]):
+class FileBatch(RootModel[list[FilePart]], frozen = True):
     '''
     Class representing a collection of file parts
     '''
@@ -135,7 +135,7 @@ class FileBatch(RootModel[list[FilePart]]):
 
         return msg
 # ------------------------------------
-class FileBatches(RootModel[list[FileBatch]]):
+class FileBatches(RootModel[list[FileBatch]], frozen = True):
     '''
     Class representing a collection of file batches 
     '''
@@ -197,7 +197,7 @@ class FileBatches(RootModel[list[FileBatch]]):
 
         return msg
 # ------------------------------------
-class File(BaseModel):
+class File(BaseModel, frozen = True):
     '''
     Object representing ROOT file
     '''
@@ -248,7 +248,7 @@ class File(BaseModel):
 
         return file_parts
 # ------------------------------------
-class Files(RootModel[list[File]], Serializable):
+class Files(RootModel[list[File]], Serializable, frozen = True):
     '''
     Represents list of files
     '''
