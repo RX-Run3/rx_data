@@ -19,12 +19,17 @@ from rx_common import Project
 from rx_data   import SampleSplitter
 # ──────────────────────────────────────────────────────────────────────
 @cache
-def _get_parts(project, entries):
-    fpath = Path(f'{ANADIR}/DB/statistics/v1/{project}.json')
+def _get_files(project):
     spt   = SampleSplitter(
         version = MAIN_VERSION,
         project = project)
     files = spt.run(out_path = fpath, mode = Mode.read)
+
+    return files
+# ──────────────────────────────────────────────────────────────────────
+def _get_parts(project, entries):
+    fpath = Path(f'{ANADIR}/DB/statistics/v1/{project}.json')
+    files = _get_files(project)
 
     batches = files.split(entries = entries)
     nbatch  = batches.size
@@ -32,7 +37,6 @@ def _get_parts(project, entries):
 
     return nbatch
 def _get_calc_list(wc):
-    dir_name = f'{ANADIR}/tmp/sentinels/friends/{wc.project}'
     entries  = _get_setting(wc, 'entries')
     nparts   = _get_parts(wc.project, entries)
     fstem    = wc.fname.removesuffix('.root')
