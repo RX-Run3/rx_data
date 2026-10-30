@@ -4,6 +4,7 @@ Module holding SampleSplitter class and other helper classes
 import os
 
 from dmu         import LogStore
+from dmu.generic import Serializable
 from typing      import Final, Any
 from pathlib     import Path
 from ROOT        import RDataFrame
@@ -248,15 +249,10 @@ class File(BaseModel):
 
         return file_parts
 # ------------------------------------
-class Files(RootModel[list[File]]):
+class Files(RootModel[list[File]], Serializable):
     '''
     Represents list of files
     '''
-    # ------------------------------------
-    @classmethod
-    def from_json(cls, path : Path) -> 'Files':
-        text = path.read_text()
-        return cls.model_validate_json(text)
     # ------------------------------------
     @property
     def size(self) -> int:
@@ -346,11 +342,8 @@ class SampleSplitter:
             return Files.from_json(path = out_path)
 
         log.info(f'Not found cached, caching: {out_path}')
-        files  = self._get_files()
-        string = files.model_dump_json(indent = 2)
-
-        out_path.parent.mkdir(exist_ok = True, parents = True)
-        out_path.write_text(string)
+        files = self._get_files()
+        files.to_json(path = out_path)
 
         return files
 # ------------------------------------
