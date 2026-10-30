@@ -115,6 +115,9 @@ class FileBatch(RootModel[list[FilePart]], frozen = True):
         ---------------
         File batches, all of them with roughly `entries` entries
         '''
+        if entries <= 0:
+            raise ValueError(f'Invalid number of entries: {entries}')
+
         parts = sorted(parts, key = lambda x : x.size)
         batches    = FileBatches([]) 
         this_batch = FileBatch([])
@@ -232,7 +235,7 @@ class File(BaseModel, frozen = True):
     def _validate(cls, data : dict[str, Any]) -> dict[str,Any]:
         path = Path(data['path'])
 
-        if not path.exists():
+        if not path.is_file():
             raise ValueError(f'Missing file: {path}')
 
         nentries = data['entries']
@@ -251,6 +254,9 @@ class File(BaseModel, frozen = True):
         ----------------
         List of objects representing file partitioning
         '''
+        if entries <= 0:
+            raise ValueError(f'Invalid number of entries: {entries}')
+
         file_parts = []
         index      = 0
         for start in range(0, self.entries, entries):
@@ -326,7 +332,7 @@ class SampleSplitter:
         '''
         ana_dir  = Path(os.environ['ANADIR'])
         dir_path = ana_dir / 'Data' / self._project / _TREE / self._version
-        paths    = list(dir_path.glob(pattern = '*.root'))
+        paths    = sorted(dir_path.glob(pattern = '*.root'))
         if not paths:
             raise ValueError(f'No ROOT file found in {dir_path}')
 
