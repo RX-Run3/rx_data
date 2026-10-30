@@ -73,7 +73,7 @@ def _get_setting(wc, name):
     return cfg[name]
 # ──────────────────────────────────────────────────────────────────────
 @cache
-def _get_fnames(project):
+def _get_main_fnames(project):
     fname_wc = f'{ANADIR}/Data/{project}/main/{MAIN_VERSION}/*.root'
     paths    = glob.glob(fname_wc)
 
@@ -90,7 +90,7 @@ def merge_targets(friend):
         settings = config['projects'][project][friend]
         vers     = settings['version']
         dir_path = f'{ANADIR}/Data/{project}/{friend}/{vers}'
-        fnames   = _get_fnames(project)
+        fnames   = _get_main_fnames(project)
         paths   += [ f'{dir_path}/{fname}' for fname in fnames ]
 
     paths = [ path for path in paths if not os.path.isfile(path) ]
