@@ -14,6 +14,7 @@ python = '==3.13'
 root   = '==6.38'
 xrootd = '==5.9.1'
 ripgrep= ">=15.2.0,<16"
+git-delta = ">=0.20.1,<0.21"
 
 [pypi-dependencies]
 apd                            = '*'
