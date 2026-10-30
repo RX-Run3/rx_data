@@ -10,6 +10,7 @@ from pathlib     import Path
 from ROOT        import RDataFrame
 from rx_common   import Project
 from dmu.generic import Mode
+from functools   import cached_property
 from pydantic    import BaseModel, RootModel, model_validator
 
 _TREE     : Final[str] = 'main'
@@ -74,7 +75,7 @@ class FilePart(BaseModel, frozen = True):
 
         return Path(path)
     # --------------------
-    @property
+    @cached_property
     def size(self) -> int:
         '''
         Number of entries in file
@@ -158,7 +159,7 @@ class FileBatches(RootModel[list[FileBatch]], frozen = True):
 
         return self.root[index]
     # -------------------------
-    @property
+    @cached_property
     def parts(self) -> list[FilePart]:
         '''
         List of file parts in all batches
