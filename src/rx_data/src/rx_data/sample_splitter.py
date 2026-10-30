@@ -70,9 +70,6 @@ class FilePart(BaseModel, frozen = True):
         path = path.replace(f'/{_TREE}/'    , f'/{friend}/')
         path = path.replace(f'/{self.vers}/', f'/{version}/')
 
-        if not self.split:
-            return Path(path)
-
         return Path(path)
     # --------------------
     @cached_property
@@ -238,10 +235,9 @@ class File(BaseModel, frozen = True):
         if not path.exists():
             raise ValueError(f'Missing file: {path}')
 
-        rdf      = RDataFrame(_TREE_NAME, str(path))
-        nentries = rdf.Count().GetValue()
-
-        data['entries'] = nentries 
+        nentries = data['entries']
+        if nentries < 0:
+            raise ValueError(f'Non positive number of entries found: {nentries}')
 
         return data 
     # ------------------------------------
@@ -321,7 +317,6 @@ class SampleSplitter:
         '''
         self._project = project
         self._version = version
-        self._out_path= Path(f'.samples_{project}_{version}.json')
     # ------------------------------------
     def _get_files(self) -> Files:
         '''
@@ -335,11 +330,13 @@ class SampleSplitter:
         if not paths:
             raise ValueError(f'No ROOT file found in {dir_path}')
 
-        files = [ 
-            File(
-                path    = path, 
-                vers    = self._version,
-                entries = 0) for path in paths ]
+        files : list[File] = []
+        for path in paths:
+            rdf     = RDataFrame(_TREE_NAME, str(path))
+            entries = rdf.Count().GetValue()
+
+            obj = File(path = path, vers = self._version, entries = entries)
+            files.append(obj)
 
         return Files(files)
     # ------------------------------------
