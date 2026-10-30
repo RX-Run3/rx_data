@@ -141,7 +141,7 @@ class FileBatch(RootModel[list[FilePart]], frozen = True):
 
         return msg
 # ------------------------------------
-class FileBatches(RootModel[list[FileBatch]], frozen = True):
+class FileBatches(RootModel[list[FileBatch]], Serializable, frozen = True):
     '''
     Class representing a collection of file batches 
     '''
