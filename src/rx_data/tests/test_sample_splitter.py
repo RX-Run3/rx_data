@@ -1,6 +1,7 @@
 '''
 Module with tests for SampleSplitter
 '''
+import os
 import pytest
 
 from pathlib     import Path
@@ -8,6 +9,7 @@ from rx_common   import Project
 from rx_data     import SampleSplitter
 from dmu.generic import Mode
 
+# -------------------------------------
 def test_simple(tmp_path : Path):
     out_path = tmp_path / 'file.json' 
 
@@ -42,3 +44,17 @@ def test_simple(tmp_path : Path):
             project = Project.rk)
 
         files = spt.run(out_path = out_path, mode = Mode.write)
+# -------------------------------------
+def test_file_multiplicity():
+    ana_dir  = Path(os.environ['ANADIR'])
+    out_path = ana_dir / 'DB/statistics/v1/rk.json'
+
+    spt = SampleSplitter(
+        version = 'v1',
+        project = Project.rk)
+    files = spt.run(out_path = out_path, mode = Mode.read)
+
+    batches = files.split(entries = 100_000)
+    for fname, mult in batches.file_multiplicity.items():
+        print(f'{mult:<10}{fname:<50}')
+# -------------------------------------

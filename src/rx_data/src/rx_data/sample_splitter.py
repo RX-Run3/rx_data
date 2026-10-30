@@ -76,6 +76,11 @@ class FilePart(BaseModel, frozen = True):
         return Path(path)
     # --------------------
     @cached_property
+    def fname(self) -> str:
+        '''File name associated to this part'''
+        return self.path.name
+    # --------------------
+    @cached_property
     def size(self) -> int:
         '''
         Number of entries in file
@@ -169,6 +174,25 @@ class FileBatches(RootModel[list[FileBatch]], frozen = True):
             parts += batch.root
 
         return parts
+    # -------------------------
+    @cached_property
+    def file_multiplicity(self) -> dict[str,int]:
+        '''Dictionary mapping file name (not path) to 
+        number of parts into which it is split'''
+
+        groups : dict[str,int] = dict()
+        for batch in self.root:
+            for part in batch.root:
+                if not part.split:
+                    groups[part.fname] = 1 
+                    continue
+
+                if part.fname not in groups:
+                    groups[part.fname] = 0
+
+                groups[part.fname] += 1
+
+        return groups
     # -------------------------
     @property
     def size(self) -> int:
