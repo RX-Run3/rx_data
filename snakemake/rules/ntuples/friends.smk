@@ -87,8 +87,7 @@ def _get_main_fnames(project):
 def merge_targets(friend):
     paths = []
     for project in config['projects']:
-        settings = config['projects'][project][friend]
-        vers     = settings['version']
+        vers     = config['projects'][project][friend]['version']
         dir_path = f'{ANADIR}/Data/{project}/{friend}/{vers}'
         fnames   = _get_main_fnames(project)
         paths   += [ f'{dir_path}/{fname}' for fname in fnames ]
