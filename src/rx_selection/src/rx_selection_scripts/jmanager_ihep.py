@@ -15,7 +15,7 @@ log=LogStore.add_logger('rx_selection:jmanager_ihep')
 _STATUS_JOB_COLUMN : Final[int] = 5
 '''Index of column in Condors printout showing the job status'''
 
-_USER : Final[str] = getpass.getuser() 
+_USER : Final[str] = getpass.getuser()
 '''Username'''
 
 _CONDOR_CMD : Final[list[str]] = ['hep_q', '-u', _USER]
@@ -26,7 +26,7 @@ class Conf:
     '''
     Used to configure job management
     '''
-    dry_run   : bool 
+    dry_run   : bool
     '''If true will stop before running any hep related command'''
     memory    : int
     '''Memory requested'''
@@ -76,7 +76,7 @@ def _run_command(cfg : Conf, cmd : str, options : list[str]) -> None:
 #------------------------------
 def _update_memory(cfg : Conf):
     '''
-    Will change jobs memory and release 
+    Will change jobs memory and release
     '''
     for job_id in cfg.held_jobs:
         try:
