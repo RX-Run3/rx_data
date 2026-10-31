@@ -55,7 +55,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gfortran_impl_linux-64-14.4.0-he75539a_7.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gfortran_linux-64-14.4.0-ha2afc21_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/giflib-5.2.2-ha257d8a_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/git-delta-0.20.1-h4d5d589_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gl2ps-1.4.2-h36e74d4_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/glew-2.3.0-h71661d4_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/glib-tools-2.90.0-h3d503d9_0.conda
@@ -166,7 +165,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pyyaml-6.0.3-py313h3dea7bd_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pyzmq-27.2.0-py312h8a5ba0d_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/readline-8.3-hd6e31c0_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/ripgrep-15.2.0-hf19af3b_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/root-6.38.00-py313ha57858f_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/root_base-6.38.00-cxx20_h718cab1_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/rpds-py-2026.9.1-py313ha296275_0.conda
@@ -4749,7 +4747,7 @@ packages:
   license: MIT
   license_family: MIT
   purls:
-  - pkg:pypi/rpds-py?source=hash-mapping
+  - pkg:pypi/rpds-py?source=compressed-mapping
   run_exports: {}
   size: 302657
   timestamp: 1791202432096
@@ -6147,7 +6145,7 @@ packages:
   license: MIT
   license_family: MIT
   purls:
-  - pkg:pypi/jsonschema?source=hash-mapping
+  - pkg:pypi/jsonschema?source=compressed-mapping
   run_exports: {}
   size: 82084
   timestamp: 1787579299493
@@ -6484,7 +6482,7 @@ packages:
   license: BSD-3-Clause
   license_family: BSD
   purls:
-  - pkg:pypi/nbclient?source=hash-mapping
+  - pkg:pypi/nbclient?source=compressed-mapping
   run_exports: {}
   size: 29971
   timestamp: 1788212974885
@@ -6532,7 +6530,7 @@ packages:
   license: BSD-3-Clause
   license_family: BSD
   purls:
-  - pkg:pypi/nbformat?source=hash-mapping
+  - pkg:pypi/nbformat?source=compressed-mapping
   run_exports: {}
   size: 107750
   timestamp: 1787133512599
@@ -6843,7 +6841,7 @@ packages:
   license: BSD-3-Clause
   license_family: BSD
   purls:
-  - pkg:pypi/fastjsonschema?source=hash-mapping
+  - pkg:pypi/fastjsonschema?source=compressed-mapping
   run_exports: {}
   size: 254446
   timestamp: 1786892280524
