@@ -13,6 +13,7 @@ os.environ['ANADIR'] = ANADIR
 
 MAIN_VERSION = 'v1'
 LOGDIR = config['defaults']['smklog']
+PKGDIR = '/publicfs/ucas/user/campoverde/Packages/cal-rx-run3'
 _MERGE = f'{ANADIR}/tmp/sentinels/friends/{{project}}/{{friend}}/{{vers}}.merge'
 _CALC  = f'{ANADIR}/tmp/sentinels/friends/{{project}}/{{friend}}/{{vers}}_{{index}}.calc'
 
@@ -90,16 +91,23 @@ rule merge:
         LOGD    = LOGDIR,
         home    = HOME,
         env     = ENV,
+        pkg     = PKGDIR,
         entries = lambda wc : _get_setting(wc, 'entries'),
         fvers   = lambda wc : _get_setting(wc, 'version'),
         mvers   = MAIN_VERSION,
     shell:
         '''
         (
-        source setup.sh {params.env} {params.home}
+        export USER={params.env}
+        export HOME={params.home}
+        set +euo pipefail
+        source {params.home}/.bashrc
+        set -euo pipefail
+        cd {params.pkg}
+
         echo $_CONDOR_JOB_AD > {log.prc}
 
-        merge_friends -p {wildcards.project}\
+        pixi run merge_friends -p {wildcards.project}\
                       -f {wildcards.friend} \
                       -F {params.fvers} \
                       -M {params.mvers}   \
@@ -133,13 +141,20 @@ rule _calculate:
         LOGD      = LOGDIR,
         home      = HOME,
         env       = ENV,
+        pkg       = PKGDIR,
     shell:
         '''
         (
-        source setup.sh {params.env} {params.home}
+        export USER={params.env}
+        export HOME={params.home}
+        set +euo pipefail
+        source {params.home}/.bashrc
+        set -euo pipefail
+        cd {params.pkg}
+
         echo $_CONDOR_JOB_AD > {log.prc}
 
-        branch_calculator           \
+        pixi run branch_calculator  \
             -g {params.phot_veto}   \
             -k {wildcards.friend}   \
             -p {wildcards.project}  \
