@@ -1,7 +1,8 @@
 import os
 import glob
-from pathlib   import Path
-from functools import cache
+from pathlib     import Path
+from functools   import cache
+from dmu.generic import Mode
 
 ENV    = 'rx_run3'
 ANADIR = config['defaults']['anadir']
@@ -26,7 +27,7 @@ def _get_parts(project, entries):
         project = project)
 
     fpath   = Path(f'{ANADIR}/DB/statistics/v1/{project}.json')
-    files   = spt.run(out_path = fpath)
+    files   = spt.run(out_path = fpath, mode = Mode.read)
     batches = files.split(entries = entries)
     nbatch  = batches.size
     print(f'Found {nbatch} batches for {project} with {entries} entries')
