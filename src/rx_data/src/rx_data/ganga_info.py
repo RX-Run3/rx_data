@@ -1,13 +1,14 @@
 '''
 Module with the GangaInfo class
 '''
-from contextlib import contextmanager
 import os
 import re
 import tarfile
 
-from pathlib import Path
-from typing import Final
+from contextlib import contextmanager
+from getpass    import getuser
+from pathlib    import Path
+from typing     import Final
 
 from dmu.generic           import hashing
 from dmu.generic           import utilities as gut
@@ -24,7 +25,7 @@ class GangaInfo:
       sample names and block information
     - Make them available to the user
     '''
-    user = os.environ['USER']
+    user = getuser() 
 
     CACHE_DIR : Final[Path] = Path(f'/tmp/{user}/cache/ganga_info')
     MC_BK_RGX : Final[str ] = r'(w\d{2}_\d{2})_v\dr\d{4}'
@@ -112,14 +113,14 @@ class GangaInfo:
             log.debug('')
             log.debug(f'Searching: {subjob_dir}')
             info : dict[str,str] = self._info_from_logs(
-                input =inp_fname, 
+                input_path =inp_fname, 
                 output=out_fname)
 
             d_data.update(info)
 
         return d_data
     # ----------------------
-    def _info_from_logs(self, input : Path, output : Path) -> dict[str,str]:
+    def _info_from_logs(self, input_path : Path, output : Path) -> dict[str,str]:
         '''
         Parameters
         -------------
@@ -133,7 +134,7 @@ class GangaInfo:
         Key  : sample name
         Value: block information
         '''
-        block    = self._block_from_input(path=input)
+        block    = self._block_from_input(path=input_path)
         l_sample = self._samples_from_output(path=output)
 
         log.debug(f'Block: {block}')

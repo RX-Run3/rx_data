@@ -5,13 +5,11 @@ import os
 
 from contextlib  import contextmanager
 from pathlib     import Path
-from typing      import Final
 from ROOT        import RDataFrame, RDF
 from dmu         import LogLevels, LogStore
 from dmu.generic import utilities as gut
 
 log=LogStore.add_logger('rx_data:rdf_getter12')
-_ANADIR : Final[Path] = Path(os.environ['ANADIR'])
 # --------------------------
 class RDFGetter12:
     '''
@@ -115,7 +113,8 @@ class RDFGetter12:
         '''
         Returns ROOT dataframe with dataset
         '''
-        ntp_dir  = _ANADIR / f'Data/run12/{self._sample}/{self._version}'
+        ana_dir = Path(os.environ['ANADIR'])
+        ntp_dir = ana_dir / f'Data/run12/{self._sample}/{self._version}'
 
         log.info(f'Picking paths from {ntp_dir}')
 
