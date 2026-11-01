@@ -68,6 +68,7 @@ tensorflow-datasets            = '*'
 tensorflow-graphics            = '*'
 tensorflow-metadata            = '*'
 tensorflow-probability         = '*'
+types-colorama                 = ">=0.4.15.20260508,<0.5"
 types-tabulate                 = ">=0.10.0.20261006,<0.11"
 types-tensorflow               = '*'
 texttable                      = '*'
