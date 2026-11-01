@@ -22,11 +22,11 @@ class Server(StrEnum):
         '''
         match self:
             case Server.lxplus:
-                return '-p 22   acampove@lxplus.cern.ch'
+                return '-p 22 acampove@lxplus.cern.ch'
             case Server.local:
-                return '-p 2223 acampove@localhost'
+                return '-p 22 acampove@localhost'
             case Server.lxlogin:
-                raise ValueError('Requested IHEP host')
+                return '-p 22 campoverde@lxlogin.ihep.ac.cn'
     # ----------------------
     @property
     def data_dir(self) -> Path:

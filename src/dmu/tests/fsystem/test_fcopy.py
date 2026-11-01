@@ -50,6 +50,7 @@ def _make_paths(
 
     return l_path
 # ----------------------
+@pytest.mark.skip(reason = 'Needs SSH server running')
 def test_local(tmp_path : Path) -> None:
     '''
     Simplest test
