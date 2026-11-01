@@ -16,6 +16,7 @@ import pandas as pnd
 import numpy
 import yaml
 
+from pathlib               import Path
 from dmu.ml.train_mva      import TrainMva
 from dmu.ml.cv_classifier  import CVClassifier
 from dmu.logging.log_store import LogStore
@@ -28,7 +29,7 @@ class Data:
     '''
     Class storing shared data
     '''
-    out_dir = '/tmp/tests/dmu/ml/cv_predict'
+    out_dir : Path = Path('/tmp/tests/dmu/ml/cv_predict')
 
     d_col   = {
             'main' : ['index', 'a0', 'b0'],
@@ -63,7 +64,7 @@ def _add_nans(
     nnan= math.ceil(ntot * fraction)
 
     for col in columns:
-        arr_val = df[col].to_numpy()
+        arr_val = df[col].to_numpy(copy=True)
         arr_ind = numpy.random.choice(ntot, nnan, replace=False)
         arr_val[arr_ind] = numpy.nan
 
@@ -177,8 +178,8 @@ def get_file_with_trees(path : str) -> TFile:
 def get_models(
     rdf_sig : RDF.RNode,
     rdf_bkg : RDF.RNode,
-    name    : str        = 'train_mva',
-    out_dir : str | None = None) -> tuple[list[CVClassifier], float]:
+    name    : str               = 'train_mva',
+    out_dir : str | Path | None = None) -> tuple[list[CVClassifier], float]:
     '''
     Will train and return models together with the AUC in a tuple
 
@@ -239,7 +240,7 @@ def build_friend_structure(file_name : str, nentries : int) -> None:
     if 'tree' not in data:
         raise ValueError('tree entry missing in: {cfg_path}')
 
-    tree_name = data['tree']
+    tree_name : str = data['tree']
 
     if 'samples' not in data:
         raise ValueError('Samples section missing in: {cfg_path}')
