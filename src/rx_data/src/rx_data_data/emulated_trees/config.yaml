@@ -138,9 +138,6 @@ bpkpjpsimm_kmm_mkm:
   trk_swap  :
     H_ : L1_
   masses:
-    Kst_M:
-      H1 :  321
-      H2 : -211
     Jpsi_M:
       L1 :  13
       L2 : -13
@@ -152,9 +149,6 @@ bpkpjpsiee_kee_eke:
   trk_swap  :
     H_ : L1_
   masses:
-    Kst_M:
-      H1 :  321
-      H2 : -211
     Jpsi_M:
       L1 :  11
       L2 : -11
