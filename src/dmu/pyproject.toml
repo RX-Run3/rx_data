@@ -1,16 +1,16 @@
 [project]
 name            = 'dmu'
-version         = '0.3.2'
+version         = '0.3.3'
 description     = 'Project storing utilities needed to reduce boilerplate code when analyzing data'
 readme          = 'README.md'
 
 [project.scripts]
-check_truth         = 'dmu_scripts.physics.check_truth:main'
-print_trees         = 'dmu_scripts.rfile.print_trees:main'
-better_rootls       = 'dmu_scripts.rfile.better_rootls:main'
-compare_root_files  = 'dmu_scripts.rfile.compare_root_files:main'
-compare_classifiers = 'dmu_scripts.ml.compare_classifiers:main'
-cmd_from_index      = 'dmu_scripts.testing.cmd_from_index:main'
+check-truth         = 'dmu_scripts.physics.check_truth:main'
+print-trees         = 'dmu_scripts.rfile.print_trees:main'
+better-rootls       = 'dmu_scripts.rfile.better_rootls:main'
+compare-root-files  = 'dmu_scripts.rfile.compare_root_files:main'
+compare-classifiers = 'dmu_scripts.ml.compare_classifiers:main'
+cmd_from-index      = 'dmu_scripts.testing.cmd_from_index:main'
 dmu                 = 'dmu_scripts.cli:app'
 
 [tool.setuptools.package-data]
