@@ -25,3 +25,4 @@ tests:
     - cd /workspace
   script:
     - pixi run --as-is -e ci-cd test-sel
+    - pixi run --as-is -e ci-cd test-ml
