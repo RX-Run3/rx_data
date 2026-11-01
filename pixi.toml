@@ -3,11 +3,12 @@ authors   = ['lhcb-phys-rx-run3@cern.ch']
 channels  = ['conda-forge']
 name      = 'cal-rx-run3'
 platforms = ['linux-64']
-version   = '0.1.0'
+version   = '3.1.1'
 
 [activation.env]
 TF_CPP_MIN_LOG_LEVEL      = '2'
 TF_FORCE_GPU_ALLOW_GROWTH = 'true'
+PYTHONWARNINGS            = 'ignore'
 
 [dependencies]
 python = '==3.13'
