@@ -19,9 +19,9 @@ environment:
       -f           Dockerfile .
     - buildah push    $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
 tests:
-  stage: tests
-  image: "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
+  stage        : tests
+  image        : "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
+  before_script:
+    - cd /workspace
   script:
-    - pytest src/selection/tests/test_selection.py
-    - pytest src/selection/tests/test_registry.py
-    #- pytest src/selection/tests/test_truth_matching.py
+    - pixi run --as-is -e ci-cd selection
