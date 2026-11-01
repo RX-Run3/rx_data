@@ -1,6 +1,6 @@
 [project]
 name            = 'dmu'
-version         = '0.3.3'
+version         = '0.3.4'
 description     = 'Project storing utilities needed to reduce boilerplate code when analyzing data'
 readme          = 'README.md'
 

@@ -29,9 +29,9 @@ def _print_tree(tree : TTree, name : str) -> None:
     nbranch = len(tree.keys())
 
     print(f"Tree: {name}")
-    print(f"    entries  : {tree.num_entries}")
+    print(f"    entries  : {tree.num_entries:,}")
     print(f"    branches : {nbranch}")
-    print(f"    size [MB]: {size_mb:.1f}")
+    print(f"    size [MB]: {size_mb:,.1f}")
 # ----------------------
 def main():
     '''
