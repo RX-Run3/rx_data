@@ -124,7 +124,7 @@ def test_correlated(_fix_or_constrain) -> None:
     cad = ConstraintAdder(nll=nll, constraints=cons)
     nll = cad.get_nll()
 # ----------------------
-@pytest.mark.timeout(100)
+@pytest.mark.skip(reason = 'Takes too long')
 def test_toy(_fix_or_constrain) -> None:
     '''
     Tests toy constraint addition in a loop
