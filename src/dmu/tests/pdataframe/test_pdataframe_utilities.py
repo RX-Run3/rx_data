@@ -7,11 +7,15 @@ import numpy
 import pandas                   as pnd
 import dmu.pdataframe.utilities as put
 
-from pathlib               import Path
-from colorama              import Fore
-from dmu.logging.log_store import LogStore
+from typing   import Final
+from pathlib  import Path
+from colorama import Fore
+from dmu      import LogStore
 
 log=LogStore.add_logger('dmu:test:pdataframe:utilities')
+
+_NAN_FRACTION : Final[float] = 0.02
+'''Nan fraction injected in test'''
 # --------------------------------------
 class Data:
     '''
@@ -46,7 +50,7 @@ def test_df_to_markdown(tmp_path : Path):
     Saving dataframe to markdown 
     '''
     df = _get_df()
-    put.to_markdown(df, f'{tmp_path}/df_to_markdown/simple.md')
+    put.to_markdown(df, tmp_path / 'df_to_markdown/simple.md')
 # --------------------------------------
 def test_df_to_tex_format(tmp_path : Path):
     '''
@@ -78,21 +82,17 @@ def test_column_format(tmp_path : Path):
     df = _get_df()
     put.df_to_tex(df, f'{tmp_path}/df_to_tex/column_format.tex', column_format='lrr')
 # --------------------------------------
-@pytest.mark.parametrize('yml_path',[
-                              '/tmp/tests/dmu/pdataframe/utilities/to_yaml/file.yaml',
-                              'test_file.yaml'])
-def test_to_from_yaml(yml_path : str):
+def test_to_from_yaml(tmp_path : Path):
     '''
     Tests saving dataframe to YAML
     '''
+    out_path = tmp_path / 'file.yaml'
 
     df_1 = _get_df()
-    put.to_yaml(df_1, yml_path)
-    df_2 = put.from_yaml(yml_path)
+    put.to_yaml(df_1, out_path)
+    df_2 = put.from_yaml(out_path)
 
     assert df_1.equals(df_2)
-
-    os.unlink(yml_path)
 # --------------------------------------
 @pytest.mark.parametrize('nan_frac', [0.00, 0.01, 0.05])
 def test_dropna(nan_frac : float):
@@ -104,7 +104,7 @@ def test_dropna(nan_frac : float):
     arr[mask] = numpy.nan
     df   = pnd.DataFrame({'a' : arr})
 
-    if nan_frac < 0.02:
+    if nan_frac < _NAN_FRACTION:
         df   = put.dropna(df)
 
         assert not df.isna().any().any()
@@ -119,7 +119,7 @@ def test_colorize():
     Tests function that adds colors to dataframes
     '''
     df     = _get_df()
-    colors = {1 : Fore.RED, 2 : Fore.BLUE}
+    colors = {'1' : Fore.RED, '2' : Fore.BLUE}
     df     = df.apply(put.colorize_row, args=(colors,), axis=1)
 
     log.info('')
