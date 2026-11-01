@@ -117,10 +117,6 @@ def main():
 
     to_merge : dict[Path,Paths] = {}
     for part in batches.parts:
-        if not part.split:
-            log.debug(f'Not merging non-split part: {part.path}')
-            continue
-
         key = part.friend_path(friend = cfg.friend, version = cfg.vfrnd)
         val = part.friend_part_path(friend = cfg.friend, version = cfg.vfrnd)
 
