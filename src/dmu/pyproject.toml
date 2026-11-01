@@ -7,6 +7,7 @@ readme          = 'README.md'
 [project.scripts]
 check_truth         = 'dmu_scripts.physics.check_truth:main'
 print_trees         = 'dmu_scripts.rfile.print_trees:main'
+better_rootls       = 'dmu_scripts.rfile.better_rootls:main'
 compare_root_files  = 'dmu_scripts.rfile.compare_root_files:main'
 compare_classifiers = 'dmu_scripts.ml.compare_classifiers:main'
 cmd_from_index      = 'dmu_scripts.testing.cmd_from_index:main'
