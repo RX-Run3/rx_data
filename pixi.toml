@@ -129,10 +129,14 @@ lazygit          = ">=0.66.2,<0.67"
 ripgrep          = ">=15.2.0,<16"
 git-delta        = ">=0.20.1,<0.21"
 
+[feature.image_test.tasks]
+build-image = 'podman build --network=host -t rx_run3 -f Dockerfile .'
+test-sel    = { cmd = "podman run --rm localhost/rx_run3 sh -c 'cd /workspace && pixi run --as-is -e ci-cd test-sel'", depends-on = ['build-image'] }
+
 [feature.test.tasks]
-selection = 'pytest src/selection/tests/test_selection.py src/selection/tests/test_registry.py'
+test-sel    = 'pytest src/rx_selection/tests/test_selection.py src/rx_selection/tests/test_registry.py'
 
 [environments]
-default          = { features = ["gpu", 'dev', 'ana', 'test'] , solve-group = 'main'}
-dev-cpu          = { features = ["cpu", 'dev', 'ana', 'test'] , solve-group = 'main'}
-ci-cd            = { features = ["cpu"              , 'test'] , solve-group = 'main'}
+default          = { features = ['gpu', 'dev', 'ana', 'image_test'] , solve-group = 'main'}
+dev-cpu          = { features = ['cpu', 'dev', 'ana', 'image_test'] , solve-group = 'main'}
+ci-cd            = { features = ['cpu'              ,       'test'] , solve-group = 'main'}

@@ -24,4 +24,4 @@ tests:
   before_script:
     - cd /workspace
   script:
-    - pixi run --as-is -e ci-cd selection
+    - pixi run --as-is -e ci-cd test_sel 
