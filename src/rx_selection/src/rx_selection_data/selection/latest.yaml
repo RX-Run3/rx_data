@@ -17,6 +17,17 @@ jpsi_misid_common: &jmd_common
   psi2    : (swp_jpsi_misid_mass_swp != swp_jpsi_misid_mass_swp) || (swp_jpsi_misid_mass_swp < 3050) || (swp_jpsi_misid_mass_swp > 3150)
   high    : 'true' 
   none    : (swp_jpsi_misid_mass_swp != swp_jpsi_misid_mass_swp) || (swp_jpsi_misid_mass_swp < 3050) || (swp_jpsi_misid_mass_swp > 3150)
+
+jpsi_misid_pion_common: &jmd_pion
+  low     : (swp_jpsi_misid_pion_mass_swp != swp_jpsi_misid_pion_mass_swp) || (swp_jpsi_misid_pion_mass_swp < 3050) || (swp_jpsi_misid_pion_mass_swp > 3150)
+  central : (swp_jpsi_misid_pion_mass_swp != swp_jpsi_misid_pion_mass_swp) || (swp_jpsi_misid_pion_mass_swp < 3050) || (swp_jpsi_misid_pion_mass_swp > 3150)
+  cen_low : (swp_jpsi_misid_pion_mass_swp != swp_jpsi_misid_pion_mass_swp) || (swp_jpsi_misid_pion_mass_swp < 3050) || (swp_jpsi_misid_pion_mass_swp > 3150)
+  cen_high: (swp_jpsi_misid_pion_mass_swp != swp_jpsi_misid_pion_mass_swp) || (swp_jpsi_misid_pion_mass_swp < 3050) || (swp_jpsi_misid_pion_mass_swp > 3150)
+  jpsi    : (swp_jpsi_misid_pion_mass_swp != swp_jpsi_misid_pion_mass_swp) || (swp_jpsi_misid_pion_mass_swp < 3050) || (swp_jpsi_misid_pion_mass_swp > 3150)
+  psi2    : (swp_jpsi_misid_pion_mass_swp != swp_jpsi_misid_pion_mass_swp) || (swp_jpsi_misid_pion_mass_swp < 3050) || (swp_jpsi_misid_pion_mass_swp > 3150)
+  high    : 'true' 
+  none    : (swp_jpsi_misid_pion_mass_swp != swp_jpsi_misid_pion_mass_swp) || (swp_jpsi_misid_pion_mass_swp < 3050) || (swp_jpsi_misid_pion_mass_swp > 3150)
+
 # ----------------------------------
 # MVA
 # ----------------------------------
@@ -110,7 +121,8 @@ rkst: &rkst
     pid_pi    : (H2_PROBNN_PI * (1 - H2_PROBNN_P) * (1 - H2_ProbNNk) > 0.1)
     rich      : L1_PPHASRICH && L2_PPHASRICH && H1_PPHASRICH && H2_PPHASRICH
     acceptance: L1_INECAL && L2_INECAL
-    jpsi_misid: (swp_jpsi_misid_mass_swp != swp_jpsi_misid_mass_swp) || (swp_jpsi_misid_mass_swp < 3050) || (swp_jpsi_misid_mass_swp > 3150)
+    jpsi_misid:
+      <<: *jmd_pion
     cascade   :
       <<: *cascade_common
     hop       :
@@ -137,7 +149,8 @@ rkst: &rkst
     pid_pi    : (H2_PROBNN_PI * (1 - H2_PROBNN_P) * (1 - H2_ProbNNk) > 0.1)
     rich      : L1_PPHASRICH && L2_PPHASRICH && H1_PPHASRICH && H2_PPHASRICH
     acceptance: L1_INMUON && L2_INMUON
-    jpsi_misid: (swp_jpsi_misid_mass_swp != swp_jpsi_misid_mass_swp) || (swp_jpsi_misid_mass_swp < 3050) || (swp_jpsi_misid_mass_swp > 3150)
+    jpsi_misid:
+      <<: *jmd_pion
     cascade   :
       <<: *cascade_common
     hop       :
