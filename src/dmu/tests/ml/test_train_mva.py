@@ -29,7 +29,7 @@ def test_simple(nfold : int):
     rdf_bkg = ut.get_rdf(kind='bkg')
     cfg     = ut.get_config('ml/tests/train_mva.yaml')
     cfg['training']['nfold'] = nfold
-    path    = cfg['saving']['output']
+    path : str = cfg['saving']['output']
     cfg['saving']['output'] = path.replace('train_mva', f'train_mva_{nfold:03}')
 
     obj= TrainMva(sig=rdf_sig, bkg=rdf_bkg, cfg=cfg)
@@ -62,7 +62,7 @@ def test_missing_feature_plot():
     del cfg['plotting']['features']['plots']['y']
 
     cfg['training']['nfold'] = nfold
-    path    = cfg['saving']['output']
+    path : str = cfg['saving']['output']
     cfg['saving']['output'] = path.replace('train_mva', 'missing_feature_plot')
 
     obj= TrainMva(sig=rdf_sig, bkg=rdf_bkg, cfg=cfg)
@@ -130,7 +130,7 @@ def test_hyperparameter_optimization(workers : int):
     rdf_bkg = ut.get_rdf(kind='bkg')
     cfg     = ut.get_config('ml/tests/train_mva.yaml')
     cfg['training']['nfold'] = nfold
-    path    = cfg['saving']['output']
+    path : str = cfg['saving']['output']
     cfg['saving']['output'] = path.replace('train_mva', f'train_mva_hyp_opt_{workers:02}w')
 
     obj= TrainMva(sig=rdf_sig, bkg=rdf_bkg, cfg=cfg)
