@@ -29,6 +29,8 @@ columns:
   # Kinematics
   # ------------------------
   - swp_jpsi_misid_mass_swp
+  - swp_jpsi_misid_kaon_mass_swp
+  - swp_jpsi_misid_pion_mass_swp
   - swp_cascade_mass_swp
   - hop_mass
   # ------------------------
