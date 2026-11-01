@@ -129,7 +129,10 @@ lazygit          = ">=0.66.2,<0.67"
 ripgrep          = ">=15.2.0,<16"
 git-delta        = ">=0.20.1,<0.21"
 
+[feature.test.tasks]
+selection = 'pytest src/selection/tests/test_selection.py src/selection/tests/test_registry.py'
+
 [environments]
-default          = { features = ["gpu", 'dev', 'ana'] , solve-group = 'main'}
-dev-cpu          = { features = ["cpu", 'dev', 'ana'] , solve-group = 'main'}
-ci-cd            = { features = ["cpu"              ] , solve-group = 'main'}
+default          = { features = ["gpu", 'dev', 'ana', 'test'] , solve-group = 'main'}
+dev-cpu          = { features = ["cpu", 'dev', 'ana', 'test'] , solve-group = 'main'}
+ci-cd            = { features = ["cpu"              , 'test'] , solve-group = 'main'}
