@@ -116,20 +116,20 @@ zfit-stubs       = { path = "./src/zfit-stubs",       editable = true }
 systematics      = { path = "./src/systematics",      editable = true }
 
 [feature.dev.dependencies]
-pip              = '*'
-podman           = ">=5.8.3,<6"
-pre-commit       = '>=4.7.0,<5'
-btop             = '*'
-chafa            = '*'
-eza              = '*'
-fzf              = '==0.67.0'
-nvim             = '==0.11.0'
-tmux             = '==3.7_'
-yazi             = '==26.5.6'
-zoxide           = '*'
-lazygit          = ">=0.66.2,<0.67"
-ripgrep          = ">=15.2.0,<16"
-git-delta        = ">=0.20.1,<0.21"
+pip         = '*'
+podman      = ">=5.8.3,<6"
+pre-commit  = '>=4.7.0,<5'
+btop        = '*'
+chafa       = '*'
+eza         = '*'
+fzf         = '==0.67.0'
+nvim        = '==0.11.0'
+tmux        = '==3.7_'
+yazi        = '==26.5.6'
+zoxide      = '*'
+lazygit     = ">=0.66.2,<0.67"
+ripgrep     = ">=15.2.0,<16"
+git-delta   = ">=0.20.1,<0.21"
 
 [feature.image_test.tasks]
 build-image = 'podman build --network=host -t rx_run3 -f Dockerfile .'
@@ -139,6 +139,6 @@ test-sel    = { cmd = "podman run --rm localhost/rx_run3 sh -c 'cd /workspace &&
 test-sel    = 'pytest src/rx_selection/tests/test_selection.py src/rx_selection/tests/test_registry.py'
 
 [environments]
-default          = { features = ['gpu', 'dev', 'ana', 'image_test'] , solve-group = 'main'}
-dev-cpu          = { features = ['cpu', 'dev', 'ana', 'image_test'] , solve-group = 'main'}
-ci-cd            = { features = ['cpu'              ,       'test'] , solve-group = 'main'}
+default     = { features = ['gpu', 'dev', 'ana', 'image_test'] , solve-group = 'main'}
+dev-cpu     = { features = ['cpu', 'dev', 'ana', 'image_test'] , solve-group = 'main'}
+ci-cd       = { features = ['cpu'              ,       'test'] , solve-group = 'main'}
