@@ -52,7 +52,7 @@ rule nlls:
         set -euo pipefail
         cd {params.pkg}
 
-        pixi run fit_rx_rare_sim            \
+        pixi run --as-is fit_rx_rare_sim    \
                         -b -1               \
                         -k {params.kind}    \
                         -g nll              \

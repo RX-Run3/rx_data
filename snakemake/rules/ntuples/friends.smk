@@ -108,7 +108,7 @@ rule merge:
 
         echo $_CONDOR_JOB_AD > {log.prc}
 
-        pixi run merge_friends -p {wildcards.project}\
+        pixi run --as-is merge_friends -p {wildcards.project}\
                       -f {wildcards.friend} \
                       -F {params.fvers} \
                       -M {params.mvers}   \
@@ -155,7 +155,7 @@ rule _calculate:
 
         echo $_CONDOR_JOB_AD > {log.prc}
 
-        pixi run branch_calculator  \
+        pixi run --as-is branch_calculator  \
             -g {params.phot_veto}   \
             -k {wildcards.friend}   \
             -p {wildcards.project}  \

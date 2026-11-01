@@ -34,7 +34,7 @@ rule database_making:
         set -euo pipefail
         cd {params.pkg}
 
-        pixi run rxdata make-database \
+        pixi run --as-is rxdata make-database \
                 -c {wildcards.component} -t {wildcards.trigger} \
                 -d cmb -d prc -d q2 -d mass -d jpsi_misid -d pid_l\
                 -d cascade -d hop
