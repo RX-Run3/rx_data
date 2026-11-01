@@ -3,6 +3,7 @@
 stages:
   - test
   - build
+  - tests
 environment:
   stage: build
   image: registry.cern.ch/quay.io/buildah/stable
@@ -17,3 +18,10 @@ environment:
       -t           "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
       -f           Dockerfile .
     - buildah push    $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+tests:
+  stage: tests
+  image: "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
+  script:
+    - pytest src/selection/tests/test_selection.py
+    - pytest src/selection/tests/test_registry.py
+    #- pytest src/selection/tests/test_truth_matching.py
