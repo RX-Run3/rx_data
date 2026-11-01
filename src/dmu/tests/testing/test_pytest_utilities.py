@@ -2,8 +2,8 @@
 This module contains tests for pytest_utilities functionalities
 '''
 
-from pathlib import Path
-from dmu     import pytest_utilities
+from pathlib     import Path
+from dmu.testing import pytest_utilities
 
 # ----------------------
 def _create_test(path : Path, name : str) -> str:

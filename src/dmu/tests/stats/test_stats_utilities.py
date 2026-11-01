@@ -1,6 +1,7 @@
 '''
 Module with unit tests for functions in dmu.stat.utilities
 '''
+import os
 import re
 import pytest
 import numpy
