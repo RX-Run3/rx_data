@@ -34,7 +34,7 @@ type zres = zfit.result.FitResult
 _COLUMNS : Final[list[str]] = ['Parameter', 'Value', 'Error', 'Gen', 'Toy', 'GOF', 'Valid', 'Hash']
 '''Columns needed in dataframe holding toys information'''
 # ----------------------
-class ToyConf(BaseModel, frozen = True):
+class ToyConf(BaseModel, frozen = True, strict = True, extra = 'forbid'):
     '''
     Class meant to configure how toys are generated
 
