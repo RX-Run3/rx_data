@@ -19,6 +19,11 @@ from .cmb_constraints    import CmbConstraints
 from .signal_constraints import SignalConstraints
 
 _RARE_RK_MISID_COMPONENTS : Final[set[Component]] = {Component.bpkkk, Component.bpkpipi}
+_EFF_PREFIX : Final[str] = 'eff-'
+'''Prefix for parameters to be constrained with
+efficiency ratio constraints, e.g.:
+eff-{rkst}-{rk}-{region} = eff_rk / eff_rkst
+'''
 
 log=LogStore.add_logger('fitter:constraint_reader')
 # -------------------------------------------------------------
@@ -79,7 +84,7 @@ class ConstraintReader:
         - Trigger associated to signal region where yield is needed
         '''
         pars     = self._nll.get_params(floating = True)
-        eff_pars = [ par for par in pars if par.name.startswith('eff_') ]
+        eff_pars = [ par for par in pars if par.name.startswith(_EFF_PREFIX) ]
 
         if not eff_pars:
             log.debug('No efficiency ratio parameters to constraint')
