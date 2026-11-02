@@ -1,9 +1,17 @@
+default_install_hook_types: [pre-commit, post-merge, post-rewrite]
 repos:
   - repo: local
     hooks:
-      - id            : copy_conf
-        name          : Latest -> SHA 
-        entry         : hooks/copy_conf.sh
+      - id            : copy_pyrefly
+        name          : Update pyrefly.toml
+        entry         : hooks/copy_pyrefly.sh
         language      : script
         stages        : [pre-commit]
         pass_filenames: false
+      - id            : pixi_install
+        name          : Pixi install
+        entry         : hooks/pixi_install.sh
+        language      : script
+        stages        : [post-merge, post-rewrite]
+        pass_filenames: false
+        always_run    : true
