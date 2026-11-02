@@ -1,7 +1,6 @@
 '''
 This module tests the class ToyMaker
 '''
-import json
 import pytest
 import mplhep
 import matplotlib.pyplot as plt
@@ -80,6 +79,8 @@ def test_simple(
 
     pars  = nll.get_params()
     assert len(df) == cfg.ntoys * len(pars) 
+
+    print(df)
 # ----------------------
 @pytest.mark.parametrize('ntoys', [100])
 def test_integration(
