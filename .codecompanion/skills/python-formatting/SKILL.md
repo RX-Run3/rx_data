@@ -105,10 +105,15 @@ Functions should also have docstrings and they should look like:
 
 ```
 
-Pydantic attributes should be documented with a docstring, e.g:
+Pydantic attributes should be documented with a docstring.
+The class itself should be documented with another docstring, e.g:
 
 ```python
 class User(BaseModel):
+    '''
+    This class is used to describe a user
+    '''
+
     name: str
     '''The user's full name.'''
 
