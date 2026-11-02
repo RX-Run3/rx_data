@@ -296,6 +296,9 @@ def _fit(cfg : Conf) -> None:
         d_cfg = cfg.cfgs)
     res = ftr.run(skip_fit = False)
 
+    if res is None:
+        return
+
     _save_results(
         nlls = d_nll,
         res  = res,
