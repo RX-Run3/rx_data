@@ -75,7 +75,7 @@ class ConstraintReader:
             signal = self._signal,
             brem   = self._brem)
     # ----------------------
-    def _get_eff_constraint_inputs(self) -> tuple[str,Trigger,Trigger] | None:
+    def _get_eff_constraint_inputs(self) -> tuple[str, Component,Trigger,Trigger] | None:
         '''
         Returns tuple with:
 
@@ -98,12 +98,13 @@ class ConstraintReader:
         parts   = name.split('-')
 
         try:
-            source = Trigger(parts[1])
-            target = Trigger(parts[2])
+            signal = Component(parts[1])
+            source = Trigger(parts[2])
+            target = Trigger(parts[3])
         except Exception as exc:
             raise ValueError(f'Cannot extract source and target triggers from: {name}') from exc
 
-        return name, source, target
+        return name, signal, source, target
     # ----------------------
     def _add_eff_constraints(self, skip : bool) -> None:
         '''
@@ -119,11 +120,11 @@ class ConstraintReader:
             log.info('No parameters found for efficiency constraints')
             return
 
-        var_name, source, target = data
+        var_name, signal, source, target = data
 
         obj = EffScales(
             out_dir = self._cfg.output_directory,
-            sample  = self._signal,
+            sample  = signal,
             channel = source.channel,
             source  = source.project,
             target  = target.project,
