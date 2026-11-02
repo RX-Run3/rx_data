@@ -127,6 +127,28 @@ class DataFitterSim(BaseFitter):
         log.info(f'Saving NLL to: {out_path}')
         sut.save_nll(loss = nll.nll, path = out_path)
     # ----------------------
+    def _analyze_nll(self, nll : NLL) -> None:
+        '''
+        This method will run checks on likelihood just before minimization
+        '''
+        pars      = nll.get_params(floating = True)
+        all_names = { par.name for par in pars }
+        all_const = { par.name for cons in nll.constraints for par in cons.params.values() }
+
+        not_in_nll = sorted(all_const - all_names)
+        all_free   = sorted(all_names - all_const)
+
+        if not_in_nll:
+            for par in not_in_nll:
+                log.error(par)
+            raise ValueError('Found constraints on parameters not in NLL')
+
+        log.info(30 * '-')
+        log.info('Unconstrained parameters')
+        log.info(30 * '-')
+        for free_par in all_free:
+            log.info(free_par)
+    # ----------------------
     @overload
     def run(self, skip_fit: Literal[True]) -> None: ...
     @overload
@@ -142,6 +164,8 @@ class DataFitterSim(BaseFitter):
         Fit result
         '''
         nll = self._get_full_nll()
+
+        self._analyze_nll(nll = nll)
 
         if skip_fit:
             return None
