@@ -94,7 +94,7 @@ class ToyMaker:
         Check if using GPU
         '''
         if tf_config.list_physical_devices('GPU'):
-            log.warning('Running with GPU')
+            log.debug('Running with GPU')
         else:
             log.debug('Running with CPU')
     # ----------------------
