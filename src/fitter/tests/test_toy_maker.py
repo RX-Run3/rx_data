@@ -1,6 +1,7 @@
 '''
 This module tests the class ToyMaker
 '''
+import json
 import pytest
 import mplhep
 import matplotlib.pyplot as plt
@@ -51,8 +52,8 @@ def test_simple(
     log.info('')
     nll   = get_nll(kind='s+b', suffix = '')
 
-    data  = gut.load_data(package='fitter_data', fpath='tests/toys/toy_maker.yaml')
-    cfg   = ToyConf(**data)
+    data  = gut.yaml_to_json(package='fitter_data', fpath='tests/toys/toy_maker.yaml')
+    cfg   = ToyConf.model_validate_json(data)
 
     data  = gut.load_data(package='fitter_data', fpath='tests/fits/constraint_adder.yaml')
     cons  = Constraints[Constraint1D | ConstraintND](root = data)
@@ -99,8 +100,8 @@ def test_integration(
     nll   = get_nll(kind='s+b', suffix = '')
     assert isinstance(nll, ExtendedUnbinnedNLL)
 
-    data = gut.load_data(package='fitter_data', fpath='tests/toys/toy_maker.yaml')
-    cfg  = ToyConf(**data)
+    data_str = gut.yaml_to_json(package='fitter_data', fpath='tests/toys/toy_maker.yaml')
+    cfg  = ToyConf.model_validate_json(data_str)
     cfg  = cfg.model_copy(update = {'ntoys' : ntoys})
 
     data : dict[str,Any] = gut.load_data(package='fitter_data', fpath='tests/fits/constraint_adder.yaml') 
