@@ -29,15 +29,19 @@ def get_truth(component : Component, project : Project) -> str:
 
     project_name = project.removesuffix('_no_pid')
 
-    cfg = gut.load_conf(package='rx_selection_data', fpath=f'truth_matching/{project_name}.yaml')
-    yrs = Resolver(cfg=cfg)
+    fpath = f'truth_matching/{project_name}.yaml'
+    cfg   = gut.load_conf(package='rx_selection_data', fpath=fpath)
+    yrs   = Resolver(cfg=cfg)
 
     if component.event_type not in yrs:
-        raise KeyError(f'Could not find event type {component.event_type} in config')
+        raise KeyError(f'Could not find event type {component.event_type} in config: {fpath}')
 
     requirement = yrs[component.event_type]
 
+    log.debug(30 * '-')
+    log.debug(f'Component: {component}/{component.event_type}')
     log.debug(f'Using truth matching: {requirement}')
+    log.debug(30 * '-')
 
     return requirement
 # ----------------------------------------------------------
