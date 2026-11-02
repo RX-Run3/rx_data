@@ -119,7 +119,7 @@ class Minimization(BaseModel, frozen = True):
     False: Use TensorFlow's gradient, faster
     '''
 #------------------------------
-class FitConf(BaseModel, frozen = True):
+class FitConf(BaseModel, frozen = True, strict = True, extra = 'forbid'):
     '''
     Class meant to define how a fit will be done
     '''
