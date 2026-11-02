@@ -424,25 +424,33 @@ def save_nll(
     Parameters
     -------------
     loss: NLL
-    path: Path to file where NLL is saved, by default None, it will be saved to /tmp/
+    path: Path to directory where NLL is saved, by default None, it will be saved to `/tmp/`
+          If `root_dir(ctx_path)` manager was used, `ctx_path` will take priority.
 
     Returns
     -------------
     Path where it was saved
     '''
-    loss_bytes = dill.dumps(loss)
-    if path:
-        path.parent.mkdir(parents = True, exist_ok = True)
-        path.write_bytes(data = loss_bytes)
-        return path
-
     rdir = _ROOT_DIR.get()
     if rdir is not None:
         rdir.mkdir(parents = True, exist_ok = True)
+        path = rdir
+    elif path:
+        path.parent.mkdir(parents = True, exist_ok = True)
+    else:
+        path = None # Use system temp directory
 
-    with tempfile.NamedTemporaryFile(mode='w+b', delete=False, dir = rdir) as temp:
+    with tempfile.NamedTemporaryFile(mode='w+b', delete=False, dir = path) as temp:
         path = Path(temp.name)
-        path.write_bytes(data = loss_bytes)
+
+    try:
+        loss_bytes = dill.dumps(loss)
+    except Exception as exc:
+        path.write_text(f'Could not save NLL, because: {exc}')
+        log.warning(f'Could not save NLL, check {path}')
+        return path
+
+    path.write_bytes(data = loss_bytes)
 
     return path
 #---------------------------------------------
