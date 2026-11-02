@@ -472,7 +472,7 @@ def load_nll(syst : Systematic, q2bin : Qsq) -> tuple[ExtendedUnbinnedNLL, Const
 # ----------------------
 @app.command()
 def run_toys(
-    q2bin: Qsq = typer.Option(..., '--q2bin', '-1', help='q2 bin'),
+    q2bin: Qsq = typer.Option(..., '--q2bin', '-q', help='q2 bin'),
     seed : int = typer.Option(..., '--seed' , '-s', help='Random seed'),
     ntoy : int = typer.Option(..., '--ntoy' , '-n', help='Number of toys')):
 
