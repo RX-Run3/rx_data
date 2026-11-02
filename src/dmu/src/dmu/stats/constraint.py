@@ -112,7 +112,7 @@ class Constraint(BaseModel):
         with open(path, 'w') as ofile:
             ofile.write(data)
     # ----------------------
-    def __str__(self):
+    def __str__(self) -> str:
         return 'Base class constraint'
     # ----------------------
     def __lt__(self, other : 'Constraint1D') -> bool:
@@ -121,7 +121,7 @@ class Constraint(BaseModel):
         '''
         return self.name < other.name
 # ----------------------------------------
-class Constraints[C : Constraint](RootModel[Mapping[str,C]], Serializable, frozen = True):
+class Constraints[C : 'Constraint1D | ConstraintND'](RootModel[Mapping[str,C]], Serializable, frozen = True):
     '''
     Class meant to be used as a container of constraint objects
 
@@ -170,6 +170,9 @@ class Constraints[C : Constraint](RootModel[Mapping[str,C]], Serializable, froze
         l_cons_nd = [ cons for cons in self.root.values() if isinstance(cons, ConstraintND) ]
 
         msg = ''
+        if not l_cons_1d and not l_cons_nd:
+            return 'Empty constraints'
+
         if l_cons_1d:
             msgs  = [ header_1d ] + [ str(cons) for cons in l_cons_1d ]
             msg  += '\n'.join(msgs) + '\n'
@@ -567,7 +570,7 @@ class Constraint1D(Constraint):
         '''
         new_value, _ = result[self.name] 
 
-        log.info(f'{self.name:<20}{self.mu:<20.3f}{"--->":<20}{new_value:<20.3f}')
+        log.debug(f'{self.name:<50}{self.mu:<20.3f}{"--->":<20}{new_value:<20.3f}')
 
         return Constraint1D(
             kind   = self.kind,
