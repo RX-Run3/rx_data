@@ -1,7 +1,7 @@
 [project]
 name        = 'rx_common'
 description = 'Project used to find and load libraries in cal-rx-run3 c++ code'
-version     = '0.0.6'
+version     = '0.0.7'
 readme      = 'README.md'
 
 [tools.setuptools.packages.find]

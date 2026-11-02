@@ -119,7 +119,7 @@ run_sync()
         echo "Running streaming transfer"
         local target_path="$TARGET_SERVER/$DPATH"
 
-        if ! get_source "$source_path" | extract_target "$target_path"; then
+        if ! get_source "$source_path" | pv | extract_target "$target_path"; then
             echo "Streaming transfer failed: $source_path -> $target_path"
             exit 1
         fi
