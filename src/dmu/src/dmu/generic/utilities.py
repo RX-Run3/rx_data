@@ -163,6 +163,20 @@ def load_data(package : str, fpath : str) -> Any:
 
     return data
 # --------------------------------
+def yaml_to_json(package : str, fpath : str) -> str:
+    '''
+    Parameters
+    ---------------------
+    package: Data package, e.g. `dmu_data`
+    path   : Path to YAML/JSON file, relative to the data package
+
+    Returns
+    ---------------------
+    JSON string
+    '''
+    data = load_data(package = package, fpath = fpath)
+    return json.dumps(data)
+# --------------------------------
 def load_from_wcard(
     package : str, 
     fwcard  : str) -> list[ListConfig]:
