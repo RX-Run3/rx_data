@@ -51,8 +51,18 @@ rx_setup -k sync -i 1 -d 1
 To transfer outputs from the `$ANADIR` at CERN or IHEP from to your local `$ANADIR` do:
 
 ```bash
-rx_sync -s IHEP -t LOCAL -p DB/fitter -d 0
+rx_sync -s IHEP -t LOCAL -p DB/fitter
 ```
 
 which will transfer the `fitter` directory from `IHEP` to this machine.
-`-d` allows this not to be a dry run, by default it is a dry run.
+When the directory transfered contains many small files use
+
+```bash
+rx_sync -s IHEP -t LOCAL -p DB/fitter -S
+```
+
+to run it in streaming mode, e.g.
+
+- Make a tarball from the directory
+- Put the tarball in stdout and pick it in stdin before untarring
+
