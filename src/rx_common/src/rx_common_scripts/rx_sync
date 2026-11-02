@@ -2,6 +2,8 @@
 
 IHEP_ANADIR="campoverde@lxlogin.ihep.ac.cn:/publicfs/ucas/user/campoverde/Data"
 CERN_ANADIR="acampove@lxplus.cern.ch:/eos/lhcb/wg/RD/RX_run3"
+
+SSH_OPTS="-o ForwardX11=no -o WarnWeakCrypto=no-pq-kex"
 # -----------------------------------------
 display_help()
 {
@@ -98,12 +100,13 @@ run_sync()
     echo "------------------"
     echo "Source: $SOURCE_PATH"
     echo "Target: $TARGET_SERVER"
+    echo ""
 
-    if [[ $DRY_RUN -eq 1 ]];then
+    if [[ $DRY_RUN -eq 1 ]]; then
         echo "Running dry run"
-        rsync -avz --dry-run        -R -e "ssh -o ForwardX11=no -o WarnWeakCrypto=no-pq-kex" $SOURCE_PATH $TARGET_SERVER
+        rsync -avz --dry-run -R -e "ssh $SSH_OPTS" "$SOURCE_PATH" "$TARGET_SERVER"
     else
-        rsync -a   --info=progress2 -R -e "ssh -o ForwardX11=no -o WarnWeakCrypto=no-pq-kex" $SOURCE_PATH $TARGET_SERVER
+        rsync -a --info=progress2 -R -e "ssh $SSH_OPTS" "$SOURCE_PATH" "$TARGET_SERVER"
     fi
 }
 # -----------------------------------------
