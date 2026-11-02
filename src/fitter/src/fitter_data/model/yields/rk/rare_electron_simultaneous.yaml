@@ -31,12 +31,13 @@ yld_bpkpee_rk_brem_xx2:
     - yld_bpkpee_brem_xx1
 # --------------------
 # Efficiency ratios between rkst and rk signal regions
+# for rkst signal
 # --------------------
-eff-rkst_ee_os-rk_ee_os-brem_xx1:
+eff-bdkstkpiee-rkst_ee_os-rk_ee_os-brem_xx1:
   <<      : *fractions
-eff-rkst_ee_os-rk_ee_os-brem_xx2:
+eff-bdkstkpiee-rkst_ee_os-rk_ee_os-brem_xx2:
   <<      : *fractions
-eff-rkst_ee_os-rk_ee_os-brem_x12:
+eff-bdkstkpiee-rkst_ee_os-rk_ee_os-brem_x12:
   <<      : *fractions
 # --------------------
 # Scales between signal and part-reco
@@ -65,7 +66,7 @@ s_bpkstkpiee_brem_xx2:
 yld_bdkstkpiee_rk_brem_x12:
   kind : mul
   pars :
-    - eff-rkst_ee_os-rk_ee_os-brem_x12
+    - eff-bdkstkpiee-rkst_ee_os-rk_ee_os-brem_x12
     - yld_bdkstkpiee_rkst_brem_x12
 yld_bpkstkpiee_rk_brem_x12:
   kind : mul
@@ -81,7 +82,7 @@ yld_bsphiee_rk_brem_x12:
 yld_bdkstkpiee_rk_brem_xx1:
   kind : mul
   pars :
-    - eff-rkst_ee_os-rk_ee_os-brem_xx1
+    - eff-bdkstkpiee-rkst_ee_os-rk_ee_os-brem_xx1
     - yld_bdkstkpiee_rkst_brem_xx1
 yld_bpkstkpiee_rk_brem_xx1:
   kind : mul
@@ -97,7 +98,7 @@ yld_bsphiee_rk_brem_xx1:
 yld_bdkstkpiee_rk_brem_xx2:
   kind : mul
   pars :
-    - eff-rkst_ee_os-rk_ee_os-brem_xx2
+    - eff-bdkstkpiee-rkst_ee_os-rk_ee_os-brem_xx2
     - yld_bdkstkpiee_rkst_brem_xx2
 yld_bpkstkpiee_rk_brem_xx2:
   kind : mul
