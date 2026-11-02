@@ -119,6 +119,7 @@ systematics      = { path = "./src/systematics",      editable = true }
 
 [feature.dev.dependencies]
 pip         = '*'
+pv          = ">=1.12.0,<2"
 podman      = ">=5.8.3,<6"
 pre-commit  = '>=4.7.0,<5'
 btop        = '*'

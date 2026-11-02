@@ -738,6 +738,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/portalocker-3.2.0-py313h78bf25f_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/psutil-7.2.2-py313hd42f317_3.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pthread-stubs-0.4-h7cc23a3_1004.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/pv-1.12.0-h1114479_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pythia8-8.312-py313h9906db9_107.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/python-3.13.0-h9ebbce0_101_cp313.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pyyaml-6.0.3-py313h3dea7bd_1.conda
@@ -1366,6 +1367,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/portalocker-3.2.0-py313h78bf25f_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/psutil-7.2.2-py313hd42f317_3.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pthread-stubs-0.4-h7cc23a3_1004.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/pv-1.12.0-h1114479_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pythia8-8.312-py313h9906db9_107.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/python-3.13.0-h9ebbce0_101_cp313.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pyyaml-6.0.3-py313h3dea7bd_1.conda
@@ -4768,6 +4770,18 @@ packages:
   run_exports: {}
   size: 9630
   timestamp: 1788381877753
+- conda: https://conda.anaconda.org/conda-forge/linux-64/pv-1.12.0-h1114479_0.conda
+  sha256: 7b50bc2fa3b5f5f0746a9a8d72172f48cbd2c5b786785b63c34419a775cbaca2
+  md5: 070ca10e2c5dceaaff15de764e2a7f8a
+  depends:
+  - __glibc >=2.17,<3.0.a0
+  - libgcc >=15
+  license: GPL-3.0-or-later
+  license_family: GPL
+  purls: []
+  run_exports: {}
+  size: 161645
+  timestamp: 1790009455460
 - conda: https://conda.anaconda.org/conda-forge/linux-64/pythia8-8.312-py313h9906db9_107.conda
   sha256: f6bdf3e690476144fd7e5bcdbda69c5fb6582125a68d9bd0ee7ac056911af6f0
   md5: 684e5574163e6c99903198b68d7a04fb
