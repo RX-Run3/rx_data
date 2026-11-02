@@ -476,7 +476,7 @@ def run_toys(
     seed : int = typer.Option(..., '--seed' , '-s', help='Random seed'),
     ntoy : int = typer.Option(..., '--ntoy' , '-n', help='Number of toys')):
 
-    syst = Systematic.nominal 
+    syst = Systematic.nominal
 
     nll, cns, res = load_nll(syst = syst, q2bin = q2bin)
 
