@@ -37,18 +37,15 @@ _COLUMNS : Final[list[str]] = ['Parameter', 'Value', 'Error', 'Gen', 'Toy', 'GOF
 class ToyConf(BaseModel, frozen = True, strict = True, extra = 'forbid'):
     '''
     Class meant to configure how toys are generated
-
-    Attributes
-    --------------------
-    fit_conf        : Configuration for fits to toy data
-    output_directory: Directory where files (e.g. parquet files) will be saved
-    rseed           : Random seed will be a Cantor mapping of rseed and index of toy
-    ntoys           : Number of toys
     '''
     fit_conf         : FitConf
+    '''Configuration for fits to toy data'''
     output_directory : Path
+    '''Directory where files (e.g. parquet files) will be saved, WRT ANADIR'''
     ntoys            : int
+    '''Number of toys'''
     rseed            : int
+    '''Random seed will be a Cantor mapping of rseed and index of toy'''
     # ----------------
     def __str__(self) -> str:
         data = self.model_dump(mode = 'json')
