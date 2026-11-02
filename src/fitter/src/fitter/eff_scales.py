@@ -84,8 +84,8 @@ class EffScales:
         eff_tgt = self._get_ef(project = self.__target)
         scale   = eff_tgt / eff_src
 
-        log.debug(f'Source efficiency: {eff_src}')
-        log.debug(f'Target efficiency: {eff_tgt}')
+        log.debug(f'Source efficiency ({self.__source}): {eff_src}')
+        log.debug(f'Target efficiency ({self.__target}): {eff_tgt}')
 
         return scale.mean, scale.sdev
 # -------------------------
