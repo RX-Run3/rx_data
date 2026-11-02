@@ -112,6 +112,9 @@ class Constraint(BaseModel):
         with open(path, 'w') as ofile:
             ofile.write(data)
     # ----------------------
+    def __str__(self):
+        return 'Base class constraint'
+    # ----------------------
     def __lt__(self, other : 'Constraint1D') -> bool:
         '''
         Sort constraints by name
@@ -335,7 +338,7 @@ class ConstraintND(Constraint):
             new_value, _ = result[name]
             new_values.append(new_value)
 
-            log.info(f'{name:<20}{old_value:<20.3f}{"--->":<20}{new_value:<20.3f}')
+            log.debug(f'{name:<50}{old_value:<20.3f}{"--->":<20}{new_value:<20.3f}')
 
         return ConstraintND(
             name       = self.name,
