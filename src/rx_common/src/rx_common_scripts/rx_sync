@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
 
+set -o pipefail
+
 IHEP_ANADIR="campoverde@lxlogin.ihep.ac.cn:/publicfs/ucas/user/campoverde/Data"
 CERN_ANADIR="acampove@lxplus.cern.ch:/eos/lhcb/wg/RD/RX_run3"
-
-SSH_OPTS="-o ForwardX11=no -o WarnWeakCrypto=no-pq-kex"
+SSH_OPTS=(
+    -o IgnoreUnknown=WarnWeakCrypto
+    -o ForwardX11=no
+    -o WarnWeakCrypto=no-pq-kex
+)
 # -----------------------------------------
 display_help()
 {
@@ -11,8 +16,9 @@ display_help()
     echo ""
     echo "-s: Server from which to transfer, e.g. IHEP, CERN, LOCAL"
     echo "-t: Server to which to upload, e.g. IHEP, CERN, LOCAL"
-    echo "-p: Path to directory to be transferred in $ANADIR"
-    echo "-d: If 1, dry run (default), 0 for real run"
+    echo "-p: Path to directory to be transferred in ANADIR"
+    echo "-d: Do dry run"
+    echo "-S: Enable streaming transfer, e.g. tarball data transfer and untar"
 }
 # -----------------------------------------
 get_opts()
@@ -22,8 +28,9 @@ get_opts()
         exit 1
     fi
 
-    DRY_RUN=1
-    while getopts :hf:s:t:p:d: option; do
+    DRY_RUN=0
+    STREAMING=0
+    while getopts :hs:t:p:dS option; do
         case "${option}" in
             h)
                 display_help
@@ -32,12 +39,13 @@ get_opts()
             s)  SOURCE=${OPTARG};;
             t)  TARGET=${OPTARG};;
             p)  DPATH=${OPTARG};;
-            d)  DRY_RUN=${OPTARG};;
+            d)  DRY_RUN=1;;
+            S)  STREAMING=1;;
            \?)  echo "Invalid option: -${OPTARG}"
                 display_help
                 exit 1
                 ;;
-            :)  echo "$0: Arguments needed"
+            :)  echo "Option -${OPTARG} requires an argument"
                 display_help
                 exit 1
                 ;;
@@ -75,12 +83,12 @@ set_target()
 # -----------------------------------------
 check_environment()
 {
-    if [[ -z $ANADIR ]];then
+    if [[ -z "$ANADIR" ]];then
         echo "ANADIR variable not set"
         exit 1
     fi
 
-    if [[ ! -d $ANADIR ]];then
+    if [[ ! -d "$ANADIR" ]];then
         echo "$ANADIR path not found"
         exit 1
     fi
@@ -88,30 +96,101 @@ check_environment()
 # -----------------------------------------
 run_sync()
 {
-    local SOURCE_PATH="$SOURCE_SERVER"/./"$DPATH"
+    local source_path="$SOURCE_SERVER"/./"$DPATH"
 
-    if [[ "$SOURCE" == "LOCAL" ]] && [[ ! -e $SOURCE_PATH ]];then
-        echo "Cannot find: $SOURCE_PATH"
+    if [[ "$SOURCE" == "LOCAL" && ! -d "$source_path" ]];then
+        echo "Cannot find: $source_path"
         exit 1
     fi
 
     echo "------------------"
     echo "Transferring"
     echo "------------------"
-    echo "Source: $SOURCE_PATH"
+    echo "Source: $source_path"
     echo "Target: $TARGET_SERVER"
     echo ""
 
     if [[ $DRY_RUN -eq 1 ]]; then
         echo "Running dry run"
-        rsync -avz --dry-run -R -e "ssh $SSH_OPTS" "$SOURCE_PATH" "$TARGET_SERVER"
+        return
+    fi
+
+    if [[ $STREAMING -eq 1 ]]; then
+        echo "Running streaming transfer"
+        local target_path="$TARGET_SERVER/$DPATH"
+
+        if ! get_source "$source_path" | extract_target "$target_path"; then
+            echo "Streaming transfer failed: $source_path -> $target_path"
+            exit 1
+        fi
     else
-        rsync -a --info=progress2 -R -e "ssh $SSH_OPTS" "$SOURCE_PATH" "$TARGET_SERVER"
+        if ! rsync -a --info=progress2 -R -e "ssh ${SSH_OPTS[*]}" "$source_path" "$TARGET_SERVER"; then
+            echo "Rsync transfer failed: $source_path -> $TARGET_SERVER"
+            exit 1
+        fi
     fi
 }
 # -----------------------------------------
-check_environment
+get_source() {
+    local source_path="$1"
+    # Source is remote -> TARGET is LOCAL (enforced in check_opts)
+    if [[ "$TARGET" == "LOCAL" ]]; then
+        local host="${source_path%%:*}"
+        local path="${source_path#*:}"
+        ssh "${SSH_OPTS[@]}" "$host" "tar -cf - -C '$path' ."
+    else
+        tar -cf - -C "$source_path" .
+    fi
+}
+# -----------------------------------------
+extract_target() {
+    local target_path="$1"
+    # TARGET is remote -> SOURCE is LOCAL (enforced in check_opts)
+    if [[ "$SOURCE" == "LOCAL" ]]; then
+        local host="${target_path%%:*}"
+        local path="${target_path#*:}"
+        ssh "${SSH_OPTS[@]}" "$host" "mkdir -p '$path' && tar -xf - -C '$path'"
+    else
+        mkdir -p "$target_path"
+        tar -xf - -C "$target_path"
+    fi
+}
+# -----------------------------------------
+check_opts() {
+    for var in SOURCE TARGET DPATH; do
+        if [[ ! -z ${!var} ]]; then
+            continue
+        fi
+
+        echo "Missing required option for $var"
+        display_help
+        exit 1
+    done
+
+    if [[ "$SOURCE" != "LOCAL" && "$TARGET" != "LOCAL" ]]; then
+        echo "Either source or target must be LOCAL"
+        exit 1
+    fi
+
+    if [[ "$SOURCE" == "LOCAL" && "$TARGET" == "LOCAL" ]]; then
+        echo "Both source and target cannot be LOCAL"
+        exit 1
+    fi
+
+    if [[ "$SOURCE" == "$TARGET" ]]; then
+        echo "Source and target must be different"
+        exit 1
+    fi
+
+    if [[ "$DPATH" == *\'* ]]; then
+        echo "Invalid name for DPATH: $DPATH"
+        exit 1
+    fi
+}
+# -----------------------------------------
 get_opts "$@"
+check_opts
+check_environment
 set_source
 set_target
 run_sync
