@@ -153,7 +153,16 @@ class AnealingMinimizer:
 
         return lower, upper
     # ------------------------
-    def _pick_best_fit(self, d_chi2_res : dict) -> zres | None:
+    def _pick_best_fit(self, d_chi2_res : dict[float,zres]) -> zres | None:
+        '''
+        Parameters
+        ---------------
+        d_chi2_res: Dictionary mapping Chi2 to fit result
+
+        Returns
+        ---------------
+        Fit result with lowest chi2, None if no fits were found
+        '''
         nres = len(d_chi2_res)
         if nres == 0:
             log.error('No fits found')
