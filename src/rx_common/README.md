@@ -66,3 +66,6 @@ to run it in streaming mode, e.g.
 - Make a tarball from the directory
 - Put the tarball in stdout and pick it in stdin before untarring
 
+[Note]: To allow local machine to authenticate to SSH server use control master sockets
+
+
