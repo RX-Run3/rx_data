@@ -107,6 +107,8 @@ class ZfitLimit(abc.ABC, metaclass=ABCMeta):
     @abstractmethod
     def __hash__(self): ...
 
+LowerTypeReturn = np.ndarray | tf.Tensor | None | bool  #:
+UpperTypeReturn = LowerTypeReturn  #:
 class ZfitSpace(ZfitLimit, ZfitOrderableDimensional, ZfitObject, metaclass=ABCMeta):
     V1: ZfitSpace
     V0: ZfitSpace
@@ -119,7 +121,7 @@ class ZfitSpace(ZfitLimit, ZfitOrderableDimensional, ZfitObject, metaclass=ABCMe
     def n_limits(self) -> int: ...
     @property
     @abstractmethod
-    def limits(self) -> tuple[ztyping.LowerTypeReturn, ztyping.UpperTypeReturn]: ...
+    def limits(self) -> tuple[LowerTypeReturn, UpperTypeReturn]: ...
     @property
     @abstractmethod
     def lower(self) -> ztyping.LowerTypeReturn: ...
