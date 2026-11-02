@@ -8,7 +8,11 @@ from typing      import Final
 from functools   import cache
 from rx_common   import Project
 from pathlib     import Path
+from dmu         import LogStore
+from dmu.stats   import utilities as sut
 from dmu.stats   import ZFitPlotterConf
+from dmu.stats   import zfit
+from dmu.stats   import Constraint1D, ConstraintType
 from rx_common   import Channel
 from rx_common   import Component
 from rx_common   import Trigger
@@ -24,13 +28,16 @@ from fitter      import NLLConf
 from fitter      import DataFitterSim
 from fitter      import PlotConf
 from dmu.testing import get_nll 
-from dmu.stats   import zfit
 from dmu.generic import rxran
 
 zpar = zfit.Parameter | zfit.ComposedParameter
+Loss = zfit.loss.ExtendedUnbinnedNLL
 
 _NEE : Final[int] = 10_000
 _NMM : Final[int] = 30_000
+
+
+log=LogStore.add_logger('fitter:test_data_fitter_sim')
 # -------------------------------
 @pytest.fixture(autouse = True)
 def random_seed():
@@ -56,6 +63,34 @@ def _get_pars() -> dict[str, zpar]:
 
     return {par.name : par for par in pars} 
 # -------------------------------
+def _add_constraints(nll : Loss) -> tuple[Loss, list[Constraint1D]]:
+    pars  = nll.get_params(floating = True)
+    zcons = []
+    dcons = []
+    for par in pars:
+        if par.name.startswith(('nbkg', 'nsig')):
+            continue
+
+        lower, upper = sut.get_par_lims(par = par)
+
+        mu  = float(par.value().numpy()) 
+        sg  = 0.1 * (upper - lower) 
+
+        dcns     = Constraint1D(
+            name = par.name,
+            kind = ConstraintType.gauss,
+            mu   = mu,
+            sg   = sg)
+
+        zcns = dcns.zfit_cons(nll)
+
+        zcons.append(zcns)
+        dcons.append(dcns)
+
+    nll = nll.create_new(constraints = zcons)
+
+    return nll, dcons
+# -------------------------------
 def _get_nll(region : Region) -> NLLConf:
     if region.trigger.is_electron:
         nentries = 2 * _NEE 
@@ -68,10 +103,12 @@ def _get_nll(region : Region) -> NLLConf:
         pars    = _get_pars(),
         suffix  = region.name)
 
+    nll, cns = _add_constraints(nll = nll)
+
     return NLLConf(
         nll         = nll,
         selection   = {},
-        constraints = [])
+        constraints = cns)
 # -------------------------------
 def _get_cfg(region : Region) -> RXFitConfig:
     q2bin      = Qsq.central
@@ -135,9 +172,8 @@ def test_single_ratio(
     else:
         val, _ = res.get('rkst', fall_back=None)
 
-    assert numpy.isclose(val, 3.041844)
-
     print(res)
+    assert numpy.isclose(val, 3.039155349225672)
 # -------------------------------
 def test_double_ratio(monkeypatch, tmp_path : Path):
     '''
@@ -170,8 +206,8 @@ def test_double_ratio(monkeypatch, tmp_path : Path):
     rk  , _ = res.get('rk'  , fall_back=None)
     rkst, _ = res.get('rkst', fall_back=None)
 
-    assert numpy.isclose(rk  , 3.04176)
-    assert numpy.isclose(rkst, 2.99603)
+    assert numpy.isclose(rk  , 3.039096932443193)
+    assert numpy.isclose(rkst, 3.012329706404988)
 
     print(res)
 # -------------------------------
