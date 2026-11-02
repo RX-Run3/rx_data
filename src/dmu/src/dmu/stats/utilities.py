@@ -42,11 +42,16 @@ SingleLiteral = Literal['signal', 'signal_alt', 'bkg']
 SumLiteral    = Literal['s+b', 's_alt+b']
 AllLiteral    = Literal['signal', 'signal_alt', 'bkg', 's+b', 's_alt+b']
 
-_PARS_LINE        : Final[int]            = 9    # Line in postfit.txt where parameters start
-_MIN_MERGE_MODELS : Final[int]            = 2    # Cannot merge fewer than 2 models
-_MIN_LIMITS       : Final[int]            = 2    # Need at least upper and lower limit in observable
-_MIN_INT_PRINT    : Final[int]            = 1000 # Minimum value of a float that would be printed without decimals
-_ROOT_DIR         : ContextVar[Path|None] = ContextVar('ROOT_DIR', default = None) # When saving an NLL can override /tmp/ with this directory 
+_PARS_LINE        : Final[int]            = 9
+'''Line in postfit.txt where parameters start'''
+_MIN_MERGE_MODELS : Final[int]            = 2
+'''Cannot merge fewer than 2 models'''
+_MIN_LIMITS       : Final[int]            = 2
+'''Need at least upper and lower limit in observable'''
+_MIN_INT_PRINT    : Final[int]            = 1000
+'''Minimum value of a float that would be printed without decimals'''
+_ROOT_DIR         : ContextVar[Path|None] = ContextVar('ROOT_DIR', default = None)
+'''When saving an NLL can override /tmp/ with this directory '''
 #-------------------------------------------------------
 class Data:
     '''
@@ -629,7 +634,7 @@ def _format_float_str(val : str) -> str:
 
     return val
 #-------------------------------------------------------
-def _info_from_line(line : str) -> tuple|None:
+def _info_from_line(line : str) -> tuple[str,...]|None:
     regex = r'(^\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)'
     mtch  = re.match(regex, line)
     if not mtch:
