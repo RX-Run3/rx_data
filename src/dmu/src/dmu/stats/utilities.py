@@ -424,7 +424,7 @@ def save_nll(
     Parameters
     -------------
     loss: NLL
-    path: Path to directory where NLL is saved, by default None, it will be saved to `/tmp/`
+    path: Path to file where NLL is saved, by default None, it will be saved to `/tmp/`
           If `root_dir(ctx_path)` manager was used, `ctx_path` will take priority.
 
     Returns
@@ -434,14 +434,13 @@ def save_nll(
     rdir = _ROOT_DIR.get()
     if rdir is not None:
         rdir.mkdir(parents = True, exist_ok = True)
-        path = rdir
+        with tempfile.NamedTemporaryFile(mode='w+b', delete=False, dir = rdir) as temp:
+            path = Path(temp.name)
     elif path:
         path.parent.mkdir(parents = True, exist_ok = True)
     else:
-        path = None # Use system temp directory
-
-    with tempfile.NamedTemporaryFile(mode='w+b', delete=False, dir = path) as temp:
-        path = Path(temp.name)
+        with tempfile.NamedTemporaryFile(mode='w+b', delete=False) as temp:
+            path = Path(temp.name)
 
     try:
         loss_bytes = dill.dumps(loss)
@@ -968,6 +967,30 @@ def replace_model(
         return models
 
     raise ValueError(f'PDF {name} not found')
+# ----------------------
+def get_par_lims(par : zpar) -> tuple[float,float]:
+    '''
+    Parameters
+    --------------
+    par: zfit parameter
+
+    Returns
+    --------------
+    Tuple with lower and upper limits, will raise if either is None
+    '''
+    upper = par.upper
+    lower = par.lower
+
+    if upper is None:
+        raise ValueError(f'No upper bound for: {par.name}')
+
+    if lower is None:
+        raise ValueError(f'No lower bound for: {par.name}')
+
+    fupper = float(upper.numpy())
+    flower = float(lower.numpy())
+
+    return flower, fupper
 #---------------------------------------------
 # Mergers
 #---------------------------------------------
