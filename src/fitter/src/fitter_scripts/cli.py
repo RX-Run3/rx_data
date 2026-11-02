@@ -8,13 +8,20 @@ import os
 import typer
 import pandas as pnd
 
+from zfit.loss  import ExtendedUnbinnedNLL
 from contextlib import ExitStack
 from enum       import StrEnum, auto
 from typing     import Final
+from pathlib    import Path
 from rx_common  import Trigger, Qsq
 from dmu        import LogLevels, LogStore
 from dmu.stats  import zfit
-from pathlib    import Path
+from dmu.stats  import FitResult
+from dmu.stats  import Constraints
+from dmu.stats  import FitConf
+from dmu.stats  import utilities as sut
+from fitter     import ToyMaker, ToyConf
+from fitter     import Systematic
 from fitter     import YieldGrid
 from fitter     import FitSummary
 
@@ -439,6 +446,52 @@ def expected_background(
         grid = grid_bkg, 
         kind = 'expected_background',
         name = f'{trigger}_{q2bin}_bkg')
+# ----------------------
+def load_nll(syst : Systematic, q2bin : Qsq) -> tuple[ExtendedUnbinnedNLL, Constraints, FitResult]:
+    '''
+    Parameters
+    ----------------
+    syst : Systematic variation
+    q2bin: q2 bin for which fit is needed
+
+    Returns
+    ----------------
+    Tuple holding likelihood, constraints and fit result for given q2 bin and systematic
+    '''
+    ana_dir = Path(os.environ['ANADIR'])
+    out_dir = ana_dir / f'fits/data/nll/{syst}/default_default_all/rare/{q2bin}'
+
+    nll = sut.load_nll(out_dir / 'nll.bytes')
+    res = FitResult.from_json(path = out_dir / 'result.json')
+    cns = Constraints.from_json(path = out_dir / 'constraints.json')
+
+    if not isinstance(nll, ExtendedUnbinnedNLL):
+        raise ValueError('Likelihood is not extended')
+
+    return nll, cns, res
+# ----------------------
+@app.command()
+def run_toys(
+    q2bin: Qsq = typer.Option(..., '--q2bin', '-1', help='q2 bin'),
+    seed : int = typer.Option(..., '--seed' , '-s', help='Random seed'),
+    ntoy : int = typer.Option(..., '--ntoy' , '-n', help='Number of toys')):
+
+    syst = Systematic.nominal 
+
+    nll, cns, res = load_nll(syst = syst, q2bin = q2bin)
+
+    cfg  = ToyConf(
+        ntoys            = ntoy,
+        rseed            = seed,
+        output_directory = Path(f'systematics/{syst}'),
+        fit_conf         = FitConf())
+
+    mkr     = ToyMaker(
+        cfg = cfg,
+        nll = nll,
+        res = res,
+        cns = cns)
+    mkr.get_parameter_information(name = f'{seed:03d}')
 # ----------------------
 if __name__ == '__main__':
     app()
