@@ -202,8 +202,8 @@ def _colorize(row : pnd.Series) -> pnd.Series:
     '''
     try:
         expected = row['main']
-    except KeyError:
-        raise KeyError(f'Cannot get main from: {row}')
+    except KeyError as exc:
+        raise KeyError(f'Cannot get main from: {row}') from exc
 
     excluded = {'Size [Mb]', 'main'}
     colored  = row.copy()
