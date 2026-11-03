@@ -99,7 +99,7 @@ def _cuts_from_binning(l_name : list[str], l_setting : list, index : int) -> lis
     l_min    = l_bound[:-1]
     l_max    = l_bound[+1:]
 
-    l_cut = [ f'({var_name} > {minv:>3.0f}) && ({var_name} <={maxv:>3.0f})' for minv, maxv in zip(l_min, l_max, strict=False)]
+    l_cut = [ f'({var_name} > {minv:>3.0f}) && ({var_name} <={maxv:>3.0f})' for minv, maxv in zip(l_min, l_max, strict=True)]
 
     return l_cut
 # -----------------------------

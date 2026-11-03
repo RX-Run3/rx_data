@@ -313,7 +313,7 @@ class CVPredict:
 
         l_prob = model.predict_proba(df_ft_group)
         l_hash = list(df_ft_group.index)
-        d_prob = dict(zip(l_hash, l_prob, strict=False))
+        d_prob = dict(zip(l_hash, l_prob, strict=True))
         nfeat  = len(df_ft_group)
         nprob  = len(l_prob)
 
