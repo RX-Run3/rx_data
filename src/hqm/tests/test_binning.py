@@ -25,16 +25,16 @@ def test_from_str(binning : str):
     '''
     Load binning
     '''
-    obj = BinningConf.load()
-    bin = obj.from_str(binning = binning)
-    sel = bin.selection
+    obj     = BinningConf.load()
+    bin_cfg = obj.from_str(binning = binning)
+    sel     = bin_cfg.selection
 
-    assert isinstance(bin, BinConf)
+    assert isinstance(bin_cfg, BinConf)
 
     if binning == '':
         assert len(sel) == 0
 
-    print(bin)
+    print(bin_cfg)
     for key, val in sel.items():
         log.info(f'{key:<20}{val}')
 # ------------------------------------
@@ -45,10 +45,10 @@ def test_block_found():
     iblock  = 3
     binning = f'block-{iblock}'
 
-    obj = BinningConf.load()
-    bin = obj.from_str(binning = binning)
+    obj     = BinningConf.load()
+    bin_cfg = obj.from_str(binning = binning)
 
-    assert bin.block == Block(value = iblock)
+    assert bin_cfg.block == Block(value = iblock)
 # ------------------------------------
 def test_block_missing():
     '''
@@ -58,11 +58,11 @@ def test_block_missing():
     iblock  = 3
     binning = 'mva_cmb-3 mva_prc-2'
 
-    obj = BinningConf.load()
-    bin = obj.from_str(binning = binning)
+    obj     = BinningConf.load()
+    bin_cfg = obj.from_str(binning = binning)
 
     with pytest.raises(ValueError):
-        assert bin.block == Block(value = iblock)
+        assert bin_cfg.block == Block(value = iblock)
 # ------------------------------------
 def test_from_sel():
     '''

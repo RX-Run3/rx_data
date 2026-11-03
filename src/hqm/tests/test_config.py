@@ -93,9 +93,9 @@ def test_serialization_conf(tmp_path : Path, monkeypatch):
     monkeypatch.setenv('ANADIR', str(tmp_path))
 
     bins_conf = BinningConf.load()
-    bin       = bins_conf.from_str(binning = 'block-3 mva_cmb-3')
+    binning   = bins_conf.from_str(binning = 'block-3 mva_cmb-3')
 
-    cfg  = SerializationConf(binning = bin)
+    cfg  = SerializationConf(binning = binning)
     path = cfg.make_path(kind = 'test', project = Project.rk)
 
     assert path.exists()
