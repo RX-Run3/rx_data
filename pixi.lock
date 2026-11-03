@@ -942,7 +942,6 @@ environments:
       - pypi: ./src/rx_plots
       - pypi: ./src/rx_q2
       - pypi: ./src/rx_selection
-      - pypi: ./src/rx_tests
       - pypi: ./src/rx_web
       - pypi: ./src/systematics
       - pypi: ./src/vector_stubs
@@ -1571,7 +1570,6 @@ environments:
       - pypi: ./src/rx_plots
       - pypi: ./src/rx_q2
       - pypi: ./src/rx_selection
-      - pypi: ./src/rx_tests
       - pypi: ./src/rx_web
       - pypi: ./src/systematics
       - pypi: ./src/vector_stubs
@@ -7657,8 +7655,6 @@ packages:
   name: rx-q2
 - pypi: ./src/rx_selection
   name: rx-selection
-- pypi: ./src/rx_tests
-  name: rx-tests
 - pypi: ./src/rx_web
   name: rx-web
 - pypi: ./src/systematics
