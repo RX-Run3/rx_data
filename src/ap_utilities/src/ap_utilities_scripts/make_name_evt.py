@@ -3,11 +3,10 @@ Script meant to invert the evt_name.yaml file
 such that the keys are the nicknames and the values are the event types
 '''
 import argparse
-from importlib.resources import files
 import yaml
-
 import ap_utilities.decays.utilities as aput
 
+from importlib.resources            import files
 from ap_utilities.logging.log_store import LogStore
 
 log = LogStore.add_logger('ap_utilities:make_name_evt')
@@ -23,8 +22,8 @@ def _get_data() -> dict[str,str]:
 def _invert_dict(d_evt_name : dict[str,str]) -> dict[str,str]:
     d_name_evt = {}
     for evt, name in d_evt_name.items():
-        name             = aput.format_nickname(nickname=name, style= 'safe_1')
-        d_name_evt[name] = evt
+        formatted_name             = aput.format_nickname(nickname=name)
+        d_name_evt[formatted_name] = evt
 
     return d_name_evt
 # ------------------------------
