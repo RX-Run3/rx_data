@@ -3,6 +3,7 @@ Script with functions needed to test functions in selection.py
 '''
 import pytest
 
+from rx_common    import QsqDef
 from pathlib      import Path
 from dmu          import LogStore
 from rx_common    import Component, Cuts, Qsq, Trigger
@@ -18,6 +19,28 @@ def initialize():
     '''
     LogStore.set_level('rx_selection:selection'     , 10)
     LogStore.set_level('rx_selection:test_selection', 10)
+# --------------------------
+@pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rk_mm_os, Trigger.rkst_ee_os, Trigger.rkst_mm_os])
+@pytest.mark.parametrize('q2bin'  , Qsq.for_physics())
+@pytest.mark.parametrize('kind'   , QsqDef)
+def test_override_qsq(
+    trigger : Trigger,
+    q2bin   : Qsq,
+    kind    : QsqDef):
+    '''
+    Test update q2 cut
+    '''
+    q2bin     = Qsq(q2bin)
+    component = Component.data_24
+
+    with sel.override_qsq(kind = kind):
+        d_sel = sel.selection(
+            trigger=trigger,
+            q2bin  =q2bin,
+            process=component)
+
+    expr = d_sel[Cuts.q2]
+    print(expr)
 # --------------------------
 @pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rk_mm_os, Trigger.rkst_ee_os, Trigger.rkst_mm_os])
 @pytest.mark.parametrize('q2bin'  , Qsq.for_physics())
@@ -220,3 +243,4 @@ def test_apply_selection(tmp_path : Path):
         cuts    =cuts,
         uid     =gtr.get_uid(),
         out_path=out_path)
+# --------------------------

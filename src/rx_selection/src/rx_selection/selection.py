@@ -8,6 +8,7 @@ import yaml
 from functools              import cache
 from pathlib                import Path
 from contextlib             import contextmanager
+from contextvars            import ContextVar
 from importlib.resources    import files
 from ROOT                   import RDF
 from dmu                    import LogStore
@@ -15,9 +16,12 @@ from dmu.generic            import hashing
 from dmu.rdataframe         import utilities          as rut
 from dmu.generic            import utilities          as gut
 from rx_selection           import truth_matching     as tm
-from rx_common              import Channel, Component, Project, Qsq, Trigger, Cuts
+from rx_common              import Channel, Component, Project
+from rx_common              import Qsq, QsqDef, Trigger, Cuts
 
 log=LogStore.add_logger('rx_selection:selection')
+
+_OVERRIDING_QSQ : ContextVar[None|QsqDef] = ContextVar('_OVERRIDING_QSQ', default = None)
 #-----------------------
 class Data:
     '''
@@ -35,6 +39,21 @@ class MultipleSelectionOverriding(Exception):
     '''
     def __init__(self, message : str):
         super().__init__(message)
+#-----------------------
+@contextmanager
+def override_qsq(kind : QsqDef):
+    '''
+    Parameters
+    ---------------
+    Kind: q2 type that should be used inside this context
+    for selection
+    '''
+    old_value = _OVERRIDING_QSQ.get()
+    _OVERRIDING_QSQ.set(kind)
+    try:
+        yield
+    finally:
+        _OVERRIDING_QSQ.set(old_value)
 #-----------------------
 @contextmanager
 def custom_selection(
@@ -265,6 +284,32 @@ def _load_selection_config() -> dict[str,dict[str,str | dict[str,str]]]:
 
     return d_sel
 #-----------------------
+def _preprocess_cut(cut : Cuts, expr : str) -> str:
+    '''
+    Parameters
+    --------------
+    cut: Type of cut to preprocess, e.g. q2
+    expr: String with the cut expression, e.g. q2 > 100000
+
+    Returns
+    --------------
+    Updated cut expression
+    '''
+    if cut != Cuts.q2:
+        return expr
+
+    qsq_kind = _OVERRIDING_QSQ.get()
+    if qsq_kind is None:
+        return expr
+
+    log.info(f'Updating {cut}')
+
+    log.info(f'Default: {expr}')
+    expr = qsq_kind.update_expression(expr = expr)
+    log.info(f'New    : {expr}')
+
+    return expr
+#-----------------------
 # TODO: Add types
 def _get_selection(
     chan   : Channel,
@@ -315,6 +360,7 @@ def _get_selection(
         cut_val = d_q2bin[q2_bin]
         log.debug(f'Overriding {cut_name} for {q2_bin}')
 
+        cut_val    = _preprocess_cut(cut, cut_val)
         d_new[cut] = cut_val
 
     return d_new
