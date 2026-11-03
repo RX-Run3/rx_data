@@ -136,7 +136,7 @@ class CandidateRebuild:
                 progress_bar = True,
                 only_new     = False,
                 prefix       = 'plots',
-                format       = 'root')
+                kind         = 'root')
 
             d_rdf : dict[str,RDF.RNode] = {}
 

@@ -40,7 +40,7 @@ def test_dzero_misid():
         tracks       = {'H1', 'H2', 'L1', 'L2'},
         replacements = {'H2' : 2212})
     df  = obj.get_df(
-        format      = 'pandas',
+        kind        = 'pandas',
         prefix      = 'kkll',
         progress_bar= True)
 

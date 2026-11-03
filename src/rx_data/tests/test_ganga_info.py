@@ -23,7 +23,7 @@ def test_small(tmp_path : Path):
     block = 'w40_42'
     fname = 'mc_magup_11264001_bd_dmnpipl_eq_dpc_Hlt2RD_BuToKpEE_MVA_bd46a6ff81.root'
 
-    with GangaInfo.set_ganga_dir(dir=tmp_path):
+    with GangaInfo.set_ganga_dir(directory=tmp_path):
         inf = GangaInfo(job_ids=[257])
         assert block == inf.block_from_fname(fname=fname)
 # ----------------------
