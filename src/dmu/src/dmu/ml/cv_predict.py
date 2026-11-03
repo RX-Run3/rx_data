@@ -313,12 +313,13 @@ class CVPredict:
 
         l_prob = model.predict_proba(df_ft_group)
         l_hash = list(df_ft_group.index)
-        d_prob = dict(zip(l_hash, l_prob, strict=True))
         nfeat  = len(df_ft_group)
         nprob  = len(l_prob)
 
         if nfeat != nprob:
             raise ValueError(f'Number of features and probabilities do not agree: {nfeat} != {nprob}')
+
+        d_prob = dict(zip(l_hash, l_prob, strict=True))
 
         return d_prob
     # --------------------------------------------
