@@ -241,21 +241,6 @@ class GangaInfo:
 
         return self._ganga_dir
     # ----------------------
-    @ganga_dir.setter
-    def ganga_dir(self, value : Path) -> None:
-        '''
-        Parameters
-        --------------
-        value: Path to Ganga sandbox, containing numbered directories
-        '''
-        if self._ganga_dir is not None:
-            raise ValueError(f'Ganga directory already set to: {self._ganga_dir}')
-
-        if not value.is_dir():
-            raise FileNotFoundError(f'Directory not found: {value}')
-
-        self._ganga_dir = value
-    # ----------------------
     def block_from_fname(self, fname : str, fallback : str|None = None) -> str:
         '''
         Parameters
@@ -279,7 +264,7 @@ class GangaInfo:
         return self._data[fname]
     # ----------------------
     @classmethod
-    def set_ganga_dir(cls, dir : Path|str):
+    def set_ganga_dir(cls, directory : Path|str):
         '''
         This is a context manager meant to override the value of
         GANGADIR, which is the location of the sandbox, i.e. the
@@ -289,18 +274,18 @@ class GangaInfo:
         -------------
         dir: Directory path for Ganga sandbox
         '''
-        if isinstance(dir, str):
-            dir = Path(dir)
+        if isinstance(directory, str):
+            directory = Path(directory)
 
-        if not dir.is_dir():
-            raise FileNotFoundError(f'Non-existent path: {dir}')
+        if not directory.is_dir():
+            raise FileNotFoundError(f'Non-existent path: {directory}')
 
         old_dir = os.environ.get('GANGADIR')
 
         @contextmanager
         def _context():
             try:
-                os.environ['GANGADIR'] = str(dir)
+                os.environ['GANGADIR'] = str(directory)
                 yield
             finally:
                 if old_dir is None:
