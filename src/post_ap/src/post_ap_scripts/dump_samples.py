@@ -2,8 +2,6 @@
 Script used to provide blocks of MC samples in a YAML file
 Needed to write YAML config for post_ap
 '''
-# pylint: disable = too-many-ancestors
-
 import re
 import argparse
 from functools           import cache
@@ -13,7 +11,7 @@ from importlib.resources import files
 import yaml
 import ap_utilities.decays.utilities as aput
 
-from apd                    import AnalysisData
+from apd                    import AnalysisData, SampleCollection
 from dmu.logging.log_store  import LogStore
 
 log=LogStore.add_logger('dmu:post_ap_scripts:dump_samples')
@@ -23,6 +21,7 @@ class IndentedDumper(yaml.Dumper):
     Class needed to create indentation when saving lists as values of dictionaries in YAML files
     '''
     def increase_indent(self, flow=False, indentless=False):
+        _ = indentless
         return super().increase_indent(flow, False)
 # ----------------------------------------------
 class Data:
@@ -43,8 +42,9 @@ def _block_from_name(name : str) -> str:
 
     return mtch.group(1)
 # ----------------------------------------------
-def _get_samples(samples) -> dict[str,list[str]]:
+def _get_samples(samples : SampleCollection) -> dict[str,list[str]]:
     d_data   = {}
+    sample : dict[str,str]
     for sample in samples:
         vers = sample['version']
         if vers not in Data.l_vers:
@@ -111,7 +111,7 @@ def _is_sample_found(sample_needed :  str, l_sample_found : list[str]) -> bool:
 # ----------------------------------------------
 def _get_missing_samples(l_samples_found : list[str], block_period : str) -> dict[str,str]:
     d_sam            = _load_samples()
-    l_samples_needed = []
+    l_samples_needed : list[str] = []
     for analysis in Data.l_analysis:
         if analysis not in d_sam:
             log.warning(f'Analysis {analysis} not found, skipping')
@@ -119,7 +119,10 @@ def _get_missing_samples(l_samples_found : list[str], block_period : str) -> dic
 
         l_samples_needed += d_sam[analysis]
 
-    d_missing = { aput.read_event_type(sample_needed) : sample_needed for sample_needed in l_samples_needed if not _is_sample_found(sample_needed, l_samples_found) }
+    d_missing = {
+        aput.read_event_type(sample_needed) : sample_needed
+        for sample_needed in l_samples_needed
+        if not _is_sample_found(sample_needed, l_samples_found) }
 
     nmiss = len(d_missing)
     if nmiss > 0:
@@ -142,7 +145,7 @@ def _save_missing(d_sam : dict[str,list[str]]) -> None:
     with open(f'{Data.group}_{Data.prod}_miss.yaml', 'w', encoding='utf-8') as ofile:
         yaml.dump(d_miss, ofile, Dumper=IndentedDumper)
 
-    l_miss = []
+    l_miss : list[str] = []
     for l_evtid in d_miss.values():
         l_miss += l_evtid
 
@@ -173,6 +176,9 @@ def main():
 
     datasets = AnalysisData(Data.group, Data.prod)
     samples  = datasets.all_samples()
+
+    if not isinstance(samples, SampleCollection):
+        raise ValueError('Samples object is not a samples collection')
 
     d_data = _get_samples(samples)
     with open(f'{Data.group}_{Data.prod}.yaml', 'w', encoding='utf-8') as ofile:
