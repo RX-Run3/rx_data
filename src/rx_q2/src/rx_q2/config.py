@@ -4,19 +4,12 @@ Module containing Conf class
 import os
 from typing         import Self
 from pathlib        import Path
-from typing         import Any
 from pydantic       import BaseModel, computed_field, model_validator, ConfigDict
 from dmu            import LogStore
-from dmu.stats      import zfit
+from dmu.stats      import zfit, Model, FitConf
 from zfit           import Space    as zobs
 
 log=LogStore.add_logger('rx_q2:config')
-#-------------------
-class FitConfig(BaseModel):
-    '''
-    Class holding configuration needed for MC fits
-    '''
-    strategy : dict[str,dict[str,Any]]
 #-------------------
 class Samples(BaseModel):
     '''
@@ -52,12 +45,6 @@ class Plots(BaseModel):
     stacked: bool
     d_leg  : dict[str,str]
 #-------------------
-class FitModel(BaseModel):
-    '''
-    Class meant to represent a fitting model
-    '''
-    pdfs : list[str]
-#-------------------
 class Fitting(BaseModel):
     '''
     Class used to store fitting configuration
@@ -65,12 +52,12 @@ class Fitting(BaseModel):
     ranges    : dict[str,dict[int,list[float]]]
     mass      : str
     weights   : str
-    model     : FitModel
-    sim       : FitConfig
-    dat       : FitConfig
+    model     : list[Model]
+    sim       : FitConf
+    dat       : FitConf
     skip      : bool
     # ----------------------
-    def __getitem__(self, kind : str) -> FitConfig:
+    def __getitem__(self, kind : str) -> FitConf:
         '''
         Parameters
         -------------
@@ -83,7 +70,11 @@ class Fitting(BaseModel):
         if kind not in ['sim', 'dat']:
             raise ValueError(f'Invalid kind: {kind}')
 
-        return getattr(self, kind)
+        val = getattr(self, kind)
+        if not isinstance(val, FitConf):
+            raise ValueError(f'Cannot extrac fit configuration for: {kind}')
+
+        return val
 #-------------------
 class Config(BaseModel):
     '''
