@@ -36,8 +36,7 @@ class CandidateRebuilder:
         tracks     : Set of strings representing particle prefixes, e.g. {L1, L2,...}
         d_had      : Dictionary mapping hadron names with mass hypetheses to swap, e.g. {H : 312}
         constraint : Tuple with PDG ID and set of strings representing particles
-                     whose combined mass is constrainted to the PDG ID's value
-                     by default None
+        whose combined mass is constrainted to the PDG ID's value by default None
         '''
         self._rdf           = rdf
         self._tracks        = tracks
@@ -137,7 +136,7 @@ class CandidateRebuilder:
         ----------------------
         Mass of the combination of particles
         '''
-        sum : None | v4d  = None
+        combined_4vec : None | v4d  = None
         for particle in self._tracks:
             if self._constraint and particle in self._constraint[1]:
                 continue
@@ -147,19 +146,22 @@ class CandidateRebuilder:
             if kind == 'new':
                 vec = self._update_mass(vec = vec, name = particle)
 
-            if sum is None:
-                sum = vec
+            if combined_4vec is None:
+                combined_4vec = vec
                 continue
 
-            sum = sum + vec # type: ignore
+            combined_4vec = combined_4vec + vec # type: ignore
+
+        if combined_4vec is None:
+            raise ValueError('Track combination for unconstrained tracks is None')
 
         if self._constraint:
-            sum = sum + self._get_constrained_combination(row = row) # type: ignore
+            combined_4vec = combined_4vec + self._get_constrained_combination(row = row) # type: ignore
 
-        if sum is None:
+        if combined_4vec is None:
             raise ValueError(f'No sum obtained, used tracks: {self._tracks}')
 
-        return sum.mass
+        return combined_4vec.mass
     # ----------------------
     def _get_constrained_combination(self, row : pnd.Series) -> v4d:
         '''
@@ -174,16 +176,16 @@ class CandidateRebuilder:
         if not self._constraint:
             raise ValueError('Cannot get constraints, constraints not passed')
 
-        sum : v4d | None = None
+        combined_4vec : v4d | None = None
         for particle in self._constraint[1]:
             vec = self._get_4vec(row = row, name = particle)
 
-            if sum is None:
-                sum = vec
+            if combined_4vec is None:
+                combined_4vec = vec
             else:
-                sum = sum + vec # type: ignore
+                combined_4vec = combined_4vec + vec # type: ignore
 
-        if sum is None:
+        if combined_4vec is None:
             raise ValueError('No sum found to constrain')
 
         pdg_id   = self._constraint[0]
@@ -193,9 +195,9 @@ class CandidateRebuilder:
         if mass is None:
             raise ValueError(f'Cannot find mass for {particle} with ID: {pdg_id}')
 
-        sum.mass = mass
+        combined_4vec.mass = mass
 
-        return sum
+        return combined_4vec
     # ----------------------
     def _update_mass(self, vec : v4d, name : str) -> v4d:
         '''
@@ -248,27 +250,27 @@ class CandidateRebuilder:
     @overload
     def get_df(
         self,
-        format       : Literal['pandas'],
+        kind         : Literal['pandas'],
         prefix       : str,
         only_new     : bool = False,
         progress_bar : bool = False) -> pnd.DataFrame: ...
     @overload
     def get_df(
         self,
-        format       : Literal['root'],
+        kind         : Literal['root'],
         prefix       : str,
         only_new     : bool = False,
         progress_bar : bool = False) -> RDF.RNode: ...
     def get_df(
         self,
-        format       : Literal['pandas', 'root'],
+        kind         : Literal['pandas', 'root'],
         prefix       : str,
         only_new     : bool = False,
         progress_bar : bool = False) -> RDF.RNode | pnd.DataFrame:
         '''
         Parameters:
         ------------------
-        format      : Either pandas or root, used to pick dataframe format
+        kind        : Either pandas or root, used to pick dataframe format
         prefix      : Will be used to name branches with masses as `{preffix}_mass_old/new` for the original and swapped masses
         progress_bar: If True, will show progress bar, by default false
 
@@ -280,12 +282,12 @@ class CandidateRebuilder:
 
         d_data : dict[str, numpy.ndarray] = {}
 
-        kinds = ['new'] if only_new else ['old', 'new']
-        for kind in kinds:
-            sr_mass = self._calculate_mass(progress_bar, kind)
+        stored_kinds = ['new'] if only_new else ['old', 'new']
+        for stored_kind in stored_kinds:
+            sr_mass = self._calculate_mass(progress_bar, stored_kind)
             d_data[f'{prefix}_mass_{kind}'] = sr_mass.to_numpy().flatten()
 
-        if format == 'pandas':
+        if kind == 'pandas':
             return pnd.DataFrame(d_data)
 
         try:
