@@ -384,11 +384,11 @@ class ParsLoader:
 
         data : dict[str,pnd.Series] = dict()
         for syst, df_syst in df.groupby('syst'):
-            syst = str(syst)
-            if syst.startswith('fix_'):
+            syst_str = str(syst)
+            if syst_str.startswith('fix_'):
                 continue
 
-            data[syst] = df_syst['Value']
+            data[syst_str] = df_syst['Value']
 
         df = pnd.DataFrame(data)
         df = self._reduce_bootstrap(df = df)
@@ -432,9 +432,9 @@ class ParsLoader:
 
         l_df : list[pnd.DataFrame] = []
         for syst, df in self._df.groupby('syst'):
-            syst       = str(syst)
-            fixed      = syst.startswith('fix_')
-            is_nominal = syst == _NOMINAL
+            syst_str   = str(syst)
+            fixed      = syst_str.startswith('fix_')
+            is_nominal = syst_str == _NOMINAL
 
             if not fixed and not is_nominal:
                 continue
@@ -442,11 +442,11 @@ class ParsLoader:
             nfloat = len(df['Parameter'].unique().tolist())
             nfixed = tot_nfloat - nfloat
 
-            df          = df.query(f'Parameter == \"{poi}\"')
-            df['Fixed' ]= syst
-            df['nFixed']= nfixed
+            df_filtered          = df.query(f'Parameter == \"{poi}\"')
+            df_filtered['Fixed' ]= syst_str
+            df_filtered['nFixed']= nfixed
 
-            l_df.append(df)
+            l_df.append(df_filtered)
 
         df = pnd.concat(l_df, axis=0)
         df = df.reset_index(drop=True)

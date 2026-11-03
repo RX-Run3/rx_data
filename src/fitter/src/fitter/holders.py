@@ -67,9 +67,9 @@ class ComponentHolder[T]:
         '''
         try:
             new_value = copy.deepcopy(value)
-        except Exception:
+        except Exception as exc:
             obj_type = type(value)
-            raise ValueError(f'Cannot copy objects of type: {obj_type}')
+            raise ValueError(f'Cannot copy objects of type: {obj_type}') from exc
 
         return new_value
     # ----------------------
@@ -99,8 +99,8 @@ class ComponentHolder[T]:
                 copy_value      = self._copy_value(value = value)
                 new_holder[key] = copy_value
             else:
-                value = update[key]
-                new_holder[key] = value
+                val             = update[key]
+                new_holder[key] = val
 
         return new_holder
 # ----------------------
