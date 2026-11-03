@@ -30,9 +30,9 @@ class EfficiencyCalculator(Cache):
     '''
     #------------------------------------------
     def __init__(
-        self, 
+        self,
         out_dir : Path,
-        q2bin   : Qsq, 
+        q2bin   : Qsq,
         trigger : Trigger,
         sample  : Component):
         '''
@@ -44,8 +44,8 @@ class EfficiencyCalculator(Cache):
         sample  : MC sample for which the efficiency is calculated
         '''
         self._q2bin   = q2bin
-        self._trigger = trigger 
-        self._sample  = sample 
+        self._trigger = trigger
+        self._sample  = sample
 
         super().__init__(
             out_path = out_dir / 'efficiencies' / f'{sample}_{q2bin}_{trigger.value}',
@@ -70,8 +70,8 @@ class EfficiencyCalculator(Cache):
         Returns geometric acceptance
         '''
         obj = AcceptanceReader(
-            sample = self._sample, 
-            year   = _YEAR, 
+            sample = self._sample,
+            year   = _YEAR,
             project= self._trigger.project)
 
         acc = obj.read()
@@ -106,8 +106,8 @@ class EfficiencyCalculator(Cache):
     #------------------------------------------
     def _get_rdf(self, tree_name : str) -> RDF.RNode:
         gtr = RDFGetter(
-            sample  = self._sample, 
-            trigger = self._trigger, 
+            sample  = self._sample,
+            trigger = self._trigger,
             tree    = tree_name)
         rdf = gtr.get_rdf(per_file=False)
 
