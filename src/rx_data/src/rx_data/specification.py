@@ -103,7 +103,7 @@ class File(BaseModel):
         elif patch:
             fname  = path.name.replace('.root', '_')
             link   = get_tmp_path(
-                dir       = f'rx_data/specification/{ftree}',
+                directory = f'rx_data/specification/{ftree}',
                 prefix    = fname,
                 extension = 'root')
 
