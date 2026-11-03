@@ -82,7 +82,7 @@ def make_json(version, filename):
 #-----------------------------------------------------------
 def get_args():
     parser = argparse.ArgumentParser(description='Used to make v0 q2 parameters from RX table, already in CSV format')
-    args = parser.parse_args()
+    parser.parse_args()
 #-----------------------------------------------------------
 if __name__ == '__main__':
     get_args()

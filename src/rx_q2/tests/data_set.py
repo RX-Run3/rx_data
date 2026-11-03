@@ -8,14 +8,14 @@ def test_mc():
     obj.log.setLevel(logging.DEBUG)
     obj.nentries = 1000
     obj.plt_dir  = 'tests/data_set/mc'
-    rdf = obj.get_rdf()
+    obj.get_rdf()
 #-----------------------------------
 def test_dt():
     obj = data_set(is_mc=False, trigger='ETOS', dset='2018')
     obj.log.setLevel(logging.DEBUG)
     obj.nentries = 1000
     obj.plt_dir  = 'tests/data_set/dt'
-    rdf = obj.get_rdf()
+    obj.get_rdf()
 #-----------------------------------
 def main():
     test_mc()

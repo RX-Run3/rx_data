@@ -254,18 +254,10 @@ def _get_os_df(
     --------------
     List of dataframes with parameters from OS fits
     '''
-    pars     = df_ss['Parameter'].to_list()
-    prefixes = { _get_prefix(param = par) for par in pars }
-    l_df : list[pnd.DataFrame] = []
-
-    with ExitStack() as stack:
-        stack.enter_context(gut.environment(mapping = {'ANADIR' : _IHEP_ANADIR}))
-        raise NotImplementedError(
-            '''
-            Implementation here needs to take into account new desing for FitSummary
-            ''')
-
-    return l_df
+    raise NotImplementedError(
+        '''
+        Implementation here needs to take into account new desing for FitSummary
+        ''')
 # --------------------------------
 def main():
     '''

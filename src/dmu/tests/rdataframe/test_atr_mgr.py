@@ -15,7 +15,7 @@ def test_attach():
     rdf.entries = 20
     rdf.l_data  = [1, 2, 3]
 
-    obj = AtrMgr(rdf)
+    AtrMgr(rdf)
 #--------------------------------
 def test_dump():
     '''
