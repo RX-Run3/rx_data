@@ -139,6 +139,11 @@ class Mass(StrEnum):
         '''
         match self:
             # ------------
+            # Swap masses
+            # ------------
+            case Mass.swp_swap:
+                return r'$M(K_{\to\ell},\ell)$'
+            # ------------
             # Lambda_b
             # ------------
             case Mass.lb_dtf_jpsi:
