@@ -170,9 +170,9 @@ def _get_pidc_map(
     map_name  = f'effhists-2024_WithUT_block{block}_v2-{polarity}-{particle}-{cut}-log10({particle_cut}_PT).{particle_cut}_ETA.pkl'
     fpath     = f'{ana_dir}/Calibration/mis_id/v14/{brem_name}/{map_name}'
     with open(fpath, 'rb') as ifile:
-        map = pickle.load(ifile)
+        mapping = pickle.load(ifile)
 
-    arr = map.values()
+    arr = mapping.values()
     arr = numpy.where(numpy.isnan(arr), 0, arr)
     arr = numpy.where(arr          > 1, 1, arr)
 
