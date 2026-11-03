@@ -5,8 +5,6 @@ import os
 import re
 import glob
 import zipfile
-import functools
-from typing import Union
 
 from ap_utilities.logging.log_store import LogStore
 
@@ -37,8 +35,7 @@ class LogInfo:
 
         return log_path
     # ---------------------------------------------
-    @functools.lru_cache()
-    def _get_dv_lines(self) -> Union[list[str],None]:
+    def _get_dv_lines(self) -> list[str] | None:
         if not os.path.isfile(self._zip_path):
             log.warning(f'Cannot find: {self._zip_path}')
             return None
@@ -53,7 +50,7 @@ class LogInfo:
 
         return l_line
     # ---------------------------------------------
-    def _entries_from_line(self, line : str) -> Union[int,None]:
+    def _entries_from_line(self, line : str) -> int | None:
         mtch = re.match(self._entries_regex, line)
         if not mtch:
             log.warning(f'Cannot extract number of entries from line \"{line}\" using regex \"{self._entries_regex}\"')
@@ -70,7 +67,7 @@ class LogInfo:
 
         return found
     # ---------------------------------------------
-    def _index_at_first_instance(self, l_line : list[str], l_substr : list[str]) -> Union[int,None]:
+    def _index_at_first_instance(self, l_line : list[str], l_substr : list[str]) -> int | None:
         index = None
         for i_line, line in enumerate(l_line):
             if self._all_in_line(line, l_substr):
@@ -79,7 +76,7 @@ class LogInfo:
 
         return index
     # ---------------------------------------------
-    def _get_line_with_entries(self, l_line : list[str], alg_name : str) -> Union[str,None]:
+    def _get_line_with_entries(self, l_line : list[str], alg_name : str) -> str | None:
         algo_index = self._index_at_first_instance(l_line, l_substr=[alg_name, 'Number of counters'])
         if algo_index is None:
             log.warning(f'Cannot find line with \"Number of counters\" and \"{alg_name}\" in {self._log_path}')
