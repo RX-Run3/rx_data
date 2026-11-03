@@ -212,31 +212,31 @@ def _get_sample_definer_expression_cached(samples : tuple[tuple[str,int],...]) -
     if len(samples) == 0:
         raise ValueError('Found no entries for patching')
 
-    hash = hashing.hash_object(obj = [samples])
+    hsh = hashing.hash_object(obj = [samples])
 
     inserts = ''
     for file_name, value in samples:
         inserts += f'tmp["{file_name}"] = {value};' + '\n'
 
     text = rf'''
-    int GetValue_{hash}(const std::string &name)
+    int GetValue_{hsh}(const std::string &name)
     {{
-        static const std::map<std::string,int> entries_{hash} = []{{
+        static const std::map<std::string,int> entries_{hsh} = []{{
             std::map<std::string,int> tmp;
             {inserts}
             return tmp;
         }}();
 
-        auto it = entries_{hash}.find(name);
-        return it == entries_{hash}.end() ? -999 : it->second;
+        auto it = entries_{hsh}.find(name);
+        return it == entries_{hsh}.end() ? -999 : it->second;
     }}
     '''
 
     ROOT.gInterpreter.Declare(text)
 
     return f'''
-    auto name_{hash}  = rdfsampleinfo_.AsString();
+    auto name_{hsh}  = rdfsampleinfo_.AsString();
 
-    return GetValue_{hash}(name_{hash});
+    return GetValue_{hsh}(name_{hsh});
     '''
 # ---------------------------------------------------------------------
