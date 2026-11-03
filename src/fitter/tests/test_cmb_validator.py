@@ -37,7 +37,7 @@ def test_config(
     '''
     Validate configuration
     '''
-    input       = CmbInputConfig(
+    input_cfg   = CmbInputConfig(
         q2bin   = Qsq.central,
         mass    = mass,
         trigger = Trigger.rk_ee_ss,
@@ -45,7 +45,7 @@ def test_config(
         cutflow = cutflow,
     )
 
-    output      = CmbOutputConfig(
+    output_cfg  = CmbOutputConfig(
         dir_path= tmp_path,
         plots   = ZFitPlotterConf.default(),
     )
@@ -53,9 +53,9 @@ def test_config(
     validation = CmbValidationConfig.from_file(fname = 'combinatorial/test_parametric.yaml')
 
     return CmbValidatorConf(
-        input      = input,
+        input      = input_cfg,
         validation = validation,
-        output     = output)
+        output     = output_cfg)
 # ----------------------
 def _get_mass(
     comp : Component,
