@@ -131,7 +131,7 @@ class WorkingPoint(RootModel[list[Cut]], frozen = True):
         '''
         Variables used in working point
         '''
-        vars : list[str] = [ cut.var for cut in self.cuts ]
+        _variables : list[str] = [ cut.var for cut in self.cuts ]
 
-        return sorted(vars)
+        return sorted(_variables)
 # --------------------------------
