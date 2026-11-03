@@ -1,12 +1,10 @@
 '''
 Module containing EfficiencyCalculator class
 '''
-import os
 import math
-import mplhep
 import pandas            as pnd
-import matplotlib.pyplot as plt
 
+from typing             import Final
 from pathlib            import Path
 from ROOT               import RDF
 from dmu                import LogStore
@@ -19,6 +17,9 @@ from rx_selection       import selection as sel
 from .acceptance_reader import AcceptanceReader
 
 log=LogStore.add_logger('rx_efficiencies:efficiency_calculator')
+_YEAR : Final[str] = '2024'
+_MCDT : Final[str] = 'MCDecayTree'
+_RCDT : Final[str] = 'DecayTree'
 #------------------------------------------
 class EfficiencyCalculator(Cache):
     '''
@@ -39,17 +40,12 @@ class EfficiencyCalculator(Cache):
         -----------------
         out_dir : Full path to directory where outputs will go
         q2bin   : Either low, central or high
-        trigger : By default
+        trigger : HLT2 trigger associated to sample
         sample  : MC sample for which the efficiency is calculated
-                  If None, will calculate it for all samples from rx_common::types.Sample 
         '''
         self._q2bin   = q2bin
-        self._year    = '2024'
         self._trigger = trigger 
-        self._d_sel   = {'Sample' : [], 'Decay' : [], 'Value' : [], 'Error' : []}
         self._sample  = sample 
-
-        plt.style.use(mplhep.style.LHCb2)
 
         super().__init__(
             out_path = out_dir / 'efficiencies' / f'{sample}_{q2bin}_{trigger.value}',
@@ -57,8 +53,6 @@ class EfficiencyCalculator(Cache):
             q2bin    = self._q2bin,
             trigger  = self._trigger,
             sample   = sample)
-
-        self._initialized=False
     #------------------------------------------
     def _get_selection_hash(self) -> str:
         '''
@@ -71,88 +65,56 @@ class EfficiencyCalculator(Cache):
 
         return hsh
     #------------------------------------------
-    @property
-    def out_dir(self) -> str|None:
+    def _get_geo_eff(self) -> float:
         '''
-        Returns path to directory where validation plots should go
-        '''
-        if not hasattr(self, '_out_dir'):
-            return None
-
-        return self._out_dir
-
-    @out_dir.setter
-    def out_dir(self, value : str):
-        try:
-            os.makedirs(value, exist_ok=True)
-        except:
-            log.error(f'Cannot make: {value}')
-            raise
-
-        self._out_dir = value
-    #------------------------------------------
-    def _get_geo_eff(self, sample : Component) -> float:
-        '''
-        Takes sample and returns geometric acceptance
+        Returns geometric acceptance
         '''
         obj = AcceptanceReader(
-            sample =sample, 
-            year   =self._year, 
-            project=self._trigger.project)
+            sample = self._sample, 
+            year   = _YEAR, 
+            project= self._trigger.project)
 
         acc = obj.read()
 
+        if acc <= 0:
+            raise ValueError(f'Invalid geometric acceptance: {acc:.3f}')
+
         return acc
     #------------------------------------------
-    def _add_sel_eff(
-            self,
-            passed : int,
-            total  : int,
-            sample : Component) -> None:
-        eff = passed / total
-        err = math.sqrt(eff * (1 - eff) / total)
-
-        self._d_sel['Sample'].append(sample)
-        self._d_sel['Decay' ].append(sample.latex)
-        self._d_sel['Value' ].append(eff)
-        self._d_sel['Error' ].append(err)
-    #------------------------------------------
-    def _get_yields(self, sample : Component) -> tuple[int,int]:
-        sel_yld = self._get_sel_yld(sample)
-        gen_yld = self._get_gen_yld(sample)
-        geo_acc = self._get_geo_eff(sample)
+    def _get_yields(self) -> tuple[int,int]:
+        sel_yld = self._get_sel_yld()
+        gen_yld = self._get_gen_yld()
+        geo_acc = self._get_geo_eff()
         tot_yld = int(gen_yld / geo_acc)
-
-        self._add_sel_eff(passed=sel_yld, total=gen_yld, sample=sample)
 
         return sel_yld, tot_yld
     #------------------------------------------
-    def _get_sel_yld(self, sample : Component) -> int:
+    def _get_sel_yld(self) -> int:
         log.info('Calculating selected yield')
 
-        rdf = self._get_rdf(sample=sample, tree_name='DecayTree')
+        rdf = self._get_rdf(tree_name=_RCDT)
         rdf = sel.apply_full_selection(
             q2bin   = self._q2bin,
             trigger = self._trigger,
-            process = sample,
-            out_path= self._out_path / sample,
+            process = self._sample,
+            out_path= self._out_path / self._sample,
             rdf     = rdf)
 
         nsel = rdf.Count().GetValue()
 
         return nsel
     #------------------------------------------
-    def _get_rdf(self, sample : Component, tree_name : str) -> RDF.RNode:
+    def _get_rdf(self, tree_name : str) -> RDF.RNode:
         gtr = RDFGetter(
-            sample  = sample, 
+            sample  = self._sample, 
             trigger = self._trigger, 
             tree    = tree_name)
         rdf = gtr.get_rdf(per_file=False)
 
         return rdf
     #------------------------------------------
-    def _get_gen_yld(self, sample : Component) -> int:
-        rdf      = self._get_rdf(sample=sample, tree_name='MCDecayTree')
+    def _get_gen_yld(self) -> int:
+        rdf      = self._get_rdf(tree_name=_MCDT)
         nentries = rdf.Count().GetValue()
 
         return nentries
@@ -163,7 +125,7 @@ class EfficiencyCalculator(Cache):
         '''
         d_data   = {'Sample' : [], 'Passed' : [], 'Total' : [], 'Eff' : []}
         log.info(f'Calculating yields for sample: {self._sample}')
-        pas, tot = self._get_yields(sample = self._sample)
+        pas, tot = self._get_yields()
 
         d_data['Sample' ].append(self._sample)
         d_data['Passed' ].append(pas)
@@ -174,7 +136,7 @@ class EfficiencyCalculator(Cache):
 
         return df
     #------------------------------------------
-    def _efficiency_from_sample(
+    def _efficiency_from_yields(
         self,
         as_yields : bool,
         df        : pnd.DataFrame) -> tuple[float,float]:
@@ -195,12 +157,15 @@ class EfficiencyCalculator(Cache):
         df = df[ df['Sample'] == self._sample ]
 
         if len(df) != 1:
-            log.error('\n' + str(df_org))
-            log.error('')
-            log.error('--->')
-            log.error('')
-            log.error(df)
-            raise ValueError(f'After specifying process {self._sample.name} dataframe does not have one and only one column')
+            log.error(
+            f'''
+            {df_org}
+
+            --->
+
+            {df}
+            ''')
+            raise ValueError(f'After specifying process {self._sample.name} dataframe does not have one and only one row')
 
         pas : float = df['Passed'].iloc[0]
         tot : float = df['Total' ].iloc[0]
@@ -217,24 +182,26 @@ class EfficiencyCalculator(Cache):
         '''
         Parameters
         -------------
-        as_yields: If true, it will return passed and failed yields. 
-        Otherwise efficiency and error
+        as_yields: Flag controlling return value format
 
         Returns
         -------------
-        Tuple with effiency and error associated
+        with as_yields:
+
+        True : Tuple with passed and failed yields
+        False: Tuple with efficiency and error associated
         '''
-        data_path = f'{self._out_path}/yields.json'
+        data_path = self._out_path / 'yields.json'
         if self._copy_from_cache():
             log.info(f'Found yields cached, loading: {data_path}')
             df = pnd.read_json(path_or_buf=data_path)
 
-            return self._efficiency_from_sample(df=df, as_yields=as_yields)
+            return self._efficiency_from_yields(df=df, as_yields=as_yields)
 
         log.info(f'Recalculating dataframe with yields for {self._sample.name}')
         df = self._get_stats()
         df.to_json(path_or_buf=data_path, indent=2)
 
         self._cache()
-        return self._efficiency_from_sample(df=df, as_yields=as_yields)
+        return self._efficiency_from_yields(df=df, as_yields=as_yields)
 #------------------------------------------
