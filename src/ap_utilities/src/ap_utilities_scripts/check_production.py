@@ -5,7 +5,7 @@ This problems will be caught before pipelines run
 '''
 import re
 
-from typing              import Union
+from typing              import Any
 from collections         import Counter
 from importlib.resources import files
 
@@ -52,7 +52,7 @@ def _get_lines(name : str) -> list[str]:
 
     return l_line
 # -------------------------
-def _sample_from_line(line : str) -> Union[None,list[str]]:
+def _sample_from_line(line : str) -> None | list[str]:
     '''
     Takes line from info.yaml
     Returns a list of strings, each with configuration for an MC sample, if line is not present, returns None
@@ -86,7 +86,7 @@ def _print_repeated(l_line : list[str]) -> None:
     for repeated, count in l_repeated:
         log.info(f'{repeated:<40}{count:<10}')
 # -------------------------
-def _list_to_set(l_line : list[str], msg_repeated : Union[None,str]=None) -> set[str]:
+def _list_to_set(l_line : list[str], msg_repeated : None | str = None) -> set[str]:
     s_line = set(l_line)
     nlist  = len(l_line)
     nset   = len(s_line)
@@ -124,7 +124,7 @@ def _nickname_from_evt_type(evt_type : int) -> str:
 
     return nickname
 # -------------------------
-def _flatten_list(lst : list) -> list:
+def _flatten_list(lst : list[Any]) -> list:
     l_val = []
     for item in lst:
         if isinstance(item, list):
@@ -147,7 +147,8 @@ def _get_analysis_nicknames() -> set[str]:
         d_analysis = yaml.safe_load(ifile)
 
     l_evt_type = d_analysis[Data.analysis]
-    l_evt_type = _flatten_list(l_evt_type)
+    l_evt_type : list[int] = _flatten_list(l_evt_type)
+
     l_nick_name= [ _nickname_from_evt_type(event_type) for event_type in l_evt_type ]
 
     return set(l_nick_name)
@@ -190,9 +191,10 @@ def _save_report():
 def _check_name_lenghts() -> None:
     l_long_nickname = []
     for [nickname, evt_type, mc_path, polarity, _, _, _, nuval, sim_version, generator] in Data.l_info:
-        mc_path  = mc_path.replace('.', '_')
-        job_name = f'MC_{mc_path}_{polarity}_{nuval}_{sim_version}_{generator}_{evt_type}_{nickname}'
-        size     = len(job_name)
+        mc_path_nodot  = mc_path.replace('.', '_')
+        job_name       = f'MC_{mc_path_nodot}_{polarity}_{nuval}_{sim_version}_{generator}_{evt_type}_{nickname}'
+        size           = len(job_name)
+
         if size > 100:
             log.warning(f'{size:<20}{nickname:<100}')
             size = str(size)
