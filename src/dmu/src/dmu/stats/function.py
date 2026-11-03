@@ -14,6 +14,7 @@ from scipy.interpolate     import interp1d
 from dmu.logging.log_store import LogStore
 
 log = LogStore.add_logger('dmu:stats:function')
+Npaint = numpy.ndarray[tuple[int], numpy.dtype[numpy.float64]]
 #---------------------------------------------------------
 class FunOutOfBounds(Exception):
     '''
@@ -116,8 +117,8 @@ class Function:
 
         xmod = numpy.clip(xval, min_x, max_x)
 
-        arr_diff = xval != xmod
-        arr_indx = numpy.where(arr_diff)[0]
+        arr_diff          = xval != xmod
+        arr_indx : Npaint = numpy.where(arr_diff)[0]
         ndiff    = numpy.sum(arr_diff)
         arr_indx = arr_indx[:20]
 
@@ -147,10 +148,10 @@ class Function:
         if '_tag' not in d_attr:
             raise KeyError('tag not found')
 
-        x    = d_attr['_l_x' ]
-        y    = d_attr['_l_y' ]
-        kind = d_attr['_kind']
-        tag  = d_attr['_tag' ]
+        x    : list[float] = d_attr['_l_x' ]
+        y    : list[float] = d_attr['_l_y' ]
+        kind : str         = d_attr['_kind']
+        tag  : str         = d_attr['_tag' ]
 
         fun  = Function(x=x, y=y, kind=kind)
         fun.tag = tag
@@ -275,7 +276,7 @@ class Function:
         Takes Function object
         Returns dictionary of attributes for encoding
         '''
-        d_data = obj.__dict__
+        d_data : dict = obj.__dict__
 
         if '_interpolator' in d_data:
             del d_data['_interpolator']
