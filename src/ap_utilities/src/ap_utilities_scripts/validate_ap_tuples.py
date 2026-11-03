@@ -8,10 +8,9 @@ import argparse
 from functools import cached_property
 from pathlib   import Path
 from ROOT      import RDF, RDataFrame
-from typing    import Final, Generic, TypeVar
+from typing    import Final
 from pydantic  import BaseModel, model_validator, ConfigDict
 
-T = TypeVar('T')
 _TREENAME : Final[str] = 'DecayTree'
 # -------------------------------
 class Config(BaseModel):
@@ -51,7 +50,7 @@ class IndentedDumper(yaml.Dumper):
 
         return super().increase_indent(flow=flow, indentless=False)
 # -------------------------------
-class Holder(BaseModel, Generic[T]):
+class Holder[T](BaseModel):
     '''
     Class meant to hold an old version and a new version
     of a generic object
@@ -131,7 +130,7 @@ def _get_directory_names(path : Path) -> list[str]:
     List of directory names in file
     '''
     with uproot.open(path = path) as ifile: # type: ignore
-        dirs = ifile.keys(filter_classname = 'TDirectory')
+        dirs : list[str] = ifile.keys(filter_classname = 'TDirectory')
         dirs = [ dirname.split(';')[0] for dirname in dirs ]
 
     return dirs
@@ -204,8 +203,8 @@ def main():
     dirs  = _get_directories(cfg = cfg)
     trees = _get_trees(cfg = cfg, dirs = dirs)
 
-    dirs_summaries = { dir.name  : dir.summary for dir  in dirs  if dir.summary is not None }
-    tree_summaries = { tree.name : tree.tree_summary(cfg = cfg) for tree in trees }
+    dirs_summaries = { directory.name  : directory.summary for directory  in dirs  if directory.summary is not None }
+    tree_summaries = { tree.name       : tree.tree_summary(cfg = cfg) for tree in trees }
 
     data = {
         'Directories' : dirs_summaries,
