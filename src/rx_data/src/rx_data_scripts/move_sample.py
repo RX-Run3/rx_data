@@ -47,14 +47,17 @@ class Conf(BaseModel):
     # --------------------------------------
     @model_validator(mode = 'before')
     @classmethod
-    def validate_fields(cls, data):
+    def validate_fields(cls, data : dict[str,str]):
         '''
         Validates fields
         '''
         identifier = data.get('identifier')
+        if identifier is None:
+            raise ValueError('Cannot find identifier entry')
 
         if   re.match(r'\d{8}', identifier):
-            name   = decay_utilities.read_decay_name(event_type=identifier)
+            etype  = int(identifier)
+            name   = decay_utilities.read_decay_name(event_type=etype)
             decay  = name.lower()
             regex  = fr'.*{decay}.*'
         elif identifier == _ANALYSIS_ID:
@@ -178,8 +181,8 @@ def _setup_dirs(
     cannot_make = False
     invalid_name= False
 
-    for dir in dirs:
-        str_dir = str(dir)
+    for directory in dirs:
+        str_dir = str(directory)
         nsource = str_dir.count(f'/{source}/')
         if nsource != 1:
             log.error(f'Not found one and only one occurence of {source} in {str_dir}')
