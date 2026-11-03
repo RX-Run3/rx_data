@@ -111,7 +111,6 @@ rx_pid           = { path = "./src/rx_pid",           editable = true }
 rx_plots         = { path = "./src/rx_plots",         editable = true }
 rx_q2            = { path = "./src/rx_q2",            editable = true }
 rx_selection     = { path = "./src/rx_selection",     editable = true }
-rx_tests         = { path = "./src/rx_tests",         editable = true }
 rx_web           = { path = "./src/rx_web",           editable = true }
 vector_stubs     = { path = "./src/vector_stubs",     editable = true }
 zfit-stubs       = { path = "./src/zfit-stubs",       editable = true }
