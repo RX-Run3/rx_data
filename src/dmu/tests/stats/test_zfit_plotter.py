@@ -270,10 +270,6 @@ def test_low_stat(tmp_path : Path):
     obj = ZFitPlotter(data=arr, model=pdf, result=res)
     obj.plot(cfg)
 
-    # add a line to pull hist
-    lower, upper = dat.data_range.limit1d
-    obj.axs[1].plot([lower, upper], [0, 0], linestyle='--', color='black')
-
     plt.savefig(tmp_path / 'fit_lin.png', bbox_inches='tight')
 
     obj.set_yscale('log')
@@ -632,10 +628,7 @@ def test_blind(tmp_path : Path):
     obj = ZFitPlotter(data=dat, model=pdf, result=res)
     obj.plot(cfg)
 
-    # add a line to pull hist
-    lower, upper = dat.data_range.limit1d
-
-    obj.axs[1].plot([lower, upper], [0, 0], linestyle='--', color='black')
+    obj.axs[1].plot([-5, 5], [0, 0], linestyle='--', color='black')
     plt.savefig(tmp_path / 'fit_lin.png', bbox_inches='tight')
 
     obj.set_yscale('log')
