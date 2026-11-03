@@ -25,8 +25,8 @@ class Plotter:
     #-------------------------------------
     def __init__(
         self,
-        d_rdf: dict|None            =None,
-        cfg  : dict|DictConfig|None =None):
+        d_rdf: dict[str,RDF.RNode]|None =None,
+        cfg  : dict|DictConfig    |None =None):
         '''
         Parameters
         --------------
@@ -65,7 +65,7 @@ class Plotter:
 
         raise ValueError(f'Invalid quantile: {qnt:.3e}, value needs to be in (0.5, 1.0] interval')
     #-------------------------------------
-    def _find_bounds(self, d_data : dict, qnt : float = 0.98):
+    def _find_bounds(self, d_data : dict[str,numpy.ndarray], qnt : float = 0.98) -> tuple[float,float]:
         '''
         Will take dictionary between kinds of data and numpy array
         Will return tuple with bounds, where 95% of the data is found
@@ -113,7 +113,7 @@ class Plotter:
 
         return rdf
     #-------------------------------------
-    def _define_vars(self, rdf):
+    def _define_vars(self, rdf : RDF.RNode) -> RDF.RNode:
         '''
         Will define extra columns in dataframe and return updated dataframe
         '''
@@ -128,7 +128,7 @@ class Plotter:
 
         return rdf
     #-------------------------------------
-    def _apply_selection(self, rdf):
+    def _apply_selection(self, rdf : RDF.RNode) -> RDF.RNode:
         '''
         Will take dataframe, apply selection and return dataframe
         '''
@@ -143,7 +143,7 @@ class Plotter:
 
         return rdf
     #-------------------------------------
-    def _max_ran_entries(self, rdf):
+    def _max_ran_entries(self, rdf : RDF.RNode) -> RDF.RNode:
         '''
         Will take dataframe and randomly drop events
         '''
