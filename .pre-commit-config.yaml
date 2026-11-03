@@ -8,6 +8,12 @@ repos:
         language      : script
         stages        : [pre-commit]
         pass_filenames: false
+      - id            : ruff 
+        name          : Fix formatting 
+        entry         : hooks/ruff.sh
+        language      : script
+        stages        : [pre-commit]
+        pass_filenames: false
       - id            : pixi_install
         name          : Pixi install
         entry         : hooks/pixi_install.sh
