@@ -26,7 +26,7 @@ from dmu.logging.log_store import LogStore
 
 from .protocols            import SupportsAddition
 
-TIMER_ON=False
+TIMER_ON : bool = False
 log = LogStore.add_logger('dmu:generic:utilities')
 # --------------------------------
 class ConfigValidation:

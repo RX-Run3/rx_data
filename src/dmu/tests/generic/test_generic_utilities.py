@@ -3,13 +3,14 @@ Module with tests for functions in generic/utilities.py
 '''
 import os
 import sys
-from time    import sleep
-from pathlib import Path
-
-import dmu.generic.utilities as gut
 import pytest
-from omegaconf             import DictConfig, OmegaConf
-from dmu.logging.log_store import LogStore
+
+from time        import sleep
+from pathlib     import Path
+from typing      import Any
+from omegaconf   import DictConfig, OmegaConf
+from dmu         import LogStore
+from dmu.generic import utilities as gut
 
 log=LogStore.add_logger('dmu:test_generic_utilities')
 # ----------------------
@@ -31,7 +32,7 @@ def test_environment_context():
         os.environ['VAR']
 # ----------------------
 @pytest.fixture
-def no_schema_pkg(tmp_path):
+def no_schema_pkg(tmp_path : Path):
     '''
     This fixture creates a fake package missing the schema
     validating data package
@@ -166,7 +167,7 @@ def test_silent_import():
     with gut.silent_import():
         import tensorflow
 
-    tensorflow.version
+    _ : str = tensorflow.version.VERSION
 # -------------------------
 @pytest.mark.parametrize('ext', ['yaml', 'json', 'yaml.j2'])
 def test_load_data(ext : str):
@@ -186,10 +187,12 @@ def test_load_data(ext : str):
 
     assert data == expected
 # -------------------------
-def test_load_conf_schema_validation_no_package(no_schema_pkg):
+def test_load_conf_schema_validation_no_package(no_schema_pkg : Any):
     '''
     Tests that the validation fails when no schema data package is found
     '''
+    _ = no_schema_pkg
+
     cfg = gut.load_conf(
         package='fake_data',
         fpath  ='config.yaml')

@@ -44,8 +44,8 @@ class Function:
         x, y = self._remove_duplicates(x=x, y=y)
 
         self._max_entries = 400
-        self._l_x = x
-        self._l_y = y
+        self._l_x : list[float] = x
+        self._l_y : list[float] = y
         self._kind= kind
         self._tag = 'no_tag'
 
@@ -53,13 +53,14 @@ class Function:
 
         self._update_data()
     #------------------------------------------------
+    __hash__ = None
     def __eq__(self, othr):
         if not isinstance(othr, Function):
             log.warning('Comparison not done with instance of Function')
             return False
 
-        d_self = self.__dict__
-        d_othr = othr.__dict__
+        d_self = dict(self.__dict__)
+        d_othr = dict(othr.__dict__)
 
         if '_interpolator' in d_self:
             del d_self['_interpolator']
