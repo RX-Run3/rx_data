@@ -48,6 +48,8 @@ class Grid(RootModel[list[Node]]):
         return df
 
     def at(self, wp : Loc, fall_back : Node | None) -> Node:
+        _  = wp
+        _  = fall_back
         return Node()
 # -----------------------------------
 def test_simple(tmp_path : Path):
