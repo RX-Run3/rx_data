@@ -5,7 +5,6 @@ import os
 import argparse
 import pandas   as pnd
 
-from contextlib   import ExitStack
 from typing       import Final
 from ROOT         import RDF
 from pathlib      import Path
