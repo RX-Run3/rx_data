@@ -6,6 +6,7 @@ import re
 import glob
 import zipfile
 
+from functools                      import lru_cache
 from ap_utilities.logging.log_store import LogStore
 
 log = LogStore.add_logger('ap_utilities:log_info')
@@ -24,6 +25,7 @@ class LogInfo:
         self._log_path : str
 
         self._entries_regex : str = r'\s*\|\s*"#\snon-empty events for field .*"\s*\|\s*(\d+)\s*\|.*'
+        self._get_dv_lines        = lru_cache(maxsize=3)(self._get_dv_lines)
     # ---------------------------------------------
     def _get_log_path(self) -> str:
         path_wc = f'{self._out_path}/*/{self._log_wc}'
