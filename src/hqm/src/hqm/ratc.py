@@ -89,6 +89,8 @@ class CCbarRatioCalculator:
         self._out_dir  = self._cfg.make_path(kind='ratios', project = project)
         self._plotter  = Plotter(out_dir = self._out_dir)
         self._ntoys    = ntoys
+
+        self.__get_model = lru_cache(maxsize = 5)(self.__get_model)
     #-----------------------------
     def __get_ratio(self) -> CCbarRatio:
         '''
@@ -188,7 +190,6 @@ class CCbarRatioCalculator:
 
         return data.numpy()
     #-----------------------------
-    @lru_cache(maxsize = 5)
     def __get_model(self, qsq : Qsq) -> zfit.pdf.SumPDF:
         r'''
         Parameters
