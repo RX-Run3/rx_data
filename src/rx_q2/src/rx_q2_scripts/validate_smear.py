@@ -137,7 +137,7 @@ def get_data_paths(year, trig):
         l_data_path += glob.glob(data_wc)
 
     if len(l_data_path) == 0:
-        log.error(f'Cannot find data in:')
+        log.error('Cannot find data in:')
         pprint.pprint(l_data_wc)
         raise
 

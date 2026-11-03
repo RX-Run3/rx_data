@@ -7,7 +7,6 @@ import pandas as pnd
 import vector
 
 from typing                   import cast, Final
-from dask                     import dataframe as dd
 from vector._methods          import VectorProtocolSpatial
 from vector                   import MomentumObject3D as v3d
 from vector                   import MomentumObject4D as v4d

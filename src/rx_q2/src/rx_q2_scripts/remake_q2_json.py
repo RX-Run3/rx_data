@@ -3,7 +3,6 @@
 import os
 import glob
 import argparse
-import pprint
 import utils_noroot as utnr
 
 from logzero import logger as log

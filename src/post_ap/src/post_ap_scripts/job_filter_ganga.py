@@ -11,7 +11,6 @@ from typing              import Union
 from dataclasses         import dataclass
 from importlib.resources import files
 
-from ganga import ganga
 from ganga import Job
 from ganga import Executable
 from ganga import DiracFile

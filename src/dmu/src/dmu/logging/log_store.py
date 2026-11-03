@@ -18,7 +18,7 @@ class LogLevels(IntEnum):
     debug   = logging.DEBUG
     verbose = 5
 #------------------------------------------------------------
-setattr(logging, 'VERBOSE', LogLevels.verbose)
+setattr(logging, 'VERBOSE', LogLevels.verbose) # noqa: B010
 #------------------------------------------------------------
 class Logger(StdLogger):
     def verbose(self, msg, *args, **kwargs):

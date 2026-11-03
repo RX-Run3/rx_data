@@ -2,7 +2,6 @@
 
 import re
 import os
-import pprint
 import argparse
 import pandas       as pnd
 import utils_noroot as utnr
@@ -30,7 +29,7 @@ def get_data(content):
     return [float(val), float(err)]
 #-----------------------------------------------------------
 def preprocess_rk_df(df):
-    log.warning(f'Adding fake mu_MC column to RK table')
+    log.warning('Adding fake mu_MC column to RK table')
     df['mu_MC 0 gamma'] = '3070.0 ± 0.0'
     df['mu_MC 1 gamma'] = '3070.0 ± 0.0'
     df['mu_MC 2 gamma'] = '3070.0 ± 0.0'

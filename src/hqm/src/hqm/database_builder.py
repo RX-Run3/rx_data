@@ -83,7 +83,7 @@ class DatabaseBuilder:
         if '.' not in var:
             return var
 
-        return var.split('.')[-1]
+        return var.rsplit('.', maxsplit=1)[-1]
     # ----------------------------------
     def run(self) -> None:
         '''

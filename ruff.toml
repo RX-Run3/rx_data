@@ -2,8 +2,7 @@ exclude = ["src/*stubs"]
 
 [lint]
 extend-safe-fixes = ["W291", "W293"]
-#select            = ["F", "PL", "B", "A", "ARG", "W291", "W293"]
-select            = ["W291", "W293"]
+select            = ["F", "PL", "B", "A", "ARG", "W291", "W293"]
 ignore            = [
   "PLR0911", "PLR0912", "PLR0913", "PLR0915", "PLR0917",
   "PLC0415",

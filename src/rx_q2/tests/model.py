@@ -37,7 +37,7 @@ def test_1():
     pdf=obj.get_pdf(is_signal=False, split_by_nspd=False)
 
     plot_model(pdf, 'test_1')
-    log.info(f'Passed test_1')
+    log.info('Passed test_1')
     obj.clean_pars()
 #-------------------------------
 def test_2():
@@ -45,7 +45,7 @@ def test_2():
     pdf=obj.get_pdf(is_signal=True, split_by_nspd=False)
 
     plot_model(pdf, 'test_2')
-    log.info(f'Passed test_2')
+    log.info('Passed test_2')
     obj.clean_pars()
 #-------------------------------
 def test_3():
@@ -55,7 +55,7 @@ def test_3():
     pdf=obj.get_pdf(is_signal=False, split_by_nspd=True)
 
     plot_model(pdf, 'test_3')
-    log.info(f'Passed test_3')
+    log.info('Passed test_3')
     obj.clean_pars()
 #-------------------------------
 def main():

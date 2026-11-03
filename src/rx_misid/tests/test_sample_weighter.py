@@ -9,7 +9,6 @@ import pytest
 import pandas            as pnd
 
 from functools       import cache, lru_cache
-from pathlib         import Path
 from boost_histogram import Histogram
 from dmu             import LogStore
 from dmu.generic     import utilities      as gut

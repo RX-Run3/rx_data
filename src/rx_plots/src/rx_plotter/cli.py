@@ -15,7 +15,7 @@ from pathlib      import Path
 from dmu          import LogStore
 from dmu.generic  import utilities as gut
 from rx_data      import RDFGetter
-from rx_common    import Channel, Component, Cuts, Project, Trigger, Qsq
+from rx_common    import Component, Cuts, Trigger, Qsq, Project
 from rx_plotter   import CandidateRebuild
 from rx_plotter   import CandidateRebuildConf
 from rx_plotter   import refitting_plot
@@ -47,7 +47,7 @@ def refitting(
     max_evt : int     = typer.Option(-1 , '--max_evt', '-m', help='Maximum number of entries'),
     log_lvl : int     = typer.Option(20 , '--log_lvl', '-l', help='Logging level'),
     nthread : int     = typer.Option(4  , '--nthread', '-n', help='Number of threads'),
-    project : str     = typer.Option(..., '--project', '-p', help='E.g. rk, rkst'),
+    project : Project = typer.Option(..., '--project', '-p', help='E.g. rk, rkst'),
     qsq     : Qsq     = typer.Option(..., '--qsq'    , '-q', help='q2 bin'), # noqa: B008
     trigger : Trigger = typer.Option(..., '--trigger', '-t')) -> None:       # noqa: B008
     '''

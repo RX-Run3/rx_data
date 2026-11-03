@@ -6,14 +6,14 @@ import re
 import glob
 import pickle
 import argparse
-from typing import TypeAlias
-
 import tqdm
 import numpy
 import mplhep
 import matplotlib.pyplot as plt
-import matplotlib.cm     as cm
-from matplotlib.colors import Normalize
+
+from typing                import TypeAlias
+from matplotlib            import cm
+from matplotlib.colors     import Normalize
 from boost_histogram       import Histogram as bh
 from dmu.logging.log_store import LogStore
 

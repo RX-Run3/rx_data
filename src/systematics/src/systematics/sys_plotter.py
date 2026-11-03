@@ -6,7 +6,7 @@ import pandas            as pnd
 import matplotlib.pyplot as plt
 
 from matplotlib.axes import Axes
-from dmu.generic     import Serializable, utilities as gut
+from dmu.generic     import Serializable
 from functools       import cached_property
 from pydantic        import BaseModel
 from pathlib         import Path

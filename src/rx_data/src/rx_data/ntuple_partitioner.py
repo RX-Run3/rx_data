@@ -2,7 +2,6 @@
 This module contains the NtuplePartitioner class
 '''
 import os
-import fnmatch
 
 from pathlib      import Path
 from dmu          import LogStore
