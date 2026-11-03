@@ -151,8 +151,7 @@ class Plotter1D(Plotter):
                 self._run_pulls(
                     arr_val = arr_val,
                     minx    = minx,
-                    maxx    = maxx,
-                    cfg     = cfg)
+                    maxx    = maxx)
 
         if 'errors' in self._cfg['plugin']:
             if varname in self._cfg['plugin']['errors']:
@@ -192,8 +191,7 @@ class Plotter1D(Plotter):
         self,
         arr_val : numpy.ndarray,
         minx    : float,
-        maxx    : float,
-        cfg     : DictConfig) -> None:
+        maxx    : float) -> None:
         '''
         Parameters
         -------------------
