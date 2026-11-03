@@ -5,6 +5,7 @@ import os
 import yaml
 import pandas as pnd
 
+from typing                import cast, Any
 from colorama              import Style
 from pathlib               import Path
 from dmu.logging.log_store import LogStore
@@ -14,15 +15,13 @@ log=LogStore.add_logger('dmu:pdataframe:utilities')
 # -------------------------------------
 def query(
     *,
-    df          : pnd.DataFrame,
-    expr        : str,
-    allow_empty : bool = False) -> pnd.DataFrame:
+    df   : pnd.DataFrame,
+    expr : str) -> pnd.DataFrame:
     '''
     Parameters
     -------------------
-    df         : Dataframe
-    expr       : Selection applied to dataframe
-    allow_empty: If resulting dataframe is empty, will raise and show diagnostics
+    df   : Dataframe
+    expr : Selection applied to dataframe
 
     Returns
     -------------------
@@ -65,6 +64,7 @@ def df_to_tex(
         st=st.hide(axis='index')
 
     if d_format is not None:
+        d_format = cast(dict[Any,Any], d_format)
         st=st.format(formatter=d_format)
 
     log.info(f'Saving to: {path}')
