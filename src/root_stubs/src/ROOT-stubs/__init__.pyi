@@ -2,7 +2,7 @@ from .            import gInterpreter, RDF
 from .dataframe   import RDataFrame
 from .cut_info    import TCutInfo, CutIterator
 from .utilities   import EnableImplicitMT
-from .directory   import TFile
+from .directory   import TFile, TDirectoryFile
 from .tree        import TTree
 from .file_merger import TFileMerger
 from .numba       import Numba
@@ -14,6 +14,7 @@ __all__ = [
     'TTree',
     'RDataFrame',
     'TCutInfo',
+    'TDirectoryFile',
     'TFileMerger',
     'CutIterator',
     'EnableImplicitMT',
