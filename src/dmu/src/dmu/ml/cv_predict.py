@@ -134,13 +134,13 @@ class CVPredict:
         log.info('Defining columns in RDF before evaluating classifier')
         log.debug(60 * '-')
         for name, expr in d_def.items():
-            expr = expr.replace('.', '_')
+            expression = expr.replace('.', '_')
 
-            log.debug(f'{name:<20}{"<---":20}{expr:<100}')
+            log.debug(f'{name:<20}{"<---":20}{expression:<100}')
             try:
-                rdf = rdf.Define(name, expr)
+                rdf = rdf.Define(name, expression)
             except TypeError as exc:
-                log.error(f'Cannot define {name}={expr}')
+                log.error(f'Cannot define {name}={expression}')
                 dexc = exc
 
         if dexc is not None:

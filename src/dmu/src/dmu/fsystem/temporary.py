@@ -4,7 +4,7 @@ from pathlib import Path
 
 # ------------------------------------------------------
 def get_tmp_path(
-    dir       : str,
+    directory : str,
     extension : str,
     prefix    : str | None = None) -> Path:
     '''
@@ -26,7 +26,7 @@ def get_tmp_path(
     - xxx.{extension} does not exist
     '''
     tmp_dir  = tempfile.gettempdir()
-    dir_path = Path(f'{tmp_dir}/{dir}/')
+    dir_path = Path(f'{tmp_dir}/{directory}/')
     dir_path.mkdir(parents = True, exist_ok = True)
 
     ctx = tempfile.NamedTemporaryFile(
