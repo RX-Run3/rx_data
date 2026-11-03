@@ -20,9 +20,7 @@ log = LogStore.add_logger('rx_efficiencies:efficiency_scanner')
 _MCDT : Final[str] = 'MCDecayTree'
 _DT   : Final[str] = 'DecayTree'
 # --------------------------------
-class Efficiency(BaseModel):
-    model_config = ConfigDict(frozen=True)
-
+class Efficiency(BaseModel, frozen = True):
     gen : int
     sel : int
     wp  : WorkingPoint
@@ -58,7 +56,7 @@ class Efficiency(BaseModel):
         '''
         Dictionary representing row in pandas dataframe
         '''
-        data = dict()
+        data : dict[str,int | float] = dict()
         data['gen'] = self.gen
         data['sel'] = self.sel
         data['eff'] = self.sel / float(self.gen)
