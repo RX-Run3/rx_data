@@ -23,6 +23,7 @@ def _make_input(path : Path, add_block : bool = False) -> None:
     '''
     rdf_rec = RDataFrame(100)
     rdf_rec = rdf_rec.Define('a', '1')
+    rdf_rec = rdf_rec.Define('block', '2')
 
     rdf_gen = RDataFrame(100)
     rdf_gen = rdf_gen.Define('b', '1')
@@ -45,13 +46,12 @@ def test_mc_add_block(tmp_path : Path):
     '''
     Test on MC files that miss block
     '''
+    path = tmp_path / 'mc_file.root'
+    _make_input(path = path)
+
     ptc = FilePatcher(dry_run = False)
 
-    for hash in ptc.hashes:
-        path = tmp_path / f'mc_file_{hash}.root'
-        _make_input(path = path)
-
-        assert ptc.run(path = path) == 1
+    assert ptc.run(path = path) == 1
 # -----------------------------------------
 def test_data_add_block(tmp_path : Path):
     '''
@@ -69,8 +69,7 @@ def test_mc_already_present(tmp_path : Path):
     Test on MC files that have block branch
     '''
     ptc  = FilePatcher(dry_run = False)
-    hash = list(ptc.hashes)[0]
-    path = tmp_path / f'mc_file_{hash}.root'
+    path = tmp_path / 'mc_file.root'
     _make_input(path = path, add_block = True)
 
     assert ptc.run(path = path) == 0
@@ -80,9 +79,8 @@ def test_dry_run(tmp_path : Path):
     Test dry run
     '''
     ptc  = FilePatcher(dry_run = True)
+    path = tmp_path / 'mc_file.root'
+    _make_input(path = path)
 
-    for hash in ptc.hashes:
-        path = tmp_path / f'mc_file_{hash}.root'
-        _make_input(path = path)
-
-        assert ptc.run(path = path) == 2
+    assert ptc.run(path = path) == 2
+# -----------------------------------------
