@@ -68,10 +68,10 @@ def _print_total(df : pnd.DataFrame) -> None:
     if col_name not in df.columns:
         raise ValueError(f'{col_name} column missing')
 
-    sum = df[col_name].sum()
+    total = df[col_name].sum()
 
     print(20 * '-')
-    print(f'Total: {sum:,}')
+    print(f'Total: {total:,}')
     print('')
 # --------------------------------
 def _print_by_block(df : pnd.DataFrame) -> None:
