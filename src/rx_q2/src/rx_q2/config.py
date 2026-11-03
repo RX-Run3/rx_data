@@ -2,11 +2,16 @@
 Module containing Conf class
 '''
 import os
+
 from typing         import Self
 from pathlib        import Path
-from pydantic       import BaseModel, computed_field, model_validator, ConfigDict
+from pydantic       import BaseModel, computed_field, model_validator
 from dmu            import LogStore
-from dmu.stats      import zfit, Model, FitConf
+from dmu.stats      import zfit, Model, FitConf, ZFitPlotterConf
+from rx_common      import Component
+from rx_common      import Cuts
+from rx_common      import Trigger
+from rx_common      import Brem
 from zfit           import Space    as zobs
 
 log=LogStore.add_logger('rx_q2:config')
@@ -15,12 +20,12 @@ class Samples(BaseModel):
     '''
     Class meant to represent sample information
     '''
-    rk_ee  : dict[str,str]
-    rkst_ee: dict[str,str]
-    rk_mm  : dict[str,str]
-    rkst_mm: dict[str,str]
+    rk_ee  : dict[str, Component]
+    rkst_ee: dict[str, Component]
+    rk_mm  : dict[str, Component]
+    rkst_mm: dict[str, Component]
     #-------------------
-    def __getitem__(self, name : str) -> dict[str,str]:
+    def __getitem__(self, name : str) -> dict[str,Component]:
         if not hasattr(self, name):
             raise AttributeError(f'Samples class has no {name} attribute')
 
@@ -31,12 +36,12 @@ class Input(BaseModel):
     Class meant to represent input section of config
     '''
     year      : str
-    brem      : int
+    brem      : Brem
     block     : str
     kind      : str     # dat or sim, used to pick from Samples below
     samples   : Samples
-    trigger   : dict[str,str]
-    selection : dict[str,str]
+    trigger   : Trigger
+    selection : dict[Cuts   ,str]
     friends   : dict[str,list[str]]
 #-------------------
 class Plots(BaseModel):
@@ -49,7 +54,7 @@ class Fitting(BaseModel):
     '''
     Class used to store fitting configuration
     '''
-    ranges    : dict[str,dict[int,list[float]]]
+    ranges    : dict[Trigger,dict[Brem,tuple[float,float]]]
     mass      : str
     weights   : str
     model     : list[Model]
@@ -76,22 +81,17 @@ class Fitting(BaseModel):
 
         return val
 #-------------------
-class Config(BaseModel):
+class Config(BaseModel, frozen = True):
     '''
     Class meant to hold configuration
     '''
-    model_config = ConfigDict(
-        arbitrary_types_allowed = True,
-        frozen                  = True)
-
-    project  : str
     logl     : int
     ana_dir  : Path
     vers     : str
     syst     : str
     input    : Input
     fitting  : Fitting
-    plots    : Plots
+    plots    : ZFitPlotterConf
     #-------------------
     @model_validator(mode='after')
     def _update_selection(self) -> Self:
@@ -99,17 +99,17 @@ class Config(BaseModel):
         Updates input.selection dictionary
         '''
         log.debug('Updating selection')
-        self.input.selection['block'] = self._get_block_cut()
-        self.input.selection['brem' ] = self._get_brem_cut()
+        self.input.selection[Cuts.block] = self._get_block_cut()
+        self.input.selection[Cuts.brem ] = self._get_brem_cut()
 
         return self
     #-------------------
     @computed_field
     @property
     def obs_range(self) -> tuple[float,float]:
-        project     = self.project
         brem        = self.input.brem
-        rng         = self.fitting.ranges[project][brem]
+        trigger     = self.input.trigger
+        rng         = self.fitting.ranges[trigger][brem]
         [low, high] = rng
 
         return low, high
@@ -148,7 +148,7 @@ class Config(BaseModel):
     def out_dir(self) -> Path:
         ana_dir = Path(os.environ['ANADIR'])
         path_1  = f'q2/fits/{self.vers}/{self.input.kind}'
-        path_2  = f'{self.project}_{self.input.year}'
+        path_2  = f'{self.input.trigger}_{self.input.year}'
         path_3  = f'{self.input.brem}_{self.input.block}_{self.syst}'
 
         out_dir = ana_dir / path_1 / path_2 / path_3

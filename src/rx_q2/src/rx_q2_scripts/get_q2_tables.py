@@ -14,12 +14,10 @@ from functools       import cache
 from pathlib         import Path
 from typing          import Mapping, Any
 
-from omegaconf       import DictConfig
 from ROOT            import RDF
 from dmu.stats       import zfit
 from zfit.pdf        import BasePDF   as zpdf
 from zfit.data       import Data      as zdata
-from zfit.result     import FitResult as zres
 
 from dmu             import LogStore
 from dmu.rdataframe  import utilities        as rut
@@ -30,38 +28,41 @@ from dmu.stats       import ParameterLibrary as PL
 from dmu.stats       import ModelFactory
 from dmu.stats       import ZFitPlotter
 from dmu.stats       import ZFitPlotterConf
+from dmu.stats       import FitResult
 
 from rx_selection    import selection as sel
 from rx_common       import Trigger
+from rx_common       import Cuts
+from rx_common       import Qsq
+from rx_common       import Brem
 from rx_data         import RDFGetter
 from rx_q2.config    import Config
 
 Parameters=dict[str,tuple[float,float]]
-_ARGS : argparse.Namespace | DictConfig | None = None
 
 log=LogStore.add_logger('rx_q2:get_q2_tables')
 #-------------------
 def _parse_args() -> argparse.Namespace:
-    projects = ['rk_ee', 'rkst_ee', 'rk_mm', 'rkst_mm']
     parser = argparse.ArgumentParser(description='Used to produce q2 smearing factors systematic tables')
-    parser.add_argument('-v', '--vers' , type =str, help='Version, used for naming of output directory', required=True)
-    parser.add_argument('-p', '--proj' , type =str, help='Project', choices=projects                   , required=True)
-    parser.add_argument('-y', '--year' , type =str, help='Year'                                        , required=True)
-    parser.add_argument('-b', '--brem' , type =str, help='Brem category'                               , required=True)
-    parser.add_argument('-k', '--kind' , type =str, help='Kind of sample'                              , required=True)
-    parser.add_argument('-B', '--block', type =int, help='Block, by default -1, all'                   , default=-1)
-    parser.add_argument('-x', '--syst' , type =str, help='Systematic variabion'                        , default='nom')
-    parser.add_argument('-l', '--logl' , type =int, help='Logging level'                               , default=20   )
-    parser.add_argument('--skip_fit'   , help='Will not fit, just plot the model'                      , action ='store_true')
+    parser.add_argument('-v', '--vers' , type =str    , help='Version, used for naming of output directory', required=True)
+    parser.add_argument('-t', '--trig' , type =Trigger, help='Trigger'                    , required=True)
+    parser.add_argument('-y', '--year' , type =str    , help='Year'                       , required=True)
+    parser.add_argument('-b', '--brem' , type =Brem   , help='Brem category'              , required=True)
+    parser.add_argument('-k', '--kind' , type =str    , help='Kind of sample'             , required=True)
+    parser.add_argument('-B', '--block', type =int    , help='Block, by default -1, all'  , default=-1)
+    parser.add_argument('-x', '--syst' , type =str    , help='Systematic variabion'       , default='nom')
+    parser.add_argument('-l', '--logl' , type =int    , help='Logging level'              , default=20   )
+    parser.add_argument('--skip_fit'   , help='Will not fit, just plot the model'         , action ='store_true')
     args = parser.parse_args()
 
     return args
 #-------------------
 @cache
 def _load_config() -> Config:
-    args = _parse_args() if _ARGS is None else _ARGS
+    args            = _parse_args()
 
     vals            = {}
+    vals['trigger'] = args.trigger
     vals['year']    = args.year
     vals['brem']    = args.brem
     vals['block']   = 'all' if args.block == -1 else str(args.block)
@@ -69,25 +70,21 @@ def _load_config() -> Config:
 
     fitting         = {'skip' : args.skip_fit}
 
-    data = gut.load_data(package='rx_q2_data', fpath=f'config/{args.vers}.yaml')
+    data            = gut.load_data(package='rx_q2_data', fpath=f'config/{args.vers}.yaml')
     data['ana_dir'] = os.environ['ANADIR']
     data['vers'   ] = args.vers
     data['syst'   ] = args.syst
     data['logl'   ] = args.logl
-    data['project'] = args.proj
     data['input'  ].update(vals)
     data['fitting'].update(fitting)
-
-    zfit.settings.changed_warnings.hesse_name = False
 
     log.debug('Creating configuration')
     cfg = Config(**data)
 
     return cfg
 #-------------------
-def _initialize():
+def _initialize(cfg : Config):
     plt.style.use(mplhep.style.LHCb2)
-    cfg = _load_config()
 
     LogStore.set_level('dmu:stats:fitter'   , cfg.logl)
     LogStore.set_level('dmu:stats:utilities', cfg.logl)
@@ -96,7 +93,7 @@ def _initialize():
 #-------------------
 def _get_sig_pdf() -> zpdf:
     cfg = _load_config()
-    for pdf_name in cfg.fitting.model.pdfs:
+    for pdf_name in cfg.fitting.model:
         PL.values(kind=pdf_name, parameter='mu', val=3000, low=2800, high=3300)
         PL.values(kind=pdf_name, parameter='sg', val= 100, low=  10, high= 200)
 
@@ -109,7 +106,7 @@ def _get_sig_pdf() -> zpdf:
     mod     = ModelFactory(
     preffix = 'q2_smearing',
     obs     = cfg.obs,
-    l_pdf   = cfg.fitting.model.pdfs,
+    l_pdf   = cfg.fitting.model,
     l_shared= ['mu', 'sg'],
     l_float = ['mu', 'sg'])
     pdf     = mod.get_pdf()
@@ -190,29 +187,6 @@ def _par_val_from_dict(d_par : Mapping[str, Mapping[str,Any]]) -> tuple[float,fl
 
     return value, error
 #-------------------
-def _get_pars(res : zres) -> Parameters:
-    '''
-    Parameters
-    -------------------
-    res: Fit result after freezing
-
-    Returns
-    -------------------
-    Dictionary with:
-
-    Key  : Parameter name
-    Value: Tuple with value and error
-    '''
-    d_par = dict()
-    for par, d_val in res.params.items():
-        name = par.name
-        if not isinstance(name, str):
-            raise ValueError(f'Parameter name not a string, but: {name}')
-
-        d_par[name] = _par_val_from_dict(d_val)
-
-    return d_par
-#-------------------
 def _fit(d_fix : Parameters | None = None)-> Parameters | None:
     cfg = _load_config()
     kind= cfg.input.kind
@@ -226,7 +200,8 @@ def _fit(d_fix : Parameters | None = None)-> Parameters | None:
         log.warning('Skipping fit')
         return None
 
-    res=obj.fit(cfg=cfg.fitting[kind].model_dump())
+    fit_cfg = cfg.fitting[kind]
+    res=obj.fit(cfg=fit_cfg)
 
     if res is None:
         _plot_fit(dat, pdf, res)
@@ -247,11 +222,16 @@ def _fit(d_fix : Parameters | None = None)-> Parameters | None:
     log.info(30 * '-')
     _plot_fit(dat, pdf, res)
 
-    d_par = _get_pars(res)
+    pars = { par.name : (par.value, par.error) for par in res.parameters }
 
-    sut.save_fit(data=dat, model=pdf, res=res, fit_dir=cfg.out_dir, plt_cfg=cfg.plots.model_dump())
+    sut.save_fit(
+        data   =dat,
+        model  =pdf,
+        res    =res,
+        fit_dir=cfg.out_dir,
+        plt_cfg=cfg.plots)
 
-    return d_par
+    return pars
 #-------------------
 def _get_data(pdf : zpdf, kind : str) -> zdata:
     cfg       = _load_config()
@@ -293,7 +273,8 @@ def _plot_data(df : pnd.DataFrame) -> None:
     arr_mas = df[cfg.fitting.mass   ].to_numpy()
     arr_wgt = df[cfg.fitting.weights].to_numpy()
 
-    [[lower]], [[upper]] = cfg.obs.limits
+    lower, upper = sut.range_from_obs(cfg.obs)
+
     _, ax     = plt.subplots(figsize=(15, 10))
     data_hist = hist.Hist.new.Regular(
         cfg.plots.nbins,
@@ -328,7 +309,7 @@ def _add_q2_region_lines(obj : ZFitPlotter) -> None:
     axis.axvline(x=3600, c='red', ls=':')
 #-------------------
 def _get_text(data : zdata) -> tuple[str,str]:
-    nentries= data.num_entries.numpy()
+    nentries= data.num_entries
     text    = f'Candidates={nentries}'
     l_part  = []
     cfg     = _load_config()
@@ -341,9 +322,9 @@ def _get_text(data : zdata) -> tuple[str,str]:
     return text, title
 #-------------------
 def _plot_fit(
-    dat        : zdata,
-    pdf        : zpdf,
-    res        : zres) -> None:
+    dat : zdata,
+    pdf : zpdf,
+    res : FitResult) -> None:
     '''
     Function in charge of plotting fit from data and model
     '''
@@ -378,15 +359,13 @@ def _get_rdf(kind : str) -> RDF.RNode:
 
     cfg    = _load_config()
     inp    = cfg.input
-    sample = inp.samples[cfg.project][kind]
-    trigger= inp.trigger[cfg.project]
+    sample = inp.samples[inp.trigger][kind]
+    trigger= inp.trigger
     with RDFGetter.exclude_friends(names=inp.friends['excluded']):
         gtr    = RDFGetter(sample=sample, trigger=Trigger(trigger))
         rdf    = gtr.get_rdf(per_file=False)
 
-    trigger= cfg.input.trigger[cfg.project]
-
-    d_sel = sel.selection(trigger=trigger, q2bin='jpsi', process=sample)
+    d_sel = sel.selection(trigger=inp.trigger, q2bin=Qsq.jpsi, process=sample)
 
     for cut_name, cut_value in d_sel.items():
         log.debug(f'{cut_name:<20}{cut_value}')
@@ -400,7 +379,7 @@ def _get_rdf(kind : str) -> RDF.RNode:
 
     return rdf
 # ----------------------
-def _save_cutflow(rep : RDF.RCutFlowReport , cuts : dict[str,str]) -> None:
+def _save_cutflow(rep : RDF.RCutFlowReport , cuts : dict[Cuts,str]) -> None:
     '''
     Parameters
     -------------
@@ -430,16 +409,13 @@ def _make_table():
 
     _fit(d_fix=d_fix_par)
 #-------------------
-#-------------------
-def main(args : DictConfig | None = None):
+def main():
     '''
     Entry point
     '''
-    global _ARGS
-    _ARGS = args
-    _initialize()
-
     cfg = _load_config()
+    _initialize(cfg = cfg)
+
     with sel.custom_selection(d_sel = cfg.input.selection):
         _make_table()
 #-------------------
