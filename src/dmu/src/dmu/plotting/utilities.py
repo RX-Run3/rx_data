@@ -25,7 +25,7 @@ def annotate(
     size  : Font size, default 20
     x(y)off : Offset in x(y).
     '''
-    for x, y, v in zip(l_x, l_y, l_v):
+    for x, y, v in zip(l_x, l_y, l_v, strict=False):
         label = form.format(v)
 
         plt.plot(x, y, marker='o', markersize= 5, markeredgecolor=color, markerfacecolor=color)

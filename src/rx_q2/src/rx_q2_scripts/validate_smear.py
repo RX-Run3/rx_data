@@ -184,7 +184,7 @@ def get_rdf(trig, year, nbrem):
 def get_res_val(res, l_par):
     l_name    = [name for name in res.params]
     l_value   = res.values
-    d_par_val = dict(zip(l_name, l_value))
+    d_par_val = dict(zip(l_name, l_value, strict=False))
 
     return {name : val for name, val in d_par_val.items() if name in l_par}
 #-----------------------------------

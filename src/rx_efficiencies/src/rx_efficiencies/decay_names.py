@@ -54,13 +54,13 @@ class DecayNames:
     # --------------------------
     # correspondence between decay variables and latex
     # --------------------------
-    tex = dict(zip(l_nick_name, l_latex    ))
-    sam = dict(zip(l_nick_name, l_sample   ))
-    dec = dict(zip(l_nick_name, l_dec      ))
-    nic = dict(zip(l_sample   , l_nick_name))
+    tex = dict(zip(l_nick_name, l_latex, strict=False    ))
+    sam = dict(zip(l_nick_name, l_sample, strict=False   ))
+    dec = dict(zip(l_nick_name, l_dec, strict=False      ))
+    nic = dict(zip(l_sample   , l_nick_name, strict=False))
 
-    tex_nic : dict[str,str]       = dict(zip(l_latex , l_nick_name))
-    sam_dec : dict[str,list[str]] = dict(zip(l_sample, l_dec      ))
+    tex_nic : dict[str,str]       = dict(zip(l_latex , l_nick_name, strict=False))
+    sam_dec : dict[str,list[str]] = dict(zip(l_sample, l_dec, strict=False      ))
     # -----------------------------------
     @staticmethod
     def get_decays() -> list[str]:

@@ -88,7 +88,7 @@ def get_dataq(run_number : int) -> int:
     '''
     Takes run number, returns 0 (bad run) or 1 (good run)
     '''
-    for low_run, hig_run in zip(arr_low_run, arr_hig_run):
+    for low_run, hig_run in zip(arr_low_run, arr_hig_run, strict=False):
         if low_run <= run_number <= hig_run:
             return 1
 

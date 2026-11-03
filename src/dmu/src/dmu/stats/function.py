@@ -234,7 +234,7 @@ class Function:
 
         norg  = len(x)
 
-        d_tmp = dict(zip(x, y))
+        d_tmp = dict(zip(x, y, strict=False))
 
         x = list(d_tmp.keys())
         y = list(d_tmp.values())
