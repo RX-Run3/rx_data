@@ -269,7 +269,7 @@ def _load_selection_config() -> dict[str,dict[str,str | dict[str,str]]]:
 def _get_selection(
     chan   : Channel,
     proj   : Project,
-    q2_bin : Qsq) -> dict[str,str]:
+    q2_bin : Qsq) -> dict[Cuts,str]:
     '''
     Parameters
     -----------------
@@ -298,10 +298,12 @@ def _get_selection(
     if isinstance(d_cut, str):
         raise ValueError(f'Selection at {proj}/{chan} is a string: {d_cut}')
 
-    d_new = {}
+    d_new : dict[Cuts,str] = {}
     for cut_name, d_q2bin in d_cut.items():
+
+        cut = Cuts(cut_name)
         if not isinstance(d_q2bin, dict):
-            d_new[cut_name] = d_q2bin
+            d_new[cut] = d_q2bin
             continue
 
         if q2_bin not in d_q2bin:
@@ -313,7 +315,7 @@ def _get_selection(
         cut_val = d_q2bin[q2_bin]
         log.debug(f'Overriding {cut_name} for {q2_bin}')
 
-        d_new[cut_name] = cut_val
+        d_new[cut] = cut_val
 
     return d_new
 #-----------------------
