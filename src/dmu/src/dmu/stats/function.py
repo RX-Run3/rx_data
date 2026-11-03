@@ -236,7 +236,7 @@ class Function:
 
         norg  = len(x)
 
-        d_tmp = dict(zip(x, y, strict=False))
+        d_tmp = dict(zip(x, y, strict=True))
 
         x = list(d_tmp.keys())
         y = list(d_tmp.values())
@@ -277,11 +277,12 @@ class Function:
         Returns dictionary of attributes for encoding
         '''
         d_data : dict = obj.__dict__
+        copy = dict(d_data)
 
-        if '_interpolator' in d_data:
-            del d_data['_interpolator']
+        if '_interpolator' in copy:
+            del copy['_interpolator']
 
-        return d_data
+        return copy
     #------------------------------------------------
     def _save_plot(self, path : str):
         '''

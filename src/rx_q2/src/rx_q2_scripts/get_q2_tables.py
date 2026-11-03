@@ -62,7 +62,7 @@ def _load_config() -> Config:
     args            = _parse_args()
 
     vals            = {}
-    vals['trigger'] = args.trigger
+    vals['trigger'] = args.trig
     vals['year']    = args.year
     vals['brem']    = args.brem
     vals['block']   = 'all' if args.block == -1 else str(args.block)

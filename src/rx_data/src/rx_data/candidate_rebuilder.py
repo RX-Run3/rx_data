@@ -285,7 +285,7 @@ class CandidateRebuilder:
         stored_kinds = ['new'] if only_new else ['old', 'new']
         for stored_kind in stored_kinds:
             sr_mass = self._calculate_mass(progress_bar, stored_kind)
-            d_data[f'{prefix}_mass_{kind}'] = sr_mass.to_numpy().flatten()
+            d_data[f'{prefix}_mass_{stored_kind}'] = sr_mass.to_numpy().flatten()
 
         if kind == 'pandas':
             return pnd.DataFrame(d_data)
