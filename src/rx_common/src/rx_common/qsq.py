@@ -1,5 +1,5 @@
 '''
-Module containing Qsq enum
+Module containing Qsq and QsqDef enums
 '''
 import re
 
@@ -10,7 +10,7 @@ from typing      import Final
 from dmu.generic import utilities as gut
 
 _MAX_QSQ : Final[float] = 100e6 # Largest q2 value that makes sense
-_REGEX   : Final[str  ] = r'\(q2\s+>\s+(\d+)\)\s+&&\s+\(q2\s+<\s+(\d+)\)' # Used to extract bounds from q2 cut strings
+_REGEX   : Final[str  ] = r'\((\w+)\s+>\s+(\d+)\)\s+&&\s+\((\w+)\s+<\s+(\d+)\)' # Used to extract bounds from q2 cut strings
 # -----------------------
 class QsqMeta[T : Qsq](EnumMeta):
     @property
@@ -19,20 +19,6 @@ class QsqMeta[T : Qsq](EnumMeta):
         List of q2 bins for rare mode
         '''
         return [cls.low, cls.central, cls.high]
-# -----------------------
-class QsqKind(StrEnum):
-    '''
-    Enum mean to describe how q2 is calculated
-    '''
-    dtf = auto()
-    '''q2 obtained from constraining B mass to PDG value'''
-    raw = auto()
-    '''Default q2, using 4-vector from leptons'''
-    trk = auto()
-    '''q2 built from track information only'''
-    # -----------------------
-    def update_expression(self, expr : str) -> str:
-        return expr
 # -----------------------
 class Qsq(StrEnum, metaclass = QsqMeta):
     '''
@@ -140,8 +126,44 @@ class QsqDef(StrEnum):
     Enum meant to symbolize q2 definition
     '''
     default     = auto()
+    '''Default q2, using 4-vector from leptons'''
     constrained = auto()
+    '''q2 obtained from constraining B mass to PDG value'''
     true        = auto()
+    '''True q2, only available in MC'''
+    trk = auto()
+    '''q2 built from track information only'''
+    # -----------------------
+    @property
+    def branch_name(self) -> str:
+        '''
+        Name of branch in tree storing this variable
+        '''
+        match self:
+            case QsqDef.constrained:
+                return 'q2_dtf'
+            case QsqDef.default:
+                return 'q2'
+            case QsqDef.trk:
+                return 'q2_trk'
+            case QsqDef.true:
+                return 'q2_true'
+    # -----------------------
+    def from_name(self, name : str) -> 'QsqDef':
+        '''
+        Parameters
+        ---------------
+        name: Name of branch associated to q2
+
+        Returns
+        ---------------
+        QsqKind representation
+        '''
+        for kind in QsqDef:
+            if name == kind.name:
+                return kind
+
+        raise ValueError(f'Variable {name} not associated to any q2 kind')
     # -----------------------
     @property
     def color(self) -> str:
@@ -155,19 +177,8 @@ class QsqDef(StrEnum):
                 return 'green'
             case QsqDef.true:
                 return 'red'
-    # -----------------------
-    @property
-    def branch_name(self) -> str:
-        '''
-        Name of branch associated
-        '''
-        match self:
-            case QsqDef.default:
-                return 'q2'
-            case QsqDef.constrained:
-                return 'q2_dtf'
-            case QsqDef.true:
-                return 'q2_true'
+            case QsqDef.trk:
+                return 'black'
     # -----------------------
     @property
     def latex(self) -> str:
@@ -181,6 +192,35 @@ class QsqDef(StrEnum):
                 return '$q_{DTF}^{2}$'
             case QsqDef.true:
                 return '$q_{True}^{2}$'
+            case QsqDef.trk:
+                return '$q_{trk}^{2}$'
+    # -----------------------
+    def update_expression(self, expr : str) -> str:
+        '''
+        Parameters
+        ------------------
+        expr: Expression used to apply q2 cut
+
+        Returns
+        ------------------
+        Cut expression with variable renamed
+        '''
+        if expr == 'true':
+            return expr
+
+        mtch = re.match(_REGEX, expr)
+        if not mtch:
+            raise ValueError(f'Cannot extract q2 variable from: {expr}')
+
+        var_1 = mtch.group(1)
+        var_2 = mtch.group(2)
+        var_3 = mtch.group(3)
+        var_4 = mtch.group(4)
+
+        if var_1 != var_3:
+            raise ValueError(f'Upper and lower bound q2 differ: {var_1}!={var_3}')
+
+        return f'({self.name} > {var_2}) && ({self.name} < {var_4})'
 # -----------------------
 @cache
 def _load_data() -> dict[str,float]:
@@ -207,8 +247,8 @@ def _load_data() -> dict[str,float]:
         if not mtch:
             raise ValueError(f'Cannot match {expr} with {_REGEX}')
 
-        lower_val = float(mtch.group(1))
-        upper_val = float(mtch.group(2))
+        lower_val = float(mtch.group(2))
+        upper_val = float(mtch.group(4))
 
         result[f'{qsq}_lower'] = lower_val
         result[f'{qsq}_upper'] = upper_val
