@@ -10,6 +10,7 @@ import numpy                 as np
 import matplotlib.pyplot     as plt
 import matplotlib.colors     as mcolors
 
+from typing                  import Any
 from hist                    import Hist, BaseHist
 from mplhep.error_estimation import poisson_interval
 from typing                  import Final
@@ -25,6 +26,7 @@ from .imports               import zfit, tensorflow as tf
 
 param      = zfit.param
 Npaflt     = np.ndarray[tuple[int], np.dtype[np.float64]]
+Npaint     = np.ndarray[tuple[int], np.dtype[np.int64]]
 type Range = tuple[float,float]
 type zpar  = zfit.param.Parameter
 
@@ -55,7 +57,8 @@ def _range_from_obs(obs : zfit.Space) -> tuple[float,float]:
     if len(obs.limits) != _MIN_LIMITS:
         raise ValueError(f'Observable has more than one range: {obs.limits}')
 
-    minx, maxx = obs.limits
+    lims : tuple[Any,Any] = obs.limits
+    minx, maxx            = lims
 
     if not isinstance(minx, np.ndarray):
         raise ValueError(f'Minx is not an array but: {minx}')
@@ -96,15 +99,15 @@ class ZFitPlotter:
         self,
         data   : zdat | np.ndarray | pd.Series | pd.DataFrame,
         model  : zpdf,
-        weights: np.ndarray| None = None,
-        result : zres | None      = None):
+        weights: np.ndarray | None       = None,
+        result : zres | FitResult | None = None):
         '''
         Parameters
         ------------------
         data   : The data you are fit on
         model  : The final total fit model
         weights: 1D numpy array of weights
-        result : Zfit fit result object
+        result : Zfit or DMU fit result object
         '''
         if not isinstance(model.space, zfit.Space):
             raise ValueError('No observable found in PDF')
@@ -204,7 +207,7 @@ class ZFitPlotter:
         values   = data_hist.values()
         variance = data_hist.variances()
 
-        errors : tuple[Npaflt, Npaflt] = poisson_interval(values, variance)
+        errors : tuple[Npaflt, Npaflt] = poisson_interval(values, variance) # type: ignore
         low, up                        = errors
 
         l_error  = list(zip(values - low, up - values, strict = True))
@@ -308,7 +311,7 @@ class ZFitPlotter:
         pdf_hist   : Hist,
         l_range    : None | list[Range] = None) -> tuple[Hist, list[Range]]:
         lower, upper        = self.plot_range
-        pdf_values : Npaflt = pdf_hist.values()
+        pdf_values : Npaint = pdf_hist.values()
         dat, wgt  = self._get_range_data(l_range, blind=False)
         hist_bldr = hist.Hist.new.Regular(self.nbins, lower, upper, name=self._obs_name, underflow=False, overflow=False)
         data_hist = hist_bldr.Weight()
@@ -375,10 +378,14 @@ class ZFitPlotter:
         '''
         Returns goodness of fit string
         '''
-        if not self._result or not hasattr(self._result, 'gof'):
+        if self._result is None:
             return None
 
-        chi2, ndof, pval = getattr(self._result, 'gof') # noqa: B009
+        gof = getattr(self._result, 'gof', None)
+        if gof is None:
+            return None
+
+        chi2, ndof, pval = gof
         rchi2 : float    = chi2 / ndof
 
         return (
@@ -411,15 +418,19 @@ class ZFitPlotter:
 
         if error is not available, will assign zeros
         '''
-        if self._result is not None:
-            res   = FitResult.from_zfit(
+        if self._result is None:
+            s_par = self.total_model.get_params()
+            return {par.name : [float(par.value()), 0] for par in s_par }
+
+        if isinstance(self._result, zres):
+            res = FitResult.from_zfit(
                 res          = self._result,
                 no_errors_ok = True)
-            pars  = res.parameters
-            d_par = { par.name : [par.value, par.error] for par in pars }
         else:
-            s_par = self.total_model.get_params()
-            d_par = {par.name : [float(par.value()), 0] for par in s_par }
+            res = self._result
+
+        pars  = res.parameters
+        d_par = { par.name : [par.value, par.error] for par in pars }
 
         return d_par
     #----------------------------------------
@@ -740,7 +751,7 @@ class ZFitPlotter:
 
         if data_hist and not ymax and scale == 'log':
             val = _Y_MAX_LOG_SCALE * data_hist.values()
-            ymax= np.max(val)
+            ymax= float(np.max(val))
 
         axis.set_ylim(bottom = ymin, top = ymax)
     #----------------------------------------
@@ -872,7 +883,12 @@ class ZFitPlotter:
         text           = self._get_text(self.cfg.ext_text)
         xlabel, ylabel = self._get_labels(self.cfg.xlabel, self.cfg.ylabel, self.cfg.unit)
 
-        self.axs[0].legend(title=text, fontsize=20, title_fontsize=20, loc=self.cfg.leg_loc)
+        self.axs[0].legend(
+            title         =text,
+            fontsize      =20,
+            title_fontsize=20,
+            loc           =self.cfg.leg_loc)
+
         self.axs[0].set(xlabel=xlabel, ylabel=ylabel)
 
         self.axs[0].set_xlim(self.plot_range)

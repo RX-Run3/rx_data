@@ -1,7 +1,7 @@
 '''
 Module holding ZFitPlotterConf
 '''
-from typing          import Self
+from typing          import Self, Literal
 from pydantic        import BaseModel, Field
 from matplotlib.axes import Axes
 
@@ -75,7 +75,11 @@ class ZFitPlotterConf(BaseModel, frozen = True):
     figsize : tuple[int, int] = (13, 7)
     '''Tuple with figure size, default (13, 7)'''
 
-    leg_loc : str = 'best'
+    leg_loc : Literal[
+        'best',
+        'upper right', 'upper left', 'lower left', 'lower right',
+        'right', 'center left', 'center right',
+        'lower center', 'upper center', 'center'] = 'best'
     '''Location of legend, default 'best' '''
     # ---------------------------
     @classmethod
