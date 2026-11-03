@@ -13,7 +13,7 @@ input:
     - 0
     - 1
     - 2
-  cali:   # This specifies what weights the MC input to the calibration can have 
+  cali:   # This specifies what weights the MC input to the calibration can have
     - 000 # No weights
     - nom # Fully weighted with nominal weights
   samples: # Supported samples

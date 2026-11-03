@@ -8,7 +8,7 @@ observable:
   jpsi:
     name : B_Mass
     range:
-      - 5000 
+      - 5000
       - 6500
 components:
   jpsi:
@@ -30,11 +30,11 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
         nbins           : 400
         stacked         : True
         d_leg :
-          bpkpjpsimm_brem_xx0 : $B^+\to J/\psi(\to \mu^+\mu^-) K^+$ 
-          bppijpsimm_brem_xx0 : $B^+\to J/\psi(\to \mu^+\mu^-) \pi^+$ 
-          bpkppsi2mm_brem_xx0 : $B^+\to \psi(2S)(\to \mu^+\mu^-) K^+$ 
+          bpkpjpsimm_brem_xx0 : $B^+\to J/\psi(\to \mu^+\mu^-) K^+$
+          bppijpsimm_brem_xx0 : $B^+\to J/\psi(\to \mu^+\mu^-) \pi^+$
+          bpkppsi2mm_brem_xx0 : $B^+\to \psi(2S)(\to \mu^+\mu^-) K^+$
           comb_brem_xx0       : Combinatorial
-          ccbar_ccbar         : $c\bar{c}$ 
+          ccbar_ccbar         : $c\bar{c}$
         plot_range:
           - 5100
           - 6000

@@ -1,7 +1,7 @@
 # This file contains all the truth matching strings needed by
 # MC reconstructed as Bu -> K^+ \ell\ell
 
-input: 
+input:
   - rx_selection_data
   - truth_matching/common.yaml
 # ----------
@@ -9,14 +9,14 @@ not_fail_lep      : 'TMath::Abs(L1_TRUEID) != 0 && TMath::Abs(L2_TRUEID)   != 0'
 not_fail_mes      : 'TMath::Abs(B_TRUEID)  != 0 && TMath::Abs(Jpsi_TRUEID) != 0 && TMath::Abs(H_TRUEID) != 0'
 not_fail_moth_1   : 'TMath::Abs(L1_MC_MOTHER_ID)   != 0 && TMath::Abs(L2_MC_MOTHER_ID) != 0'
 not_fail_moth_2   : 'TMath::Abs(Jpsi_MC_MOTHER_ID) != 0 && TMath::Abs(H_MC_MOTHER_ID)  != 0'
-not_fail          : '{not_fail_lep} && {not_fail_mes} && {not_fail_moth_1} && {not_fail_moth_2}' 
+not_fail          : '{not_fail_lep} && {not_fail_mes} && {not_fail_moth_1} && {not_fail_moth_2}'
 not_reso_ee       : '( ({jpsi_ee_kp}) == 0 && ({jpsi_ee_pi}) == 0 && ({psi2_ee_kp}) == 0 && ({psi2_ee_pi}) == 0 )'
 not_reso_mm       : '( ({jpsi_mm_kp}) == 0 && ({jpsi_mm_pi}) == 0 && ({psi2_mm_kp}) == 0 && ({psi2_mm_pi}) == 0 )'
 # ----------
-h_is_electron     : 'TMath::Abs(H_TRUEID)       ==   11' 
-h_is_muon         : 'TMath::Abs(H_TRUEID)       ==   13' 
-h_is_pion         : 'TMath::Abs(H_TRUEID)       ==  211' 
-h_is_kaon         : 'TMath::Abs(H_TRUEID)       ==  321' 
+h_is_electron     : 'TMath::Abs(H_TRUEID)       ==   11'
+h_is_muon         : 'TMath::Abs(H_TRUEID)       ==   13'
+h_is_pion         : 'TMath::Abs(H_TRUEID)       ==  211'
+h_is_kaon         : 'TMath::Abs(H_TRUEID)       ==  321'
 h_is_proton       : 'TMath::Abs(H_TRUEID)       == 2212'
 
 h_from_phi        : 'TMath::Abs(H_MC_MOTHER_ID) == 333'
@@ -199,7 +199,7 @@ psi2_ee_pi: '{b_is_bplus} && {ll_is_psi2} && {ll_from_bplus} && {lep_are_electro
 12125101 : '{b_is_bplus} && {lep_are_electrons} && {lep_from_bplus} && {h_is_pion} && ({h_from_kshort} || {h_from_kstplus})'
 #B+ -> K*+(-> K+ pi0) Jpsi(ee)
 12153420  : '{b_is_bplus} && {ll_is_jpsi} && {ll_from_bplus} && {lep_are_electrons} && {lep_from_jpsi} && {h_is_kaon} && {h_from_kstplus}'
-#B+ -> K*+(-> K+ pi0) psi2S(ee) 
+#B+ -> K*+(-> K+ pi0) psi2S(ee)
 12153430  : '{b_is_bplus} && {ll_is_psi2} && {ll_from_bplus} && {lep_are_electrons} && {lep_from_psi2} && {h_is_kaon} && {h_from_kstplus}'
 #-------------------------------------------------------------
 #  Bu -> Jpsi(ee) Kst(KS(-> pipi) pi)

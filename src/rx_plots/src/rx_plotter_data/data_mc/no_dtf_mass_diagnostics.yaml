@@ -37,12 +37,12 @@ plots:
     H_PT :
       normalized : true
       binning : [0, 10000, 40]
-      yscale  : linear 
+      yscale  : linear
       labels  : ['$p_T(K^+)$', '']
     B_ETA :
       normalized : true
       binning : [2, 5, 40]
-      yscale  : linear 
+      yscale  : linear
       labels  : ['$\eta(B^+)$', '']
     Jpsi_PT :
       normalized : true
@@ -52,7 +52,7 @@ plots:
     Jpsi_ETA :
       normalized : true
       binning : [2, 5, 40]
-      yscale  : linear 
+      yscale  : linear
       labels  : ['$\eta(J/\psi)$', '']
     Jpsi_IPCHI2_OWNPV:
       normalized : true
@@ -96,7 +96,7 @@ plots:
     B_FDCHI2_OWNPV :
       normalized : true
       binning : [0, 10000, 40]
-      yscale  : linear 
+      yscale  : linear
       labels  : ['$FD_{\chi^2}(B^+)$', '']
     min_ll_pt:
       normalized : true
@@ -111,12 +111,12 @@ plots:
     min_ll_eta:
       normalized : true
       binning : [1.5, 5, 30]
-      yscale  : linear 
+      yscale  : linear
       labels  : ['$\min(\eta(e^+), \eta(e^-))$', '']
     max_ll_eta:
       normalized : true
       binning : [1.5, 5, 30]
-      yscale  : linear 
+      yscale  : linear
       labels  : ['$\max(\eta(e^+), \eta(e^-))$', '']
 style:
   skip_lines : true
@@ -125,6 +125,6 @@ plugin:
       vars:
         - B_M
       obs    : [4500, 6000]
-      plot   : true        
-      format : FWHM={:.0f} MeV 
-      add_std: True        
+      plot   : true
+      format : FWHM={:.0f} MeV
+      add_std: True

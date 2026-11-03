@@ -6,20 +6,20 @@ general:
 
 correlation:
   size     : [20, 15]
-  title    : Correlation matrix 
+  title    : Correlation matrix
   annot    : true
   fmt      : '.3f'
   vmin     : 0.0
   vmax     : 1.0
-  cmap     : Spectral 
+  cmap     : Spectral
   linewidth: 0.5
   annot_kws:
-    size : 15 
+    size : 15
   rotation :
     x    : 45
 
 generated:
-  x     : -1 
+  x     : -1
   label : Generated
   ls    : --
   c     : red
@@ -43,7 +43,7 @@ plots:
     binning: [0.0, 100., 60]
     yscale: 'linear'
     labels: ['$\varepsilon(\mu)$', 'Entries']
-  
+
   nbkg_val:
     binning: [700, 1300, 60]
     yscale: 'linear'
@@ -52,7 +52,7 @@ plots:
     binning: [20, 30, 60]
     yscale: 'linear'
     labels: ['nbkg_err', 'Entries']
-  
+
   nsig_val:
     binning: [750, 1250, 60]
     yscale: 'linear'
@@ -104,10 +104,10 @@ plugin:
       format : '{:.3f}'
 
 summary:
-  median : 
+  median :
     - mu_err
     - sg_err
-  mean : 
-    - Valid 
+  mean :
+    - Valid
   pulls:
     - mu_pul

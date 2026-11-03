@@ -64,7 +64,7 @@ dataset :
     bkg :
       bdt  : (1)
       q2   : q2 >  15000000 && q2_dtf < 22000000
-      mass : (1) 
+      mass : (1)
     sig :                            # Cannot be put in function of aliases
       bdt  : (1)
       q2   : q2 >  15000000 && q2_dtf < 22000000

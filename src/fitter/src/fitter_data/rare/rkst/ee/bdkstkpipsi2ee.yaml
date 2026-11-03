@@ -1,4 +1,4 @@
-component : bdkstkpipsi2ee 
+component : bdkstkpipsi2ee
 categories:
   main:
     model :
@@ -20,8 +20,8 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
   nbins     : 50
   stacked   : True
   d_leg :
-    dscb_1 : DSCB 
-    cbl_1  : Crystal Ball 
+    dscb_1 : DSCB
+    cbl_1  : Crystal Ball
   plot_range:
     - 4300
     - 6000

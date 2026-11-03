@@ -17,9 +17,9 @@ RKst:
     kinem_kst : TMath::Abs(Kst_M - 892) < 400 && Kst_PT > 300
     clones    : (th_l1_l2 > 5e-4) && (th_l1_kp > 5e-4) && (th_l1_pm > 5e-4) && (th_l2_kp > 5e-4) && (th_l2_pm > 5e-4) && (th_kp_pm > 5e-4)
     tr_ipchi2 : H1_IPCHI2_OWNPV > 9 && H2_IPCHI2_OWNPV > 9 && L1_IPCHI2_OWNPV > 9 && L2_IPCHI2_OWNPV > 9
-    pid_l     : (1) 
-    pid_k     : (1) 
-    rich      : L1_PPHASRICH && L2_PPHASRICH && H1_PPHASRICH && H2_PPHASRICH 
+    pid_l     : (1)
+    pid_k     : (1)
+    rich      : L1_PPHASRICH && L2_PPHASRICH && H1_PPHASRICH && H2_PPHASRICH
     acceptance: L1_INECAL    && L2_INECAL && H1_INMUON && H2_INMUON
     cascade   : (1)
     jpsi_misid: (1)
@@ -32,9 +32,9 @@ RKst:
     kinem_kst : TMath::Abs(Kst_M - 892) < 400 && Kst_PT > 300
     clones    : (th_l1_l2 > 5e-4) && (th_l1_kp > 5e-4) && (th_l1_pm > 5e-4) && (th_l2_kp > 5e-4) && (th_l2_pm > 5e-4) && (th_kp_pm > 5e-4)
     tr_ipchi2 : H1_IPCHI2_OWNPV > 9 && H2_IPCHI2_OWNPV > 9 && L1_IPCHI2_OWNPV > 9 && L2_IPCHI2_OWNPV > 9
-    pid_l     : (1) 
-    pid_k     : (1) 
-    rich      : L1_PPHASRICH && L2_PPHASRICH && H1_PPHASRICH && H2_PPHASRICH 
+    pid_l     : (1)
+    pid_k     : (1)
+    rich      : L1_PPHASRICH && L2_PPHASRICH && H1_PPHASRICH && H2_PPHASRICH
     acceptance: L1_INMUON    && L2_INMUON    && H1_INMUON    && H2_INMUON
     cascade   : (1)
     jpsi_misid: (1)

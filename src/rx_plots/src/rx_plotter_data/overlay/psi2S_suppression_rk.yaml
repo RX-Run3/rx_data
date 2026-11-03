@@ -1,4 +1,4 @@
-# This config is used to overlay different distributions (mostly masses) 
+# This config is used to overlay different distributions (mostly masses)
 # in different mva_prc bins
 styling: &sty
   histtype : step
@@ -9,11 +9,11 @@ selection:
   q2   : (1)
   mass : (1)
 cutflow:
-  None : (1) 
-  '$m(B^+)-400$ MeV': B_const_mass_M > 5280 - 400 
-  '$m(B^+)-500$ MeV': B_const_mass_M > 5280 - 500 
-  '$m(B^+)-600$ MeV': B_const_mass_M > 5280 - 600 
-  '$m(B^+)-800$ MeV': B_const_mass_M > 5280 - 800 
+  None : (1)
+  '$m(B^+)-400$ MeV': B_const_mass_M > 5280 - 400
+  '$m(B^+)-500$ MeV': B_const_mass_M > 5280 - 500
+  '$m(B^+)-600$ MeV': B_const_mass_M > 5280 - 600
+  '$m(B^+)-800$ MeV': B_const_mass_M > 5280 - 800
 saving:
   plt_dir : overlay/psi2S_suppession
 plots:
@@ -21,9 +21,9 @@ plots:
     binning    : [3200, 3800, 30]
     yscale     : 'linear'
     labels     : ['M$(J/\psi)$[MeV]', 'Normalized']
-    title      : Mass distribution for different lower cuts on $B^+_{DTF}$ 
+    title      : Mass distribution for different lower cuts on $B^+_{DTF}$
     name       : jpsi_mass_mva_prc_raw
-    normalized : false 
+    normalized : false
     styling:
       <<: *sty
     vline :
@@ -36,9 +36,9 @@ plots:
     binning    : [3200, 3800, 30]
     yscale     : 'linear'
     labels     : ['$M_{corr}(J/\psi)$[MeV]', 'Normalized']
-    title      : Mass distribution for different lower cuts on $B^+_{DTF}$ 
+    title      : Mass distribution for different lower cuts on $B^+_{DTF}$
     name       : jpsi_mass_mva_prc_cor
-    normalized : false 
+    normalized : false
     styling:
       <<: *sty
     vline :
@@ -51,7 +51,7 @@ plots:
     binning    : [4500, 6000, 60]
     yscale     : 'linear'
     labels     : ['M$(B^+)$[MeV]', 'Normalized']
-    title      : Mass distribution for different lower cuts on $B^+_{DTF}$ 
+    title      : Mass distribution for different lower cuts on $B^+_{DTF}$
     name       : b_mass_mva_prc_raw
     normalized : true
     styling:
@@ -60,7 +60,7 @@ plots:
     binning    : [4500, 6000, 60]
     yscale     : 'linear'
     labels     : ['$M_{corr}(B^+)$[MeV]', 'Normalized']
-    title      : Mass distribution for different lower cuts on $B^+_{DTF}$ 
+    title      : Mass distribution for different lower cuts on $B^+_{DTF}$
     name       : b_mass_mva_prc_cor
     normalized : true
     styling:
@@ -69,7 +69,7 @@ plots:
     binning    : [5100, 5500, 60]
     yscale     : 'linear'
     labels     : ['$M_{DTF}(B^+)$[MeV]', 'Normalized']
-    title      : Mass distribution for different lower cuts on $B^+_{DTF}$ 
+    title      : Mass distribution for different lower cuts on $B^+_{DTF}$
     name       : b_dtf_mass_mva_prc_raw
     normalized : true
     styling:

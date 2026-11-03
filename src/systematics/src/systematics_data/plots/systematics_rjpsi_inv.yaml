@@ -12,8 +12,8 @@ axes:
     limits: [0, 3]
     bins  : 50
   y:
-    label : Entries 
-    limits: null 
+    label : Entries
+    limits: null
     bins  : 0
 vline:
   style : '-'

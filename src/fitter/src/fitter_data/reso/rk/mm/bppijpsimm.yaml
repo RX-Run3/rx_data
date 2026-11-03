@@ -4,7 +4,7 @@ categories:
     selection : {}
     model :
       pdfs :
-        - dscb 
+        - dscb
         - cbl
       shared        :
         - mu
@@ -23,5 +23,5 @@ plots:
     - 5100
     - 5700
   d_leg :
-    cbl_bppijpsimm_brem_xx0_1  : Crystal Ball 
-    dscb_bppijpsimm_brem_xx0_1 : DSCB 
+    cbl_bppijpsimm_brem_xx0_1  : Crystal Ball
+    dscb_bppijpsimm_brem_xx0_1 : DSCB

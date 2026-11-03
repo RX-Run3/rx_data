@@ -15,11 +15,11 @@ plots:
         labels     : ['$M(B^+)$', 'Normalized']
         title      : ''
         name       : 'DaVinci'
-        normalized : true 
+        normalized : true
     B_Mass:
         binning    : [4500, 6000, 100]
         yscale     : 'linear'
         labels     : ['$M_{corr}(B^+)$', 'Normalized']
         title      : ''
         name       : 'Custom'
-        normalized : true 
+        normalized : true

@@ -17,7 +17,7 @@ selection :
   - PARTICLE_BPVIPCHI2 > 9
   - PARTICLE_PPHASRICH
   - PARTICLE_INECAL
-binning: 
+binning:
   nominal : config/binning.yaml
 # -----------------------------------------------
 subselection:

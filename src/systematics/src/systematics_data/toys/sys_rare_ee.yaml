@@ -19,12 +19,12 @@ pKstee:
   skip      : False
 pKKK:
   component : pKKK
-  delta_norm: 20 
+  delta_norm: 20
   bootstrap : null
   skip      : False
 pKKpi:
   component : pKKpi
-  delta_norm: 20 
+  delta_norm: 20
   bootstrap : null
   skip      : False
 pKpipi:

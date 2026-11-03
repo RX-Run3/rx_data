@@ -8,10 +8,10 @@ dataset :
     paths:
         sig :
             file_path : /publicfs/lhcb/user/campoverde/Data/cache/tools/apply_selection/bdt_train/v3/ctrl_BuToKpEE_ana/v2/2024_ETOS/*.root
-            tree_name : ETOS 
+            tree_name : ETOS
         bkg :
             file_path : /publicfs/lhcb/user/campoverde/Data/cache/tools/apply_selection/bdt_train/v3/data_ana_mva_bp/v4/2024_ETOS/*.root
-            tree_name : ETOS 
+            tree_name : ETOS
     define :
       mass       : 'B_nopv_const_mass_M[0]'
       min_ll_pt  : 'TMath::Min(L1_PT , L2_PT)'
@@ -21,11 +21,11 @@ dataset :
 training :
     nfold    : 10
     rdm_stat : 1
-    features : 
+    features :
         - B_PT
         - B_IPCHI2_OWNPV
         - B_FDCHI2_OWNPV
-        - B_ENDVERTEX_CHI2DOF 
+        - B_ENDVERTEX_CHI2DOF
         - B_DIRA_OWNPV
     #
         - Jpsi_PT
@@ -38,8 +38,8 @@ training :
         - max_ll_ipc
         - min_ll_ipc
     #
-        - H_PT 
-        - H_IPCHI2_OWNPV 
+        - H_PT
+        - H_IPCHI2_OWNPV
     hyper    :
       loss              : log_loss
       n_estimators      : 100
@@ -81,7 +81,7 @@ plotting:
               binning : [0.9995, 1, 100]
               yscale  : 'log'
               labels  : ['DIRA$(B^+)$', '']
-            
+
             Jpsi_PT :
               normalized : true
               binning : [0, 30000, 100]

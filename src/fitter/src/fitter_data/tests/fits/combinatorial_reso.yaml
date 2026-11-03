@@ -4,7 +4,7 @@ reso_veto: &reso_veto
 
 categories:
   main:
-    models : 
+    models :
       jpsi : [hypexp]
 jpsi:
   shared        : []
@@ -12,7 +12,7 @@ jpsi:
   reparametrize : {}
   fix           : {}
   constraints:
-    sample     : DATA_24* 
+    sample     : DATA_24*
     trigger    : rk_ee_ss
     selection  :
       mass : (1)
@@ -22,10 +22,10 @@ jpsi:
       - ap       # E.g mu_hypexp_combinatorial_1
       - bt
     fit :
-      strategy : 
+      strategy :
         retry :
           ntries        : 20
           pvalue_thresh : 0.05
-          ignore_status : False 
+          ignore_status : False
     plots:
       nbins : 50

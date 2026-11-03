@@ -3,7 +3,7 @@ productions:
   rx_2024:
     versions:
       sim10g_unfiltered: v1r5754
-      sim10g_filtered  : v1r5781 
+      sim10g_filtered  : v1r5781
       sim10g_ss        : v1r5811
       data_ecal        : v1r6028
       mc_rkst          : v1r6361
@@ -11,15 +11,15 @@ productions:
       sim10g_unfiltered: null
       sim10g_filtered  : null
       sim10g_ss        : null
-      data_ecal        : null 
+      data_ecal        : null
       mc_rkst          : null
     fractions:
-      mc_24_w31_magup_sim10g_11144001_bd_jpsikst_mm_eq_dpc_tuple      : null 
-      mc_24_w32_34_magup_sim10g_11144001_bd_jpsikst_mm_eq_dpc_tuple   : 0.08 
-      mc_24_w35_37_magup_sim10g_11144001_bd_jpsikst_mm_eq_dpc_tuple   : 0.08 
-      mc_24_w37_39_magdown_sim10g_11144001_bd_jpsikst_mm_eq_dpc_tuple : 0.08 
-      mc_24_w40_41_magdown_sim10g_11144001_bd_jpsikst_mm_eq_dpc_tuple : 0.08 
-      mc_24_w41_42_magup_sim10g_11144001_bd_jpsikst_mm_eq_dpc_tuple   : 0.08 
+      mc_24_w31_magup_sim10g_11144001_bd_jpsikst_mm_eq_dpc_tuple      : null
+      mc_24_w32_34_magup_sim10g_11144001_bd_jpsikst_mm_eq_dpc_tuple   : 0.08
+      mc_24_w35_37_magup_sim10g_11144001_bd_jpsikst_mm_eq_dpc_tuple   : 0.08
+      mc_24_w37_39_magdown_sim10g_11144001_bd_jpsikst_mm_eq_dpc_tuple : 0.08
+      mc_24_w40_41_magdown_sim10g_11144001_bd_jpsikst_mm_eq_dpc_tuple : 0.08
+      mc_24_w41_42_magup_sim10g_11144001_bd_jpsikst_mm_eq_dpc_tuple   : 0.08
   rx_filter:
     versions:
       data_ecal : v1r6146

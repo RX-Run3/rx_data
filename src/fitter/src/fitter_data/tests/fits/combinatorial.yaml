@@ -2,15 +2,15 @@ reso_veto: &reso_veto
   jpsi veto  : "TMath::Abs(B_const_mass_M       - 5280) > 200"
   psi2s veto : "TMath::Abs(B_const_mass_psi2S_M - 5280) > 100"
 fit_strategy: &fit_strategy
-  strategy : 
+  strategy :
     retry :
       ntries        : 20
       pvalue_thresh : 0.05
-      ignore_status : False 
+      ignore_status : False
 constraints: &cons
-    sample     : DATA_24* 
+    sample     : DATA_24*
     trigger    : rkst_ee_ss
-    selection  : 
+    selection  :
       <<: *reso_veto
     parameters : # Will constrain parameters starting
       - mu       # with any of these strings
@@ -24,7 +24,7 @@ constraints: &cons
 
 categories:
   main:
-    models : 
+    models :
       low     : [hypexp]
       central : [hypexp]
       high    : [suj]
@@ -50,13 +50,13 @@ high:
     dl_suj : 2.5
     gm_suj : -10
   constraints:
-      sample     : DATA_24* 
+      sample     : DATA_24*
       trigger    : rkst_ee_ss
-      selection  : 
+      selection  :
         <<: *reso_veto
-      parameters : 
-        - mu       
-        - sg       
+      parameters :
+        - mu
+        - sg
       fit :
         <<: *fit_strategy
       plots:

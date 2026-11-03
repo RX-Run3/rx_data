@@ -1,18 +1,18 @@
-trigger : rkst_mm_os 
+trigger : rkst_mm_os
 data    : data_24
 brems   :
   - brem_xx0
-q2bin      : jpsi 
+q2bin      : jpsi
 signal     : bdkstkpijpsimm
 components :
   - data_24
-  - ccbar              
-  - lbpkjpsimm         
-  - bsphijpsimm        
-  - bskstjpsimm        
+  - ccbar
+  - lbpkjpsimm
+  - bsphijpsimm
+  - bskstjpsimm
   - bskstpsi2mm
   - bdkstkpijpsimm_kpimm_pikmm
-  - bdkstkpipsi2mm     
+  - bdkstkpipsi2mm
 blocks :
   - b4
   - b3

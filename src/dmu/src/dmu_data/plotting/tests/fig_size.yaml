@@ -3,11 +3,11 @@ saving:
 general:
     size : [20, 10]
 plots:
-    x : 
+    x :
         binning : [-5.0, 8.0, 40]
-        yscale  : 'linear' 
+        yscale  : 'linear'
         labels  : ['x', 'Entries']
-    y : 
+    y :
         binning : [-5.0, 8.0, 40]
-        yscale  : 'linear' 
+        yscale  : 'linear'
         labels  : ['y', 'Entries']

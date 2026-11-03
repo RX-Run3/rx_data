@@ -6,7 +6,7 @@ categories:
       pdfs:
         - dscb
         - gauss
-      shared        : 
+      shared        :
         - mu
         - sg
       floating      :
@@ -26,5 +26,5 @@ plots:
     - 5180
     - 5400
   d_leg :
-    gauss_bdkstkpijpsimm_brem_xx0_1 : Gauss 
-    dscb_bdkstkpijpsimm_brem_xx0_1  : DSCB 
+    gauss_bdkstkpijpsimm_brem_xx0_1 : Gauss
+    dscb_bdkstkpijpsimm_brem_xx0_1  : DSCB

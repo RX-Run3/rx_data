@@ -1,4 +1,4 @@
-# Config used to make 2D plots PIDe between two electrons 
+# Config used to make 2D plots PIDe between two electrons
 #
 # Can be used to show that signal and misID samples live far
 # in the PID plane.
@@ -6,7 +6,7 @@
 saving:
     plt_dir : plots/2d/ep_em_pide
 selection:
-  pid_l : (1) 
+  pid_l : (1)
   cmb   : (1)
   prc   : (1)
   q2    : (1)

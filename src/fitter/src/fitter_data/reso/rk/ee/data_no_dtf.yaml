@@ -11,7 +11,7 @@ plots_settings: &plots_settings
 # -------------------------------------
 trigger   : rk_ee_os
 yields    : model/yields/rk/reso_electron.yaml
-selection : 
+selection :
   jpsi :
     extra   : TMath::Abs(B_const_mass_M) > 5200
     q2      : (q2_dtf > 6000000) && (q2_dtf < 11000000)
@@ -19,7 +19,7 @@ observable:
   jpsi:
     name : B_Mass
     range:
-      - 4500 
+      - 4500
       - 7000
 components:
   jpsi:

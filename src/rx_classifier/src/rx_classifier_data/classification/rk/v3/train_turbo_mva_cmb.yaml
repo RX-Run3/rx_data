@@ -20,14 +20,14 @@ dataset :
     - B_PT
     - B_IPCHI2_OWNPV
     - B_FDCHI2_OWNPV
-    - B_ENDVERTEX_CHI2DOF 
+    - B_ENDVERTEX_CHI2DOF
     - B_DIRA_OWNPV
     - Jpsi_PT
     - Jpsi_DIRA_OWNPV
     - Jpsi_CHI2DOF
     - Jpsi_IPCHI2_OWNPV
-    - H_PT 
-    - H_IPCHI2_OWNPV 
+    - H_PT
+    - H_IPCHI2_OWNPV
     - L1_PT
     - L2_PT
     - L1_IPCHI2_OWNPV
@@ -35,11 +35,11 @@ dataset :
   selection:
     bkg :
       casc : swp_cascade_mass_swp    < 1800 || swp_cascade_mass_swp    > 1900
-      jmis : swp_jpsi_misid_mass_swp < 3050 || swp_jpsi_misid_mass_swp > 3150 
+      jmis : swp_jpsi_misid_mass_swp < 3050 || swp_jpsi_misid_mass_swp > 3150
       mass : mass > 5500
     sig :
       casc : swp_cascade_mass_swp    < 1800 || swp_cascade_mass_swp    > 1900
-      jmis : swp_jpsi_misid_mass_swp < 3050 || swp_jpsi_misid_mass_swp > 3150 
+      jmis : swp_jpsi_misid_mass_swp < 3050 || swp_jpsi_misid_mass_swp > 3150
   paths:
     main : /home/acampove/external_ssd/Data/samples/main.yaml
     hop  : /home/acampove/external_ssd/Data/samples/hop.yaml
@@ -62,18 +62,18 @@ training :
   nfold    : 10
   rdm_stat : 1
   hyper:
-    low : 
+    low :
       n_estimators : 70
-    central : 
+    central :
       n_estimators : 70
       max_depth    : 4
-    high : 
+    high :
       n_estimators : 70
-  features : 
+  features :
     - B_PT
     - B_IPCHI2_OWNPV
     - B_FDCHI2_OWNPV
-    - B_ENDVERTEX_CHI2DOF 
+    - B_ENDVERTEX_CHI2DOF
     - B_DIRA_OWNPV
     #
     - Jpsi_PT
@@ -86,8 +86,8 @@ training :
     - max_ll_ipc
     - min_ll_ipc
     #
-    - H_PT 
-    - H_IPCHI2_OWNPV 
+    - H_PT
+    - H_IPCHI2_OWNPV
 saving:
   path : 'output/mva_rare_2024_cmb/VERSION/model.pkl'
 plotting:

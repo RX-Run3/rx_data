@@ -1,4 +1,4 @@
-trigger : rk_ee_os 
+trigger : rk_ee_os
 signal  : bpkpee
 data    : data_24
 brems   :
@@ -16,7 +16,7 @@ components :
 q2bins :
   - low
   - central
-  - high 
+  - high
 blocks :
   - 4
   - 3

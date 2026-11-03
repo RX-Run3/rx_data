@@ -4,7 +4,7 @@
 # - The analyses associated to them
 #
 # These triggers are implemented in:
-# 
+#
 # https://gitlab.cern.ch/lhcb/Moore/-/blob/master/Hlt/Hlt2Conf/python/Hlt2Conf/lines/rd/b_to_xll_hlt2_mva.py?ref_type=heads
 
 RK_noPID:

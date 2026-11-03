@@ -12,8 +12,8 @@ RK:
     kinem_had : H_PT > 300 && H_P > 2500
     clones    : (th_l1_l2 > 5e-4) && (th_l1_kp > 5e-4) && (th_l2_kp > 5e-4)
     tr_ipchi2 : H_IPCHI2_OWNPV > 9 && L1_IPCHI2_OWNPV > 9 && L2_IPCHI2_OWNPV > 9
-    pid_l     : (1) 
-    pid_k     : (1) 
+    pid_l     : (1)
+    pid_k     : (1)
     rich      : L1_PPHASRICH && L2_PPHASRICH && H_PPHASRICH
     acceptance: L1_INECAL    && L2_INECAL
     cascade   : (1)
@@ -32,7 +32,7 @@ RK:
     acceptance: L1_INMUON && L2_INMUON
     cascade   : (1)
     jpsi_misid: (1)
-working_group: RD 
+working_group: RD
 productions:
   rx_2024:
     versions:
@@ -40,11 +40,11 @@ productions:
       ss_mu : v1r4676
     samples:
       ss_md:
-        - data_24_magdown_turbo_rd_24c2 
+        - data_24_magdown_turbo_rd_24c2
         - data_24_magdown_turbo_rd_24c3
         - data_24_magdown_turbo_rd_24c4
       ss_mu:
-        - data_24_magup_turbo_rd_24c2 
+        - data_24_magup_turbo_rd_24c2
         - data_24_magup_turbo_rd_24c3
         - data_24_magup_turbo_rd_24c4
 # ------------------------------------------------

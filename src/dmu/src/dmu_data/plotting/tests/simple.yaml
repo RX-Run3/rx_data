@@ -1,9 +1,9 @@
 saving:
     plt_dir : tests/plotting/simple
 plots:
-    x : 
+    x :
       binning : [-5.0, 8.0, 40]
       title   : x distribution
-    y : 
+    y :
       binning : [-5.0, 8.0, 40]
       title   : y distribution

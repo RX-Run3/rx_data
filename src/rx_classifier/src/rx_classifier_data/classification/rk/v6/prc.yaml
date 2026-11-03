@@ -52,7 +52,7 @@ dataset :
       mass : B_M < 5100
     sig :
       bdt  : mva_cmb > 0.6
-      mass : (1) 
+      mass : (1)
   samples:
     sig :
       sample : Bu_Kee_eq_btosllball05_DPC
@@ -62,7 +62,7 @@ dataset :
         log_b_pt                  : TMath::Log(B_PT)
         acos_dira                 : TMath::ACos(B_DIRA_OWNPV)
     bkg :
-      sample : DATA* 
+      sample : DATA*
       trigger: Hlt2RD_BuToKpMuMu_MVA
       definitions:
         mass                      : B_M
@@ -92,12 +92,12 @@ training :
   nfold    : 10
   rdm_stat : 1
   hyper:
-    low : 
+    low :
       n_estimators : 70
-    central : 
+    central :
       n_estimators : 70
       max_depth    : 4
-    high : 
+    high :
       n_estimators : 70
 saving:
   output : mva/prc/VERSION
@@ -121,14 +121,14 @@ plotting:
         yscale  : 'linear'
         binning : [-20000, 200000, 40]
         labels  : ['Iso$_{CC}^P(B^+)$MeV', '']
-        styling :          
+        styling :
             linestyle: '-'
       iso_cc_ptasy:
         normalized : true
         yscale  : 'linear'
         binning : [-1, +1.2, 40]
         labels  : ['Iso$_{CC}^{p_T, Asym}(B^+)$MeV', '']
-        styling :          
+        styling :
             linestyle: '-'
       # --------------------
       iso_nc_mom:
@@ -136,14 +136,14 @@ plotting:
         yscale  : 'linear'
         binning : [-20000, 100000, 40]
         labels  : ['Iso$_{NC}^P(B^+)$MeV', '']
-        styling :          
+        styling :
             linestyle: '-'
       iso_nc_ptasy:
         normalized : true
         yscale  : 'linear'
         binning : [-1, +1.2, 40]
         labels  : ['Iso$_{NC}^{p_T, Asym}(B^+)$MeV', '']
-        styling :          
+        styling :
             linestyle: '-'
       # --------------------
       iso_one_mass:
@@ -151,7 +151,7 @@ plotting:
         binning : [1999, 8000, 40]
         yscale  : 'linear'
         labels  : ['Iso$_{mass}^{1Trk}(B^+)$', '']
-        styling :          
+        styling :
             linestyle: '-'
       # --------------------
       iso_one_dchi:
@@ -159,7 +159,7 @@ plotting:
         binning : [-3, 15, 40]
         yscale  : 'linear'
         labels  : ['Iso$_{\Delta\chi^2}^{1Trk}(B^+)$', '']
-        styling :          
+        styling :
             linestyle: '-'
       # --------------------
       log_b_pt  :
@@ -167,76 +167,76 @@ plotting:
         binning : [6, 11, 40]
         yscale  : 'linear'
         labels  : ['$\log(p_T)(B^+)$', '']
-        styling :          
+        styling :
             linestyle: '-'
       sqrt_ipchi2:
         normalized : true
         yscale  : 'linear'
         binning : [0, 6, 40]
         labels  : ['$\sqrt{IP_{\chi^2}}(B^+)$', '']
-        styling :          
+        styling :
             linestyle: '-'
       sqrt_jipchi2:
         normalized : true
         binning : [0, 100, 40]
         yscale  : 'linear'
         labels  : ['$\sqrt{IP_{\chi^2}}(J/\psi)$', '']
-        styling :          
+        styling :
             linestyle: '-'
       acos_dira:
         normalized : true
         binning : [0, 0.03, 40]
         yscale  : 'log'
         labels  : ['$\arccos(DIRA)(B^+)$', '']
-        styling :          
+        styling :
             linestyle: '-'
       log_h_pt  :
         normalized : true
         binning : [1, 10, 40]
         yscale  : 'linear'
         labels  : ['$\log(p_T)(K^+)$', '']
-        styling :          
+        styling :
             linestyle: '-'
       min_ll_ipc:
         normalized : true
         binning : [0, 60, 40]
         yscale  : 'linear'
         labels  : ['$\min(IP_{\chi^2}(e^+), IP_{\chi^2}(e^-))$', '']
-        styling :          
+        styling :
             linestyle: '-'
       mass:
         normalized : true
         binning : [3500, 6500, 50]
         yscale  : 'linear'
         labels  : ['$M(B^+)$', '']
-        styling :          
+        styling :
             linestyle: '-'
       hop.hop_mass:
         normalized : true
         binning : [3000, 7000, 60]
         yscale  : 'linear'
         labels  : ['$M_{HOP}(B^+)$', '']
-        styling :          
+        styling :
             linestyle: '-'
       cascade.swp_cascade_mass_swp:
         normalized : true
         binning : [1700, 3000, 60]
         yscale  : 'linear'
         labels  : ['$M(K,\ell_{\to\pi})$', '']
-        styling :          
+        styling :
             linestyle: '-'
       jpsi_misid.swp_jpsi_misid_mass_swp:
         normalized : true
         binning : [2000, 4000, 60]
         yscale  : 'linear'
         labels  : ['$M(K_{\to\ell},\ell)$', '']
-        styling :          
+        styling :
             linestyle: '-'
 diagnostics:
   output      : mva/prc/VERSION/plots/diagnostics
   correlations:
-    target : 
-      name    : mass 
+    target :
+      name    : mass
       overlay :
         wp:
           - 0.0
@@ -254,12 +254,12 @@ diagnostics:
             yscale     : 'linear'
             labels     : ['M$(B^+)$', 'Entries']
             normalized : true
-            styling :          
+            styling :
               linestyle: '-' # By default there is no line, just pointer
     methods:
       - Pearson
       - Kendall-$\tau$
     figure:
       size       : [20, 10]
-      xlabelsize : 25 
+      xlabelsize : 25
       rotate     : 60

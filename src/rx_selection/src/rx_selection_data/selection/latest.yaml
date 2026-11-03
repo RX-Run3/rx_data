@@ -15,7 +15,7 @@ jpsi_misid_common: &jmd_common
   cen_high: (swp_jpsi_misid_mass_swp != swp_jpsi_misid_mass_swp) || (swp_jpsi_misid_mass_swp < 3050) || (swp_jpsi_misid_mass_swp > 3150)
   jpsi    : (swp_jpsi_misid_mass_swp != swp_jpsi_misid_mass_swp) || (swp_jpsi_misid_mass_swp < 3050) || (swp_jpsi_misid_mass_swp > 3150)
   psi2    : (swp_jpsi_misid_mass_swp != swp_jpsi_misid_mass_swp) || (swp_jpsi_misid_mass_swp < 3050) || (swp_jpsi_misid_mass_swp > 3150)
-  high    : 'true' 
+  high    : 'true'
   none    : (swp_jpsi_misid_mass_swp != swp_jpsi_misid_mass_swp) || (swp_jpsi_misid_mass_swp < 3050) || (swp_jpsi_misid_mass_swp > 3150)
 
 jpsi_misid_pion_common: &jmd_pion
@@ -25,7 +25,7 @@ jpsi_misid_pion_common: &jmd_pion
   cen_high: (swp_jpsi_misid_pion_mass_swp != swp_jpsi_misid_pion_mass_swp) || (swp_jpsi_misid_pion_mass_swp < 3050) || (swp_jpsi_misid_pion_mass_swp > 3150)
   jpsi    : (swp_jpsi_misid_pion_mass_swp != swp_jpsi_misid_pion_mass_swp) || (swp_jpsi_misid_pion_mass_swp < 3050) || (swp_jpsi_misid_pion_mass_swp > 3150)
   psi2    : (swp_jpsi_misid_pion_mass_swp != swp_jpsi_misid_pion_mass_swp) || (swp_jpsi_misid_pion_mass_swp < 3050) || (swp_jpsi_misid_pion_mass_swp > 3150)
-  high    : 'true' 
+  high    : 'true'
   none    : (swp_jpsi_misid_pion_mass_swp != swp_jpsi_misid_pion_mass_swp) || (swp_jpsi_misid_pion_mass_swp < 3050) || (swp_jpsi_misid_pion_mass_swp > 3150)
 
 # ----------------------------------

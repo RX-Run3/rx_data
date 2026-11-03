@@ -4,23 +4,23 @@
 general:
   size: [15, 10]
 saving:
-  plt_dir: null 
+  plt_dir: null
 correlation:
   size     : [20, 15]
-  title    : Correlation matrix 
+  title    : Correlation matrix
   annot    : true
   fmt      : '.3f'
   vmin     : -1.0
   vmax     : +1.0
-  cmap     : Spectral 
+  cmap     : Spectral
   linewidth: 0.5
   annot_kws:
-    size : 12 
+    size : 12
   rotation :
     x    : 45
     y    : 45
 generated:
-  x     : -1 
+  x     : -1
   label : Generated
   ls    : --
   c     : red
@@ -122,23 +122,23 @@ plots:
     labels: ['$\varepsilon(r_{J/\psi}^{-1})$', 'Entries']
 # ----------------------------
 plugin:
-  pulls: 
+  pulls:
     rjpsi_inv_pul : {}
   errors:
     rjpsi_inv_val :
-      color  : green 
+      color  : green
       format : '{:.2f}'
       symbol : '\delta'
     rjpsi_inv_unc :
-      color  : green 
+      color  : green
       format : '{:.2f}'
       symbol : '\delta'
   stats:
     Valid:
       mean : validity rate={:.1%}
 # ----------------------------
-summary: 
-  median : [] 
+summary:
+  median : []
   mean   : []
   pulls  : []
 # ----------------------------

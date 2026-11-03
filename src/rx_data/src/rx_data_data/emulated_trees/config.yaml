@@ -2,7 +2,7 @@
 
 # ----------------------------------------
 mc:
-  samples : 
+  samples :
     mc : 1.0
   patching:
     3 : 2
@@ -17,7 +17,7 @@ bpkxkpipiee:
 # with samples starting from Bd decay
 # ----------------------------------------
 bskstjpsimm:
-  samples : 
+  samples :
     bdkstkpijpsimm : 1.0
   redefine : &red_001
     B_M                  : B_M                  + 87.23
@@ -29,17 +29,17 @@ bskstjpsimm:
     Kst_MC_MOTHER_ID     : 'TMath::Abs(Kst_MC_MOTHER_ID) == 511 ? 531 :  Kst_MC_MOTHER_ID'
     Jpsi_MC_MOTHER_ID    : 'TMath::Abs(Jpsi_MC_MOTHER_ID)== 511 ? 531 : Jpsi_MC_MOTHER_ID'
 bskstjpsiee:
-  samples : 
+  samples :
     bdkstkpijpsiee : 1.0
   redefine :
     <<: *red_001
 bskstpsi2mm:
-  samples : 
+  samples :
     bdkstkpipsi2mm : 1.0
   redefine :
     <<: *red_001
 bskstpsi2ee:
-  samples : 
+  samples :
     bdkstkpipsi2ee : 1.0
   redefine :
     <<: *red_001
@@ -48,7 +48,7 @@ bskstpsi2ee:
 # hadronic swapped (K -> pi and pi -> K) decays
 # ----------------------------------------
 bdkstkpijpsimm_kpimm_pikmm:
-  samples   : 
+  samples   :
     bdkstkpijpsimm : 1.0
   trk_swap  :
     H1_ : H2_
@@ -57,7 +57,7 @@ bdkstkpijpsimm_kpimm_pikmm:
       H1 :  321
       H2 : -211
 bdkstkpijpsiee_kpiee_pikee:
-  samples   : 
+  samples   :
     bdkstkpijpsiee : 1.0
   trk_swap  :
     H1_ : H2_
@@ -71,7 +71,7 @@ bdkstkpijpsiee_kpiee_pikee:
 bdkstkpijpsimm_kpimm_kmpim:
   redefine  :
     q2 : Jpsi_M * Jpsi_M
-  samples   : 
+  samples   :
     bdkstkpijpsimm : 1.0
   trk_swap  :
     H2_ : L2_
@@ -85,7 +85,7 @@ bdkstkpijpsimm_kpimm_kmpim:
 bdkstkpijpsiee_kpiee_kepie:
   redefine  :
     q2 : Jpsi_M * Jpsi_M
-  samples   : 
+  samples   :
     bdkstkpijpsiee : 1.0
   trk_swap  :
     H2_ : L2_
@@ -102,7 +102,7 @@ bdkstkpijpsiee_kpiee_kepie:
 bdkstkpijpsimm_kpimm_mpimk:
   redefine  :
     q2 : Jpsi_M * Jpsi_M
-  samples   : 
+  samples   :
     bdkstkpijpsimm : 1.0
   trk_swap  :
     H1_ : L1_
@@ -116,7 +116,7 @@ bdkstkpijpsimm_kpimm_mpimk:
 bdkstkpijpsiee_kpiee_epiek:
   redefine  :
     q2 : Jpsi_M * Jpsi_M
-  samples   : 
+  samples   :
     bdkstkpijpsiee : 1.0
   trk_swap  :
     H1_ : L1_
@@ -133,7 +133,7 @@ bdkstkpijpsiee_kpiee_epiek:
 bpkpjpsimm_kmm_mkm:
   redefine  :
     q2 : Jpsi_M * Jpsi_M
-  samples   : 
+  samples   :
     bpkpjpsimm     : 1.0
   trk_swap  :
     H_ : L1_
@@ -144,7 +144,7 @@ bpkpjpsimm_kmm_mkm:
 bpkpjpsiee_kee_eke:
   redefine  :
     q2 : Jpsi_M * Jpsi_M
-  samples   : 
+  samples   :
     bpkpjpsiee     : 1.0
   trk_swap  :
     H_ : L1_
@@ -154,7 +154,7 @@ bpkpjpsiee_kee_eke:
       L2 : -11
 # ----------------------------------------
 bsjpsixmm:
-  samples : 
+  samples :
     bsjpsixmm : 1.0
   patching:
     1 : 5
@@ -163,7 +163,7 @@ bsjpsixmm:
     4 : 5
 # ----------------------------------------
 bpjpsixmm:
-  samples : 
+  samples :
     bpjpsixmm : 1.0
   patching:
     1 : 5
@@ -172,7 +172,7 @@ bpjpsixmm:
     4 : 5
 # ----------------------------------------
 bdkstkpipsi2mm:
-  samples : 
+  samples :
     bdkstkpipsi2mm : 1.0
   patching:
     4 : 2

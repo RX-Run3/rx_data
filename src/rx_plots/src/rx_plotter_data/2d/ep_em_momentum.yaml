@@ -1,9 +1,9 @@
 # If OS candidates pollute SS sample:
-# 
+#
 # - One electron is low quality. This config plots chi2 of one electron vs the other
 # - One electron is high momentum and track is almost straight. This config plots momenta
 
-definitions : 
+definitions :
   ep_mom : L1_P / 1000
   ep_chi : L1_TRCHI2DOF
   # -----------

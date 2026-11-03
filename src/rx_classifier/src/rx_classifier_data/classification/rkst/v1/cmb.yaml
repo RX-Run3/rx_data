@@ -2,17 +2,17 @@
 style: &sty
   Signal:
     histtype  : step
-    linestyle : '-' 
-    color     : blue 
+    linestyle : '-'
+    color     : blue
   Background:
-    histtype  : step 
-    linestyle : '-' 
+    histtype  : step
+    linestyle : '-'
     color     : red
 
 features:
   low:
-    - B_PT 
-    - B_BPVDIRA 
+    - B_PT
+    - B_BPVDIRA
     - B_IPCHI2_OWNPV
     - B_FDCHI2_OWNPV
     - B_ENDVERTEX_CHI2DOF
@@ -23,8 +23,8 @@ features:
     - Kst_BPVFDCHI2
     - Kst_END_VCHI2DOF
     #
-    - Jpsi_PT 
-    - Jpsi_BPVDIRA 
+    - Jpsi_PT
+    - Jpsi_BPVDIRA
     - Jpsi_IPCHI2_OWNPV
     - Jpsi_FDCHI2_OWNPV
     - Jpsi_END_VCHI2DOF
@@ -39,11 +39,11 @@ features:
     - min_ll_ipc
     - max_ll_ipc
   central:
-    - B_PT 
+    - B_PT
     - B_IPCHI2_OWNPV
     - B_FDCHI2_OWNPV
     - B_ENDVERTEX_CHI2DOF
-    - B_BPVDIRA 
+    - B_BPVDIRA
     #
     - Kst_PT
     - Kst_BPVIPCHI2
@@ -51,11 +51,11 @@ features:
     - Kst_END_VCHI2DOF
     - Kst_BPVDIRA
     #
-    - Jpsi_PT 
+    - Jpsi_PT
     - Jpsi_IPCHI2_OWNPV
     - Jpsi_FDCHI2_OWNPV
     - Jpsi_END_VCHI2DOF
-    - Jpsi_BPVDIRA 
+    - Jpsi_BPVDIRA
     #
     - min_hh_pt
     - max_hh_pt
@@ -67,11 +67,11 @@ features:
     - min_ll_ipc
     - max_ll_ipc
   high:
-    - B_PT 
+    - B_PT
     - B_IPCHI2_OWNPV
     - B_FDCHI2_OWNPV
     - B_ENDVERTEX_CHI2DOF
-    - B_BPVDIRA 
+    - B_BPVDIRA
     #
     - Kst_PT
     - Kst_BPVIPCHI2
@@ -79,11 +79,11 @@ features:
     - Kst_END_VCHI2DOF
     - Kst_BPVDIRA
     #
-    - Jpsi_PT 
+    - Jpsi_PT
     - Jpsi_IPCHI2_OWNPV
     - Jpsi_FDCHI2_OWNPV
     - Jpsi_END_VCHI2DOF
-    - Jpsi_BPVDIRA 
+    - Jpsi_BPVDIRA
     #
     - min_hh_pt
     - max_hh_pt
@@ -99,7 +99,7 @@ dataset :
   selection:
     bkg :
       bdt      : (1)
-      kst_mass : 'TMath::Abs(Kst_M - 896) > 100' 
+      kst_mass : 'TMath::Abs(Kst_M - 896) > 100'
       mass     : B_M > 5500 # This selection will be applied before definitions
     sig :                            # Cannot be put in function of aliases
       bdt      : (1)
@@ -133,11 +133,11 @@ training :
   hyper:
     low :
       learning_rate    : 0.088
-      max_depth        :     6 
-      max_features     :     3 
+      max_depth        :     6
+      max_features     :     3
       min_samples_split:     2
-      min_samples_leaf :    24 
-      n_estimators     :   312 
+      min_samples_leaf :    24
+      n_estimators     :   312
     central :
       learning_rate    : 0.097
       max_depth        : 7

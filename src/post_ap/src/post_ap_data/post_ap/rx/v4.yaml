@@ -5,21 +5,21 @@ tests:
     test_mc_spruce_ee : v1r2041
     test_mc_spruce_mm : v1r2041
   samples: &tst_sam
-    test_mc_turbo_ee: 
+    test_mc_turbo_ee:
       - mc_24_w31_34_hlt1bug_magup_sim10d_12123003_bu_kee_eq_btosllball05_dpc_tuple
-    test_mc_turbo_mm: 
+    test_mc_turbo_mm:
       - mc_24_w31_34_hlt1bug_magup_sim10d_12113002_bu_kmumu_eq_btosllball05_dpc_tuple
-    test_mc_spruce_ee: 
+    test_mc_spruce_ee:
       - mc_24_w31_34_hlt1bug_magup_sim10d_12123003_bu_kee_eq_btosllball05_dpc_spr,_tuple
-    test_mc_spruce_mm: 
+    test_mc_spruce_mm:
       - mc_24_w31_34_hlt1bug_magup_sim10d_12113002_bu_kmumu_eq_btosllball05_dpc_spr,_tuple
 
 working_group: RD
 productions:
   rd_ap_2024:
-    versions: 
+    versions:
       data_turbo        : v1r1670
-      data_spruce       : v1r1670 
+      data_spruce       : v1r1670
       simulation_spruce : v1r2041
       simulation_turbo  : v1r2041
       <<: *tst_ver
@@ -42,7 +42,7 @@ productions:
         - data_24_magup_turbo_24c2
         - data_24_magup_turbo_24c3
         - data_24_magup_turbo_24c4
-      simulation_spruce: 
+      simulation_spruce:
         - mc_24_w31_34_hlt1bug_magup_sim10d_11154001_bd_jpsikst_ee_eq_dpc_spr,_tuple
         - mc_24_w31_34_hlt1bug_magup_sim10d_11144001_bd_jpsikst_mm_eq_dpc_spr,_tuple
         - mc_24_w31_34_hlt1bug_magup_sim10d_12143001_bu_jpsik_mm_eq_dpc_spr,_tuple
@@ -55,7 +55,7 @@ productions:
         - mc_24_w31_34_hlt1bug_magup_sim10d_11102202_bd_kstgamma_eq_highptgamma_dpc_spr,_tuple
         - mc_24_w31_34_hlt1bug_magup_sim10d_12113004_bu_kmumu_eq_phsp_dpc_spr,_tuple
         - mc_24_w31_34_hlt1bug_magup_sim10d_11114014_bd_kstmumu_flatq2_eq_dpc_momcut_spr,_tuple
-      simulation_turbo: 
+      simulation_turbo:
         - mc_24_w31_34_hlt1bug_magup_sim10d_12113004_bu_kmumu_eq_phsp_dpc_tuple
         - mc_24_w31_34_hlt1bug_magup_sim10d_12123001_bu_kee_eq_btosllball_dpc_tuple
         - mc_24_w31_34_hlt1bug_magup_sim10d_12123003_bu_kee_eq_btosllball05_dpc_tuple
@@ -146,15 +146,15 @@ transformations:
     # Means X will be renamed as Y, change in order not possible due to repeated keys
     Lb_HEAD_CC_Lb_ : B_HEAD_CC_B_
     Lb_HEAD_NC_Lb_ : B_HEAD_NC_B_
-    Lb_VTXISO_Lb_  : B_VTXISO_B_ 
+    Lb_VTXISO_Lb_  : B_VTXISO_B_
 
     B_HEAD_CC_bp_  : B_HEAD_CC_B_
     B_HEAD_NC_bp_  : B_HEAD_NC_B_
-    B_VTXISO_bp_   : B_VTXISO_B_ 
+    B_VTXISO_bp_   : B_VTXISO_B_
 
     B_HEAD_CC_bd_  : B_HEAD_CC_B_
     B_HEAD_NC_bd_  : B_HEAD_NC_B_
-    B_VTXISO_bd_   : B_VTXISO_B_ 
+    B_VTXISO_bd_   : B_VTXISO_B_
     # Lb and Bx samples will have branches starting with B, simpler
     Lb_            : B_
     # Sprucing issue
@@ -171,7 +171,7 @@ transformations:
     B_DTF_Jpsi_PY                     : B_const_mass_PY
     B_DTF_Jpsi_PZ                     : B_const_mass_PZ
     B_DTF_Jpsi_PE                     : B_const_mass_PE
-  
+
     B_DTF_Psi2S_MASS                  : B_const_mass_psi2S_M
     B_DTF_Psi2S_PX                    : B_const_mass_psi2S_PX
     B_DTF_Psi2S_PY                    : B_const_mass_psi2S_PY
@@ -259,7 +259,7 @@ H1_TRGHOSTPROB
       - _BPV
       # Drop covariance matrices
       - _COV_MATRIX
-      #Track's cluster, calo, RICH PID, 
+      #Track's cluster, calo, RICH PID,
       - _CLUSTER
       - _Calo
       - _RICH_DLL_
@@ -346,23 +346,23 @@ H1_TRGHOSTPROB
       - Jpsi_Max
       - Jpsi_MAX
       - Jpsi_ALV
-      # Phi 
+      # Phi
       - Phi_Max
       - Phi_Min
       - Phi_ALV
-      # Kst 
+      # Kst
       - Kst_Min
       - Kst_MIN
       - Kst_Max
       - Kst_MAX
       - Kst_ALV
-      # Lz 
+      # Lz
       - Lz_Max
       - Lz_Min
       - Lz_ALV
-      # Lepton 
-      - L1_HCAL 
-      - L2_HCAL 
+      # Lepton
+      - L1_HCAL
+      - L2_HCAL
       # Hadron
       - Hp_
       - H_BREM
@@ -381,7 +381,7 @@ H1_TRGHOSTPROB
       - H2_ECAL
       - H2_ELECTRON
       - H2_MUON
-      # Hlt not for B 
+      # Hlt not for B
       - Hlt1
       - Jpsi_Hlt1
       - Phi_Hlt1
@@ -406,11 +406,11 @@ H1_TRGHOSTPROB
       - _SUM_PT
     #Will drop branches matching wild card
     wild_card:
-      # Leptons 
+      # Leptons
       - L*_N*HITS
       - L*_PT_WITH_BREM
-      - L*_MUONCATBOOST 
-      - L*_RICH*_GAS_USED 
+      - L*_MUONCATBOOST
+      - L*_RICH*_GAS_USED
       - L*_ECALPID*
       - L*_ELECTRON*
       - L*_BREMHYPO*
@@ -419,13 +419,13 @@ H1_TRGHOSTPROB
       - L*MUONLLMU
       # Hadrons
       - H_N*HITS
-      - H_RICH*_GAS_USED 
+      - H_RICH*_GAS_USED
       - H_HASBREM*
       - H1_N*HITS
-      - H1_RICH*_GAS_USED 
+      - H1_RICH*_GAS_USED
       - H1_HASBREM*
       - H2_N*HITS
-      - H2_RICH*_GAS_USED 
+      - H2_RICH*_GAS_USED
       - H2_HASBREM*
       # DETA and DPHI vectors of isolation track positions?
       - B_HEAD_CC_B_ChargedIso_DR2_*_D*

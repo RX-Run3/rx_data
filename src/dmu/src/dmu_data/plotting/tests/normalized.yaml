@@ -1,9 +1,9 @@
 saving:
     plt_dir : tests/plotting/normalized
 plots:
-    x : 
+    x :
       normalized : true
       binning    : [-5.0, 8.0, 40]
-    y : 
-      normalized : false 
+    y :
+      normalized : false
       binning    : [-5.0, 8.0, 40]

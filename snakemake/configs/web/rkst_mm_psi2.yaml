@@ -1,4 +1,4 @@
-trigger : rkst_mm_os 
+trigger : rkst_mm_os
 data    : data_24
 brems   :
   - brem_xx0
@@ -6,13 +6,13 @@ q2bin      : psi2
 signal     : bdkstkpipsi2mm
 components :
   - data_24
-  - ccbar              
-  - lbpkjpsimm         
-  - bsphijpsimm        
-  - bskstjpsimm        
+  - ccbar
+  - lbpkjpsimm
+  - bsphijpsimm
+  - bskstjpsimm
   - bskstpsi2mm
   - bdkstkpijpsimm_kpimm_pikmm
-  - bdkstkpijpsimm     
+  - bdkstkpijpsimm
 blocks :
   - b4
   - b3

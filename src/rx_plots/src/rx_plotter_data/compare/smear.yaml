@@ -29,22 +29,22 @@ plots:
     styling:
       linestyle : '-'
     vline   :
-      x     : 5280 
-      label : $B^+$ 
+      x     : 5280
+      label : $B^+$
       ls    : --
-      c     : black 
+      c     : black
       lw    : 2
   jmass:
     binning    : [2300, 3700, 40]
     yscale     : linear
     labels     : ['M$(J/\psi)$[MeV]', 'Normalized']
-    name       : jmass 
+    name       : jmass
     normalized : true
     styling:
       linestyle : '-'
     vline   :
       x     : 3097
-      label : $J/\psi$ 
+      label : $J/\psi$
       ls    : --
-      c     : black 
+      c     : black
       lw    : 2

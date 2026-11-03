@@ -19,7 +19,7 @@ build:
         - pyproject.toml
     paths:
       - ~/.cache/pip
-  stage: build 
+  stage: build
   variables:
     ANADIR : /eos/lhcb/wg/RD/RX_run3
   script:
@@ -32,7 +32,7 @@ build:
     - ssh-keyscan github.com >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
 # -----------
-    - GIT_SSH_COMMAND='ssh -i ~/.ssh/id_rsa_user -o IdentitiesOnly=yes -o StrictHostKeyChecking=no' pip install poetry 
+    - GIT_SSH_COMMAND='ssh -i ~/.ssh/id_rsa_user -o IdentitiesOnly=yes -o StrictHostKeyChecking=no' pip install poetry
     - GIT_SSH_COMMAND='ssh -i ~/.ssh/id_rsa_user -o IdentitiesOnly=yes -o StrictHostKeyChecking=no' poetry install --extras 'dev'
     - eval "$(apd-login)"  # authenticate with Analysis Productions using this JWT
     - root -l -q root://eoslhcb.cern.ch//eos/lhcb/grid/prod/lhcb/anaprod/lhcb/MC/2024/TUPLE.ROOT/00298319/0000/00298319_00000001_1.tuple.root

@@ -2,11 +2,11 @@ saving:
     plt_dir : tests/plotting/no_bounds
 
 plots:
-    x : 
+    x :
         binning : [1, 1, 40]
-        yscale  : 'linear' 
+        yscale  : 'linear'
         labels  : ['x', 'Entries']
-    y : 
+    y :
         binning : [1, 1, 40]
-        yscale  : 'linear' 
+        yscale  : 'linear'
         labels  : ['y', 'Entries']

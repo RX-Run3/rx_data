@@ -19,7 +19,7 @@ fit:
         pvalue : 0.05
     model:
       pdfs:
-        - hypexp 
+        - hypexp
       shared       : []
       reparametrize: {}
       floating     : []

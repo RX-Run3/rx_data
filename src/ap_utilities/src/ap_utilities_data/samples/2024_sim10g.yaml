@@ -25,14 +25,14 @@ block_1:
   hlt_conf: 2024.W31.34
   polarity: MagUp
   nu_path : Nu6.3
-  ctags   : sim10-2024.Q3.4-v1.3-mu100    
+  ctags   : sim10-2024.Q3.4-v1.3-mu100
 block_2:
   <<: *set
   block_id: 2024.W32.34
   hlt_conf: 2024.W31.34
   polarity: MagUp
   nu_path : Nu6.3
-  ctags   : sim10-2024.Q3.4-v1.3-mu100    
+  ctags   : sim10-2024.Q3.4-v1.3-mu100
 block_3:
   <<: *set
   block_id: 2024.W29.30

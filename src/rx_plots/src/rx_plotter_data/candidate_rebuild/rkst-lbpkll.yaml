@@ -13,7 +13,7 @@ particles:
   - L1
   - L2
 constraint:
-  - 443 
+  - 443
   - [L1, L2]
 swaps:
   single:

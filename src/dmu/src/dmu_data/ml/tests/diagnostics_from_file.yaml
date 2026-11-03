@@ -1,7 +1,7 @@
 output         : /tmp/tests/dmu/ml/cv_diagnostics/from_rdf
   # Will assume that the target is already in the input dataframe
   # and will use it, instead of evaluating models
-score_from_rdf : w 
+score_from_rdf : w
 correlations:
   # Variables with respect to which the correlations with the features will be measured
   target :
@@ -9,5 +9,5 @@ correlations:
   methods:
     - Pearson
   figure:
-    title: Scores from file 
+    title: Scores from file
     size : [10, 8]

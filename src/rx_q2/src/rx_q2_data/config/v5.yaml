@@ -22,7 +22,7 @@ input:
   selection:
     psi_vt  : B_const_mass_M > 5180 # This removes the psi2S contamination
     q2      : (1)
-    mass    : (1) 
+    mass    : (1)
 syst:
     - nom
 fitting:
@@ -58,7 +58,7 @@ fitting:
   mass    : Jpsi_M_brem_track_2 # Observable to be fitted
   weights : weight
   model:
-    pdfs: 
+    pdfs:
       - dscb
       - gauss
   sim:
@@ -66,19 +66,19 @@ fitting:
       retry  :
         ntries        : 12
         pvalue_thresh : 0.05
-        ignore_status : false 
+        ignore_status : false
   dat:
     strategy :
       retry  :
         ntries        : 3
         pvalue_thresh : 0.05
-        ignore_status : false 
+        ignore_status : false
 plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#fit-plotting
   yrange:
     log   : [1.0,  1e5]
     linear: [0.0, null]
-  nbins         : 60 
-  stacked       : False 
+  nbins         : 60
+  stacked       : False
   d_leg :
     q2_smearing : Model
     dscb_1      : DSCB

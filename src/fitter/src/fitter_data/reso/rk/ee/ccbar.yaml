@@ -1,6 +1,6 @@
 merged :
   jpsi : True
-  psi2 : False 
+  psi2 : False
 samples:
   - bdjpsixee
   - bpjpsixee

@@ -1,11 +1,11 @@
 samples_notused:
     sig :
       file_path : /publicfs/lhcb/user/campoverde/Data/cache/tools/apply_selection/bdt_train/v3/bdks_jpsi_B0ToKpPimEE_ana/v2/2024_ETOS/*.root
-      tree_name : ETOS 
+      tree_name : ETOS
 samples:
     bkg :
       file_path : /publicfs/lhcb/user/campoverde/Data/cache/tools/apply_selection/bdt_train/v3/data_ana_mva_bd/v4/2024_ETOS/*.root
-      tree_name : ETOS 
+      tree_name : ETOS
 define :
     min_ll_pt   : 'TMath::Min(L1_PT , L2_PT)'
     max_ll_pt   : 'TMath::Max(L1_PT , L2_PT)'
@@ -14,8 +14,8 @@ define :
     min_ll_ipc  : 'TMath::Min(L1_IPCHI2_OWNPV, L2_IPCHI2_OWNPV)'
     max_ll_ipc  : 'TMath::Max(L1_IPCHI2_OWNPV, L2_IPCHI2_OWNPV)'
 saving :
-    score    : BDT_cmb 
+    score    : BDT_cmb
     out_dir  : 'output/application/cut_ctrl_2024'
-    branches : null 
-model  : /publicfs/ucas/user/campoverde/Data/RK/MVA/run3/v3/bdkstee/model.pkl    
-    
+    branches : null
+model  : /publicfs/ucas/user/campoverde/Data/RK/MVA/run3/v3/bdkstee/model.pkl
+

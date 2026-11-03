@@ -21,14 +21,14 @@ jobs:
           root
         channels: conda-forge
         init-shell: bash
-    - name: Define output directory 
+    - name: Define output directory
       run: |
         ANADIR=$PWD/output
         echo  "ANADIR=$PWD/output" >> "$GITHUB_ENV"
-    
+
         mkdir -p $ANADIR
     #-----------
-    - name: Cache dependencies installed with poetry 
+    - name: Cache dependencies installed with poetry
       uses: actions/cache@v4
       with:
         path: |
@@ -49,7 +49,7 @@ jobs:
     - name: Install project dependencies
       run: |
         micromamba run -n myenv poetry install --extras 'dev ml'
-    - name: Install project itself 
+    - name: Install project itself
       run: |
         micromamba run -n myenv pip install --no-deps .
     - name: Show computed version

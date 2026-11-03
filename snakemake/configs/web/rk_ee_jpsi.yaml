@@ -1,9 +1,9 @@
-trigger : rk_ee_os 
+trigger : rk_ee_os
 data    : data_24
 brems   :
   - brem_xx1
   - brem_xx2
-q2bin      : jpsi 
+q2bin      : jpsi
 signal     : bpkpjpsiee
 components :
   - data_24

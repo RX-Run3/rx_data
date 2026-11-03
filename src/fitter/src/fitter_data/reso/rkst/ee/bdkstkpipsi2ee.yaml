@@ -1,11 +1,11 @@
-component : bdkstkpipsi2ee 
+component : bdkstkpipsi2ee
 categories:
   brem_xx1    :
     selection : {}
     model:
       pdfs :
         - dscb
-      shared        : 
+      shared        :
         - mu
         - sg
       floating      :
@@ -21,7 +21,7 @@ categories:
     model:
       pdfs :
         - dscb
-      shared        : 
+      shared        :
         - mu
         - sg
       floating      :
@@ -40,8 +40,8 @@ plots:
   nbins   : 50
   stacked : True
   d_leg :
-    dscb_bdkstkpipsi2ee_brem_xx1_1  : DSCB 
-    dscb_bdkstkpipsi2ee_brem_xx2_1  : DSCB 
+    dscb_bdkstkpipsi2ee_brem_xx1_1  : DSCB
+    dscb_bdkstkpipsi2ee_brem_xx2_1  : DSCB
   plot_range:
     - 5100
     - 5600

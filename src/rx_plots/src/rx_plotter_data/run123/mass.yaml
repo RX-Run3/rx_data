@@ -3,25 +3,25 @@
 
 lines: &lines
   ls    : --
-  c     : black 
+  c     : black
   lw    : 2
 
 styling: &style
   run12:
     histtype  : fill
     alpha     : 0.3
-    color     : green 
+    color     : green
   '2024':
-    histtype  : step 
+    histtype  : step
     linestyle : '-'
-    color     : blue 
+    color     : blue
 # --------------------
 input:
   sample : Bu_Kee_eq_btosllball05_DPC
   trigger: Hlt2RD_BuToKpEE_MVA
 cuts: # Do not call this section 'selection'. The Plotter class would pick that up
   bdt : (1)
-  q2  : (1) 
+  q2  : (1)
   mass: (1)
 general:
   size : [15, 10]
@@ -33,32 +33,32 @@ branches:
     bmass      :                B_M
     q2_trk     : q2_track / 1000000
     L1_TRUE_P  : TMath::Sqrt(L1_TRUEP_X * L1_TRUEP_X + L1_TRUEP_Y * L1_TRUEP_Y + L1_TRUEP_Z * L1_TRUEP_Z)
-    L2_TRUE_P  : TMath::Sqrt(L2_TRUEP_X * L2_TRUEP_X + L2_TRUEP_Y * L2_TRUEP_Y + L2_TRUEP_Z * L2_TRUEP_Z) 
+    L2_TRUE_P  : TMath::Sqrt(L2_TRUEP_X * L2_TRUEP_X + L2_TRUEP_Y * L2_TRUEP_Y + L2_TRUEP_Z * L2_TRUEP_Z)
     L1_TRACK_P : TMath::Sqrt(L1_TRACK_PX * L1_TRACK_PX + L1_TRACK_PY * L1_TRACK_PY + L1_TRACK_PZ * L1_TRACK_PZ)
-    L2_TRACK_P : TMath::Sqrt(L2_TRACK_PX * L2_TRACK_PX + L2_TRACK_PY * L2_TRACK_PY + L2_TRACK_PZ * L2_TRACK_PZ) 
-    ep_res     : (L1_TRUE_P - L1_TRACK_P) / L1_TRUE_P 
-    em_res     : (L2_TRUE_P - L2_TRACK_P) / L2_TRUE_P 
+    L2_TRACK_P : TMath::Sqrt(L2_TRACK_PX * L2_TRACK_PX + L2_TRACK_PY * L2_TRACK_PY + L2_TRACK_PZ * L2_TRACK_PZ)
+    ep_res     : (L1_TRUE_P - L1_TRACK_P) / L1_TRUE_P
+    em_res     : (L2_TRUE_P - L2_TRACK_P) / L2_TRUE_P
   '2024':
     bmass      :                B_M
     q2_trk     : q2_track / 1000000
     L1_TRUE_P  : TMath::Sqrt(L1_TRUEPX * L1_TRUEPX + L1_TRUEPY * L1_TRUEPY + L1_TRUEPZ * L1_TRUEPZ)
-    L2_TRUE_P  : TMath::Sqrt(L2_TRUEPX * L2_TRUEPX + L2_TRUEPY * L2_TRUEPY + L2_TRUEPZ * L2_TRUEPZ) 
-    ep_res     : (L1_TRUE_P - L1_TRACK_P) / L1_TRUE_P 
-    em_res     : (L2_TRUE_P - L2_TRACK_P) / L2_TRUE_P 
-saving: 
+    L2_TRUE_P  : TMath::Sqrt(L2_TRUEPX * L2_TRUEPX + L2_TRUEPY * L2_TRUEPY + L2_TRUEPZ * L2_TRUEPZ)
+    ep_res     : (L1_TRUE_P - L1_TRACK_P) / L1_TRUE_P
+    em_res     : (L2_TRUE_P - L2_TRACK_P) / L2_TRUE_P
+saving:
   plt_dir : plots/run123
 plots:
   ep_res:
     binning    : [0, 1, 60]
     labels     : ['($p_{true}(e^+)-p_{track}(e^+))/p_{true}(e^+)$', 'Normalized']
-    name       : ep_res 
+    name       : ep_res
     normalized : true
     styling:
       <<: *style
   em_res:
     binning    : [0, 1, 60]
     labels     : ['($p_{true}(e^-)-p_{track}(e^-))/p_{true}(e^-)$', 'Normalized']
-    name       : em_res 
+    name       : em_res
     normalized : true
     styling:
       <<: *style
@@ -70,8 +70,8 @@ plots:
     styling:
       <<: *style
     vline   :
-      x     : 5280 
-      label : $B^+$ 
+      x     : 5280
+      label : $B^+$
       <<: *lines
   bmass:
     binning    : [4500, 6000, 40]
@@ -81,17 +81,17 @@ plots:
     styling:
       <<: *style
     vline   :
-      x     : 5280 
-      label : $B^+$ 
+      x     : 5280
+      label : $B^+$
       <<: *lines
   q2_trk:
     binning    : [0, 21, 60]
     labels     : ['$q^2_{track}$', 'Normalized']
-    name       : q2_trk 
+    name       : q2_trk
     normalized : true
     styling:
       <<: *style
     vline   :
-      x     : 14.3 
-      label : Signal region 
+      x     : 14.3
+      label : Signal region
       <<: *lines

@@ -1,8 +1,8 @@
-trigger : rk_mm_os 
+trigger : rk_mm_os
 data    : data_24
 brems   :
   - brem_xx0
-q2bin      : jpsi 
+q2bin      : jpsi
 signal     : bpkpjpsimm
 components :
   - data_24

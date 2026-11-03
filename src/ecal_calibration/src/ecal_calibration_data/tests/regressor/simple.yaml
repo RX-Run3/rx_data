@@ -3,9 +3,9 @@
 model   : v7
 target  : mu
 features:
-  - row 
-  - col 
-  - are 
+  - row
+  - col
+  - are
   - eng # This should be BREMTRACKBASEDENERGY when the photon was added by hand
   - npv
   - blk

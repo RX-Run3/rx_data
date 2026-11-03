@@ -45,7 +45,7 @@ plots:
   low:
     merging:
       brem_x12-rk_ee_os:
-        - brem_xx1-rk_ee_os 
+        - brem_xx1-rk_ee_os
         - brem_xx2-rk_ee_os
     regions:
       brem_x12-rk_ee_os:

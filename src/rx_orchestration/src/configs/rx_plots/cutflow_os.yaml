@@ -42,7 +42,7 @@ args:
   - {sample : data_24        , trigger : rkst_mm_ss , q2bin : central}
   - {sample : data_24        , trigger : rkst_ee_os , q2bin : central}
   - {sample : data_24        , trigger : rkst_ee_ss , q2bin : central}
-  # ------------                                    
+  # ------------
   - {sample : data_24        , trigger : rkst_mm_os , q2bin : jpsi   }
   - {sample : data_24        , trigger : rkst_mm_ss , q2bin : jpsi   }
   - {sample : data_24        , trigger : rkst_ee_os , q2bin : jpsi   }
@@ -52,13 +52,13 @@ args:
   - {sample : data_24        , trigger : rkst_mm_ss , q2bin : high   }
   - {sample : data_24        , trigger : rkst_ee_os , q2bin : high   }
   - {sample : data_24        , trigger : rkst_ee_ss , q2bin : high   }
-  # ------------                                    
-  # ------------                                    
+  # ------------
+  # ------------
   - {sample : data_24        , trigger :   rk_mm_os , q2bin : low    }
   - {sample : data_24        , trigger :   rk_mm_ss , q2bin : low    }
   - {sample : data_24        , trigger :   rk_ee_os , q2bin : low    }
   - {sample : data_24        , trigger :   rk_ee_ss , q2bin : low    }
-  # ------------                                    
+  # ------------
   - {sample : data_24        , trigger :   rk_mm_os , q2bin : central}
   - {sample : data_24        , trigger :   rk_mm_ss , q2bin : central}
   - {sample : data_24        , trigger :   rk_ee_os , q2bin : central}
@@ -68,7 +68,7 @@ args:
   - {sample : data_24        , trigger :   rk_mm_ss , q2bin : jpsi   }
   - {sample : data_24        , trigger :   rk_ee_os , q2bin : jpsi   }
   - {sample : data_24        , trigger :   rk_ee_ss , q2bin : jpsi   }
-  # ------------                                    
+  # ------------
   - {sample : data_24        , trigger :   rk_mm_os , q2bin : high   }
   - {sample : data_24        , trigger :   rk_mm_ss , q2bin : high   }
   - {sample : data_24        , trigger :   rk_ee_os , q2bin : high   }

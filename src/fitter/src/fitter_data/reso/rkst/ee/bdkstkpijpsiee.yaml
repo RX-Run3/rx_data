@@ -1,11 +1,11 @@
-component : bdkstkpijpsiee 
+component : bdkstkpijpsiee
 categories:
   brem_xx1:
     selection : {}
     model:
       pdfs:
         - dscb
-      shared        : 
+      shared        :
         - mu
         - sg
       floating      :
@@ -21,7 +21,7 @@ categories:
     model:
       pdfs:
         - dscb
-      shared        : 
+      shared        :
         - mu
         - sg
       floating      :
@@ -40,8 +40,8 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
   nbins   : 50
   stacked : True
   d_leg :
-    dscb_bdkstkpijpsiee_brem_xx1_1  : DSCB 
-    dscb_bdkstkpijpsiee_brem_xx2_1  : DSCB 
+    dscb_bdkstkpijpsiee_brem_xx1_1  : DSCB
+    dscb_bdkstkpijpsiee_brem_xx2_1  : DSCB
   plot_range:
     - 5100
     - 5500

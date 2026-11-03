@@ -1,4 +1,4 @@
-component : bpkpjpsiee 
+component : bpkpjpsiee
 categories:
   brem_xx1:
     selection : {}
@@ -40,8 +40,8 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
   nbins     : 50
   stacked   : True
   d_leg :
-    dscb_bpkpjpsiee_brem_xx1_1  : DSCB 
-    dscb_bpkpjpsiee_brem_xx2_1  : DSCB 
+    dscb_bpkpjpsiee_brem_xx1_1  : DSCB
+    dscb_bpkpjpsiee_brem_xx2_1  : DSCB
     gauss_bpkpjpsiee_brem_xx1_1 : Gauss
     gauss_bpkpjpsiee_brem_xx2_1 : Gauss
   plot_components : []

@@ -1,7 +1,7 @@
 # This is a config file used for tests
 # It illustrates how a fit would run for data
 reg_cfg_jpsi: &reg_cfg_jpsi
-  nbins           : 325 
+  nbins           : 325
   stacked         : True
   d_leg :
     ccbar_brem_x12         : $B_{s,d,u}\to c\bar{c} X$
@@ -11,11 +11,11 @@ reg_cfg_jpsi: &reg_cfg_jpsi
     comb_brem_xx2          : Combinatorial
     bskstjpsiee_brem_xx1   : $B_s\to J/\psi K^{*0}(\to K^+\pi^-)$
     bskstjpsiee_brem_xx2   : $B_s\to J/\psi K^{*0}(\to K^+\pi^-)$
-    bdkstkpijpsiee_brem_xx1: $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$ 
-    bdkstkpijpsiee_brem_xx2: $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$ 
+    bdkstkpijpsiee_brem_xx1: $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$
+    bdkstkpijpsiee_brem_xx2: $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$
     bskstjpsiee            : $B_s\to J/\psi K^{*0}(\to K^+\pi^-)$
-    bdkstkpijpsiee         : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$ 
-  plot_components : 
+    bdkstkpijpsiee         : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$
+  plot_components :
     - ccbar_brem_xx1
     - ccbar_brem_xx2
     - ccbar_brem_x12
@@ -23,7 +23,7 @@ reg_cfg_jpsi: &reg_cfg_jpsi
     - 4900
     - 6200
 reg_cfg_psi2: &reg_cfg_psi2
-  nbins           : 40 
+  nbins           : 40
   stacked         : True
   d_leg :
     ccbar                        : $B_{s,d,u}\to c\bar{c} X$
@@ -45,23 +45,23 @@ reg_cfg_psi2: &reg_cfg_psi2
     bskstjpsiee_brem_xx1         : $B_s\to J/\psi K^{*0}(\to K^+\pi^-)$
     bskstjpsiee_brem_xx2         : $B_s\to J/\psi K^{*0}(\to K^+\pi^-)$
     bskstjpsiee_brem_x12         : $B_s\to J/\psi K^{*0}(\to K^+\pi^-)$
-    bdkstjpsiee                  : $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$ 
-    bdkstkpijpsiee_kpiee_pikee_brem_xx1 : $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$ 
-    bdkstkpijpsiee_kpiee_pikee_brem_xx2 : $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$ 
-    bdkstkpijpsiee_kpiee_pikee_brem_x12 : $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$ 
-    bdkstkpijpsiee               : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$ 
-    bdkstkpijpsiee_brem_xx1      : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$ 
-    bdkstkpijpsiee_brem_xx2      : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$ 
-    bdkstkpijpsiee_brem_x12      : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$ 
-    bdkstkpipsi2ee               : $B^0\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
-    bdkstkpipsi2ee_brem_xx1      : $B^0\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
-    bdkstkpipsi2ee_brem_xx2      : $B^0\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
-    bdkstkpipsi2ee_brem_x12      : $B^0\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
-    bskstpsi2ee                  : $B_s\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
-    bskstpsi2ee_brem_xx1         : $B_s\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
-    bskstpsi2ee_brem_xx2         : $B_s\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
-    bskstpsi2ee_brem_x12         : $B_s\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
-  plot_components : 
+    bdkstjpsiee                  : $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$
+    bdkstkpijpsiee_kpiee_pikee_brem_xx1 : $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$
+    bdkstkpijpsiee_kpiee_pikee_brem_xx2 : $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$
+    bdkstkpijpsiee_kpiee_pikee_brem_x12 : $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$
+    bdkstkpijpsiee               : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$
+    bdkstkpijpsiee_brem_xx1      : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$
+    bdkstkpijpsiee_brem_xx2      : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$
+    bdkstkpijpsiee_brem_x12      : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$
+    bdkstkpipsi2ee               : $B^0\to \psi(2S) K^{*0}(\to K^+\pi^-)$
+    bdkstkpipsi2ee_brem_xx1      : $B^0\to \psi(2S) K^{*0}(\to K^+\pi^-)$
+    bdkstkpipsi2ee_brem_xx2      : $B^0\to \psi(2S) K^{*0}(\to K^+\pi^-)$
+    bdkstkpipsi2ee_brem_x12      : $B^0\to \psi(2S) K^{*0}(\to K^+\pi^-)$
+    bskstpsi2ee                  : $B_s\to \psi(2S) K^{*0}(\to K^+\pi^-)$
+    bskstpsi2ee_brem_xx1         : $B_s\to \psi(2S) K^{*0}(\to K^+\pi^-)$
+    bskstpsi2ee_brem_xx2         : $B_s\to \psi(2S) K^{*0}(\to K^+\pi^-)$
+    bskstpsi2ee_brem_x12         : $B_s\to \psi(2S) K^{*0}(\to K^+\pi^-)$
+  plot_components :
     - ccbar
   plot_range :
     - 4900
@@ -76,12 +76,12 @@ observable:
   jpsi:
     name : B_const_mass_M
     range:
-      - 4700 
+      - 4700
       - 7000
   psi2:
     name : B_const_mass_psi2S_M
     range:
-      - 4700 
+      - 4700
       - 7000
 components:
   jpsi:
@@ -105,7 +105,7 @@ components:
     bdkstkpipsi2ee      : reso/rkst/ee/bdkstkpipsi2ee.yaml
 constraints:
   signal_fraction:
-    - bskstjpsiee 
+    - bskstjpsiee
     - bsphijpsiee
     - lbpkjpsiee
     - bdkstkpijpsiee_kpiee_pikee

@@ -1,5 +1,5 @@
 
-component        : lbpkjpsimm 
+component        : lbpkjpsimm
 events_range     :
   - 4200
   - 6500
@@ -12,7 +12,7 @@ plots:
   nbins   : 50
   stacked : True
   d_leg :
-    gauss_1 : Gauss 
+    gauss_1 : Gauss
   plot_components : []
   plot_range:
     - 4800

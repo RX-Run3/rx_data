@@ -33,5 +33,5 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
   nbins   : 50
   stacked : True
   d_leg :
-    signal        : $B^0\to K^0(\to K^+\pi^-)\mu^+\mu^-$ 
+    signal        : $B^0\to K^0(\to K^+\pi^-)\mu^+\mu^-$
     combinatorial : Combinatorial

@@ -23,8 +23,8 @@ plt_cfg: &plt_cfg
 trigger   : rkst_mm_os
 yields    : model/yields/rkst/reso_muon.yaml
 selection :
-  jpsi : {} 
-  psi2 : {} 
+  jpsi : {}
+  psi2 : {}
 observable:
   jpsi:
     name : B_const_mass_M
@@ -63,6 +63,6 @@ constraints:
   combinatorial   : false
   signal_shape    : false
 fit: {}
-plots: 
+plots:
   jpsi : *plt_cfg
   psi2 : *plt_cfg

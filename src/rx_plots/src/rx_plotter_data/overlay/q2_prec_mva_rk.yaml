@@ -1,4 +1,4 @@
-# This config is used to overlay different distributions (mostly masses) 
+# This config is used to overlay different distributions (mostly masses)
 # in different mva_prc bins
 
 general:
@@ -22,7 +22,7 @@ plots:
     labels     : ['$BDT_{PRC}$', 'Normalized']
     title      : PRec MVA distribution in $BDT_{prc}$ bins
     name       : mva_prc
-    normalized : false 
+    normalized : false
     styling:
       histtype : step
   Jpsi_M:
@@ -31,7 +31,7 @@ plots:
     labels     : ['M$(J/\psi)$[MeV]', 'Normalized']
     title      : Mass distribution in $BDT_{prc}$ bins
     name       : jpsi_mass_raw
-    normalized : false 
+    normalized : false
     styling:
       histtype : step
   Jpsi_Mass:
@@ -40,7 +40,7 @@ plots:
     labels     : ['$M_{corr}(J/\psi)$[MeV]', 'Normalized']
     title      : Mass distribution in $BDT_{prc}$ bins
     name       : jpsi_mass_cor
-    normalized : false 
+    normalized : false
     styling:
       histtype : step
   B_M:
@@ -49,7 +49,7 @@ plots:
     labels     : ['M$(B^+)$[MeV]', 'Normalized']
     title      : Mass distribution in $BDT_{prc}$ bins
     name       : b_mass_raw
-    normalized : false 
+    normalized : false
     styling:
       histtype : step
   B_Mass:
@@ -58,7 +58,7 @@ plots:
     labels     : ['$M_{corr}(B^+)$[MeV]', 'Normalized']
     title      : Mass distribution in $BDT_{prc}$ bins
     name       : b_mass_cor
-    normalized : false 
+    normalized : false
     styling:
       histtype : step
   B_const_mass_M:
@@ -67,7 +67,7 @@ plots:
     labels     : ['$M_{DTF}(B^+)$[MeV]', 'Normalized']
     title      : Mass distribution in $BDT_{prc}$ bins
     name       : b_mass_dtf
-    normalized : false 
+    normalized : false
     styling:
       histtype : step
   nPVs:
@@ -76,6 +76,6 @@ plots:
     labels     : ['nPVs', 'Normalized']
     title      : Number of Primary vertices in $BDT_{prc}$ bins
     name       : npvs
-    normalized : false 
+    normalized : false
     styling:
       histtype : step

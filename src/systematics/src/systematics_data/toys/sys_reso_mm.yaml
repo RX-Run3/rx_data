@@ -8,17 +8,17 @@ cmb:
   suffix   : alt_cmb
 # ---------------------
 kk_jpsi_mm:
-  component : KKjpsi_mm 
+  component : KKjpsi_mm
   delta_norm: null
   bootstrap : 50
-  skip      : True 
+  skip      : True
 pK_swap_mm:
   component : jpsi_mm_swap
   delta_norm: null
   bootstrap : 50
-  skip      : True 
+  skip      : True
 pKst_jpsi_mm:
-  component : Kstjpsi_mm 
+  component : Kstjpsi_mm
   delta_norm: null
   bootstrap : 50
-  skip      : False 
+  skip      : False

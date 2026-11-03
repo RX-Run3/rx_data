@@ -20,11 +20,11 @@ q2_common: &q2_common
   high   : (Jpsi_M * Jpsi_M > 15500000) && (Jpsi_M * Jpsi_M < 22000000)
 
 hop_common: &hop_common
-  low    : hop_mass > 4500 
-  central: hop_mass > 4500 
-  jpsi   : hop_mass > 4500 
-  psi2   : hop_mass > 4500 
-  high   : hop_mass > 3000 
+  low    : hop_mass > 4500
+  central: hop_mass > 4500
+  jpsi   : hop_mass > 4500
+  psi2   : hop_mass > 4500
+  high   : hop_mass > 3000
 
 mass_ee  : &mass_ee
   low    : (B_M                  > 4600) && (B_M                  < 6200)
@@ -69,12 +69,12 @@ RKst:
     tr_ipchi2 : H1_IPCHI2_OWNPV > 9 && H2_IPCHI2_OWNPV > 9 && L1_IPCHI2_OWNPV > 9 && L2_IPCHI2_OWNPV > 9
     pid_l     : L1_ProbNNe > 0.2 && L2_ProbNNe > 0.2 && L1_PIDe  > 3.000 && L2_PIDe  > 3.000
     pid_k     : (H1_ProbNNk   * (1 - H1_PROBNN_P) > 0.05) && H1_PID_K > 0
-    pid_pi    : (H2_PROBNN_PI * (1 - H2_PROBNN_P) * (1 - H2_ProbNNk) > 0.1) 
+    pid_pi    : (H2_PROBNN_PI * (1 - H2_PROBNN_P) * (1 - H2_ProbNNk) > 0.1)
     rich      : L1_PPHASRICH && L2_PPHASRICH && H1_PPHASRICH && H2_PPHASRICH
     acceptance: L1_INECAL && L2_INECAL
     cascade   : (1)
     jpsi_misid: (1)
-    bdt       : (1) 
+    bdt       : (1)
     q2:
       <<: *q2_common
     mass:
@@ -90,12 +90,12 @@ RKst:
     tr_ipchi2 : H1_IPCHI2_OWNPV > 9 && H2_IPCHI2_OWNPV > 9 && L1_IPCHI2_OWNPV > 9 && L2_IPCHI2_OWNPV > 9
     pid_l     : L1_ProbNNmu> 0.2 && L2_ProbNNmu> 0.2 && L1_isMuon && L2_isMuon && L1_PIDmu >-3. && L2_PIDmu > -3
     pid_k     : (H1_ProbNNk   * (1 - H1_PROBNN_P) > 0.05) && H1_PID_K > 0
-    pid_pi    : (H2_PROBNN_PI * (1 - H2_PROBNN_P) * (1 - H2_ProbNNk) > 0.1) 
+    pid_pi    : (H2_PROBNN_PI * (1 - H2_PROBNN_P) * (1 - H2_ProbNNk) > 0.1)
     rich      : L1_PPHASRICH && L2_PPHASRICH && H1_PPHASRICH && H2_PPHASRICH
     acceptance: L1_INMUON && L2_INMUON
     cascade   : (1)
     jpsi_misid: (1)
-    bdt       : (1) 
+    bdt       : (1)
     q2:
       <<: *q2_common
     mass:
@@ -116,9 +116,9 @@ RK:
     jpsi_misid: swp_jpsi_misid_mass_swp < 3050 || swp_jpsi_misid_mass_swp > 3150
     cascade   :
       <<: *cascade_common
-    hop       : 
+    hop       :
       <<: *hop_common
-    bdt       : 
+    bdt       :
       <<: *bdt_common
     q2:
       <<: *q2_common
@@ -139,9 +139,9 @@ RK:
     jpsi_misid: swp_jpsi_misid_mass_swp < 3050 || swp_jpsi_misid_mass_swp > 3150
     cascade   :
       <<: *cascade_common
-    hop       : 
+    hop       :
       <<: *hop_common
-    bdt       : 
+    bdt       :
       <<: *bdt_common
     q2:
       <<: *q2_common

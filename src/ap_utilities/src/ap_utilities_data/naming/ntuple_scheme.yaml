@@ -11,11 +11,11 @@ paths:
 # -----------------------------------------
 samples:
   Bu_K1ee_eq_DPC:
-    - any 
+    - any
   Bu_K2stee_Kpipi_eq_mK1430_DPC:
-    - any 
-  Bu_Kstee_Kpi0_eq_btosllball05_DPC: 
-    - any 
+    - any
+  Bu_Kstee_Kpi0_eq_btosllball05_DPC:
+    - any
   Bd_Kpiee_eq_DPC:
     - Hlt2RD_B0ToKpPimEE
     - Hlt2RD_B0ToKpPimEE_MVA
@@ -23,9 +23,9 @@ samples:
   # Exclusive ccbar PRec
   #----------
   Bu_JpsiKst_ee_Kpi0_eq_DPC:
-    - any 
+    - any
   Bu_psi2SKst_ee_Kpi0_eq_DPC:
-    - any 
+    - any
   Bd_psi2SKst_ee_eq_DPC:
     - Hlt2RD_B0ToKpPimEE
     - Hlt2RD_B0ToKpPimEE_MVA
@@ -33,41 +33,41 @@ samples:
   # Cascade decays
   #----------
   Bu_D0pi_Kenu_eq_DPC_TightCut:
-    - any 
+    - any
   Bu_D0enu_Kpi_eq_DPC_TightCut:
-    - any 
+    - any
   Bu_D0enu_Kenu_eq_DPC_ptCut200MeV_visMass4GeV:
-    - any 
+    - any
   #----------
   # Hadronic mis-ID, B-> hhh
   #----------
   Bu_KplpiplKmn_eq_sqDalitz_DPC:
-    - any 
+    - any
   Bu_KplKplKmn_eq_sqDalitz_DPC:
-    - any 
-  Bu_piplpimnKpl_eq_sqDalitz_DPC: 
-    - any 
+    - any
+  Bu_piplpimnKpl_eq_sqDalitz_DPC:
+    - any
   #----------
   # Cocktail electron
   #----------
   Bd_JpsiX_ee_eq_JpsiInAcc:
-    - any 
+    - any
   Bu_JpsiX_ee_eq_JpsiInAcc:
-    - any 
+    - any
   Bs_JpsiX_ee_eq_JpsiInAcc:
-    - any 
+    - any
   Lb_JpsiX_ee_eq_JpsiInAcc:
-    - any 
+    - any
   #----------
   # Cocktail muon
   #----------
   Bd_JpsiX_mm_eq_JpsiInAcc:
-    - any 
+    - any
   Bu_JpsiX_mm_eq_JpsiInAcc:
-    - any 
+    - any
   Bs_JpsiX_mm_eq_JpsiInAcc:
-    - any 
+    - any
   Lb_JpsiX_mm_eq_JpsiInAcc:
-    - any 
+    - any
   Lb_JpsipKX_mm_eq_JpsiInAcc:
-    - any 
+    - any

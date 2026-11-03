@@ -1,12 +1,12 @@
 # This config file defines the yields and the relationships between them
-# For the fit of the resonant muon channel 
+# For the fit of the resonant muon channel
 # --------------------
 # Generic parameters
 # --------------------
 fractions: &fractions
-  val : 0.5 
+  val : 0.5
   min : 0.0
-  max : 1.0 
+  max : 1.0
 yields: &yields
   val : 10
   min : 0

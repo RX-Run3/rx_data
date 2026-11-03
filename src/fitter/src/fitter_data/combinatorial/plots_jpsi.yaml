@@ -8,7 +8,7 @@ styles  :
   nev:
     xrotation : 45
     alpha     : 1.0
-    ylabel    : Entries 
+    ylabel    : Entries
     yrange    : [0, 4000]
   mu_hypexp_cmb_1:
     <<: *style
@@ -24,10 +24,10 @@ styles  :
     yrange: [0., 0.006]
   pvalue:
     <<: *style
-    ylabel    : p-value 
+    ylabel    : p-value
     yrange    : [0.0, 1.0]
 labels :
-  SS : SS 
+  SS : SS
 groups :
   all:
-    - SS 
+    - SS

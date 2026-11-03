@@ -4,11 +4,11 @@
 # What samples should be copied
 
 triggers:
-  - rkst_ee_os 
-  - rkst_ee_misid 
-  - rkst_ee_ss 
-  - rkst_mm_os 
-  - rkst_mm_ss 
+  - rkst_ee_os
+  - rkst_ee_misid
+  - rkst_ee_ss
+  - rkst_mm_os
+  - rkst_mm_ss
 samples :
   data:
     - DATA_24_MagDown_24c2

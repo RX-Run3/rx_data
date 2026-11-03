@@ -9,17 +9,17 @@ model:
     low:
       name : B_Mass_smr
       range:
-        - 4500 
+        - 4500
         - 6900
     central:
       name : B_Mass_smr
       range:
-        - 4600 
+        - 4600
         - 6900
     high:
       name : B_Mass_smr
       range:
-        - 4500 
+        - 4500
         - 6900
   components:
     combinatorial                     : tests/fits/combinatorial.yaml
@@ -43,13 +43,13 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
   nbins   : 30
   stacked : True
   d_leg :
-    jpsi_leakage                      : $B^+\to K^+ J/\psi(\to e^+e^-)$ 
-    psi2_leakage                      : $B^+\to K^+ \psi(2S)(\to e^+e^-)$ 
-    Bd_Kstee_eq_btosllball05_DPC      : $B^+\to K^{*+}(\to K^+\pi^0)e^+e^-$ 
-    Bu_Kstee_Kpi0_eq_btosllball05_DPC : $B^0\to K^{*0}(\to K^+\pi^-)e^+e^-$ 
-    Bs_phiee_eq_Ball_DPC              : $B_s\to \phi(\to K^+K^-)e^+e^-$ 
+    jpsi_leakage                      : $B^+\to K^+ J/\psi(\to e^+e^-)$
+    psi2_leakage                      : $B^+\to K^+ \psi(2S)(\to e^+e^-)$
+    Bd_Kstee_eq_btosllball05_DPC      : $B^+\to K^{*+}(\to K^+\pi^0)e^+e^-$
+    Bu_Kstee_Kpi0_eq_btosllball05_DPC : $B^0\to K^{*0}(\to K^+\pi^-)e^+e^-$
+    Bs_phiee_eq_Ball_DPC              : $B_s\to \phi(\to K^+K^-)e^+e^-$
     combinatorial                     : Combinatorial
-    signal                            : $B^+\to K^+ e^+e^-$ 
+    signal                            : $B^+\to K^+ e^+e^-$
     ccbar                             : $B\to c\bar{c}(\to e^+e^-) + X$
-    kkk                               : $B^+\to K^+K^+K^-$ 
-    kpipi                             : $B^+\to K^+\pi^+\pi^-$ 
+    kkk                               : $B^+\to K^+K^+K^-$
+    kpipi                             : $B^+\to K^+\pi^+\pi^-$

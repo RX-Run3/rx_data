@@ -1,10 +1,10 @@
 # This config file defines the yields and the relationships between them
-# For the fit of the resonant electron channel 
+# For the fit of the resonant electron channel
 # -------------------------
 fractions: &frac
   val : 0.5
   min : 0.0
-  max : 1.0 
+  max : 1.0
 # -------------------------
 yields: &yields
   val : 10
@@ -47,11 +47,11 @@ yld_bpkpjpsiee_rk_brem_x12:
   <<: *yields
 yld_bpkpjpsiee_rk_brem_xx1:
   kind : mul
-  pars : 
+  pars :
     - yld_bpkpjpsiee_rk_brem_x12
     - bpkpjpsiee_fraction
 yld_bpkpjpsiee_rk_brem_xx2:
-  kind : dif 
+  kind : dif
   pars :
     - yld_bpkpjpsiee_rk_brem_x12
     - yld_bpkpjpsiee_rk_brem_xx1
@@ -60,11 +60,11 @@ yld_bpkppsi2ee_rk_brem_x12:
   <<: *yields
 yld_bpkppsi2ee_rk_brem_xx1:
   kind : mul
-  pars : 
+  pars :
     - yld_bpkppsi2ee_rk_brem_x12
     - bpkppsi2ee_fraction
 yld_bpkppsi2ee_rk_brem_xx2:
-  kind : dif 
+  kind : dif
   pars :
     - yld_bpkppsi2ee_rk_brem_x12
     - yld_bpkppsi2ee_rk_brem_xx1

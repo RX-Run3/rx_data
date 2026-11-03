@@ -6,12 +6,12 @@ plots:
     title   : x distribution
     styling :
       class A:
-        histtype : fill 
+        histtype : fill
         color    : gray
         alpha    : 0.3
       class B:
-        color    : red 
-        histtype : step 
+        color    : red
+        histtype : step
         linestyle: '-'
   y :
     binning : [-5.0, 8.0, 40]

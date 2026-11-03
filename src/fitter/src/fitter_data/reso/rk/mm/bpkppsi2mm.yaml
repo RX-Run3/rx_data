@@ -4,13 +4,13 @@ categories:
     selection : {}
     model :
       pdfs :
-        - dscb 
+        - dscb
         - cbl
       shared        :
         - mu
         - sg
       floating      :
-        - mu 
+        - mu
         - sg
       reparametrize : {}
       fix           : {}
@@ -25,5 +25,5 @@ plots:
     - 5200
     - 5400
   d_leg :
-    cbl_bpkppsi2mm_brem_xx0_1  : Crystal Ball 
-    dscb_bpkppsi2mm_brem_xx0_1 : DSCB 
+    cbl_bpkppsi2mm_brem_xx0_1  : Crystal Ball
+    dscb_bpkppsi2mm_brem_xx0_1 : DSCB

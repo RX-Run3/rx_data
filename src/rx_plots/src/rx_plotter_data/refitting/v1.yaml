@@ -5,43 +5,43 @@ general:
 plots:
   B_const_mass_psi2S_M:
     binning    : [5150, 5800, 140]
-    yscale     : log 
+    yscale     : log
     labels     : ['$M_{DTF}^{\psi(2S)}(B)$', 'Entries/5 MeV']
-    title      : Refitted vs original 
+    title      : Refitted vs original
     name       : bmass_psi2_dtf
     styling :
         Original:
-            histtype : fill 
-            color    : blue 
-            alpha    : 0.4
-        Refitted:
-            color    : black 
-            histtype : step
-            linestyle: '-'
-    vline   :
-      x     : 5280 
-      label : PDG 
-      ls    : --
-      c     : red 
-      lw    : 1
-  B_const_mass_M:
-    binning    : [5150, 5800, 140]
-    yscale     : log 
-    labels     : ['$M_{DTF}^{J/\psi}(B)$', 'Entries/5 MeV']
-    title      : Refitted vs original 
-    name       : bmass_jpsi_dtf 
-    styling :
-        Original:
-            histtype : fill 
+            histtype : fill
             color    : blue
             alpha    : 0.4
         Refitted:
-            color    : black 
+            color    : black
             histtype : step
             linestyle: '-'
     vline   :
-      x     : 5280 
-      label : PDG 
+      x     : 5280
+      label : PDG
       ls    : --
-      c     : red 
+      c     : red
+      lw    : 1
+  B_const_mass_M:
+    binning    : [5150, 5800, 140]
+    yscale     : log
+    labels     : ['$M_{DTF}^{J/\psi}(B)$', 'Entries/5 MeV']
+    title      : Refitted vs original
+    name       : bmass_jpsi_dtf
+    styling :
+        Original:
+            histtype : fill
+            color    : blue
+            alpha    : 0.4
+        Refitted:
+            color    : black
+            histtype : step
+            linestyle: '-'
+    vline   :
+      x     : 5280
+      label : PDG
+      ls    : --
+      c     : red
       lw    : 1

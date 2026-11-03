@@ -1,7 +1,7 @@
 general:
   size : [15, 10]
 selection:
-  max_ran_entries : -1 
+  max_ran_entries : -1
   cuts:
     pide : L1_PIDe > 1 && L2_PIDe > 1
     pidk : H_PID_K > -2
@@ -14,19 +14,19 @@ plots:
     styling : &style
       '0.1 x New':
         histtype : fill
-        color    : red 
+        color    : red
         alpha    : 0.4
       '2e-2 x New':
         histtype : fill
-        color    : red 
+        color    : red
         alpha    : 0.4
       '1e-4 x New':
         histtype : fill
-        color    : red 
+        color    : red
         alpha    : 0.4
       'Original':
-        histtype : fill 
-        color    : green 
+        histtype : fill
+        color    : green
         alpha    : 0.4
       'New with PID':
         color    : blue

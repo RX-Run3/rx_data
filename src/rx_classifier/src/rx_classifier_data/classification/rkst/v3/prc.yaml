@@ -1,25 +1,25 @@
 style: &sty
   Signal:
     histtype  : step
-    linestyle : '-' 
-    color     : blue 
+    linestyle : '-'
+    color     : blue
   Background:
-    histtype  : step 
-    linestyle : '-' 
+    histtype  : step
+    linestyle : '-'
     color     : red
 features:
   low:
-    - sqrt_ipchi2 
+    - sqrt_ipchi2
     #- B_ENDVERTEX_CHI2DOF
     - b_dira
     - b_pt
     #
-    - kst_dira 
+    - kst_dira
     #- Kst_END_VCHI2DOF
     - Kst_BPVIPCHI2
     - Kst_PT
     #
-    - j_dira 
+    - j_dira
     - Jpsi_IPCHI2_OWNPV
     - Jpsi_FDCHI2_OWNPV
     #
@@ -30,17 +30,17 @@ features:
     - iso_one_dchi
     - iso_one_mass
   central:
-    - sqrt_ipchi2 
+    - sqrt_ipchi2
     #- B_ENDVERTEX_CHI2DOF
     - b_dira
     - b_pt
     #
-    - kst_dira 
+    - kst_dira
     #- Kst_END_VCHI2DOF
     - Kst_BPVIPCHI2
     - Kst_PT
     #
-    - j_dira 
+    - j_dira
     - Jpsi_IPCHI2_OWNPV
     - Jpsi_FDCHI2_OWNPV
     #
@@ -51,17 +51,17 @@ features:
     - iso_one_dchi
     - iso_one_mass
   high:
-    - sqrt_ipchi2 
+    - sqrt_ipchi2
     - B_ENDVERTEX_CHI2DOF
     - b_dira
     - b_pt
     #
-    - kst_dira 
+    - kst_dira
     - Kst_END_VCHI2DOF
     - Kst_BPVIPCHI2
     - Kst_PT
     #
-    - j_dira 
+    - j_dira
     - Jpsi_IPCHI2_OWNPV
     - Jpsi_FDCHI2_OWNPV
     #
@@ -86,7 +86,7 @@ dataset :
       sample : Bd_Kstee_eq_btosllball05_DPC
       trigger: Hlt2RD_B0ToKpPimEE_MVA
     bkg :
-      sample : 
+      sample :
         - Bu_JpsiX_ee_eq_JpsiInAcc
         - Bd_JpsiX_ee_eq_JpsiInAcc
         - Bu_K1ee_eq_DPC
@@ -134,7 +134,7 @@ training :
       max_depth         : 7
       max_features      : 6
       min_samples_split : 7
-      min_samples_leaf  : 10 
+      min_samples_leaf  : 10
       n_estimators      : 399
     high :
       learning_rate     : 0.05
@@ -247,7 +247,7 @@ plotting:
         styling :
           <<: *sty
       # --------------------
-      # Hadrons 
+      # Hadrons
       # --------------------
       min_hh_pt:
         normalized : true

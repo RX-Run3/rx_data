@@ -4,7 +4,7 @@ observable:
   name       : B_Mass
   wide_range : [ 3000, 7000]
   mass_range : [ 4600, 6700]
-  tran_range : 
+  tran_range :
     jpsi :
       jpsi :
         [   0, -1500, 1500]

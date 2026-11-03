@@ -7,8 +7,8 @@ bp : &samp_bp
     q2bin   : central
     selection :
       bdt   : mva_cmb > 0.6
-  background: 
-    name    : Bu_JpsiX_ee_eq_JpsiInAcc 
+  background:
+    name    : Bu_JpsiX_ee_eq_JpsiInAcc
     trigger : rk_ee_os
     q2bin   : central
     selection :
@@ -16,8 +16,8 @@ bp : &samp_bp
 bd : &samp_bd
   signal    :
     <<: *signal
-  background: 
-    name    : Bd_JpsiX_ee_eq_JpsiInAcc 
+  background:
+    name    : Bd_JpsiX_ee_eq_JpsiInAcc
     trigger : rk_ee_os
     q2bin   : central
     selection :
@@ -31,21 +31,21 @@ plotting:
 cases:
   v7.6 on $B^+\to c\bar{c}X$ background:
     model  : /home/acampove/external_ssd/mva/prc/v7p6/central
-    color  : blue 
+    color  : blue
     samples:
       <<: *samp_bp
   v7.7 on $B^+\to c\bar{c}X$ background:
     model  : /home/acampove/external_ssd/mva/prc/v7p7/central
-    color  : red 
+    color  : red
     samples:
       <<: *samp_bp
   v7.6 on $B_d\to c\bar{c}X$ background:
     model  : /home/acampove/external_ssd/mva/prc/v7p6/central
-    color  : green 
+    color  : green
     samples:
       <<: *samp_bd
   v7.7 on $B_d\to c\bar{c}X$ background:
     model  : /home/acampove/external_ssd/mva/prc/v7p7/central
-    color  : orange 
+    color  : orange
     samples:
       <<: *samp_bd

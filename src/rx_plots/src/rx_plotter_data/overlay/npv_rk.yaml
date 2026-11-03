@@ -17,18 +17,18 @@ plots:
     labels     : ['$M(B^+)$', 'Normalized']
     title      : ''
     name       : 'bmass_raw'
-    normalized : true 
+    normalized : true
   B_const_mass_M:
     binning    : [5100, 5500, 100]
     yscale     : 'linear'
     labels     : ['$M_{DTF}(B^+)$', 'Normalized']
     title      : ''
     name       : 'bmass_dtf'
-    normalized : true 
+    normalized : true
   nPVs :
     binning    : [0, 15, 15]
     yscale     : 'linear'
     labels     : ['nPVs', 'Normalized']
     title      : ''
     name       : 'npvs'
-    normalized : false 
+    normalized : false

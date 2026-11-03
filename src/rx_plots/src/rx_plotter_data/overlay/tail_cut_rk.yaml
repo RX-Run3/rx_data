@@ -5,12 +5,12 @@ general:
 definitions: {}
 selection:
   q2      : (1)
-  mass    : (1) 
+  mass    : (1)
 cutflow:
   'none'  : (1)
-  '5150'  : B_const_mass_M > 5150 
-  '5170'  : B_const_mass_M > 5170 
-  '5200'  : B_const_mass_M > 5200 
+  '5150'  : B_const_mass_M > 5150
+  '5170'  : B_const_mass_M > 5170
+  '5200'  : B_const_mass_M > 5200
 plots:
   B_Mass:
     binning    : [4500, 5800, 60]
@@ -27,7 +27,7 @@ plots:
     labels     : ['$M_{DTF}(B^+)$', 'Normalized']
     title      : ''
     name       : 'bmass_dtf'
-    normalized : false 
+    normalized : false
     styling:
       histtype : step
 saving:

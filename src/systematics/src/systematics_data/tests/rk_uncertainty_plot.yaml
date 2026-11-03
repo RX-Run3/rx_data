@@ -1,9 +1,9 @@
 name   : some-name
 alpha  : 0.5
-xlabel : Parameter fixed 
+xlabel : Parameter fixed
 ylabel : Uncertainty
 yrange : [0, 30]
-title  : Title 
+title  : Title
 labels :
   a : $\alpha$
   b : $\beta$

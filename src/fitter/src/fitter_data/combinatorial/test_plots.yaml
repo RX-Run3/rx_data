@@ -2,7 +2,7 @@ style : &style
   xrotation : 45
   alpha     : 0.5
 # ------------------------
-out_dir : null 
+out_dir : null
 size    : [30, 10]
 xname   : Fit
 styles  :
@@ -16,16 +16,16 @@ styles  :
     yrange    : [-0.0005, 0.0015]
   nev:
     <<: *style
-    ylabel    : p-value 
+    ylabel    : p-value
     yrange    : [0.0, 1.0]
   pvalue:
     <<: *style
-    ylabel    : p-value 
+    ylabel    : p-value
     yrange    : [0.0, 1.0]
 labels :
-  c1 : Cat 1 
+  c1 : Cat 1
   c2 : Cat 2
 groups :
   g1:
-    - c1 
-    - c2 
+    - c1
+    - c2

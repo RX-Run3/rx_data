@@ -21,10 +21,10 @@ input:
       sim : Bd_JpsiKst_mm_eq_DPC
       dat : DATA*
   selection:
-    bdt     : (1) 
+    bdt     : (1)
     psi_vt  : B_const_mass_M > 5180 # This removes the psi2S contamination
     q2      : (1)
-    mass    : (1) 
+    mass    : (1)
 syst:
     - nom
 fitting:

@@ -1,11 +1,11 @@
 style: &sty
   Signal:
     histtype  : step
-    linestyle : '-' 
-    color     : blue 
+    linestyle : '-'
+    color     : blue
   Background:
-    histtype  : step 
-    linestyle : '-' 
+    histtype  : step
+    linestyle : '-'
     color     : red
 
 dataset:
@@ -23,7 +23,7 @@ training :
     rdm_stat : 1
     hyper    :
       loss              : log_loss
-      max_features      : sqrt 
+      max_features      : sqrt
       n_estimators      : 100
       max_depth         : 5
       min_samples_split : 2

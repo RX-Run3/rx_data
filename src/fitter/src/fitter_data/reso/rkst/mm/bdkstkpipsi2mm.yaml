@@ -27,4 +27,4 @@ plots:
     - 5400
   d_leg:
     gauss_bdkstkpipsi2mm_brem_xx0_1 : Gauss
-    dscb_bdkstkpipsi2mm_brem_xx0_1  : DSCB 
+    dscb_bdkstkpipsi2mm_brem_xx0_1  : DSCB

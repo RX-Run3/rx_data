@@ -20,10 +20,10 @@ dataset :
   paths:
     sig :
       file_path : /publicfs/ucas/user/campoverde/Data/RX_run3/v2/NO_q2_bdt_mass_Q2_central_VR_v1/Bu_Kee_eq_btosllball05_DPC/Hlt2RD_BuToKpEE_MVA/*.root
-      tree_name : DecayTree 
+      tree_name : DecayTree
     bkg :
       file_path : /publicfs/ucas/user/campoverde/Data/RX_run3/v2/NO_q2_bdt_mass_Q2_central_VR_v1/DATA_24_Mag*_24c2/Hlt2RD_BuToKpEE_MVA/*.root
-      tree_name : DecayTree 
+      tree_name : DecayTree
   define :
     mass       : 'B_M'
     min_ll_pt  : 'TMath::Min(L1_PT , L2_PT)'
@@ -34,18 +34,18 @@ training :
   nfold    : 10
   rdm_stat : 1
   hyper:
-    low : 
+    low :
       n_estimators : 70
-    central : 
+    central :
       n_estimators : 70
       max_depth    : 4
-    high : 
+    high :
       n_estimators : 70
-  features : 
+  features :
     - B_PT
     - B_IPCHI2_OWNPV
     - B_FDCHI2_OWNPV
-    - B_ENDVERTEX_CHI2DOF 
+    - B_ENDVERTEX_CHI2DOF
     - B_DIRA_OWNPV
     #
     - Jpsi_PT
@@ -58,8 +58,8 @@ training :
     - max_ll_ipc
     - min_ll_ipc
     #
-    - H_PT 
-    - H_IPCHI2_OWNPV 
+    - H_PT
+    - H_IPCHI2_OWNPV
 saving:
   path : 'output/mva_rare_2024_cmb/VERSION/model.pkl'
 plotting:

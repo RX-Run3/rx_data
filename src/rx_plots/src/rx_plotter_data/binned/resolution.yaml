@@ -30,15 +30,15 @@ plots:
     brem_pos:
       L2_BREMHYPOROW:
         binning:
-          nbin: 64 
-          min : 0 
-          max : 64 
+          nbin: 64
+          min : 0
+          max : 64
         label: ECAL${}_{X}$
         isobin: true
       L2_BREMHYPOCOL:
         binning:
-          nbin: 64 
-          min : 0 
-          max : 64 
+          nbin: 64
+          min : 0
+          max : 64
         label : ECAL${}_{Y}$
         isobin: true

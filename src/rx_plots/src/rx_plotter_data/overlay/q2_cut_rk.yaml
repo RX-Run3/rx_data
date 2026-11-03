@@ -5,12 +5,12 @@ general:
 definitions: {}
 selection:
   q2      : (1)
-  mass    : (1) 
+  mass    : (1)
 cutflow:
   'none'  : (1)
-  '2150'  : Jpsi_Mass > 2150 
-  '2350'  : Jpsi_Mass > 2350 
-  '2450'  : Jpsi_Mass > 2450 
+  '2150'  : Jpsi_Mass > 2150
+  '2350'  : Jpsi_Mass > 2350
+  '2450'  : Jpsi_Mass > 2450
 saving:
   plt_dir : overlay/q2_cut
 plots:
@@ -38,6 +38,6 @@ plots:
     labels     : ['$M_{corr}(J/\psi)$', 'Normalized']
     title      : ''
     name       : 'jmass'
-    normalized : false 
+    normalized : false
     styling:
       histtype : step

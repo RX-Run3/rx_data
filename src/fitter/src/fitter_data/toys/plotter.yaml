@@ -9,20 +9,20 @@ saving:
 
 correlation:
   size     : [20, 15]
-  title    : Correlation matrix 
+  title    : Correlation matrix
   annot    : true
   fmt      : '.3f'
   vmin     : -1.0
   vmax     : +1.0
-  cmap     : Spectral 
+  cmap     : Spectral
   linewidth: 0.5
   annot_kws:
-    size : 15 
+    size : 15
   rotation :
     x    : 45
 
 generated:
-  x     : -1 
+  x     : -1
   label : Generated
   ls    : --
   c     : red
@@ -187,9 +187,9 @@ plugin:
       mean : validity rate={:.1%}
 
 summary:
-  median : 
+  median :
     - yld_signal_unc
-  mean : 
+  mean :
     - valid
   pulls:
     - yld_signal_pul

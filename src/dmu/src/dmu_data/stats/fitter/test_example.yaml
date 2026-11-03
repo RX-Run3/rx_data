@@ -21,7 +21,7 @@ strategy      :
           nsigma   : [5.0, 2.0] #Number of sigmas for the range of the parameter, for each step
 # The lines below will split the range of the data [0-10] into two subranges, such that the NLL is built
 # only in those ranges. The ranges need to be tuples
-ranges        : 
+ranges        :
       - [0, 3]
       - [6, 9]
 #The lines below will allow using contraints for each parameter, where the first element is the mean and the second
@@ -32,4 +32,4 @@ constraints   :
 #After each fit, the parameters spciefied below will be printed, for debugging purposes
 print_pars    : ['mu', 'sg']
 likelihood :
-  binned : false 
+  binned : false

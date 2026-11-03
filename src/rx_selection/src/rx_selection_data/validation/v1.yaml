@@ -1,7 +1,7 @@
 sample:
   ipath   : /home/acampove/Data/RX_run3/v1/post_ap
   project : RK
-  #sample  : Bu_Kmumu_eq_btosllball05_DPC 
+  #sample  : Bu_Kmumu_eq_btosllball05_DPC
   #hlt2    : Hlt2RD_BuToKpMuMu_MVA
   #hlt2    : SpruceRD_BuToHpMuMu
   sample  : Bu_Kee_eq_btosllball05_DPC
@@ -18,17 +18,17 @@ plotting_1d:
           binning    : [0., 22000000, 40]
           yscale     : 'linear'
           labels     : ['$q^2$', 'Entries']
-          title      : '' 
+          title      : ''
           name       : 'q2'
       B_M :
           binning    : [4500, 6000, 40]
           yscale     : 'linear'
           labels     : ['$M(B^+)$', 'Entries']
-          title      : '' 
+          title      : ''
           name       : 'b_mass'
 plotting_2d:
   saving:
-      plt_dir : validation 
+      plt_dir : validation
   definitions:
     q2 : Jpsi_M * Jpsi_M
   general:

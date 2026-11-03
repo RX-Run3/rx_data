@@ -9,12 +9,12 @@ observable:
   jpsi:
     name : B_const_mass_M
     range:
-      - 5180 
+      - 5180
       - 6500
   psi2:
     name : B_const_mass_psi2S_M
     range:
-      - 5180 
+      - 5180
       - 6000
 components:
   jpsi:
@@ -38,9 +38,9 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
         nbins           : 400
         stacked         : True
         d_leg :
-          bpkpjpsimm_brem_xx0 : $B^+\to J/\psi(\to \mu^+\mu^-) K^+$ 
-          bppijpsimm_brem_xx0 : $B^+\to J/\psi(\to \mu^+\mu^-) \pi^+$ 
-          bpkppsi2mm_brem_xx0 : $B^+\to \psi(2S)(\to \mu^+\mu^-) K^+$ 
+          bpkpjpsimm_brem_xx0 : $B^+\to J/\psi(\to \mu^+\mu^-) K^+$
+          bppijpsimm_brem_xx0 : $B^+\to J/\psi(\to \mu^+\mu^-) \pi^+$
+          bpkppsi2mm_brem_xx0 : $B^+\to \psi(2S)(\to \mu^+\mu^-) K^+$
           comb_brem_xx0       : Combinatorial
         plot_range:
           - 5180
@@ -54,9 +54,9 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
         nbins           : 80
         stacked         : True
         d_leg :
-          bpkpjpsimm_brem_xx0 : $B^+\to J/\psi(\to \mu^+\mu^-) K^+$ 
-          bppijpsimm_brem_xx0 : $B^+\to J/\psi(\to \mu^+\mu^-) \pi^+$ 
-          bpkppsi2mm_brem_xx0 : $B^+\to \psi(2S)(\to \mu^+\mu^-) K^+$ 
+          bpkpjpsimm_brem_xx0 : $B^+\to J/\psi(\to \mu^+\mu^-) K^+$
+          bppijpsimm_brem_xx0 : $B^+\to J/\psi(\to \mu^+\mu^-) \pi^+$
+          bpkppsi2mm_brem_xx0 : $B^+\to \psi(2S)(\to \mu^+\mu^-) K^+$
           comb_brem_xx0       : Combinatorial
         plot_range:
           - 5180

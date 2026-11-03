@@ -1,10 +1,10 @@
 output : /tmp/tests/dmu/ml/cv_diagnostics/multiple_methods
 correlations:
   # Variables with respect to which the correlations with the features will be measured
-  target    : 
+  target    :
     name : z
   methods:
     - Pearson
-    - Kendall-$\tau$ 
+    - Kendall-$\tau$
   figure:
     size : [10, 8]

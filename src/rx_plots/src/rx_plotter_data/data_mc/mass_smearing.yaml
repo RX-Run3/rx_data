@@ -15,23 +15,23 @@ plots:
       linestyle : '-'
     vline   :
       x     : 3097
-      label : $J/\psi$ 
+      label : $J/\psi$
       ls    : --
-      c     : black 
+      c     : black
       lw    : 2
   Jpsi_Mass_smr:
     binning    : [2300, 3700, 40]
     yscale     : linear
     labels     : ['M$(J/\psi)$[MeV]', 'Normalized']
-    name       : jmass_smr 
+    name       : jmass_smr
     normalized : true
     styling:
       linestyle : '-'
     vline   :
       x     : 3097
-      label : $J/\psi$ 
+      label : $J/\psi$
       ls    : --
-      c     : black 
+      c     : black
       lw    : 2
 plugin:
   stats:

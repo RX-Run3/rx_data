@@ -11,15 +11,15 @@ yld_jpsi_ee_rk: # Label of what will be plotted below, used to name PNGs
   # ------------------------------------
   yrange:
     - 0
-    - 12e4 
+    - 12e4
   size:
     - 15
     - 10
   xlabel: Block
-  ylabel: Yield 
+  ylabel: Yield
   title : Yield vs block
-  xaxis :                  
-    name  : block 
+  xaxis :
+    name  : block
     values: ['4', '3', '2', '1', '5', '6', '7', '8'] # Plot will be WRT this, use strings for custom ordering
   # ------------------------------------
   # This is the per-graph configuration
@@ -36,7 +36,7 @@ yld_jpsi_ee_rk: # Label of what will be plotted below, used to name PNGs
         <<: *sel
       error : yld_jpsi_error * (1 - jpsi_fraction_error)
       label : $2\gamma$
-      color : red 
+      color : red
 # ------------------------------------
 jpsi_fraction:
   yrange:
@@ -46,10 +46,10 @@ jpsi_fraction:
     - 15
     - 10
   xlabel: Block
-  ylabel: Brem fraction 
-  title : Brem fraction vs block 
-  xaxis :                  
-    name  : block 
+  ylabel: Brem fraction
+  title : Brem fraction vs block
+  xaxis :
+    name  : block
     values: ['4', '3', '2', '1', '5', '6', '7', '8'] # Plot will be WRT this, use strings for custom ordering
   # ------------------------------------
   # This is the per-graph configuration
@@ -66,4 +66,4 @@ jpsi_fraction:
         <<: *sel
       error : jpsi_fraction_error # Error of 1 - x is error of x
       label : $2\gamma$
-      color : red 
+      color : red

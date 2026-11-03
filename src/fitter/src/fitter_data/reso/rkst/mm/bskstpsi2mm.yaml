@@ -5,8 +5,8 @@ categories:
     model:
       pdfs:
         - dscb
-        - gauss 
-      shared        : 
+        - gauss
+      shared        :
         - mu
         - sg
       floating      : []
@@ -17,11 +17,11 @@ fit:
     ntries : 15
     pvalue : 0.05
 plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#fit-plotting
-  nbins   : 75 
+  nbins   : 75
   stacked : True
   d_leg :
-    gauss_bskstpsi2mm_brem_xx0_1 : Gauss 
-    dscb_bskstpsi2mm_brem_xx0_1  : DSCB 
+    gauss_bskstpsi2mm_brem_xx0_1 : Gauss
+    dscb_bskstpsi2mm_brem_xx0_1  : DSCB
   plot_components : []
   plot_range:
     - 5300

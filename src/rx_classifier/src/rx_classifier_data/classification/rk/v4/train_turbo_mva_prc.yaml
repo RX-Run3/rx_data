@@ -12,7 +12,7 @@ features:
     - acos_dira
     - log_h_pt
     - min_ll_ipc
-    - iso_one_mass 
+    - iso_one_mass
     - iso_one_dchi
     - iso_cc_mom
     - iso_cc_ptasy
@@ -25,7 +25,7 @@ features:
     - acos_dira
     - log_h_pt
     - min_ll_ipc
-    - iso_one_mass 
+    - iso_one_mass
     - iso_one_dchi
     - iso_cc_mom
     - iso_cc_ptasy
@@ -38,7 +38,7 @@ features:
     - acos_dira
     - log_h_pt
     - min_ll_ipc
-    - iso_one_mass 
+    - iso_one_mass
     - iso_one_dchi
     - iso_cc_mom
     - iso_cc_ptasy
@@ -67,7 +67,7 @@ dataset :
     - B_HEAD_NC_B_NeutralIso_DR2_0p15_PTASY
     - B_VTXISO_B_OneTrack_DChi2Vtx_9p0_Smallest_DELTACHI2_MASS
     - B_VTXISO_B_OneTrack_DChi2Vtx_9p0_Smallest_DELTACHI2
-    - Jpsi_IPCHI2_OWNPV 
+    - Jpsi_IPCHI2_OWNPV
     - B_DIRA_OWNPV
     - H_PT
     - L1_IPCHI2_OWNPV
@@ -75,30 +75,30 @@ dataset :
   selection:
     bkg :
       casc : swp_cascade_mass_swp    < 1800 || swp_cascade_mass_swp    > 1900
-      jmis : swp_jpsi_misid_mass_swp < 3050 || swp_jpsi_misid_mass_swp > 3150 
+      jmis : swp_jpsi_misid_mass_swp < 3050 || swp_jpsi_misid_mass_swp > 3150
       tail : B_M < 5100
       mva  : mva_cmb > 0.7
     sig :
       casc : swp_cascade_mass_swp    < 1800 || swp_cascade_mass_swp    > 1900
-      jmis : swp_jpsi_misid_mass_swp < 3050 || swp_jpsi_misid_mass_swp > 3150 
+      jmis : swp_jpsi_misid_mass_swp < 3050 || swp_jpsi_misid_mass_swp > 3150
       mva  : mva_cmb > 0.7
   paths:
     mva  : /home/acampove/external_ssd/Data/samples/mva_v1.yaml # Use first version of MVA to clean for combinatorial, to train second version of PRC MVA
     hop  : /home/acampove/external_ssd/Data/samples/hop.yaml
     jmis : /home/acampove/external_ssd/Data/samples/jpsi_misid.yaml
     casc : /home/acampove/external_ssd/Data/samples/cascade.yaml
-    main : /home/acampove/external_ssd/Data/samples/main.yaml 
+    main : /home/acampove/external_ssd/Data/samples/main.yaml
   samples:
     sig :
       sample : Bu_Kee_eq_btosllball05_DPC
       trigger: Hlt2RD_BuToKpEE_MVA
     bkg :
-      sample : DATA* 
+      sample : DATA*
       trigger: Hlt2RD_BuToKpMuMu_MVA
   define :
     mass        : B_M
     log_b_pt    : TMath::Log(B_PT)
-    sqrt_ipchi2 : TMath::Sqrt(B_IPCHI2_OWNPV) 
+    sqrt_ipchi2 : TMath::Sqrt(B_IPCHI2_OWNPV)
     acos_dira   : TMath::ACos(B_DIRA_OWNPV)
     # ----------
     iso_cc_mom  : B_HEAD_CC_B_ChargedIso_DR2_0p15_CP
@@ -110,7 +110,7 @@ dataset :
     iso_one_mass: B_VTXISO_B_OneTrack_DChi2Vtx_9p0_Smallest_DELTACHI2_MASS
     iso_one_dchi: B_VTXISO_B_OneTrack_DChi2Vtx_9p0_Smallest_DELTACHI2
     # ----------
-    sqrt_jipchi2: TMath::Sqrt(Jpsi_IPCHI2_OWNPV) 
+    sqrt_jipchi2: TMath::Sqrt(Jpsi_IPCHI2_OWNPV)
     log_h_pt    : TMath::Log(H_PT)
     min_ll_ipc  : TMath::Min(TMath::Sqrt(L1_IPCHI2_OWNPV), TMath::Sqrt(L2_IPCHI2_OWNPV))
   nan :
@@ -122,12 +122,12 @@ training :
   nfold    : 10
   rdm_stat : 1
   hyper:
-    low : 
+    low :
       n_estimators : 70
-    central : 
+    central :
       n_estimators : 70
       max_depth    : 4
-    high : 
+    high :
       n_estimators : 70
 saving:
   path : 'output/mva_rare_2024_prc/VERSION/model.pkl'

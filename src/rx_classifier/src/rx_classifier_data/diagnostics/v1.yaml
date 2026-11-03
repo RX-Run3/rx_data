@@ -10,25 +10,25 @@ diagnostics:
   output         : plots/prec_correlations/diagnostics
   score_from_rdf : mva_prc
   correlations:
-    target : 
-      name    : B_M 
-      overlay :  
+    target :
+      name    : B_M
+      overlay :
         general:
           size : [12, 8]
         saving:
           plt_dir : plots/prec_correlations/diagnostics
         plots:
           B_M :
-            binning    : [4500, 6000, 60] 
+            binning    : [4500, 6000, 60]
             yscale     : 'linear'
             labels     : ['B_M', 'Entries']
             normalized : true
-            styling :          
+            styling :
               linestyle: '-'
     methods:
       - Pearson
-      - Kendall-$\tau$ 
+      - Kendall-$\tau$
     figure:
       size       : [12, 8]
-      rotate     : 60 
+      rotate     : 60
       xlabelsize : 16

@@ -8,10 +8,10 @@ dataset :
     paths:
         sig :
             file_path : /publicfs/lhcb/user/campoverde/Data/cache/tools/apply_selection/bdt_train/v3/bdks_jpsi_B0ToKpPimEE_ana/v2/2024_ETOS/*.root
-            tree_name : ETOS 
+            tree_name : ETOS
         bkg :
             file_path : /publicfs/lhcb/user/campoverde/Data/cache/tools/apply_selection/bdt_train/v3/data_ana_mva_bd/v4/2024_ETOS/*.root
-            tree_name : ETOS 
+            tree_name : ETOS
     define :
       mass       : 'B_nopv_const_mass_M[0]'
       min_ll_pt  : 'TMath::Min(L1_PT , L2_PT)'
@@ -30,7 +30,7 @@ training :
         - B_PT
         - B_IPCHI2_OWNPV
         - B_FDCHI2_OWNPV
-        - B_ENDVERTEX_CHI2DOF 
+        - B_ENDVERTEX_CHI2DOF
         - B_DIRA_OWNPV
     #
         - Kst_PT
@@ -46,8 +46,8 @@ training :
         - max_ll_ipc
         - min_ll_ipc
     #
-        - max_hh_pt 
-        - min_hh_pt 
+        - max_hh_pt
+        - min_hh_pt
     hyper    :
       loss              : log_loss
       n_estimators      : 100
@@ -89,7 +89,7 @@ plotting:
               binning : [0.9995, 1, 100]
               yscale  : 'log'
               labels  : ['DIRA$(B^+)$', '']
-            
+
             Jpsi_PT :
               normalized : true
               binning : [0, 50000, 100]
@@ -110,7 +110,7 @@ plotting:
               binning : [0.99,  1, 100]
               yscale  : 'log'
               labels  : ['DIRA$(J/\psi)$', '']
-            
+
             Kst_PT :
               normalized : true
               binning : [0, 20000, 100]
@@ -121,7 +121,7 @@ plotting:
               binning : [0, 10, 100]
               yscale  : 'log'
               labels  : ['$\chi^2/dof(K^*)$', '']
-            
+
             min_ll_pt:
               normalized : true
               binning : [0, 10000, 100]
@@ -142,7 +142,7 @@ plotting:
               binning : [0, 3000, 100]
               yscale  : 'log'
               labels  : ['$\max(IP_{\chi^2}(e^+), IP_{\chi^2}(e^-))$', '']
-            
+
             min_hh_ipc:
               normalized : true
               binning : [0,  500, 100]
@@ -153,7 +153,7 @@ plotting:
               binning : [0, 3000, 100]
               yscale  : 'log'
               labels  : ['$\max(IP_{\chi^2}(K^+), IP_{\chi^2}(\pi^-))$', '']
-            
+
             mass:
               normalized : true
               binning : [4800, 6000, 100]

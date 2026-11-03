@@ -1,20 +1,20 @@
 mu:
   name : mu
-  kind : GaussianConstraint 
+  kind : GaussianConstraint
   mu   : 5200
   sg   : 1
 sg:
-  name : sg 
-  kind : GaussianConstraint 
-  mu   : 150 
-  sg   : 2 
+  name : sg
+  kind : GaussianConstraint
+  mu   : 150
+  sg   : 2
 nsig:
-  name : nsig 
+  name : nsig
   kind : PoissonConstraint
-  mu   : 1000 
-  sg   : -999 
+  mu   : 1000
+  sg   : -999
 nbkg:
   name : nbkg
   kind : PoissonConstraint
-  mu   : 1000 
-  sg   : -999 
+  mu   : 1000
+  sg   : -999

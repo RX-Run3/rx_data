@@ -4,7 +4,7 @@ categories:
     selection : {}
     model :
       pdfs :
-        - pol1 
+        - pol1
       shared        : []
       floating      : []
       reparametrize : {}
@@ -17,7 +17,7 @@ plots:
   nbins     : 50
   stacked   : True
   plot_range:
-    - 2600 
+    - 2600
     - 3300
   d_leg :
-    pol1_bpkpjpsimm_brem_xx0_rk_mm_1  : Crystal Ball 
+    pol1_bpkpjpsimm_brem_xx0_rk_mm_1  : Crystal Ball

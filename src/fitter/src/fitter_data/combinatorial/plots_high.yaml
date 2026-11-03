@@ -8,7 +8,7 @@ styles  :
   nev:
     xrotation : 45
     alpha     : 1.0
-    ylabel    : Entries 
+    ylabel    : Entries
     yrange    : [0, 4000]
   mu_suj_cmb_1:
     <<: *style
@@ -20,7 +20,7 @@ styles  :
     yrange: [  0,  1200]
   pvalue:
     <<: *style
-    ylabel    : p-value 
+    ylabel    : p-value
     yrange    : [0.0, 1.0]
 labels :
   OS  : Opposite Sign
@@ -29,8 +29,8 @@ labels :
   +-- : $B^+\to K^+e^-e^- + cc$
 groups :
   OS_vs_SS:
-    - OS 
-    - SS 
+    - OS
+    - SS
   p3_vs_p1:
     - +++
     - +--

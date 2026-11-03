@@ -1,4 +1,4 @@
-trigger : rk_ee_os 
+trigger : rk_ee_os
 data    : data_24
 brems   :
   - brem_xx1

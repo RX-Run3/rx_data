@@ -5,7 +5,7 @@ yield:
 fraction:
   val : 0.2
   min : 0.0
-  max : 1.0 
+  max : 1.0
 
 yield_001:
   kind : mul
@@ -16,4 +16,4 @@ yield_002:
   kind : dif
   pars :
     - yield
-    - yield_001 
+    - yield_001

@@ -1,18 +1,18 @@
 signal_shape:
   name        : shape
-  kind        : GaussianConstraint 
+  kind        : GaussianConstraint
   parameters  :
     - mu
     - sg
-  values : 
+  values :
     - 5200
     - 150
-  cov: 
+  cov:
     - [100, 10]
     - [ 10,  4]
 nsig:
   kind : PoissonConstraint
-  name : nsig 
+  name : nsig
   mu   : 1000
   sg   : -999
 nbkg:

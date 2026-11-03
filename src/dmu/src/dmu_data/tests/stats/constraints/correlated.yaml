@@ -1,12 +1,12 @@
 signal_shape:
   name        : placeholder
-  kind        : GaussianConstraint 
+  kind        : GaussianConstraint
   parameters  :
     - mu
     - sg
-  values : 
+  values :
     - 5200
     - 150
-  cov: 
+  cov:
     - [100, 10]
     - [ 10,  4]

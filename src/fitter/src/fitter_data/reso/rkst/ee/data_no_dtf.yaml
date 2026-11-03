@@ -3,18 +3,18 @@
 
 trigger   : rkst_ee_os
 yields    : model/yields/rkst/reso_electron.yaml
-selection : 
+selection :
   extra   : TMath::Abs(B_const_mass_M) > 5180
 observable:
   jpsi:
     name : B_Mass
     range:
-      - 4500 
+      - 4500
       - 7000
   psi2:
-    name : B_Mass 
+    name : B_Mass
     range:
-      - 4500 
+      - 4500
       - 7000
 components:
   comb            : reso/rkst/ee/comb.yaml
@@ -37,6 +37,6 @@ plots: # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#f
     lbjpsipkee      : $\Lambda_b \to J/\psi pK$
     bsphijpsiee     : $B_s \to J/\psi\phi(\to KK)$
     bskstjpsiee     : $B_s\to J/\psi K^{*0}(\to K^+\pi^-)$
-    bdkstkpijpsiee_kpiee_pikee : $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$ 
-    bdkstkpijpsiee  : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$ 
-    bdkstkpipsi2ee  : $B^0\to \psi(2S) K^{*0}(\to K^+\pi^-)$ 
+    bdkstkpijpsiee_kpiee_pikee : $B^0\to J/\psi K^{*0}(\to K^+_{\to\pi^+}\pi^-_{\to K^-})$
+    bdkstkpijpsiee  : $B^0\to J/\psi K^{*0}(\to K^+\pi^-)$
+    bdkstkpipsi2ee  : $B^0\to \psi(2S) K^{*0}(\to K^+\pi^-)$

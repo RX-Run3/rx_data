@@ -1,12 +1,12 @@
 # These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#fit-plotting
-plots_cfg: &plt_cfg 
+plots_cfg: &plt_cfg
   merging : {}
   regions :
     brem_xx0-rk_mm_os-kmm_mkm:
       nbins   : 50
       stacked : True
       d_leg :
-        bpkpmm_brem_xx0 : $B^+\to K^+\mu^+\mu^-$ 
+        bpkpmm_brem_xx0 : $B^+\to K^+\mu^+\mu^-$
         comb_brem_xx0   : Combinatorial
 # -------------------------------
 trigger          : rk_mm_os
@@ -17,7 +17,7 @@ observable:
   high:
     name : swp_jpsi_misid_mass_swp
     range:
-      - 2600 
+      - 2600
       - 3300
 components:
   high:

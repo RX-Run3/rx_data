@@ -42,9 +42,9 @@ plots:
     binning    : [0, 3, 3]
     yscale     : linear
     labels     : ['n$\gamma$', 'Brem Fraction']
-    name       : brem_fraction 
+    name       : brem_fraction
     normalized : true
-    styling :          
+    styling :
       <<: *styles
   bmass:
     binning    : [4500, 6500, 40]
@@ -63,20 +63,20 @@ plots:
     labels     : ['Long Tracks', 'Normalized']
     name       : long_tracks
     normalized : true
-    styling :          
+    styling :
       <<: *styles
   nPVs:
     binning    : [1, 7, 6]
     yscale     : linear
     labels     : ['nPVs', 'Normalized']
-    name       : npv 
+    name       : npv
     normalized : true
-    styling :          
+    styling :
       <<: *styles
 plugin:
   fwhm:
     bmass:
       obs    : [4500, 6000]
-      plot   : true        
+      plot   : true
       format : FWHM={:.0f} MeV
       add_std: True

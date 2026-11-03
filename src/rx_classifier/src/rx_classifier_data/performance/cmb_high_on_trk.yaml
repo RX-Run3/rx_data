@@ -1,23 +1,23 @@
 # Config file used to control
-# 
+#
 # - Which samples are compared
 # - Which models are compared
 # - How to plot the comparisons, colors, etc
 #
-# For case where testing on OS track q2, training on every possible choice 
+# For case where testing on OS track q2, training on every possible choice
 
 samples     : &sample
   signal    :
     name    : Bu_Kee_eq_btosllball05_DPC
     trigger : rk_ee_os
-    q2bin   : high 
+    q2bin   : high
     selection :
       bdt   : (1)
       q2    : q2_track > 14300000 && q2_track < 22000000 && q2 < 22000000
   background:
     name    : DATA*
     trigger : rk_ee_os
-    q2bin   : high 
+    q2bin   : high
     selection :
       bdt   : (1)
       q2    : q2_track > 14300000 && q2_track < 22000000 && q2 < 22000000
@@ -30,17 +30,17 @@ plotting:
 cases:
   On central $q^2$:
     model  : /home/acampove/external_ssd/mva/cmb/v7p0/central
-    color  : black 
+    color  : black
     samples:
       <<: *sample
   On high $q^2$:
     model  : /home/acampove/external_ssd/mva/cmb/v7p0/high
-    color  : red 
+    color  : red
     samples:
       <<: *sample
   On high $q^2_{track}$:
     model  : /home/acampove/external_ssd/mva/cmb/v7p1/high
-    color  : blue 
+    color  : blue
     samples:
       <<: *sample
   On high $q^2_{DTF}$:
@@ -60,6 +60,6 @@ cases:
       <<: *sample
   On central $q^2$ SS:
     model  : /home/acampove/external_ssd/mva/cmb/v7p5/high
-    color  : cyan 
+    color  : cyan
     samples:
       <<: *sample

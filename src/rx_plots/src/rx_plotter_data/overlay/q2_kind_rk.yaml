@@ -2,13 +2,13 @@ general:
   size : [10, 8]
 definitions: {}
 selection:
-  q2   : 'true' 
-  mass : 'true' 
+  q2   : 'true'
+  mass : 'true'
 saving:
   plt_dir : overlay/q2_kind
 cutflow:
-  DTF      : q2_dtf > 11000000 && q2_dtf < 15000000  
-  Standard : q2     > 11000000 && q2     < 15000000  
+  DTF      : q2_dtf > 11000000 && q2_dtf < 15000000
+  Standard : q2     > 11000000 && q2     < 15000000
 plots:
   B_Mass:
       binning    : [4500, 6000, 30]

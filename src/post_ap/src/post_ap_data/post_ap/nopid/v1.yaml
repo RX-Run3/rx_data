@@ -14,8 +14,8 @@ RK:
     kinem_had : H_PT > 300 && H_P > 2500
     clones    : (th_l1_l2 > 5e-4) && (th_l1_kp > 5e-4) && (th_l2_kp > 5e-4)
     tr_ipchi2 : H_IPCHI2_OWNPV > 9 && L1_IPCHI2_OWNPV > 9 && L2_IPCHI2_OWNPV > 9
-    pid_l     : (1) 
-    pid_k     : (1) 
+    pid_l     : (1)
+    pid_k     : (1)
     rich      : L1_PPHASRICH && L2_PPHASRICH && H_PPHASRICH
     acceptance: L1_INECAL    && L2_INECAL
     cascade   : (1)

@@ -17,4 +17,4 @@ constraints   :
 #After each fit, the parameters spciefied below will be printed, for debugging purposes
 print_pars    : ['mu', 'sg']
 likelihood :
-  binned : false 
+  binned : false

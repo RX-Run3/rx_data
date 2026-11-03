@@ -1,26 +1,26 @@
 trigger   : rk_ee_os
 selection : {}
-yields    : 
+yields    :
   nsig001:
     val : 10
     min : 0
     max : 100000
 observable:
   low:
-    name : B_M 
+    name : B_M
     range:
-      - 4500 
+      - 4500
       - 7000
 components:
   low:
     comb   :
       models:
-        central : 
+        central :
           pdfs :
             - gauss
           shared        : []
           reparametrize : {}
-          fix           : {} 
+          fix           : {}
           floating      : []
       constraints: null
     bpkpee :

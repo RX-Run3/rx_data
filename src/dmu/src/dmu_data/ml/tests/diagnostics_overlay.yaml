@@ -22,12 +22,12 @@ correlations:
           yscale     : 'linear'
           labels     : ['$z$', 'Entries']
           normalized : true
-          styling :          
+          styling :
             linestyle: '-'
   methods:
     - Pearson
-    - Kendall-$\tau$ 
+    - Kendall-$\tau$
   figure:
     title     : Scores from file
     size      : [12, 10]
-    xlabelsize: 30 
+    xlabelsize: 30

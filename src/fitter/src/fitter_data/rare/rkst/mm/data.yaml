@@ -9,7 +9,7 @@ plt_cfg: &plt_cfg
       nbins   : 50
       stacked : True
       d_leg :
-        bdkstkpimm_brem_xx0 : $B^0\to K^0(\to K^+\pi^-)\mu^+\mu^-$ 
+        bdkstkpimm_brem_xx0 : $B^0\to K^0(\to K^+\pi^-)\mu^+\mu^-$
         comb_brem_xx0       : Combinatorial
 trigger          : rkst_mm_os
 yields           : model/yields/rkst/rare_muon.yaml
@@ -48,7 +48,7 @@ constraints:
   combinatorial : false
   signal_shape  : false
 fit: {}
-plots: 
+plots:
   low     : *plt_cfg
   central : *plt_cfg
   high    : *plt_cfg

@@ -101,8 +101,8 @@ productions:
 # ------------------------------------------------
 transformations:
   redefine_head:
-    B_ : Lb_ 
-    X_ : Lz_ 
+    B_ : Lb_
+    X_ : Lz_
     H1_: P_
     H2_: K_
   particle_variables:

@@ -1,5 +1,5 @@
 # This config file defines the yields and the relationships between them
-# For the fit of the resonant muon channel 
+# For the fit of the resonant muon channel
 yields: &yields
   val : 10
   min : 0

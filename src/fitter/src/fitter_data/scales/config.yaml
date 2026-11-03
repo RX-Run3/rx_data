@@ -3,20 +3,20 @@ output_directory: scales
 categories:
   rk_rare_electron:
     trigger : rk_ee_os
-    brem    : x12 
+    brem    : x12
     q2bin   :
-      - low 
-      - central 
-      - high 
+      - low
+      - central
+      - high
     signal     : bpkpee
     backgrounds:
-      - bdkstkpiee 
-      - bpkstkpiee 
+      - bdkstkpiee
+      - bpkstkpiee
       - bsphiee
   # ------------------------
   rk_reso_electron:
     trigger : rk_ee_os
-    brem    : x12 
+    brem    : x12
     q2bin   :
       - jpsi
     signal     : bpkpjpsiee
@@ -37,10 +37,10 @@ categories:
     brem    : x12
     q2bin   :
       - jpsi
-    signal     : bdkstkpijpsiee 
+    signal     : bdkstkpijpsiee
     backgrounds:
       - lbpkjpsiee
-      - bsphijpsiee 
+      - bsphijpsiee
       - bskstjpsiee
   # ------------------------
   rkst_reso_muon:

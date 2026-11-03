@@ -59,7 +59,7 @@ dataset :
       sample : Bu_Kee_eq_btosllball05_DPC
       trigger: Hlt2RD_BuToKpEE_MVA
     bkg :
-      sample : 
+      sample :
         - Bu_JpsiX_ee_eq_JpsiInAcc
         - Bd_JpsiX_ee_eq_JpsiInAcc
         - Bd_Kstee_eq_btosllball05_DPC

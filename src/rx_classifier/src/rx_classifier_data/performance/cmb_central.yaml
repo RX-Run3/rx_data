@@ -1,5 +1,5 @@
 # Config file used to control
-# 
+#
 # - Which samples are compared
 # - Which models are compared
 # - How to plot the comparisons, colors, etc
@@ -11,7 +11,7 @@ samples: &samp
     q2bin   : central
     selection :
       bdt   : (1)
-  background: 
+  background:
     name    : DATA*
     trigger : rk_ee_os
     q2bin   : central
@@ -26,11 +26,11 @@ plotting:
 cases:
   OS background proxy:
     model  : /home/acampove/external_ssd/mva/cmb/v7p0/central
-    color  : blue 
+    color  : blue
     samples:
       <<: *samp
   SS background proxy:
     model  : /home/acampove/external_ssd/mva/cmb/v7p5/central
-    color  : red 
+    color  : red
     samples:
       <<: *samp

@@ -1,4 +1,4 @@
-trigger : rkst_ee_os 
+trigger : rkst_ee_os
 data    : data_24
 brems   :
   - brem_xx1
@@ -7,13 +7,13 @@ q2bin      : psi2
 signal     : bdkstkpipsi2ee
 components :
   - data_24
-  - ccbar              
-  - lbpkjpsiee         
-  - bsphijpsiee        
-  - bskstjpsiee        
+  - ccbar
+  - lbpkjpsiee
+  - bsphijpsiee
+  - bskstjpsiee
   - bskstpsi2ee
   - bdkstkpijpsiee_kpiee_pikee
-  - bdkstkpijpsiee     
+  - bdkstkpijpsiee
 blocks :
   - b4
   - b3

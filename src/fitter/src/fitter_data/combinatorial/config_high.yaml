@@ -36,7 +36,7 @@ fit:
         pvalue : 0.99
     model:
       pdfs:
-        - suj 
+        - suj
       shared       : []
       reparametrize: {}
       fix          :

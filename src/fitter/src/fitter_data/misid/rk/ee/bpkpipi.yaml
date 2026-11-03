@@ -5,7 +5,7 @@ project          : rk_no_pid
 events_range     :
   - 4200
   - 6000
-selection: 
+selection:
   pid_l : (1)  # Built removing PID on leptons
 weights : model/weights/weights.yaml
 fit:

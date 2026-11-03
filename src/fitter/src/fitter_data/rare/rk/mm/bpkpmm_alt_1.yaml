@@ -4,11 +4,11 @@ categories:
     selection : {}
     model:
       pdfs :
-        - cbl 
-        - cbr 
+        - cbl
+        - cbr
       shared        :
         - mu
-        - sg 
+        - sg
       floating      :
         - mu
         - sg
@@ -20,16 +20,16 @@ categories:
           - 5200
           - 5350
         sg:
-          - 15 
-          - 10 
-          - 20 
+          - 15
+          - 10
+          - 20
         nl:
           -   1
-          - -10 
+          - -10
           -  30
         nr:
           -   1
-          - -10 
+          - -10
           -  30
 fit:
   strategy:

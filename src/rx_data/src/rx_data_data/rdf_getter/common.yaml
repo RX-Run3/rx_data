@@ -83,7 +83,7 @@ definitions:
     B_Mass            : B_M_brem_track_2
     # -------
     nbrem             : int(L1_HASBREMADDED_brem_track_2) + int(L2_HASBREMADDED_brem_track_2) # Will use the new definition of brem
-    nbrem_org         : int(L1_HASBREMADDED             ) + int(L2_HASBREMADDED             ) # But keep old one for checks 
+    nbrem_org         : int(L1_HASBREMADDED             ) + int(L2_HASBREMADDED             ) # But keep old one for checks
     <<: *common
   mm:
     B_DIRA_OWNPV_brem_track_2    : B_DIRA_OWNPV    # and expects brem corrected features in muon trees

@@ -35,7 +35,7 @@ plots:
         linestyle: '-'
     vline :
       x         : 5280
-      label     : PDG 
+      label     : PDG
       linestyle : ':'
       color     : green
 saving:

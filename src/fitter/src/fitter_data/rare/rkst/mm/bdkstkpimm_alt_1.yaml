@@ -20,9 +20,9 @@ categories:
           - 5200
           - 5350
         sg:
-          - 15 
-          - 10 
-          - 20 
+          - 15
+          - 10
+          - 20
 fit:
   strategy  :
     ntries : 10

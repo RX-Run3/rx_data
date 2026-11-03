@@ -10,11 +10,11 @@ paths:
 # -----------------------------------------
 samples:
   Bd_Denu_Kstenu_eq_VIA_HVM_EGDWC:
-    - any 
+    - any
   Bd_D0Xenu_D0_eq_cocktail:
-    - any 
+    - any
   Bu_K1ee_eq_DPC:
-    - any 
+    - any
   Bu_JpsiX_mm_eq_JpsiInAcc:
     - any
   Lb_JpsipK_ee_eq_phsp_DPC:

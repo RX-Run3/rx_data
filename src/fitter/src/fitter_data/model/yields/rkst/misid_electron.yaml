@@ -11,7 +11,7 @@ flt_yields: &flt_yields
 cns_yields: &cns_yields
   val : 1
   min : 0
-  max : 1000 
+  max : 1000
   fix : True
 # ------------------
 yld_comb_rkst_no_pid_kaon:

@@ -13,7 +13,7 @@ fit:
         pvalue : 0.05
     model:
       pdfs:
-        - fermi_dirac 
+        - fermi_dirac
       shared       : []
       reparametrize: {}
       floating     : []
@@ -25,7 +25,7 @@ fit:
         pvalue : 0.05
     model:
       pdfs:
-        - hypexp 
+        - hypexp
       shared       : []
       reparametrize: {}
       floating     : []

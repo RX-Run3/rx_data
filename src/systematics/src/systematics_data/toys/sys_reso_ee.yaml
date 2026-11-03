@@ -8,7 +8,7 @@ cmb:
   suffix   : alt_cmb
 # ---------------------
 kk_jpsi_ee:
-  component : KKjpsi_ee 
+  component : KKjpsi_ee
   delta_norm: null
   bootstrap : 50
   skip      : False
@@ -16,9 +16,9 @@ pK_swap_ee:
   component : jpsi_ee_swap
   delta_norm: null
   bootstrap : 50
-  skip      : True 
+  skip      : True
 pKst_jpsi_ee:
-  component : Kstjpsi_ee 
+  component : Kstjpsi_ee
   delta_norm: null
   bootstrap : 50
-  skip      : True 
+  skip      : True

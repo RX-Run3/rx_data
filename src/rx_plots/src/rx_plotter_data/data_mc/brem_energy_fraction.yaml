@@ -16,7 +16,7 @@ selection:
 plots:
     L1_eloss:
       binning    : [0, 1, 60]
-      yscale     : linear 
+      yscale     : linear
       labels     : ['Energy Loss', 'Normalized']
       normalized : True
       styling:

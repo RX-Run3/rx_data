@@ -4,7 +4,7 @@ categories:
     selection : {}
     model :
       pdfs :
-        - ipatia 
+        - ipatia
       shared        :
         - mu
         - sg
@@ -14,7 +14,7 @@ categories:
       reparametrize : {}
       fix           : {}
 fit:
-  do_errors : True 
+  do_errors : True
   strategy  :
     ntries : 4
     pvalue : 0.05
@@ -28,4 +28,4 @@ plots:
     - 5200
     - 5400
   d_leg :
-    ipatia_bpkpjpsimm_brem_xx0_1 : Hypatia 
+    ipatia_bpkpjpsimm_brem_xx0_1 : Hypatia

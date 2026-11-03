@@ -17,20 +17,20 @@ dataset :
       mass : 'mass > 4500 && mass < 5600'
   paths:
     sig :
-      file_path : 
+      file_path :
         - /publicfs/ucas/user/campoverde/Data/RX_run3/v3/NO_q2_bdt_mass_Q2_central_VR_v1/Bu_Kee_eq_btosllball05_DPC/Hlt2RD_BuToKpEE_MVA/*.root
-      tree_name : DecayTree 
+      tree_name : DecayTree
     bkg :
-      file_path : 
+      file_path :
         - /publicfs/ucas/user/campoverde/Data/RX_run3/v3/NO_q2_bdt_mass_Q2_central_VR_v1/Bd_Kstee_eq_btosllball05_DPC/Hlt2RD_BuToKpEE_MVA/*.root
         - /publicfs/ucas/user/campoverde/Data/RX_run3/v3/NO_q2_bdt_mass_Q2_central_VR_v1/Bu_Kstee_Kpi0_eq_btosllball05_DPC/Hlt2RD_BuToKpEE_MVA/*.root
         - /publicfs/ucas/user/campoverde/Data/RX_run3/v3/NO_q2_bdt_mass_Q2_central_VR_v1/Bu_JpsiX_ee_eq_JpsiInAcc/Hlt2RD_BuToKpEE_MVA/*.root
         - /publicfs/ucas/user/campoverde/Data/RX_run3/v3/NO_q2_bdt_mass_Q2_central_VR_v1/Bd_JpsiX_ee_eq_JpsiInAcc/Hlt2RD_BuToKpEE_MVA/*.root
-      tree_name : DecayTree 
+      tree_name : DecayTree
   define :
     mass        : B_M
     log_b_pt    : TMath::Log(B_PT)
-    sqrt_ipchi2 : TMath::Sqrt(B_IPCHI2_OWNPV) 
+    sqrt_ipchi2 : TMath::Sqrt(B_IPCHI2_OWNPV)
     acos_dira   : TMath::ACos(B_DIRA_OWNPV)
     # ----------
     iso_cc_mult : B_HEAD_CC_B_ChargedIso_DR2_0p15_CMULT
@@ -47,7 +47,7 @@ dataset :
     iso_two_mass: B_VTXISO_B_TwoTracks_DChi2Vtx_9p0_Smallest_DELTACHI2_MASS
     iso_two_dchi: B_VTXISO_B_TwoTracks_DChi2Vtx_9p0_Smallest_DELTACHI2
     # ----------
-    sqrt_jipchi2: TMath::Sqrt(Jpsi_IPCHI2_OWNPV) 
+    sqrt_jipchi2: TMath::Sqrt(Jpsi_IPCHI2_OWNPV)
     jp_acos_dira: TMath::ACos(Jpsi_DIRA_OWNPV)
     log_h_pt    : TMath::Log(H_PT)
     min_ll_ipc  : TMath::Min(TMath::Sqrt(L1_IPCHI2_OWNPV), TMath::Sqrt(L2_IPCHI2_OWNPV))
@@ -62,17 +62,17 @@ training :
   nfold    : 10
   rdm_stat : 1
   hyper:
-    low : 
+    low :
       n_estimators : 70
       learning_rate: 0.05
-    central : 
-      n_estimators : 120 
+    central :
+      n_estimators : 120
       learning_rate: 0.03
       max_depth    : 4
-    high : 
+    high :
       n_estimators : 70
       learning_rate: 0.05
-  features : 
+  features :
     - log_b_pt
     - sqrt_ipchi2
     - acos_dira
@@ -81,8 +81,8 @@ training :
     - log_h_pt
     - min_ll_ipc
     # ---------
-    - iso_one_mass 
-    - iso_two_mass 
+    - iso_one_mass
+    - iso_two_mass
     - iso_one_dchi
     - iso_two_dchi
     - iso_cc_mult

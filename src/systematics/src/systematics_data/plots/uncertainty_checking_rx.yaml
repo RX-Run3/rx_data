@@ -7,11 +7,11 @@ xlabel_rotation : 45
 
 labels :
   fix_mm_dt_cmb_N : $N_{comb}^{\mu\mu}$
-  fix_mm_dt_sig_mu: $\mu_{sig}^{\mu\mu}$ 
+  fix_mm_dt_sig_mu: $\mu_{sig}^{\mu\mu}$
   fix_mm_dt_sig_sg: $\sigma^{\mu\mu}$
   fix_mm_cmb_c    : $c_{comb}^{\mu\mu}$
   # ---------------
   fix_ee_dt_cmb_N : $N_{comb}^{ee}$
-  fix_ee_dt_sig_mu: $\mu_{sig}^{ee}$ 
-  fix_ee_jpsi_ee_N: $N_{Leakage}^{ee}$ 
-  fix_ee_pKst_ee_N: $N_{pK^{*}ee}$ 
+  fix_ee_dt_sig_mu: $\mu_{sig}^{ee}$
+  fix_ee_jpsi_ee_N: $N_{Leakage}^{ee}$
+  fix_ee_pKst_ee_N: $N_{pK^{*}ee}$

@@ -8,14 +8,14 @@ defaults:
 # ------------
 projects:
   rk:
-    brem_track_2: 
+    brem_track_2:
       version     : v4
       entries     : 100_000
       photon_veto : v0
-    hop: 
+    hop:
       version     : v4
       entries     : 100_000
-    mass: 
+    mass:
       version     : v2
       entries     : 100_000
     swp_cascade:
@@ -24,22 +24,22 @@ projects:
     swp_jpsi_misid:
       version     : v4
       entries     : 100_000
-    mva           : 
+    mva           :
       version     : v9
       entries     : 100_000
-    smear: 
+    smear:
       version     : v2
       entries     : 100_000
   # ------------
   rkst:
-    brem_track_2: 
+    brem_track_2:
       version     : v4
       entries     : 100_000
       photon_veto : v0
-    hop: 
+    hop:
       version     : v2
       entries     : 100_000
-    mass: 
+    mass:
       version     : v2
       entries     : 100_000
     swp_cascade:
@@ -48,10 +48,10 @@ projects:
     swp_jpsi_misid:
       version     : v3
       entries     : 100_000
-    mva           : 
+    mva           :
       version     : v5
       entries     : 100_000
-    smear: 
+    smear:
       version     : v2
       entries     : 100_000
 # ------------

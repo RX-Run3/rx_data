@@ -1,4 +1,4 @@
-name: Publish zfit-stubs to PyPI 
+name: Publish zfit-stubs to PyPI
 on: push
 jobs:
   build:
@@ -30,7 +30,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-poetry-
     #-----------
-    - name: Install and test 
+    - name: Install and test
       run: |
         micromamba run -n myenv pip install poetry pytest
         micromamba run -n myenv poetry install --extras 'dev'
@@ -45,7 +45,7 @@ jobs:
   #--------------------
   publish-to-pypi:
     name: >-
-      Publish to PyPI 
+      Publish to PyPI
     needs:
     - build
     runs-on: ubuntu-latest

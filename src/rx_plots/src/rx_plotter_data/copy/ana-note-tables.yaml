@@ -1,5 +1,5 @@
 extensions:
-  - tex 
+  - tex
 source_dir: ANADIR
 target_dir: NOTEDIR
 paths:

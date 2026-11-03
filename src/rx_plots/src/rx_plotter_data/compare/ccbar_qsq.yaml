@@ -19,8 +19,8 @@ plots:
     binning    : [6, 22, 100]
     yscale     : linear
     labels     : ['$q^2$[GeV]', 'Entries']
-    name       : ccbar_qsq 
-    normalized : false 
+    name       : ccbar_qsq
+    normalized : false
     styling:
       Original:
         histtype : fill
@@ -32,7 +32,7 @@ plots:
         color    : blue
     vline   :
       x     : 15
-      label : High $q^2$ 
+      label : High $q^2$
       ls    : --
       c     : black
       lw    : 1

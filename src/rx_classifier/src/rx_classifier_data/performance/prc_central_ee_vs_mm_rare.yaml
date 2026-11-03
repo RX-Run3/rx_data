@@ -11,7 +11,7 @@ ee : &samp_ee
     q2bin   : central
     selection :
       bdt   : mva_cmb > 0.6
-  background: 
+  background:
     name    : Bu_K2stee_Kpipi_eq_mK1430_DPC
     trigger : rk_ee_os
     q2bin   : central
@@ -20,13 +20,13 @@ ee : &samp_ee
 mm : &samp_mm
   signal    :
     <<: *signal
-  background: 
-    name    : DATA_* 
+  background:
+    name    : DATA_*
     trigger : rk_mm_os
     q2bin   : central
     selection :
       bdt   : mva_cmb > 0.6
-      mass  : B_M < 5100 
+      mass  : B_M < 5100
 # --------------------------------
 mva : v5 # will use this MVA files version to load the dataframe
 plotting:
@@ -36,21 +36,21 @@ plotting:
 cases:
   v6 on muon low SB background:
     model  : /home/acampove/external_ssd/mva/prc/v6/central
-    color  : green 
+    color  : green
     samples:
       <<: *samp_mm
   v7 on muon low SB background:
     model  : /home/acampove/external_ssd/mva/prc/v7p6/central
-    color  : orange 
+    color  : orange
     samples:
       <<: *samp_mm
   v6 on $B^+$ rare electron background:
     model  : /home/acampove/external_ssd/mva/prc/v6/central
-    color  : blue 
+    color  : blue
     samples:
       <<: *samp_ee
   v7 on $B^+$ rare electron background:
     model  : /home/acampove/external_ssd/mva/prc/v7p6/central
-    color  : red 
+    color  : red
     samples:
       <<: *samp_ee

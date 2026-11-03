@@ -1,5 +1,5 @@
 component    : bpkpjpsiee
-events_range : 
+events_range :
   - 4000
   - 7200
 fit:

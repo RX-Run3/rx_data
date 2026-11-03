@@ -1,14 +1,14 @@
 jpsi:
-  rk   : 
+  rk   :
     ee : bpkpjpsiee
     mm : bpkpjpsimm
-  rkst : 
+  rkst :
     ee : bdkstkpijpsiee
     mm : bdkstkpijpsimm
 psi2:
-  rk : 
+  rk :
     ee : bpkppsi2ee
     mm : bpkppsi2mm
-  rkst : 
+  rkst :
     ee : bdkstkpipsi2ee
     mm : bdkstkpipsi2mm
