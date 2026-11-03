@@ -57,7 +57,7 @@ class UncertaintyChecker:
     '''
     # ----------------------
     def __init__(
-        self, 
+        self,
         df : pnd.DataFrame,
         cfg: UncertaintyCheckerCfg):
         '''
@@ -98,10 +98,10 @@ class UncertaintyChecker:
         '''
         Parameters
         -------------
-        df: Pandas dataframe for a set of toys ran with a given number of floating parameters 
+        df: Pandas dataframe for a set of toys ran with a given number of floating parameters
         i.e. with columns:
         {'Error', 'Gen', 'Fixed', 'nFixed'}
-    
+
         Returns
         -------------
         Uncertainty in POI, upper and lower 68% CL in %

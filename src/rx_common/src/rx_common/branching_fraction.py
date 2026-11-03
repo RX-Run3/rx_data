@@ -31,7 +31,7 @@ class BranchingFraction(BaseModel):
         Decay: {self.dec}
         Value: {self.val:.3g}
         Error: {self.err:.3g}
-        ''' 
+        '''
     # ---------------------------------------
     @classmethod
     def from_decays(cls, decays : list[str], latex : str) -> 'BranchingFraction':

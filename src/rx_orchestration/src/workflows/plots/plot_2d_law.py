@@ -68,9 +68,9 @@ class Plot2DTask(law.Task):
         '''
         Runs comparison
         '''
-        from rx_plotter_scripts.plot_2d import main as plot_2d 
+        from rx_plotter_scripts.plot_2d import main as plot_2d
 
-        cfg = self._get_config() 
+        cfg = self._get_config()
 
         plot_2d(cfg=cfg.args)
 # -------------------------------------
@@ -85,7 +85,7 @@ class WrapPlot2D(law.WrapperTask):
         '''
         Parameters
         -------------
-        kind: Type of check, e.g. block quality 
+        kind: Type of check, e.g. block quality
 
         Returns
         -------------
@@ -95,7 +95,7 @@ class WrapPlot2D(law.WrapperTask):
             fname = f'{kind}.yaml'
         else:
             raise ValueError(f'Invalid kind of plot: {kind}')
-        
+
         config = gut.load_conf(package='configs', fpath=f'rx_plots/2d/{fname}')
 
         return config
@@ -108,8 +108,8 @@ class WrapPlot2D(law.WrapperTask):
         --------------
         List of JSON strings defining what each job will do
         '''
-        l_cfg = [] 
-        for kind in _KINDS: 
+        l_cfg = []
+        for kind in _KINDS:
             config = WrapPlot2D._get_config(kind=kind)
 
             for args in config['args']:
@@ -120,14 +120,14 @@ class WrapPlot2D(law.WrapperTask):
                 cfg             = {}
                 cfg['sample'  ] = sample
                 cfg['trigger' ] = trigger
-                cfg['q2bin'   ] = q2bin 
-                cfg['config'  ] = kind 
+                cfg['q2bin'   ] = q2bin
+                cfg['config'  ] = kind
 
                 output   = OmegaConf.to_container(config.output, resolve=True)
-                json_str = json.dumps({'args' : cfg, 'output' : output}) 
+                json_str = json.dumps({'args' : cfg, 'output' : output})
                 l_cfg.append(json_str)
-    
-        return l_cfg 
+
+        return l_cfg
     # --------------------------
     def requires(self):
         '''

@@ -43,7 +43,7 @@ class DataFitterSim(BaseFitter):
             Value:
                 - ExtendedBinnedNLL instance
                 - Configuration storing the selections used by default and in the fit
-        d_cfg: Dictionary mapping fitting region to config 
+        d_cfg: Dictionary mapping fitting region to config
         '''
         self._q2bin   = q2bin
         self._d_nll   = d_nll
@@ -97,9 +97,9 @@ class DataFitterSim(BaseFitter):
         return fres
     # ---------------------------------------------
     def _save_by_region(
-        self, 
+        self,
         reg  : Region,
-        nll  : NLLConf, 
+        nll  : NLLConf,
         cfg  : RXFitConfig,
         fres : FitResult) -> None:
         '''
@@ -178,7 +178,7 @@ class DataFitterSim(BaseFitter):
 
             self._save_by_region(
                 reg = region,
-                nll = nll_cfg, 
+                nll = nll_cfg,
                 cfg = cfg,
                 fres= fres,
             )

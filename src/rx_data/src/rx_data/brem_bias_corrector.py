@@ -91,9 +91,9 @@ class BremBiasCorrector:
     # --------------------------
     def correct(
         self,
-        brem : v4d, 
-        row  : int, 
-        col  : int, 
+        brem : v4d,
+        row  : int,
+        col  : int,
         area : int) -> v4d:
         '''
         Takes 4 vector with brem, the row and column locations in ECAL

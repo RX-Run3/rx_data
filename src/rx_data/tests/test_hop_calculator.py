@@ -95,8 +95,8 @@ def test_compare_bukee(tmp_path : Path):
     Compare signal with background for Bu -> K ee decays
     '''
     trigger = Trigger.rk_ee_os
-    sig_sam = Component.bpkpee  
-    bkg_sam = Component.bdkstkpiee 
+    sig_sam = Component.bpkpee
+    bkg_sam = Component.bdkstkpiee
     rdf_sig = tst.rdf_from_sample(sample=sig_sam, trigger=trigger)
     rdf_bkg = tst.rdf_from_sample(sample=bkg_sam, trigger=trigger)
 
@@ -110,8 +110,8 @@ def test_compare_bdkstee(tmp_path : Path):
     Compare signal with background for Bd -> Kpi ee decays
     '''
     trigger = Trigger.rkst_ee_os
-    sig_sam = Component.bdkstkpiee 
-    bkg_sam = Component.bpk1kpipiee 
+    sig_sam = Component.bdkstkpiee
+    bkg_sam = Component.bpk1kpipiee
     rdf_sig = tst.rdf_from_sample(sample=sig_sam, trigger=trigger)
     rdf_bkg = tst.rdf_from_sample(sample=bkg_sam, trigger=trigger)
 

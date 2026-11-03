@@ -47,7 +47,7 @@ def test_electron(tmp_path : Path, trig : Trigger):
     q2bin   = Qsq.central
     mass    = Mass.bp_dtf_jpsi
     obs     = zfit.Space(
-        obs   = mass.latex, 
+        obs   = mass.latex,
         label = mass,
         limits=(4500, 6000))
 
@@ -62,14 +62,14 @@ def test_electron(tmp_path : Path, trig : Trigger):
             name  = 'main',
             cfg   = cfg,
             obs   = obs,
-            trig  = trig, 
+            trig  = trig,
             q2bin = q2bin)
 
         obp.get_sum(name = 'ccbar')
 #-----------------------------------------------
 @pytest.mark.parametrize('trig, q2bin, mass', [
-    (Trigger.rk_mm_os  , 'jpsi', 'B_const_mass_M'), 
-    (Trigger.rk_mm_os  , 'psi2', 'B_const_mass_psi2S_M'), 
+    (Trigger.rk_mm_os  , 'jpsi', 'B_const_mass_M'),
+    (Trigger.rk_mm_os  , 'psi2', 'B_const_mass_psi2S_M'),
     # ---------
     (Trigger.rkst_mm_os, 'jpsi', 'B_const_mass_M'),
     (Trigger.rkst_mm_os, 'psi2', 'B_const_mass_psi2S_M'),
@@ -78,10 +78,10 @@ def test_muon_reso(tmp_path : Path, trig : Trigger, q2bin : str, mass : str):
     '''
     Simplest test in muon channel
     '''
-    q2bin   = Qsq(q2bin) 
+    q2bin   = Qsq(q2bin)
     mass    = Mass(mass)
     obs     = zfit.Space(
-        obs   = mass.latex, 
+        obs   = mass.latex,
         label = mass,
         limits=(4500, 6000))
 
@@ -97,7 +97,7 @@ def test_muon_reso(tmp_path : Path, trig : Trigger, q2bin : str, mass : str):
             name  = 'main',
             cfg   = cfg,
             obs   = obs,
-            trig  = trig, 
+            trig  = trig,
             q2bin = q2bin)
 
         pdf = obp.get_sum(name = 'ccbar')
@@ -115,7 +115,7 @@ def test_electron_by_block(tmp_path : Path, trig : Trigger, block : int):
     q2bin   = Qsq.jpsi
     mass    = Mass.bd_dtf_jpsi
     obs     = zfit.Space(
-        obs   = mass.latex, 
+        obs   = mass.latex,
         label = mass,
         limits=(4500, 6000))
 
@@ -131,7 +131,7 @@ def test_electron_by_block(tmp_path : Path, trig : Trigger, block : int):
             name  = 'main',
             cfg   = cfg,
             obs   = obs,
-            trig  = trig, 
+            trig  = trig,
             q2bin = q2bin)
 
         obp.get_sum(name = 'ccbar')
@@ -150,7 +150,7 @@ def test_reso_by_weights(
     trig    = Trigger.rk_ee_os
 
     obs     = zfit.Space(
-        obs   = mass.latex, 
+        obs   = mass.latex,
         label = mass,
         limits=(4500, 6000))
 
@@ -167,7 +167,7 @@ def test_reso_by_weights(
             name  = 'main',
             cfg   = cfg,
             obs   = obs,
-            trig  = trig, 
+            trig  = trig,
             q2bin = q2bin)
 
         obp.get_sum(name = 'ccbar')
@@ -178,9 +178,9 @@ def test_fit(tmp_path : Path):
     '''
     q2bin   = Qsq.jpsi
     mass    = Mass.bp_dtf_jpsi
-    trig    = Trigger.rk_ee_os 
+    trig    = Trigger.rk_ee_os
     obs     = zfit.Space(
-        obs   = mass.latex, 
+        obs   = mass.latex,
         label = mass,
         limits=(4500, 6000))
 
@@ -196,7 +196,7 @@ def test_fit(tmp_path : Path):
             name  = 'test',
             cfg   = cfg,
             obs   = obs,
-            trig  = trig, 
+            trig  = trig,
             q2bin = q2bin)
 
         pdf = obp.get_sum(name = 'ccbar')
@@ -235,11 +235,11 @@ def test_bdt(q2bin : str, bdt_cut : str, tmp_path : Path):
     '''
     mass    = {'jpsi' : Mass.bp_dtf_jpsi, 'psi2' : Mass.bp_dtf_psi2}[q2bin]
     obs     = zfit.Space(
-        obs   = mass.latex, 
+        obs   = mass.latex,
         label = mass,
         limits=(4500, 6000))
 
-    trig   = Trigger.rk_ee_os 
+    trig   = Trigger.rk_ee_os
     q2bin  = Qsq(q2bin)
     cfg    = CCbarConf.default(channel = Channel.ee)
 
@@ -251,7 +251,7 @@ def test_bdt(q2bin : str, bdt_cut : str, tmp_path : Path):
             name  = 'main',
             cfg   = cfg,
             obs   = obs,
-            trig  = trig, 
+            trig  = trig,
             q2bin = q2bin)
 
         obp.get_sum(name = 'ccbar')
@@ -264,7 +264,7 @@ def test_brem(brem_cut : str, tmp_path : Path):
     q2bin   = Qsq.jpsi
     mass    = {'jpsi' : Mass.bp_bcor_smr, 'psi2' : Mass.bp_bcor_smr}[q2bin]
     obs     = zfit.Space(
-        obs   = mass.latex, 
+        obs   = mass.latex,
         label = mass,
         limits=(4500, 6000))
 
@@ -277,7 +277,7 @@ def test_brem(brem_cut : str, tmp_path : Path):
             name  = 'main',
             cfg   = cfg,
             obs   = obs,
-            trig  = Trigger.rk_ee_os, 
+            trig  = Trigger.rk_ee_os,
             q2bin = q2bin)
 
         obp.get_sum(name = 'ccbar')
@@ -290,7 +290,7 @@ def test_cache(tmp_path : Path):
     trig    = Trigger.rk_ee_os
     mass    = Mass.bp_dtf_jpsi
     obs     = zfit.Space(
-        obs   = mass.latex, 
+        obs   = mass.latex,
         label = mass,
         limits=(4500, 6000))
 
@@ -302,7 +302,7 @@ def test_cache(tmp_path : Path):
             name  = 'main',
             cfg   = cfg,
             obs   = obs,
-            trig  = trig, 
+            trig  = trig,
             q2bin = q2bin)
 
         obp.get_sum(name = 'ccbar')
@@ -311,7 +311,7 @@ def test_cache(tmp_path : Path):
             name  = 'main',
             cfg   = cfg,
             obs   = obs,
-            trig  = trig, 
+            trig  = trig,
             q2bin = q2bin)
 
         obp.get_sum(name = 'ccbar')
@@ -324,7 +324,7 @@ def test_extended(tmp_path : Path):
     trig    = Trigger.rk_ee_os
     mass    = Mass.bp_dtf_jpsi
     obs     = zfit.Space(
-        obs   = mass.latex, 
+        obs   = mass.latex,
         label = mass,
         limits=(4500, 6000))
 
@@ -336,7 +336,7 @@ def test_extended(tmp_path : Path):
             name  = 'main',
             cfg   = cfg,
             obs   = obs,
-            trig  = trig, 
+            trig  = trig,
             q2bin = q2bin)
 
         pdf = obp.get_sum(name = 'ccbar')
@@ -353,7 +353,7 @@ def test_low_stats(mass : str, tmp_path : Path):
     trig    = Trigger.rk_ee_os
     mass    = Mass.bp_dtf_jpsi
     obs     = zfit.Space(
-        obs   = mass.latex, 
+        obs   = mass.latex,
         label = mass,
         limits=(4500, 6000))
 
@@ -369,7 +369,7 @@ def test_low_stats(mass : str, tmp_path : Path):
             name  = 'main',
             cfg   = cfg,
             obs   = obs,
-            trig  = trig, 
+            trig  = trig,
             q2bin = q2bin)
 
         obp.get_sum(name = 'ccbar')

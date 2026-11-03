@@ -45,7 +45,7 @@ class PFNDownloader:
     '''
     # --------------------------------------------
     def __init__(
-        self, 
+        self,
         cfg     : PFNDownloaderConf,
         samples : PFNHolder):
         '''
@@ -70,15 +70,15 @@ class PFNDownloader:
         thread_size = math.floor(npfn / self._cfg.nthread)
         l_pfns      = list(pfns)
         groups      = [ l_pfns[i_pfn : i_pfn + thread_size] for i_pfn in range(0, npfn, thread_size) ]
-    
+
         log.debug(30 * '-')
         log.debug(f'{"Thread":<10}{"PFNs":<20}')
         log.debug(30 * '-')
         for i_thread, group in enumerate(groups):
             npfn = len(group)
             log.debug(f'{i_thread:<10}{npfn:<20}')
-    
-        return groups 
+
+        return groups
     # --------------------------------------------
     def _delete_superfluous_files(self, fnames : set[str]) -> None:
         '''
@@ -110,7 +110,7 @@ class PFNDownloader:
                 path.unlink()
     # --------------------------------------------
     def _get_pfns_to_download(
-        self, 
+        self,
         fnames : set[str],
         pfns   : set[str]) -> set[str]:
         '''
@@ -155,14 +155,14 @@ class PFNDownloader:
 
         if not paths_downloaded:
             log.info(f'No downloaded files found in {dir_downloaded}, check for superfluous paths skipped')
-            return pfns 
-    
+            return pfns
+
         s_name_downloaded  = {os.path.basename(path) for path in paths_downloaded}
         s_name_superfluous = s_name_downloaded - s_name_to_download
-    
+
         self._delete_superfluous_files(fnames = s_name_superfluous)
         pfns       = self._get_pfns_to_download(
-            fnames = s_name_downloaded, 
+            fnames = s_name_downloaded,
             pfns   = pfns)
 
         return pfns
@@ -170,7 +170,7 @@ class PFNDownloader:
     @staticmethod
     def download_group(
         cfg  : PFNDownloaderConf,
-        pfns : list[str], 
+        pfns : list[str],
         pbar : tqdm.std.tqdm) -> None:
         '''
         Parameters
@@ -186,12 +186,12 @@ class PFNDownloader:
                 log.debug(f'Reason: {exc}', exc_info = True)
                 lfn = pfn.removeprefix(_PFN_PREFIX)
                 cfg.failed_pfns.append(lfn)
-    
+
             pbar.update(1)
     # --------------------------------------------------
     @staticmethod
     def download_pfn(
-        cfg : PFNDownloaderConf, 
+        cfg : PFNDownloaderConf,
         pfn : str) -> None:
         '''
         Parameters
@@ -204,7 +204,7 @@ class PFNDownloader:
         if os.path.isfile(out_path):
             log.debug(f'Skipping downloaded file: {pfn}')
             return
-    
+
         if cfg.dry_run:
             return
 
@@ -229,7 +229,7 @@ class PFNDownloader:
         '''
         Parameters
         ------------------
-        groups: List of groups of PFNs 
+        groups: List of groups of PFNs
         '''
         with ThreadPoolExecutor(max_workers=self._cfg.nthread) as executor:
             l_future = []
@@ -245,12 +245,12 @@ class PFNDownloader:
         time.sleep(1)
     # ------------------------------------
     def _download_groups(
-        self, 
+        self,
         groups : list[list[str]]) -> None:
         '''
         Parameters
         ------------------
-        groups: List of groups of PFNs 
+        groups: List of groups of PFNs
         '''
         if self._cfg.nthread > 1:
             log.info(f'Using {self._cfg.nthread} threads')

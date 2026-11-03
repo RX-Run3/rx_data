@@ -9,7 +9,7 @@ log = LogStore.add_logger('dmu:server')
 # -----------------------------------------
 class Server(StrEnum):
     '''
-    Class meant to represent server 
+    Class meant to represent server
     '''
     lxlogin= auto()
     local  = auto()
@@ -37,9 +37,9 @@ class Server(StrEnum):
             case Server.lxplus:
                 ana_dir = '/eos/lhcb/wg/RD/RX_run3'
             case Server.local:
-                ana_dir = '/run/media/acampove/RX' 
+                ana_dir = '/run/media/acampove/RX'
             case Server.lxlogin:
-                ana_dir = '/publicfs/ucas/user/campoverde/Data' 
+                ana_dir = '/publicfs/ucas/user/campoverde/Data'
 
         return Path(ana_dir) / 'Data'
 # -----------------------------------------

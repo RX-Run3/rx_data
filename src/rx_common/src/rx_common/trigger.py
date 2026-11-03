@@ -32,8 +32,8 @@ class Trigger(StrEnum):
     # -----------
     @classmethod
     def get_main_trigger(
-        cls, 
-        channel : Channel, 
+        cls,
+        channel : Channel,
         project : Project) -> 'Trigger':
         '''
         Parameters
@@ -144,7 +144,7 @@ class Trigger(StrEnum):
                 raise ValueError(f'Version with PID not defined for: {self}')
     # -----------
     def get_signal_component(
-        self, 
+        self,
         qsq : Qsq) -> Component:
         '''
         Parameters
@@ -153,7 +153,7 @@ class Trigger(StrEnum):
 
         Returns
         -------------
-        Signal component for given q2 bin 
+        Signal component for given q2 bin
         '''
         # ----------------
         if qsq == Qsq.jpsi and self == Trigger.rk_ee_os:
@@ -201,7 +201,7 @@ class Trigger(StrEnum):
         List of triggers into which this trigger can be
         decomposed, e.g. nopid = misID + signal region
 
-        If not decomposable, return list with only this trigger 
+        If not decomposable, return list with only this trigger
         '''
         match self:
             case Trigger.rk_ee_nopid:
@@ -323,10 +323,10 @@ class Trigger(StrEnum):
         '''
         if '_ee_' in self.name:
             return Channel.ee
-    
+
         if '_mm_' in self.name:
             return Channel.mm
-    
+
         if '_me_' in self.name:
             return Channel.me
 

@@ -27,7 +27,7 @@ log=LogStore.add_logger('rx_fitter:validate_cmb')
 _IHEP_ANADIR        : Final[str] = '/publicfs/ucas/user/campoverde/Data'
 _CMB_SUFFIX         : Final[str] = '_cmb_1' # end part of string in combinatorial fits parameters
 _OS_DROPPED_COLUMNS : Final[list[str]] = ['q2bin', 'channel', 'brem', 'mva_prc', 'project', 'block', 'component']
-_CMB_PREFIX         : Final[str] = 'yld_comb' 
+_CMB_PREFIX         : Final[str] = 'yld_comb'
 # ----------------------
 def _get_conf() -> CmbValidatorConf:
     parser = argparse.ArgumentParser(description='Used to perform fits to validate choice of PDF for combinatorial')
@@ -39,7 +39,7 @@ def _get_conf() -> CmbValidatorConf:
 
     samples : list[Component] = [
         Component.data_24,
-        Component.bpkpee, 
+        Component.bpkpee,
     ]
 
     ana_dir  = Path(os.environ['ANADIR'])
@@ -66,7 +66,7 @@ def _get_conf() -> CmbValidatorConf:
         validation = validation)
 # ----------------------
 def _get_rdfs(
-    cfg : CmbValidatorConf, 
+    cfg : CmbValidatorConf,
     cut : str) -> dict[Component, RDF.RNode]:
     '''
     Parameters
@@ -96,7 +96,7 @@ def _get_rdfs(
         rdf = rdf.Filter(cut)
         rdfs[sample] = rdf
 
-    return rdfs 
+    return rdfs
 # ----------------------
 def _get_pars(
     label : str,
@@ -143,7 +143,7 @@ def _plot(
     cfg_val: Config used for combinatorial validation
     '''
     data= gut.load_data(
-        package = 'fitter_data', 
+        package = 'fitter_data',
         fpath   = f'combinatorial/plots_{cfg_val.input.q2bin}.yaml')
     data['out_dir'] = str(cfg_val.out_dir(component = Component.data_24))
 
@@ -157,7 +157,7 @@ def _get_renaming(
     '''
     Parameters
     -------------
-    prefixes: Strings used to find parameter columns 
+    prefixes: Strings used to find parameter columns
     df      : Dataframe with OS fits parameters
 
     Returns
@@ -168,7 +168,7 @@ def _get_renaming(
     parameters = df['Parameter'].to_list()
     for parameter in parameters:
         if parameter.startswith(_CMB_PREFIX):
-            renaming[parameter] = 'nev' 
+            renaming[parameter] = 'nev'
             continue
 
         if not any(parameter.startswith(pref) for pref in prefixes):
@@ -243,7 +243,7 @@ def _get_prefix(param : str) -> str:
     return prefix
 # --------------------------------
 def _get_os_df(
-    df_ss : pnd.DataFrame, 
+    df_ss : pnd.DataFrame,
     cfg   : CmbValidatorConf) -> list[pnd.DataFrame]:
     '''
     Parameters

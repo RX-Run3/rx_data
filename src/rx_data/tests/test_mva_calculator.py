@@ -59,7 +59,7 @@ def test_data(trigger : Trigger, tmp_path : Path) -> None:
     '''
     Test MVACalculator with data
     '''
-    sample = Component.data_24 
+    sample = Component.data_24
     with RDFGetter.max_entries(value=Data.nentries):
         gtr = RDFGetter(sample=sample, trigger=trigger)
         rdf = gtr.get_rdf(per_file=False)
@@ -115,7 +115,7 @@ def test_nopid(trigger : Trigger, sample : Component, tmp_path : Path) -> None:
     '''
     with RDFGetter.max_entries(value=Data.nentries),\
         RDFGetter.exclude_friends(names=['mva']):
-        gtr = RDFGetter(sample=sample, trigger=trigger) 
+        gtr = RDFGetter(sample=sample, trigger=trigger)
         rdf = gtr.get_rdf(per_file=False)
 
     cal = MVACalculator(

@@ -12,7 +12,7 @@ from rx_data import FilteredStats
 pytestmark = pytest.mark.skipif(
     not os.environ.get('USER') == 'acampove',
     reason ='''
-    These tests use FilteredStats, which uses GangaInfo, 
+    These tests use FilteredStats, which uses GangaInfo,
     which needs sandbox and cannot run in REANA cluster
     ''')
 

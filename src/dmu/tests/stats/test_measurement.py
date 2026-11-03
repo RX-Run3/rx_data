@@ -28,7 +28,7 @@ def test_get_values():
     assert ms.get_values(prefix = 'a_par') == (1., 1.)
 
     with pytest.raises(ValueError):
-        ms.get_values(prefix = 'b_par') 
+        ms.get_values(prefix = 'b_par')
 # ------------------------------------
 def test_print():
     '''

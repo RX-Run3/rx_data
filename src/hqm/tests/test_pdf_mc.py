@@ -178,7 +178,7 @@ def test_use_kde(tmp_path : Path, monkeypatch):
 
     pdf = model.get_pdf(name = pdf_name)
 
-    print_pdf(pdf = pdf) 
+    print_pdf(pdf = pdf)
 
     assert pdf.name == pdf_name
 # --------------------

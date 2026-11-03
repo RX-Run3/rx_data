@@ -20,7 +20,7 @@ class Style(BaseModel):
     '''
     ylabel   : str
     yrange   : tuple[float|None,float|None]
-    xrotation: int 
+    xrotation: int
     alpha    : float
 # ---------------------------------------
 class BandPlotterConf(BaseModel):
@@ -41,8 +41,8 @@ class BandPlotter:
     '''
     # ----------------------------
     def __init__(
-        self, 
-        cfg : BandPlotterConf, 
+        self,
+        cfg : BandPlotterConf,
         df  : pnd.DataFrame):
         '''
         Parameter
@@ -66,7 +66,7 @@ class BandPlotter:
         Tuple with:
 
         - alpha (opacity)
-        - y-axis label 
+        - y-axis label
         '''
         if parameter not in self._cfg.styles:
             log.warning(f'No styling found for: {parameter}')
@@ -85,8 +85,8 @@ class BandPlotter:
         return style.alpha, style.ylabel
     # ----------------------------
     def _plot_group(
-        self, 
-        df         : pnd.DataFrame, 
+        self,
+        df         : pnd.DataFrame,
         par_name   : str,
         categories : list[str]) -> None:
         '''
@@ -113,7 +113,7 @@ class BandPlotter:
             alpha, ylabel = self._style(parameter = par_name)
 
             plt.fill_between(
-                x  = xval, 
+                x  = xval,
                 y1 = lower, # type: ignore
                 y2 = upper, # type: ignore
                 alpha = alpha,
@@ -131,7 +131,7 @@ class BandPlotter:
             par_name = str(tmp)
             for group, categories in self._cfg.groups.items():
                 self._plot_group(
-                    df         = df_par, 
+                    df         = df_par,
                     par_name   = par_name,
                     categories = categories)
 

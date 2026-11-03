@@ -23,8 +23,8 @@ from .zfit_plotter_conf   import ZFitPlotterConf
 from .zfit_models          import ModExp
 from .zfit_models          import HypExp
 from .function             import Function
-from .zfit_models          import FermiDirac 
-from .ipatia               import Ipatia 
+from .zfit_models          import FermiDirac
+from .ipatia               import Ipatia
 from .spline               import SplinePDF
 from .spline               import SplineRepr
 from .non_parametric_model import NonParametricModel

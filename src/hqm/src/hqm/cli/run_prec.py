@@ -20,7 +20,7 @@ log=LogStore.add_logger('hqm:run_prec')
 # ----------------------
 def run_prec(binning: str = binning_opt):
     '''
-    Selects lower sideband in muon data, fits it to a non-parametric PDF, 
+    Selects lower sideband in muon data, fits it to a non-parametric PDF,
     and convolves it with transfer function to produce part-reco templates
     '''
     total = len(_PROJECTS) * len(_SOURCES) * len(_TARGETS)

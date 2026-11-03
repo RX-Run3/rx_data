@@ -144,8 +144,8 @@ def get_model(
     raise NotImplementedError(f'Invalid kind of fit: {kind}')
 # ----------------------
 def _get_composite_model(
-    prefix      : str, 
-    suffix      : str, 
+    prefix      : str,
+    suffix      : str,
     suffix_pdfs : bool,
     kind        : AllLiteral,
     pars        : dict[str,xpar] | None,
@@ -153,15 +153,15 @@ def _get_composite_model(
     nsample     : int):
     nbkg = zfit.param.Parameter(f'{prefix}nbkg{suffix}', nsample, 0, 1000_000)
     nsig = _get_signal_yield(
-        pars    = pars, 
-        suffix  = suffix, 
+        pars    = pars,
+        suffix  = suffix,
         prefix  = prefix,
         nsample = nsample)
 
     models : dict[AllLiteral, AllLiteral] = {
-        's+b'     : 'signal', 
-        'skde+b'  : 'signal_kde', 
-        's+b+x'   : 'signal', 
+        's+b'     : 'signal',
+        'skde+b'  : 'signal_kde',
+        's+b+x'   : 'signal',
         's_alt+b' : 'signal_alt'}
     signal_name = models[kind]
 
@@ -201,8 +201,8 @@ def _get_composite_model(
         suffix_pdfs = suffix_pdfs)
 
     nsig = _get_signal_yield(
-        pars    = pars, 
-        suffix  = suffix, 
+        pars    = pars,
+        suffix  = suffix,
         prefix  = prefix,
         nsample = nsample)
 
@@ -214,7 +214,7 @@ def _get_parametric_background(
     obs         : zobs,
     lam         : float,
     nsample     : int | None,
-    suffix      : str, 
+    suffix      : str,
     prefix      : str,
     suffix_pdfs : bool) -> zpdf:
     pdf_suffix = suffix if suffix_pdfs else ''
@@ -222,8 +222,8 @@ def _get_parametric_background(
 
     c   = zfit.Parameter(f'{prefix}c{suffix}', lam, -0.01, +0.01)
     pdf = zfit.pdf.Exponential(
-        obs  = obs, 
-        lam  = c, 
+        obs  = obs,
+        lam  = c,
         name = pdf_name)
 
     if nsample is None:
@@ -234,9 +234,9 @@ def _get_parametric_background(
     return pdf.create_extended(nevt, name = pdf_name)
 # ----------------------
 def _get_parametric_signal(
-    kind        : str, 
-    prefix      : str, 
-    suffix      : str, 
+    kind        : str,
+    prefix      : str,
+    suffix      : str,
     nsig        : xpar | None,
     suffix_pdfs : bool,
     obs         : zobs) -> zpdf:
@@ -250,9 +250,9 @@ def _get_parametric_signal(
     pdf : None | zpdf = None
     if kind == 'signal':
         pdf = zfit.pdf.Gauss(
-            obs  = obs, 
-            mu   = mu, 
-            sigma= sg, 
+            obs  = obs,
+            mu   = mu,
+            sigma= sg,
             name = pdf_name)
     elif kind == 'signal_alt':
         ar  = zfit.Parameter(f'{prefix}ar{suffix}', 1,    0,    5)
@@ -260,13 +260,13 @@ def _get_parametric_signal(
         nr  = zfit.Parameter(f'{prefix}nr{suffix}', 1,  -10,  150)
         nl  = zfit.Parameter(f'{prefix}nl{suffix}', 1,  -10,  150)
         pdf = zfit.pdf.DoubleCB(
-            mu    = mu, 
-            sigma = sg, 
-            alphal= al, 
-            nl    = nl, 
-            alphar= ar, 
-            nr    = nr, 
-            obs   = obs, 
+            mu    = mu,
+            sigma = sg,
+            alphal= al,
+            nl    = nl,
+            alphar= ar,
+            nr    = nr,
+            obs   = obs,
             name  = pdf_name)
     else:
         raise ValueError(f'Invalid signal type: {kind}')
@@ -279,9 +279,9 @@ def _get_parametric_signal(
     return pdf.create_extended(nevt, name = pdf_name)
 # ----------------------
 def _get_kde_signal(
-    kind        : str, 
-    prefix      : str, 
-    suffix      : str, 
+    kind        : str,
+    prefix      : str,
+    suffix      : str,
     nsig        : xpar | None,
     suffix_pdfs : bool,
     obs         : zobs) -> zpdf:
@@ -292,7 +292,7 @@ def _get_kde_signal(
     masses = numpy.random.normal(loc = 5280, scale = 150, size = 1000)
     pdf    = zfit.pdf.KDE1DimFFT(
         name = pdf_name,
-        data = masses, 
+        data = masses,
         obs  = obs)
 
     if nsig is None:
@@ -365,7 +365,7 @@ def get_nll(
     '''
     # signal and background yield in model are half of
     # requested dataset
-    nsample = int(nentries / 2.) 
+    nsample = int(nentries / 2.)
     pdf     = get_model(
         kind   = kind,
         pars   = pars,

@@ -46,7 +46,7 @@ def _get_friend_stats(frnd_dir : str, kind : str) -> dict[str,int]:
     dictionary where:
 
     key  : Name of sample
-    value: Quantity requested 
+    value: Quantity requested
     '''
     l_fpath = _paths_from_friend_dir(frnd_dir=frnd_dir)
     d_sample= {}
@@ -63,7 +63,7 @@ def _get_friend_stats(frnd_dir : str, kind : str) -> dict[str,int]:
         if identifier not in d_sample:
             d_sample[identifier] = _stat_from_path(fpath=fpath, kind=kind)
         else:
-            d_sample[identifier]+= _stat_from_path(fpath=fpath, kind=kind) 
+            d_sample[identifier]+= _stat_from_path(fpath=fpath, kind=kind)
 
     return d_sample
 # ----------------------
@@ -163,7 +163,7 @@ def _update_sizes(data : dict[str,dict[str,int]], sizes : dict[str,int]) -> dict
     Parameters
     -------------
     data: Dictionary where:
-        Key  : Friend trees names 
+        Key  : Friend trees names
         Value: Dictionary with:
             key as Sample name and value as number of files
             key as Sample size and value as size in Mb
@@ -180,7 +180,7 @@ def _update_sizes(data : dict[str,dict[str,int]], sizes : dict[str,int]) -> dict
         if identifier not in data['Sizes']:
             data['Sizes'][identifier] = 0
 
-        data['Sizes'][identifier] += size 
+        data['Sizes'][identifier] += size
         chan = identifier.split('/')[0]
         if chan == 'MM':
             continue

@@ -36,7 +36,7 @@ class UsedSamples(BaseModel):
     @classmethod
     def from_project(cls, project : Project) -> 'UsedSamples':
         data = gut.load_data(
-            package='rx_data_data', 
+            package='rx_data_data',
             fpath  =f'copy_files/{project}.yaml')
 
         return cls(**data)
@@ -44,7 +44,7 @@ class UsedSamples(BaseModel):
     @property
     def identifiers(self) -> list[str]:
         '''
-        List of strings used to identify samples 
+        List of strings used to identify samples
         '''
         values : list[str] = []
         for identifiers in self.samples.values():

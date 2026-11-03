@@ -49,9 +49,9 @@ class BremRecovery:
         return brem, int(block), mva
     # ----------------------
     def _add_row(
-        self, 
+        self,
         kind : str,
-        df   : pnd.DataFrame, 
+        df   : pnd.DataFrame,
         path : Path) -> None:
         '''
         Parameters
@@ -63,8 +63,8 @@ class BremRecovery:
         brem, block, mva = self._get_brem_block_mva(path = path)
         data             = gut.load_json(path = path)
         row              = {
-            'kind' : kind, 
-            'brem' : brem, 
+            'kind' : kind,
+            'brem' : brem,
             'block': block,
             'mva'  : mva,
             'fwhm' : data['fwhm'],
@@ -104,9 +104,9 @@ class BremRecovery:
                 for kind, df_kind in df_mva.groupby('kind'):
                     df_sort = df_kind.sort_values(by = 'block')
                     ax = df_sort.plot(
-                        x         ='block', 
-                        y         ='fwhm', 
-                        label     = kind, 
+                        x         ='block',
+                        y         ='fwhm',
+                        label     = kind,
                         marker    = 'o',
                         linestyle = 'none',
                         ax        = ax)

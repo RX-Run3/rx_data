@@ -9,11 +9,11 @@ from operator  import add
 from dmu       import LogStore
 from rx_common import Correction
 from rx_common import Component
-from rx_common import Brem 
-from rx_common import Channel 
+from rx_common import Brem
+from rx_common import Channel
 from rx_common import Trigger
 from rx_common import Project
-from rx_common import Block 
+from rx_common import Block
 
 log=LogStore.add_logger('rx_common::test_types')
 
@@ -29,11 +29,11 @@ def test_correction(corr : Correction):
     Tests Correction type
     '''
     assert isinstance(corr.latex, str)
-    assert corr.kind in {'reso', 'scale', 'weight'} 
+    assert corr.kind in {'reso', 'scale', 'weight'}
 # -------------------------------------------
 def test_component():
     '''
-    Test Enum representing fit component 
+    Test Enum representing fit component
     '''
     assert Component.data_24.sample         == 'DATA_24*'
 
@@ -73,19 +73,19 @@ def test_brem():
     brems : list[Brem]
 
     with pytest.raises(TypeError):
-        brems = [] 
-        total = reduce(add, brems) 
+        brems = []
+        total = reduce(add, brems)
 
-    brems = [Brem.one] 
-    total = reduce(add, brems) 
+    brems = [Brem.one]
+    total = reduce(add, brems)
     assert total == Brem.one
 
-    brems = [Brem.one, Brem.two] 
-    total = reduce(add, brems) 
+    brems = [Brem.one, Brem.two]
+    total = reduce(add, brems)
     assert total == Brem.brx12
 
-    brems = [Brem.zero, Brem.one, Brem.two] 
-    total = reduce(add, brems) 
+    brems = [Brem.zero, Brem.one, Brem.two]
+    total = reduce(add, brems)
     assert total == Brem.br012
 # -------------------------------------------
 @pytest.mark.parametrize('sample', Component)

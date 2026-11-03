@@ -23,7 +23,7 @@ def initialize():
 # ----------------------------------------
 def _get_df() -> pnd.DataFrame:
     df           = pnd.DataFrame()
-    df['nFixed'] = numpy.random.choice(a = [0, 1, 2, 3], size = _SIZE) 
+    df['nFixed'] = numpy.random.choice(a = [0, 1, 2, 3], size = _SIZE)
     df['Gen'   ] = 1.00
 
     pars = {
@@ -42,7 +42,7 @@ def _get_df() -> pnd.DataFrame:
 
     df['Fixed'] = df['nFixed'].map(pars)
     df['Error'] = numpy.nan
-    
+
     for n_fixed, (mean, width) in errors.items():
         mask   = df['nFixed'] == n_fixed
         errors = numpy.random.normal(loc=mean, scale=width, size=mask.sum())

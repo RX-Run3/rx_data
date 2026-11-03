@@ -20,13 +20,13 @@ class Campaign(StrEnum):
         '''
         match self:
             case Campaign.c1_24:
-                return 'black' 
+                return 'black'
             case Campaign.c2_24:
-                return 'blue' 
+                return 'blue'
             case Campaign.c3_24:
-                return 'green' 
+                return 'green'
             case Campaign.c4_24:
-                return 'red' 
+                return 'red'
     # --------------------------------
     @property
     def name(self) -> str:
@@ -35,19 +35,19 @@ class Campaign(StrEnum):
         '''
         match self:
             case Campaign.c1_24:
-                return 'c1' 
+                return 'c1'
             case Campaign.c2_24:
-                return 'c2' 
+                return 'c2'
             case Campaign.c3_24:
-                return 'c3' 
+                return 'c3'
             case Campaign.c4_24:
-                return 'c4' 
+                return 'c4'
     # --------------------------------
     @property
     def runs(self) -> tuple[int,int]:
         '''
         First and last runs in campaign
-        
+
         Numbers from: https://lhcb-dpa.web.cern.ch/lhcb-dpa/wp1/campaigns/2024/s24c4.html
         '''
         match self:

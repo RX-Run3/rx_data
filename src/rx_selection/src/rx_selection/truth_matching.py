@@ -13,12 +13,12 @@ def get_truth(component : Component, project : Project) -> str:
     r'''
     Parameters:
     --------------------------
-    component : MC component, representing process 
+    component : MC component, representing process
     project   : Either rk or rkst
 
     Returns:
     --------------------------
-    For data it will return '(1)'. For MC, truth matching string. 
+    For data it will return '(1)'. For MC, truth matching string.
     The truth matching string will assume that the candidates were reconstructed as:
 
     rk   -> $B^+\to K^+ e^+e^-$ candidates

@@ -119,9 +119,9 @@ class RegularGraphMaker:
         '''
         Parameters
         --------------
-        data: dictionary mapping coordinates of node with value as a random variable 
+        data: dictionary mapping coordinates of node with value as a random variable
         '''
-        self.__data = data 
+        self.__data = data
     # ---------------------------------
     def __get_data(self) -> _NodeData:
         '''
@@ -147,7 +147,7 @@ class RegularGraphMaker:
 
             res.append(elm)
 
-        return _NodeData(root = res) 
+        return _NodeData(root = res)
     # ---------------------------------
     def __add_nodes(self, data : _NodeData, nodes : dict[tuple[float,float],LinkedNode]) -> dict[tuple[float,float],LinkedNode]:
         '''

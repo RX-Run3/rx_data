@@ -45,8 +45,8 @@ class SpecMaker:
                                                    # when sending jobs to clusters with shared file systems
     # ----------------------
     def __init__(
-        self, 
-        component  : Component, 
+        self,
+        component  : Component,
         trigger    : Trigger,
         tree       : str  = 'DecayTree') -> None:
         '''
@@ -64,12 +64,12 @@ class SpecMaker:
         self._cfg_samp  = self._emulator.samples
 
         prefix          = f'rx_data/spec_maker/cache/{component}_{trigger}_{tree}'
-        self._cache_dir = get_tmp_dir(prefix = prefix) 
+        self._cache_dir = get_tmp_dir(prefix = prefix)
 
         self._trigger   = trigger
         self._tree_name = tree
 
-        self._project      = self._set_project(trigger=trigger) 
+        self._project      = self._set_project(trigger=trigger)
         self._samples      = self._get_json_paths()
         self._l_path : list[Path] = [] # list of paths to all the ROOT files
 
@@ -117,7 +117,7 @@ class SpecMaker:
             return True
 
         # The main tree is never skipped
-        if ftree == _MAIN_TREE: 
+        if ftree == _MAIN_TREE:
             return False
 
         if ftree in self._excluded_friends:
@@ -161,11 +161,11 @@ class SpecMaker:
             else:
                 data['friends'][ftree] = sample
 
-        return Specification(**data) 
+        return Specification(**data)
     # ---------------------------------------------------
     def _get_sample(
-        self, 
-        json_path : Path, 
+        self,
+        json_path : Path,
         ftree     : str) -> Sample:
         '''
         Parameters:
@@ -180,13 +180,13 @@ class SpecMaker:
         log.debug(f'Building section from: {json_path}')
 
         string = json_path.read_text()
-        samples= NestedSamples.model_validate_json(json_data = string) 
+        samples= NestedSamples.model_validate_json(json_data = string)
 
         paths : list[Path] = []
         missing_paths = False
         for target in self._cfg_samp.root:
             sample_paths = samples.get_paths(
-                ftree    = ftree, 
+                ftree    = ftree,
                 sample   = target,
                 trigger  = self._trigger)
 
@@ -197,21 +197,21 @@ class SpecMaker:
                 paths.extend(sample_paths)
 
         if missing_paths:
-            string = samples.model_dump_json(indent = 2) 
+            string = samples.model_dump_json(indent = 2)
             log.error(string)
             raise ValueError(f'Could not find any sample matching {self._cfg_samp} with friend tree {ftree} in {json_path}')
 
-        self._l_path += paths 
+        self._l_path += paths
 
         if ftree == _MAIN_TREE:
             block = None
         else:
             block = Block(value = 1) # Dummy block, for friend trees, friend trees do not have block column
 
-        files = [ 
+        files = [
             File.from_path(
-                path  = path, 
-                tree  = self._tree_name, 
+                path  = path,
+                tree  = self._tree_name,
                 ftree = ftree,
                 patch = False,
                 block = block) for path in paths ]
@@ -219,14 +219,14 @@ class SpecMaker:
         non_empty_files = [ file for file in files if not file.is_empty ]
 
         sam   = Sample(
-            trees    = [self._tree_name], 
-            files    = non_empty_files, 
+            trees    = [self._tree_name],
+            files    = non_empty_files,
             metadata = {'kind' : ftree})
 
         return sam
     # ---------------------------------------------------
     def _filter_friends(
-        self, 
+        self,
         d_ftree_dir : dict[str,Path]) -> dict[str,Path]:
         '''
         Parameters
@@ -307,7 +307,7 @@ class SpecMaker:
         log.debug(f'Looking for files in: {dir_path}')
 
         l_root_path = list(dir_path.glob(pattern='*.root'))
-        if not l_root_path: 
+        if not l_root_path:
             raise ValueError(f'No ROOT files found in {dir_path}')
 
         spl  = PathSplitter(paths=l_root_path)
@@ -351,28 +351,28 @@ class SpecMaker:
 
             log.debug(f'Saving per-file config path to {config_path}')
             config_path.write_text(single_file_spec.model_dump_json(indent=2))
-            d_config[file.path] = config_path 
+            d_config[file.path] = config_path
 
         return d_config
     # ---------------------------------------------------
     def _remove_all_but(
-        self, 
-        spec  : Specification, 
-        ifile : int, 
+        self,
+        spec  : Specification,
+        ifile : int,
         main  : str) -> tuple[Specification, File]:
         '''
         Will:
 
-        - Take the specification object 
+        - Take the specification object
         - Make a local copy
         - Remove all the paths except the ifile th entry
 
         Returns
         ----------------
-        Tuple with: 
+        Tuple with:
 
         - Copy of specification after removal of all but the ifile
-        - Object symbolizing ROOT file 
+        - Object symbolizing ROOT file
         '''
 
         data       = spec.model_dump()
@@ -566,13 +566,13 @@ class SpecMaker:
         if cls._custom_project:
             raise ValueError(f'Custom project already set to: {cls._custom_project}')
 
-        cls._custom_project = project 
+        cls._custom_project = project
         @contextmanager
         def _context():
             try:
                 yield
             finally:
-                cls._custom_project = None 
+                cls._custom_project = None
 
         return _context()
 # --------------------------

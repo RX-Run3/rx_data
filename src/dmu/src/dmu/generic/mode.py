@@ -29,7 +29,7 @@ class Mode(StrEnum):
     @property
     def skip_reading(self) -> bool:
         '''
-        If true, won't read any data but process all over again 
+        If true, won't read any data but process all over again
         '''
         return self in {Mode.write, Mode.update}
     # ----------------

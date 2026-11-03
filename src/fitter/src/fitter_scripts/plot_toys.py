@@ -82,7 +82,7 @@ def _get_paths(source_path : Path) -> list[Path]:
 
     log.info(f'Found {npath} paths')
 
-    return l_path 
+    return l_path
 # ----------------------
 def _run(input_path : Path) -> DictConfig|None:
     '''
@@ -112,7 +112,7 @@ def _save_summary(out_dir : Path, l_cfg : list) -> None:
     Parameters
     -------------
     out_dir: Output directory
-    l_cfg  : List of config dictionaries, one per toy 
+    l_cfg  : List of config dictionaries, one per toy
     '''
     out_path = out_dir/'summary.yaml'
 
@@ -138,7 +138,7 @@ def _attach_wp(cfg : DictConfig, path : Path) -> DictConfig:
     if not mtch:
         raise ValueError(f'Cannot extract MVA WP substring from: {path}')
 
-    [cmb, prc] = mtch.groups() 
+    [cmb, prc] = mtch.groups()
 
     cmb = float(cmb) / 100.
     prc = float(prc) / 100.

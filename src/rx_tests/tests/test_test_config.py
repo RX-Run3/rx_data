@@ -19,7 +19,7 @@ def test_from_package():
 # ----------------------
 def test_filter():
     '''
-    Test filtering out all projects but one 
+    Test filtering out all projects but one
     '''
     cfg = TestConfig.from_package(
         package   = 'rx_tests_data',

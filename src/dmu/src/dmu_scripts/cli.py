@@ -47,17 +47,17 @@ def check_jobs_status(
             total_tests    += int(suite.get('tests'   , 0))
             total_errors   += int(suite.get('errors'  , 0))
             total_failures += int(suite.get('failures', 0))
-    
+
     log.info(f'{"Failures:":<20}{total_failures:<20}')
     log.info(f'{"Errors:  ":<20}{total_errors:<20}')
     log.info(f'{"Total:   ":<20}{total_tests:<20}')
-    
+
     report = f'Tests: {total_tests}, Failures: {total_failures}, Errors: {total_errors}'
 
     log.info(f'Saving tests report to: {freport}')
     with open(freport, 'w') as file_path:
         file_path.write(report + '\n')
-    
+
     if total_failures > 0 or total_errors > 0:
         log.warning('At least one test failed')
         raise typer.Exit(code=1)

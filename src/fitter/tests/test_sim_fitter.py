@@ -12,7 +12,7 @@ from dmu.stats     import zfit, utilities as sut
 from dmu.generic   import rxran
 from dmu.workflow  import Cache
 
-from rx_common     import Component, Cuts, Mass, Qsq, Brem 
+from rx_common     import Component, Cuts, Mass, Qsq, Brem
 from rx_common     import Trigger
 from rx_data       import RDFGetter
 from rx_selection  import selection as sel
@@ -52,7 +52,7 @@ def loggers():
 # ---------------------------------------------------
 @pytest.fixture(autouse=True)
 def patcher(
-    request     : pytest.FixtureRequest, 
+    request     : pytest.FixtureRequest,
     monkeypatch : pytest.MonkeyPatch):
     '''
     Runs before every test

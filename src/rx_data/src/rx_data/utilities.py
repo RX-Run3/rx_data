@@ -60,7 +60,7 @@ def info_from_path(
     sample, trigger_str = info
     trigger = Trigger.from_name(name = trigger_str)
     if sample_lowercase:
-        return sample, trigger 
+        return sample, trigger
 
     sample = aput.name_from_lower_case(sample)
 
@@ -107,7 +107,7 @@ def _info_from_data_path(path : Path) -> tuple[str,str]:
     return sample, line
 # ---------------------------------
 def df_from_rdf(
-    rdf       : RDF.RNode, 
+    rdf       : RDF.RNode,
     drop_nans : bool) -> pnd.DataFrame:
     '''
     Parameters
@@ -171,13 +171,13 @@ def _pick_column(name : str) -> bool:
     # To make friend trees and align entries
     to_keep  = ['EVENTNUMBER', 'RUNNUMBER', 'nPVs']
 
-    # Needed to identify electrons, muons do not need brem correction 
+    # Needed to identify electrons, muons do not need brem correction
     to_keep += ['L1_ID'      , 'L2_ID']
 
     # For q2 smearing
     to_keep += ['nbrem'      , 'block', 'Jpsi_TRUEM', 'B_TRUEM']
 
-    # To re-use old DIRA in case new DIRA cannot be calculated 
+    # To re-use old DIRA in case new DIRA cannot be calculated
     to_keep += ['Jpsi_DIRA_OWNPV']
 
     # To recalculate DIRA

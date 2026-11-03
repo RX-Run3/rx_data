@@ -23,30 +23,30 @@ log = LogStore.add_logger('rx_efficiencies:calculate_acceptance')
 plt.style.use(mplhep.style.LHCb2)
 
 _RARE_RK     : Final[list[Component]] = [
-    Component.bsphiee, 
-    Component.bpk1kpipiee, 
-    Component.bpk2kpipiee, 
-    Component.bpkpee, 
+    Component.bsphiee,
+    Component.bpk1kpipiee,
+    Component.bpk2kpipiee,
+    Component.bpkpee,
     Component.bpkpmm]
 _RARE_RKST   : Final[list[Component]] = [
-    Component.bdkstkpiee, 
+    Component.bdkstkpiee,
     Component.bdkstkpimm]
 _RESO_RK     : Final[list[Component]] = [
-    Component.bpkpjpsiee, 
-    Component.bppijpsiee, 
-    Component.bpkpjpsimm, 
+    Component.bpkpjpsiee,
+    Component.bppijpsiee,
+    Component.bpkpjpsimm,
     Component.bppijpsimm]
 _RESO_RKST_EE: Final[list[Component]] = [
-    Component.bdkstkpijpsiee, 
-    Component.bskstjpsiee, 
-    Component.bskstpsi2ee, 
-    Component.bsphijpsiee, 
+    Component.bdkstkpijpsiee,
+    Component.bskstjpsiee,
+    Component.bskstpsi2ee,
+    Component.bsphijpsiee,
     Component.lbpkjpsiee]
 _RESO_RKST_MM: Final[list[Component]] = [
-    Component.bdkstkpijpsimm, 
-    Component.bskstjpsimm, 
-    Component.bskstpsi2mm, 
-    Component.bsphijpsimm, 
+    Component.bdkstkpijpsimm,
+    Component.bskstjpsimm,
+    Component.bskstpsi2mm,
+    Component.bsphijpsimm,
     Component.lbpkjpsimm]
 _GROUPS      : Final[dict[str,list[Component]]] = {
     'Rare $R_K$'              : _RARE_RK,
@@ -61,7 +61,7 @@ class Data:
     Class used to share data
     '''
     update  : bool
-    out_dir : Path 
+    out_dir : Path
     version : str
     project : Project
 
@@ -71,7 +71,7 @@ class Data:
 def _get_args():
     parser = argparse.ArgumentParser(description='Used to dump JSON file with acceptances')
     parser.add_argument('-e', '--energy' , nargs='+'    , help='Center of mass energy', default=Data.l_energy, choices=Data.l_energy)
-    parser.add_argument('-p', '--project', type =Project, help='E.g. rk or rkst'                                             , required=True) 
+    parser.add_argument('-p', '--project', type =Project, help='E.g. rk or rkst'                                             , required=True)
     parser.add_argument('-v', '--version', type =str    , help='Version for directory containing JSON files with acceptances', required=True)
     parser.add_argument('-u', '--update' ,                help='If used, will update acceptances, even if found', action = 'store_true')
     args = parser.parse_args()
@@ -105,7 +105,7 @@ def _sample_from_path(path : Path) -> Component:
     if value is None:
         raise ValueError(f'Cannot recognize {identifier} as a component in: {path}')
 
-    return value 
+    return value
 #----------------------------------
 def _get_ntuple_paths(energy : str) -> dict[Component,Path]:
     '''
@@ -132,8 +132,8 @@ def _get_ntuple_paths(energy : str) -> dict[Component,Path]:
     return d_path
 #----------------------------------
 def _get_acceptances(
-    sample : Component, 
-    path   : Path, 
+    sample : Component,
+    path   : Path,
     energy : str) -> tuple[float,float]:
     '''
     Parameters
@@ -148,7 +148,7 @@ def _get_acceptances(
     '''
     rdf = RDataFrame('DecayTree', str(path))
     obj = AcceptanceCalculator(
-        rdf     = rdf, 
+        rdf     = rdf,
         project = Data.project,
         channel = sample.channel)
     obj.plot_dir     = f'{Data.out_dir}/plots_{energy}/{sample}'
@@ -184,8 +184,8 @@ def _get_df(energy : str) -> pnd.DataFrame:
 
         log.debug(f'Checking {sample}')
         acc_phy, acc_lhc = _get_acceptances(
-            path    = path, 
-            sample  = sample, 
+            path    = path,
+            sample  = sample,
             energy  = energy)
 
         d_out['Sample'  ].append(sample)
@@ -197,7 +197,7 @@ def _get_df(energy : str) -> pnd.DataFrame:
     return df
 #----------------------------------
 def _save_tables(
-    df     : pnd.DataFrame, 
+    df     : pnd.DataFrame,
     energy : str) -> None:
     '''
     Saves pandas dataframe as latex table and JSON
@@ -218,7 +218,7 @@ def _save_tables(
     df.to_json(jsn_path, indent=4)
 #----------------------------------
 def _plot_acceptance(
-    df   : pnd.DataFrame, 
+    df   : pnd.DataFrame,
     label: str,
     kind : str) -> None:
     '''

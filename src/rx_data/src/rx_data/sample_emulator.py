@@ -8,7 +8,7 @@ from dmu         import LogStore
 from typing      import Any, Final
 from dmu.generic import utilities as gut
 from pydantic    import BaseModel, RootModel
-from rx_common   import Block, Component 
+from rx_common   import Block, Component
 
 log=LogStore.add_logger('rx_data:sample_emulator')
 
@@ -99,13 +99,13 @@ class EmulationConf(BaseModel, frozen=True, extra='forbid', strict=True):
     Class meant to represent configuration needed
     to emulate a sample
     '''
-    samples  : SamplesConf 
+    samples  : SamplesConf
     '''Used to configure build of sample cocktails'''
 
-    patching : dict[Block, Block] = dict() 
+    patching : dict[Block, Block] = dict()
     '''Dictionary meant to allow patching blocks of data'''
 
-    redefine : dict[str  ,   str] = dict() 
+    redefine : dict[str  ,   str] = dict()
     '''Dictionary used to update candidate information, e.g. B -> B + 30
     meant to change mass hypotheses of particles or mother IDs'''
 
@@ -140,7 +140,7 @@ class SampleEmulator:
     Class meant to:
 
     - Open config file with emulation settings
-    - Provide emulating sample name 
+    - Provide emulating sample name
     - Postprocess original sample to make it suitable for emulation
     '''
     # ----------------------
@@ -148,7 +148,7 @@ class SampleEmulator:
         '''
         Parameters
         ---------------
-        sample: Sample to emulate e.g. bpkpee 
+        sample: Sample to emulate e.g. bpkpee
         '''
         fpath       = 'emulated_trees/config.yaml'
         data        = gut.load_data(package='rx_data_data', fpath=fpath)
@@ -165,7 +165,7 @@ class SampleEmulator:
         self._cfg = EmulationConf(samples = samples)
     # ----------------------
     def _run_redefine(
-        self, 
+        self,
         rdf : RDF.RNode) -> RDF.RNode:
         '''
         Parameters
@@ -189,7 +189,7 @@ class SampleEmulator:
         Parameters
         -------------
         rdf: Dataframe
-    
+
         Returns
         -------------
         Dataframe with cocktail weights added
@@ -237,7 +237,7 @@ class SampleEmulator:
         cols : All columns in dataframe
         prf_x: Column prefixes for columns to be swapped, e.g. L1, H
 
-        Returns 
+        Returns
         --------------
         Dataframe with columns associated to prefix `prf_1` renamed to
         `prf_2`, `tmp_{prf_1}_...` columns will be added as byproduct.
@@ -323,9 +323,9 @@ class SampleEmulator:
         return rdf
     # ---------------------
     def _get_vector_expr(
-        self, 
-        track  : str, 
-        pdg_id : int, 
+        self,
+        track  : str,
+        pdg_id : int,
         counter: int) -> str:
         '''
         Parameters

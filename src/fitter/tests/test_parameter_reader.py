@@ -6,8 +6,8 @@ from pathlib   import Path
 from fitter    import ParameterReader
 from rx_common import MVAWp
 from rx_common import Brem, Component
-from rx_common import Trigger 
-from rx_common import Qsq 
+from rx_common import Trigger
+from rx_common import Qsq
 from rx_common import Block
 from dmu       import LogStore
 
@@ -22,19 +22,19 @@ def initialize() -> None:
 # -----------------------
 def test_data():
     '''
-    Test reader with data 
+    Test reader with data
     '''
     comp = Component.data_24
     name = 'reso_dtf-latest' # 'reso_no_dtf'
     rdr  = ParameterReader(name = name)
     meas = rdr(
         comp     = comp,
-        brem     = Brem.brx12, 
-        block    = Block(value = 1), 
+        brem     = Brem.brx12,
+        block    = Block(value = 1),
         cmb      = MVAWp.from_str('0.99'),
         prc      = MVAWp.from_str('0.60'),
         q2bin    = Qsq.jpsi,
-        trigger  = Trigger.rk_ee_os, 
+        trigger  = Trigger.rk_ee_os,
     )
 
     print(meas)
@@ -44,10 +44,10 @@ def test_data():
 @pytest.mark.parametrize('block', Block.blocks())
 def test_all(
     q2bin : Qsq,
-    block : Block, 
+    block : Block,
     brem  : Brem):
     '''
-    Test reader with initializer 
+    Test reader with initializer
     '''
     if brem == Brem.zero:
         trig = Trigger.rk_mm_os
@@ -60,12 +60,12 @@ def test_all(
     rdr  = ParameterReader(name = name)
     res  = rdr(
         comp     = comp,
-        brem     = brem, 
-        block    = block, 
+        brem     = brem,
+        block    = block,
         cmb      = MVAWp.from_str('0.99'),
         prc      = MVAWp.from_str('0.60'),
         q2bin    = q2bin,
-        trigger  = trig, 
+        trigger  = trig,
     )
 
     print(res)
@@ -75,10 +75,10 @@ def test_all(
 @pytest.mark.parametrize('block', Block.blocks())
 def test_pars_path(
     q2bin : Qsq,
-    block : Block, 
+    block : Block,
     brem  : Brem):
     '''
-    Test context manager user to set path to parameters 
+    Test context manager user to set path to parameters
     '''
     if brem == Brem.zero:
         trig = Trigger.rk_mm_os
@@ -95,12 +95,12 @@ def test_pars_path(
         rdr = ParameterReader()
         res = rdr(
             comp    = comp,
-            brem    = brem, 
-            block   = block, 
+            brem    = brem,
+            block   = block,
             cmb     = MVAWp.from_str('0.99'),
             prc     = MVAWp.from_str('0.60'),
             q2bin   = q2bin,
-            trigger = trig, 
+            trigger = trig,
         )
 
     print(res)

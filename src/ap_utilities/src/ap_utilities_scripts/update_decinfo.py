@@ -42,7 +42,7 @@ def _val_from_line(file_path : str, line : str) -> str:
     '''
     Function taking a line from a specific file
     It expects two values separated by a colon, it returns the second one
-    If not found, it returns, missing 
+    If not found, it returns, missing
     '''
     if line == 'not_found':
         return line

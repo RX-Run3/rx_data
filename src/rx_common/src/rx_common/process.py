@@ -1,11 +1,11 @@
 '''
-Module with functionality specifying how to process the data 
+Module with functionality specifying how to process the data
 '''
 from contextlib  import contextmanager
 from contextvars import ContextVar
 
 # -----------------------------
-nproc : ContextVar[None|int] = ContextVar('nproc', default = None) 
+nproc : ContextVar[None|int] = ContextVar('nproc', default = None)
 @contextmanager
 def set_nproc(value : int):
     '''

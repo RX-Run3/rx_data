@@ -118,9 +118,9 @@ def _parse_args() -> Conf:
     cfgs = { region : _cfg_from_args(region = region, args = args) for region in regions }
 
     cfg  = Conf(
-        cfgs   = cfgs, 
-        syst   = args.syst, 
-        q2bin  = args.q2bin, 
+        cfgs   = cfgs,
+        syst   = args.syst,
+        q2bin  = args.q2bin,
         dry_run= args.dry_run)
 
     return cfg

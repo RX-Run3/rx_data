@@ -47,12 +47,12 @@ class MassCalculator:
         data['B_Mass_hdkk'  ] = self._get_hxy_mass(row=row, x=321, y=321)
 
         if not self._with_validation:
-            return pnd.Series(data) 
+            return pnd.Series(data)
 
         data['B_M'         ] = tut.numeric_from_series(row, 'B_M', float)
         data['B_Mass_check'] = self._get_hxy_mass(row=row, x= 11, y= 11)
 
-        sr = pnd.Series(data) 
+        sr = pnd.Series(data)
 
         return sr
     # ----------------------
@@ -188,7 +188,7 @@ class MassCalculator:
         if mass is None:
             raise ValueError(f'Cannot find mass of particle with ID: {pid}')
 
-        return mass 
+        return mass
     # ----------------------
     def _is_valid_column(self, name : str) -> bool:
         '''

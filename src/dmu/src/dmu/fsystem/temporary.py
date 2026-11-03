@@ -11,7 +11,7 @@ def get_tmp_path(
     Parameters
     ----------------
     dir       : directory name
-    extension : E.g. `json` 
+    extension : E.g. `json`
     prefix    : Purpose of path, e.g. specification, optional
 
     Returns
@@ -31,7 +31,7 @@ def get_tmp_path(
 
     ctx = tempfile.NamedTemporaryFile(
         delete = False,
-        dir    = dir_path, 
+        dir    = dir_path,
         prefix = prefix,
         suffix = f'.{extension}')
 
@@ -56,7 +56,7 @@ def get_tmp_dir(prefix : str) -> Path:
     where:
     - tmp_dir is chosen by the `tmpfile` module
     - {tmp_dir}/prefix is created
-    - xxx is a random value 
+    - xxx is a random value
     '''
     tmp_dir  = tempfile.gettempdir()
     dir_path = Path(f'{tmp_dir}/{prefix}')

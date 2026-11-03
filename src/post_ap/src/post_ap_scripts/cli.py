@@ -25,14 +25,14 @@ def make_info(
     ntuples made by DaVinci
     '''
     data = gut.load_data(
-        package = 'post_ap_data', 
+        package = 'post_ap_data',
         fpath   = f'filter/{project}.yaml')
 
     storage = Path(os.environ['ANADIR']) / 'downloads'
     cfg     = PFNReaderConf(**data)
     rdr     = PFNReader(cfg = cfg, storage = storage)
     samples = rdr.get_samples(
-        production=Production.rx_2024, 
+        production=Production.rx_2024,
         nickname  =group)
 
     lines : list[str] = [ sample.info for sample in samples ]
@@ -52,7 +52,7 @@ def show_samples(
     Print information on a given version of a production for a given project
     '''
     data = gut.load_data(
-        package = 'post_ap_data', 
+        package = 'post_ap_data',
         fpath   = f'filter/{project}.yaml')
 
     storage = Path(os.environ['ANADIR']) / 'downloads'
@@ -63,7 +63,7 @@ def show_samples(
 
     for group in groups:
         samples = rdr.get_samples(
-            production=production, 
+            production=production,
             nickname  =group)
 
         log.info(f'Event types for {group}:')

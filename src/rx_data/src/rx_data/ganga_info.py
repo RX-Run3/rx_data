@@ -25,7 +25,7 @@ class GangaInfo:
       sample names and block information
     - Make them available to the user
     '''
-    user = getuser() 
+    user = getuser()
 
     CACHE_DIR : Final[Path] = Path(f'/tmp/{user}/cache/ganga_info')
     MC_BK_RGX : Final[str ] = r'(w\d{2}_\d{2})_v\dr\d{4}'
@@ -38,7 +38,7 @@ class GangaInfo:
         -------------
         job_ids: List of Ganga job IDs where search will happen
         '''
-        self._ganga_dir : Path          = Path(os.environ['GANGADIR']) 
+        self._ganga_dir : Path          = Path(os.environ['GANGADIR'])
         self._data      : dict[str,str] = self._load_data(job_ids=job_ids)
 
         GangaInfo.CACHE_DIR.mkdir(exist_ok=True)
@@ -59,7 +59,7 @@ class GangaInfo:
         if len(job_ids) == 0:
             raise ValueError('Empty job IDs list passed')
 
-        hash_obj = self._ganga_dir, job_ids 
+        hash_obj = self._ganga_dir, job_ids
         val      = hashing.hash_object(hash_obj)
         opath    = GangaInfo.CACHE_DIR/f'{val}.json'
         if opath.is_file():
@@ -113,7 +113,7 @@ class GangaInfo:
             log.debug('')
             log.debug(f'Searching: {subjob_dir}')
             info : dict[str,str] = self._info_from_logs(
-                input_path =inp_fname, 
+                input_path =inp_fname,
                 output=out_fname)
 
             d_data.update(info)
@@ -206,8 +206,8 @@ class GangaInfo:
 
         Returns
         -------------
-        Path to input file, after opening tarball. 
-        This should go to a caching directory 
+        Path to input file, after opening tarball.
+        This should go to a caching directory
         in order not to pullute the ganga sandbox
         '''
         untar_dir = GangaInfo.CACHE_DIR/'input_logs'/tar_fpath.name.replace('.tgz', '')
@@ -232,7 +232,7 @@ class GangaInfo:
     @property
     def ganga_dir(self) -> Path:
         '''
-        Returns 
+        Returns
         --------------
         Path to Ganga sandbox directory
         '''
@@ -261,7 +261,7 @@ class GangaInfo:
         Parameters
         -------------
         fname   : Name of ROOT file produced by filtering step
-        fallback: If specified, will use that value for file names without blocks 
+        fallback: If specified, will use that value for file names without blocks
 
         Returns
         -------------

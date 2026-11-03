@@ -6,12 +6,12 @@ from rx_common import Project
 from rx_data   import NtuplePartitioner
 
 _FRIENDS=[
-    'main', 
-    'mva', 
-    'hop', 
+    'main',
+    'mva',
+    'hop',
     'mass',
-    'brem_track_2', 
-    'swp_jpsi_misid', 
+    'brem_track_2',
+    'swp_jpsi_misid',
     'swp_cascade']
 
 _TOTAL=3

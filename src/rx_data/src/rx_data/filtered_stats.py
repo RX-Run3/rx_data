@@ -23,12 +23,12 @@ class FilteredStats:
     - Access the JSON files stored in this project with the list of LFNs
     - Use them to build a dataframe with the following columns:
         - Block: e.g. w40_42
-        - EventType 
-        - Version: version of ntuples in AP 
+        - EventType
+        - Version: version of ntuples in AP
     '''
     # ----------------------
     def __init__(
-        self, 
+        self,
         analysis : str,
         versions : list[int],
         max_lfns : int|None=None) -> None:
@@ -36,21 +36,21 @@ class FilteredStats:
         Parameters
         -------------
         analysis : E.g. rx, nopid
-        versions : Versions of JSON files to check 
+        versions : Versions of JSON files to check
         max_lfns : Maximum number of LFNs per JSON file
         '''
         self._analysis = analysis
-        self._versions = versions 
+        self._versions = versions
         self._max_lfns = max_lfns
         self._columns  : list[str] = ['EventType', 'Sample', 'Trigger', 'Version', 'Mag']
 
         self._evt_rgx        : str = r'_(\d{8})_'
         self._trg_rgx        : str = r'_(Hlt2RD_.*)_\w{10}\.root'
         self._sam_rgx        : str = r'^mc_.*_\d{8}_(\w+)_Hlt2RD_.*'
-        self._mag_rgx        : str = r'_(magup|magdown)_' 
+        self._mag_rgx        : str = r'_(magup|magdown)_'
         self._fname_json_rgx : str = r'lfn_(\d{3})\.json'
 
-        self._d_lfn : dict[str,int]      = {} 
+        self._d_lfn : dict[str,int]      = {}
         self._df    : pnd.DataFrame|None = None
         self._inf   : GangaInfo
     # ----------------------
@@ -76,7 +76,7 @@ class FilteredStats:
         '''
         Parameters
         -------------
-        element: Element in container to be sorted 
+        element: Element in container to be sorted
 
         Returns
         -------------
@@ -128,7 +128,7 @@ class FilteredStats:
             raise ValueError(f'No LFN directories found in: {base}')
         l_dir= sorted(l_dir, key=self._version_from_path)
 
-        d_file : dict[Path, int] = {} 
+        d_file : dict[Path, int] = {}
         log.info(80 * '-')
         log.info(f'{"Files":<10}{"LFNs":<20}{"Path"}')
         log.info(80 * '-')
@@ -174,7 +174,7 @@ class FilteredStats:
         '''
         log.debug('Getting LFNs from paths')
 
-        d_lfn : dict[str,int] = {} 
+        d_lfn : dict[str,int] = {}
         for path, version in d_path.items():
             lfns = gut.load_json(path=path)
             lfns = [ lfn for lfn in lfns if '_MVA_cal_' not in lfn ]
@@ -201,21 +201,21 @@ class FilteredStats:
         '''
         Parameters
         -------------
-        row: Pandas series representing row of empty dataframe 
+        row: Pandas series representing row of empty dataframe
 
         Returns
         -------------
         Series representing updated row
         '''
 
-        row['EventType'] = self._event_type_from_row(row=row) 
+        row['EventType'] = self._event_type_from_row(row=row)
         row['Trigger'  ] = self._info_from_row(path=row.path, kind='trigger', regex=self._trg_rgx)
         row['Version'  ] = self._d_lfn[row.path]
         row['Sample'   ] = self._sample_from_row(row=row)
         row['block'    ] = self._inf.block_from_fname(fname=row.path, fallback='missing')
         row['Mag'      ] = self._info_from_row(path=row.path, kind='trigger', regex=self._mag_rgx)
 
-        return row 
+        return row
     # ----------------------
     def _sample_from_row(self, row : pnd.Series) -> str:
         '''
@@ -250,9 +250,9 @@ class FilteredStats:
         return self._info_from_row(path=path, kind='event type', regex=self._evt_rgx)
     # ----------------------
     def _info_from_row(
-        self, 
+        self,
         path  : str,
-        kind  : str, 
+        kind  : str,
         regex : str) -> str:
         '''
         Parameters
@@ -282,7 +282,7 @@ class FilteredStats:
         -------------
         d_path: Dictionary with:
            Key  : Path to JSON file with LFNs
-           Value: Version of production, not needed here 
+           Value: Version of production, not needed here
 
         Returns
         -------------
@@ -339,9 +339,9 @@ class FilteredStats:
         return df
     # ----------------------
     def exists(
-        self, 
-        event_type : str, 
-        block      : str, 
+        self,
+        event_type : str,
+        block      : str,
         polarity   : str) -> bool:
         '''
         Parameters

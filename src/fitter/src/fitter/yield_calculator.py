@@ -79,14 +79,14 @@ class YieldCalculatorConf(BaseModel):
         '''
         Parameters
         -----------------
-        name: string identifying file holding configuration, e.g. rare 
+        name: string identifying file holding configuration, e.g. rare
 
         Returns
         -----------------
         Configuration object
         '''
         data = gut.load_data(
-            package = 'fitter_data', 
+            package = 'fitter_data',
             fpath   = f'yields/{name}.yaml')
 
         return cls(**data)
@@ -98,8 +98,8 @@ class YieldCalculator:
     '''
     # -------------------------------
     def __init__(
-        self, 
-        name    : str, 
+        self,
+        name    : str,
         wp      : WorkingPoint,
         q2bin   : Qsq,
         trigger : Trigger):
@@ -111,8 +111,8 @@ class YieldCalculator:
         project: E.g. rk
         q2bin  : E.g. low
         '''
-        self.__cfg = YieldCalculatorConf.from_name(name = name) 
-        self.__trg = trigger 
+        self.__cfg = YieldCalculatorConf.from_name(name = name)
+        self.__trg = trigger
         self.__qsq = q2bin
         self.__wp  = wp
 

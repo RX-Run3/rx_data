@@ -133,10 +133,10 @@ def _plot_roc(kind : str, cfg : dict) -> None:
     color   = cfg['color']
     models  = _get_models(cfg['model'])
     auc     = Data.cvp.plot_roc(
-        sig  = rdf_sig, 
-        bkg  = rdf_bkg, 
-        model= models, 
-        name = kind, 
+        sig  = rdf_sig,
+        bkg  = rdf_bkg,
+        model= models,
+        name = kind,
         color= color)
 
     log.info(f'For {kind} found AUC: {auc:.3f}')

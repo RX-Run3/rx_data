@@ -8,7 +8,7 @@ from dmu       import LogStore
 from rx_q2     import ScaleReader
 from rx_common import Channel, Correction
 from rx_common import Brem
-from rx_common import Block 
+from rx_common import Block
 
 log=LogStore.add_logger('rx_q2:test_scale_reader')
 
@@ -32,8 +32,8 @@ def test_electron_scales(
     '''
     srd      = ScaleReader(channel = Channel.ee)
     val, err = srd.get_scale(
-        corr  = kind, 
-        block = block, 
+        corr  = kind,
+        block = block,
         brem  = brem)
 
     log.info('')
@@ -61,8 +61,8 @@ def test_muon_scales(
     brem     = Brem.from_int(0)
     srd      = ScaleReader(channel = Channel.mm)
     val, err = srd.get_scale(
-        corr  = kind, 
-        block = block, 
+        corr  = kind,
+        block = block,
         brem  = brem)
 
     log.info('')
@@ -89,13 +89,13 @@ def test_electron_pars(
     block: Block,
     kind : Correction):
     '''
-    Test retrieval of parameters 
+    Test retrieval of parameters
     '''
     srd      = ScaleReader(channel = Channel.ee)
     val, err = srd.get_param(
         is_mc = is_mc,
-        param = kind, 
-        block = block, 
+        param = kind,
+        block = block,
         brem  = brem)
 
     log.info('')
@@ -120,14 +120,14 @@ def test_muon_pars(
     block: Block,
     kind : Correction):
     '''
-    Test retrieval of parameters 
+    Test retrieval of parameters
     '''
     brem     = Brem.from_int(0)
     srd      = ScaleReader(channel = Channel.mm)
     val, err = srd.get_param(
         is_mc = is_mc,
-        param = kind, 
-        block = block, 
+        param = kind,
+        block = block,
         brem  = brem)
 
     log.info('')
@@ -154,8 +154,8 @@ def test_single_block_scales(
     '''
     srd      = ScaleReader(channel = Channel.ee)
     val, err = srd.get_scale(
-        corr  = Correction.blok_fraction, 
-        block = block, 
+        corr  = Correction.blok_fraction,
+        block = block,
         brem  = brem)
 
     log.info('')

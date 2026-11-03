@@ -10,7 +10,7 @@ from pathlib        import Path
 from ihep_utilities import JobSubmitter
 from rx_tests       import TestConfig
 from rx_tests       import TestJobs
-from rx_tests       import ReportBuilder 
+from rx_tests       import ReportBuilder
 from dmu            import LogStore
 
 app = typer.Typer(
@@ -51,12 +51,12 @@ def test_all(
 
     if project:
         cfg = cfg.filter(project = project)
-    
+
     tjb = TestJobs(cfg = cfg)
     jobs= tjb.get_jobs()
-    
+
     sbt = JobSubmitter(
-        jobs        = jobs, 
+        jobs        = jobs,
         environment = 'rx_run3')
     sbt.run(skip_submit=dry_run)
 # ----------------------
@@ -76,7 +76,7 @@ def build_report(
 
         log.info('Running type analysis')
         result = subprocess.run(
-            ['pyright', '--project', code_path, '--outputjson'], 
+            ['pyright', '--project', code_path, '--outputjson'],
             capture_output = True,
             text           = True,
             check          = False)

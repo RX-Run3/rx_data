@@ -12,9 +12,9 @@ from dmu       import LogLevels, LogStore
 log=LogStore.add_logger('rx_common:test_branching_fraction')
 
 _COMPONENTS : Final[list[Component]] = [
-    Component.bpkpee, 
+    Component.bpkpee,
     Component.bpkpjpsiee,
-    Component.bdkstkpiee, 
+    Component.bdkstkpiee,
     Component.bdkstkpijpsiee]
 # ----------------------
 @pytest.fixture(scope='session', autouse=True)
@@ -27,5 +27,5 @@ def initialize():
 @pytest.mark.parametrize('comp', _COMPONENTS)
 def test_simple(comp : Component):
     BranchingFraction.from_decays(
-        decays = comp.subdecays, 
+        decays = comp.subdecays,
         latex  = comp.latex)

@@ -135,16 +135,16 @@ class DataFitter(BaseFitter, Cache):
         return fres
     # ---------------------------------------------
     def _save_merged_regions(
-        self, 
+        self,
         fres    : FitResult,
-        region  : Region, 
+        region  : Region,
         regions : list[Region]) -> None:
         '''
         Parameters
         ---------------
         fres   : Fit result
-        region : Merged signal region 
-        regions: List of signal regions to merge 
+        region : Merged signal region
+        regions: List of signal regions to merge
         '''
         if len(regions) < _MIN_REGIONS_IN_CAT:
             raise ValueError(f'Cannot create category with fewer than two regions, found: {regions}')
@@ -169,8 +169,8 @@ class DataFitter(BaseFitter, Cache):
         # In order to plot combined model
         prefixes : list[Component] = [ component for component in self._cfg.components[self._q2bin] ]
         model = sut.merge_sum_models(
-            obs      = self._cfg.obs, 
-            models   = models, 
+            obs      = self._cfg.obs,
+            models   = models,
             prefixes = prefixes,
             pair     = 'by_prefix')
 
@@ -183,8 +183,8 @@ class DataFitter(BaseFitter, Cache):
             out_path = out_path)
     # ---------------------------------------------
     def _save_by_region(
-        self, 
-        nll  : NLL, 
+        self,
+        nll  : NLL,
         fres : FitResult) -> None:
         '''
         Parameters
@@ -245,14 +245,14 @@ class DataFitter(BaseFitter, Cache):
         fres.to_json(path = result_path)
 
         # If there is one signal region (fit is not simultaneous)
-        # we can skip making plot of merged signal regions 
+        # we can skip making plot of merged signal regions
         if len(self._d_nll) == 1:
             self._cache()
             return fres
 
         for region, regions in self._cfg.plots[self._q2bin].merging.items():
             self._save_merged_regions(
-                region = region, 
+                region = region,
                 fres   = fres,
                 regions  = regions)
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 import os
-import re 
+import re
 import pprint
-import argparse 
+import argparse
 
 import pandas            as pnd
 import utils_noroot      as utnr
@@ -86,7 +86,7 @@ def get_version(version):
         version = '$R_{K}$'
     else:
         version = version
-    
+
     return version
 #-----------------------------------------
 def main():

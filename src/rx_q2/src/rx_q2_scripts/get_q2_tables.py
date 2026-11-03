@@ -49,7 +49,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument('-y', '--year' , type =str, help='Year'                                        , required=True)
     parser.add_argument('-b', '--brem' , type =str, help='Brem category'                               , required=True)
     parser.add_argument('-k', '--kind' , type =str, help='Kind of sample'                              , required=True)
-    parser.add_argument('-B', '--block', type =int, help='Block, by default -1, all'                   , default=-1) 
+    parser.add_argument('-B', '--block', type =int, help='Block, by default -1, all'                   , default=-1)
     parser.add_argument('-x', '--syst' , type =str, help='Systematic variabion'                        , default='nom')
     parser.add_argument('-l', '--logl' , type =int, help='Logging level'                               , default=20   )
     parser.add_argument('--skip_fit'   , help='Will not fit, just plot the model'                      , action ='store_true')
@@ -129,7 +129,7 @@ def _get_full_pdf() -> zpdf:
     bkg = _get_bkg_pdf()
     pdf = zfit.pdf.SumPDF([bkg, sig])
 
-    return pdf 
+    return pdf
 #-------------------
 def _get_bkg_pdf() -> zpdf:
     cfg = _load_config()
@@ -182,7 +182,7 @@ def _par_val_from_dict(d_par : Mapping[str, Mapping[str,Any]]) -> tuple[float,fl
         raise TypeError(f'Value is not a float but {value}, result was likely not frozen')
 
     if 'hesse' not in d_par:
-        return value, -1 
+        return value, -1
 
     error = d_par['hesse']['error']
     if not isinstance(error, float):
@@ -215,7 +215,7 @@ def _get_pars(res : zres) -> Parameters:
 #-------------------
 def _fit(d_fix : Parameters | None = None)-> Parameters | None:
     cfg = _load_config()
-    kind= cfg.input.kind 
+    kind= cfg.input.kind
     pdf = _get_pdf(kind)
     dat = _get_data(pdf, kind)
     pdf = _fix_pdf(pdf, d_fix)
@@ -256,7 +256,7 @@ def _fit(d_fix : Parameters | None = None)-> Parameters | None:
 def _get_data(pdf : zpdf, kind : str) -> zdata:
     cfg       = _load_config()
     data_path = cfg.out_dir / '.data.parquet'
-    if data_path.exists(): 
+    if data_path.exists():
         log.warning(f'Data found, loading from: {data_path}')
         df  = pnd.read_parquet(data_path)
         # TODO: Here the weights need to be put back, once the bug in zfit be fixed
@@ -296,11 +296,11 @@ def _plot_data(df : pnd.DataFrame) -> None:
     [[lower]], [[upper]] = cfg.obs.limits
     _, ax     = plt.subplots(figsize=(15, 10))
     data_hist = hist.Hist.new.Regular(
-        cfg.plots.nbins, 
-        lower, 
-        upper, 
-        name     ='', 
-        underflow=False, 
+        cfg.plots.nbins,
+        lower,
+        upper,
+        name     ='',
+        underflow=False,
         overflow =False)
     data_hist = data_hist.Weight()
     data_hist.fill(arr_mas, weight=arr_wgt)
@@ -436,7 +436,7 @@ def main(args : DictConfig | None = None):
     Entry point
     '''
     global _ARGS
-    _ARGS = args 
+    _ARGS = args
     _initialize()
 
     cfg = _load_config()

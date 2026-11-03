@@ -39,7 +39,7 @@ def _print_tags(sample : Sample):
 # -----------------------------
 @pytest.mark.parametrize('nickname, expected', Data.l_arg_nopid)
 def test_simple(
-    nickname : str, 
+    nickname : str,
     expected : int,
     tmp_path : Path):
     '''
@@ -47,7 +47,7 @@ def test_simple(
     '''
     storage= tmp_path / 'downloaded'
     data   = gut.load_data(
-        package='post_ap_data', 
+        package='post_ap_data',
         fpath  ='tests/pfn_reader/simple.yaml')
     cfg    = PFNReaderConf(**data)
 
@@ -56,7 +56,7 @@ def test_simple(
         storage = storage)
 
     samples= reader.get_samples(
-        production=Production.btoxll_mva_2024_nopid, 
+        production=Production.btoxll_mva_2024_nopid,
         nickname  =nickname)
     npfn   = samples.size
 
@@ -68,7 +68,7 @@ def test_data(tmp_path : Path):
     '''
     storage= tmp_path / 'downloaded'
     data   = gut.load_data(
-        package='post_ap_data', 
+        package='post_ap_data',
         fpath  ='tests/pfn_reader/simple.yaml')
     cfg    = PFNReaderConf(**data)
 
@@ -77,10 +77,10 @@ def test_data(tmp_path : Path):
         storage = storage)
 
     samples= reader.get_samples(
-        production= Production.rx_filter, 
+        production= Production.rx_filter,
         nickname  = 'data-ecal')
     npfn   = samples.size
-    assert npfn > 0 
+    assert npfn > 0
 
     for sample in samples:
         log.info(sample)
@@ -97,7 +97,7 @@ def test_real(sample : str, tmp_path : Path):
     '''
     storage = tmp_path / 'downloaded'
     data    = gut.load_data(
-        package='post_ap_data', 
+        package='post_ap_data',
         fpath  ='post_ap/rx/v15.yaml')
     cfg     = PFNReaderConf(**data)
 
@@ -122,7 +122,7 @@ def test_sim10g(sample : str, tmp_path : Path):
     '''
     storage = tmp_path / 'downloaded'
     data    = gut.load_data(
-        package='post_ap_data', 
+        package='post_ap_data',
         fpath  ='post_ap/rx/v15.yaml')
     cfg     = PFNReaderConf(**data)
 
@@ -146,7 +146,7 @@ def test_progress(sample : str, tmp_path : Path):
     '''
     storage = tmp_path / 'downloaded'
     data    = gut.load_data(
-        package='post_ap_data', 
+        package='post_ap_data',
         fpath  ='post_ap/rx/v15.yaml')
     cfg     = PFNReaderConf(**data)
 
@@ -154,7 +154,7 @@ def test_progress(sample : str, tmp_path : Path):
         cfg     = cfg,
         storage = storage)
     samples = reader.get_samples(
-        production=Production.rx_2024, 
+        production=Production.rx_2024,
         nickname  =sample)
 
     for _ in tqdm.tqdm(samples, ascii = ' -'):
@@ -164,7 +164,7 @@ def test_progress(sample : str, tmp_path : Path):
 # -----------------------------
 @pytest.mark.parametrize('sample_name', ['all'])
 def test_merge(
-    sample_name : str, 
+    sample_name : str,
     tmp_path    : Path):
     '''
     Test that sample container can be iterated
@@ -185,7 +185,7 @@ def test_merge(
         storage = storage,
         cfg     = cfg)
     samples = reader.get_samples(
-        production=Production.rx_filter, 
+        production=Production.rx_filter,
         nickname  =sample_name)
 
     sample      = samples[0]
@@ -217,7 +217,7 @@ def test_polarity(
     '''
     storage = tmp_path / 'downloaded'
     data    = gut.load_data(
-        package='post_ap_data', 
+        package='post_ap_data',
         fpath  ='post_ap/rx/v15.yaml')
     cfg     = PFNReaderConf(**data)
 
@@ -242,7 +242,7 @@ def test_paths():
         fractions= {'all' : None})
 
     cfg     = PFNReaderConf(
-        working_group= 'RD', 
+        working_group= 'RD',
         productions  = {Production.rx_filter : prod_cfg})
 
     reader  = PFNReader(
@@ -250,7 +250,7 @@ def test_paths():
         storage = storage)
 
     samples = reader.get_samples(
-        production = Production.rx_filter, 
+        production = Production.rx_filter,
         nickname   = 'all')
     sample  = samples.root[0]
 
@@ -269,7 +269,7 @@ def test_trigger():
         fractions= {'all' : None})
 
     cfg     = PFNReaderConf(
-        working_group= 'RD', 
+        working_group= 'RD',
         productions  = {Production.rx_filter : prod_cfg})
 
     reader  = PFNReader(
@@ -291,13 +291,13 @@ def test_target_paths():
         fractions= {'all' : None})
 
     cfg     = PFNReaderConf(
-        working_group= 'RD', 
+        working_group= 'RD',
         productions  = {Production.rx_filter : prod_cfg})
 
     ANADIR  = os.environ['PFS_ANADIR']
     storage = ANADIR / Path('downloaded')
     reader  = PFNReader(
-        cfg     = cfg, 
+        cfg     = cfg,
         storage = storage)
     samples = reader.get_samples(production=Production.rx_filter, nickname='all')
     sample  = samples.root[0]
@@ -326,7 +326,7 @@ def test_hash():
         cfg     = cfg,
         storage = storage)
     samples = reader.get_samples(
-        production=Production.rx_filter, 
+        production=Production.rx_filter,
         nickname  ='all')
 
     for sample in samples:

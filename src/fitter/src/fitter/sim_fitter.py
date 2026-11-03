@@ -90,7 +90,7 @@ class SimFitter(BaseFitter, Cache):
         SkipDataConf = CombinatorialConf | CombinatorialConfUnconstrained | CCbarConf
 
         if isinstance(self._cfg, SkipDataConf):
-            return dict() 
+            return dict()
 
         if isinstance(self._cfg, ParametricConf):
             return self._get_category_data(cfg = self._cfg)
@@ -220,7 +220,7 @@ class SimFitter(BaseFitter, Cache):
             # of parameters meant to float
             if par.name.endswith('_flt'):
                 log.debug(f'Not fixing: {par.name}')
-                par.floating = True 
+                par.floating = True
                 continue
 
             if par.name in res:
@@ -296,8 +296,8 @@ class SimFitter(BaseFitter, Cache):
 
         if skip_fit:
             return Category(
-                name      = name, 
-                pdf       = model, 
+                name      = name,
+                pdf       = model,
                 sumw      = sumw,
                 model     = cat_cfg.model.pdfs,
                 selection = cat_cfg.selection)
@@ -314,11 +314,11 @@ class SimFitter(BaseFitter, Cache):
                 res      = None,
                 out_path = self._out_path / name )
 
-            return None 
+            return None
 
         res = self._fit(
-            data = data, 
-            model= model, 
+            data = data,
+            model= model,
             cfg  = cfg.fit)
 
         self._save_fit(
@@ -340,7 +340,7 @@ class SimFitter(BaseFitter, Cache):
             selection = cat_cfg.selection)
     # ----------------------
     def _get_cut_config(
-        self, 
+        self,
         category : str | None,
         cfg      : ParametricConf | NonParametricConf) -> dict[str,dict[Cuts,str]]:
         '''
@@ -355,8 +355,8 @@ class SimFitter(BaseFitter, Cache):
             Values: Selection for data that was fitted and default
         '''
         cuts_current= sel.selection(
-            process = cfg.component, 
-            trigger = self._trigger, 
+            process = cfg.component,
+            trigger = self._trigger,
             q2bin   = self._q2bin)
 
         if isinstance(cfg, ParametricConf) and category is not None:
@@ -367,8 +367,8 @@ class SimFitter(BaseFitter, Cache):
 
         with sel.custom_selection(d_sel={}, force_override=True):
             cuts['default'] = sel.selection(
-                process = cfg.component, 
-                trigger = self._trigger, 
+                process = cfg.component,
+                trigger = self._trigger,
                 q2bin   = self._q2bin)
 
         return cuts
@@ -400,17 +400,17 @@ class SimFitter(BaseFitter, Cache):
     # ------------------------
     @overload
     def _get_merged_category(
-        self, 
-        cfg      : ParametricConf, 
+        self,
+        cfg      : ParametricConf,
         skip_fit : Literal[True]) -> Category: ...
     @overload
     def _get_merged_category(
-        self, 
-        cfg      : ParametricConf, 
+        self,
+        cfg      : ParametricConf,
         skip_fit : Literal[False]) -> FitCategory | None: ...
     def _get_merged_category(
-        self, 
-        cfg      : ParametricConf, 
+        self,
+        cfg      : ParametricConf,
         skip_fit : bool) -> FitCategory | Category | None:
         '''
         Parameters
@@ -452,12 +452,12 @@ class SimFitter(BaseFitter, Cache):
         if skip_fit:
             mgr = CategoryMerger(
                 reparametrize = self._q2bin.is_rare,
-                categories    = cats_raw, 
+                categories    = cats_raw,
                 comp          = self._component)
         else:
             mgr = FitCategoryMerger(
                 reparametrize = self._q2bin.is_rare,
-                categories    = cats_fit, 
+                categories    = cats_fit,
                 comp          = self._component)
 
         cat = mgr.get_category()
@@ -484,12 +484,12 @@ class SimFitter(BaseFitter, Cache):
         nentries = self._entries_from_data(data = data, obs = cfg.obs)
         if nentries < _MIN_KDE_ENTRIES:
             log.warning(f'Not bulding KDE, found too few entries: {nentries} < {_MIN_KDE_ENTRIES}')
-            return 
+            return
 
         pdf = cfg.fit.kind.cls(
-            data      = data, 
-            name      = f'{self._component}_{self._name}', 
-            obs       = cfg.obs, 
+            data      = data,
+            name      = f'{self._component}_{self._name}',
+            obs       = cfg.obs,
             norm      = cfg.norm,
             bandwidth = cfg.fit.bandwidth,
             padding   = cfg.fit.padding.value)
@@ -544,7 +544,7 @@ class SimFitter(BaseFitter, Cache):
         - None, if statistics are too low to build PDF
 
         Returned PDF needs to have parameters fixed unless
-        their names end on _flt. E.g. 
+        their names end on _flt. E.g.
 
         - Will fix tails, means and widths
         - Will float scales and resolutions
@@ -566,7 +566,7 @@ class SimFitter(BaseFitter, Cache):
             res = FitResult.from_json(path = result_path)
 
             # If caching, need only model, second return value
-            # Is None because no fit happened 
+            # Is None because no fit happened
             cat = self._get_merged_category(skip_fit=True, cfg = self._cfg)
             return self._fix_tails(pdf=cat.pdf, res=res)
 

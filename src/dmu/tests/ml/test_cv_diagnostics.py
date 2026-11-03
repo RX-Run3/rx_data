@@ -20,7 +20,7 @@ def _initialize():
 def test_score_from_model():
     '''
     Measures correlations between target and features + score
-    where the score is calculated from the model 
+    where the score is calculated from the model
     '''
 
     rdf_sig = ut.get_rdf(kind='sig')

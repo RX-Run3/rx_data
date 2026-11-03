@@ -75,7 +75,7 @@ def _get_Bx_df(cfg : ScalesConf) -> pnd.DataFrame:
 
     smr= FitSummarizer(name = cfg.name, kind = _KIND)
     smr.get_summary(
-        force_update = True, 
+        force_update = True,
         out_name     = f'fit_summary_{cfg.comb.name}_{cfg.prec.name}.json')
 
     if not smr.output_path:
@@ -105,7 +105,7 @@ def _get_Bx_df(cfg : ScalesConf) -> pnd.DataFrame:
                     bk_val, bk_err = 1.0, 0.0
 
                 if channel == Channel.mm:
-                    fr_val, fr_err = 0.001, 0.0 # Brem fraction for brem 1 is zero in muon channel 
+                    fr_val, fr_err = 0.001, 0.0 # Brem fraction for brem 1 is zero in muon channel
                 else:
                     fr_val, fr_err = msr.get_par(prefix = f'fr_{signal}_{brem}').data
 

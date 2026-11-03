@@ -20,7 +20,7 @@ log=LogStore.add_logger('rx_common:region')
 # ------------------------
 class MisID(StrEnum):
     '''
-    Class meant to represent type of particle MisID 
+    Class meant to represent type of particle MisID
     '''
     none = auto()
     '''No misID, used for signal regions'''
@@ -42,7 +42,7 @@ class MisID(StrEnum):
 # ------------------------
 class Region(BaseModel, Serializable, frozen = True, extra = 'forbid', strict = True):
     '''
-    Enum meant to symbolize control and signal regions, 
+    Enum meant to symbolize control and signal regions,
     e.g. hadronic misID control region
     '''
     brem    : Brem
@@ -51,7 +51,7 @@ class Region(BaseModel, Serializable, frozen = True, extra = 'forbid', strict = 
     trigger : Trigger
     '''HLT2 trigger'''
 
-    misid   : MisID   = MisID.none 
+    misid   : MisID   = MisID.none
     '''Identifies region by what tracks IDs were swapped'''
     # ---------------------
     @property
@@ -67,13 +67,13 @@ class Region(BaseModel, Serializable, frozen = True, extra = 'forbid', strict = 
 
         if self.misid == MisID.kee_kkk       and self.trigger.project == Project.rk:
             return Component.bpkkk
-            
+
         if self.misid == MisID.kee_kpipi     and self.trigger.project == Project.rk:
             return Component.bpkpipi
 
         if self.misid == MisID.kpiee_kpikk   and self.trigger.project == Project.rkst:
             return Component.bdkstkk
-            
+
         if self.misid == MisID.kpiee_kpipipi and self.trigger.project == Project.rkst:
             return Component.bdkstpipi
 
@@ -148,7 +148,7 @@ class Region(BaseModel, Serializable, frozen = True, extra = 'forbid', strict = 
         parts= name.split('-')
 
         try:
-            brem = Brem(parts[0]) 
+            brem = Brem(parts[0])
             trig = Trigger(parts[1])
             misid= MisID(parts[2]) if len(parts) > 2 else MisID.none # noqa: PLR2004
         except Exception as exc:
@@ -157,7 +157,7 @@ class Region(BaseModel, Serializable, frozen = True, extra = 'forbid', strict = 
         return {
             'brem'   : brem,
             'trigger': trig,
-            'misid'  : misid} 
+            'misid'  : misid}
     # ---------------------
     @model_validator(mode = 'after')
     def _validate_after(self):

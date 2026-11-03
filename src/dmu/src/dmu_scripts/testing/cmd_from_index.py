@@ -10,7 +10,7 @@ This script will
 '''
 
 import json
-import numpy 
+import numpy
 import random
 import argparse
 from dmu.testing import pytest_utilities
@@ -43,7 +43,7 @@ def _get_json(args : argparse.Namespace) -> list[str]:
 
     Returns
     -------------
-    dictionary mapping index to command, corresponding to a group 
+    dictionary mapping index to command, corresponding to a group
     '''
     data    = pytest_utilities.get_tests(path = args.path)
     indexes = list(data)

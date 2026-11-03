@@ -170,7 +170,7 @@ def test_rare_electron_high(
     ctx_3 = sel.custom_selection(d_sel = {Cuts.mass : '(1)', Cuts.brem : 'nbrem != 0'})
     ctx_4 = monkeypatch.context()
 
-    with ExitStack() as stack: 
+    with ExitStack() as stack:
         stack.enter_context(ctx_1)
         stack.enter_context(ctx_2)
         stack.enter_context(ctx_3)

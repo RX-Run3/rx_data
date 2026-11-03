@@ -44,14 +44,14 @@ class PlotConfig:
     REGIONS  = ['signal', 'control']
     Q2BINS   = ['low', 'central', 'high']
 
-    nplots   : int        = field(init=False) 
-    block    : int        = field(init=False) 
-    sample   : str        = field(init=False) 
-    q2bin    : str        = field(init=False) 
-    bremcat  : str        = field(init=False) 
-    region   : str        = field(init=False) 
+    nplots   : int        = field(init=False)
+    block    : int        = field(init=False)
+    sample   : str        = field(init=False)
+    q2bin    : str        = field(init=False)
+    bremcat  : str        = field(init=False)
+    region   : str        = field(init=False)
 
-    rdf_cfg  : dict       = field(init=False) 
+    rdf_cfg  : dict       = field(init=False)
     weighter : DictConfig = field(init=False)
     splitter : DictConfig = field(init=False)
     # ----------------------
@@ -72,7 +72,7 @@ class PlotConfig:
         nplots = 1
         if self.block   ==    -1:
             nplots *= len(self.BLOCKS)
-        
+
         if self.sample  == 'all':
             nplots *= len(self.SAMPLES)
 
@@ -106,7 +106,7 @@ class PlotConfig:
     @staticmethod
     def particle_from_sample(sample : str) -> str:
         '''
-        Transform sample into nickname 
+        Transform sample into nickname
         '''
         if sample == 'all':
             return 'all'
@@ -167,7 +167,7 @@ def _set_logs(level : int) -> None:
     LogStore.set_level('rx_misid:plot_samples'      , level)
 # ----------------------
 def _get_df(
-    cfg    : PlotConfig, 
+    cfg    : PlotConfig,
     q2bin  : Qsq,
     sample : Component,
     region : str) -> pnd.DataFrame:
@@ -175,7 +175,7 @@ def _get_df(
     Parameters
     -------------
     cfg   : Configuration needed to make dataframe
-    q2bin : E.g. central 
+    q2bin : E.g. central
     sample: MC sample, e.g. mc_bukee...
     region: signal or control
 
@@ -187,7 +187,7 @@ def _get_df(
     rdf   = gtr.get_rdf(per_file=False)
     uid   = gtr.get_uid()
     cuts  = {
-        Cuts.pid_l : '(1)', 
+        Cuts.pid_l : '(1)',
         Cuts.brem  : 'nbrem != 0'} # Do not care about brem 0 candidates
 
     with sel.custom_selection(d_sel = cuts):
@@ -195,12 +195,12 @@ def _get_df(
             rdf    = rdf,
             uid    = uid,
             q2bin  = q2bin,
-            process= sample, 
+            process= sample,
             trigger= cfg.rdf_cfg['trigger'])
 
     out_dir = Path('misid')
     spl   = SampleSplitter(
-        rdf     = rdf, 
+        rdf     = rdf,
         cfg     = cfg.splitter,
         out_dir = out_dir)
     df    = spl.get_sample()
@@ -215,7 +215,7 @@ def _get_df(
     return df
 # ----------------------
 def _plot_overlay(
-    df     : pnd.DataFrame, 
+    df     : pnd.DataFrame,
     hist   : bh,
     key    : str,
     bremcat: str,
@@ -239,10 +239,10 @@ def _plot_overlay(
     _plot_map(hist=hist)
     for level, style in zip(levels, styles, strict=True):
         sns.kdeplot(
-            x         =arr_pt, 
-            y         =arr_et, 
-            levels    =[1 - level], 
-            c         ='red', 
+            x         =arr_pt,
+            y         =arr_et,
+            levels    =[1 - level],
+            c         ='red',
             lw        =0.5,
             linestyles=style)
 
@@ -287,7 +287,7 @@ def _plot_map(hist : bh) -> None:
 
     arr_x, arr_y = numpy.meshgrid(x_edges, y_edges)
 
-    counts  = 100 * bin_values 
+    counts  = 100 * bin_values
     tmp     = numpy.where((counts < _MAX_EFF) & (counts >= 0), counts, 0)
     maxz    = numpy.max(tmp)
     plt.pcolormesh(arr_x, arr_y, counts.T, shading='auto', vmin=0, vmax=maxz)
@@ -359,7 +359,7 @@ def main():
                             log.debug(f'Skip {block}')
                             continue
 
-                        particle  = PlotConfig.particle_from_sample(sample=sample) 
+                        particle  = PlotConfig.particle_from_sample(sample=sample)
                         df_block  = df[df['block'] == block]
                         key       = f'block{block}_{particle}_{region}'
                         hist      = d_hist[key]

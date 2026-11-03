@@ -48,7 +48,7 @@ def test_modexp_mu_scan(tmp_path : Path):
     '''
     min_mu = Data.l_mu_mod_exp[ 0]
     max_mu = Data.l_mu_mod_exp[-1]
-    mid_mu = 0.5 * (min_mu + max_mu) 
+    mid_mu = 0.5 * (min_mu + max_mu)
 
     mu = zfit.Parameter('mu', mid_mu, min_mu, max_mu)
     ap = zfit.Parameter('ap',   0.01,   0.01,   0.02)

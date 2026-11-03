@@ -40,10 +40,10 @@ def _add_lines() -> None:
         start, _ = campaign.runs
 
         plt.axvline(
-            x     = start, 
+            x     = start,
             lw    = 1.0,
             ls    = '-.',
-            color = campaign.color, 
+            color = campaign.color,
             label = campaign.name)
 # ---------------------------------
 def plot():
@@ -60,10 +60,10 @@ def plot():
     lumi_up : numpy.ndarray = df_rx_all['int_lumi_up'].to_numpy()
 
     plt.fill_between(
-        x     = xval, 
+        x     = xval,
         y1    = lumi_dn, # type: ignore
-        y2    = lumi_up, # type: ignore 
-        color = 'gray', 
+        y2    = lumi_up, # type: ignore
+        color = 'gray',
         alpha = 0.5,
         label = fr'Total: {rx_lumi:>4.2f} fb${{}}^{{-1}}$')
 

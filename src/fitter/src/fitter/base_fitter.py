@@ -1,7 +1,7 @@
 '''
 This module contains BaseFitter
 '''
-import json 
+import json
 import textwrap
 
 from pathlib     import Path
@@ -154,7 +154,7 @@ class BaseFitter:
         Tuple with:
 
         - Selection used for fit
-        - Difference between fit selection and default 
+        - Difference between fit selection and default
         - Brem categories choice
         '''
         # For components like combinatorial, there is no MC sample
@@ -177,7 +177,7 @@ class BaseFitter:
         return sel_fit, sel_dif, brem_cuts
     # --------------------------
     def _entries_from_data(
-        self, 
+        self,
         data : zdata,
         obs  : zobs | None = None) -> int:
         '''
@@ -263,7 +263,7 @@ class BaseFitter:
         # There will not be PDF
         title, sel_fit, sel_dif = self._get_text(data=data, res=res, selection=cut_cfg)
         if plt_cfg.title:
-            title = f'{plt_cfg.title}; {title}' 
+            title = f'{plt_cfg.title}; {title}'
 
         text       = '\n'.join(textwrap.wrap(sel_dif, width=40))
         new_fields = {'title' : title, 'ext_text' : text}

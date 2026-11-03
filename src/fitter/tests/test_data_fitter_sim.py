@@ -27,7 +27,7 @@ from fitter      import FitModelConf
 from fitter      import NLLConf
 from fitter      import DataFitterSim
 from fitter      import PlotConf
-from dmu.testing import get_nll 
+from dmu.testing import get_nll
 from dmu.generic import rxran
 
 zpar = zfit.Parameter | zfit.ComposedParameter
@@ -61,7 +61,7 @@ def _get_pars() -> dict[str, zpar]:
 
     pars = [nkee, nkstee, nkmm, nkstmm]
 
-    return {par.name : par for par in pars} 
+    return {par.name : par for par in pars}
 # -------------------------------
 def _add_constraints(nll : Loss) -> tuple[Loss, list[Constraint1D]]:
     pars  = nll.get_params(floating = True)
@@ -73,8 +73,8 @@ def _add_constraints(nll : Loss) -> tuple[Loss, list[Constraint1D]]:
 
         lower, upper = sut.get_par_lims(par = par)
 
-        mu  = float(par.value().numpy()) 
-        sg  = 0.1 * (upper - lower) 
+        mu  = float(par.value().numpy())
+        sg  = 0.1 * (upper - lower)
 
         dcns     = Constraint1D(
             name = par.name,
@@ -93,9 +93,9 @@ def _add_constraints(nll : Loss) -> tuple[Loss, list[Constraint1D]]:
 # -------------------------------
 def _get_nll(region : Region) -> NLLConf:
     if region.trigger.is_electron:
-        nentries = 2 * _NEE 
+        nentries = 2 * _NEE
     else:
-        nentries = 2 * _NMM 
+        nentries = 2 * _NMM
 
     nll  = get_nll(
         nentries= nentries,
@@ -119,7 +119,7 @@ def _get_cfg(region : Region) -> RXFitConfig:
 
     new_fields = {
         'components' : components,
-        'plots'      : {q2bin : plt_cfg} 
+        'plots'      : {q2bin : plt_cfg}
     }
 
     mod_cfg = FitModelConf.default()
@@ -162,7 +162,7 @@ def test_single_ratio(
 
     ftr = DataFitterSim(
         d_cfg = d_cfg,
-        d_nll = d_nll, 
+        d_nll = d_nll,
         q2bin = Qsq.central)
 
     res = ftr.run(skip_fit = False)
@@ -199,7 +199,7 @@ def test_double_ratio(monkeypatch, tmp_path : Path):
 
     ftr = DataFitterSim(
         d_cfg = d_cfg,
-        d_nll = d_nll, 
+        d_nll = d_nll,
         q2bin = Qsq.central)
     res = ftr.run(skip_fit = False)
 

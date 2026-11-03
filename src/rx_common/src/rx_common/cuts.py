@@ -129,11 +129,11 @@ class Cuts(StrEnum):
 yaml.SafeDumper.add_representer(
       Cuts,
       yaml.representer.SafeRepresenter.represent_str,
-)                                                            
+)
 # --------------------------------
 class Cut(BaseModel, frozen = True):
     '''
-    Class meant to represent a cut 
+    Class meant to represent a cut
     '''
     cut : Cuts
     var : str

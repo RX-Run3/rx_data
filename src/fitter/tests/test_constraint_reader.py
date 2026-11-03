@@ -232,7 +232,7 @@ def _get_fit_config(
 # --------------------------------------------------------------
 def _get_component_config(
     comp  : Component,
-    path  : Path, 
+    path  : Path,
     q2bin : Qsq) -> RXFitConfig:
     '''
     Provides fit configuration for fit with specific component
@@ -246,7 +246,7 @@ def _get_component_config(
 
     components = cfg.mod_cfg.components[q2bin]
     dropped    = [ component for component in components if component != comp ]
-    for component in dropped: 
+    for component in dropped:
         del components[component]
 
     return cfg
@@ -304,7 +304,7 @@ def test_background_fraction(
     q2bin: q2 bin
     '''
     monkeypatch.setattr(
-        'fitter.constraint_reader.get_prec_constraints', 
+        'fitter.constraint_reader.get_prec_constraints',
         get_test_prec_constraints)
 
     obs  = zfit.Space('dummy', limits=(4500, 6000))
@@ -349,7 +349,7 @@ def test_signal(
     nll  = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
     cfg  = _get_component_config(
         comp = comp,
-        path = tmp_path, 
+        path = tmp_path,
         q2bin= q2bin)
 
     with Cache.cache_root(path = tmp_path):
@@ -363,7 +363,7 @@ def test_signal(
     print(constraints)
 
     pars = nll.get_params()
-    assert len(constraints.root) == len(pars) 
+    assert len(constraints.root) == len(pars)
 # --------------------------------------------------------------
 @pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
 def test_combinatorial(

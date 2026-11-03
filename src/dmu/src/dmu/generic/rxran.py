@@ -2,7 +2,7 @@
 Module with functions needed to handle random numbers
 '''
 import numpy
-import random 
+import random
 
 from contextlib import contextmanager
 from dmu        import LogStore
@@ -36,7 +36,7 @@ def seed(
     Parameters
     -------------
     value: Random seed value, e.g. 42
-    index: If doing an ensemble of datasets, value would identify the ensemble, index 
+    index: If doing an ensemble of datasets, value would identify the ensemble, index
            would identify the dataset. If None (default) the random seed is `value`
     '''
     if index is None:

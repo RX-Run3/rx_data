@@ -47,7 +47,7 @@ class Input(BaseModel):
     friends   : dict[str,list[str]]
 #-------------------
 class Plots(BaseModel):
-    yrange : dict[str, list[float|None]] 
+    yrange : dict[str, list[float|None]]
     nbins  : int
     stacked: bool
     d_leg  : dict[str,str]
@@ -66,8 +66,8 @@ class Fitting(BaseModel):
     mass      : str
     weights   : str
     model     : FitModel
-    sim       : FitConfig 
-    dat       : FitConfig 
+    sim       : FitConfig
+    dat       : FitConfig
     skip      : bool
     # ----------------------
     def __getitem__(self, kind : str) -> FitConfig:

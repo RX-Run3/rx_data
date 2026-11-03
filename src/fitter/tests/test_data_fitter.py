@@ -49,7 +49,7 @@ def _rename_model(pdf : zfit.pdf.SumPDF, signal : str, background : str) -> zfit
     [sig, bkg] = pdf.pdfs
 
     sig._name = signal     # type: ignore
-    bkg._name = background # type: ignore 
+    bkg._name = background # type: ignore
 
     return pdf
 # ----------------------
@@ -62,8 +62,8 @@ def test_single_region(tmp_path : Path) -> None:
     nll = zfit.loss.ExtendedUnbinnedNLL(data=dat, model=pdf)
 
     cfg_nll = NLLConf(
-        nll         = nll, 
-        selection   = _SEL_CFG, 
+        nll         = nll,
+        selection   = _SEL_CFG,
         constraints = [])
 
     rk_ee_br12  = Region(
@@ -85,7 +85,7 @@ def test_two_regions(tmp_path : Path) -> None:
     '''
     Test simultaneous fit with two regions
     '''
-    obs     = zfit.Space(obs = 'Mass', limits = (4500, 7000)) 
+    obs     = zfit.Space(obs = 'Mass', limits = (4500, 7000))
 
     pdf_001 = get_model(obs=obs, kind='s+b', suffix='001')
     pdf_001 = _rename_model(pdf = pdf_001, signal = 'bpkpee_001', background = 'comb_001')
@@ -98,13 +98,13 @@ def test_two_regions(tmp_path : Path) -> None:
     nll_002 = zfit.loss.ExtendedUnbinnedNLL(data=dat_002, model=pdf_002)
 
     cfg_nll_001 = NLLConf(
-        nll         = nll_001, 
-        selection   = _SEL_CFG, 
+        nll         = nll_001,
+        selection   = _SEL_CFG,
         constraints = [])
 
     cfg_nll_002 = NLLConf(
-        nll         = nll_002, 
-        selection   = _SEL_CFG, 
+        nll         = nll_002,
+        selection   = _SEL_CFG,
         constraints = [])
 
     rk_ee_br1   = Region(
@@ -124,7 +124,7 @@ def test_two_regions(tmp_path : Path) -> None:
     with goc.GofCalculator.disabled(True),\
          Cache.cache_root(path = tmp_path):
         data = gut.load_data(
-            package='fitter_data', 
+            package='fitter_data',
             fpath  ='tests/fits/two_regions.yaml')
 
         cfg  = FitModelConf(**data)
@@ -140,7 +140,7 @@ def test_two_regions_shared(tmp_path : Path) -> None:
     '''
     Test simultaneous fit with two regions
     '''
-    obs     = zfit.Space(obs = 'Mass', limits = (4500, 7000)) 
+    obs     = zfit.Space(obs = 'Mass', limits = (4500, 7000))
     nsig    = zfit.param.Parameter('nsig', 0, 0, 1000_000)
 
     pdf_001 = get_model(obs=obs, kind='s+b', suffix='001', nsig = nsig)
@@ -154,13 +154,13 @@ def test_two_regions_shared(tmp_path : Path) -> None:
     nll_002 = zfit.loss.ExtendedUnbinnedNLL(data=dat_002, model=pdf_002)
 
     cfg_nll_001 = NLLConf(
-        nll         = nll_001, 
-        selection   = _SEL_CFG, 
+        nll         = nll_001,
+        selection   = _SEL_CFG,
         constraints = [])
 
     cfg_nll_002 = NLLConf(
-        nll         = nll_002, 
-        selection   = _SEL_CFG, 
+        nll         = nll_002,
+        selection   = _SEL_CFG,
         constraints = [])
 
     rk_ee_br1   = Region(
@@ -180,7 +180,7 @@ def test_two_regions_shared(tmp_path : Path) -> None:
     with goc.GofCalculator.disabled(True),\
          Cache.cache_root(path = tmp_path):
         data = gut.load_data(
-            package='fitter_data', 
+            package='fitter_data',
             fpath  ='tests/fits/two_regions.yaml')
 
         cfg  = FitModelConf(**data)
@@ -204,8 +204,8 @@ def test_with_constraints(tmp_path : Path) -> None:
     cons  = Constraint1D(**_CONSTRAINTS)
 
     cfg_nll = NLLConf(
-        nll         = nll, 
-        selection   = _SEL_CFG, 
+        nll         = nll,
+        selection   = _SEL_CFG,
         constraints = [cons])
 
     rk_ee_br12  = Region(
@@ -246,8 +246,8 @@ def test_with_toys(ntoys : int, tmp_path : Path) -> None:
     nll = zfit.loss.ExtendedUnbinnedNLL(data=dat, model=pdf)
 
     cfg_nll = NLLConf(
-        nll         = nll, 
-        selection   = _SEL_CFG, 
+        nll         = nll,
+        selection   = _SEL_CFG,
         constraints = [])
 
     rk_ee_br12  = Region(

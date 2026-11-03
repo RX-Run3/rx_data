@@ -16,7 +16,7 @@ from dmu                   import LogLevels, LogStore
 from dmu.generic           import hashing
 from dmu.stats             import KDEConf
 from dmu.stats             import zfit
-from dmu.stats             import ZFitPlotter 
+from dmu.stats             import ZFitPlotter
 from dmu.stats             import is_pdf_usable
 from dmu.stats             import utilities as sut
 from dmu.rdataframe        import utilities as rut
@@ -31,7 +31,7 @@ from rx_common             import Component, Cuts, Qsq, Trigger, Mass, CCbarComp
 from rx_selection          import selection     as sel
 
 from .configs                  import CCbarConf, CCbarWeight
-from .inclusive_decays_weights import read_weight 
+from .inclusive_decays_weights import read_weight
 from .inclusive_sample_weights import Reader as SampleWeightReader
 
 log=LogStore.add_logger('fitter:prec')
@@ -49,7 +49,7 @@ class CharmoniumComponent(BaseModel, frozen = True):
     model_config = ConfigDict(arbitrary_types_allowed = True)
 
     name: str
-    cfg : KDEConf 
+    cfg : KDEConf
     obs : zobs
     '''
     Normalization observable
@@ -78,7 +78,7 @@ class CharmoniumComponent(BaseModel, frozen = True):
             norm      = self.obs,
             obs       = self._extended_obs,
             data      = self.mass,
-            weights   = self.wgt, 
+            weights   = self.wgt,
             padding   = self.cfg.padding.value,
             bandwidth = self.cfg.bandwidth)
 
@@ -102,7 +102,7 @@ class CharmoniumComponent(BaseModel, frozen = True):
         limits  = min_obs, max_obs
 
         obs = zfit.Space(
-            obs   = self.obs.obs, 
+            obs   = self.obs.obs,
             label = self.obs.label,
             limits= limits)
 
@@ -120,7 +120,7 @@ class CharmoniumComponent(BaseModel, frozen = True):
     @property
     def nentries(self) -> int:
         '''
-        Returns 
+        Returns
         ------------
         Number of entries in observable range
         '''
@@ -132,7 +132,7 @@ class CharmoniumComponent(BaseModel, frozen = True):
 # ------------------------------
 class CCbarModel(BaseModel, frozen = True):
     '''
-    Class meant to represent PDF meant to model all the charmonium components 
+    Class meant to represent PDF meant to model all the charmonium components
     '''
     model_config = ConfigDict(arbitrary_types_allowed = True)
     # -------------------------
@@ -141,7 +141,7 @@ class CCbarModel(BaseModel, frozen = True):
     '''
     Normalization observable
     '''
-    models    : list[CharmoniumComponent] 
+    models    : list[CharmoniumComponent]
     fractions : list[float]
     # -------------------------
     @property
@@ -197,21 +197,21 @@ class CCbarModel(BaseModel, frozen = True):
 
             return kde_copy
 
-        fractions = [ 
-            fraction for model, fraction in zip(self.models, self.fractions, strict = True) 
+        fractions = [
+            fraction for model, fraction in zip(self.models, self.fractions, strict = True)
             if model.pdf is not None ]
 
         arrays : dict[str,numpy.ndarray] = dict()
         for attr_name in _MODEL_ATTRS:
-            arrays[attr_name] = getattr(self, attr_name) 
+            arrays[attr_name] = getattr(self, attr_name)
 
         norm_fractions = [ fraction / sum(fractions) for fraction in fractions ]
-        
+
         log.debug('Adding PDFs')
         pdf  = zfit.pdf.SumPDF(
             obs  = self.obs,
             norm = self.obs,
-            pdfs = pdfs, 
+            pdfs = pdfs,
             fracs= norm_fractions)
 
         for name, array in arrays.items():
@@ -333,7 +333,7 @@ class PRec(Cache):
         -----------------
         rdf       : ROOT dataframe before selection
         uid       : Unique identifier of dataframe
-        component : Fit component for which selection is needed 
+        component : Fit component for which selection is needed
 
         Returns
         -----------------
@@ -343,8 +343,8 @@ class PRec(Cache):
         - Updated Unique identifier that takes into account the selection
         '''
         d_sel      = sel.selection(
-            trigger=self._trig, 
-            q2bin  =self._q2bin, 
+            trigger=self._trig,
+            q2bin  =self._q2bin,
             process=component)
 
         d_sel[Cuts.mass] = '(1)'
@@ -360,8 +360,8 @@ class PRec(Cache):
         return rdf, uid
     # ----------------------
     def __save_cutflow(
-        self, 
-        report    : RDF.RCutFlowReport, 
+        self,
+        report    : RDF.RCutFlowReport,
         sample    : str,
         selection : dict[Cuts,str]) -> None:
         '''
@@ -433,8 +433,8 @@ class PRec(Cache):
         return d_df
     #-----------------------------------------------------------
     def __add_dec_weights(
-        self, 
-        sample : str, 
+        self,
+        sample : str,
         df     : pnd.DataFrame) -> pnd.DataFrame:
         '''
         Parameters
@@ -463,7 +463,7 @@ class PRec(Cache):
         return df
     #-----------------------------------------------------------
     def __add_sam_weights(
-        self, 
+        self,
         df : pnd.DataFrame) -> pnd.DataFrame:
         '''
         Parameters
@@ -512,11 +512,11 @@ class PRec(Cache):
     #-----------------------------------------------------------
     def __get_match_str_jpsi(self) -> dict[str,str]:
         '''
-        The Jpsi splitting splits by B kind, i.e. three components, Bd, Bu, Bs 
+        The Jpsi splitting splits by B kind, i.e. three components, Bd, Bu, Bs
 
         Returns
         ------------
-        Dictionary mapping 
+        Dictionary mapping
 
         - Latex string describing process
         - Truth matching string isolating process
@@ -545,7 +545,7 @@ class PRec(Cache):
 
         Returns
         ------------
-        Dictionary mapping 
+        Dictionary mapping
 
         - Latex string describing process
         - Truth matching string isolating process
@@ -554,19 +554,19 @@ class PRec(Cache):
         bp = '(abs(B_TRUEID) == 521)'
         bs = '(abs(B_TRUEID) == 531)'
 
-        psjp     = '(abs(Jpsi_TRUEID) == 443) & (abs(Jpsi_MC_MOTHER_ID) == 100443) & (abs(Jpsi_MC_GD_MOTHER_ID) == 521)' 
+        psjp     = '(abs(Jpsi_TRUEID) == 443) & (abs(Jpsi_MC_MOTHER_ID) == 100443) & (abs(Jpsi_MC_GD_MOTHER_ID) == 521)'
         bp_psjp  = f'{bp} & {psjp}'
 
         neg_psjp = psjp.replace('==', '!=').replace('&' , '|')
         bp_ex    = f'{bp} & ({neg_psjp})'
 
         d_cut : dict[str,str] = {}
-        d_cut[r'$B^+\to \psi(2S)(\to J/\psi+X)H_{s}$'] = bp_psjp 
-        if   self._trig.is_electron: 
+        d_cut[r'$B^+\to \psi(2S)(\to J/\psi+X)H_{s}$'] = bp_psjp
+        if   self._trig.is_electron:
             d_cut[r'$B^+\to c\bar{c}(\to e^+ e^-)H_s$']    = bp_ex
             d_cut[r'$B_d\to c\bar{c}(\to e^+ e^-)H_s$']    = bd
             d_cut[r'$B_s\to c\bar{c}(\to e^+ e^-)H_s$']    = bs
-        elif self._trig.is_muon: 
+        elif self._trig.is_muon:
             d_cut[r'$B^+\to c\bar{c}(\to \mu^+\mu^-)H_s$'] = bp_ex
             d_cut[r'$B_d\to c\bar{c}(\to \mu^+\mu^-)H_s$'] = bd
             d_cut[r'$B_s\to c\bar{c}(\to \mu^+\mu^-)H_s$'] = bs
@@ -584,7 +584,7 @@ class PRec(Cache):
         return arr_wgt
     #-----------------------------------------------------------
     def __model_from_df(
-        self, 
+        self,
         name : str,
         mass : Mass,
         cfg  : KDEConf,
@@ -620,9 +620,9 @@ class PRec(Cache):
             name= name,
             obs = self._obs,
             cfg = cfg,
-            mass= arr_mass, 
-            wgt = arr_wgt, 
-            sam = arr_sam, 
+            mass= arr_mass,
+            wgt = arr_wgt,
+            sam = arr_sam,
             dec = arr_dec)
 
         return model
@@ -639,7 +639,7 @@ class PRec(Cache):
         name    : Latex name of PDF component
         mass    : Mass to be fitted
         df      : DataCorresponding to given ccbar component
-        q2bin   : q2bin for which mdoel is needed 
+        q2bin   : q2bin for which mdoel is needed
 
         Returns
         ------------------
@@ -649,25 +649,25 @@ class PRec(Cache):
 
         model    = self.__model_from_df(
             name = component_name,
-            df   = df, 
+            df   = df,
             cfg  = cfg,
             mass = mass)
 
         plot_name = slugify.slugify(text=component_name, lowercase=False)
 
         self._plot_weights(
-            model   = model, 
-            name    = plot_name, 
-            title   = component_name, 
+            model   = model,
+            name    = plot_name,
+            title   = component_name,
             out_dir = self._out_path)
 
         self._plot_pdf(
-            model  = model, 
+            model  = model,
             title  = component_name,
             name   = plot_name,
             out_dir= self._out_path)
 
-        return model 
+        return model
     #-----------------------------------------------------------
     #-----------------------------------------------------------
     def __yield_in_range(self, model : CharmoniumComponent) -> float:
@@ -678,7 +678,7 @@ class PRec(Cache):
 
         Parameters
         ---------------
-        model: Holding PDF and arrays used to build it 
+        model: Holding PDF and arrays used to build it
 
         Returns
         ---------------
@@ -694,9 +694,9 @@ class PRec(Cache):
         return self.__yield_from_arrays(masses = arr_mass, weights = arr_weight, obs = obs)
     #-----------------------------------------------------------
     def __yield_from_arrays(
-        self, 
-        masses  : numpy.ndarray, 
-        weights : numpy.ndarray, 
+        self,
+        masses  : numpy.ndarray,
+        weights : numpy.ndarray,
         obs     : zobs) -> float:
         '''
         Returns
@@ -709,7 +709,7 @@ class PRec(Cache):
 
         return sum(wgt)
     #-----------------------------------------------------------
-    def __get_full_model(self, d_df : dict[str,pnd.DataFrame]) -> CCbarModel: 
+    def __get_full_model(self, d_df : dict[str,pnd.DataFrame]) -> CCbarModel:
         '''
         Parameters
         -------------------
@@ -733,27 +733,27 @@ class PRec(Cache):
         dfs   = [ df for df in d_df.values() ]
         df    = pnd.concat(objs = dfs, axis = 0)
         model = self.__get_model(
-            mass           = Mass(self._obs.label), 
-            component_name = _MERGED_PDFNAME, 
-            df             = df, 
+            mass           = Mass(self._obs.label),
+            component_name = _MERGED_PDFNAME,
+            df             = df,
             q2bin          = self._q2bin)
 
         merged_model = CCbarModel(
             name      = f'{_MERGED_PDFNAME}_{self._name}',
             obs       = self._obs,
-            models    = [model], 
+            models    = [model],
             fractions = [1])
 
         return merged_model
     #-----------------------------------------------------------
     def __get_full_split_model(
-        self, 
+        self,
         d_df : dict[str,pnd.DataFrame]) -> CCbarModel:
-        all_models: list[CharmoniumComponent] = [ 
+        all_models: list[CharmoniumComponent] = [
             self.__get_model(
-                mass           = Mass(self._obs.label), 
-                component_name = ltex, 
-                df             = df, 
+                mass           = Mass(self._obs.label),
+                component_name = ltex,
+                df             = df,
                 q2bin          = self._q2bin) for ltex, df in d_df.items() ]
 
         models    : list[CharmoniumComponent] = [ model for model in all_models if model.pdf is not None ]
@@ -763,7 +763,7 @@ class PRec(Cache):
         model = CCbarModel(
             name      = f'{_MERGED_PDFNAME}_{self._name}',
             obs       = self._obs,
-            models    = models, 
+            models    = models,
             fractions = fractions)
 
         return model
@@ -791,8 +791,8 @@ class PRec(Cache):
 
         if model.pdf:
             obj = ZFitPlotter(
-                data   = model.mass, 
-                model  = model.pdf, 
+                data   = model.mass,
+                model  = model.pdf,
                 weights= model.wgt)
             obj.run(cfg = self._cfg.plots)
 
@@ -825,7 +825,7 @@ class PRec(Cache):
         plt.close('all')
     #-----------------------------------------------------------
     def _plot_weights(
-        self, 
+        self,
         model   : CCbarModel | CharmoniumComponent,
         name    : str,
         title   : str,
@@ -855,7 +855,7 @@ class PRec(Cache):
         if model.pdf is None:
             return
 
-        text_path = f'{out_dir}/{name}.txt' 
+        text_path = f'{out_dir}/{name}.txt'
         sut.print_pdf(model.pdf, txt_path=text_path)
     #-----------------------------------------------------------
     def get_sum(self, name : str) -> zfit.pdf.SumPDF | _KDEPDF | None:
@@ -881,9 +881,9 @@ class PRec(Cache):
             model= self.__get_full_model(d_df=d_df)
 
             self._plot_weights(
-                model   = model, 
-                name    = plot_name, 
-                title   = name, 
+                model   = model,
+                name    = plot_name,
+                title   = name,
                 out_dir = self._out_path)
 
             self._plot_pdf(
@@ -912,9 +912,9 @@ class PRec(Cache):
             df.to_parquet(path)
 
         self._plot_weights(
-            model   = model, 
-            name    = plot_name, 
-            title   = name, 
+            model   = model,
+            name    = plot_name,
+            title   = name,
             out_dir = self._out_path)
 
         self._plot_pdf(

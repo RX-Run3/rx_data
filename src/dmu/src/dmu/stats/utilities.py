@@ -127,7 +127,7 @@ def range_from_obs(obs : zobs) -> tuple[float,float]:
     lower : float = minx[0][0]
     upper : float = maxx[0][0]
 
-    return lower, upper 
+    return lower, upper
 #-------------------------------------------------------
 def yield_from_zdata(data : zdata) -> float:
     '''
@@ -196,13 +196,13 @@ def _get_const(par : zpar , d_const : None | dict[str, tuple[float,float]]) -> s
     return val
 #-------------------------------------------------------
 def _get_unblinded_vars(
-    s_par   : set[zpar], 
+    s_par   : set[zpar],
     l_blind : list[str]|None = None) -> set[zpar]:
     '''
     Parameters
     -----------------
     s_par  : PDF parameters
-    l_blind: List of regular expressions that will be used to select parameters to blind 
+    l_blind: List of regular expressions that will be used to select parameters to blind
 
     Returns
     -----------------
@@ -380,8 +380,8 @@ def _print_obs(pdf : zpdf) -> list[str]:
     obs  = pdf.space
     nrm  = obs if not isinstance(pdf.norm, zfit.Space) else pdf.norm
 
-    lo_ob, up_ob = range_from_obs(obs = obs)  
-    lo_no, up_no = range_from_obs(obs = nrm)  
+    lo_ob, up_ob = range_from_obs(obs = obs)
+    lo_no, up_no = range_from_obs(obs = nrm)
 
     msg : list[str] = []
     msg.append('---------------------------')
@@ -418,7 +418,7 @@ def _print_component_pdfs(pdf : zpdf) -> list[str]:
     return msg
 #---------------------------------------------
 def save_nll(
-    loss : Loss, 
+    loss : Loss,
     path : Path | None = None) -> Path:
     '''
     Parameters
@@ -527,13 +527,13 @@ def save_fit(
         return
 
     _save_fit_plot(
-        data   =data, 
-        model  =model, 
-        cfg    =plt_cfg, 
+        data   =data,
+        model  =model,
+        cfg    =plt_cfg,
         fit_dir=fit_dir)
 
     pars  = _save_result(
-        res      = res, 
+        res      = res,
         fit_dir  = fit_dir)
 
     df    = data.to_pandas(weightsname=Data.weight_name)
@@ -547,15 +547,15 @@ def save_fit(
     print_pdf(model, txt_path=f'{fit_dir}/post_fit.txt', d_const=d_const)
     pdf_to_tex(
         in_path   = Path(f'{fit_dir}/post_fit.txt'),
-        out_dir   = Path(fit_dir), 
-        d_par     ={'mu' : r'$\mu$'}, 
+        out_dir   = Path(fit_dir),
+        d_par     ={'mu' : r'$\mu$'},
         skip_fixed=True)
 
     return pars
 # ----------------------
 def _save_fit_plot(
-    data   : zdata, 
-    model  : zpdf|None, 
+    data   : zdata,
+    model  : zpdf|None,
     fit_dir: Path,
     cfg    : ZFitPlotterConf) -> None:
     '''
@@ -596,14 +596,14 @@ def _save_fit_plot(
     plt.close()
 #-------------------------------------------------------
 def _save_result(
-    fit_dir : Path, 
+    fit_dir : Path,
     res     : FitResult | None) -> None:
     '''
     Saves result as yaml, JSON, pkl
 
     Parameters
     ---------------
-    nentries: Number of entries or sum of weights, if not None 
+    nentries: Number of entries or sum of weights, if not None
     fit_dir : Directory where fit result will go
     res     : Fit result object
     '''
@@ -688,9 +688,9 @@ def _df_from_lines(l_line : list[str]) -> pnd.DataFrame:
     return df
 #-------------------------------------------------------
 def pdf_to_tex(
-    in_path    : Path, 
+    in_path    : Path,
     out_dir    : Path,
-    d_par      : dict[str,str], 
+    d_par      : dict[str,str],
     skip_fixed : bool = True) -> None:
     '''
     Creates a latex table with the same name as `path` but `txt` extension replaced by `tex`
@@ -712,7 +712,7 @@ def pdf_to_tex(
         if val is None:
             return name
 
-        return val 
+        return val
 
     df = _df_from_lines(l_line)
     df['Parameter']=df.Parameter.apply(_rename)
@@ -732,7 +732,7 @@ def pdf_to_tex(
 
     put.df_to_tex(df, out_dir / out_name)
 #---------------------------------------------
-# Zfit utilities 
+# Zfit utilities
 #---------------------------------------------
 def _reformat_values(d_par : dict, fall_back_error : float|None = None) -> dict:
     '''
@@ -773,7 +773,7 @@ def _reformat_values(d_par : dict, fall_back_error : float|None = None) -> dict:
     return {'value' : value, 'error' : error}
 #-------------------------------------------------------
 def zres_to_cres(
-    res             : zres, 
+    res             : zres,
     fall_back_error : float|None = None) -> DictConfig:
     '''
     Parameters
@@ -809,7 +809,7 @@ def to_float(val : Any) -> float:
     '''
     Parameters
     -------------
-    val: Object to transform/check into a float 
+    val: Object to transform/check into a float
 
     Returns
     -------------
@@ -821,7 +821,7 @@ def to_float(val : Any) -> float:
     return float(val)
 # ----------------------
 def val_from_zres(
-    res  : zres, 
+    res  : zres,
     name : str,
     fall_back : float | None = None) -> float:
     '''
@@ -846,9 +846,9 @@ def val_from_zres(
             return float(par.value().numpy())
 
         # TODO: Remove ignore when issue be fixed:
-        # https://github.com/zfit/zfit/discussions/684#discussioncomment-15376203 
+        # https://github.com/zfit/zfit/discussions/684#discussioncomment-15376203
         if isinstance(par,  str):
-            val = data['value'] 
+            val = data['value']
             return float(val) # type:ignore
 
     if fall_back is not None:
@@ -911,7 +911,7 @@ def find_model(models : Sequence[zpdf], name : str) -> zpdf:
 
     Returns
     -----------------
-    Found model or will raise value error if not found 
+    Found model or will raise value error if not found
     '''
     for pdf in models:
         if pdf.name == name:
@@ -929,7 +929,7 @@ def find_model(models : Sequence[zpdf], name : str) -> zpdf:
     raise ValueError(f'PDF {name} not found')
 # ----------------------
 def replace_model(
-    models : list[zpdf], 
+    models : list[zpdf],
     name   : str,
     pdf    : zpdf) -> list[zpdf]:
     '''
@@ -961,7 +961,7 @@ def replace_model(
             continue
 
         models[idx] = zfit.pdf.SumPDF(
-            pdfs, 
+            pdfs,
             name  = _pdf.name)
 
         return models
@@ -1054,7 +1054,7 @@ def merge_sum_models(
     return zfit.pdf.SumPDF(pdfs = merged_components, obs = obs)
 #---------------------------------------------
 def _merge_by_prefix(
-    obs      : zobs, 
+    obs      : zobs,
     prefixes : Sequence[str],
     models   : list[zfit.pdf.SumPDF]) -> zfit.pdf.SumPDF:
     '''
@@ -1076,14 +1076,14 @@ def _merge_by_prefix(
         if len(pdfs) == 1:
             component = pdfs[0]
         else:
-            component = zfit.pdf.SumPDF(pdfs = pdfs, obs = obs, name = prefix) 
+            component = zfit.pdf.SumPDF(pdfs = pdfs, obs = obs, name = prefix)
 
         components.append(component)
 
-    return zfit.pdf.SumPDF(pdfs = components, obs = obs) 
+    return zfit.pdf.SumPDF(pdfs = components, obs = obs)
 #---------------------------------------------
 def _group_components(
-    models   : list[zfit.pdf.SumPDF], 
+    models   : list[zfit.pdf.SumPDF],
     prefixes : Sequence[str]) -> dict[str,list[zpdf]]:
     '''
     Group components by prefix, i.e. all components with a given prefix
@@ -1122,7 +1122,7 @@ def _group_components(
     return groups
 #---------------------------------------------
 def _merge_by_name(
-    obs    : zobs, 
+    obs    : zobs,
     models : list[zfit.pdf.SumPDF]) -> list[zfit.pdf.SumPDF]:
     '''
     Parameters
@@ -1149,7 +1149,7 @@ def _merge_by_name(
         pdfs = []
         for model in models:
             [pdf] = [ component for component in model.pdfs if component.name == name ]
-        
+
             pdfs.append(pdf)
 
         merged_component = zfit.pdf.SumPDF(pdfs = pdfs, obs = obs, name = name)
@@ -1158,7 +1158,7 @@ def _merge_by_name(
     return merged_components
 #---------------------------------------------
 def _merge_by_order(
-    obs    : zobs, 
+    obs    : zobs,
     models : list[zfit.pdf.SumPDF]) -> list[zfit.pdf.SumPDF]:
     '''
     Parameters

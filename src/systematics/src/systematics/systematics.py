@@ -44,7 +44,7 @@ class Calculator[PDF : zpdf.BasePDF ]:
         cfg : Config object controlling toy generation
         '''
         self._poi = poi
-        self._nll = nll 
+        self._nll = nll
         self._res = res
         self._cns = cns
         self._cfg = cfg
@@ -176,7 +176,7 @@ class Calculator[PDF : zpdf.BasePDF ]:
                 res = self._res)
 
             df = mkr.get_parameter_information(
-                name     = f'{label}_b{index:03d}', 
+                name     = f'{label}_b{index:03d}',
                 samplers = self._sam)
 
             df['bts'] = index
@@ -204,13 +204,13 @@ class Calculator[PDF : zpdf.BasePDF ]:
         # bootstrapped NLL from original one
         models = [ model for model in self._nll.model ]
         pdf    = sut.find_model(
-            models = models, 
+            models = models,
             name   = name)
 
         pdf   = sut.bootstrap_kde(pdf = pdf, index = index)
         models= sut.replace_model(
-            models = models, 
-            name   = name, 
+            models = models,
+            name   = name,
             pdf    = pdf)
 
         nll = self._nll.create_new(model = models)

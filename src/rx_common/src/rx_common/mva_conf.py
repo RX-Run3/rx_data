@@ -11,7 +11,7 @@ _UNINIT_NAME : Final[str]     = 'default'
 
 UNINIT_VAL  : Final[float]    = -999.
 '''Value used as placeholder for MVAWp that are meant to
-represent the absence of a working point, e.g. such that 
+represent the absence of a working point, e.g. such that
 default analysis values are used'''
 
 _MULT_FACTOR : Final[float]    = 1000.
@@ -63,15 +63,15 @@ class MVAWp(RootModel[float|tuple[float,float]]):
             raise ValueError(f'Could not find cut in: {wp}')
 
         return cls(root = target.val)
-    # -------------    
+    # -------------
     @property
     def lower_str(self) -> str:
         return f'{self.lower:.03f}'
-    # -------------    
+    # -------------
     @property
     def upper_str(self) -> str:
         return f'{self.upper:.03f}'
-    # -------------    
+    # -------------
     @property
     def lower(self) -> float:
         '''
@@ -84,20 +84,20 @@ class MVAWp(RootModel[float|tuple[float,float]]):
             return self.root[0]
 
         raise ValueError(f'Invalid WP: {self.root}')
-    # -------------    
+    # -------------
     @property
     def upper(self) -> float:
         '''
         Upperbound of working point
         '''
         if isinstance(self.root, float):
-            return 1.0 
+            return 1.0
 
         if isinstance(self.root, tuple):
             return self.root[1]
 
         raise ValueError(f'Invalid WP: {self.root}')
-    # -------------    
+    # -------------
     @classmethod
     def from_str(cls, val : str) -> Self:
         '''
@@ -111,8 +111,8 @@ class MVAWp(RootModel[float|tuple[float,float]]):
         '''
         if '-' in val:
             lower, upper = val.split('-')
-            lo     = cls.__str_to_float(val = lower) 
-            hi     = cls.__str_to_float(val = upper) 
+            lo     = cls.__str_to_float(val = lower)
+            hi     = cls.__str_to_float(val = upper)
             values = lo, hi
 
             return cls(values)
@@ -120,11 +120,11 @@ class MVAWp(RootModel[float|tuple[float,float]]):
         flt_val = cls.__str_to_float(val = val)
 
         return cls(flt_val)
-    # -------------    
+    # -------------
     @classmethod
     def __str_to_float(cls, val : str) -> float:
         '''
-        Takes string representing float, returns float 
+        Takes string representing float, returns float
         '''
         if not val.isnumeric():
             raise ValueError(f'{val} is not numeric')
@@ -133,7 +133,7 @@ class MVAWp(RootModel[float|tuple[float,float]]):
             raise ValueError(f'{val} expected to have {_LEN_STR} decimals')
 
         return float(val) / _MULT_FACTOR
-    # -------------    
+    # -------------
     @model_validator(mode = 'before')
     @classmethod
     def validate_input(cls, data):
@@ -142,7 +142,7 @@ class MVAWp(RootModel[float|tuple[float,float]]):
             return wp.root
 
         return data
-    # -------------    
+    # -------------
     @model_validator(mode = 'after')
     def validate_value(self) -> 'MVAWp':
         if isinstance(self.root, (float, int)):
@@ -161,11 +161,11 @@ class MVAWp(RootModel[float|tuple[float,float]]):
         self._validate_prob(prob = high)
 
         return self
-    # -------------    
+    # -------------
     def _validate_prob(self, prob : float):
         if 0 <= prob <= 1:
             return
-        
+
         raise ValueError(f'Invalid probability: {prob}')
     # ----------------------
     def get_cut(self, name : str) -> str:
@@ -180,7 +180,7 @@ class MVAWp(RootModel[float|tuple[float,float]]):
         min_val, max_val = self.root
 
         return f'({name} >= {min_val}) && ({name} < {max_val})'
-    # -------------    
+    # -------------
     @property
     def name(self):
         '''
@@ -197,7 +197,7 @@ class MVAWp(RootModel[float|tuple[float,float]]):
         hig = int(_MULT_FACTOR * self.root[1])
 
         return f'{low:04d}-{hig:04d}'
-    # -------------    
+    # -------------
     def __str__(self):
         if isinstance(self.root, float):
             return f'{self.root:.3f}'
@@ -205,7 +205,7 @@ class MVAWp(RootModel[float|tuple[float,float]]):
         low, high  = self.root # type: ignore[misc]
 
         return f'{low:.2f}-{high:.2f}'
-    # -------------    
+    # -------------
     def __format__(self, spec : str):
         return format(str(self), spec)
 # ---------------------

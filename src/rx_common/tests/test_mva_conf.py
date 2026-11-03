@@ -51,10 +51,10 @@ def test_from_float():
 # ----------------------------------------
 def test_from_tuple():
     '''
-    Test creating a config from tuple 
+    Test creating a config from tuple
     '''
     cfg = MVAConf.from_values(
-        cmb = (_LOWER_BOUND, _UPPER_BOUND), 
+        cmb = (_LOWER_BOUND, _UPPER_BOUND),
         prc = _LOWER_BOUND)
 
     log.info('')
@@ -71,17 +71,17 @@ def test_str_to_wp(str_val : str):
     # NOTE: Initialize through string only for tests
     # use from_str for actual code.
     # Tests needs to check that a string will be
-    # usable as input to MVAWp 
+    # usable as input to MVAWp
     wp_2 = MVAWp(str_val) # type: ignore
 
     assert wp_1 == wp_2
 
     if str_val == _STR_VALS[0]:
-        assert wp_1.lower == _LOWER_BOUND 
-        assert wp_1.upper == _MAX_BOUND 
+        assert wp_1.lower == _LOWER_BOUND
+        assert wp_1.upper == _MAX_BOUND
 
     if str_val == _STR_VALS[1]:
-        assert wp_1.lower == _LOWER_BOUND 
+        assert wp_1.lower == _LOWER_BOUND
         assert wp_2.upper == _UPPER_BOUND
 
     # Invalid string raises

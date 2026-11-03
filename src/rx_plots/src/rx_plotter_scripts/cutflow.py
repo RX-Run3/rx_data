@@ -29,12 +29,12 @@ class Data:
 
     chanel    : str
     ncores    : int
-    component : Component 
-    trigger   : Trigger 
-    q2_bin    : Qsq 
+    component : Component
+    trigger   : Trigger
+    q2_bin    : Qsq
     config    : str
     plt_dir   : str
-    cfg       : DictConfig 
+    cfg       : DictConfig
     d_def     : dict[str,str] = {}
 
     l_ee_trees = ['brem_track_2', 'ecalo_bias']
@@ -44,7 +44,7 @@ class Data:
 def _apply_definitions(rdf : RDF.RNode) -> RDF.RNode:
     if 'definitions' not in Data.cfg:
         return rdf
-    
+
     for name, expr in Data.cfg.definitions.items():
         good_name = naming.clean_special_characters(name=name)
         rdf       = rdf.Define(good_name, expr)
@@ -53,8 +53,8 @@ def _apply_definitions(rdf : RDF.RNode) -> RDF.RNode:
 # ---------------------------------
 def _apply_selection(rdf : RDF.RNode) -> tuple[RDF.RNode, dict[Cuts,str]]:
     d_sel = selection.selection(
-        trigger=Data.trigger, 
-        q2bin  =Data.q2_bin, 
+        trigger=Data.trigger,
+        q2bin  =Data.q2_bin,
         process=Data.component)
 
     if 'selection' in Data.cfg:
@@ -168,7 +168,7 @@ def _plot(d_rdf : dict[str,tuple[RDF.RNode, dict[Cuts,str]]]) -> None:
 
     gut.dump_json(
         exists_ok= True,
-        data     = sels, 
+        data     = sels,
         path     = f'{cfg.saving.plt_dir}/selection.json')
 
     ptr=Plotter1D(d_rdf=rdfs, cfg=cfg)

@@ -99,7 +99,7 @@ def get_last_version(dir_path: str | Path, version_only: bool = True) -> str | P
     if not version_only:
         return path
 
-    return path.name 
+    return path.name
 #---------------------------------------
 def get_latest_file(dir_path : str, wc : str) -> str:
     '''Will find latest file in a given directory

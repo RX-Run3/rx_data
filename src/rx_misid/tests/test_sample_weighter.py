@@ -60,7 +60,7 @@ def _get_dataframe(
     else:
         raise ValueError(f'Invalid sample: {sample}')
 
-    df['block' ]      = block 
+    df['block' ]      = block
     df['hadron']      = numpy.random.choice(particles   , size=Data.nentries)
     df['weight']      = numpy.random.choice([1, 10]     , size=Data.nentries)
     df['L1_HASBREM' ] = numpy.random.choice(a = [0, 1], p = [0.5, 0.5], size = Data.nentries)
@@ -91,7 +91,7 @@ def _check_weights(df : pnd.DataFrame) -> None:
     -------------
     df: Pandas dataframe to be checked
     '''
-    
+
     assert 'pid_weights' in df.columns
     assert 'pid_eff_l1'  in df.columns
     assert 'pid_eff_l2'  in df.columns
@@ -109,7 +109,7 @@ def _check_blocks(
     Parameters
     -------------
     df           : DataFrame to check
-    arr_block_inp: Array of blocks in the input data 
+    arr_block_inp: Array of blocks in the input data
     '''
     arr_block_out = df['block'].to_numpy()
 
@@ -139,9 +139,9 @@ def _closure_check(
         _check_maps(hist_calc=hist, hist_pidc=pidc)
 # ----------------------
 def _get_pidc_map(
-    has_brem : int, 
-    block    : int, 
-    sample   : str, 
+    has_brem : int,
+    block    : int,
+    sample   : str,
     is_sig   : bool) -> numpy.ndarray|None:
     '''
     Parameters
@@ -152,9 +152,9 @@ def _get_pidc_map(
 
     Returns
     -------------
-    Calibration map from PIDCalib as numpy array 
+    Calibration map from PIDCalib as numpy array
     '''
-    if   sample == 'Bu_KplKplKmn_eq_sqDalitz_DPC': 
+    if   sample == 'Bu_KplKplKmn_eq_sqDalitz_DPC':
         particle = 'K'
         cut      = '(PROBNN_E>0.2)&(DLLe>3.0)' if is_sig else '((PROBNN_E<0.2)|(DLLe<3.0))&(DLLe>-1.0)&(K_PROBNN_K>0.1)'
     elif sample == 'Bu_piplpimnKpl_eq_sqDalitz_DPC':
@@ -180,13 +180,13 @@ def _get_pidc_map(
     return arr
 # ----------------------
 def _check_maps(
-    hist_calc : numpy.ndarray, 
-    hist_pidc : numpy.ndarray) -> None: 
+    hist_calc : numpy.ndarray,
+    hist_pidc : numpy.ndarray) -> None:
     '''
     Parameters
     -------------
     hist_calc: Efficiency map calculated from weighted data
-    hist_pidc: Efficiency map from PIDCalib 
+    hist_pidc: Efficiency map from PIDCalib
     '''
     hist_diff = hist_pidc - hist_calc
     hist_diff = numpy.where(hist_diff < 1e-7, 0, hist_diff)
@@ -250,8 +250,8 @@ def _get_binning() -> tuple[list[float], list[float]]:
     'Bu_KplKplKmn_eq_sqDalitz_DPC',
     'Bu_piplpimnKpl_eq_sqDalitz_DPC'])
 def test_simple(
-    is_sig : bool, 
-    sample : str, 
+    is_sig : bool,
+    sample : str,
     block  : int):
     '''
     Parameters

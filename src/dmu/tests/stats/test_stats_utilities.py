@@ -166,8 +166,8 @@ def test_pdf_to_tex(tmp_path : Path):
     in_path = Path(str(data))
 
     pdf_to_tex(
-        in_path = in_path, 
-        out_dir = tmp_path, 
+        in_path = in_path,
+        out_dir = tmp_path,
         d_par   = d_par)
 #----------------------------------
 def test_is_pdf_usable():
@@ -245,7 +245,7 @@ def test_save_fit_param(tmp_path : Path):
 #----------------------------------
 def test_save_fit_nomodel(tmp_path : Path):
     '''
-    Tests saving fit without model 
+    Tests saving fit without model
     '''
     pdf = _get_pdf(kind='simple')
     dat = pdf.create_sampler(n=1000)
@@ -280,7 +280,7 @@ def test_range_from_obs():
     obs        = zfit.Space('xyz', limits=(MIN, MAX))
     minx, maxx = sut.range_from_obs(obs=obs)
 
-    assert minx == MIN 
+    assert minx == MIN
     assert maxx == MAX
 #----------------------------------
 @pytest.mark.parametrize('weighted', [True, False])

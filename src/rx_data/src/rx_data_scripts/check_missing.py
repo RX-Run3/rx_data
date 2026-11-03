@@ -24,7 +24,7 @@ FileStructure = dict[str,SampStructure]
 # ---------------------------------
 class Data:
     '''
-    Used to store shared information 
+    Used to store shared information
     '''
     only_friend     : str|None
     friends_skipped : list[str]
@@ -63,7 +63,7 @@ def _get_data_dir(project : str) -> Path:
 def _parse_args() -> None:
     parser = argparse.ArgumentParser(description='Script meant to check for missing friend trees')
     parser.add_argument('-p', '--project'  , type=str , help='E.g. rk', choices=['rk', 'rkst', 'rk_nopid', 'rkst_nopid'], required=True)
-    parser.add_argument('-o', '--only'     , type=str , help='Do only these friend tree, optional') 
+    parser.add_argument('-o', '--only'     , type=str , help='Do only these friend tree, optional')
     parser.add_argument('-s', '--skip_sam' , nargs='+', help='Samples to skip', default=[])
     parser.add_argument('-l', '--log_level', type=int , help='Logging level', default=20, choices=[10, 20, 30])
 
@@ -101,7 +101,7 @@ def _paths_from_sample(friend_path : Path, version : str) -> set[Path]:
     if len(s_path) == 0:
         log.warning(f'No file found in: {ver_dir}')
 
-    return s_path 
+    return s_path
 # ---------------------------------
 def _info_from_fname(fname : str) -> tuple[str,str]:
     '''
@@ -133,7 +133,7 @@ def _paths_to_dict(s_path : set[Path]) -> SampStructure:
     '''
     Parameters
     ---------------------
-    s_path : Set paths associated to friend trees 
+    s_path : Set paths associated to friend trees
 
     Returns
     ---------------------
@@ -203,7 +203,7 @@ def _find_paths() -> FileStructure:
 
     friend -> { sample -> { trigger -> list[file_name] } }
 
-    e.g. 
+    e.g.
 
     mva    -> { DATA_24... -> { HLT2... -> [f1.root, f2.root...] } }
     '''
@@ -242,8 +242,8 @@ def _get_sample_files(sample : dict[str,list[Path]]) -> set[Path]:
     '''
     Parameters
     -----------------
-    sample : Dictionary with 
-            key  : HLT2 trigger name 
+    sample : Dictionary with
+            key  : HLT2 trigger name
             Value: List of names of ROOT files
     Returns
     -----------------
@@ -262,7 +262,7 @@ def _sample_difference(
     Parameters
     --------------------
     sample_*: Dictionary where:
-        key  : Hlt2 trigger name 
+        key  : Hlt2 trigger name
         Value: List of paths to ROOT files
 
     1 represents the main tree, 2 represents the friend tree
@@ -287,7 +287,7 @@ def _sample_difference(
 
     # Check differences for common files
     d_stat   = _get_file_stat(
-        main  = s_path_1, 
+        main  = s_path_1,
         friend= s_path_2)
 
     d_diff.update(d_stat)
@@ -295,7 +295,7 @@ def _sample_difference(
     return dict(sorted(d_diff.items()))
 # ----------------------
 def _get_file_stat(
-    main   : set[Path], 
+    main   : set[Path],
     friend : set[Path]) -> StatsInfo:
     '''
     Parameters
@@ -327,7 +327,7 @@ def _get_file_stat(
 
         d_stats[str(friend_path)] = tup_stat
 
-    return d_stats 
+    return d_stats
 # ----------------------
 def _get_stats(main_path : Path, friend_path : Path) -> tuple[int,int]|None:
     '''

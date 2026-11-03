@@ -8,12 +8,12 @@ from contextlib import contextmanager
 from pathlib    import Path
 from dmu        import LogStore
 from dmu.stats  import FitResult
-from rx_common  import Block, Brem, Component, Trigger 
+from rx_common  import Block, Brem, Component, Trigger
 from rx_common  import Qsq
 
 from .fit_metadata import FitMetadata
 from .fit_summary  import FitSummary
-from rx_common     import MVAWp 
+from rx_common     import MVAWp
 
 log=LogStore.add_logger('fitter:parameter_reader')
 
@@ -27,12 +27,12 @@ class ParameterReader:
     _pars_path : Path | None = None
     # ----------------------
     def __init__(
-        self, 
+        self,
         name : str | None = None):
         '''
         Parameters
         -------------
-        name : Fit name, e.g. mid_window 
+        name : Fit name, e.g. mid_window
         '''
         if name is None and self._pars_path is None:
             raise ValueError('No name was passed and no path to parameters exists')
@@ -55,17 +55,17 @@ class ParameterReader:
         '''
         if self._pars_path:
             log.info(f'Using user defined path: {self._pars_path}')
-            return FitSummary.from_json(path = self._pars_path) 
+            return FitSummary.from_json(path = self._pars_path)
 
         pars_path = _ANADIR / f'fits/data/{name}/fit_summary.json'
         log.debug(f'Using path: {pars_path}')
         if not pars_path.exists():
             raise FileNotFoundError(f'Cannot find: {pars_path}')
 
-        return FitSummary.from_json(path = pars_path) 
+        return FitSummary.from_json(path = pars_path)
     # ----------------------
     def __call__(
-        self, 
+        self,
         comp    : Component,
         brem    : Brem,
         block   : Block,
@@ -79,7 +79,7 @@ class ParameterReader:
         comp    : Component associated to fitted dataset
         brem    : Brem category, e.g. 0, 1, 2
         block   : Block number in 2024, e.g. 1, 2, 3...8
-        cmb/prc : MVA working point 
+        cmb/prc : MVA working point
         q2bin   : E.g. jpsi
         trigger : HLT2 trigger, used to pick channel, etc
 
@@ -101,14 +101,14 @@ class ParameterReader:
 
         fres = self._summary.at(meta)
 
-        return fres 
+        return fres
     # ----------------------
     @classmethod
     def inputs_from(cls, pars_path : Path):
         '''
         Parameters
         -------------
-        pars_path: Path to parquet file with parameters 
+        pars_path: Path to parquet file with parameters
 
         Returns
         -------------

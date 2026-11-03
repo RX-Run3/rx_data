@@ -51,7 +51,7 @@ def test_simple(value : str) -> None:
     '''
     Test where overriden path
     '''
-    path = _ANADIR / f'fits/data/{value}' 
+    path = _ANADIR / f'fits/data/{value}'
 
     meta = FitMetadata.from_pars_path(path = path)
     fres = FitResult.from_json(path = path)
@@ -66,7 +66,7 @@ def test_rare(value : str) -> None:
     '''
     Test where overriden path
     '''
-    path = _ANADIR / f'fits/data/{value}' 
+    path = _ANADIR / f'fits/data/{value}'
     meta = FitMetadata.from_pars_path(path = path)
     fres = FitResult.from_json(path = path)
 
@@ -151,7 +151,7 @@ def test_at(value : str) -> None:
     '''
     Test at method
     '''
-    path = _ANADIR / f'fits/data/{value}' 
+    path = _ANADIR / f'fits/data/{value}'
 
     meta = FitMetadata.from_pars_path(path = path)
     fres = FitResult.from_json(path = path)
@@ -167,7 +167,7 @@ def test_grid(value : str) -> None:
     Test make_grid method
     '''
     comp = Component.bpkpjpsiee
-    path = _ANADIR / f'fits/data/{value}' 
+    path = _ANADIR / f'fits/data/{value}'
 
     meta = FitMetadata.from_pars_path(path = path)
     fres = FitResult.from_json(path = path)

@@ -23,16 +23,16 @@ class Project(StrEnum):
     '''
     test          = auto() # needed for tests
     # ---------------
-    rk            = auto() 
-    rk_no_pid     = auto() 
-    rk_no_refit   = auto() 
-    rk_sim10d     = auto() 
+    rk            = auto()
+    rk_no_pid     = auto()
+    rk_no_refit   = auto()
+    rk_sim10d     = auto()
     rk_bad_ecal   = auto()
     # ---------------
-    rkst          = auto() 
-    rkst_no_pid   = auto() 
-    rkst_no_refit = auto() 
-    rkst_sim10d   = auto() 
+    rkst          = auto()
+    rkst_no_pid   = auto()
+    rkst_no_refit = auto()
+    rkst_sim10d   = auto()
     rkst_bad_ecal = auto()
     # --------------------------------------------
     @property
@@ -144,7 +144,7 @@ class Project(StrEnum):
         key: Denotes alternative version of this project, e.g. bad_ecal
         '''
         if key is None:
-            return None 
+            return None
 
         if key == AlternativeProject.no_pid   and self == Project.rk:
             return Project.rk_no_pid

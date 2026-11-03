@@ -99,8 +99,8 @@ def _get_pdf():
     return pdf
 #-------------------------------------
 def _save_fit(
-    test     : str, 
-    kind     : str, 
+    test     : str,
+    kind     : str,
     out_path : Path):
     plot_path = out_path / f'{test}_{kind}.png'
 
@@ -139,15 +139,15 @@ def test_1d_constrain():
     Fits with constraints to parameters
     '''
     mu  = Constraint1D(
-        kind = ConstraintType.gauss, 
-        name = 'mu', 
-        mu   = 5.0, 
+        kind = ConstraintType.gauss,
+        name = 'mu',
+        mu   = 5.0,
         sg   = 1.0)
 
     sg  = Constraint1D(
         kind = ConstraintType.gauss,
-        name = 'sg', 
-        mu   = 1.0, 
+        name = 'sg',
+        mu   = 1.0,
         sg   = 0.1)
 
     fcf = FitConf.default()
@@ -167,15 +167,15 @@ def test_nd_constrain():
     Fits with constraints to parameters
     '''
     mu  = Constraint1D(
-        kind = ConstraintType.gauss, 
-        name = 'mu', 
-        mu   = 5.0, 
+        kind = ConstraintType.gauss,
+        name = 'mu',
+        mu   = 5.0,
         sg   = 1.0)
 
     sg  = Constraint1D(
         kind = ConstraintType.gauss,
-        name = 'sg', 
-        mu   = 1.0, 
+        name = 'sg',
+        mu   = 1.0,
         sg   = 0.1)
 
     cons = Constraints(root = {'mu' : mu, 'sg' : sg}).merge(name = 'mu_sg_const')

@@ -19,7 +19,7 @@ def initialize():
     LogStore.set_level('dmu:fsystem:fcopy', 10)
 # ----------------------
 def _make_paths(
-    dir_path  : Path, 
+    dir_path  : Path,
     make_file : bool,
     number    : int,
     size      : int = 1) -> list[Path]:

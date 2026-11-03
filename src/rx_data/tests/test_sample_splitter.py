@@ -11,7 +11,7 @@ from dmu.generic import Mode
 
 # -------------------------------------
 def test_simple(tmp_path : Path):
-    out_path = tmp_path / 'file.json' 
+    out_path = tmp_path / 'file.json'
 
     # Fail to load missing file
     with pytest.raises(ValueError):

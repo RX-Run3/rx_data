@@ -20,7 +20,7 @@ from hepstats.splot.exceptions    import ModelNotFittedToData
 from hepstats.splot.warnings      import AboveToleranceWarning
 
 _ATOL_WARNING       : Final[float] = 5e-3 # If the 'mlsr' is below this value, it will show a warning
-_MIN_YIELD_FRACTION : Final[float] = 1e-2 # Components with less than this fraction 
+_MIN_YIELD_FRACTION : Final[float] = 1e-2 # Components with less than this fraction
                                           # of the data will be considered small
 # --------------------------------------------------------------------------------
 def is_sum_of_extended_pdfs(model) -> bool:
@@ -38,9 +38,9 @@ def is_sum_of_extended_pdfs(model) -> bool:
     return all(m.is_extended for m in model.get_models()) and model.is_extended
 # --------------------------------------------------------------------------------
 def compute_sweights(
-    model : zfit.pdf.SumPDF, 
-    x: np.ndarray, 
-    *, 
+    model : zfit.pdf.SumPDF,
+    x: np.ndarray,
+    *,
     atol_exceptions: float = 5e-2) -> dict[Any, np.ndarray]:
     """Computes sWeights from probability density functions for different components/species in a fit model
     (for instance signal and background) fitted on some data `x`.

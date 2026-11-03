@@ -26,7 +26,7 @@ class Stats:
         Takes tree name, returns number of entries
         '''
         mkr = SpecMaker(
-            component  = self._sample, 
+            component  = self._sample,
             trigger = self._trigger,
             tree    = tree)
         json_path = mkr.get_spec_path(per_file=False)

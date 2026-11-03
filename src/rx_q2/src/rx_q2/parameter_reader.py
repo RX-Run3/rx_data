@@ -29,13 +29,13 @@ class ParameterReader:
         Parameters
         -----------------
         path: Full path to parameters.json
-    
+
         Returns
         -----------------
         Dictionary mapping name of quantity and value, e.g. mu_val : 20.3
         '''
         data = gut.load_json(path)
-    
+
         brem, block = self._brem_block_from_path(path=path)
 
         [[mu_val, mu_err]] = [ val for name, val in data.items() if name.startswith('mu_')]
@@ -48,16 +48,16 @@ class ParameterReader:
             'sg_err' : sg_err,
             'brem'   : brem,
             'block'  : block,
-        } 
+        }
 
-        return data 
+        return data
     #-------------------------------------
     def _brem_block_from_path(self, path : Path) -> tuple[int, int]:
         '''
         Parameters
         ---------------
         Path: path to parameters.json
-    
+
         Returns
         ---------------
         Tuple with integers describing the brem and block
@@ -65,7 +65,7 @@ class ParameterReader:
         mtch = re.match(self._cfg.regex, path.parent.name)
         if not mtch:
             raise ValueError(f'Cannot extract information from {path.parent.name} using {self._cfg.regex}')
-    
+
         [brem, block] = mtch.groups()
 
         return int(brem), int(block)

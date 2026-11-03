@@ -29,9 +29,9 @@ class Data:
     nthreads: int = 1
     loglvl  : int = 20
     config  : str = ''
-    q2bin   : Qsq 
-    sample  : Component 
-    trigger : Trigger 
+    q2bin   : Qsq
+    sample  : Component
+    trigger : Trigger
 # ---------------------------------
 def _set_logs() -> None:
     LogStore.set_level('rx_plots:plot_2d'      , Data.loglvl)
@@ -53,7 +53,7 @@ def _parse_args() -> None:
     project = info.project_from_trigger(trigger=args.trigger, lower_case=True)
 
     Data.sample   = args.sample
-    Data.trigger  = args.trigger 
+    Data.trigger  = args.trigger
     Data.loglvl   = args.loglvl
     Data.q2bin    = args.q2bin
     Data.config   = f'{args.config}_{project}'
@@ -92,8 +92,8 @@ def _initialize_settings(cfg : DictConfig) -> None:
     Data.trigger  = Trigger(cfg.trigger)
     Data.q2bin    = Qsq(cfg.q2bin)
     Data.config   = f'{cfg.config}_{Data.trigger.project}'
-    Data.loglvl   = 20 
-    Data.nthreads = 1 
+    Data.loglvl   = 20
+    Data.nthreads = 1
 # ---------------------------------
 def main(cfg : DictConfig|None = None):
     '''

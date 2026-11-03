@@ -21,7 +21,7 @@ from .likelihood_factory import LikelihoodFactory, NLLConf
 from .data_preprocessor  import DataPreprocessor
 
 log=LogStore.add_logger('fitter:misid_constraints')
-# -------------------------        
+# -------------------------
 class MisIDConstraints(Cache):
     '''
     Class meant to provide constraints for the yields of different
@@ -36,8 +36,8 @@ class MisIDConstraints(Cache):
     '''
     # ----------------------
     def __init__(
-        self, 
-        cfg   : FitModelConf, 
+        self,
+        cfg   : FitModelConf,
         q2bin : Qsq):
         '''
         Parameters
@@ -45,20 +45,20 @@ class MisIDConstraints(Cache):
         cfg      : configuration needed to build PDF
         q2bin    : E.g. central
         '''
-        self._data_sample : Final[Component] = Component.data_24 
+        self._data_sample : Final[Component] = Component.data_24
 
         self._cfg   = cfg
         self._q2bin = q2bin
 
         d_sel = sel.selection(
-            q2bin   = self._q2bin, 
-            trigger = self._cfg.trigger, 
+            q2bin   = self._q2bin,
+            trigger = self._cfg.trigger,
             process = self._data_sample)
 
         Cache.__init__(
             self,
             out_path = Path('constraints'),
-            d_sel    = { cut.name : val for cut, val in d_sel.items() }, 
+            d_sel    = { cut.name : val for cut, val in d_sel.items() },
             config   = cfg.model_dump(),
         )
     # ----------------------
@@ -77,13 +77,13 @@ class MisIDConstraints(Cache):
             # Use constraint for signal region
             d_yield[f'yld_{region.signal}'] = self.__get_signal_region_yield(
                 region   = region, # Pick it from control region
-                pars     = pars) 
+                pars     = pars)
 
-        return d_yield 
+        return d_yield
     # ----------------------
     def __get_signal_region_yield(
-        self, 
-        region   : Region, 
+        self,
+        region   : Region,
         pars     : FitResult) -> tuple[float,float]:
         '''
         Parameters
@@ -112,7 +112,7 @@ class MisIDConstraints(Cache):
         '''
         Parameters
         -------------
-        nickname: Sample nickname, e.g. hdkk, hdpipi        
+        nickname: Sample nickname, e.g. hdkk, hdpipi
 
         Returns
         -------------
@@ -125,7 +125,7 @@ class MisIDConstraints(Cache):
             cfg_type = type(cfg)
             raise ValueError(f'Config for hadronic misID components of type: {cfg_type}')
 
-        sig_yld, ctr_yld = 0, 0 
+        sig_yld, ctr_yld = 0, 0
         # Extract yields from weighted (PID) no PID misID MC
         log.info(20 * '-')
         for pid_region in ['signal', 'control']:
@@ -193,7 +193,7 @@ class MisIDConstraints(Cache):
             ftr = LikelihoodFactory(
                 obs    = region.obs,
                 name   = region.name,
-                sample = self._data_sample, 
+                sample = self._data_sample,
                 q2bin  = self._q2bin,
                 cfg    = self._cfg)
             nll = ftr.run()
@@ -215,7 +215,7 @@ class MisIDConstraints(Cache):
 
             d_cns = gut.load_json(cons_path)
             cons  = Constraint1D.from_dict(
-                data = d_cns, 
+                data = d_cns,
                 kind = ConstraintType.gauss)
 
             return cons
@@ -228,8 +228,8 @@ class MisIDConstraints(Cache):
 
             with GofCalculator.disabled(value=True):
                 ftr      = DataFitter(
-                    q2bin= self._q2bin, 
-                    d_nll= { region : nll }, 
+                    q2bin= self._q2bin,
+                    d_nll= { region : nll },
                     cfg  = self._cfg)
 
                 cfg = self._cfg.components[self._q2bin][region.signal]
@@ -248,7 +248,7 @@ class MisIDConstraints(Cache):
         self._cache()
 
         const    = Constraint1D.from_dict(
-            data = d_cns, 
+            data = d_cns,
             kind = ConstraintType.gauss)
 
         return const

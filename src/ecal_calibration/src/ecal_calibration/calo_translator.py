@@ -34,20 +34,20 @@ def get_data() -> pnd.DataFrame:
 # ------------------------------------------------------
 @overload
 def from_id_to_xy(
-    row : int, 
-    col : int, 
-    det : str, 
+    row : int,
+    col : int,
+    det : str,
     area: int) -> tuple[float,float]: ...
 @overload
 def from_id_to_xy(
-    row : int | None = ..., 
-    col : int | None = ..., 
-    det : str | None = ..., 
+    row : int | None = ...,
+    col : int | None = ...,
+    det : str | None = ...,
     area: int | None = ...) -> pnd.DataFrame: ...
 def from_id_to_xy(
-    row : int | None = None, 
-    col : int | None = None, 
-    det : str | None = None, 
+    row : int | None = None,
+    col : int | None = None,
+    det : str | None = None,
     area: int | None = None) -> tuple[float,float] | pnd.DataFrame:
     '''
     Function taking position in ECAL

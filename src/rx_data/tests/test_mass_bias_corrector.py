@@ -88,7 +88,7 @@ def _load_conf() -> dict:
 def _check_corrected(
     rdf_unc : RDF.RNode,
     rdf_cor : RDF.RNode,
-    trigger : str, 
+    trigger : str,
     name    : str) -> int:
     '''
     Parameters
@@ -124,12 +124,12 @@ def _check_corrected(
 
     # A mass will be considered unchaged if the difference is less than 1 MeV
     arr_flag    = numpy.isclose(arr_val_unc, arr_val_cor, atol=1).astype(int)
-    total       = len(arr_flag) 
+    total       = len(arr_flag)
     uncorrected = numpy.sum(arr_flag)
-    corrected   = total - uncorrected 
+    corrected   = total - uncorrected
 
     # Somewhere between 20% and 70% of candidates should change with brem correction
-    assert corrected / total < 1 
+    assert corrected / total < 1
 
     return corrected
 # ----------------------
@@ -143,8 +143,8 @@ def _clean_rdf(rdf : RDF.RNode) -> RDF.RNode:
     return rdf
 #-----------------------------------------
 def _compare_masses(
-    d_rdf      : dict[str, RDF.RNode], 
-    test_name  : str, 
+    d_rdf      : dict[str, RDF.RNode],
+    test_name  : str,
     correction : str,
     out_dir    : Path,
     skip_jpsi  : bool=False) -> None:
@@ -240,8 +240,8 @@ def _check_size(rdf_org : RDF.RNode, rdf_cor : RDF.RNode) -> None:
 @pytest.mark.parametrize('photon_veto_version', _PHOTON_VETO_VERSIONS)
 def test_simple(
     photon_veto_version : str,
-    sample              : Component, 
-    trigger             : Trigger, 
+    sample              : Component,
+    trigger             : Trigger,
     tmp_path            : Path):
     '''
     Simplest test
@@ -256,7 +256,7 @@ def test_simple(
     cor_1   = MassBiasCorrector(
         photon_veto_version= photon_veto_version,
         skip_correction    = True,
-        df                 = df_org, 
+        df                 = df_org,
         is_mc              = is_mc,
         trigger            = trigger,
         ecorr_kind         = kind)
@@ -264,7 +264,7 @@ def test_simple(
     cor_2   = MassBiasCorrector(
         photon_veto_version= photon_veto_version,
         skip_correction    = False,
-        df                 = df_org, 
+        df                 = df_org,
         is_mc              = is_mc,
         trigger            = trigger,
         ecorr_kind         = kind)
@@ -283,12 +283,12 @@ def test_simple(
     d_rdf   = {'Original' : rdf_org, 'Corrected' : rdf_cor}
     _compare_masses(d_rdf, f'simple/{trigger}', kind, out_dir = tmp_path)
 #-----------------------------------------
-@pytest.mark.parametrize('sample, trigger'    , _SAMPLES_DATA) 
+@pytest.mark.parametrize('sample, trigger'    , _SAMPLES_DATA)
 @pytest.mark.parametrize('photon_veto_version', _PHOTON_VETO_VERSIONS)
 def test_medium_input(
     photon_veto_version : str,
-    sample              : Component, 
-    trigger             : Trigger, 
+    sample              : Component,
+    trigger             : Trigger,
     tmp_path            : Path):
     '''
     Medium input
@@ -303,7 +303,7 @@ def test_medium_input(
     cor_1   = MassBiasCorrector(
         photon_veto_version = photon_veto_version,
         skip_correction     = True,
-        df                  = df_org, 
+        df                  = df_org,
         is_mc               = is_mc,
         trigger             = trigger,
         ecorr_kind          = kind)
@@ -311,7 +311,7 @@ def test_medium_input(
     cor_2   = MassBiasCorrector(
         photon_veto_version = photon_veto_version,
         skip_correction     = False,
-        df                  = df_org, 
+        df                  = df_org,
         is_mc               = is_mc,
         trigger             = trigger,
         ecorr_kind          = kind)
@@ -330,7 +330,7 @@ def test_medium_input(
     d_rdf   = {'Original' : rdf_org, 'Uncorrected' : rdf_unc, 'Corrected' : rdf_cor}
     _compare_masses(d_rdf, f'medium_{sample}/{trigger}', kind, out_dir = tmp_path)
 #-----------------------------------------
-@pytest.mark.parametrize('sample, trigger', _SAMPLES) 
+@pytest.mark.parametrize('sample, trigger', _SAMPLES)
 def test_suffix(sample : Component, trigger : Trigger):
     '''
     Tests that output dataframe has columns with suffix added
@@ -344,7 +344,7 @@ def test_suffix(sample : Component, trigger : Trigger):
 
     cor     = MassBiasCorrector(
         photon_veto_version = 'v0',
-        df                  = df_org, 
+        df                  = df_org,
         trigger             = trigger,
         is_mc               = is_mc,
         ecorr_kind          = kind)
@@ -354,7 +354,7 @@ def test_suffix(sample : Component, trigger : Trigger):
 
     _check_output_columns(rdf_cor)
 #-----------------------------------------
-@pytest.mark.parametrize('sample, trigger', _SAMPLES) 
+@pytest.mark.parametrize('sample, trigger', _SAMPLES)
 @pytest.mark.parametrize('brem_energy_threshold', [100, 200, 300, 400, 600, 800, 1000, 1500, 2000, 4000])
 def test_brem_threshold(sample : Component, trigger : Trigger, brem_energy_threshold: float, tmp_path : Path):
     '''
@@ -368,7 +368,7 @@ def test_brem_threshold(sample : Component, trigger : Trigger, brem_energy_thres
 
     cor_1   = MassBiasCorrector(
         photon_veto_version  ='v0',
-        df                   =df_org, 
+        df                   =df_org,
         trigger              =trigger,
         is_mc                =is_mc,
         skip_correction      =True,
@@ -376,7 +376,7 @@ def test_brem_threshold(sample : Component, trigger : Trigger, brem_energy_thres
 
     cor_2   = MassBiasCorrector(
         photon_veto_version  ='v0',
-        df                   =df_org, 
+        df                   =df_org,
         trigger              =trigger,
         is_mc                =is_mc,
         skip_correction      =False,

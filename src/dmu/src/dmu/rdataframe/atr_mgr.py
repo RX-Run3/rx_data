@@ -14,7 +14,7 @@ log = LogStore.add_logger('dmu:rdataframe:atr_mgr')
 #------------------------
 class AtrMgr:
     '''
-    Class intended to store attributes of ROOT dataframes and attach them back after a Filtering, definition, redefinition, etc operation 
+    Class intended to store attributes of ROOT dataframes and attach them back after a Filtering, definition, redefinition, etc operation
     These operations create new dataframes and therefore drop attributes.
     '''
     #------------------------

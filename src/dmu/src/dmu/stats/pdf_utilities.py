@@ -23,13 +23,13 @@ def has_gradient(pdf : zfit.pdf.BasePDF) -> bool:
 
     data   = pdf.sample(n=3).value()
     params = list(pdf.get_params())
-    
+
     with tf.GradientTape() as tape:
         prob = pdf.pdf(data)
-    
+
     tensors = cast(list[tf.Variable], params)
     grads   = tape.gradient(
-        target = prob, 
+        target = prob,
         sources= tensors)
 
     missing = False

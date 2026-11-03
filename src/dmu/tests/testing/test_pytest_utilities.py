@@ -23,7 +23,7 @@ def _create_test(path : Path, name : str) -> str:
     data = path.read_text() if path.exists() else ''
     path.write_text(data = f'{data}\ndef test_{name}():\n    pass')
 
-    return f'{path}::test_{name}' 
+    return f'{path}::test_{name}'
 # ----------------------
 def test_collect(tmp_path : Path):
     '''

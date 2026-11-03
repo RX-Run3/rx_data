@@ -7,7 +7,7 @@ import pandas as pnd
 import vector
 
 from typing                   import cast, Final
-from dask                     import dataframe as dd 
+from dask                     import dataframe as dd
 from vector._methods          import VectorProtocolSpatial
 from vector                   import MomentumObject3D as v3d
 from vector                   import MomentumObject4D as v4d
@@ -58,12 +58,12 @@ class MassBiasCorrector:
         trigger              : Hlt2 trigger name
         photon_veto_version  : Version of file used to veto photons, e.g. v1
         skip_correction      : Will do everything but not correction. Needed to check that only the correction is changing data.
-        nthreads             : Number of processes to use 
+        nthreads             : Number of processes to use
         brem_energy_threshold: Lowest energy that an ECAL cluster needs to have to be considered a photon, used as argument of ElectronBiasCorrector, default 0 (MeV)
         ecorr_kind           : Kind of correction to be added to electrons, [ecalo_bias, brem_track]
         '''
         self._df : Final[pnd.DataFrame] = df
-        self._is_mc                     = is_mc 
+        self._is_mc                     = is_mc
         self._trigger                   = trigger
         self._skip_correction           = skip_correction
         self._nproc                     = nthreads
@@ -94,8 +94,8 @@ class MassBiasCorrector:
         LogStore.set_level(name, 50)
     # ------------------------------------------
     def _correct_electron(
-        self, 
-        name : str, 
+        self,
+        name : str,
         row  : pnd.Series) -> pnd.Series:
         '''
         Parameters
@@ -118,8 +118,8 @@ class MassBiasCorrector:
             return row
 
         row     = self._ebc.correct(
-            row = row, 
-            name= name, 
+            row = row,
+            name= name,
             kind= self._ecorr_kind)
 
         return row
@@ -148,7 +148,7 @@ class MassBiasCorrector:
         ----------------
         row: Series representing event
 
-        Returns 
+        Returns
         ----------------
         Series with recalculated kinematics, after corrections
         '''
@@ -282,7 +282,7 @@ class MassBiasCorrector:
         ------------
         suffix : If passed (by default not), will add this as the suffix of the column names
 
-        Returns 
+        Returns
         ------------
         corrected pandas dataframe
         '''
@@ -303,5 +303,5 @@ class MassBiasCorrector:
         if in_size != ot_size:
             raise ValueError(f'Sizes of input and output dataframes differ, {in_size} != {ot_size}')
 
-        return df_corr 
+        return df_corr
 # ------------------------------------------

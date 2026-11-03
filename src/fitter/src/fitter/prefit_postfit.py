@@ -20,7 +20,7 @@ _NLINES : Final[int]           = 4
 _LABELS : Final[dict[str,str]] = {
     'nd_mu_suj_comb_main_1'          : r'$\mu_{comb}$',
     'nd_sg_suj_comb_main_1'          : r'$\sigma_{comb}$',
-    # -------------    
+    # -------------
     'nd_mu_hypexp_comb_main_1'       : r'$\mu_{comb}$',
     'nd_ap_hypexp_comb_main_1'       : r'$\alpha_{comb}$',
     'nd_bt_hypexp_comb_main_1'       : r'$\beta_{comb}$',
@@ -103,7 +103,7 @@ def _relabel(name : str) -> str:
         return _LABELS[name]
 
     name = name.replace(
-        Component.bdkstkpiee, 
+        Component.bdkstkpiee,
         Component.bpkpee)
 
     return _LABELS[name]
@@ -135,25 +135,25 @@ def _add_entries_ND(
         val, err        = res[name]
 
         data['par_nam'] = f'nd_{name}'
-        data['pre_val'] = 0 
-        data['pre_err'] = err / sg 
+        data['pre_val'] = 0
+        data['pre_err'] = err / sg
 
         data['pos_val'] = abs(val - norm) / err
         data['pos_err'] = 1
 
         values.append(data)
 
-    return values 
+    return values
 # ---------------------------------------
 def _plot_var(
     out_path : Path,
-    regex    : str, 
-    df_org   : pnd.DataFrame, 
+    regex    : str,
+    df_org   : pnd.DataFrame,
     limits   : tuple[float,float]) -> None:
     '''
     Parameters
     --------------
-    out_path: Path to output file 
+    out_path: Path to output file
     regex   : Regex needed to filter parameters
     df_org  : DataFrame with data to plot
     limits  : Range in x axis
@@ -165,7 +165,7 @@ def _plot_var(
     plt.figure(figsize=(7, 35))
     try:
         plt.fill_betweenx(
-            y     = df['par_nam'], 
+            y     = df['par_nam'],
             x1    = df['pre_val'] - df['pre_err'], # type: ignore
             x2    = df['pre_val'] + df['pre_err'], # type: ignore
             label = 'Pre fit',
@@ -176,16 +176,16 @@ def _plot_var(
         log.error(df_org)
         log.error(df)
         raise ValueError(f'Cannot plot with parameters {regex}') from exc
-    
+
     plt.errorbar(
-        y     = df['par_nam'], 
+        y     = df['par_nam'],
         x     = df['pos_val'],
         xerr  = df['pos_err'],
         fmt   = 'o',
         label = 'Post fit',
         color = 'blue',
     )
-    
+
     plt.axvline(x = -1, color = 'red', linestyle = ':', linewidth = 1)
     plt.axvline(x = +1, color = 'red', linestyle = ':', linewidth = 1)
 
@@ -206,7 +206,7 @@ def _plot_var(
 # ---------------------------------------
 def _plot(
     out_path : Path,
-    pre_path : Path, 
+    pre_path : Path,
     pst_path : Path) -> None:
     '''
     Parameters
@@ -216,7 +216,7 @@ def _plot(
     '''
     res = FitResult.from_json(path = pst_path)
     cos = Constraints.from_json(path = pre_path)
-    
+
     data : list[dict] = []
     for cns in cos.root:
         if   isinstance(cns, Constraint1D):
@@ -228,10 +228,10 @@ def _plot(
         else:
             ctype = type(cns)
             raise ValueError(f'Invalid constraint of type: {ctype}')
-    
+
     df = pnd.DataFrame(data)
     df = df.dropna(subset=['par_nam'])
-    
+
     _plot_var(regex =        '^nd_.*', out_path = out_path / 'comb.png'  , df_org = df, limits = (-7., +7.))
     _plot_var(regex = '^fr_.*block.*', out_path = out_path / 'block.png' , df_org = df, limits = (-3., +3.))
     _plot_var(regex =  '^fr_.*brem.*', out_path = out_path / 'brem.png'  , df_org = df, limits = (-3., +3.))

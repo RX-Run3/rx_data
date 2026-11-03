@@ -25,12 +25,12 @@ def initialize():
     plt.style.use(mplhep.style.LHCb2)
 # --------------------------------
 def _plot_region(
-    df        : pnd.DataFrame, 
-    name      : str, 
+    df        : pnd.DataFrame,
+    name      : str,
     title     : str,
     out_dir   : Path,
-    color     : str  = 'blue', 
-    skip_save : bool = False, 
+    color     : str  = 'blue',
+    skip_save : bool = False,
     ax               = None):
     ax=df.plot.scatter(x='x', y='y', color=color, s=3.0, title=title, ax=ax)
 
@@ -61,7 +61,7 @@ def _add_veto(
     Parameters
     --------------
     row: Series containing row, column, etc
-    ver: PhotonVeto instance 
+    ver: PhotonVeto instance
 
     Returns
     --------------

@@ -15,7 +15,7 @@ from omegaconf    import DictConfig, OmegaConf
 from pydantic     import model_validator
 from rx_data      import RDFGetter
 from rx_common    import Component, Cuts, Trigger, Qsq
-from rx_selection import selection        as sel 
+from rx_selection import selection        as sel
 from dmu.generic  import utilities        as gut
 from dmu.plotting import DsetOverlayConf, Dataset, Plotter1D
 from dmu          import LogStore
@@ -120,7 +120,7 @@ def _get_dataframes(cfg : Config) -> dict[str,RDF.RNode]:
     dataframes : dict[str,RDF.RNode] = {}
     for label, dset in cfg.datasets.items():
         rdf         = _get_rdf(
-            dset    = dset, 
+            dset    = dset,
             sample  = cfg.sample,
             trigger = cfg.trigger)
 

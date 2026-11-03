@@ -47,7 +47,7 @@ def test_df_to_tex_simple(tmp_path : Path):
 # --------------------------------------
 def test_df_to_markdown(tmp_path : Path):
     '''
-    Saving dataframe to markdown 
+    Saving dataframe to markdown
     '''
     df = _get_df()
     put.to_markdown(df, tmp_path / 'df_to_markdown/simple.md')

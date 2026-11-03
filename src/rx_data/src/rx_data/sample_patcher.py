@@ -22,13 +22,13 @@ class SamplePatcher:
     '''
     # ----------------------
     def __init__(
-        self, 
-        sample : Component, 
+        self,
+        sample : Component,
         spec   : Specification) -> None:
         '''
         Parameters
         -------------
-        sample : E.g. bpkpee 
+        sample : E.g. bpkpee
         spec   : Object specifying how to build dataframe withf riends
         '''
         self._sample                           = sample
@@ -42,7 +42,7 @@ class SamplePatcher:
 
         Returns
         -------------
-        Dictionary where the keys are the blocks needed 
+        Dictionary where the keys are the blocks needed
         and the values are the blocks used to patch the needed blocks
 
         If no patching is available, dictionary will be empty
@@ -60,7 +60,7 @@ class SamplePatcher:
 
         if self._sample not in cfg.root:
             log.debug(f'No sample specific patching needed for {self._sample}')
-            return associations 
+            return associations
 
         log.info(f'Using sample specific patching for {self._sample}')
         associations.update(cfg.root[self._sample].patching)
@@ -72,12 +72,12 @@ class SamplePatcher:
             log.info(f'{key:<20}{val}')
         log.info(20 * '-')
 
-        return associations 
+        return associations
     # ----------------------
     def _patch_sample(
-        self, 
+        self,
         ftree          : str,
-        sample         : Sample, 
+        sample         : Sample,
         patching_files : dict[Block,list[Path]]) -> Sample:
         '''
         Parameters
@@ -86,7 +86,7 @@ class SamplePatcher:
         sample: Object holding list of paths to be patched
         patching_files: Dictionary with:
             Key  : Block numbers needed
-            Value: List of paths of main sample that should be used for patching. 
+            Value: List of paths of main sample that should be used for patching.
                    These are full paths and only the file names are meant to be used
                    to identify the patching path
 
@@ -101,18 +101,18 @@ class SamplePatcher:
             nfile = len(file_paths)
             log.debug(f'Patching block {block_needed} with {nfile} files')
 
-            file_names = [ file_path.name for file_path in file_paths ] 
+            file_names = [ file_path.name for file_path in file_paths ]
             sample     = self._patch_sample_for_block(
                 ftree        = ftree,
-                block_needed = block_needed, 
-                file_names   = file_names, 
+                block_needed = block_needed,
+                file_names   = file_names,
                 sample       = sample)
 
 
         return sample
     # ----------------------
     def _patch_sample_for_block(
-        self, 
+        self,
         ftree        : str,
         sample       : Sample,
         file_names   : list[str],
@@ -152,7 +152,7 @@ class SamplePatcher:
             raise ValueError(f'Size of patching paths is different from expected number of files for block {block_needed}')
 
         patched_sample = sample.patch(
-            paths = patching_paths, 
+            paths = patching_paths,
             block = block_needed)
 
         return patched_sample
@@ -187,7 +187,7 @@ class SamplePatcher:
         log.debug('Patching main tree')
         patched_main = self._patch_sample(
             ftree          = _MAIN_TREE,
-            sample         = main_sample, 
+            sample         = main_sample,
             patching_files = d_patching_files)
 
         patched_friends : dict[str, Sample] = dict()
@@ -195,7 +195,7 @@ class SamplePatcher:
             log.debug(f'Patching friend: {friend_name}')
             patched_friends[friend_name] = self._patch_sample(
                 ftree          = friend_name,
-                sample         = friend_sample, 
+                sample         = friend_sample,
                 patching_files = d_patching_files)
 
         data = {'friends' : patched_friends, 'samples' : {'main' : patched_main }}

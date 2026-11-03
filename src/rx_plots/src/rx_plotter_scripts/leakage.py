@@ -24,9 +24,9 @@ class Data:
     plots_dir : str
 
     trigger   : Trigger
-    component : Component 
+    component : Component
 
-    q2bin   = Qsq.central 
+    q2bin   = Qsq.central
     columns = [
         'nbrem',
         'B_M',
@@ -90,7 +90,7 @@ def _check_q2_leakage(nbrem : int) -> None:
 
     if nbrem != -1:
         df = df[df['nbrem'] == nbrem]
-    
+
     nbrem_label = str(nbrem) if nbrem != -1 else 'all'
 
     fig, ax = plt.subplots(figsize=[15,10])

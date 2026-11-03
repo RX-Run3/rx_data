@@ -70,18 +70,18 @@ def initialize(monkeypatch):
         yield
 # ----------------------
 def _update_block(
-    cfg       : FitModelConf, 
+    cfg       : FitModelConf,
     q2bin     : Qsq,
     component : Component) -> FitModelConf:
     '''
     Parameters
     -------------
-    cfg      : Fit config as loaded from YAML file 
+    cfg      : Fit config as loaded from YAML file
     component: Name of component whose block will be updated
 
     Returns
     -------------
-    config with updated category name 
+    config with updated category name
     '''
     conf = cfg.components[q2bin][component]
     if not isinstance(conf, ParametricConf):

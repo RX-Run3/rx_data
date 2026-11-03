@@ -33,7 +33,7 @@ class ScalesConf(BaseModel, frozen = True):
     kind    : Literal['q2', 'B']
     comb    : MVAWp
     prec    : MVAWp
-    trig    : Trigger 
+    trig    : Trigger
     year    : str
     # ------------------------------
     @property

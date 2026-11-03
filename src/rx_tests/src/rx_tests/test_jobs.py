@@ -24,7 +24,7 @@ class TestJobs:
         self._cfg = cfg
     # ----------------------
     def _cmd_from_cfg(
-        self, 
+        self,
         group: int,
         test : str,
         cfg  : PackageConf) -> str:

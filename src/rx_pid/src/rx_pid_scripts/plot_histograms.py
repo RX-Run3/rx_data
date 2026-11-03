@@ -30,7 +30,7 @@ class Data:
     d_hadron_cut = {'pion' : '&(pi_PROBNN_K<0.1)', 'kaon' : '&(K_PROBNN_K>0.1)'}
 
     max_eff_sg : float =  7
-    max_eff_ct : float = 15 
+    max_eff_ct : float = 15
     min_eff    : float = 0.
 
     max_rat_pi : float = 2.5
@@ -129,7 +129,7 @@ def _annotate_pcolormesh(arr_x, arr_y, counts, **kwargs):
             plt.text(x_center, y_center, f'{value:.2f}', ha='center', va='center', color=color)
 # ------------------------------------
 def _plot_hist(
-    hist     : bh, 
+    hist     : bh,
     pkl_path : str,
     brem     : str,
     is_ratio : bool = False) -> None:
@@ -169,7 +169,7 @@ def _plot_hist(
     plt.close()
 # ------------------------------------
 def _add_info(
-    pkl_path : str, 
+    pkl_path : str,
     is_ratio : bool,
     brem     : str)-> None:
     file_name = os.path.basename(pkl_path)

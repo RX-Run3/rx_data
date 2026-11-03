@@ -18,7 +18,7 @@ class MatrixPlotter:
     '''
     # -----------------------------------------------
     def __init__(self, mat : Array2D, cfg : dict):
-        self._mat     = mat 
+        self._mat     = mat
         self._cfg     = cfg
 
         self._size    : int

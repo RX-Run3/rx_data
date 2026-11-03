@@ -74,9 +74,9 @@ class CutflowTask(law.Task):
         '''
         Runs comparison
         '''
-        from rx_plotter_scripts.cutflow import main as cutflow 
+        from rx_plotter_scripts.cutflow import main as cutflow
 
-        cfg  = self._get_config() 
+        cfg  = self._get_config()
         obj  = OmegaConf.to_object(cfg = cfg)
         obj  = cast(dict[str,dict[str,str]], obj)
 
@@ -102,7 +102,7 @@ class WrapCutflow(law.WrapperTask):
         fname  = _CONFIGS.get(kind)
         if fname is None:
             raise ValueError(f'No config found for: {kind}')
-        
+
         config = gut.load_conf(package='configs', fpath=f'rx_plots/{fname}')
 
         return config
@@ -115,26 +115,26 @@ class WrapCutflow(law.WrapperTask):
         --------------
         List of JSON strings defining what each job will do
         '''
-        l_cfg = [] 
+        l_cfg = []
         for kind in _KINDS:
             config = WrapCutflow._get_config(kind=kind)
-    
+
             for args in config['args']:
                 q2bin   = args['q2bin'  ]
                 sample  = args['sample' ]
                 trigger = args['trigger']
 
                 cfg             = {}
-                cfg['q2bin'   ] = q2bin 
+                cfg['q2bin'   ] = q2bin
                 cfg['sample'  ] = sample
                 cfg['trigger' ] = trigger
-                cfg['config'  ] = kind 
+                cfg['config'  ] = kind
 
                 output   = OmegaConf.to_container(config.output, resolve=True)
-                json_str = json.dumps({'args' : cfg, 'output' : output}) 
+                json_str = json.dumps({'args' : cfg, 'output' : output})
                 l_cfg.append(json_str)
 
-        return l_cfg 
+        return l_cfg
     # --------------------------
     def requires(self):
         '''

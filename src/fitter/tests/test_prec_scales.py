@@ -71,9 +71,9 @@ def _validate_scales(scales : Any) -> None:
     Component.bdkstkpiee,
     Component.bpkstkpiee,
     Component.bsphiee])
-@pytest.mark.parametrize('brem', [ 
-    Brem.one, 
-    Brem.two, 
+@pytest.mark.parametrize('brem', [
+    Brem.one,
+    Brem.two,
     Brem.brx12])
 def test_rk_ee(
     q2bin    : Qsq,
@@ -110,7 +110,7 @@ def test_rk_mm(
     '''
     signal = Component.bpkpjpsimm
     ctx_1  = Cache.cache_root(path = tmp_path)
-    ctx_2  = sel.custom_selection(d_sel = {Cuts.block : 'block == 1'}) 
+    ctx_2  = sel.custom_selection(d_sel = {Cuts.block : 'block == 1'})
 
     with ExitStack() as stack:
         stack.enter_context(ctx_1)
@@ -133,7 +133,7 @@ def test_rk_mm(
 @pytest.mark.parametrize('background', [
     Component.bsphijpsiee,
     Component.lbpkjpsiee])
-@pytest.mark.parametrize('brem', [ 
+@pytest.mark.parametrize('brem', [
     Brem.brx12])
 def test_rkst_reso(
     q2bin     : Qsq,
@@ -185,7 +185,7 @@ def test_seq_scan_scales(
             brem            = brem,
             q2bin           = q2bin)
         scales = obj.get_scale(
-            signal     = signal, 
+            signal     = signal,
             background = component)
 
     _validate_scales(scales = scales)

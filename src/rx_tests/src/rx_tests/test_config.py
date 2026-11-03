@@ -16,7 +16,7 @@ class PackageConf(BaseModel):
     Class meant to represent testing configuration
     for single project
     '''
-    path   : str 
+    path   : str
     splits : int = Field(gt = 0, lt = 50)
     # --------------------------------
     @field_validator('path', mode = 'before')
@@ -25,7 +25,7 @@ class PackageConf(BaseModel):
         '''
         Parameters
         ------------
-        path: Package name 
+        path: Package name
 
         Returns
         ------------

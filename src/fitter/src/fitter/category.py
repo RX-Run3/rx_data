@@ -35,8 +35,8 @@ class Category(BaseModel, frozen = True):
     '''
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    name      : str 
-    pdf       : zpdf 
+    name      : str
+    pdf       : zpdf
     sumw      : float
     model     : list[Model]
     selection : dict[Cuts,str]
@@ -53,7 +53,7 @@ class Category(BaseModel, frozen = True):
         if same_block and same_brem:
             raise ValueError('Found two categories sharing block and brem')
 
-        if same_block: 
+        if same_block:
             return self.brem < other.brem
 
         return self.block < other.block

@@ -47,7 +47,7 @@ def initialize():
     LogStore.set_level('fitter:dataset_summary', LogLevels.debug)
 # ----------------------
 def test_markdown_to_df(tmp_path : Path):
-    path = tmp_path / 'markdown.md' 
+    path = tmp_path / 'markdown.md'
     path.write_text(_CUTFLOW)
 
     df = DatasetSummary.markdown_to_df(path = path)

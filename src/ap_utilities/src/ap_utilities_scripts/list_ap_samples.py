@@ -40,7 +40,7 @@ def _list_samples(cfg : Config) -> None:
     if not isinstance(scol, SampleCollection):
         raise RuntimeError('Cannot extract SampleCollection instance')
 
-    scol = scol.filter(version=cfg.version) 
+    scol = scol.filter(version=cfg.version)
     nsam = len(scol)
     log.info(30 * '-')
     log.info(f'Found {nsam} samples:')

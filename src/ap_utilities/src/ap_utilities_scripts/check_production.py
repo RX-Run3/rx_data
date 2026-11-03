@@ -12,7 +12,7 @@ from importlib.resources import files
 import argparse
 import yaml
 
-import ap_utilities.io.utilities     as iout 
+import ap_utilities.io.utilities     as iout
 import ap_utilities.decays.utilities as aput
 from ap_utilities.logging.log_store import LogStore
 

@@ -31,7 +31,7 @@ class FitParameters:
         plt.style.use(mplhep.style.LHCb2)
 
         self._rdr  = ParameterReader(name = name)
-        self._cfg  = self._load_config(name = cfg) 
+        self._cfg  = self._load_config(name = cfg)
     # ----------------------
     def _load_config(self, name : str) -> FitParametersConf:
         '''
@@ -50,8 +50,8 @@ class FitParameters:
     # ----------------------
     def _get_values(
         self,
-        ms    : Measurement, 
-        expr  : str, 
+        ms    : Measurement,
+        expr  : str,
         error : str) -> tuple[float,float]:
         '''
         Parameters
@@ -62,22 +62,22 @@ class FitParameters:
 
         Returns
         -------------
-        Tuple with y value and error 
+        Tuple with y value and error
         '''
         pars : dict[str,float] = ms.to_dict()
 
         val = numexpr.evaluate(
-            ex         = expr, 
+            ex         = expr,
             local_dict = pars)
 
         err = numexpr.evaluate(
-            ex         = error, 
+            ex         = error,
             local_dict = pars)
 
         return float(val), float(err)
     # ----------------------
     def _plot_graph(
-        self, 
+        self,
         expr : str,
         pcfg : PlotConf,
         gcfg : GraphConf) -> None:
@@ -110,9 +110,9 @@ class FitParameters:
         arr_dn = numpy.array(yvals) - numpy.array(yerrs)
 
         plt.fill_between(
-            x        = xvals, 
-            y1       = arr_up, 
-            y2       = arr_dn, 
+            x        = xvals,
+            y1       = arr_up,
+            y2       = arr_dn,
             alpha    = 0.5,
             color    = gcfg.color,
             label    = gcfg.label)

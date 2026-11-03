@@ -7,11 +7,11 @@ from .utilities             import is_acceptance_defined
 
 __all__ = [
     'Efficiency',
-    'EfficiencyCalculator', 
-    'EfficiencyScanner', 
-    'EfficiencyScannerConf', 
+    'EfficiencyCalculator',
+    'EfficiencyScanner',
+    'EfficiencyScannerConf',
     'EfficiencyGrid',
-    'AcceptanceReader', 
-    'AcceptanceCalculator', 
+    'AcceptanceReader',
+    'AcceptanceCalculator',
     'is_acceptance_defined',
     'DecayNames']

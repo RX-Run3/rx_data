@@ -9,7 +9,7 @@ from dmu.stats import ModelFactory
 from rx_common import Block, Brem, Channel, Component, Cuts
 from zfit.loss import ExtendedUnbinnedNLL
 from fitter    import SignalConstraints
-from fitter    import Category 
+from fitter    import Category
 from fitter    import CategoryMerger
 
 Loss = zfit.loss.ExtendedUnbinnedNLL
@@ -138,12 +138,12 @@ def _fix_tails(pdf : zpdf) -> zpdf:
             continue
 
         par.floating = False
-   
+
     return pdf
 # ----------------------
 def _get_signal(
     obs  : zobs,
-    brem : Brem, 
+    brem : Brem,
     block: Block):
 
     signal_name = f'signal_brem_{brem}_b{block}'
@@ -178,13 +178,13 @@ def _get_category(
 
     pdf  = _get_signal(
         obs  = obs,
-        brem = brem, 
+        brem = brem,
         block= block)
 
     cat  = Category(
-        name      = f'{brem}_b{block}', 
-        pdf       = pdf, 
-        sumw      = 1000., 
+        name      = f'{brem}_b{block}',
+        pdf       = pdf,
+        sumw      = 1000.,
         selection = {Cuts.mass : '(1)'},
         model     = [Model.gauss])
 
@@ -199,7 +199,7 @@ def test_full_model():
 
     mgr = CategoryMerger(
         comp          = Component.bpkpee,
-        categories    = categories, 
+        categories    = categories,
         reparametrize = True)
     cat = mgr.get_category()
     nsg = zfit.Parameter('nsig', 1000, 0, 10_000)
@@ -209,7 +209,7 @@ def test_full_model():
     nll = ExtendedUnbinnedNLL(model = pdf, data = dat)
 
     calc= SignalConstraints(
-        nll     = nll, 
+        nll     = nll,
         channel = Channel.ee,
         comp    = Component.bpkpee)
     constraints = calc.get_constraints()
@@ -230,7 +230,7 @@ def test_fractions(component :  Component):
 
     nll = ParsHolder(pars = fractions)
     calc= SignalConstraints(
-        nll     = nll, 
+        nll     = nll,
         channel = Channel.ee,
         comp    = component)
     constraints = calc.get_constraints()
@@ -247,7 +247,7 @@ def test_rk_shape(shapes : list[str]):
     '''
     nll   = ParsHolder(pars = shapes)
     calc  = SignalConstraints(
-        nll     = nll, 
+        nll     = nll,
         channel = Channel.ee,
         comp    = Component.bpkpee)
     constraints = calc.get_constraints()
@@ -256,7 +256,7 @@ def test_rk_shape(shapes : list[str]):
 
     log.info(f'Found {ncons} constraints')
 
-    assert ncons == len(shapes) 
+    assert ncons == len(shapes)
 # ----------------------
 @pytest.mark.parametrize('component', [Component.bpkpee, Component.bdkstkpiee])
 @pytest.mark.parametrize('brem'     , [Brem.one, Brem.two])
@@ -266,11 +266,11 @@ def test_fractions_by_brem(component :  Component, brem : Brem):
     for all fractions
     '''
     values    = _FRACTIONS_BY_BREM[brem]
-    fractions = [ f'fr_{component}_{value}' for value in values ] 
+    fractions = [ f'fr_{component}_{value}' for value in values ]
 
     nll = ParsHolder(pars = fractions)
     calc= SignalConstraints(
-        nll     = nll, 
+        nll     = nll,
         channel = Channel.ee,
         comp    = component)
     constraints = calc.get_constraints()

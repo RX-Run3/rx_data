@@ -40,7 +40,7 @@ def test_anealing(do_errors : bool):
 @pytest.mark.parametrize('kind', ['s+b'])
 def test_context_minimizer(kind : SumLiteral):
     '''
-    Test context minimizer 
+    Test context minimizer
     '''
     nll       = get_nll(kind = kind)
     minimizer = zfit.minimize.Minuit()

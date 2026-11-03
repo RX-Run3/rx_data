@@ -1,5 +1,5 @@
 '''
-Script used to plot overlays of a given variable, in a given dataframe, 
+Script used to plot overlays of a given variable, in a given dataframe,
 under diferent selections. E.g. the mass distribution for different blocks
 '''
 import os
@@ -43,9 +43,9 @@ class Data:
 
     chanel  : str
     config  : str
-    sample  : Component 
+    sample  : Component
     trigger : Trigger
-    q2_bin  : Qsq 
+    q2_bin  : Qsq
     cfg_dir : str
     brem    : int | None
     logl    : int

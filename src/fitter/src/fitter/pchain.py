@@ -15,9 +15,9 @@ class PChain:
     '''
     #----------------------------------
     def __init__(
-        self, 
-        pid   : int, 
-        mid   : int, 
+        self,
+        pid   : int,
+        mid   : int,
         gmid  : int,
         ggmid : int):
         '''

@@ -59,20 +59,20 @@ class EffScales:
         log.debug(f'Calculating efficiencies for {self.__sample}')
 
         trigger = Trigger.get_main_trigger(
-            channel = self.__channel, 
+            channel = self.__channel,
             project = project)
 
         with sel.update_selection(d_sel = self.__brem.selection):
             obj = EfficiencyCalculator(
                 out_dir= self.__out_dir,
-                q2bin  = self.__q2bin, 
-                sample = self.__sample, 
+                q2bin  = self.__q2bin,
+                sample = self.__sample,
                 trigger= trigger)
             val, err = obj.get_efficiency()
 
         log.debug(f'Efficiency: {val}')
 
-        return gvar(val, err) 
+        return gvar(val, err)
     # -------------------------
     def get_value(self) -> tuple[float,float]:
         '''

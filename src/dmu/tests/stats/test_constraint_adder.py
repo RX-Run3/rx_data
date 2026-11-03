@@ -16,7 +16,7 @@ from dmu.generic import rxran
 from dmu.testing import get_nll
 
 from zfit.data   import SamplerData
-from zfit.loss   import ExtendedUnbinnedNLL, UnbinnedNLL 
+from zfit.loss   import ExtendedUnbinnedNLL, UnbinnedNLL
 
 log             = LogStore.add_logger('dmu:stats:test_constraint_adder')
 type Loss       = ExtendedUnbinnedNLL | UnbinnedNLL
@@ -63,7 +63,7 @@ def _extract_parameters(nll : Loss) -> pnd.DataFrame:
     return df
 # ----------------------
 def _validate(
-    df   : pnd.DataFrame, 
+    df   : pnd.DataFrame,
     cons : Constraints[Constraint1D]) -> None:
     '''
     Check that for each parameter the mean and std from the dataframe (toys)
@@ -72,7 +72,7 @@ def _validate(
     Parameters
     -------------
     df : Dataframe with parameter name, observed value and toy inde
-    cfg: Config with user defined information 
+    cfg: Config with user defined information
     '''
     for toy_par, df_par in df.groupby('Parameter'):
         if toy_par not in cons.root:

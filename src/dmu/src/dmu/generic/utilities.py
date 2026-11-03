@@ -37,7 +37,7 @@ class ConfigValidation:
     # - Existence of schema
     # - That validation passes
     # Or else an exception will be risen
-    enforce     = False          
+    enforce     = False
     schema_name = 'ConfigSchema' # When validating OmegaConf configs, this will be the top level class name of the schema
 # --------------------------------
 class BlockStyleDumper(yaml.SafeDumper):
@@ -72,7 +72,7 @@ def object_to_string(obj : Any, sort_keys=False) -> str:
     Parameters
     -------------------
     obj: Python object, e.g. dictionary, it can contain the following objects:
-    - Path (pathlib) 
+    - Path (pathlib)
     - DictConfig (omegacong)
     sort_keys: If true will sort the keys of all the dictionaries. Not recommended for mixed type keys
 
@@ -134,7 +134,7 @@ def enforce_schema_validation(value : bool):
             - Schema file not found
             - Problems with the config
     '''
-    old_val = ConfigValidation.enforce 
+    old_val = ConfigValidation.enforce
     ConfigValidation.enforce = value
     try:
         yield
@@ -178,16 +178,16 @@ def yaml_to_json(package : str, fpath : str) -> str:
     return json.dumps(data)
 # --------------------------------
 def load_from_wcard(
-    package : str, 
+    package : str,
     fwcard  : str) -> list[ListConfig]:
     '''
-    This function will load YAML or JSON files storing lists 
+    This function will load YAML or JSON files storing lists
     by using the package name and a wildcard for the path
 
     Parameters
     ---------------------
     package: Data package, e.g. `dmu_data`
-    fwcard : Wildcard representing path with respect to package 
+    fwcard : Wildcard representing path with respect to package
 
     Returns
     ---------------------
@@ -248,7 +248,7 @@ def load_conf(
 # ----------------------
 def _validate_schema(
     cfg     : DictConfig,
-    package : str, 
+    package : str,
     fpath   : str) -> None:
     '''
     Parameters
@@ -258,7 +258,7 @@ def _validate_schema(
     fpath  : Relative (to package) path to config file
     '''
     spath   = _get_schema_path(package=package, fpath=fpath)
-    if spath is None: 
+    if spath is None:
         log.debug(f'No schema found in: {spath}')
         return
 
@@ -298,7 +298,7 @@ def _get_schema_path(package : str, fpath : str) -> str|None:
     Either:
 
     - Path to schema file, a python module
-    - None, if no package was found and schema validation is not enforced 
+    - None, if no package was found and schema validation is not enforced
     '''
     package = package.removesuffix('_data')
     package = f'{package}_schema'
@@ -434,10 +434,10 @@ def dump_text(
     '''
     Parameters
     ----------------
-    lines     : List or ListConfig with lines to write 
+    lines     : List or ListConfig with lines to write
     path      : Path to output file where to save it
     exists_ok : If False (default) will raise RunTimeError if file already found
-    sort_lines: Will sort lines before saving 
+    sort_lines: Will sort lines before saving
     '''
     path = _prepare_path(path=path, exists_ok=exists_ok)
 
@@ -471,7 +471,7 @@ def _prepare_path(path : Path|str, exists_ok : bool) -> Path:
 # --------------------------------
 def load_json(path : str | Path):
     '''
-    Loads data from: 
+    Loads data from:
     - JSON
     - YAML
     - JINJA

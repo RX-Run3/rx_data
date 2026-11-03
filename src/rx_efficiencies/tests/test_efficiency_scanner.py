@@ -101,7 +101,7 @@ def test_scan(sample : Component, q2bin : Qsq, tmp_path : Path):
     (Component.bpkpee     , Qsq.high   )][:1])
 def test_cache(sample : Component, q2bin : Qsq, tmp_path : Path):
     '''
-    Test caching and loading from cache 
+    Test caching and loading from cache
     '''
     l_wp = [0.50, 0.80]
     wps  : list[WorkingPoint] = []

@@ -3,7 +3,7 @@ Module containing ScalesTabulator
 '''
 import os
 import pandas as pnd
- 
+
 from dmu.workflow   import Cache
 from pathlib        import Path
 from typing         import Final
@@ -32,7 +32,7 @@ class ScalesCategory(BaseModel):
     @property
     def group(self) -> str:
         '''
-        Identifier for group that this category belongs to 
+        Identifier for group that this category belongs to
         '''
         q2bins            = '-'.join(self.q2bin)
         no_channel_signal = self.signal.replace('ee', '').replace('mm', '')
@@ -73,7 +73,7 @@ class ScalesTabulatorConf(BaseModel):
         Config object to tabulate scales
         '''
         data = gut.load_data(
-            package = 'fitter_data', 
+            package = 'fitter_data',
             fpath   = 'scales/config.yaml')
 
         return ScalesTabulatorConf(**data)
@@ -117,7 +117,7 @@ class ScalesTabulator:
 
             for background in category.backgrounds:
                 val, err       = obj.get_scale(
-                    signal     = category.signal, 
+                    signal     = category.signal,
                     background = background)
 
                 log.debug(f'{val:10.3g}{err:10.3g}')
@@ -125,7 +125,7 @@ class ScalesTabulator:
                 df.loc[len(df)] = {
                     'Background' : background,
                     'Value'      : val,
-                    'Error'      : err, 
+                    'Error'      : err,
                     'Brem'       : category.brem.latex,
                     '$q^2$ bin'  : q2bin.latex,
                 }
@@ -168,9 +168,9 @@ class ScalesTabulator:
         log.info(f'Saving to: {path}')
 
         put.df_to_tex(
-            df        = df, 
-            path      = path, 
-            hide_index=True, 
+            df        = df,
+            path      = path,
+            hide_index=True,
             d_format  ={'Background' : '{}', 'Value' : '{:.3g}', 'Error' : '{:.3g}'})
     # ----------------------------------------
     def run(self) -> None:

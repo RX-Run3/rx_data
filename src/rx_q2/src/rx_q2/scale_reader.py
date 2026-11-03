@@ -25,7 +25,7 @@ class ScaleReader:
     '''
     # ----------------------
     def __init__(
-        self, 
+        self,
         channel : Channel,
         version : str = 'latest') -> None:
         '''
@@ -44,7 +44,7 @@ class ScaleReader:
         Parameters
         ---------------
         name   : Name of JSON file with the data, e.g. scales, parameters
-        version: Version of fit output, usually `latest` 
+        version: Version of fit output, usually `latest`
 
         Returns
         ---------------
@@ -61,9 +61,9 @@ class ScaleReader:
         return df
     # ----------------------
     def _get_combined_entry(
-        self, 
+        self,
         df       : pnd.DataFrame,
-        quantity : str, 
+        quantity : str,
         block    : Block) -> tuple[float,float]:
         '''
         Parameters
@@ -78,18 +78,18 @@ class ScaleReader:
         '''
         val_1, err_1 = self._query_entry(
             df       = df,
-            quantity = quantity, 
-            block    = block, 
+            quantity = quantity,
+            block    = block,
             brem     = Brem.one)
 
         val_2, err_2 = self._query_entry(
             df       = df,
-            quantity = quantity, 
-            block    = block, 
+            quantity = quantity,
+            block    = block,
             brem     = Brem.two)
 
         val, var = jacobi.propagate(
-            lambda x : (x[0] + x[1]) / 2,  
+            lambda x : (x[0] + x[1]) / 2,
             [val_1, val_2],                     # type: ignore
             [[err_1 ** 2, 0], [0, err_2 ** 2]]) # type: ignore
         val = float(val)
@@ -98,7 +98,7 @@ class ScaleReader:
         return val, err
     # ----------------------
     def _query_entry(
-        self, 
+        self,
         df      : pnd.DataFrame,
         quantity: str,
         block   : Block,
@@ -172,13 +172,13 @@ class ScaleReader:
         Parameters
         -------------
         is_mc: If true will return MC parameters, otherwise data
-        param: Parameter name, e.g. mu 
+        param: Parameter name, e.g. mu
         block: E.g. 1...8
         brem : E.g. 1, 2
 
         Returns
         -------------
-        Tuple with value and error of parameter 
+        Tuple with value and error of parameter
         '''
         key = f'{is_mc}-{param}-{block}-{brem}'
         if key in self._cache:

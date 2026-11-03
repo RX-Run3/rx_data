@@ -35,7 +35,7 @@ def _get_fit_model(models : list[Model]) -> FittedModel:
 
     fmo     = FittedModel.from_fit(
         name= 'test',
-        cfg = mfc.cfg, 
+        cfg = mfc.cfg,
         pdf = pdf,
         res = res)
 
@@ -61,7 +61,7 @@ def test_from_fit():
 
     fmo     = FittedModel.from_fit(
         name= 'test',
-        cfg = mfc.cfg, 
+        cfg = mfc.cfg,
         pdf = pdf,
         res = res)
 

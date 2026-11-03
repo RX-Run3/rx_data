@@ -23,8 +23,8 @@ class Conf:
 def _parse_args() -> Conf:
     parser = argparse.ArgumentParser(description='Script used to make list of LFNs')
     parser.add_argument('-p', '--project', type =str, help='E.g. rx'         , required=True, choices=['rx', 'nopid'])
-    parser.add_argument('-v', '--vers'   , nargs='+', help='List of versions', required=True) 
-    parser.add_argument('-l', '--loglvl' , type =str, help='Logging level'   , default =  20) 
+    parser.add_argument('-v', '--vers'   , nargs='+', help='List of versions', required=True)
+    parser.add_argument('-l', '--loglvl' , type =str, help='Logging level'   , default =  20)
     args = parser.parse_args()
 
     LogStore.set_level('rx_data:list_lfns', args.loglvl)

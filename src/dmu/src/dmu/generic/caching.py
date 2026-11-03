@@ -6,7 +6,7 @@ import json
 
 from typing                import Any
 from dmu.generic           import hashing
-from dmu.generic           import utilities as gut 
+from dmu.generic           import utilities as gut
 
 from dmu.logging.log_store import LogStore
 

@@ -98,9 +98,9 @@ class FileBatch(RootModel[list[FilePart]], frozen = True):
     # ------------------------------------
     @classmethod
     def batch_parts(
-        cls, 
+        cls,
         parts   : list[FilePart],
-        entries : int) -> 'FileBatches': 
+        entries : int) -> 'FileBatches':
         '''
         Parameters
         --------------
@@ -115,7 +115,7 @@ class FileBatch(RootModel[list[FilePart]], frozen = True):
             raise ValueError(f'Invalid number of entries: {entries}')
 
         parts = sorted(parts, key = lambda x : x.size)
-        batches    = FileBatches([]) 
+        batches    = FileBatches([])
         this_batch = FileBatch([])
         for part in parts:
             this_batch.root.append(part)
@@ -128,7 +128,7 @@ class FileBatch(RootModel[list[FilePart]], frozen = True):
         if this_batch.root:
             batches.root.append(this_batch)
 
-        return batches 
+        return batches
     # ------------------------------------
     def __str__(self) -> str:
         nfiles = len(self.root)
@@ -139,7 +139,7 @@ class FileBatch(RootModel[list[FilePart]], frozen = True):
 # ------------------------------------
 class FileBatches(RootModel[list[FileBatch]], Serializable, frozen = True):
     '''
-    Class representing a collection of file batches 
+    Class representing a collection of file batches
     '''
     # -------------------------
     def at(self, index : int) -> FileBatch:
@@ -173,14 +173,14 @@ class FileBatches(RootModel[list[FileBatch]], Serializable, frozen = True):
     # -------------------------
     @property
     def file_multiplicity(self) -> dict[str,int]:
-        '''Dictionary mapping file name (not path) to 
+        '''Dictionary mapping file name (not path) to
         number of parts into which it is split'''
 
         groups : dict[str,int] = dict()
         for batch in self.root:
             for part in batch.root:
                 if not part.split:
-                    groups[part.fname] = 1 
+                    groups[part.fname] = 1
                     continue
 
                 if part.fname not in groups:
@@ -238,7 +238,7 @@ class File(BaseModel, frozen = True):
         if nentries < 0:
             raise ValueError(f'Non positive number of entries found: {nentries}')
 
-        return data 
+        return data
     # ------------------------------------
     def parts(self, entries : int) -> list[FilePart]:
         '''
@@ -262,7 +262,7 @@ class File(BaseModel, frozen = True):
                 path = self.path,
                 vers = self.vers,
                 index= index,
-                split= self.entries > entries, 
+                split= self.entries > entries,
                 range= (start, end))
 
             file_parts.append(element)
@@ -308,7 +308,7 @@ class SampleSplitter:
     '''
     # ------------------------------------
     def __init__(
-        self, 
+        self,
         project : Project,
         version : str):
         '''
@@ -343,20 +343,20 @@ class SampleSplitter:
         return Files(files)
     # ------------------------------------
     def run(
-        self, 
+        self,
         mode     : Mode,
         out_path : Path) -> Files:
         '''
         Parameters
         -----------------
-        mode    : Specifies what to do with the path passed 
+        mode    : Specifies what to do with the path passed
         out_path: Path to database with samples information
                   If passed JSON path will load it, if not
                   will calculate it, cache it and return files object
 
         Returns
         -----------------
-        Container with object representing ntuples 
+        Container with object representing ntuples
         '''
         mode.validate(path = out_path)
 

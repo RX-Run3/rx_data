@@ -40,7 +40,7 @@ class AcceptanceCalculator:
     '''
     #-----------------------------
     def __init__(
-        self, 
+        self,
         rdf    : RDF.RNode,
         channel: Channel,
         project: Project):
@@ -59,7 +59,7 @@ class AcceptanceCalculator:
         if project not in {Project.rk, Project.rkst}:
             raise ValueError(f'Invalid project: {project}')
 
-        self._project     = project 
+        self._project     = project
 
         self._rdf         = rdf
         self._plot_dir    : str
@@ -78,8 +78,8 @@ class AcceptanceCalculator:
             self._rdf = self._rdf.Define(f'{track}_in', f'({track}_th > {_MIN_THETA}) && ({track}_th < {_MAX_THETA})')
 
             self._plot_split(
-                rdf   = self._rdf, 
-                theta = f'{track}_th', 
+                rdf   = self._rdf,
+                theta = f'{track}_th',
                 flag  = f'{track}_in')
 
             self._plot(self._rdf, f'{track}_et')
@@ -117,15 +117,15 @@ class AcceptanceCalculator:
         self._plot_dir = value
     #-----------------------------
     def _plot_split(
-        self, 
-        rdf   : RDF.RNode, 
-        theta : str, 
+        self,
+        rdf   : RDF.RNode,
+        theta : str,
         flag  : str) -> None:
         '''
         Parameters
         --------------
         rdf  : DataFrame with kinematics
-        theta: e.g. ep_0_th 
+        theta: e.g. ep_0_th
         flag : e.g. ep_0_in
         '''
         rdf_in = rdf.Filter(f'{flag} == 1')
@@ -146,8 +146,8 @@ class AcceptanceCalculator:
         plt.close('all')
     #-----------------------------
     def _plot(
-        self, 
-        rdf : RDF.RNode, 
+        self,
+        rdf : RDF.RNode,
         var : str) -> None:
         '''
         Plots variable in dataframe
@@ -200,7 +200,7 @@ class AcceptanceCalculator:
         '''
         Returns
         -----------
-        Tuple with strings with names for leptons in ntuple 
+        Tuple with strings with names for leptons in ntuple
         '''
         if self._channel == Channel.ee:
             return 'ep_0', 'em_0'
@@ -262,7 +262,7 @@ class AcceptanceCalculator:
             return rdf.Define('is_phy', f'{lep_acceptance} && pip_0_in')
 
         if self._all_hadrons in [{'Kp_0'}, {'Kp_0', 'pim_0'}, {'Kp_0', 'pi0_0'}]:
-            # Signal or part reco 
+            # Signal or part reco
             return rdf.Define('is_phy', f'{lep_acceptance} && Kp_0_in')
 
         raise ValueError(f'For project {self._project}, found tracks: {self._all_tracks}')
@@ -286,7 +286,7 @@ class AcceptanceCalculator:
             return rdf.Define('is_phy', f'{lep_acceptance} && Kp_0_in && pim_0_in')
 
         if self._all_hadrons == {'Kp_0', 'pim_0', 'pip_0'}:
-            # Part reco 
+            # Part reco
             return rdf.Define('is_phy', f'{lep_acceptance} && Kp_0_in && pim_0_in')
 
         if self._all_hadrons == {'Kp_0', 'Km_0'}:

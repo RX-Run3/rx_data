@@ -37,7 +37,7 @@ _WEIGHT_BRANCH : Final[str] = 'weight'
 type Selection = dict[Cuts,str]
 type WgtCfg    = dict[Correction,MisIDSampleWeights]
 # ------------------------
-# TODO: Should this class take a dictionary of cuts? 
+# TODO: Should this class take a dictionary of cuts?
 # Should this be made into a context manager?
 class DataPreprocessor(Cache):
     '''
@@ -93,7 +93,7 @@ class DataPreprocessor(Cache):
         # To save it at the end
         rdf, cuts    = self._get_rdf(selection = selection)
         self._is_sig = is_sig
-        self._rdf    = rdf 
+        self._rdf    = rdf
         self._cuts   = cuts
 
         dir_root     = self._get_dir_root(sample = sample, ph_sample = ph_sample)
@@ -104,12 +104,12 @@ class DataPreprocessor(Cache):
             obs_range= sut.range_from_obs(obs=obs),
             d_sel    = cuts,
             is_sig   = is_sig,
-            wgt_cfg  = '' if self._wgt_cfg is None else {key : val.model_dump() for key, val in self._wgt_cfg.items()}, 
+            wgt_cfg  = '' if self._wgt_cfg is None else {key : val.model_dump() for key, val in self._wgt_cfg.items()},
             rdf_uid  = rdf.uid)
     # ------------------------
     def _get_dir_root(
-        self, 
-        sample    : Component, 
+        self,
+        sample    : Component,
         ph_sample : Component | None) -> Path:
         '''
         Parameters
@@ -133,7 +133,7 @@ class DataPreprocessor(Cache):
         return Path(ph_sample)
     # ------------------------
     def _get_rdf(
-        self, 
+        self,
         selection : Selection) -> tuple[RDF.RNode, Selection]:
         '''
         Parameters
@@ -180,16 +180,16 @@ class DataPreprocessor(Cache):
 
         log.debug('Applied selection')
 
-        return rdf_sel, selection 
+        return rdf_sel, selection
     # ------------------------
     def _get_rdf_from_database(self, selection : Selection) -> tuple[RDF.RNode, str, Selection]:
         '''
-        Parameters 
+        Parameters
         ---------------------
         selection: Dictionary holding selection that needs to be applied
                    to input files
 
-        Returns 
+        Returns
         ---------------------
         Tuple with:
         - Dataframe from database with `d_sel` attached
@@ -236,7 +236,7 @@ class DataPreprocessor(Cache):
     # ------------------------
     def _get_rdf_from_filtered_files(self) -> tuple[RDF.RNode, str]:
         '''
-        Will retrieve tuple with: 
+        Will retrieve tuple with:
 
         - Dataframe by reading filtered files
         - UID
@@ -291,8 +291,8 @@ class DataPreprocessor(Cache):
         return wgt
     # ----------------------
     def _get_extra_weight(
-        self, 
-        kind : Correction, 
+        self,
+        kind : Correction,
         cfg  : MisIDSampleWeights) -> numpy.ndarray:
         '''
         Parameters
@@ -324,7 +324,7 @@ class DataPreprocessor(Cache):
         '''
         log.info(f'Splitting sample: {self._sample}/{self._q2bin}')
         spl   = SampleSplitter(
-            rdf     = self._rdf, 
+            rdf     = self._rdf,
             out_dir = self._out_path,
             cfg     = cfg.splitting)
         df    = spl.get_sample()

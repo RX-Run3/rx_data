@@ -5,7 +5,7 @@ import yaml
 
 from rx_common    import Component, Cuts
 from rx_common    import Trigger
-from rx_common    import Qsq 
+from rx_common    import Qsq
 from rx_selection import selection as sel
 from rx_data      import RDFGetter
 from ROOT         import RDF
@@ -78,17 +78,17 @@ def get_rdf(kind : str, prefix : str) -> RDF.RNode:
     ROOT dataframe with actual data or MC
     '''
     if   kind == 'dt_ss':
-        sample = Component.data_24 
+        sample = Component.data_24
     elif kind == 'dt_ee':
-        sample = Component.data_24 
+        sample = Component.data_24
     elif kind == 'dt_mi':
-        sample = Component.data_24 
+        sample = Component.data_24
     elif kind == 'dt_mm':
-        sample = Component.data_24 
+        sample = Component.data_24
     elif kind == 'mc_ee':
         sample = Component.bdkstkpiee
     elif kind == 'mc_mm':
-        sample = Component.bdkstkpimm 
+        sample = Component.bdkstkpimm
     else:
         raise ValueError(f'Invalid dataset of kind/prefix: {kind}/{prefix}')
 
@@ -100,7 +100,7 @@ def get_rdf(kind : str, prefix : str) -> RDF.RNode:
     return rdf
 # ----------------------------------
 def rdf_from_sample(
-    sample          : Component, 
+    sample          : Component,
     trigger         : Trigger,
     nentries        : int  = 10_000,
     apply_selection : bool =  False) -> RDF.RNode:
@@ -135,8 +135,8 @@ def rdf_from_sample(
     return rdf
 # ----------------------------------
 def _apply_selection(
-    rdf     : RDF.RNode, 
-    trigger : Trigger, 
+    rdf     : RDF.RNode,
+    trigger : Trigger,
     sample  : Component) -> tuple[RDF.RNode, dict[Cuts,str]]:
     d_sel               = sel.selection(trigger=trigger, q2bin=Qsq.jpsi, process=sample)
     d_sel[Cuts.pid_l]      = '(1)'

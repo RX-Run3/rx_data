@@ -1,7 +1,7 @@
 '''
 Module used to test CmbConstraints class
 '''
-import pytest 
+import pytest
 
 from contextlib   import ExitStack
 from pathlib      import Path
@@ -54,7 +54,7 @@ def _get_fit_config(q2bin : Qsq) -> RXFitConfig:
     return RXFitConfig(
         name    = 'test',
         group   = 'test',
-        mod_cfg = mod_cfg, 
+        mod_cfg = mod_cfg,
         mva_cmb = MVAWp(0.9),
         mva_prc = MVAWp(0.8),
         q2bin   = q2bin,

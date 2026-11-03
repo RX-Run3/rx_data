@@ -9,9 +9,9 @@ from gvar        import gvar
 def _pick(coo : tuple[float,float]) -> bool:
     x, y = coo
     if x == 2 and y == 5:
-        return False 
+        return False
 
-    return True 
+    return True
 # -------------------------------
 def test_simple():
     xs = [1., 2., 3.]

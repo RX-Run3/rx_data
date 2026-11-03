@@ -64,7 +64,7 @@ class TrainTask(law.Task):
         '''
         from rx_classifier_scripts.train_classifier import main as runner
 
-        cfg = self._get_config() 
+        cfg = self._get_config()
         runner(cfg=cfg.args)
 # -------------------------------------
 class WrapTrain(law.WrapperTask):
@@ -84,15 +84,15 @@ class WrapTrain(law.WrapperTask):
         --------------
         List of JSON strings defining what each job will do
         '''
-        l_cfg    = [] 
+        l_cfg    = []
         outputs  = OmegaConf.to_container(cfg.outputs, resolve=True)
 
         for args in cfg.args:
             args     = OmegaConf.to_container(args, resolve=True)
-            json_str = json.dumps({'args' : args, 'outputs' : outputs}) 
+            json_str = json.dumps({'args' : args, 'outputs' : outputs})
             l_cfg.append(json_str)
-    
-        return l_cfg 
+
+        return l_cfg
     # --------------------------
     def requires(self):
         '''

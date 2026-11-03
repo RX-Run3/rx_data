@@ -42,7 +42,7 @@ def max_entries():
         yield
 # -------------------------------------------------
 def _validate_data(
-    data     : zdata, 
+    data     : zdata,
     tmp_path : Path) -> None:
     '''
     Makes validation plots from zfit data
@@ -92,7 +92,7 @@ def test_database(
 # -------------------------------------------------
 @pytest.mark.parametrize('component', [Component.bpkpjpsimm])
 def test_mc(
-    tmp_path : Path, 
+    tmp_path : Path,
     component: Component):
     '''
     Test MC over few entries
@@ -119,7 +119,7 @@ def test_mc(
 # -------------------------------------------------
 @pytest.mark.parametrize('component', [Component.bpkpjpsimm])
 def test_cache(
-    tmp_path : Path, 
+    tmp_path : Path,
     component: Component):
     '''
     Tests caching of dataset
@@ -157,7 +157,7 @@ def test_cache(
     Component.data_24_md_c2,
     Component.bpkpjpsimm])
 def test_muon(
-    tmp_path : Path, 
+    tmp_path : Path,
     component: Component):
     '''
     Tests class with toys
@@ -181,8 +181,8 @@ def test_muon(
     Component.bpkpjpsiee])
 @pytest.mark.parametrize('brem_cat', [0, 1, 2])
 def test_brem_cat_data(
-    tmp_path : Path, 
-    component: Component, 
+    tmp_path : Path,
+    component: Component,
     brem_cat : int):
     '''
     Tests class with toys
@@ -194,10 +194,10 @@ def test_brem_cat_data(
         prp = DataPreprocessor(
             name      = 'main',
             obs       = obs,
-            sample    = component, 
+            sample    = component,
             trigger   = Trigger.rk_ee_os,
             wgt_cfg   = None,
-            selection = cut, 
+            selection = cut,
             q2bin     = Qsq.jpsi)
         dat = prp.get_data()
 
@@ -209,7 +209,7 @@ def test_brem_cat_data(
 def test_with_pid_weights(
     tmp_path  : Path,
     component : Component,
-    region    : Region, 
+    region    : Region,
     kind      : str) -> None:
     '''
     Parameters
@@ -228,7 +228,7 @@ def test_with_pid_weights(
             sample    = component,
             trigger   = Trigger.rk_ee_nopid,
             wgt_cfg   = {Correction.pid : cfg},
-            selection = {Cuts.pid_l : '(1)'}, 
+            selection = {Cuts.pid_l : '(1)'},
             is_sig    = kind == 'signal',
             q2bin     = Qsq.jpsi)
         dat  = prp.get_data()
@@ -237,7 +237,7 @@ def test_with_pid_weights(
 # -------------------------------------------------
 @pytest.mark.parametrize('sample, ph_sample, trigger', _PH_SAMPLES)
 def test_ph_sample(
-    tmp_path : Path, 
+    tmp_path : Path,
     ph_sample: Component,
     sample   : Component,
     trigger  : Trigger):

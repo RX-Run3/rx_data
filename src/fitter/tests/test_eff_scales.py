@@ -18,7 +18,7 @@ log=LogStore.add_logger('fitter:test_eff_scales')
 # ----------------------
 @pytest.fixture(autouse=True)
 def initialize(
-    request : pytest.FixtureRequest, 
+    request : pytest.FixtureRequest,
     monkeypatch):
     '''
     This will run before any test

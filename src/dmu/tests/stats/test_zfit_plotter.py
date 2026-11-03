@@ -696,7 +696,7 @@ def test_plot_range(tmp_path : Path):
 
     cfg = ZFitPlotterConf(
         stacked    = False,
-        plot_range = (3, 8), 
+        plot_range = (3, 8),
         nbins      = 40)
     obj = ZFitPlotter(data=sam, model=pdf)
     obj.plot(cfg)
@@ -704,7 +704,7 @@ def test_plot_range(tmp_path : Path):
 
     cfg = ZFitPlotterConf(
         stacked    = True,
-        plot_range = (3, 8), 
+        plot_range = (3, 8),
         nbins      = 40)
     obj = ZFitPlotter(data=sam, model=pdf)
     obj.plot(cfg)

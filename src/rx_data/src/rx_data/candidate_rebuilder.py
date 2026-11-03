@@ -33,15 +33,15 @@ class CandidateRebuilder:
         Parameters
         --------------
         rdf        : ROOT dataframe
-        tracks     : Set of strings representing particle prefixes, e.g. {L1, L2,...} 
+        tracks     : Set of strings representing particle prefixes, e.g. {L1, L2,...}
         d_had      : Dictionary mapping hadron names with mass hypetheses to swap, e.g. {H : 312}
         constraint : Tuple with PDG ID and set of strings representing particles
                      whose combined mass is constrainted to the PDG ID's value
                      by default None
         '''
         self._rdf           = rdf
-        self._tracks        = tracks 
-        self._replacements  = replacements 
+        self._tracks        = tracks
+        self._replacements  = replacements
         self._constraint    = constraint
 
         self._df            = self._pnd_from_root(rdf)
@@ -206,26 +206,26 @@ class CandidateRebuilder:
 
         Returns
         -------------
-        Particle after mass replacement 
+        Particle after mass replacement
         '''
         new_pdgid = self._replacements.get(name)
 
-        if new_pdgid is None: 
+        if new_pdgid is None:
             return vec
 
-        particle = part.from_pdgid(value = new_pdgid)        
+        particle = part.from_pdgid(value = new_pdgid)
 
         new_mass = particle.mass
         if new_mass is None:
             raise ValueError(f'No mass found for {particle}, ID: {new_pdgid}')
 
         vec.mass = new_mass
-        
-        return vec 
+
+        return vec
     #---------------------------------
     def _calculate_mass(
-        self, 
-        progress_bar : bool, 
+        self,
+        progress_bar : bool,
         kind         : str) -> pnd.Series:
         '''
         Parameters
@@ -239,7 +239,7 @@ class CandidateRebuilder:
             return self._df.apply(self._combine, args=args, axis=1)
 
         sr_mass = self._df.progress_apply( # type: ignore
-            self._combine, 
+            self._combine,
             args = args,
             axis = 1)
 

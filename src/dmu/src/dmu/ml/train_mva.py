@@ -776,7 +776,7 @@ class TrainMva:
         objective  = partial(self._objective, kfold=kfold)
 
         pruner= optuna.pruners.MedianPruner(
-            n_startup_trials = _OPTUNA_STARTUP_TRIALS, 
+            n_startup_trials = _OPTUNA_STARTUP_TRIALS,
             n_warmup_steps   = _OPTUNA_WARMUP_STEPS)
 
         study = optuna.create_study(

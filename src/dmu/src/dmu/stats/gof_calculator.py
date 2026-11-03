@@ -30,8 +30,8 @@ class GofCalculator:
     _disabled : bool = False # If true, it will not run, returning chi2=0 and pvalue=1
     # ---------------------
     def __init__(
-        self, 
-        nll  : Loss, 
+        self,
+        nll  : Loss,
         ndof : int = 10):
         '''
         Parameters
@@ -132,7 +132,7 @@ class GofCalculator:
         -----------------
         kind: Type of goodness of fit: pvalue, chi2, chi2/ndof
 
-        Returns 
+        Returns
         -----------------
         Goodness of fit of a given kind
         '''

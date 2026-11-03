@@ -26,7 +26,7 @@ _TOY_INDEX : Final[str] = 'Toy' # Name of column identifying different fits
 class MissingVariableConfiguration(Exception):
     '''
     This exception will be risen if a variable is needed that
-    does not have a configuration associated 
+    does not have a configuration associated
     '''
     def __init__(self, message : str) -> None:
         super().__init__(message)
@@ -87,7 +87,7 @@ class ToyPlotter:
                 raise ValueError('DataFrame has duplicated values in Toy column')
     # ----------------------
     def _get_latex_names(
-        self, 
+        self,
         cfg: DictConfig) -> dict[str,str]:
         '''
         Parameters
@@ -98,7 +98,7 @@ class ToyPlotter:
         -------------
         Dictionary mapping parameter names with their latex version
         '''
-        d_latex    = {} 
+        d_latex    = {}
         for par_name in self._l_par:
             try:
                 latex_name = cfg.plots[f'{par_name}_val'].labels[0]
@@ -108,7 +108,7 @@ class ToyPlotter:
 
             d_latex[par_name] = latex_name
 
-        return d_latex 
+        return d_latex
     # ----------------------
     def _get_gen_values(self, df : pnd.DataFrame) -> dict[str,float]:
         '''
@@ -160,7 +160,7 @@ class ToyPlotter:
 
         for par_name in self._d_tex:
             cfg_gen_par          = copy.deepcopy(cfg_gen)
-            cfg_gen_par.x        = self._d_gen[par_name] 
+            cfg_gen_par.x        = self._d_gen[par_name]
             cfg_gen_par['label'] = f'{cfg_gen_par.label}={cfg_gen_par.x:.2f}'
 
             cfg.plots[f'{par_name}_val']['vline'] = cfg_gen_par
@@ -214,18 +214,18 @@ class ToyPlotter:
 
         # Extract toy-wise columns from any of the dataframes
         d_toy_col : dict[str,pnd.Series] = {}
-        for column in self._toywise_columns: 
+        for column in self._toywise_columns:
             df                = l_df[-1]
             d_toy_col[column] = df[column]
 
         # Remove toy-wise columns from all dataframes
-        l_df_strip : list[pnd.DataFrame] = [ 
+        l_df_strip : list[pnd.DataFrame] = [
             df.drop(columns=self._toywise_columns) for df in l_df ]
 
-        # Concatenate horizontally 
+        # Concatenate horizontally
         df = pnd.concat(
-            objs         = l_df_strip, 
-            axis         = 1, 
+            objs         = l_df_strip,
+            axis         = 1,
             ignore_index = False)
 
         # Add back toy wise columns, once
@@ -256,8 +256,8 @@ class ToyPlotter:
         return rdf
     # ----------------------
     def _reformat_df(
-        self, 
-        df   : pnd.DataFrame, 
+        self,
+        df   : pnd.DataFrame,
         name : str) -> pnd.DataFrame:
         '''
         Parameters
@@ -277,12 +277,12 @@ class ToyPlotter:
             'Gen'   : f'{name}_gen',
             'Pull'  : f'{name}_pul',
             'Unc'   : f'{name}_unc',
-            'Value' : f'{name}_val', 
+            'Value' : f'{name}_val',
             'Error' : f'{name}_err'}
 
-        df = df.rename(columns=d_name) 
+        df = df.rename(columns=d_name)
         # No need of name, it is in the other columns already
-        df = df.drop(columns='Parameter') 
+        df = df.drop(columns='Parameter')
 
         return df
     # ----------------------
@@ -297,7 +297,7 @@ class ToyPlotter:
             log.info(name)
     # ----------------------
     def _plot_correlation_matrix(
-        self, 
+        self,
         rdf      : RDF.RNode,
         plt_path : Path) -> None:
         '''
@@ -366,7 +366,7 @@ class ToyPlotter:
 
         Returns
         -------------
-        Dictionary with keys as parameter names and values as fitted values 
+        Dictionary with keys as parameter names and values as fitted values
         '''
         log.debug(f'Getting pull parameters for {name}')
 

@@ -14,7 +14,7 @@ def test_simple():
     trig = Trigger.rk_ee_os
     rg   = Region(brem = brem, trigger = trig)
 
-    assert rg.name == f'{brem}-{trig.name}' 
+    assert rg.name == f'{brem}-{trig.name}'
 # ----------------------------------------
 def test_serialize(tmp_path : Path):
     brem = Brem.one
@@ -36,7 +36,7 @@ def test_obs(brem : Brem, trigger : Trigger):
         return
 
     region      = Region(
-        brem    = brem, 
+        brem    = brem,
         trigger = trigger)
 
     _ = region.obs

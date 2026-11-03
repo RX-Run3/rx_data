@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import os
-import re 
-import argparse 
+import re
+import argparse
 
 import pandas            as pnd
 import utils_noroot      as utnr
@@ -15,7 +15,7 @@ class data:
     l_year   = ['r1', 'r2p1', '2017', '2018']
     l_par    = ['delta_m', 'mu_MC', 's_sigma']
 
-    plot_dir = None 
+    plot_dir = None
     qsq_dir  = os.environ['QSQSYS']
     version  = None
 

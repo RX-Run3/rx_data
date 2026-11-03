@@ -41,11 +41,11 @@ class HistConf(BaseModel):
     '''
     Class with configuration needed to build histogram
     '''
-    name  : str 
-    bins  : int 
-    start : int 
-    stop  : int 
-    label : str 
+    name  : str
+    bins  : int
+    start : int
+    stop  : int
+    label : str
 # ----------------------
 class FigConf(BaseModel):
     '''
@@ -68,15 +68,15 @@ class PlotConfig(BaseModel):
 def _parse_args() -> PlotConfig:
     parser = argparse.ArgumentParser(description='Script needed to plot efficiency vs true q2')
     parser.add_argument(
-        '-c', 
-        '--component', 
-        type=Component, 
+        '-c',
+        '--component',
+        type=Component,
         help='Component')
 
     parser.add_argument(
-        '-t', 
-        '--trigger', 
-        type=Trigger, 
+        '-t',
+        '--trigger',
+        type=Trigger,
         help='Trigger')
 
     args = parser.parse_args()
@@ -122,7 +122,7 @@ def _preselect(
     Parameters
     -------------
     rdf    : ROOT dataframe corresponding to a given MC sample
-    sample : Component object 
+    sample : Component object
     trigger: HLT2 trigger name
 
     Returns
@@ -131,8 +131,8 @@ def _preselect(
     '''
 
     d_full_sel = sel.selection(
-        q2bin  =Qsq.jpsi, 
-        process=component, 
+        q2bin  =Qsq.jpsi,
+        process=component,
         trigger=trigger)
 
     for name, cut in d_full_sel.items():
@@ -180,7 +180,7 @@ def _get_data(
     log.debug('Loading data')
 
     gtr = RDFGetter(
-        sample = cfg.component, 
+        sample = cfg.component,
         trigger= cfg.trigger)
     rdf = gtr.get_rdf(per_file=False)
     rdf = _preselect(rdf = rdf, component = cfg.component, trigger = cfg.trigger)
@@ -204,7 +204,7 @@ def _get_hist(
     cfg : Plotting configuration
     axis: Hist's X axis, needed to make histogram
     var : q2 name, for numerator histogram, q2 or q2_true
-    flag: Either None, or q2 definition 
+    flag: Either None, or q2 definition
           Needed to control what histogram is made
           If None, will use MCDT q2 values
 
@@ -252,9 +252,9 @@ def _plot_efficiencies(
         )
     else:
         h_eff_tot.plot(
-            histtype= 'step', 
-            label   = qsqdef.latex, 
-            color   = qsqdef.color, 
+            histtype= 'step',
+            label   = qsqdef.latex,
+            color   = qsqdef.color,
         )
 # ----------------------
 def _plot(
@@ -312,7 +312,7 @@ def main(args : dict[str,str] | None = None) -> None:
     _set_logs()
     log.debug('Loading configuration')
 
-    for q2bin in Qsq: 
+    for q2bin in Qsq:
         if q2bin == Qsq.none:
             continue
 

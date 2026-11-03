@@ -32,7 +32,7 @@ def dump_logs(
     out_dir.mkdir(parents=True, exist_ok=True)
 
     for job_name, job_data in logs.items():
-        string = job_data['logs'] 
+        string = job_data['logs']
 
         if substring not in string:
             continue

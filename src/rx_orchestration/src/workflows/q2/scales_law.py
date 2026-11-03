@@ -1,5 +1,5 @@
 '''
-This script is meant to steer the calculation of mass scales and resolutions 
+This script is meant to steer the calculation of mass scales and resolutions
 '''
 import os
 import json
@@ -42,10 +42,10 @@ class Fit(law.Task):
             raise ValueError('cfg not a DictConfig')
 
         self._cfg                     = cfg
-        self._cfg['args']['kind']     = self.kind 
-        self._cfg['args']['syst']     = 'nom' 
-        self._cfg['args']['logl']     = 20 
-        self._cfg['args']['skip_fit'] = False 
+        self._cfg['args']['kind']     = self.kind
+        self._cfg['args']['syst']     = 'nom'
+        self._cfg['args']['logl']     = 20
+        self._cfg['args']['skip_fit'] = False
 
         return self._cfg
     # -------------------------------------
@@ -89,7 +89,7 @@ class Fit(law.Task):
         '''
         from rx_q2_scripts.get_q2_tables import main as runner
 
-        cfg = self._get_config() 
+        cfg = self._get_config()
         runner(args=cfg.args)
 # -------------------------------------
 class Fits(law.WrapperTask):
@@ -110,15 +110,15 @@ class Fits(law.WrapperTask):
         --------------
         List of JSON strings defining what each job will do
         '''
-        l_cfg    = [] 
+        l_cfg    = []
         outputs  = OmegaConf.to_container(cfg.outputs, resolve=True)
 
         for args in cfg.l_args:
             args     = OmegaConf.to_container(args, resolve=True)
-            json_str = json.dumps({'args' : args, 'outputs' : outputs}) 
+            json_str = json.dumps({'args' : args, 'outputs' : outputs})
             l_cfg.append(json_str)
-    
-        return l_cfg 
+
+        return l_cfg
     # --------------------------
     def requires(self):
         '''
@@ -205,8 +205,8 @@ class Scales(law.Task):
         for args in cfg.args:
             outputs = self._get_outputs(args=args, names=cfg.outputs)
             scl     = Scale(
-                args        =args, 
-                outputs     =outputs, 
+                args        =args,
+                outputs     =outputs,
                 vers        =self.vers,
                 dependencies=[cfg_path])
 

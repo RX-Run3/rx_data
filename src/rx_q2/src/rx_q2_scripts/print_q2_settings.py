@@ -20,7 +20,7 @@ def get_args():
     parser.add_argument('-b', '--brem' , nargs='+', help='Bremsstranlung categories', default=data.l_brem, choices=data.l_brem + ['all'])
     args = parser.parse_args()
 
-    data.ijob   = args.index 
+    data.ijob   = args.index
     data.l_dset = data.l_dset if args.dset == ['all'] else args.dset
     data.l_trig = data.l_trig if args.trig == ['all'] else args.trig
     data.l_brem = data.l_brem if args.brem == ['all'] else args.brem

@@ -1,5 +1,5 @@
 '''
-Module holding LogStore 
+Module holding LogStore
 '''
 import logging
 import contextlib
@@ -16,7 +16,7 @@ class LogLevels(IntEnum):
     error   = logging.ERROR
     info    = logging.INFO
     debug   = logging.DEBUG
-    verbose = 5 
+    verbose = 5
 #------------------------------------------------------------
 setattr(logging, 'VERBOSE', LogLevels.verbose)
 #------------------------------------------------------------
@@ -37,7 +37,7 @@ class StoreFormater(logging.Formatter):
         logging.DEBUG   : '\033[94m',      # Gray
         logging.INFO    : '\033[37m',      # White
         logging.WARNING : '\033[93m',      # Yellow
-        logging.ERROR   : '\033[38;5;208m',# Orange 
+        logging.ERROR   : '\033[38;5;208m',# Orange
         logging.CRITICAL: '\033[91m'       # Red
     }
 

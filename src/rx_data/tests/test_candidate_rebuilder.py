@@ -35,7 +35,7 @@ def test_dzero_misid():
     rdf = rdf.Range(100_000, 100_000 + ientries)
 
     obj = CandidateRebuilder(
-        rdf, 
+        rdf,
         constraint   = (443 , {'L1', 'L2'}),
         tracks       = {'H1', 'H2', 'L1', 'L2'},
         replacements = {'H2' : 2212})

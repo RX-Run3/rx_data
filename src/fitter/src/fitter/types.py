@@ -4,7 +4,7 @@ Module holding enums needed for fitting models
 
 from rx_common import Brem
 from rx_common import Region
-from rx_common import Trigger 
+from rx_common import Trigger
 from enum      import StrEnum, auto
 
 # ------------------------------
@@ -14,12 +14,12 @@ class CCbarWeight(StrEnum):
     in order to build cocktails
 
     Attributes
-    
+
     dec: Decay weights, needed to correct branching fractions within cocktail
-    sam: Sample weights, needed to correct for hadronization fraction, etc between Bs, Bd and Bp decays 
+    sam: Sample weights, needed to correct for hadronization fraction, etc between Bs, Bd and Bp decays
     '''
     dec = 'dec'
-    sam = 'sam' 
+    sam = 'sam'
 # ------------------------------
 class SimFit(StrEnum):
     '''
@@ -36,7 +36,7 @@ class SimFit(StrEnum):
     '''
     rx = auto()
     '''
-    Fully simultaneous fit in rare mode, putting together 
+    Fully simultaneous fit in rare mode, putting together
     electron and muon rk and rkst
     '''
     # ------------------------------------
@@ -53,11 +53,11 @@ class SimFit(StrEnum):
 
         match self:
             case SimFit.rk:
-                return [rk_ee, rk_mm] 
+                return [rk_ee, rk_mm]
             case SimFit.rkst:
-                return [rkst_ee, rkst_mm] 
+                return [rkst_ee, rkst_mm]
             case SimFit.rx:
-                return [rkst_ee, rkst_mm, rk_ee, rk_mm] 
+                return [rkst_ee, rkst_mm, rk_ee, rk_mm]
 # ------------------------------
 class Systematic(StrEnum):
     '''

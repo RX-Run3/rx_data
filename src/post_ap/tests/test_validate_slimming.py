@@ -29,7 +29,7 @@ def test_get_pfns_from_apd() -> None:
     nsam   = len(s_path)
     log.info(f'Found {nsam} samples')
 
-    assert len(s_path) == 1265 
+    assert len(s_path) == 1265
 # ----------------------
 def test_get_processed_pfns() -> None:
     '''

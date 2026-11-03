@@ -12,7 +12,7 @@ from functools   import lru_cache
 from typing      import Union
 from ROOT        import RDF, Numba
 from dmu         import LogStore
-from dmu.generic import hashing 
+from dmu.generic import hashing
 
 log = LogStore.add_logger('dmu:rdataframe:utilities')
 # ---------------------------------------------------------------------
@@ -117,10 +117,10 @@ def rdf_report_to_df(rep : RDF.RCutFlowReport) -> pnd.DataFrame:
     ------------------
     rep: output of rdf.Report(), i.e. an RDataFrame cutflow report.
 
-    Returns 
+    Returns
     ------------------
     A pandas dataframe with the total, failed, efficiency, and cumulative efficiency
-    If no cut was applied, raises ValueError 
+    If no cut was applied, raises ValueError
     '''
     if rep.begin() == rep.end():
         raise ValueError('Empty cutflow report')
@@ -139,7 +139,7 @@ def rdf_report_to_df(rep : RDF.RCutFlowReport) -> pnd.DataFrame:
     df['Efficiency' ] = df['Passed'] / df['All'].replace(0, pnd.NA)
     df['Cummulative'] = df['Efficiency'].cumprod()
 
-    return df 
+    return df
 # ---------------------------------------------------------------------
 def random_filter(rdf : RDF.RNode, entries : int) -> RDF.RNode:
     '''
@@ -196,10 +196,10 @@ def get_sample_definer_expression(samples : dict[str,int]) -> str:
     Returns
     ---------------
     String where return value (year, block, etc) will be provided for given sample. This is used to define
-    sample-wise columns as: 
+    sample-wise columns as:
 
     ```python
-    expr = get_sample_definer_expression(samples = samples) 
+    expr = get_sample_definer_expression(samples = samples)
     rdf  = rdf.DefinePerSample('year', expr)
     ```
     '''

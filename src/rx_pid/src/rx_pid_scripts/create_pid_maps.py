@@ -6,7 +6,7 @@ import os
 import argparse
 from typing import cast, Any
 
-from omegaconf                import DictConfig, OmegaConf 
+from omegaconf                import DictConfig, OmegaConf
 from pidcalib2.make_eff_hists import make_eff_hists
 
 import dmu.generic.utilities as gut
@@ -212,7 +212,7 @@ def _get_config() -> dict[str,Any]:
     cfg['file_list']        = None
     cfg['samples_file']     = None
 
-    return cfg 
+    return cfg
 # --------------------------------
 def main():
     '''

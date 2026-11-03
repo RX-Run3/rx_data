@@ -41,9 +41,9 @@ def __get_pdf():
     zeta  = zfit.Parameter("zeta" , 1.0, 0.0001, 20)
 
     return Ipatia(
-        obs  =obs, 
-        mu   =mu, 
-        sigma=sigma, 
+        obs  =obs,
+        mu   =mu,
+        sigma=sigma,
         nl   =nl,
         al   =al,
         nr   =nr,

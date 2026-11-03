@@ -113,7 +113,7 @@ class Selector:
     # -------------------------------------------------------------------
     def _evt_max(self):
         '''
-        Will limit running to the first "evt_max" entries from the selection section 
+        Will limit running to the first "evt_max" entries from the selection section
         '''
 
         if 'evt_max' not in self._d_sel:
@@ -141,7 +141,7 @@ class Selector:
 
         Parameters
         -------------------
-        sel_kind         : Type of selection, found in transformations/selection section of config 
+        sel_kind         : Type of selection, found in transformations/selection section of config
         as_cutflow (bool): If true will return {cut_name -> rdf} dictionary
         with cuts applied one after the other. If False (default), it will only return
         the dataframe after the full selection

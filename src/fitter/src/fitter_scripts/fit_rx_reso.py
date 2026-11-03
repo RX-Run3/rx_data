@@ -11,12 +11,12 @@ from dmu           import LogStore
 from dmu.stats     import GofCalculator
 from dmu.workflow  import Cache
 from dmu.stats     import ParameterLibrary as PL
-from dmu.stats     import utilities as sut 
+from dmu.stats     import utilities as sut
 from dmu.generic   import utilities as gut
 from dmu.generic   import UnpackerModel
 
 from fitter        import DataPreprocessor
-from fitter        import add_constraints 
+from fitter        import add_constraints
 from fitter        import NLLConf
 from rx_common     import MVAWp
 from fitter        import FitModelConf
@@ -29,7 +29,7 @@ from rx_common     import AlternativeProject, Brem, Qsq, Component, Region
 
 log=LogStore.add_logger('fitter:fit_rx_reso')
 _DATA        : Final[Component ]                 = Component.data_24
-_ALT_PROJECT : Final[AlternativeProject | None ] = None # AlternativeProject.bad_ecal 
+_ALT_PROJECT : Final[AlternativeProject | None ] = None # AlternativeProject.bad_ecal
 # ----------------------
 def _set_logs() -> None:
     '''
@@ -63,7 +63,7 @@ def _parse_args() -> RXFitConfig:
     parser.add_argument('-N', '--ntoys'  , type=int    , help='If specified, this will override ntoys in config', default =0)
     parser.add_argument('-l', '--log_lvl', type=int    , help='Logging level', choices=[5, 10, 20, 30]          , default =20)
     parser.add_argument('-q', '--q2bin'  , type=Qsq    , help='q2 bin'      , choices=Qsq                       , required=True)
-    parser.add_argument('-r', '--rawmass',               help='If used, will fit with non-DTF mass'             , action  ='store_true') 
+    parser.add_argument('-r', '--rawmass',               help='If used, will fit with non-DTF mass'             , action  ='store_true')
     parser.add_argument('-C', '--mva_cmb', type=MVAWp.from_str, help='MVA working point, e.g. 0200; 0100-0300'  , required=True)
     parser.add_argument('-P', '--mva_prc', type=MVAWp.from_str, help='MVA working point, e.g. 0200; 0100-0300'  , required=True)
 

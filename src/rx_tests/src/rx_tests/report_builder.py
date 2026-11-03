@@ -30,14 +30,14 @@ class ReportBuilder:
         colors = {"error": "#e05252", "warning": "#e09a52", "information": "#5284e0"}
         color  = colors.get(severity, "#888")
         badge  = f'<span style="background:{color};color:#fff;padding:2px 8px;border-radius:4px;font-size:0.8em;font-weight:bold">{severity.upper()}</span>'
-    
+
         return badge
     # ----------------------------------
     def _get_template(self) -> str:
         with as_file(files('rx_tests_data')) as path:
             path = path / 'pyright_template.html'
             text = path.read_text()
-    
+
         return text
     # ------------------
     def _build_html(self, data: dict) -> str:
@@ -47,7 +47,7 @@ class ReportBuilder:
         data: Data stored in JSON file
         '''
         cnt : dict[str,str | int] = dict()
-    
+
         diagnostics           = data.get("generalDiagnostics", [])
         summary               = data.get("summary", {})
         cnt['version']        = data.get("version", "unknown")
@@ -57,28 +57,28 @@ class ReportBuilder:
         cnt['warning_count']  = sum(1 for d in diagnostics if d.get("severity") == "warning")
         cnt['info_count']     = sum(1 for d in diagnostics if d.get("severity") == "information")
         cnt['files_analyzed'] = summary.get("filesAnalyzed", "N/A")
-    
+
         by_file = defaultdict(list)
         for d in diagnostics:
             by_file[d.get("file", "unknown")].append(d)
-    
+
         rows = ""
         files_with_issues = 0
         for file_path, issues in sorted(by_file.items()):
             if issues:
                 files_with_issues += 1
-    
+
             short_path    = file_path
             file_errors   = sum(1 for i in issues if i.get("severity") == "error")
             file_warnings = sum(1 for i in issues if i.get("severity") == "warning")
             badge_summary = ""
-    
+
             if file_errors:
                 badge_summary += f'<span style="color:#e05252;font-weight:bold">{file_errors}     error{"s" if file_errors   != 1 else ""}</span> '
-    
+
             if file_warnings:
                 badge_summary += f'<span style="color:#e09a52;font-weight:bold">{file_warnings} warning{"s" if file_warnings != 1 else ""}</span>'
-    
+
             rows += f"""
             <tr class="file-row" onclick="toggleFile(this)">
                 <td colspan="4">
@@ -87,7 +87,7 @@ class ReportBuilder:
                     <span class="arrow">▶</span>
                 </td>
             </tr>"""
-    
+
             for issue in issues:
                 sev   = issue.get("severity", "")
                 msg   = issue.get("message", "").replace("\n", "<br>")
@@ -102,13 +102,13 @@ class ReportBuilder:
                 <td>{msg}</td>
                 <td style="font-family:monospace;font-size:0.8em;color:#888">{rule}</td>
             </tr>"""
-    
+
         cnt['rows']              = rows
         cnt['files_with_issues'] = files_with_issues
         cnt['status_color']      = "#e05252" if cnt['error_count'] else "#52a852"
         cnt['status_text' ]      = "FAILED"  if cnt['error_count'] else "PASSED"
         template                 = self._get_template()
-    
+
         return Template(template).substitute(cnt)
     # ------------------
     def run(self) -> Path:

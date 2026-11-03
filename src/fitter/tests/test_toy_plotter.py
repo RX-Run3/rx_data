@@ -29,7 +29,7 @@ def initialize():
 @lru_cache(maxsize=3)
 def _get_df(ntoys : int, l_var : tuple[str]) -> pnd.DataFrame:
     '''
-    Returns 
+    Returns
     ------------------
     dataframe with fake fit parameter information
     '''
@@ -46,7 +46,7 @@ def _get_df(ntoys : int, l_var : tuple[str]) -> pnd.DataFrame:
             df_var['Gen'      ] = numpy.array(ntoys * [1000])
             df_var['Value'    ] = numpy.random.normal(loc=1000, scale=30, size=ntoys)
             df_var['Error'    ] = numpy.random.normal(loc=  30, scale= 1, size=ntoys)
-        df_var['Toy'      ] = numpy.arange(ntoys) 
+        df_var['Toy'      ] = numpy.arange(ntoys)
 
         l_df_var.append(df_var)
 
@@ -113,7 +113,7 @@ def test_missing_variable(caplog, tmp_path : Path) -> None:
         ptr= ToyPlotter(df=df, cfg=cfg)
         ptr.plot()
 
-    l_message= [ record.getMessage() for record in caplog.records ] 
+    l_message= [ record.getMessage() for record in caplog.records ]
 
     assert l_message[-3:] == ['Parameters found:', 'b', 'c']
 # ----------------------

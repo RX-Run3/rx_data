@@ -34,7 +34,7 @@ def initialize():
 # ----------------------
 def test_swap():
     '''
-    Test loading config for track swapped control regions 
+    Test loading config for track swapped control regions
     '''
     data = gut.load_data(package = 'fitter_data', fpath = 'rare/rk/mm/kmm_mkm/data.yaml')
     FitModelConf(**data)

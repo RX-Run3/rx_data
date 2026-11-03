@@ -102,7 +102,7 @@ class UnpackerModel(BaseModel, frozen = True):
             if not cls._is_unpackable(val):
                 log.debug(f'Not unpacking {field_name} = {val}')
                 continue
-                
+
             log.debug(f'Unpacking field {field_name}')
             path             = Path(val)
             data[field_name] = cls._data_from_path(path = path)
@@ -128,7 +128,7 @@ class UnpackerModel(BaseModel, frozen = True):
     # --------------
     @classmethod
     def from_yaml(
-        cls, 
+        cls,
         path    : Path | str,
         package : None | str = None) -> Self:
         '''
@@ -154,7 +154,7 @@ class UnpackerModel(BaseModel, frozen = True):
 
         if package is None:
             return cls(**data)
-        
+
         with cls.package(name = package):
             return cls(**data)
     # ----------------------
@@ -228,13 +228,13 @@ class UnpackerModel(BaseModel, frozen = True):
             try:
                 yield
             finally:
-                _PACKAGE.reset(token) 
+                _PACKAGE.reset(token)
 
         return _context()
 # --------------------------------------------------
 class HashableModel(BaseModel, frozen = True):
     '''
-    Mixing that makes pydantic models hashable 
+    Mixing that makes pydantic models hashable
     '''
     # -------------------------
     def __hash__(self) -> int:

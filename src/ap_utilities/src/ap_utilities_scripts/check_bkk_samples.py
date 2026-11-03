@@ -104,12 +104,12 @@ def main():
     _set_logs(cfg=cfg)
 
     obj     = SampleConfig(
-        settings=cfg.config, 
+        settings=cfg.config,
         samples =cfg.samples)
     cfg_sam = obj.get_config(category=cfg.priority)
 
     obj= BkkChecker(
-        name= cfg.priority, 
+        name= cfg.priority,
         dry = False,
         cfg = cfg_sam)
     dsi= obj.save(

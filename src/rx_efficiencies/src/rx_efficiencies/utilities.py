@@ -34,12 +34,12 @@ _RK          : Final[list[Component]] = [
 ]
 _RKST        : Final[list[Component]] = [
     # ----
-    # Kpipi ll 
+    # Kpipi ll
     # ----
     Component.bpk1kpipiee,
     Component.bpk2kpipiee,
     # ----
-    # Kpi ll 
+    # Kpi ll
     # ----
     Component.bdkstkpijpsiee,
     Component.bdkstkpijpsimm,
@@ -70,7 +70,7 @@ def is_acceptance_defined(sample : Component, project : Project) -> bool:
 
     Returns
     -------------
-    True or false. False if for this project this samples' acceptance does not make sense 
+    True or false. False if for this project this samples' acceptance does not make sense
     '''
     if project not in {Project.rk, Project.rkst}:
         raise ValueError(f'Invalid project: {project}')
@@ -80,10 +80,10 @@ def is_acceptance_defined(sample : Component, project : Project) -> bool:
         raise ValueError(f'Unrecognized sample: {sample}')
 
     if project == Project.rk   and sample in _RKST:
-        return False 
+        return False
 
     if project == Project.rkst and sample in _RK:
-        return False 
+        return False
 
-    return True 
+    return True
 # ---------------------------------------

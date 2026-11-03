@@ -155,7 +155,7 @@ def test_suffix(monkeypatch, tmp_path : Path):
     '''
     Override suffix of PDF
     '''
-    TestRatio.larger_prec = False 
+    TestRatio.larger_prec = False
 
     monkeypatch.setenv('ANADIR', str(tmp_path))
     monkeypatch.setattr(ccbar_pdf, 'PdfBuilder'          , TestPdfBuilder)

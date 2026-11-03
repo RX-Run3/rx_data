@@ -19,9 +19,9 @@ from contextvars       import ContextVar
 log=LogStore.add_logger('rx_efficiencies:yields')
 
 _ALLOW_UNMATCHED : ContextVar[bool] = ContextVar('_ALLOW_UNMATCHED', default = False)
-_ALLOW_NAN_YIELD : ContextVar[bool] = ContextVar('_ALLOW_NAN_YIELD', default = False) 
+_ALLOW_NAN_YIELD : ContextVar[bool] = ContextVar('_ALLOW_NAN_YIELD', default = False)
 # ......
-# TODO: Yields and yield grids implement 
+# TODO: Yields and yield grids implement
 # ......
 # yield * yield
 # sqrt(yield)
@@ -112,11 +112,11 @@ class Yield(BaseModel, frozen = True):
         if operator == _Operator.div:
             # Yield / eff = Yield before cuts
             if isinstance(obj, Efficiency) and self.wp == obj.wp:
-                return WorkingPoint(root = []) 
+                return WorkingPoint(root = [])
 
             # Yield / yield = object at same wp
             if isinstance(obj,      Yield) and self.wp == obj.wp:
-                return self.wp 
+                return self.wp
 
             log.error(f'Other : {obj.wp} ')
             log.error(f'Yield : {self.wp}')
@@ -252,14 +252,14 @@ class Yield(BaseModel, frozen = True):
     # ---------------------------------
     @classmethod
     def from_linked_node(
-        cls, 
+        cls,
         wp    : WorkingPoint,
         lnode : LinkedNode) -> 'Yield':
         '''
         Parameters
         ---------------
         lnode: Linked node
-        wp   : Working point used as template, cut values will be replaced 
+        wp   : Working point used as template, cut values will be replaced
                with location of linked node
         '''
         gaus = lnode.gauss
@@ -371,8 +371,8 @@ class YieldGrid(Serializable, Patchable, RootModel[list[Yield]], frozen = True):
         return yields
     # ---------------------
     def at(
-        self, 
-        wp        : WorkingPoint, 
+        self,
+        wp        : WorkingPoint,
         fall_back : Yield | None) -> Yield:
         '''
         Parameters

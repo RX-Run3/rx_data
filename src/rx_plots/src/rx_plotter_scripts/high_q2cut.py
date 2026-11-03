@@ -38,8 +38,8 @@ class Data:
     Data class
     '''
     plt_dir  : str
-    component: Component 
-    trigger  : Trigger 
+    component: Component
+    trigger  : Trigger
     run      : str
 
     q2bin   = Qsq.high
@@ -70,9 +70,9 @@ def _initialize():
     os.makedirs(plt_dir, exist_ok=True)
 
     if Data.component.is_mc:
-        Data.trigger = Trigger.rk_ee_os 
+        Data.trigger = Trigger.rk_ee_os
     else:
-        Data.trigger = Trigger.rk_ee_ss 
+        Data.trigger = Trigger.rk_ee_ss
 
     Data.plt_dir = plt_dir
 # ---------------------------
@@ -87,7 +87,7 @@ def _get_rdf() -> RDF.RNode:
 # ---------------------------
 def _get_run3_rdf() -> RDF.RNode:
     gtr = RDFGetter(
-        sample  = Data.component, 
+        sample  = Data.component,
         trigger = Data.trigger)
     rdf = gtr.get_rdf(per_file=False)
 

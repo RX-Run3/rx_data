@@ -140,7 +140,7 @@ class PhotonVeto:
 
         log.info(f'Loading cells from version {self._version} to veto')
 
-        if data is None: 
+        if data is None:
             log.warning(f'Not vetoing any calorimeter region for version: {self._version}')
             return None
 

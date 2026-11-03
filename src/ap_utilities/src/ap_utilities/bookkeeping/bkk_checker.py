@@ -16,13 +16,13 @@ from ap_utilities                    import SettingsConf, Block
 from ap_utilities.decays             import utilities as aput
 from ap_utilities.logging.log_store  import LogStore
 
-_SAMPLE_INFO : Final[str] = ''' 
+_SAMPLE_INFO : Final[str] = '''
 For BK query: {'ConfigName': 'MC', 'ConfigVersion': '2024', 'ConditionDescription': 'Beam6800GeV-2024.W41.42-MagUp-Nu7.6-25ns-Pythia8', 'ProcessingPass': '/Sim10g/HLT2-2024.W40.42', 'EventType': '12113002', 'FileType': 'HLT2.DST', 'Visible': 'Yes', 'SimulationConditions': 'Beam6800GeV-2024.W41.42-MagUp-Nu7.6-25ns-Pythia8'}
 Nb of Files      :  51
 Nb of Events     :  413'644
 Total size       :  286.865 GB (693.5 kB per evt)
 Total size (1024):  267.164 GiB (677.3 kiB per evt)
-Luminosity       :  0.000 
+Luminosity       :  0.000
 Size per /pb     :  0.0 GB
 '''
 log = LogStore.add_logger('ap_utilities:bkk_checker')
@@ -44,7 +44,7 @@ class BkkInfo(BaseModel):
     generator  : str
     stdout     : str  | None
     # -----------------------------
-    nevents    : int = -1 
+    nevents    : int = -1
     size       : int = -1
     # --------------------------------
     @property
@@ -62,13 +62,13 @@ class BkkInfo(BaseModel):
         match = re.search(regex, string)
         if not match:
             log.debug(f'Cannot find size with regex: {regex}')
-            return None 
+            return None
 
-        return match.group(1) 
+        return match.group(1)
     # --------------------------------
     def _get_size(self) -> int:
         if self.stdout is None:
-            return 0 
+            return 0
 
         regex = r'Total size\s+:\s+([\d\.]+) GB'
         value = self._extract_with_regex(regex = regex, string = self.stdout)
@@ -80,7 +80,7 @@ class BkkInfo(BaseModel):
     # --------------------------------
     def _get_nevents(self) -> int:
         if self.stdout is None:
-            return 0 
+            return 0
 
         regex = r"Nb of Events\s+:\s+([\d']+)"
         val   = self._extract_with_regex(regex = regex, string = self.stdout)
@@ -105,7 +105,7 @@ class BkkInfo(BaseModel):
             'Events'   : self.nevents,
         }
 
-        return pnd.Series(data) 
+        return pnd.Series(data)
     # --------------------------------
     @property
     def ap_line(self) -> str:
@@ -149,14 +149,14 @@ class DatasetInfo(RootModel[list[BkkInfo]]):
         return cls(root = data)
     # -----------------------------
     def save(
-        self, 
+        self,
         path : Path) -> None:
         '''
         Saves current instance to JSON
 
         Parameters
         ---------------
-        path : Path to JSON file 
+        path : Path to JSON file
         '''
         log.info(f'Saving to: {path}')
         path.parent.mkdir(exist_ok=True, parents=True)
@@ -191,8 +191,8 @@ class BkkChecker:
     '''
     # -------------------------
     def __init__(
-        self, 
-        name : str, 
+        self,
+        name : str,
         dry  : bool,
         cfg  : SettingsConf):
         '''
@@ -204,7 +204,7 @@ class BkkChecker:
         rgx  : Regular expression used to filter HLT triggers, optional
         '''
         self._name   = name
-        self._dry    = dry 
+        self._dry    = dry
         self._cfg    = cfg
         self._out_dir= self.__get_out_dir()
     # -------------------------
@@ -228,17 +228,17 @@ class BkkChecker:
         samples= self._cfg.root[block].samples
         log.debug(f'Found {len(samples)} samples for block {block}')
 
-        l_info = [ 
+        l_info = [
             self.__get_block_evt_info(
-                block       = block, 
-                evt         = evt, 
+                block       = block,
+                evt         = evt,
                 sample_name = sample_name) for evt, sample_name in samples.items() ]
 
         return l_info
     # -------------------------
     def __get_block_evt_info(
-        self, 
-        block       : Block, 
+        self,
+        block       : Block,
         sample_name : str,
         evt         : int) -> BkkInfo:
         '''
@@ -270,7 +270,7 @@ class BkkChecker:
             stdout  = result.stdout
         else:
             log.warning('Running dry run')
-            stdout  = _SAMPLE_INFO 
+            stdout  = _SAMPLE_INFO
 
         out_path = self._out_dir / f'{evt}_{block}.txt'
         out_path.write_text(stdout)
@@ -284,7 +284,7 @@ class BkkChecker:
             dtags      = cfg.dtags,
             generator  = cfg.generator,
             event_type = evt,
-            sample     = sample_name, 
+            sample     = sample_name,
             block      = block,
             stdout     = stdout)
 
@@ -323,10 +323,10 @@ class BkkChecker:
             log.info(f'Using {nthreads} threads')
             l_info = self.__get_samples_with_threads(nthreads)
 
-        return l_info 
+        return l_info
     # -------------------------
     def save(
-        self, 
+        self,
         update   : bool = False,
         nthreads : int  = 1) -> DatasetInfo:
         '''
@@ -354,5 +354,5 @@ class BkkChecker:
         dsinfo.save_info_yaml(path = self._out_dir / 'info.yaml')
         dsinfo.save(path = out_path)
 
-        return dsinfo 
+        return dsinfo
 # ---------------------------------

@@ -5,7 +5,7 @@ import pytest
 
 from dmu         import LogStore
 from dmu.stats   import Model, zfit
-from dmu.testing import get_model 
+from dmu.testing import get_model
 from fitter      import CategoryMerger
 from fitter      import Category
 from rx_common   import Brem, Block, Component, Cuts
@@ -38,13 +38,13 @@ def _get_category(name : str) -> Category:
     obs = zfit.Space('mass', limits = (0, 10))
     pdf = get_model(
         obs    = obs,
-        kind   = 'signal', 
+        kind   = 'signal',
         suffix = name)
 
     cat  = Category(
-        name      = name, 
-        pdf       = pdf, 
-        sumw      = 1000., 
+        name      = name,
+        pdf       = pdf,
+        sumw      = 1000.,
         selection = {Cuts.mass : '(1)'},
         model     = [Model.gauss])
 
@@ -53,7 +53,7 @@ def _get_category(name : str) -> Category:
 @pytest.mark.parametrize('brems', [BREM_012, BREM_01, BREM_02, BREM_12])
 def test_add_brem(brems : list[Brem]):
     '''
-    Add only brems for given block 
+    Add only brems for given block
     '''
     log.info(f'Adding: {brems}')
     names      = [ f'{brem}_b1' for brem in brems ]
@@ -61,7 +61,7 @@ def test_add_brem(brems : list[Brem]):
 
     mgr = CategoryMerger(
         reparametrize = True,
-        categories    = categories, 
+        categories    = categories,
         comp          = Component.bpkpee)
     cat = mgr.get_category()
 
@@ -78,7 +78,7 @@ def test_add_block():
 
     mgr = CategoryMerger(
         reparametrize = True,
-        categories    = categories, 
+        categories    = categories,
         comp          = Component.bpkpee)
     cat = mgr.get_category()
 
@@ -97,7 +97,7 @@ def test_add_brem_block():
 
     mgr = CategoryMerger(
         reparametrize = True,
-        categories    = categories, 
+        categories    = categories,
         comp          = Component.bpkpee)
     cat = mgr.get_category()
 

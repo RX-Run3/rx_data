@@ -56,7 +56,7 @@ def _get_rdf(sample : Component, trigger : Trigger):
     return rdf
 # -------------------------------------------------------
 def _plot_simulation_pide(
-    df       : pnd.DataFrame, 
+    df       : pnd.DataFrame,
     tmp_path : Path,
     sample   : str) -> None:
     '''

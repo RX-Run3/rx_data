@@ -76,7 +76,7 @@ class EfficiencyGrid(RootModel[list[Efficiency]]):
     def df(self) -> pnd.DataFrame:
         '''
         Table with efficiencies for each working point
-        made into a pandas dataframe 
+        made into a pandas dataframe
         '''
         rows : list[dict[str,float]] = [ eff.row for eff in self.root ]
 

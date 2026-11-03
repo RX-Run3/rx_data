@@ -5,7 +5,7 @@ import pytest
 
 from ap_utilities import LogStore
 from ap_utilities import BkkChecker
-from ap_utilities import SampleConfig 
+from ap_utilities import SampleConfig
 
 log = LogStore.add_logger('ap_utilities:tests:test_bkk_check')
 # ----------------------------------------
@@ -27,7 +27,7 @@ def test_simple(update : bool):
     cfg = obj.get_config(category = 'high_priority')
 
     obj= BkkChecker(
-        name = 'test', 
+        name = 'test',
         dry  = True,
         cfg  = cfg)
     dsi= obj.save(update = update)
@@ -47,7 +47,7 @@ def test_with_hash(update : bool):
     cfg = obj.get_config(category = 'sim10g')
 
     obj= BkkChecker(
-        name = 'test', 
+        name = 'test',
         dry  = True,
         cfg  = cfg)
     dsi= obj.save(update = update)

@@ -32,7 +32,7 @@ class Plotter1D(Plotter):
         '''
         super().__init__(d_rdf=d_rdf, cfg=cfg)
 
-        self._data : CategoryData = self._get_data()  
+        self._data : CategoryData = self._get_data()
     # ----------------------
     def _get_data(self) -> CategoryData:
         '''
@@ -51,7 +51,7 @@ class Plotter1D(Plotter):
         log.info('Picking up data from dataframe:')
         for category, rdf in self._d_rdf.items():
             log.info(category)
-            data[category] = rdf.AsNumpy(variables) 
+            data[category] = rdf.AsNumpy(variables)
 
         # Swap keys, inner is variable, outer is category
         data_swap : CategoryData = {}
@@ -165,7 +165,7 @@ class Plotter1D(Plotter):
     # ----------------------
     def _run_errors(
         self,
-        arr_val : numpy.ndarray, 
+        arr_val : numpy.ndarray,
         cfg     : DictConfig) -> None:
         '''
         Parameters
@@ -184,7 +184,7 @@ class Plotter1D(Plotter):
             fmt = cfg['format']
             val = fmt.format(median)
 
-        label = rf'$\mathrm{{Med}}({symbol})={val}$' 
+        label = rf'$\mathrm{{Med}}({symbol})={val}$'
 
         plt.axvline(x=median, ls=':', label=label, c=color)
     # ----------------------
@@ -212,7 +212,7 @@ class Plotter1D(Plotter):
         arr_y  = norm.pdf(arr_x, mu, sg)
         bw     = (maxx - minx) / nbins
         area   = bw * arr_y.sum()
-        arr_y  = arr_y / area 
+        arr_y  = arr_y / area
 
         plt.plot(arr_x, arr_y, label='Fit', color='black')
 
@@ -337,7 +337,7 @@ class Plotter1D(Plotter):
         --------------------
         Largest bin content among all bins and among all histograms plotted
         '''
-        d_data           = self._data[var] 
+        d_data           = self._data[var]
         minx, maxx, bins = self._get_binning(var, d_data)
 
         l_bc_all = []
@@ -348,10 +348,10 @@ class Plotter1D(Plotter):
             hst          = Hist.new.Reg(bins=bins, start=minx, stop=maxx, name='x').Weight()
             hst.fill(x=arr_val, weight=arr_wgt)
             self._run_plugins(
-                arr_val, 
-                arr_wgt, 
+                arr_val,
+                arr_wgt,
                 hst,  # type: ignore
-                name, 
+                name,
                 var)
 
             style = self._get_style_config(var=var, label=label)
@@ -403,8 +403,8 @@ class Plotter1D(Plotter):
         return f'{name:<15}{nentries:<10}'
     # --------------------------------------------
     def _normalize_weights(
-        self, 
-        arr_wgt : numpy.ndarray, 
+        self,
+        arr_wgt : numpy.ndarray,
         var     : str) -> numpy.ndarray:
         '''
         Parameters
@@ -430,7 +430,7 @@ class Plotter1D(Plotter):
         log.debug(f'Normalizing for variable: {var}')
         bw      = (maxx - minx) / nbins
         area    = bw * numpy.sum(arr_wgt)
-        arr_wgt = arr_wgt / area 
+        arr_wgt = arr_wgt / area
 
         return arr_wgt
     # --------------------------------------------

@@ -12,7 +12,7 @@ from dmu             import LogStore
 from dmu.rdataframe  import utilities as rut
 from dmu.workflow    import Cache     as Wcache
 
-from .types          import MisIDSampleSplitting 
+from .types          import MisIDSampleSplitting
 
 log=LogStore.add_logger('rx_misid:sample_splitter')
 
@@ -23,7 +23,7 @@ class SampleSplitter(Wcache):
     '''
     What this returns
     -----------------------
-    Class meant to split a dataframe with simulated 
+    Class meant to split a dataframe with simulated
     data it will tag events using the `kind` column as kaon or pion events.
 
     It adds columns:
@@ -112,7 +112,7 @@ class SampleSplitter(Wcache):
     # --------------------------------
     def get_sample(self) -> pnd.DataFrame:
         '''
-        Returns pandas dataframe with data from input ROOT dataframe 
+        Returns pandas dataframe with data from input ROOT dataframe
         the output contains the `hadron` column, signaling if this is
         a kaon (kkk) or pion sample (kpipi)
         '''

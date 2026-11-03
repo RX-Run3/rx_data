@@ -11,8 +11,8 @@ from rx_data   import SpecMaker
 _LATEST_MVA_TREE : Final[str] = 'v9'
 
 _NOPIDSAMPLES=[
-    Component.bpkkk, 
-    Component.bpkpipi, 
+    Component.bpkkk,
+    Component.bpkpipi,
 ]
 
 # These samples need minimal patching/emulation, etc
@@ -51,13 +51,13 @@ def initialize():
 # ------------------------------------------------------
 @pytest.mark.parametrize('component, trigger', _PATCHING_SAMPLES)
 def test_patching(
-    component : Component, 
+    component : Component,
     trigger   : Trigger) -> None:
     '''
     Return path to specification of combined sample
     '''
     mkr  = SpecMaker(
-        component = component, 
+        component = component,
         trigger   = trigger)
     path = mkr.get_spec_path(per_file=False)
 

@@ -105,7 +105,7 @@ def read_decay_name(
 def read_event_type(nickname : str) -> str:
     '''
     Takes nickname after reformatting, i.e. replacement of commans, equals, etc.
-    Returns corresponding event type 
+    Returns corresponding event type
     '''
     _initialize()
 

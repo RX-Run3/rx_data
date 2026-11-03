@@ -3,8 +3,8 @@
 import utils_noroot as utnr
 
 import argparse
-import ROOT 
-import os 
+import ROOT
+import os
 
 from rk.q2smear import q2smear as q2
 
@@ -16,7 +16,7 @@ class data:
     l_year     = None
     l_trig     = None
     l_brem     = None
-    cal_vers   = None 
+    cal_vers   = None
 
     l_all_year = ['2011', '2012', '2015', '2016', '2017', '2018']
     l_all_trig = ['ETOS', 'GTIS']

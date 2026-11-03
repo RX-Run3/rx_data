@@ -36,7 +36,7 @@ def _bessel_second_kind(ni, x) -> Tensor:
     return tnp.where(cond, low_x_bk, high_x_bk)
 # -------------------------------------
 def _log_eval(ax_sigma, lam, rt, beta, pr) -> Tensor:
-    dl_ap   = pr * rt 
+    dl_ap   = pr * rt
     term_02 = pr ** 2 + ax_sigma ** 2
     term_03 = rt * tnp.sqrt(term_02)
 
@@ -102,7 +102,7 @@ def _get_tail_z(ax, nx, sigma, lam, beta, diff, sign) -> Tensor: # noqa: PLR0913
     cx    = tnp.exp(sign * beta * ax * sigma)
     phx   = 1.0 + ax * ax
     k1    = cx * tnp.power(phx, lam - 0.5)
-    k2    = beta  * k1 + sign * cx * (lam - 0.5) * tnp.power(phx, lam - 1.5) * 2 * ax / sigma 
+    k2    = beta  * k1 + sign * cx * (lam - 0.5) * tnp.power(phx, lam - 1.5) * 2 * ax / sigma
     var_b = - ax  * sigma - sign * nx * k1 / k2
     var_a = k1    * tnp.power(var_b + ax * sigma,  nx)
 

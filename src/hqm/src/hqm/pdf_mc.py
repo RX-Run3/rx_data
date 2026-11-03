@@ -214,15 +214,15 @@ class PdfBuilder:
         contexts : list[AbstractContextManager[None]] = []
         for kind, name, val, low, high in _RANGES:
             ctx = ParameterLibrary.values(
-                kind      = kind, 
-                parameter = name, 
+                kind      = kind,
+                parameter = name,
                 val       = val,
                 low       = low,
                 high      = high)
 
             contexts.append(ctx)
 
-        return contexts 
+        return contexts
     # ----------------------------
     @cached_property
     def name(self) -> str:
@@ -283,7 +283,7 @@ class PdfBuilder:
             'mu': cfg.mu,
             'sg': cfg.sg}
 
-        with ExitStack() as stack: 
+        with ExitStack() as stack:
             for val_ctx in self._get_val_ctx():
                 stack.enter_context(val_ctx)
 

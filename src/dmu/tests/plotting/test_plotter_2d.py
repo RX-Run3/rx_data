@@ -74,7 +74,7 @@ def test_simple():
 #---------------------------------------
 def test_empty_log():
     '''
-    Tests plotting an empty dataset with log scale for z axis 
+    Tests plotting an empty dataset with log scale for z axis
     '''
     name    = '2d'
     rdf     = _get_rdf(kind='class A', test='weights', nentries = 10)

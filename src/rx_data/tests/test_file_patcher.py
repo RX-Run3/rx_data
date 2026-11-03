@@ -33,12 +33,12 @@ def _make_input(path : Path, add_block : bool = False) -> None:
     opts.fMode = 'update'
 
     rdf_rec.Snapshot(
-        treename = 'DecayTree', 
+        treename = 'DecayTree',
         filename = str(path))
 
     rdf_gen.Snapshot(
         treename = 'MCDecayTree',
-        filename = str(path), 
+        filename = str(path),
         options  = opts)
 # -----------------------------------------
 def test_mc_add_block(tmp_path : Path):
@@ -55,7 +55,7 @@ def test_mc_add_block(tmp_path : Path):
 # -----------------------------------------
 def test_data_add_block(tmp_path : Path):
     '''
-    Test on data files 
+    Test on data files
     '''
     ptc = FilePatcher(dry_run = False)
 
@@ -66,7 +66,7 @@ def test_data_add_block(tmp_path : Path):
 # -----------------------------------------
 def test_mc_already_present(tmp_path : Path):
     '''
-    Test on MC files that have block branch 
+    Test on MC files that have block branch
     '''
     ptc  = FilePatcher(dry_run = False)
     hash = list(ptc.hashes)[0]
@@ -77,7 +77,7 @@ def test_mc_already_present(tmp_path : Path):
 # -----------------------------------------
 def test_dry_run(tmp_path : Path):
     '''
-    Test dry run 
+    Test dry run
     '''
     ptc  = FilePatcher(dry_run = True)
 

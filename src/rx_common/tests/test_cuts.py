@@ -35,5 +35,5 @@ def test_clone_cut():
     log.info(cln)
 
     assert cln.val == 0.8
-    assert cln     != cut 
+    assert cln     != cut
 # ----------------------

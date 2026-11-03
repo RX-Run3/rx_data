@@ -21,7 +21,7 @@ from .types          import CorrectionImplementation, Model
 from .ipatia         import Ipatia
 from .zfit_models    import HypExp
 from .zfit_models    import ModExp
-from .zfit_models    import FermiDirac 
+from .zfit_models    import FermiDirac
 
 log=LogStore.add_logger('dmu:stats:model_factory')
 
@@ -31,7 +31,7 @@ type zpar = Parameter | ComposedParameter
 # ------------------------------
 class ModelFactoryConf(BaseModel, frozen = True):
     '''
-    Class meant to configure the builder of PDFs 
+    Class meant to configure the builder of PDFs
 
     Attributes
     ----------------
@@ -318,7 +318,7 @@ class ModelFactory:
         return par
     # ----------------------
     def _get_parameter_values(
-        self, 
+        self,
         model : Model,
         name  : str) -> tuple[float,float,float]:
         '''
@@ -337,7 +337,7 @@ class ModelFactory:
 
         log.info(f'Using custom parameters for model/name: {model}/{name}')
 
-        return self._values[name] 
+        return self._values[name]
     #-----------------------------------------
     def _get_reparametrization_type(self, name : str) -> CorrectionImplementation | None:
         '''
@@ -445,10 +445,10 @@ class ModelFactory:
         bt = self._get_parameter(kind = Model.hypexp, name = 'bt', suffix = suffix)
 
         pdf= HypExp(
-            obs   = self._obs, 
-            mu    = mu, 
-            alpha = ap, 
-            beta  = bt, 
+            obs   = self._obs,
+            mu    = mu,
+            alpha = ap,
+            beta  = bt,
             name  = f'hypexp_{self._preffix}{suffix}')
 
         return pdf
@@ -459,9 +459,9 @@ class ModelFactory:
         ap = self._get_parameter(kind = Model.fermi_dirac, name = 'ap', suffix = suffix)
 
         pdf= FermiDirac(
-            obs   = self._obs, 
-            mu    = mu, 
-            ap    = ap, 
+            obs   = self._obs,
+            mu    = mu,
+            ap    = ap,
             name  = f'fermi_dirac_{self._preffix}{suffix}')
 
         return pdf
@@ -628,8 +628,8 @@ class ModelFactory:
         l_frc= [ zfit.param.Parameter(f'mod_frc_{self._preffix}_{ifrc + 1}', 0.5, 0, 1) for ifrc in range(nfrc - 1) ]
 
         pdf = zfit.pdf.SumPDF(
-            pdfs = l_pdf, 
-            name = self._preffix, 
+            pdfs = l_pdf,
+            name = self._preffix,
             fracs= l_frc)
 
         return pdf
@@ -679,7 +679,7 @@ class ModelFactory:
     #-----------------------------------------
     @classmethod
     def from_conf(
-        cls, 
+        cls,
         obs    : zobs,
         prefix : str,
         cfg    : ModelFactoryConf) -> Self:

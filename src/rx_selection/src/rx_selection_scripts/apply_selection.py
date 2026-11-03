@@ -13,7 +13,7 @@ log=LogStore.add_logger('rx_selection:apply_selection')
 # ----------------------------------------
 class Data:
     '''
-    Class used to share attributes 
+    Class used to share attributes
     '''
 
     mva_dir = os.environ['MVADIR']

@@ -25,7 +25,7 @@ class Data:
 
     mplhep.style.use('LHCb2')
     ana_dir    = Path(os.environ['ANADIR'])
-    input_path : Path 
+    input_path : Path
     output_path: Path
 # ----------------------
 def _parse_args() -> None:

@@ -28,10 +28,10 @@ class TestSample:
     '''
     # ------------------------------------
     def __init__(
-        self, 
+        self,
         name     : str,
         nfiles   : int,
-        triggers : list[Trigger], 
+        triggers : list[Trigger],
         storage  : Path):
         '''
         Parameters
@@ -66,7 +66,7 @@ class TestSample:
 
             rdf.Snapshot(
                 options  = self._opt,
-                treename = f'{trigger}/DecayTree', 
+                treename = f'{trigger}/DecayTree',
                 filename = str(file_path))
             self._opt.fMode = 'update'
 
@@ -77,20 +77,20 @@ class TestSample:
 
         rdf.Snapshot(
             options  = self._opt,
-            treename = extra_tree, 
+            treename = extra_tree,
             filename = str(file_path))
 
         return file_path
     # ------------------------------------
     @property
     def name(self) -> str:
-        return self._name 
+        return self._name
     # ------------------------------------
     def local_paths(
-        self, 
+        self,
         must_exist: bool) -> list[Path]:
 
-        _ = must_exist 
+        _ = must_exist
 
         return [ self._make_file(file_name = f'test_{index:03}.root') for index in range(self._nfiles) ]
     # ------------------------------
@@ -110,7 +110,7 @@ class TestSample:
         if len(paths) == 0:
             raise ValueError('No target paths found')
 
-        return paths 
+        return paths
     # ------------------------------
     @property
     def is_organized(self) -> bool:
@@ -160,7 +160,7 @@ def test_simple(
 # ------------------------------------
 @pytest.mark.parametrize('triggers', [[Trigger.rk_ee_os, Trigger.rkst_ee_os]])
 def test_versions(
-    tmp_path : Path, 
+    tmp_path : Path,
     triggers : list[Trigger]):
     '''
     Test that new version does not override old one
@@ -180,7 +180,7 @@ def test_versions(
 # ------------------------------------
 @pytest.mark.parametrize('triggers', [[Trigger.rk_ee_os, Trigger.rkst_ee_os]])
 def test_skip_done(
-    tmp_path : Path, 
+    tmp_path : Path,
     triggers : list[Trigger]):
     '''
     Test that if sample was organized, it won't be organized again

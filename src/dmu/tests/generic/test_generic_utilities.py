@@ -22,7 +22,7 @@ def test_environment_context():
 
     with gut.environment(mapping = {'VAR' : '1234'}):
         assert os.environ['VAR'] == '1234'
-    
+
     with gut.environment(mapping = {'VAR' : '1234', 'VOR' : 'abcd'}):
         assert os.environ['VAR'] == '1234'
         assert os.environ['VOR'] == 'abcd'
@@ -36,7 +36,7 @@ def no_schema_pkg(tmp_path):
     This fixture creates a fake package missing the schema
     validating data package
     '''
-    pkg_dir = tmp_path / 'fake_data' 
+    pkg_dir = tmp_path / 'fake_data'
     pkg_dir.mkdir()
     (pkg_dir / '__init__.py').write_text('')
     (pkg_dir / 'config.yaml').write_text('dummy: data')
@@ -55,8 +55,8 @@ def initialize():
     '''
     This runs before any test
     '''
-    LogStore.set_level('dmu:generic:utilities'     , 10)    
-    LogStore.set_level('dmu:test_generic_utilities', 10)    
+    LogStore.set_level('dmu:generic:utilities'     , 10)
+    LogStore.set_level('dmu:test_generic_utilities', 10)
 # ----------------------
 def _check_data(path : Path, data : list[str]) -> None:
     '''
@@ -95,8 +95,8 @@ def test_dump_json(ext : str, tmp_path : Path):
 
     l_data = [1,2,3,4]
     d_data = {
-        1           : 'a', 
-        'b'         : 2, 
+        1           : 'a',
+        'b'         : 2,
         'some_path' : this_path}
 
     gut.dump_json(l_data, this_path/f'list.{ext}')
@@ -188,7 +188,7 @@ def test_load_data(ext : str):
 # -------------------------
 def test_load_conf_schema_validation_no_package(no_schema_pkg):
     '''
-    Tests that the validation fails when no schema data package is found 
+    Tests that the validation fails when no schema data package is found
     '''
     cfg = gut.load_conf(
         package='fake_data',
@@ -218,7 +218,7 @@ def test_load_conf_schema_validation_no_file():
 # -------------------------
 def test_load_conf_schema_validation():
     '''
-    Tests that the validation passes 
+    Tests that the validation passes
     '''
     with gut.enforce_schema_validation(value=True):
         cfg = gut.load_conf(
@@ -231,7 +231,7 @@ def test_load_conf_schema_validation():
 # -------------------------
 def test_load_conf_schema_validation_fail():
     '''
-    Tests that the validation fails 
+    Tests that the validation fails
     '''
     with pytest.raises(RuntimeError),\
          gut.enforce_schema_validation(value=True):

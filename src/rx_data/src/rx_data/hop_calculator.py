@@ -23,7 +23,7 @@ class HOPCalculator:
     '''
     # -------------------------------
     def __init__(
-        self, 
+        self,
         rdf    : RDF.RNode,
         trigger: Trigger):
         '''
@@ -90,11 +90,11 @@ class HOPCalculator:
         return l_vec
     # -------------------------------
     def _get_alpha(
-        self, 
-        pv : XYZVector, 
-        sv : XYZVector, 
-        l1 : LorentzVector, 
-        l2 : LorentzVector, 
+        self,
+        pv : XYZVector,
+        sv : XYZVector,
+        l1 : LorentzVector,
+        l2 : LorentzVector,
         hd : LorentzVector) -> float:
         '''
         Parameters
@@ -160,7 +160,7 @@ class HOPCalculator:
         ----------------
         prefix: Prefix used for HOP variables, i.e. {prefix}_alpha, {prefix}_mass, ...
 
-        Returns 
+        Returns
         ----------------
         ROOT dataframe with HOP variables
         '''

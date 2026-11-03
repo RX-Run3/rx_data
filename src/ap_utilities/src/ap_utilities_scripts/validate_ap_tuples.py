@@ -78,7 +78,7 @@ class Holder(BaseModel, Generic[T]):
         if self.old and self.new:
             return None
 
-        return {  
+        return {
             'old' : self.old is not None,
             'new' : self.new is not None,
         }
@@ -91,7 +91,7 @@ class RDFHolder(Holder):
     # ---------
     def _get_cols(self, rdf : RDF.RNode | None) -> list[str]:
         if rdf is None:
-            return [] 
+            return []
 
         return [ col.c_str() for col in rdf.GetColumnNames() ]
     # ---------
@@ -131,7 +131,7 @@ def _get_directory_names(path : Path) -> list[str]:
     List of directory names in file
     '''
     with uproot.open(path = path) as ifile: # type: ignore
-        dirs = ifile.keys(filter_classname = 'TDirectory') 
+        dirs = ifile.keys(filter_classname = 'TDirectory')
         dirs = [ dirname.split(';')[0] for dirname in dirs ]
 
     return dirs
@@ -158,13 +158,13 @@ def _get_directories(cfg : Config) -> list[Holder[str]]:
     return holders
 # -------------------------------
 def _get_trees(
-    cfg  : Config, 
+    cfg  : Config,
     dirs : list[Holder[str]]) -> list[RDFHolder]:
     '''
     Parameters
     ---------------
     cfg : Configuration
-    dirs: Holder of directory names 
+    dirs: Holder of directory names
 
     Returns
     ---------------
@@ -214,8 +214,8 @@ def main():
 
     with open('summary.yaml', 'w') as ofile:
         string = yaml.dump(
-            data               = data, 
-            default_flow_style = False, 
+            data               = data,
+            default_flow_style = False,
             Dumper             = IndentedDumper)
         ofile.write(string)
 # -------------------------------

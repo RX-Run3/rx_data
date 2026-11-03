@@ -50,7 +50,7 @@ def test_config(
         plots   = ZFitPlotterConf.default(),
     )
 
-    validation = CmbValidationConfig.from_file(fname = 'combinatorial/test_parametric.yaml') 
+    validation = CmbValidationConfig.from_file(fname = 'combinatorial/test_parametric.yaml')
 
     return CmbValidatorConf(
         input      = input,
@@ -58,7 +58,7 @@ def test_config(
         output     = output)
 # ----------------------
 def _get_mass(
-    comp : Component, 
+    comp : Component,
     size : int) -> numpy.ndarray:
     '''
     Returns numpy array with masses
@@ -79,7 +79,7 @@ def _get_mass(
 
     arr_bkg = truncexpon.rvs(b=2.5, loc=4500, scale=1000, size=size)
 
-    arr_dat = numpy.concatenate([arr_sig, arr_bkg]) 
+    arr_dat = numpy.concatenate([arr_sig, arr_bkg])
     numpy.random.shuffle(arr_dat)
 
     return arr_dat[:size]
@@ -116,7 +116,7 @@ def _get_df(
     rdfs : dict[Component,RDF.RNode] = {}
     for comp in [Component.data_24, Component.bpkpee]:
         rdfs[comp] = _get_rdf(
-            mass   = mass, 
+            mass   = mass,
             comp   = comp)
 
     obj = CmbValidator(
@@ -149,7 +149,7 @@ def test_validation(
         plots   = ZFitPlotterConf.default(),
     )
 
-    validation = CmbValidationConfig.from_file(fname = 'combinatorial/test_parametric.yaml') 
+    validation = CmbValidationConfig.from_file(fname = 'combinatorial/test_parametric.yaml')
 
     cfg = CmbValidatorConf(
         input      = cfg_input,
@@ -165,7 +165,7 @@ def test_validation(
 
     df   = pnd.concat(l_df)
     data = gut.load_data(
-        package = 'fitter_data', 
+        package = 'fitter_data',
         fpath   = 'combinatorial/test_plots.yaml')
     data['out_dir'] = tmp_path
 
@@ -182,7 +182,7 @@ def test_kde_fit(
     mass    : Mass,
     cutflow : str):
     '''
-    Test fitting extra component with kde 
+    Test fitting extra component with kde
     '''
     cfg_input   = CmbInputConfig(
         q2bin   = Qsq.central,
@@ -197,7 +197,7 @@ def test_kde_fit(
         plots   = ZFitPlotterConf.default(),
     )
 
-    validation = CmbValidationConfig.from_file(fname = 'combinatorial/test_kde.yaml') 
+    validation = CmbValidationConfig.from_file(fname = 'combinatorial/test_kde.yaml')
 
     cfg = CmbValidatorConf(
         input      = cfg_input,
@@ -213,7 +213,7 @@ def test_kde_fit(
 
     df   = pnd.concat(l_df)
     data = gut.load_data(
-        package = 'fitter_data', 
+        package = 'fitter_data',
         fpath   = 'combinatorial/test_plots.yaml')
     data['out_dir'] = tmp_path
 

@@ -12,7 +12,7 @@ In the case above, the slimmed ntuples will have been made with a config
 
   - APD, taken from the `v1.yaml` config file through `PFNReader`
 
-  is the same as 
+  is the same as
 
   - The ones that were processed according to the metadata of the ntuples.
 '''
@@ -59,8 +59,8 @@ def _get_conf() -> Conf:
         description    = textwrap.dedent(__doc__).strip())
 
     parser.add_argument('-P', '--project' , type=str , help='Project, needed to find config', choices=['rk', 'rkst'])
-    parser.add_argument('-v', '--version' , type=str , help='Version of LFNs'                       , required=True) 
-    parser.add_argument('-p', '--path'    , type=Path, help='Path to directory with slimmed ntuples', required=True) 
+    parser.add_argument('-v', '--version' , type=str , help='Version of LFNs'                       , required=True)
+    parser.add_argument('-p', '--path'    , type=Path, help='Path to directory with slimmed ntuples', required=True)
 
     args = parser.parse_args()
 
@@ -110,7 +110,7 @@ def _get_pfns_from_apd(cfg : Conf) -> set[str]:
         log.debug(f'Picking PFNs for: {sample}')
         d_tmp = reader.get_pfns(production=production, nickname=sample)
         for value in d_tmp.values():
-            l_pfn+= value 
+            l_pfn+= value
 
     return set(l_pfn)
 # ----------------------
@@ -122,7 +122,7 @@ def _production_from_config(cfg : DictConfig) -> str:
 
     Returns
     -------------
-    Name of production (e.g. rx_2024). 
+    Name of production (e.g. rx_2024).
     One and only one production is expected in the config.
     '''
     productions = cfg.productions
@@ -142,7 +142,7 @@ def _get_processed_pfns(paths : set[Path]) -> set[str]:
 
     Returns
     -------------
-    Set of PFNs that were slimmed to make these ROOT files 
+    Set of PFNs that were slimmed to make these ROOT files
     '''
     hsh       = hashing.hash_object(obj=paths)
     pfns_list = Path(f'/tmp/{hsh}.json')
@@ -209,7 +209,7 @@ def _get_pfn_from_path(path : Path) -> str:
     ifile.Close()
 
     cfg     = json.loads(data)
-    yml_str = OmegaConf.to_yaml(cfg) 
+    yml_str = OmegaConf.to_yaml(cfg)
     cfg     = OmegaConf.create(yml_str)
 
     return cfg.input

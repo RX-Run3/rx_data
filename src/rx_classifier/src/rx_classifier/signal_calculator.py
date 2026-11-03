@@ -61,13 +61,13 @@ class SignalCalculator:
         # Control mode (i.e. Jpsi) should always
         # be evaluated at Jpsi bin
         obj = EfficiencyCalculator(
-            q2bin   = 'jpsi', 
-            trigger = trigger, 
+            q2bin   = 'jpsi',
+            trigger = trigger,
             sample  = sample)
 
         val, _ = obj.get_efficiency()
 
-        return val 
+        return val
     # -----------------------------------
     def _get_eff_ratio(self) -> pnd.DataFrame:
         df_sig_eff = self._get_signal_eff()

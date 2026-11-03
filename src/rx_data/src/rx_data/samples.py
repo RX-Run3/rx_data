@@ -6,7 +6,7 @@ import os
 import tqdm
 import math
 import numpy
-import pandas as pnd 
+import pandas as pnd
 
 from colorama       import Fore
 from pathlib        import Path
@@ -102,7 +102,7 @@ class SamplesPrinter:
         '''
         Parameters
         -------------
-        rdf : ROOT dataframe with main sample 
+        rdf : ROOT dataframe with main sample
 
         Returns
         -------------

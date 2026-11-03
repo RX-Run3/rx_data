@@ -95,7 +95,7 @@ class ModelSystematics(RootModel[dict[Systematic,tuple[str,str]]], frozen = True
         Loads instance of class from `model.yaml`
         '''
         data = gut.load_data(
-            package = 'fitter_data', 
+            package = 'fitter_data',
             fpath   = 'systematics/models.yaml')
 
         return cls(**data)
@@ -123,7 +123,7 @@ class ModelSystematics(RootModel[dict[Systematic,tuple[str,str]]], frozen = True
 
             replacements[nominal_path] = alternative_path
 
-        return replacements 
+        return replacements
 # ------------------------------
 # Constraints
 # ------------------------------
@@ -182,7 +182,7 @@ class CCbarConf(ComponentConf, frozen = True):
     from_sim_fit : Literal[True] = True
     # -----------------
     def __str__(self):
-        samples = [ f'{sample}' for sample in self.samples ] 
+        samples = [ f'{sample}' for sample in self.samples ]
         weights = ''
         for key, val in self.weights.items():
             weights += f'{key:<20}{val}\n'
@@ -191,15 +191,15 @@ class CCbarConf(ComponentConf, frozen = True):
         Samples
         ----------------
         {samples}
-        
+
         Weights
         ----------------
         {weights}
-        
+
         Fit
         ----------------
         {self.fit}
-        
+
         Plot
         ----------------
         {self.plots}'
@@ -278,14 +278,14 @@ class ParametricConf(ComponentConf, frozen = True):
             self.categories[key] = val
     # ----------------------
     def cfg_clone(
-        self, 
-        prefix: str, 
+        self,
+        prefix: str,
         brems : list[Brem]) -> Self:
         '''
         Parameters
         ---------------
         prefix : Initial part of category's original name
-        brems  : List of signal brem categories for which prefixed section will be cloned 
+        brems  : List of signal brem categories for which prefixed section will be cloned
 
         Returns
         ---------------
@@ -375,7 +375,7 @@ class NonParametricConf(ComponentConf, frozen = True):
     fit          : KDEConf
     plots        : ZFitPlotterConf
     events_range : tuple[int,int]
-    from_sim_fit : Literal[True] = True 
+    from_sim_fit : Literal[True] = True
     # ---------------------------
     @property
     def obs(self) -> zobs:
@@ -445,13 +445,13 @@ class CmbConstraintConf(BaseModel, frozen = True):
 class CombinatorialConfUnconstrained(ComponentConf, frozen = True):
     '''
     Class mean to control configuration of fit to combinatorial
-    for fits to control region, used to get constraints. I.e. 
+    for fits to control region, used to get constraints. I.e.
     this fit has no constraints for the combinatorial, because
     here is where the constraints come from
     '''
     models      : dict[Qsq, ModelFactoryConf ]
-    constraints : Literal[None] 
-    from_sim_fit: Literal[True] = True 
+    constraints : Literal[None]
+    from_sim_fit: Literal[True] = True
 # ------------------------------
 class CombinatorialConf(ComponentConf, frozen = True):
     '''
@@ -459,7 +459,7 @@ class CombinatorialConf(ComponentConf, frozen = True):
     '''
     models      : dict[Qsq, ModelFactoryConf ]
     constraints : CmbConstraintConf
-    from_sim_fit: Literal[True] = True 
+    from_sim_fit: Literal[True] = True
     # --------------------------------------
     def specialize(self, q2bin : Qsq) -> Self:
         '''
@@ -484,7 +484,7 @@ class MisIDConf(NonParametricConf, frozen = True):
     weights   : MisIDSampleWeights
     data_fit  : FitConf
     selection : dict[Cuts,str]
-    from_sim_fit: Literal[True] = True 
+    from_sim_fit: Literal[True] = True
     '''
     Overriding selection to full selection, e.g. `pid == false`
     Selection gets implemented in form of weights
@@ -599,7 +599,7 @@ class FitModelConf(UnpackerModel, frozen = True):
         if self.trigger.is_muon:
             return cfg_obs.model_copy(update = {'name' : Mass.b})
 
-        # If fit uses electron non-DTF AND parametric PDF 
+        # If fit uses electron non-DTF AND parametric PDF
         # use unsmeared mass
         if not isinstance(cfg_cmp, (NonParametricConf, CCbarConf)):
             return cfg_obs
@@ -630,15 +630,15 @@ class FitModelConf(UnpackerModel, frozen = True):
         return cfg_obs.obs
     # ----------------------
     def cfg_clone(
-        self, 
-        prefix  : str, 
+        self,
+        prefix  : str,
         q2bin   : Qsq,
         brems   : list[Brem]) -> Self:
         '''
         Parameters
         ---------------
         prefix: Initial part of category's original name
-        brems : List of brem categories for which prefixed section will be cloned 
+        brems : List of brem categories for which prefixed section will be cloned
 
         Returns
         ---------------
@@ -735,7 +735,7 @@ class RXFitConfig(BaseModel):
             return
 
         update : dict[str,Path | int] = {
-            'output' : self.output_directory / 'toys', 
+            'output' : self.output_directory / 'toys',
             'ntoys'  : self.ntoys}
 
         self.toy_cfg = self.toy_cfg.model_copy(update = update)
@@ -789,7 +789,7 @@ class RXFitConfig(BaseModel):
         path.write_text(string)
     # ----------------------
     def cfg_copy(
-        self, 
+        self,
         q2bin        : Qsq,
         replacements : dict[str,str]) -> Self:
         '''
@@ -822,8 +822,8 @@ class RXFitConfig(BaseModel):
         return self.model_copy(update = {'mod_cfg' : new_mod_cfg})
     # ----------------------
     def cfg_clone(
-        self, 
-        prefix  : str, 
+        self,
+        prefix  : str,
         q2bin   : Qsq,
         brems   : list[Brem]) -> Self:
         '''
@@ -831,7 +831,7 @@ class RXFitConfig(BaseModel):
         ---------------
         q2bin   : Value of q2bin for which this config is needed
         prefix  : Initial part of category's original name
-        brems   : List of brem categories for which prefixed section will be cloned 
+        brems   : List of brem categories for which prefixed section will be cloned
 
         Returns
         ---------------
@@ -839,14 +839,14 @@ class RXFitConfig(BaseModel):
         brem categories, with selections updated
         '''
         new_mod_cfg = self.mod_cfg.cfg_clone(
-            prefix  = prefix, 
+            prefix  = prefix,
             q2bin   = q2bin,
             brems   = brems)
 
         return self.model_copy(update = {'mod_cfg' : new_mod_cfg})
     # ----------------------
     def pick_category(
-        self, 
+        self,
         q2bin: Qsq,
         name : str) -> Self:
         '''
@@ -988,7 +988,7 @@ class RXFitConfig(BaseModel):
     @property
     def fit_directory(self) -> Path:
         '''
-        Directory where region directories go 
+        Directory where region directories go
         '''
         return self.output_directory / Path(Component.data_24) / 'fit/merged'
     # ----------------------

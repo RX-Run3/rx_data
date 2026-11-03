@@ -43,7 +43,7 @@ class Conf(BaseModel):
     identifier: str
     source    : str
     target    : str
-    dry       : bool 
+    dry       : bool
     # --------------------------------------
     @model_validator(mode = 'before')
     @classmethod
@@ -60,15 +60,15 @@ class Conf(BaseModel):
         elif identifier == _ANALYSIS_ID:
             source = data['source']
             project= Project(source)
-            regex  = cls._get_analysis_regex(project = project) 
+            regex  = cls._get_analysis_regex(project = project)
         else:
             regex = identifier
 
-        data['identifier'] = regex 
+        data['identifier'] = regex
 
         log.info(f'Using regex: {regex}')
 
-        return data 
+        return data
     # --------------------------------------
     @classmethod
     def _get_analysis_regex(cls, project : Project) -> str:
@@ -120,7 +120,7 @@ def _get_conf() -> Conf:
     parser.add_argument('-i', '--identifier', type=str, help=f'Event type, regex or "{_ANALYSIS_ID}", needed to find files', required=True)
     parser.add_argument('-s', '--source'    , type=str, help='Name of project to move files from, e.g. rk'  , required=True)
     parser.add_argument('-t', '--target'    , type=str, help='Name of target project'                       , required=True)
-    parser.add_argument('-l', '--loglvl'    , type=int, help='Logging level'                                , default=20) 
+    parser.add_argument('-l', '--loglvl'    , type=int, help='Logging level'                                , default=20)
     parser.add_argument('-d', '--dry'       , action='store_true', help='If used, will do a dry run, e.g. not move files')
     args = parser.parse_args()
 
@@ -165,7 +165,7 @@ def _get_paths(cfg : Conf) -> tuple[list[Path], list[Path]]:
     return l_fpath, l_dpath
 # ----------------------
 def _setup_dirs(
-    dirs   : list[Path], 
+    dirs   : list[Path],
     source : str,
     target : str) -> None:
     '''
@@ -198,7 +198,7 @@ def _setup_dirs(
         raise ValueError('Directory checks failed')
 # ----------------------
 def _move_files(
-    files  : list[Path], 
+    files  : list[Path],
     dry    : bool,
     source : str,
     target : str) -> None:

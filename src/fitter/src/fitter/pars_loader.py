@@ -33,7 +33,7 @@ class ParsLoader:
     '''
     # ----------------------
     def __init__(
-        self, 
+        self,
         name : str):
         '''
         Parameters
@@ -47,19 +47,19 @@ class ParsLoader:
 
         self._paths = self._get_paths()
         df          = self._paths_to_df(paths = self._paths)
-        self._df    = self._check_df(df = df) 
+        self._df    = self._check_df(df = df)
     # ----------------------
     def _check_df(
-        self, 
+        self,
         df : pnd.DataFrame) -> pnd.DataFrame:
         '''
         Parameters
         -------------
-        df : Pandas dataframe with fitting parameters before validation 
+        df : Pandas dataframe with fitting parameters before validation
 
         Returns
         -------------
-        Dataframe after validation 
+        Dataframe after validation
         '''
         hashes = df['Hash'].unique().tolist()
         seeds  = df['seed'].unique().tolist()
@@ -186,7 +186,7 @@ class ParsLoader:
         '''
         Parameters
         -------------
-        paths: List of paths to parquet files with all toys 
+        paths: List of paths to parquet files with all toys
 
         Returns
         -------------
@@ -252,7 +252,7 @@ class ParsLoader:
         return mtch.group(1)
     # ----------------------
     def _bootstrap_df(
-        self, 
+        self,
         df   : pnd.DataFrame,
         model: str) -> pnd.DataFrame:
         '''
@@ -265,7 +265,7 @@ class ParsLoader:
         -------------
         Subset of dataframe, containing only bootstrapping variations on this model
         '''
-        columns = list() 
+        columns = list()
         for name in df.columns:
             if self._boots_model(name = name) is None:
                 continue
@@ -299,7 +299,7 @@ class ParsLoader:
         - B can be treated the same as the other columns now, for e.g. plotting purposes
         '''
         models = { self._boots_model(name = name) for name in df.columns.to_list() }
-        
+
         data : list[pnd.Series] = []
         for model in models:
             if model is None:
@@ -363,7 +363,7 @@ class ParsLoader:
         df_strip   = df.drop(columns = all_deltas)
         df_delta   = pnd.DataFrame(data)
         df         = pnd.concat([df_strip, df_delta], axis=1)
-        
+
         return df
     # ----------------------
     def df_by_poi(self, poi : str) -> pnd.DataFrame:
@@ -401,7 +401,7 @@ class ParsLoader:
         Parameters
         -------------
         sys: Name of systematic, e.g. nominal
-    
+
         Returns
         -------------
         Dataframe corresponding to current systematic
@@ -430,11 +430,11 @@ class ParsLoader:
         tot_nfloat = len(df_nom['Parameter'].unique().tolist())
         log.debug(f'Found {tot_nfloat} floating parameters in nominal model')
 
-        l_df : list[pnd.DataFrame] = [] 
+        l_df : list[pnd.DataFrame] = []
         for syst, df in self._df.groupby('syst'):
             syst       = str(syst)
             fixed      = syst.startswith('fix_')
-            is_nominal = syst == _NOMINAL 
+            is_nominal = syst == _NOMINAL
 
             if not fixed and not is_nominal:
                 continue
@@ -444,7 +444,7 @@ class ParsLoader:
 
             df          = df.query(f'Parameter == \"{poi}\"')
             df['Fixed' ]= syst
-            df['nFixed']= nfixed 
+            df['nFixed']= nfixed
 
             l_df.append(df)
 

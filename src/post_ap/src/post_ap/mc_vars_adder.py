@@ -29,7 +29,7 @@ class MCVarsAdder:
         '''
         self._sample_name = sample_name
         self._rdf         = rdf
-        self._regex       = MC_REGEX 
+        self._regex       = MC_REGEX
         self._block_name  = 'block'
     # ---------------------------
     @cached_property

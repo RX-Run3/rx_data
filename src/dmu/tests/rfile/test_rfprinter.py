@@ -34,7 +34,7 @@ def test_simple():
 # -------------------------------------------------
 def test_raise_on_fail():
     '''
-    Test raise_on_fail flag 
+    Test raise_on_fail flag
     '''
     with pytest.raises(FileNotFoundError):
         obj = RFPrinter(path=Data.file_path_fail)
@@ -42,7 +42,7 @@ def test_raise_on_fail():
 # -------------------------------------------------
 def test_file_name():
     '''
-    Test specifying summary file name 
+    Test specifying summary file name
     '''
 
     obj = RFPrinter(path=Data.file_path_simple)

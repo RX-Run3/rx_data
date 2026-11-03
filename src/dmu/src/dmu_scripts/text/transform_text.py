@@ -15,10 +15,10 @@ class data:
 #---------------------------------
 def get_args():
     parser=argparse.ArgumentParser(description='Will transform a text file following a set of rules')
-    parser.add_argument('-i', '--input' , type=str, help='Path to input file' , required=True) 
+    parser.add_argument('-i', '--input' , type=str, help='Path to input file' , required=True)
     parser.add_argument('-o', '--output', type=str, help='Path to output file, if not passed, it will be same as input, but with trf before extension')
-    parser.add_argument('-c', '--config', type=str, help='Path to config file', required=True) 
-    parser.add_argument('-l', '--loglvl', type=int, help='Log level'          , default=20, choices=[10, 20, 30, 40]) 
+    parser.add_argument('-c', '--config', type=str, help='Path to config file', required=True)
+    parser.add_argument('-l', '--loglvl', type=int, help='Log level'          , default=20, choices=[10, 20, 30, 40])
     args = parser.parse_args()
 
     data.txt = args.input

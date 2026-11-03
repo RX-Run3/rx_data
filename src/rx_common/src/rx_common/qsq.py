@@ -183,8 +183,8 @@ def _load_data() -> dict[str,float]:
     result : dict[str,float] = dict()
     for qsq in Qsq:
         if qsq == Qsq.none:
-            result[f'{qsq}_lower'] = 0.0 
-            result[f'{qsq}_upper'] = _MAX_QSQ 
+            result[f'{qsq}_lower'] = 0.0
+            result[f'{qsq}_upper'] = _MAX_QSQ
 
             continue
 

@@ -167,7 +167,7 @@ def test_nopid(sample : Component):
         rdf = rdf_org.Filter(cut, 'truth match')
         try:
             fin = rdf.Count().GetValue()
-        except Exception as exc: 
+        except Exception as exc:
             raise RuntimeError(f'Cannot apply cut: "{cut}"') from exc
 
         this_fail = 20 * fin < ini
@@ -333,7 +333,7 @@ def test_semileptonic_rkst(sample : Component):
 @pytest.mark.parametrize('sample, trigger', _EMULATED)
 def test_emulated(sample : Component, trigger : Trigger):
     '''
-    Tests with emulated samples 
+    Tests with emulated samples
     '''
     cut = tm.get_truth(component = sample, project = trigger.project)
     gtr = RDFGetter(sample=sample, trigger=trigger)
@@ -348,5 +348,5 @@ def test_emulated(sample : Component, trigger : Trigger):
 
     log.info(f'{sample}; eff={fin}/{ini}={fin/ini=:.3f}')
 
-    assert fin > 0 
+    assert fin > 0
 # --------------------------

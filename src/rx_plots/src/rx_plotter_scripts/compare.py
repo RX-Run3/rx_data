@@ -35,13 +35,13 @@ class Config:
     '''
     Class used to store configuration
     '''
-    q2_bin  : Qsq 
-    sample  : Component 
-    trigger : Trigger 
+    q2_bin  : Qsq
+    sample  : Component
+    trigger : Trigger
     config  : str
     brem    : int
     block   : int
-    mva     : int 
+    mva     : int
     emulate : int
     ncores  : int
 
@@ -49,7 +49,7 @@ class Config:
     ana_dir = Path(os.environ['ANADIR'])
     l_col   = []
 # ---------------------------------
-def _get_plot_cfg(cfg : Config) -> DictConfig: 
+def _get_plot_cfg(cfg : Config) -> DictConfig:
     '''
     Returns
     -------------
@@ -138,7 +138,7 @@ def _update_with_block(
 
     Returns
     ---------------
-    Updated block cuts 
+    Updated block cuts
     '''
     if cfg.block == -1:
         log.info('Not filtering by block')
@@ -150,7 +150,7 @@ def _update_with_block(
 # ---------------------------------
 @gut.timeit
 def _get_rdf(
-    cfg     : Config, 
+    cfg     : Config,
     cfg_plt : DictConfig) -> RDF.RNode:
     '''
     Parameters
@@ -179,7 +179,7 @@ def _get_selection(
     '''
     Parameters
     -------------
-    cfg    : Configuration used to build inputs 
+    cfg    : Configuration used to build inputs
     cfg_plt: Plotting configuration
 
     Returns
@@ -245,7 +245,7 @@ def _cfg_from_args() -> Config:
     return cfg
 # ---------------------------------
 def _get_out_dir(
-    plt_dir : Path, 
+    plt_dir : Path,
     cfg     : Config) -> Path:
     '''
     Parameters
@@ -267,7 +267,7 @@ def _get_out_dir(
     return out_dir
 # ---------------------------------
 def _rdf_from_def(
-    rdf   : RDF.RNode, 
+    rdf   : RDF.RNode,
     d_def : DictConfig) -> RDF.RNode:
     '''
     Parameters

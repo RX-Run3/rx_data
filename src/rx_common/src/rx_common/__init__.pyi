@@ -1,10 +1,10 @@
 from .types              import Correction
 from .types              import Parameter
-from .types              import Particle 
-from .types              import DataSet 
-from .types              import Brem 
+from .types              import Particle
+from .types              import DataSet
+from .types              import Brem
 from .types              import Block
-from .types              import MVA 
+from .types              import MVA
 
 from .branching_fraction import BranchingFraction
 from .working_point      import WorkingPoint
@@ -13,14 +13,14 @@ from .component          import CCbarComponent
 from .component          import Component
 from .campaign           import Campaign
 from .mva_conf           import MVAConf, MVAWp, UNINIT_VAL
-from .trigger            import Trigger 
-from .process            import set_nproc, get_nproc 
+from .trigger            import Trigger
+from .process            import set_nproc, get_nproc
 from .project            import Project, AlternativeProject
-from .channel            import Channel 
+from .channel            import Channel
 from .region             import Region, MisID
 from .cuts               import Cuts, Cut
 from .mass               import Mass
-from .qsq                import Qsq 
+from .qsq                import Qsq
 from .qsq                import QsqDef
 
 __all__ = [
@@ -30,16 +30,16 @@ __all__ = [
     'CCbarComponent',
     'WorkingPoint',
     'Correction',
-    'Component', 
+    'Component',
     'Parameter',
     'Campaign',
     'Particle',
-    'Trigger', 
-    'Channel', 
+    'Trigger',
+    'Channel',
     'MVAConf',
     'MVAWp',
     'UNINIT_VAL',
-    'Project', 
+    'Project',
     'DataSet',
     'Region',
     'MisID',
@@ -49,8 +49,8 @@ __all__ = [
     'Brem',
     'Block',
     'MVA',
-    'Qsq', 
-    'QsqDef', 
+    'Qsq',
+    'QsqDef',
     # --------------------
     'set_nproc',
     'get_nproc',

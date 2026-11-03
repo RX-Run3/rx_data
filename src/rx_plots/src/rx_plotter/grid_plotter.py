@@ -65,11 +65,11 @@ class GridPlotter:
         arr_x = df.index.to_numpy()
         arr_y = df.columns.to_numpy()
         arr_z = df.values
-    
+
         ix, iy = numpy.unravel_index(numpy.argmax(arr_z), arr_z.shape)
         y = arr_x[ix]
         x = arr_y[iy]
-    
+
         plt.scatter([x], [y], color='red', s=200, zorder=5)
         plt.annotate(
             f'({x:.2f}, {y:.2f})',
@@ -85,30 +85,30 @@ class GridPlotter:
             index  =_YNAME,
             columns=_XNAME,
             values =_ZNAME)
-    
+
         if randomize:
             scale   = random.gauss(mu=1, sigma=_RANDOM_SIGMA)
             pivoted = scale * pivoted
-    
+
         arr_x = pivoted.columns.to_numpy()
         arr_y = pivoted.index.to_numpy()
         arr_z = pivoted.values
-    
+
         def edges(vals):
             mid = (vals[1:] + vals[:-1]) / 2
             first = vals[0] - (mid[0] - vals[0])
             last  = vals[-1] + (vals[-1] - mid[-1])
             return numpy.concatenate([[first], mid, [last]])
-    
+
         x_edges = edges(arr_x)
         y_edges = edges(arr_y)
-    
+
         plt.figure(figsize=(13, 10))
         mesh = plt.pcolormesh(
             x_edges, y_edges, arr_z,
             cmap='viridis', shading='flat')
         plt.colorbar(mesh)
-    
+
         if randomize:
             plt.title('Randomized yields vs WP')
         else:

@@ -14,14 +14,14 @@ class FCopy:
     '''
     Class meant to act as a wrapper to rsync by
 
-    - Checking that the server is reachable 
+    - Checking that the server is reachable
     - Talking to rsync
 
     ````python
     from dmu import FCopy
 
     with FCopy(target='-p 1234 userA@serverA') as fcp
-        fcp.copy(source='/home/userA/path/file1', target='/home/userB/path/file1') 
+        fcp.copy(source='/home/userA/path/file1', target='/home/userB/path/file1')
     ````
 
     will copy a local file to a remote server.
@@ -34,7 +34,7 @@ class FCopy:
     '''
     # ----------------------
     def __init__(
-        self, 
+        self,
         server : str,
         timeout: int = 50):
         '''
@@ -42,18 +42,18 @@ class FCopy:
         -------------
         target : User and server name where output files will go, e.g. -p 1234 user@server.ch
         timeout: When checking for servers availability, wait this number of seconds
-        
+
         If server and/or target are left empty (default), the files will be assumed to be local
         '''
         port, login  = self._read_server(server = server)
         self._port   = port
-        self._login  = login 
+        self._login  = login
         self._timeout= timeout
 
         self._check_utility(name='rsync')
         self._check_utility(name='ssh'  )
 
-        self._close_on_exit = False 
+        self._close_on_exit = False
     # ----------------------
     def _read_server(self, server : str) -> tuple[str,str]:
         '''
@@ -116,7 +116,7 @@ class FCopy:
 
         log.debug(' '.join(commands))
         result = subprocess.run(
-            commands, 
+            commands,
             check = False,
             stderr=subprocess.PIPE,
             text  = True)

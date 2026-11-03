@@ -24,7 +24,7 @@ class RDFRenamer:
 
         Returns
         -------------
-        Name of branch to be used as alias, e.g. friend.[ALIAS_NAME] 
+        Name of branch to be used as alias, e.g. friend.[ALIAS_NAME]
         '''
         try:
             [friend, column] = name.split('.')
@@ -73,7 +73,7 @@ class RDFRenamer:
         --------------
         rdf: ROOT dataframe before renaming
 
-        Returns 
+        Returns
         --------------
         ROOT dataframe after renaming
         '''

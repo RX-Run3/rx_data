@@ -15,7 +15,7 @@ from dmu       import LogStore
 def initialize():
     '''
     This will run before any test
-    '''    
+    '''
     LogStore.set_level('dmu:stats:regular_interpolator', 10)
 # ---------------------------------------
 def test_numpy(tmp_path : Path):

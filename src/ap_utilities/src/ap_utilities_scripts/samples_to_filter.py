@@ -1,5 +1,5 @@
 '''
-This script will create a YAML file needed to build 
+This script will create a YAML file needed to build
 the YAML file needed to submit filtering jobs to the grid
 '''
 
@@ -22,7 +22,7 @@ class Sample:
     '''
     Class meant to represent an MC sample
     '''
-    event_type : str 
+    event_type : str
     name       : str
     version    : str
     block      : str
@@ -89,7 +89,7 @@ def _samples_from_collection(scol : SampleCollection, analysis : str, version : 
     l_sample = []
     for evt_type in l_evt_type:
         log.debug(evt_type)
-        scol_flt = scol.filter(eventtype=evt_type, version=version) 
+        scol_flt = scol.filter(eventtype=evt_type, version=version)
         if len(scol_flt) == 0:
             continue
 

@@ -9,10 +9,10 @@ from dmu.stats   import print_pdf
 @pytest.mark.parametrize('kind', ['s+b', 's+b+x', 's_alt+b'])
 def test_get_pdfs_suffix(kind : Literal['s+b', 's+b+x', 's_alt+b']):
     '''
-    Test PDF getting function 
+    Test PDF getting function
     '''
     pdf = stats.get_model(
-        kind        = kind, 
+        kind        = kind,
         suffix      = 'test',
         suffix_pdfs = True)
 
@@ -23,10 +23,10 @@ def test_get_pdfs_suffix(kind : Literal['s+b', 's+b+x', 's_alt+b']):
 @pytest.mark.parametrize('kind', ['s+b', 's+b+x', 's_alt+b'])
 def test_get_pdfs_prefix(kind : Literal['s+b', 's+b+x', 's_alt+b']):
     '''
-    Test PDF getting function 
+    Test PDF getting function
     '''
     pdf = stats.get_model(
-        kind        = kind, 
+        kind        = kind,
         prefix      = 'test',
         suffix_pdfs = False)
 
@@ -40,7 +40,7 @@ def test_get_pdf_kde(kind : Literal['signal_kde', 'skde+b']):
     Test creating model which uses a KDE
     '''
     pdf = stats.get_model(
-        kind        = kind, 
+        kind        = kind,
         prefix      = 'test',
         suffix_pdfs = False)
 

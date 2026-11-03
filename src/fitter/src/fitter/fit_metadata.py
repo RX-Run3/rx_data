@@ -24,7 +24,7 @@ _HASH_STATS : Final[tuple[float,float]] = 1, 1 # Used to calculate hashes, hash 
 # -------------------------------
 class FitMetadata(BaseModel, frozen = True):
     '''
-    Class meant to identify fitted sample 
+    Class meant to identify fitted sample
     '''
     component : Component
     cmb       : MVAWp
@@ -34,7 +34,7 @@ class FitMetadata(BaseModel, frozen = True):
     channel   : Channel
     q2bin     : Qsq
     brem      : Brem
-    stats     : tuple[float,float] 
+    stats     : tuple[float,float]
     '''
     Number of entries and uncertainty for dataset that was fitted
     '''
@@ -65,7 +65,7 @@ class FitMetadata(BaseModel, frozen = True):
     @property
     def signal(self) -> Component:
         '''
-        Signal component associated to fit 
+        Signal component associated to fit
         '''
         trig = Trigger.get_main_trigger(
             channel = self.channel,
@@ -73,7 +73,7 @@ class FitMetadata(BaseModel, frozen = True):
 
         if self.q2bin.is_rare:
             return trig.rare_signal
-        
+
         if   self.q2bin == Qsq.jpsi:
             return trig.reso_jpsi_signal
         elif self.q2bin == Qsq.psi2:
@@ -148,7 +148,7 @@ class FitMetadata(BaseModel, frozen = True):
         ---------------
         Object holding statistics
         '''
-        data_path = path.parent / 'data.json' 
+        data_path = path.parent / 'data.json'
         if not data_path.exists():
             raise ValueError(f'Cannot find {data_path}')
 

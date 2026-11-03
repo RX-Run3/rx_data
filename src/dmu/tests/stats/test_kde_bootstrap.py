@@ -97,7 +97,7 @@ def test_replica_is_a_valid_pdf_close_to_original(cls: type[sut.AnyKDE], data: z
     replica = new_pdf.pdf(X).numpy()
     assert np.all(np.isfinite(replica))
     assert np.all(replica >= 0)
-    assert np.max(np.abs(replica - original)) < _TOLERANCE 
+    assert np.max(np.abs(replica - original)) < _TOLERANCE
 
 
 @pytest.mark.parametrize("cls", _KDE_CLASSES)

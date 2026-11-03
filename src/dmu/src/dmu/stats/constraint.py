@@ -1,5 +1,5 @@
 '''
-Module containing constraint classes 
+Module containing constraint classes
 '''
 
 import yaml
@@ -104,7 +104,7 @@ class Constraint(BaseModel):
         '''
         Parameters
         -------------
-        path: Path to JSON file that will store 
+        path: Path to JSON file that will store
         '''
         data = self.model_dump_json(indent=2)
 
@@ -181,7 +181,7 @@ class Constraints[C : 'Constraint1D | ConstraintND'](RootModel[Mapping[str,C]], 
             msgs  = [ '-' * 110 ] + [ str(cons) for cons in l_cons_nd ]
             msg  += '\n'.join(msgs) + '\n'
 
-        return msg 
+        return msg
     # -------------------------------------------
     def merge(self, name : str) -> 'ConstraintND':
         '''
@@ -199,7 +199,7 @@ class Constraints[C : 'Constraint1D | ConstraintND'](RootModel[Mapping[str,C]], 
 
         if l_cons_1d:
             cons_nd_from_1d = self._merge_1d_constraints(
-                constraints = l_cons_1d, 
+                constraints = l_cons_1d,
                 kind        = _1D_CONS_TYPE)
 
             l_cons_nd.append(cons_nd_from_1d)
@@ -210,18 +210,18 @@ class Constraints[C : 'Constraint1D | ConstraintND'](RootModel[Mapping[str,C]], 
         types = { cons.kind for cons in l_cons_nd }
         if len(types) != 1:
             raise ValueError(f'Found multiple types of 1D constraints: {types}')
-        cons_type = types.pop() 
+        cons_type = types.pop()
 
         cons = self._merge_nd_constraints(
             name        = name,
             kind        = cons_type,
             constraints = l_cons_nd)
 
-        return cons 
+        return cons
     # -------------------------------------------
     def _merge_nd_constraints(
-        self, 
-        name        : str, 
+        self,
+        name        : str,
         kind        : ConstraintType,
         constraints : list['ConstraintND']) -> 'ConstraintND':
         '''
@@ -236,7 +236,7 @@ class Constraints[C : 'Constraint1D | ConstraintND'](RootModel[Mapping[str,C]], 
         '''
         parameters = [ parameter for cons in constraints for parameter in cons.parameters ]
         values     = [ value     for cons in constraints for value     in cons.values     ]
-        covs       = [ cons.cov  for cons in constraints ] 
+        covs       = [ cons.cov  for cons in constraints ]
         cov : list[list[float]] = block_diag(*[ numpy.asarray(c, dtype = float) for c in covs ]).tolist()
 
         return ConstraintND(
@@ -247,7 +247,7 @@ class Constraints[C : 'Constraint1D | ConstraintND'](RootModel[Mapping[str,C]], 
             cov        = cov)
     # -------------------------------------------
     def _merge_1d_constraints(
-        self, 
+        self,
         kind        : ConstraintType,
         constraints : list['Constraint1D']) -> 'ConstraintND':
         '''
@@ -306,7 +306,7 @@ class ConstraintND(Constraint):
     '''
     Class meant to symbolize NDimensional Gaussian constraint
     '''
-    kind       : ConstraintType 
+    kind       : ConstraintType
     parameters : list[str]
     values     : list[float]
     cov        : list[list[float]]
@@ -347,7 +347,7 @@ class ConstraintND(Constraint):
             name       = self.name,
             kind       = self.kind,
             parameters = self.parameters,
-            values     = new_values, 
+            values     = new_values,
             cov        = self.cov,
         )
     # ----------------------
@@ -367,7 +367,7 @@ class ConstraintND(Constraint):
         msg += 'Parameters\n'
         msg += '---------------\n'
         msg += '\n'.join(parameters)
-        
+
         return msg
     # ---------------------
     @model_validator(mode='after')
@@ -376,17 +376,17 @@ class ConstraintND(Constraint):
         Checks that all the inputs are of the same dimension
         '''
         dimension = len(self.parameters)
-        
+
         if len(self.values) != dimension:
             raise ValueError(f"observation length ({len(self.values)}) must match parameters length ({dimension})")
-        
+
         if len(self.cov) != dimension:
             raise ValueError(f"cov must have {dimension} rows, but has {len(self.cov)}")
-            
+
         for irow, row in enumerate(self.cov):
             if len(row) != dimension:
                 raise ValueError(f"cov row {irow} must have {dimension} columns, but has {len(row)}")
-        
+
         return self
     # ----------------------
     def _obs_from_holder(self, holder : ParsHolder) -> list[zpar]:
@@ -403,7 +403,7 @@ class ConstraintND(Constraint):
 
         obs : list[zpar] = []
         for par in s_par:
-            if par.name not in self.parameters: 
+            if par.name not in self.parameters:
                 continue
 
             if isinstance(par, zpar):
@@ -433,7 +433,7 @@ class ConstraintND(Constraint):
         d_holder_params = { par.name : par for par in s_all if par.name in self.parameters }
 
         try:
-            pars = [ d_holder_params[name] for name in self.parameters ] 
+            pars = [ d_holder_params[name] for name in self.parameters ]
         except Exception as exc:
             for name in d_holder_params:
                 log.error(name)
@@ -454,9 +454,9 @@ class ConstraintND(Constraint):
             error = math.sqrt(self.cov[ipar][ipar])
 
             obs = zfit.Parameter(
-                f'{name}_mu', 
-                value, 
-                value - 5 * error, 
+                f'{name}_mu',
+                value,
+                value - 5 * error,
                 value + 5 * error)
 
             d_obs[name] = obs
@@ -479,7 +479,7 @@ class ConstraintND(Constraint):
         params= self._params_from_holder(holder = holder)
         l_obs = self.observations.values()
         cns   = zfit.constraint.GaussianConstraint(
-            params      = params, 
+            params      = params,
             observation = l_obs,
             cov         = self.cov)
 
@@ -494,7 +494,7 @@ class ConstraintND(Constraint):
         Parameters
         -------------
         name            : Name of parameter that will be constrained
-        raise_on_missing: If True and if parameter is not found, raises ValueError, 
+        raise_on_missing: If True and if parameter is not found, raises ValueError,
                           If False and not found, returns None
 
         Returns
@@ -523,7 +523,7 @@ class Constraint1D(Constraint):
     Class representing Gaussian 1D constrain
     '''
     name: str
-    kind: ConstraintType 
+    kind: ConstraintType
     mu  : float
     sg  : float
     # ----------------------
@@ -552,7 +552,7 @@ class Constraint1D(Constraint):
 
             constraints[name] = cns
 
-        return Constraints[Constraint1D](root = constraints) 
+        return Constraints[Constraint1D](root = constraints)
     # ----------------------
     def calibrate(self, result : FitResult) -> 'Constraint1D':
         '''
@@ -562,20 +562,20 @@ class Constraint1D(Constraint):
 
         Parameters
         -------------
-        result: Object holding result of fit 
+        result: Object holding result of fit
 
         Returns
         -------------
         Copy of this constraint with means calibrated
         '''
-        new_value, _ = result[self.name] 
+        new_value, _ = result[self.name]
 
         log.debug(f'{self.name:<50}{self.mu:<20.3f}{"--->":<20}{new_value:<20.3f}')
 
         return Constraint1D(
             kind   = self.kind,
             name   = self.name,
-            mu     = new_value, 
+            mu     = new_value,
             sg     = self.sg,
         )
     # ----------------------
@@ -593,8 +593,8 @@ class Constraint1D(Constraint):
                 raise ValueError(f'Invalid constraint: {self.kind}')
 
         mu   = zfit.Parameter(
-            name  = f'{self.name}_mu', 
-            value = self.mu, 
+            name  = f'{self.name}_mu',
+            value = self.mu,
             lower = self.mu - _CONS_SPACE_SIGMAS * sg,
             upper = self.mu + _CONS_SPACE_SIGMAS * sg)
 
@@ -609,7 +609,7 @@ class Constraint1D(Constraint):
         Parameters
         -------------
         name            : Name of parameter that will be constrained
-        raise_on_missing: If True and if parameter is not found, raises ValueError, 
+        raise_on_missing: If True and if parameter is not found, raises ValueError,
                           If False and not found, returns None
 
         Returns
@@ -661,14 +661,14 @@ class Constraint1D(Constraint):
         param = self._param_from_holder(holder = holder)
 
         match self.kind:
-            case ConstraintType.gauss: 
+            case ConstraintType.gauss:
                 cons = GConstraint(
-                    params      = param, 
-                    observation = self.obs, 
+                    params      = param,
+                    observation = self.obs,
                     uncertainty = self.sg)
             case ConstraintType.poisson:
                 cons = PConstraint(
-                    params      = param, 
+                    params      = param,
                     observation = self.obs)
 
         return cons

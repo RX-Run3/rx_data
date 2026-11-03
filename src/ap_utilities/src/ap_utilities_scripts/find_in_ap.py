@@ -67,7 +67,7 @@ def _get_info() -> list[tuple[str, str, str]]:
 # ----------------------
 def _found_type(
     col      : SampleCollection,
-    evt_type : str, 
+    evt_type : str,
     block    : str) -> bool:
     '''
     Parameters
@@ -107,7 +107,7 @@ def _found_type(
     if not found:
         log.debug(f'Cannot find: {evt_type}/{block}')
 
-    return found 
+    return found
 # ----------------------
 def _parse_args() -> None:
     parser = argparse.ArgumentParser(description='Script used to find missing ntupled samples')

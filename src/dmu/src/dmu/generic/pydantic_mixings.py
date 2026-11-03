@@ -7,7 +7,7 @@ from typing              import Sequence, TypeVar
 from dmu                 import LogStore
 
 from .pydantic_protocols import NodeProtocol
-from .pydantic_protocols import SerializableProtocol 
+from .pydantic_protocols import SerializableProtocol
 from .regular_graph      import RegularGraphMaker, LinkedNode
 from .utilities          import load_data
 
@@ -83,7 +83,7 @@ class Patchable:
             total           += lnode.gauss
             valid_neighbors += 1
 
-        avg  = total / valid_neighbors 
+        avg  = total / valid_neighbors
         node = LinkedNode(
             val         = avg.mean,
             err         = avg.sdev,

@@ -18,8 +18,8 @@ class AcceptanceReader:
     '''
     #----------------------------------
     def __init__(
-        self, 
-        year   : str, 
+        self,
+        year   : str,
         project: Project,
         sample : Component):
         '''
@@ -27,7 +27,7 @@ class AcceptanceReader:
         ---------------
         year   : E.g. 2024, needed to pick correct file
         project: E.g. rk, rkst
-        sample : E.g. Bd_psi2SKst_mm_eq_DPC 
+        sample : E.g. Bd_psi2SKst_mm_eq_DPC
         '''
         self._year    = year
         self._sample  = sample

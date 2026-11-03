@@ -136,7 +136,7 @@ class TestSimFitter:
             return resonant_shape
 
         if self._component == Component.bdkstkpiee and self._trigger == Trigger.rk_ee_os:
-            return part_reco_shape 
+            return part_reco_shape
 
         if self._component == Component.bdkstkpiee and self._trigger == Trigger.rkst_ee_os:
             return signal_shape
@@ -163,7 +163,7 @@ class TestSimFitter:
     def get_model(self) -> zpdf | None:
         log.warning('Using mock SimFitter PDF')
         skipped = {
-            Component.ccbar, 
+            Component.ccbar,
             Component.bdkstkpijpsimm_kpimm_pikmm,
             Component.bdkstkpijpsiee_kpiee_pikee,
             Component.bskstjpsiee,
@@ -172,7 +172,7 @@ class TestSimFitter:
             Component.bsphijpsimm,
             Component.lbpkjpsimm,
             Component.lbpkjpsiee,
-            Component.bpkppsi2ee, 
+            Component.bpkppsi2ee,
             Component.bpkstkpiee,
             Component.bdkstkpipsi2ee}
 
@@ -327,8 +327,8 @@ class TestCmbConstraints:
         signal  : Any,
         cfg_fit : Any) -> None:
         _ = brem
-        _ = signal 
-        _ = cfg_fit 
+        _ = signal
+        _ = cfg_fit
         log.warning('Using patch version of CmbConstraints')
     # ---------------------
     def get_constraint(self) -> ConstraintND:

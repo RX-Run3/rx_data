@@ -1,5 +1,5 @@
 '''
-Module holding LogStore 
+Module holding LogStore
 '''
 
 import logging

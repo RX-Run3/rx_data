@@ -51,7 +51,7 @@ class Plotter:
             self._cfg = cfg
 
         self._d_rdf : dict[str, RDF.RNode]     = { name : self._preprocess_rdf(rdf=rdf, name=name) for name, rdf in d_rdf.items()}
-        self._d_wgt : dict[str, numpy.ndarray] = self._get_weights() 
+        self._d_wgt : dict[str, numpy.ndarray] = self._get_weights()
 
         self._title : str = ''
     #-------------------------------------

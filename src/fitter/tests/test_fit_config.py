@@ -24,11 +24,11 @@ def initialize():
 # ----------------------
 def test_save(tmp_path : Path):
     '''
-    Tests saving config 
+    Tests saving config
     '''
     with gut.environment(mapping = {'ANADIR' : str(tmp_path)}):
         cfg = RXFitConfig(
-            name    = 'test', 
+            name    = 'test',
             group   = 'test',
             mva_cmb = MVAWp(0.),
             mva_prc = MVAWp(0.),

@@ -29,7 +29,7 @@ class CmbFitConf(BaseModel):
     '''
     model_config = ConfigDict(frozen=True)
 
-    conf : FitConf 
+    conf : FitConf
     model: ModelFactoryConf | None
 # --------------------------------
 class CmbInputConfig(BaseModel):
@@ -39,11 +39,11 @@ class CmbInputConfig(BaseModel):
     '''
     model_config = ConfigDict(frozen=True)
 
-    q2bin  : Qsq 
-    mass   : Mass 
-    trigger: Trigger 
+    q2bin  : Qsq
+    mass   : Mass
+    trigger: Trigger
     samples: list[Component]
-    cutflow: str 
+    cutflow: str
     # -------------------------------------
     @model_validator(mode = 'after')
     def validate_samples(self) -> 'CmbInputConfig':
@@ -97,7 +97,7 @@ class CmbValidationConfig(BaseModel):
         '''
         Parameters
         ---------------
-        fname: Yaml file name where configuration is specified 
+        fname: Yaml file name where configuration is specified
 
         Returns
         ---------------
@@ -203,7 +203,7 @@ class CmbValidator:
     '''
     # ---------------------------
     def __init__(
-        self, 
+        self,
         rdfs    : dict[Component, RDF.RNode],
         cfg     : CmbValidatorConf):
         '''
@@ -216,14 +216,14 @@ class CmbValidator:
         self._rdfs = rdfs
     # ---------------------------
     def _get_model(
-        self, 
+        self,
         cut  : str,
         label: str,
         name : str) -> zfit.pdf.BasePDF:
         '''
         Parameters
         ----------------
-        cut : BDT cut for current model 
+        cut : BDT cut for current model
         name: Identifier of current model
 
         Returns
@@ -239,7 +239,7 @@ class CmbValidator:
                 cut       = cut,
                 name      = name,
                 label     = label,
-                component = component, 
+                component = component,
                 cfg       = cfg_fit)
 
             if pdf is None:
@@ -254,14 +254,14 @@ class CmbValidator:
         if len(l_pdf) == 1:
             return l_pdf[0]
 
-        return zfit.pdf.SumPDF(l_pdf, obs = self._cfg.input.mass.obs) 
+        return zfit.pdf.SumPDF(l_pdf, obs = self._cfg.input.mass.obs)
     # ----------------------
     def _pdf_for_component(
-        self, 
+        self,
         cut       : str,
         name      : str,
         label     : str,
-        component : Component, 
+        component : Component,
         cfg       : CmbFitConf) -> zfit.pdf.BasePDF | None:
         '''
         Parameters
@@ -280,7 +280,7 @@ class CmbValidator:
         pdf = None
         if cfg.model:
             obj  = ModelFactory.from_conf(
-                obs    = mass.obs, 
+                obs    = mass.obs,
                 prefix = _PDF_PREFIX,
                 cfg    = cfg.model)
             pdf = obj.get_pdf()
@@ -306,7 +306,7 @@ class CmbValidator:
             obs   = zfit.Space('mass', limits = (4000, 6000))
             model = zfit.pdf.KDE1DimFFT(
                 name = component.latex,
-                data = masses, 
+                data = masses,
                 obs  = obs,
                 norm = mass.obs)
 
@@ -366,7 +366,7 @@ class CmbValidator:
         return data
     # ---------------------------
     def _fit(
-        self, 
+        self,
         label: str,
         name : str,
         comp : Component,
@@ -383,7 +383,7 @@ class CmbValidator:
         '''
         log.debug(f'Fitting MC component: {comp}')
         obj = Fitter(
-            pdf  = model, 
+            pdf  = model,
             data = data)
 
         cfg = self._cfg.validation.fit[comp]
@@ -469,8 +469,8 @@ class CmbValidator:
             results[cut_name] = res
 
         stat = ValidationStatus(
-            input      = self._cfg.input, 
-            validation = self._cfg.validation, 
+            input      = self._cfg.input,
+            validation = self._cfg.validation,
             results    = results)
 
         return stat

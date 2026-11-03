@@ -10,13 +10,13 @@ from typing          import Final
 from dmu             import LogStore
 from dmu.generic     import utilities          as gut
 from dmu.stats       import ConstraintType
-from dmu.stats       import Constraint1D 
+from dmu.stats       import Constraint1D
 from dmu.stats       import ConstraintND
 from dmu.stats       import Constraints
 from dmu.stats       import zfit
 from zfit            import Parameter          as zpar
-from zfit.constraint import GaussianConstraint as GConstraint 
-from zfit.constraint import PoissonConstraint  as PConstraint 
+from zfit.constraint import GaussianConstraint as GConstraint
+from zfit.constraint import PoissonConstraint  as PConstraint
 
 log = LogStore.add_logger('dmu:test_constraint')
 # ----------------------
@@ -52,7 +52,7 @@ def _load_constraints(kind = 'uncorrelated') -> list[dict]:
     '''
     raw_input : dict[str,dict] = gut.load_data(package='dmu_data', fpath=f'tests/stats/constraints/{kind}.yaml')
 
-    data : list[dict] = [] 
+    data : list[dict] = []
     for name, entry in raw_input.items():
         entry['name'] = name
         data.append(entry)
@@ -83,7 +83,7 @@ class ParsHolder:
 @pytest.mark.parametrize('data, mean, stdv', zip(_load_constraints(), _EXPECTED_MU, _EXPECTED_SG, strict = True))
 def test_constraint1D(data : dict, mean : float, stdv : float):
     '''
-    Basic test for Constraint1D 
+    Basic test for Constraint1D
     '''
     holder = ParsHolder()
     cons   = Constraint1D(**data)

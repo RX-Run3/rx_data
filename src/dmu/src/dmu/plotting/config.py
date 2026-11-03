@@ -31,8 +31,8 @@ class LineConf(BaseModel):
     Class configuring lines in plots
     '''
     label     : str
-    linestyle : LineStyles 
-    color     : str 
+    linestyle : LineStyles
+    color     : str
     # ---------------------------------
     @model_validator(mode = 'after')
     def _validate(self) -> 'LineConf':
@@ -52,7 +52,7 @@ class PlotConf(BaseModel):
     Class specifying how to plot a variable
     '''
     binning    : tuple[int,int,int]
-    yscale     : Literal['linear', 'log'] 
+    yscale     : Literal['linear', 'log']
     labels     : tuple[str,str]
     name       : str
     normalized : bool
@@ -67,7 +67,7 @@ class PlotConf(BaseModel):
 
         Returns
         ----------------
-        Copy of current object with prefix wherever it makes sense, e.g. name 
+        Copy of current object with prefix wherever it makes sense, e.g. name
         '''
         return self.model_copy(update = {'name' : f'{self.name}-{suffix}'})
 # --------------------------------------
@@ -86,10 +86,10 @@ class Dataset(BaseModel):
 class OverlayConf(BaseModel):
     '''
     Class holding configuration for overlays
-    of variables 
+    of variables
     '''
     general  : GenericConf
-    saving   : SavingConf 
+    saving   : SavingConf
     plots    : dict[str,PlotConf]
     # --------------------------------------
     def copy_cfg(self, suffix : str) -> 'OverlayConf':

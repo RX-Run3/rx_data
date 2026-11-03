@@ -25,11 +25,11 @@ def get_tests(path : Path) -> dict[int, str]:
 
     Returns
     ---------------
-    Dictionary mapping test index to command needed by pytest 
+    Dictionary mapping test index to command needed by pytest
     """
     collector = Collector(path=path)
     test_path = str(path)
-    
+
     pytest.main([test_path, '--collect-only', '-q'], plugins=[collector])
-    
+
     return collector.collected_test_ids

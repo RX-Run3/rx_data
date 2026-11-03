@@ -48,7 +48,7 @@ class Measurement(BaseModel):
         '''
         Parameters
         -------------
-        prefix: String that parameter has to start with 
+        prefix: String that parameter has to start with
 
         Returns
         -------------
@@ -85,7 +85,7 @@ class Measurement(BaseModel):
         result = dict()
         for name, (value, error) in self.data.items():
             result[name           ] = value
-            result[f'{name}_error'] = error 
+            result[f'{name}_error'] = error
 
         return result
 # ----------------------------------------------

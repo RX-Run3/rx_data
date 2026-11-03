@@ -15,7 +15,7 @@ from dmu.stats   import FitResult
 from dmu.stats   import FitParameter
 from dmu.stats   import Constraints, Constraint1D, ConstraintND
 from dmu.stats   import ConstraintAdder
-from dmu.stats   import zfit 
+from dmu.stats   import zfit
 from dmu.testing import get_nll
 from dmu.generic import utilities as gut
 from dmu.generic import rxran
@@ -69,16 +69,16 @@ def test_simple(
     res.hesse(name = 'minuit_hesse')
 
     mkr = ToyMaker(
-        nll=nll, 
-        res=FitResult.from_zfit(res), 
-        cfg=cfg, 
+        nll=nll,
+        res=FitResult.from_zfit(res),
+        cfg=cfg,
         cns=cons)
     df = mkr.get_parameter_information(name = 'test')
 
-    assert df.columns.to_list() == _COLUMNS 
+    assert df.columns.to_list() == _COLUMNS
 
     pars  = nll.get_params()
-    assert len(df) == cfg.ntoys * len(pars) 
+    assert len(df) == cfg.ntoys * len(pars)
 
     print(df)
 # ----------------------
@@ -90,7 +90,7 @@ def test_integration(
     '''
     Makes toys and then plots using ToyPlotter
 
-    Parameters 
+    Parameters
     -------------
     tmp_path : Where output plots will go
     ntoys    : Number of toys to override what is in config
@@ -105,7 +105,7 @@ def test_integration(
     cfg  = ToyConf.model_validate_json(data_str)
     cfg  = cfg.model_copy(update = {'ntoys' : ntoys})
 
-    data : dict[str,Any] = gut.load_data(package='fitter_data', fpath='tests/fits/constraint_adder.yaml') 
+    data : dict[str,Any] = gut.load_data(package='fitter_data', fpath='tests/fits/constraint_adder.yaml')
     cns  = Constraints[Constraint1D | ConstraintND](root = data)
 
     adr_1d = ConstraintAdder[Constraint1D](nll = nll, constraints = cns.one_dim)
@@ -119,9 +119,9 @@ def test_integration(
     res.hesse(name = 'minuit_hesse')
 
     mkr = ToyMaker(
-        nll=nll, 
-        res=FitResult.from_zfit(res), 
-        cfg=cfg, 
+        nll=nll,
+        res=FitResult.from_zfit(res),
+        cfg=cfg,
         cns=cns)
     df  = mkr.get_parameter_information(name = 'nominal')
 

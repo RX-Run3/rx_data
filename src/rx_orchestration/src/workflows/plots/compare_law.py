@@ -64,9 +64,9 @@ class CompareTask(law.Task):
         '''
         Runs comparison
         '''
-        from rx_plotter_scripts.compare import main as compare 
+        from rx_plotter_scripts.compare import main as compare
 
-        cfg = self._get_config() 
+        cfg = self._get_config()
 
         compare(settings=cfg.args)
 # -------------------------------------
@@ -81,35 +81,35 @@ class WrapCompare(law.WrapperTask):
         List of JSON strings defining what each job will do
         '''
         config = gut.load_conf(package='configs', fpath='rx_plots/compare.yaml')
-    
-        l_cfg = [] 
+
+        l_cfg = []
         for args in config['args']:
             q2bin   = args['q2_bin' ]
             sample  = args['sample' ]
             trigger = args['trigger']
-    
+
             for block in _BLOCKS:
                 for kind in _KINDS:
                     for brem in _BREMS:
                         for mva in _MVAS:
                             cfg            = {}
-                            cfg['q2_bin' ] = q2bin 
+                            cfg['q2_bin' ] = q2bin
                             cfg['sample' ] = sample
                             cfg['trigger'] = trigger
-                            cfg['config' ] = kind 
-                            cfg['substr' ] = None 
-                            cfg['brem'   ] = brem 
+                            cfg['config' ] = kind
+                            cfg['substr' ] = None
+                            cfg['brem'   ] = brem
                             cfg['block'  ] = block
                             cfg['mva'    ] = mva
-                            cfg['emulate'] = 1 
+                            cfg['emulate'] = 1
 
                             output   = OmegaConf.to_container(config.output, resolve=True)
-                            json_str = json.dumps({'args' : cfg, 'output' : output}) 
+                            json_str = json.dumps({'args' : cfg, 'output' : output})
                             l_cfg.append(json_str)
         ntask = len(l_cfg)
         log.info(f'Found {ntask} tasks')
 
-        return l_cfg 
+        return l_cfg
     # --------------------------
     def requires(self):
         '''

@@ -33,7 +33,7 @@ class data:
     cas_dir= None
     cal_dir= None
     nevs   = None
-    mcvers = None 
+    mcvers = None
 
     plot_dir= None
     diag_dir= None
@@ -41,7 +41,7 @@ class data:
     l_year = None
     l_trig = None
     l_brem = None
-    nbins  = 100 
+    nbins  = 100
 
     l_all_trig = ['ETOS', 'GTIS']
     l_all_brem = ['0', '1', '2']
@@ -62,15 +62,15 @@ def get_wgt_syst(trigger):
         log.error(f'Invalid HLT tag: {trigger}')
         raise
 
-    hlt_syst = trigger 
+    hlt_syst = trigger
 
     return gen_syst, lzr_syst, hlt_syst, hlt_syst
 #-----------------------------------
 def add_cal_wgt(rdf, trig, year, brem):
     identifier   = f'{trig}_{year}_{brem}'
     rdf.filepath = 'no-path'
-    rdf.treename = trig 
-    rdf.trigger  = trig 
+    rdf.treename = trig
+    rdf.trigger  = trig
     rdf.year     = year
 
     d_set            = {}
@@ -78,12 +78,12 @@ def add_cal_wgt(rdf, trig, year, brem):
     d_set['replica'] = 0
     d_set['bts_ver'] ='10'
     d_set['bts_sys'] ='nom'
-    d_set['pid_sys'] ='nom' 
-    d_set['trk_sys'] ='nom' 
-    d_set['gen_sys'] ='nom' 
-    d_set['lzr_sys'] ='nom' 
-    d_set['hlt_sys'] ='nom' 
-    d_set['rec_sys'] ='nom' 
+    d_set['pid_sys'] ='nom'
+    d_set['trk_sys'] ='nom'
+    d_set['gen_sys'] ='nom'
+    d_set['lzr_sys'] ='nom'
+    d_set['hlt_sys'] ='nom'
+    d_set['rec_sys'] ='nom'
 
     obj         = wgt_mgr(d_set)
     obj.log_lvl = logging.WARNING
@@ -146,7 +146,7 @@ def get_data_paths(year, trig):
 def get_rdf(trig, year, nbrem):
     l_data_path= get_data_paths(year, trig)
     bdt_cut    = rs.get('bdt', trig, q2bin='none', year='none')
-    
+
     rdf = ROOT.RDataFrame(trig, l_data_path)
     if data.nevs > 0:
         total = rdf.Count().GetValue()
@@ -175,7 +175,7 @@ def get_rdf(trig, year, nbrem):
 
     rdf.treename = trig
 
-    name    = f'wgt_{trig}_{year}_{nbrem}.png' 
+    name    = f'wgt_{trig}_{year}_{nbrem}.png'
     title   = f'Trig: {trig}; Year: {year}; Brem: {nbrem}; Vers: {data.vers}'
     plot_wgt(rdf, title, name)
 
@@ -184,7 +184,7 @@ def get_rdf(trig, year, nbrem):
 def get_res_val(res, l_par):
     l_name    = [name for name in res.params]
     l_value   = res.values
-    d_par_val = dict(zip(l_name, l_value)) 
+    d_par_val = dict(zip(l_name, l_value))
 
     return {name : val for name, val in d_par_val.items() if name in l_par}
 #-----------------------------------
@@ -250,7 +250,7 @@ def plot_dist(arr_smr, arr_org, arr_wgt, pdf, trig, year, nbrem):
     plt.hist(arr_smr, data.nbins, weights=arr_wgt, range=(data.min_mass, data.max_mass), histtype='step', label='Smeared' , density=True)
 
     title   = f'Trig: {trig}; Year: {year}; Brem: {nbrem}; Vers: {data.vers}'
-    name    = f'{trig}_{year}_{nbrem}.png' 
+    name    = f'{trig}_{year}_{nbrem}.png'
 
     plot_path = f'{data.plot_dir}/{name}'
     log.info(f'Saving to: {plot_path}')
@@ -270,7 +270,7 @@ def validate(trig, year, nbrem):
     q2dir   = f'{data.cal_dir}/qsq/{data.vers}'
 
     smr         = q2smr(rdf, q2dir)
-    smr.out_dir = data.plot_dir  
+    smr.out_dir = data.plot_dir
     arr_smr = smr.get_q2_smear(0)
     arr_org = rdf.AsNumpy(['Jpsi_M'])['Jpsi_M']
     arr_wgt = rdf.AsNumpy(['weight'])['weight']
@@ -278,7 +278,7 @@ def validate(trig, year, nbrem):
     plot_dist(arr_smr, arr_org, arr_wgt, pdf, trig, year, nbrem)
 #-----------------------------------
 def get_args():
-    parser = argparse.ArgumentParser(description='Used to compare smeared MC with fitted data') 
+    parser = argparse.ArgumentParser(description='Used to compare smeared MC with fitted data')
     parser.add_argument('-v', '--vers' , type=str, help='Version of smearing parameters and corresponding fits', required=True)
     parser.add_argument('-s', '--simv' , type=str, help='Version of MC used to smear while validating'         , required=True)
     parser.add_argument('-y', '--year' , nargs='+', help='Years'        , choices=data.l_all_year, default=data.l_all_year)

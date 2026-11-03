@@ -42,7 +42,7 @@ class MetaData:
     # --------------------------------
     @classmethod
     def from_component(
-            cls, 
+            cls,
             sim_vers  : str,
             component : Component) -> 'MetaData':
         '''
@@ -57,7 +57,7 @@ class MetaData:
             sim_vers = sim_vers)
 # --------------------------------
 def _get_df(
-    config   : str, 
+    config   : str,
     priority : str) -> pnd.DataFrame:
     '''
     Parameters
@@ -70,7 +70,7 @@ def _get_df(
     DataFrame associated to samples
     '''
     obj = SampleConfig(
-        settings= config, 
+        settings= config,
         samples = _SAMPLES)
     cfg_sam = obj.get_config(category = priority)
 
@@ -100,13 +100,13 @@ def main():
 
     for priority in _PRIORITIES:
         df = _get_df(
-            config   = '2024_sim10d', 
+            config   = '2024_sim10d',
             priority = priority)
 
         dfs.append(df)
 
     df = _get_df(
-        config   = '2024_sim10g', 
+        config   = '2024_sim10g',
         priority = 'sim10g')
     dfs.append(df)
 

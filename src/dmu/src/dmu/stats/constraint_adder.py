@@ -23,8 +23,8 @@ class ConstraintAdder[C : Constraint]:
     _fix_parameters = False
     # ----------------------
     def __init__(
-        self, 
-        nll         : ExtendedUnbinnedNLL, 
+        self,
+        nll         : ExtendedUnbinnedNLL,
         constraints : Constraints[C]):
         '''
         Parameters
@@ -136,7 +136,7 @@ class ConstraintAdder[C : Constraint]:
         for cons in self._constraints.root.values():
             log.info(cons)
 
-        l_const = [ 
+        l_const = [
             cns.zfit_cons(holder = self._nll)
             for cns in self._constraints.root.values() ]
 

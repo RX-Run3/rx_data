@@ -8,8 +8,8 @@ repos:
         language      : script
         stages        : [pre-commit]
         pass_filenames: false
-      - id            : ruff 
-        name          : Fix formatting 
+      - id            : ruff
+        name          : Fix formatting
         entry         : hooks/ruff.sh
         language      : script
         stages        : [pre-commit]

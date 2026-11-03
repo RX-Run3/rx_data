@@ -105,7 +105,7 @@ def test_fit():
 # -------------------------------------------------
 def test_predict():
     '''
-    Will test probability prediction 
+    Will test probability prediction
     '''
     cfg   = ut.get_config('ml/tests/train_mva.yaml')
 
@@ -143,7 +143,7 @@ def test_properties():
 # -------------------------------------------------
 def test_save_config():
     '''
-    Test saving of config 
+    Test saving of config
     '''
 
     cfg_inp = ut.get_config('ml/tests/train_mva.yaml')

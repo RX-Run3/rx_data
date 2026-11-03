@@ -34,7 +34,7 @@ class ChecksTask(law.Task):
         '''
         Returns
         --------------------
-        Transform JSON string `config_string` with configuration to 
+        Transform JSON string `config_string` with configuration to
         DictConfig with arguments and outputs
         '''
         if hasattr(self, '_cfg'):
@@ -67,7 +67,7 @@ class ChecksTask(law.Task):
         elif self.kind == 'leakage':
             dir_path = plt_dir / f'{cfg.args.component}_{cfg.args.trigger}'
         elif self.kind in ['validate_nopid']:
-            dir_path = plt_dir 
+            dir_path = plt_dir
         else:
             raise ValueError(f'Invalid kind: {self.kind}')
 
@@ -82,13 +82,13 @@ class ChecksTask(law.Task):
         '''
         Runs comparison
         '''
-        if self.kind not in _KIND_TO_MODULE: 
+        if self.kind not in _KIND_TO_MODULE:
             raise ValueError(f'Invalid kind: {self.kind}')
 
         module = importlib.import_module(_KIND_TO_MODULE[self.kind])
         runner = module.main
 
-        cfg  = self._get_config() 
+        cfg  = self._get_config()
         args = OmegaConf.to_object(cfg.args)
         runner(args=args)
 # -------------------------------------
@@ -109,16 +109,16 @@ class WrapChecks(law.WrapperTask):
         --------------
         List of JSON strings defining what each job will do
         '''
-        l_cfg    = [] 
+        l_cfg    = []
         cfg_kind = cfg_full[kind]
         outputs  = OmegaConf.to_container(cfg_kind.outputs, resolve=True)
 
         for args in cfg_kind.args:
             args_dict= OmegaConf.to_container(args, resolve=True)
-            json_str = json.dumps({'args' : args_dict, 'outputs' : outputs}) 
+            json_str = json.dumps({'args' : args_dict, 'outputs' : outputs})
             l_cfg.append(json_str)
-    
-        return l_cfg 
+
+        return l_cfg
     # --------------------------
     def requires(self):
         '''
@@ -127,7 +127,7 @@ class WrapChecks(law.WrapperTask):
         cfg = gut.load_conf(package='configs', fpath='rx_plots/checks.yaml')
 
         log.info(20 * '-')
-        for kind in _KIND_TO_MODULE: 
+        for kind in _KIND_TO_MODULE:
             log.info(f'Running: {kind}')
             l_settings = WrapChecks.get_settings(cfg_full=cfg, kind=kind)
             for settings in l_settings:

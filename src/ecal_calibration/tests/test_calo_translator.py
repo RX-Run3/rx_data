@@ -43,11 +43,11 @@ def _plot_boundaries(ax):
     ax.add_patch(rectangle)
 # --------------------------------
 def _plot_translation(
-    df      : pnd.DataFrame, 
+    df      : pnd.DataFrame,
     out_dir : Path,
-    row     : int, 
-    col     : int, 
-    det     : str, 
+    row     : int,
+    col     : int,
+    det     : str,
     name    : str):
     if len(df) != 1:
         print(df)
@@ -67,12 +67,12 @@ def _plot_translation(
     plt.close()
 # --------------------------------
 def _plot_region(
-    df        : pnd.DataFrame, 
-    det       : str, 
-    name      : str, 
+    df        : pnd.DataFrame,
+    det       : str,
+    name      : str,
     out_dir   : Path,
-    color     : str  = 'blue', 
-    skip_save : bool = False, 
+    color     : str  = 'blue',
+    skip_save : bool = False,
     ax               = None):
     ax=df.plot.scatter(x='x', y='y', color=color, s=0.1, title=det, ax=ax)
     ax.set_xlim(-4_000, +4_000)
@@ -150,8 +150,8 @@ def test_scan_dets(det : str, tmp_path : Path):
     df = ctran.from_id_to_xy(det=det)
 
     _plot_region(
-        df      = df, 
-        det     = det, 
+        df      = df,
+        det     = det,
         out_dir = tmp_path,
         name    ='detector_scan')
 # --------------------------------
@@ -163,12 +163,12 @@ def test_overlay_detectors(tmp_path : Path):
     for det, color in [('Inner', 'red'), ('Middle', 'green'), ('Outer', 'blue')]:
         df = ctran.from_id_to_xy(det=det)
         ax = _plot_region(
-            df, 
-            det, 
+            df,
+            det,
             out_dir   = tmp_path,
-            name      = 'detector_scan', 
-            color     = color, 
-            skip_save = True, 
+            name      = 'detector_scan',
+            color     = color,
+            skip_save = True,
             ax        = ax)
 
     plt.grid()

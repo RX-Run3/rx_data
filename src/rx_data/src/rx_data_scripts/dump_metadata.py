@@ -36,7 +36,7 @@ def main():
     if not key:
         raise ValueError(f'Metadata with name {Data.key_name} not found')
 
-    metadata = key.ReadObj() 
+    metadata = key.ReadObj()
     meta_str = metadata.GetString().Data()
     data     = json.loads(meta_str)
     with open(Data.yaml_path, 'w', encoding='utf-8') as ofile:

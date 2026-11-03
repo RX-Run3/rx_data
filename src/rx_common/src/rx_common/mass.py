@@ -86,7 +86,7 @@ class Mass(StrEnum):
 
         Returns
         -----------------
-        Raw mass type for given project 
+        Raw mass type for given project
         '''
         if project == Project.rk  :
             return Mass.bp_bcor

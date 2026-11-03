@@ -27,5 +27,5 @@ def test_properties(brem : Brem, block : Block):
 
     assert cat.pdf  == pdf
     assert cat.brem == brem
-    assert cat.block== block 
+    assert cat.block== block
 # ----------------------

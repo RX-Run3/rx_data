@@ -10,7 +10,7 @@ import math
 
 #----------------------------
 class data:
-    version = None 
+    version = None
     inp_dir = None
     l_kind  = None
     l_dset  = None
@@ -102,11 +102,11 @@ def plot_all_ratios():
 #----------------------------
 def get_args():
     parser = argparse.ArgumentParser(description='Used to plot 2D maps of resolutions in data, MC and also their ratio')
-    parser.add_argument('-v', '--vers', type=str , help='Version'      , required=True) 
-    parser.add_argument('-b', '--brem', nargs='+', help='Brem category', default=data.l_all_brem) 
-    parser.add_argument('-d', '--dset', nargs='+', help='Dataset'      , default=data.l_all_dset) 
-    parser.add_argument('-t', '--trig', nargs='+', help='Trigger'      , default=data.l_all_trig) 
-    parser.add_argument('-k', '--kind', nargs='+', help='Data or MC'   , default=data.l_all_kind) 
+    parser.add_argument('-v', '--vers', type=str , help='Version'      , required=True)
+    parser.add_argument('-b', '--brem', nargs='+', help='Brem category', default=data.l_all_brem)
+    parser.add_argument('-d', '--dset', nargs='+', help='Dataset'      , default=data.l_all_dset)
+    parser.add_argument('-t', '--trig', nargs='+', help='Trigger'      , default=data.l_all_trig)
+    parser.add_argument('-k', '--kind', nargs='+', help='Data or MC'   , default=data.l_all_kind)
     args = parser.parse_args()
 
     data.version = args.vers

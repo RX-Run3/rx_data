@@ -9,8 +9,8 @@ from dmu.generic import Serializable
 from functools   import cached_property
 
 from .imports   import zfit
-from .utilities import range_from_obs 
-from .spline    import SplinePDF 
+from .utilities import range_from_obs
+from .spline    import SplinePDF
 
 type zpdf = zfit.pdf.BasePDF
 type zdat = zfit.Data
@@ -30,7 +30,7 @@ class NonParametricModel(BaseModel, Serializable, frozen = True):
     # ------------------------
     @classmethod
     def from_data(
-        cls, 
+        cls,
         name : str,
         data : zdat) -> 'NonParametricModel':
         '''
@@ -38,7 +38,7 @@ class NonParametricModel(BaseModel, Serializable, frozen = True):
         ----------------
         name: Name of PDF
         data: Zfit data object
-        
+
         Returns
         ----------------
         Instance of NonParametricModel
@@ -51,8 +51,8 @@ class NonParametricModel(BaseModel, Serializable, frozen = True):
         ys = pdf.pdf(xs).numpy().tolist()
 
         return cls(
-            xs   = xs, 
-            ys   = ys, 
+            xs   = xs,
+            ys   = ys,
             obs  = obs_name,
             name = name)
     # ------------------------
@@ -85,7 +85,7 @@ class NonParametricModel(BaseModel, Serializable, frozen = True):
         ys  = numpy.array(self.ys)
 
         pdf = SplinePDF(
-            obs  = obs, 
+            obs  = obs,
             xs   = xs,
             ys   = ys,
             name = name)

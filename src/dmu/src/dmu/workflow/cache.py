@@ -58,7 +58,7 @@ class Cache:
             log.debug('Not using code for hashing')
 
         # If user uses absolute path, respect that
-        # If relative path, make it relative to _cache_root 
+        # If relative path, make it relative to _cache_root
         if   out_path.is_absolute():
             self._out_path = out_path
         else:

@@ -20,7 +20,7 @@ class NtuplePartitioner:
     '''
     # ----------------------
     def __init__(
-        self, 
+        self,
         project  : Project,
         kind     : str):
         '''
@@ -36,9 +36,9 @@ class NtuplePartitioner:
         self._s_ecorr   = {'brem_track_2'}
     # ---------------------------------
     def _print_groups(
-        self, 
-        groups     : dict[int,list[Path]], 
-        sizes      : dict[int,int], 
+        self,
+        groups     : dict[int,list[Path]],
+        sizes      : dict[int,int],
         this_group : int) -> None:
         '''
         Prints list of groups with number of files and sizes
@@ -55,12 +55,12 @@ class NtuplePartitioner:
         for igroup, l_file in groups.items():
             size  = sizes[igroup]
             nfile = len(l_file)
-    
+
             if igroup == this_group:
                 log.info(f'{igroup:<10}{nfile:<10}{size:<10}{"<---":<10}')
             else:
                 log.info(f'{igroup:<10}{nfile:<10}{size:<10}')
-    
+
         log.info(30 * '-')
     # ---------------------------------
     def _get_path_size(self, path : Path) -> int:
@@ -68,18 +68,18 @@ class NtuplePartitioner:
         Parameters
         ----------------
         path : Path to ROOT file
-    
+
         Returns
         ----------------
         Size in Megabytes
         '''
         size = path.stat().st_size / 1024 ** 2
         size = int(size)
-    
+
         return size
     # ---------------------------------
     def _get_partition(
-        self, 
+        self,
         l_path : list[Path],
         igroup : int,
         ngroup : int) -> list[Path]:
@@ -89,7 +89,7 @@ class NtuplePartitioner:
         l_path : List of paths to ROOT files
         index  : Index of the partition
         total  : Number of partitions
-   
+
         Returns
         -----------------
         List of paths to ROOT files corresponding to
@@ -97,24 +97,24 @@ class NtuplePartitioner:
         '''
         d_path      = { path : self._get_path_size(path) for path in l_path }
         sorted_files= sorted(d_path.items(), key=lambda x: x[1], reverse=True)
-    
+
         groups      = {i: [] for i in range(ngroup)}
         group_sizes = {i: 0  for i in range(ngroup)}
-    
+
         for file_path, size in sorted_files:
             min_group = min(group_sizes, key=lambda index : group_sizes[index])
             groups[min_group].append(file_path)
             group_sizes[min_group] += size
-    
+
         self._print_groups(groups=groups, sizes=group_sizes, this_group = igroup)
-    
+
         norg  = len(l_path)
         l_path= groups[igroup]
         npar  = len(l_path)
         log.info(f'Processing group of {npar} files out of {norg}')
         for path in l_path:
             log.debug(path)
-    
+
         return l_path
     # ---------------------------------
     def _filter_paths(self, l_path : list[Path]) -> list[Path]:
@@ -122,14 +122,14 @@ class NtuplePartitioner:
         log.debug(f'Filtering {ninit} paths')
         for path in l_path:
             log.verbose(path)
-    
+
         if self._kind in self._s_ecorr:
             # For electron corrections, drop muon paths
             l_path = [ path for path in l_path if 'MuMu' not in str(path) ]
-    
+
         nfnal = len(l_path)
         log.debug(f'Filtered -> {nfnal} paths')
-    
+
         return l_path
     # ----------------------
     def get_paths(self, index : int, total : int) -> list[Path]:

@@ -58,9 +58,9 @@ class ScaleCombiner:
         return df
     # ----------------------
     def _combine_quantity(
-        self, 
-        name  : str, 
-        row_1 : pnd.Series, 
+        self,
+        name  : str,
+        row_1 : pnd.Series,
         row_2 : pnd.Series) -> tuple[float,float]:
         '''
         Parameters
@@ -80,7 +80,7 @@ class ScaleCombiner:
 
         is_nan_1 = math.isnan(val_1) or math.isnan(var_1)
         is_nan_2 = math.isnan(val_2) or math.isnan(var_2)
-        
+
         if is_nan_1 and     is_nan_2:
             log.error(row_1)
             log.error(row_2)
@@ -96,14 +96,14 @@ class ScaleCombiner:
 
         den   = 1 / var_1 + 1 / var_2
 
-        avg   = (val_1 / var_1 + val_2 / var_2) / den 
+        avg   = (val_1 / var_1 + val_2 / var_2) / den
         err   = 1 / math.sqrt(den)
 
         return avg, err
     # ----------------------
     def _combine_measurement(
-        self, 
-        row  : pnd.Series, 
+        self,
+        row  : pnd.Series,
         ncol : int) -> pnd.Series:
         '''
         Parameters
@@ -122,12 +122,12 @@ class ScaleCombiner:
             val, err = self._combine_quantity(name=quantity, row_1=row_1, row_2=row_2)
 
             row_3[f'{quantity}_val'] = val
-            row_3[f'{quantity}_err'] = err 
+            row_3[f'{quantity}_err'] = err
 
         return row_3
     # ----------------------
     def _combine(
-        self, 
+        self,
         df_1 : pnd.DataFrame,
         df_2 : pnd.DataFrame) -> pnd.DataFrame:
         '''
@@ -144,7 +144,7 @@ class ScaleCombiner:
 
         df_combined = df_tmp.apply(self._combine_measurement, axis=1, args=(ncol,))
 
-        return df_combined 
+        return df_combined
     # ----------------------
     def _validate(self, l_df : list[pnd.DataFrame]) -> None:
         '''
@@ -172,7 +172,7 @@ class ScaleCombiner:
         log.debug(f'Dataframes rows/columns: {nrows}/{ncols}')
     # ----------------------
     def _save_combination(
-        self, 
+        self,
         name: str,
         df  : pnd.DataFrame) -> None:
         '''
@@ -191,7 +191,7 @@ class ScaleCombiner:
         df.to_json(jsn_path, indent=2)
     # ----------------------
     def combine(
-        self, 
+        self,
         name         : str,
         measurements : list[str]) -> pnd.DataFrame:
         '''

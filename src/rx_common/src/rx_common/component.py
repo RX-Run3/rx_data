@@ -306,9 +306,9 @@ class Component(StrEnum):
             Component.bdpsi2xmm,
             Component.bspsi2xmm,
             # ---------------
-            Component.undefined, 
-            Component.comb, 
-            Component.ccbar, 
+            Component.undefined,
+            Component.comb,
+            Component.ccbar,
             Component.mc}
 
         if self in components:
@@ -563,7 +563,7 @@ class Component(StrEnum):
                 return ['bsjkst' , 'jpmm', 'kokp']
             case 'bsphijpsiee':
                 return ['bsphjp' , 'jpee', 'phkk']
-            case 'bsphijpsimm':                 
+            case 'bsphijpsimm':
                 return ['bsphjp' , 'jpmm', 'phkk']
             case 'lbpkjpsiee':
                 return ['lbpkjpsi', 'jpee']

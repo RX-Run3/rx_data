@@ -60,7 +60,7 @@ class DatasetSummary:
         '''
         Returns
         -----------------
-        List of paths to data.md files for low statistics fits 
+        List of paths to data.md files for low statistics fits
         '''
         log.info('Finding paths')
 
@@ -115,8 +115,8 @@ class DatasetSummary:
 
         df          = self.markdown_to_df(path = path)
         df          = df[_COLUMNS]
-        sample      = Component.from_path(path = path) 
-        df['q2bin'] = Qsq.from_path(path = path) 
+        sample      = Component.from_path(path = path)
+        df['q2bin'] = Qsq.from_path(path = path)
         df['Block'] = self.__block_from_path(path = path)
         df['Brem' ] = str(Brem.from_path(path = path))
         df['Sample']= sample.value
@@ -128,7 +128,7 @@ class DatasetSummary:
         '''
         Parameters
         -------------------
-        path: Path to file with markdown 
+        path: Path to file with markdown
 
         Returns
         -------------------

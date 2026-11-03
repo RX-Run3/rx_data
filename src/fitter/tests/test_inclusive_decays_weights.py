@@ -13,7 +13,7 @@ from dmu                             import LogStore
 from rx_data                         import RDFGetter
 from rx_common                       import Trigger
 from rx_common                       import Component
-from fitter.inclusive_decays_weights import read_weight 
+from fitter.inclusive_decays_weights import read_weight
 
 log=LogStore.add_logger('fitter:test_inclusive_decays_weights')
 
@@ -55,7 +55,7 @@ def _rdf_to_idf(rdf : RDF.RNode) -> pnd.DataFrame:
     return df
 #-----------------------------------------------
 def _get_df(
-    sample  : Component, 
+    sample  : Component,
     trigger : Trigger) -> pnd.DataFrame:
     gtr = RDFGetter(sample = sample, trigger = trigger)
     rdf = gtr.get_rdf(per_file=False)
@@ -64,9 +64,9 @@ def _get_df(
     return df
 #-----------------------------------------------
 def _plot_mass(
-    df       : pnd.DataFrame, 
-    sample   : str, 
-    test     : str, 
+    df       : pnd.DataFrame,
+    sample   : str,
+    test     : str,
     tmp_path : Path):
     _, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
     ax1.hist(df.mass, bins=50, range=[4500, 6000], histtype='step', density=True, label='Unweighted', )
@@ -92,15 +92,15 @@ def _plot_mass(
 #-----------------------------------------------
 @pytest.mark.parametrize('sample, trigger', _SAMPLES)
 def test_simple(
-    sample   : Component, 
-    trigger  : Trigger, 
+    sample   : Component,
+    trigger  : Trigger,
     tmp_path : Path):
     '''
     Simplest test of addition of weights
     '''
     with RDFGetter.max_entries(100_000):
         df = _get_df(
-            sample = sample, 
+            sample = sample,
             trigger = trigger)
 
     df['weight'] = df.apply(read_weight, args=(trigger.project,), axis=1)

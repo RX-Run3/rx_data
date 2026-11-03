@@ -17,7 +17,7 @@ from dmu.stats    import zfit, utilities as sut
 from typing       import Final
 
 _COMPONENT : Final[Component] = Component.data_24
-_TRIGGER   : Final[Trigger  ] = Trigger.rk_ee_os 
+_TRIGGER   : Final[Trigger  ] = Trigger.rk_ee_os
 _QSQ       : Final[Qsq      ] = Qsq.high
 
 type zsum = zfit.pdf.SumPDF

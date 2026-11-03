@@ -74,7 +74,7 @@ def test_product():
 
     assert yld_1 == yld_2
 
-    assert yld_1.val == yld.val * eff.sel / eff.gen 
+    assert yld_1.val == yld.val * eff.sel / eff.gen
 
     log.info(yld)
     log.info(eff)
@@ -126,7 +126,7 @@ def test_sqrt():
 # -------------------------------------------
 def test_sum():
     '''
-    Test sum of yields 
+    Test sum of yields
     '''
     cut = Cut(cut = Cuts.cmb, val = 0.5, var = 'mva_cmb')
     wpt = WorkingPoint(root = [cut])
@@ -232,7 +232,7 @@ def test_from_linked_node():
 def test_patch_grids(tmp_path : Path):
     '''
     Test of grid patching, i.e. filling holes with
-    average of sorrounding nodes 
+    average of sorrounding nodes
     '''
     yields : list[Yield] = []
     for cmb in [0.1, 0.2, 0.3, 0.4]:

@@ -14,7 +14,7 @@ log=LogStore.add_logger('dmu:pdataframe:utilities')
 # -------------------------------------
 def query(
     *,
-    df          : pnd.DataFrame, 
+    df          : pnd.DataFrame,
     expr        : str,
     allow_empty : bool = False) -> pnd.DataFrame:
     '''
@@ -69,8 +69,8 @@ def df_to_tex(
 
     log.info(f'Saving to: {path}')
     buf = st.to_latex(
-        buf            = path, 
-        hrules         = True, 
+        buf            = path,
+        hrules         = True,
         **kwargs)
 
     return buf
@@ -135,7 +135,7 @@ def dropna(df : pnd.DataFrame, max_frac : float = 0.02) -> pnd.DataFrame:
     return df
 # -------------------------------------
 def colorize_row(
-    row    : pnd.Series, 
+    row    : pnd.Series,
     colors : dict[int, str]) -> pnd.Series:
     '''
     To pick color strings use:
@@ -150,7 +150,7 @@ def colorize_row(
     Parameters
     -------------
     df    : DataFrame to colorize
-    colors: Dictionary where 
+    colors: Dictionary where
             key  : Is an integer
             Value: String symbolizing color
 

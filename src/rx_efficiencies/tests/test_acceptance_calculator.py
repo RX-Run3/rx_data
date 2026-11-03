@@ -15,8 +15,8 @@ from dmu.generic     import version_management    as vmn
 from dmu.generic     import rxran
 from rx_efficiencies import AcceptanceCalculator
 from rx_common       import Channel
-from rx_common       import Project 
-from rx_common       import Component 
+from rx_common       import Project
+from rx_common       import Component
 
 log=LogStore.add_logger('rx_efficiencies:test_acceptance_calculator')
 
@@ -66,7 +66,7 @@ class Data:
     '''
     Data class
     '''
-    rsm_dir : Path 
+    rsm_dir : Path
 
     plt.style.use(mplhep.style.LHCb2)
 #--------------------------
@@ -92,8 +92,8 @@ def _get_rdf(sample : str, energy : str) -> RDataFrame:
 @pytest.mark.parametrize('energy', ['8TeV', '13TeV', '14TeV'])
 @pytest.mark.parametrize('sample, channel, project', _SIGNALS + _BACKGROUNDS)
 def test_sample(
-    energy   : str, 
-    sample   : Component, 
+    energy   : str,
+    sample   : Component,
     channel  : Channel,
     project  : Project,
     tmp_path : Path):
@@ -102,8 +102,8 @@ def test_sample(
     '''
     rdf = _get_rdf(sample=sample.name, energy=energy)
     obj = AcceptanceCalculator(
-        rdf    = rdf, 
-        channel= channel, 
+        rdf    = rdf,
+        channel= channel,
         project= project)
 
     obj.plot_dir     = tmp_path / f'{sample.name}/{energy}'

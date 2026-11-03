@@ -569,9 +569,9 @@ def test_consistent_loop():
         rdf = gtr.get_rdf(per_file=False)
 
     rdf     = sel.apply_full_selection(
-        rdf    = rdf, 
-        trigger=trigger, 
-        q2bin  =q2bin, 
+        rdf    = rdf,
+        trigger=trigger,
+        q2bin  =q2bin,
         process=component)
 
     values    = []
@@ -580,7 +580,7 @@ def test_consistent_loop():
         rep      = rdf.Report()
 
         rep.Print()
-        values.append(nentries.GetValue()) 
+        values.append(nentries.GetValue())
         log.info('')
 
     log.info(f'Found entries: {values}')
@@ -589,7 +589,7 @@ def test_consistent_loop():
 # ------------------------------------------------
 def test_consistent_build():
     '''
-    Test that we get the same number of entries if 
+    Test that we get the same number of entries if
     building dataframe multiple times
     '''
     component = Component.bppijpsiee
@@ -603,13 +603,13 @@ def test_consistent_build():
             rdf = gtr.get_rdf(per_file=False)
 
         rdf     = sel.apply_full_selection(
-            rdf    = rdf, 
-            trigger=trigger, 
-            q2bin  =q2bin, 
+            rdf    = rdf,
+            trigger=trigger,
+            q2bin  =q2bin,
             process=component)
 
         nentries = rdf.Count().GetValue()
-        values.append(nentries) 
+        values.append(nentries)
 
     log.info(f'Found entries: {values}')
 
@@ -1036,8 +1036,8 @@ def test_check_vars(sample : Component, trigger : Trigger):
 @pytest.mark.parametrize('sample' , Component.data_24.subsamples)
 @pytest.mark.parametrize('trigger', [Trigger.rk_ee_nopid, Trigger.rkst_ee_nopid])
 def test_ext_trigger(
-    sample   : Component, 
-    trigger  : Trigger, 
+    sample   : Component,
+    trigger  : Trigger,
     tmp_path : Path):
     '''
     Test of getter class for combination of analysis and misID trigger

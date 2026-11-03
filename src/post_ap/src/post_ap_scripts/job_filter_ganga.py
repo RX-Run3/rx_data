@@ -45,7 +45,7 @@ class Data:
     njob     : int
     test     : bool
     dry_run  : bool
-    cfg      : DictConfig 
+    cfg      : DictConfig
 
     maxj     = 500
     env_path = '/home/acampove/VENVS'

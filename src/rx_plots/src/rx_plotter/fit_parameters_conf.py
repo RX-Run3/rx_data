@@ -18,16 +18,16 @@ class Info(BaseModel):
     '''
     Class meant to hold metadata type of information
     '''
-    trigger : Trigger 
-    project : Project 
+    trigger : Trigger
+    project : Project
     q2bin   : Qsq
-    brem    : Brem 
+    brem    : Brem
 # ----------------------
 class GraphConf(BaseModel):
     '''
     Class meant to represent config for a single graph
     '''
-    info  : Info 
+    info  : Info
     error : str
     label : str
     color : str
@@ -43,7 +43,7 @@ class PlotConf(BaseModel):
     ylabel : str
     title  : str
     graphs : dict[str,GraphConf]
-    xaxis  : Axis 
+    xaxis  : Axis
 # ----------------------
 class FitParametersConf(RootModel):
     '''

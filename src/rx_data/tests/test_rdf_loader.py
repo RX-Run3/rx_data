@@ -44,7 +44,7 @@ def test_from_conf():
 # ----------------------
 def test_dask():
     '''
-    Load using dask client 
+    Load using dask client
     '''
     sample = Component.data_24
     trigger= Trigger.rk_mm_os
@@ -53,9 +53,9 @@ def test_dask():
     path   = mkr.get_spec_path(per_file=False)
 
     cluster = LocalCluster(
-        n_workers         =2, 
-        threads_per_worker=1, 
-        processes         =True, 
+        n_workers         =2,
+        threads_per_worker=1,
+        processes         =True,
         memory_limit      ='6GiB')
     client  = Client(cluster)
 

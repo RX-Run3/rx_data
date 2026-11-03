@@ -8,7 +8,7 @@ from dmu.rdataframe.atr_mgr import AtrMgr
 #--------------------------------
 def test_attach():
     '''
-    Will test picking up of attached attributes 
+    Will test picking up of attached attributes
     '''
     rdf         = RDataFrame(20)
     rdf.name    = 'dataframe_simple'

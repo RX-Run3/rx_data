@@ -25,16 +25,16 @@ class CategoryMerger[T: Category]:
     '''
     # ----------------------
     def __init__(
-        self, 
+        self,
         reparametrize : bool,
         categories    : Sequence[T],
         comp          : Component):
         '''
         Parameters
         -------------
-        reparametrize: If true, will reparametrize fractions of categories as 
+        reparametrize: If true, will reparametrize fractions of categories as
                        scales or resolutions
-        categories   : List of Category objects, representing fits to MC datasets 
+        categories   : List of Category objects, representing fits to MC datasets
         comp         : Fitting component
         '''
         self._reparametrize = reparametrize
@@ -42,9 +42,9 @@ class CategoryMerger[T: Category]:
         self._comp          = comp
     # ----------------------
     def _enforce(
-        self, 
-        categories : Sequence[Category], 
-        kind       : type, 
+        self,
+        categories : Sequence[Category],
+        kind       : type,
         condition  : Condition) -> None:
         '''
         Parameters
@@ -65,9 +65,9 @@ class CategoryMerger[T: Category]:
         ntotal  = len(categories)
         nunique = len(objs)
 
-        if condition == 'all_same'      and nunique == 1: 
+        if condition == 'all_same'      and nunique == 1:
             return
-        
+
         if condition == 'all_different' and ntotal  == nunique:
             return
 
@@ -77,7 +77,7 @@ class CategoryMerger[T: Category]:
         raise ValueError(f'Condition {condition} failed')
     # ----------------------
     def _merge_blocks(
-        self, 
+        self,
         categories : Sequence[Category]) -> Category:
         '''
         Parameters
@@ -93,12 +93,12 @@ class CategoryMerger[T: Category]:
 
         self._enforce(
             categories = categories,
-            kind       = Block, 
+            kind       = Block,
             condition  = 'all_different')
 
         self._enforce(
             categories = categories,
-            kind       = Brem, 
+            kind       = Brem,
             condition  = 'all_same')
 
         categories = sorted(categories)
@@ -119,13 +119,13 @@ class CategoryMerger[T: Category]:
             name      = f'{brem}_b{block}',
             pdf       = pdf,
             sumw      = totalw,
-            model     = model, 
+            model     = model,
             selection = {Cuts.extra : ''})
 
         return category
     # ----------------------
     def _merge_brems(
-        self, 
+        self,
         categories : Sequence[T]) -> Sequence[Category]:
         '''
         Parameters
@@ -159,7 +159,7 @@ class CategoryMerger[T: Category]:
         return l_block_cats
     # ----------------------
     def _merge_brems_in_block(
-        self, 
+        self,
         categories : Sequence[T]) -> Category:
         '''
         Parameters
@@ -172,12 +172,12 @@ class CategoryMerger[T: Category]:
         '''
         self._enforce(
             categories = categories,
-            kind       = Block, 
+            kind       = Block,
             condition  = 'all_same')
 
         self._enforce(
             categories = categories,
-            kind       = Brem, 
+            kind       = Brem,
             condition  = 'all_different')
 
         categories = sorted(categories)
@@ -191,7 +191,7 @@ class CategoryMerger[T: Category]:
         model = self._model_from_categories(
             single_model= False,        # Different brem categories can have different models
             categories  = categories)
-        sumw  = totalw 
+        sumw  = totalw
         brem  = reduce(add, brems)
         pdf   = zfit.pdf.SumPDF(pdfs, fracs[:-1])
 
@@ -200,13 +200,13 @@ class CategoryMerger[T: Category]:
             name      = f'{brem}_b{blok}',
             pdf       = pdf,
             sumw      = sumw,
-            model     = model, 
+            model     = model,
             selection = {Cuts.extra : ''})
 
         return category
     # ----------------------
     def _model_from_categories(
-        self, 
+        self,
         single_model : bool,
         categories   : Sequence[Category]) -> list[Model]:
         '''
@@ -228,10 +228,10 @@ class CategoryMerger[T: Category]:
 
             models += cat.model
 
-        return models 
+        return models
     # ----------------------
     def _get_frac(
-        self, 
+        self,
         category : Category,
         totalw   : float,
         corr     : Correction) -> zpar:
@@ -262,21 +262,21 @@ class CategoryMerger[T: Category]:
         log.debug(f'Reparametrizing: {frac_name}')
         with ModelFactory.correction(fixed = False): # Let correction float for fit to real data
             frac      = ModelFactory.get_reparametrization(
-                name  = frac_name, 
+                name  = frac_name,
                 kind  = corr.kind,
                 value = value,
                 low   = 0.0,
                 high  = 1.0)
 
-        return frac 
+        return frac
     # ----------------------
     def _validate_brem_in_categories(
-        self, 
+        self,
         categories : Mapping[Block, Sequence[T]]) -> None:
         '''
         Parameters
         ----------------
-        categories: dictionary where values are lists of categories, all in same block 
+        categories: dictionary where values are lists of categories, all in same block
 
         This method makes sure that every block contains the same
         brem categories
@@ -286,7 +286,7 @@ class CategoryMerger[T: Category]:
         for block, cat_in_block in categories.items():
             current_brems = { cat.brem for cat in cat_in_block }
             if s_brem is None:
-                s_brem = current_brems 
+                s_brem = current_brems
                 continue
 
             if s_brem != current_brems:
@@ -305,7 +305,7 @@ class CategoryMerger[T: Category]:
         Category object resulting from merging input categories
         '''
         log.debug(f'Merging {len(self._categories)} categories by brem')
-        cat_1 = self._merge_brems(categories  = self._categories) 
+        cat_1 = self._merge_brems(categories  = self._categories)
 
         log.debug(f'Merging {len(cat_1)} categories by block')
         cat_2 = self._merge_blocks(categories = cat_1)
@@ -320,16 +320,16 @@ class FitCategoryMerger(CategoryMerger[FitCategory]):
     '''
     # ----------------------
     def __init__(
-        self, 
+        self,
         reparametrize : bool,
         categories    : Sequence[FitCategory],
         comp          : Component):
         '''
         Parameters
         -------------
-        reparametrize: If true, will reparametrize fractions of categories as 
+        reparametrize: If true, will reparametrize fractions of categories as
                        scales or resolutions
-        categories   : List of Category objects, representing fits to MC datasets 
+        categories   : List of Category objects, representing fits to MC datasets
         comp         : Fitting component
         '''
         self._reparametrize = reparametrize
@@ -343,7 +343,7 @@ class FitCategoryMerger(CategoryMerger[FitCategory]):
         Category object resulting from merging input categories
         '''
         log.debug(f'Merging {len(self._categories)} categories by brem')
-        cat_1 = self._merge_brems(categories  = self._categories) 
+        cat_1 = self._merge_brems(categories  = self._categories)
 
         log.debug(f'Merging {len(cat_1)} categories by block')
         cat_2 = self._merge_blocks(categories = cat_1)
@@ -354,5 +354,5 @@ class FitCategoryMerger(CategoryMerger[FitCategory]):
         data        = cat_2.model_dump()
         data['res'] = FitResult.merge(results = l_res)
 
-        return FitCategory(**data) 
+        return FitCategory(**data)
 # ----------------------

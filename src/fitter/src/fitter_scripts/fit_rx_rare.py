@@ -19,7 +19,7 @@ from rx_common        import MVAWp
 
 from fitter           import DataPreprocessor
 from fitter           import RXFitConfig
-from fitter           import add_constraints 
+from fitter           import add_constraints
 from fitter           import DataFitter
 from fitter           import LikelihoodFactory
 from fitter           import FitModelConf
@@ -152,11 +152,11 @@ def _get_nll(
         if brem.is_composite:
             # Put all the elementary regions in same config
             cfg_brem         = cfg.cfg_clone(
-                prefix       = 'BREM', 
+                prefix       = 'BREM',
                 q2bin        = cfg.q2bin,
                 brems        = [ brem for brem in brem.components ])
         else:
-            # Pick only elementary region 
+            # Pick only elementary region
             cfg_brem         = cfg.cfg_copy(
                 q2bin        = cfg.q2bin,
                 replacements = {'BREM' : str(brem)})

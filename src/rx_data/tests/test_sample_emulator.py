@@ -65,7 +65,7 @@ def _get_rdf(size : int = 10) -> RDF.RNode:
     '''
     Returns
     -------------
-    Dataframe with zeroed columns 
+    Dataframe with zeroed columns
     '''
     rdf = RDataFrame(size)
 
@@ -117,7 +117,7 @@ def test_samples_conf():
     Test config used to represent samples
     '''
     for component in Component:
-        if not component.has_sample: 
+        if not component.has_sample:
             continue
 
         cfg = SamplesConf({component : 1.0})
@@ -137,7 +137,7 @@ def test_emulator_conf():
     Test loading config
     '''
     data = gut.load_data(
-        package = 'rx_data_data', 
+        package = 'rx_data_data',
         fpath   = 'emulated_trees/config.yaml')
     data_str = json.dumps(data)
 
@@ -156,13 +156,13 @@ def test_concatenate(sample : Component):
 # --------------------------------------------
 @pytest.mark.parametrize('new_name, old_name', _SAMPLE_PAIRS)
 def test_rename(
-    new_name : Component, 
+    new_name : Component,
     old_name : Component):
     '''
     Check renaming of samples
 
-    new_name: Sample requested 
-    old_name: Sample that will emulate sample requested 
+    new_name: Sample requested
+    old_name: Sample that will emulate sample requested
     '''
     emu = SampleEmulator(sample=new_name)
 

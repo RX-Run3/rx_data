@@ -6,7 +6,7 @@ import numpy
 import pandas as pnd
 
 from pathlib      import Path
-from dmu.plotting import Style 
+from dmu.plotting import Style
 from dmu.plotting import BandPlotter
 from dmu.plotting import BandPlotterConf
 
@@ -33,7 +33,7 @@ def _get_all_df():
                     parameter = parameter)
 
                 df['Kind'] = kind
-                df['Category'] = category 
+                df['Category'] = category
 
                 l_df.append(df)
 
@@ -62,7 +62,7 @@ def test_simple(tmp_path : Path):
     }
 
     labels = {
-        'c1' : 'Cat 1', 
+        'c1' : 'Cat 1',
         'c2' : 'Cat 2',
         'c3' : 'Cat 3',
         'c4' : 'Cat 4',

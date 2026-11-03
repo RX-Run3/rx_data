@@ -46,7 +46,7 @@ def _double_data(df_1 : pnd.DataFrame) -> pnd.DataFrame:
     return df
 # -------------------------------
 def _add_nans(
-    df      : pnd.DataFrame, 
+    df      : pnd.DataFrame,
     fraction: float,
     columns : list[str]) -> pnd.DataFrame:
     '''

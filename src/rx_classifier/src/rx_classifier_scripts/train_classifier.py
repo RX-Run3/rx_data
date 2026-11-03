@@ -147,11 +147,11 @@ def _initialize_args(cfg : DictConfig) -> None:
     Data.version     = cfg.version
 
     Data.workers     = 5
-    Data.opt_ntrial  = 0 
-    Data.max_entries = -1 
-    Data.log_level   = 20 
-    Data.plot_only   = False 
-    Data.load_trained= False 
+    Data.opt_ntrial  = 0
+    Data.max_entries = -1
+    Data.log_level   = 20
+    Data.plot_only   = False
+    Data.load_trained= False
 #---------------------------------
 def _merge_dataframes(
     d_rdf : dict[str, RDF.RNode],
@@ -195,7 +195,7 @@ def _get_rdf(kind : str) -> RDF.RNode:
 
     if   isinstance(sample, str):
         rdf   = _get_sample_rdf(sample=sample, trigger=trigger, kind=kind)
-        d_rdf = {'all' : rdf} 
+        d_rdf = {'all' : rdf}
     elif isinstance(sample, list):
         log.info(f'Found composed sample: {sample}')
         d_rdf = { sname : _get_sample_rdf(sample=sname, trigger=trigger, kind=kind) for sname in sample }
@@ -217,7 +217,7 @@ def _get_sample_rdf(sample : str, trigger : str, kind : str) -> RDF.RNode:
     return rdf
 #---------------------------------
 def _save_cutflow(
-    rdf   : RDF.RNode, 
+    rdf   : RDF.RNode,
     sample: str,
     kind  : str) -> None:
     '''
@@ -241,7 +241,7 @@ def _save_cutflow(
     df.to_json(f'{out_dir}/cutflow_{kind}_{sample}.json', indent=2)
 #---------------------------------
 def _save_selection(
-    cuts  : dict[str,str], 
+    cuts  : dict[str,str],
     sample: str,
     kind  : str) -> None:
     '''
@@ -258,7 +258,7 @@ def _save_selection(
     os.makedirs(out_dir, exist_ok=True)
 
     gut.dump_json(
-        data      = cuts, 
+        data      = cuts,
         exists_ok = True,
         path      = f'{out_dir}/selection_{kind}_{sample}.yaml')
 #---------------------------------

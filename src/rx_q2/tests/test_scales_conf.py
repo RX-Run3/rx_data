@@ -14,16 +14,16 @@ def test_simple(name : str):
     Simples test
     '''
     data = gut.load_data(
-        package = 'rx_q2_data', 
+        package = 'rx_q2_data',
         fpath   = f'plots/{name}.yaml')
 
     mva = MVAWp(root = 0.5)
 
     data['name'] = 'reso_no_dtf'
     data['kind'] = 'q2'
-    data['comb'] = mva 
-    data['prec'] = mva 
-    data['trig'] = Trigger.rk_ee_os 
-    data['year'] = '2024' 
+    data['comb'] = mva
+    data['prec'] = mva
+    data['trig'] = Trigger.rk_ee_os
+    data['year'] = '2024'
 
     ScalesConf(**data)

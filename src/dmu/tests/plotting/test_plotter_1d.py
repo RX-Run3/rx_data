@@ -28,8 +28,8 @@ def initialize():
     LogStore.set_level('dmu:plotting:Plotter1D', 10)
 #---------------------------------------
 def _get_rdf(
-    kind     : str, 
-    test     : str      = 'standard', 
+    kind     : str,
+    test     : str      = 'standard',
     nentries : int|None = None) -> RDF.RNode:
     '''
     kind (str): "class A" or "class B", equivalent to data or mc, but general
@@ -83,7 +83,7 @@ def _load_config(test : str, out_dir : Path, as_dict : bool = True) -> dict|Dict
     with open(cfg_path, encoding='utf-8') as ifile:
         cfg = yaml.safe_load(ifile)
 
-    cfg['saving']['plt_dir'] = out_dir 
+    cfg['saving']['plt_dir'] = out_dir
 
     if as_dict:
         return cfg

@@ -1,5 +1,5 @@
 '''
-Module with tests for FitParameters class 
+Module with tests for FitParameters class
 '''
 from pathlib    import Path
 from rx_plotter import FitParameters

@@ -1,5 +1,5 @@
 '''
-Module intended to provide access to other projects when they cannot be accessed directly 
+Module intended to provide access to other projects when they cannot be accessed directly
 
 - Tensorflow and zfit: zfit uses tensorflow and tensorflow will cause a crash when imported before ROOT
 '''

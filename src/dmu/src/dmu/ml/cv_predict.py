@@ -282,8 +282,8 @@ class CVPredict:
         return numpy.array(l_prob)
     # --------------------------------------------
     def _evaluate_model(
-        self, 
-        model : CVClassifier, 
+        self,
+        model : CVClassifier,
         df_ft : pnd.DataFrame) -> dict[str, float]:
         '''
         Parameters:

@@ -40,7 +40,7 @@ def test_simple(year : str, component : Component, project : Project):
         return
 
     obj=AcceptanceReader(
-        year   =year, 
+        year   =year,
         project=project,
         sample =component.sample)
     acc=obj.read()

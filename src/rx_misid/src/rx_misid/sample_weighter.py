@@ -58,13 +58,13 @@ class SampleWeighter:
         #    False: 20
         self._d_out_of_map : dict[str,dict[bool,int]] = {}
         self._d_quality    : dict[str,int] = {
-            'NaN'      : 0, 
-            'Inf'      : 0, 
-            'Negative' : 0, 
-            'Zeroes'   : 0, 
+            'NaN'      : 0,
+            'Inf'      : 0,
+            'Negative' : 0,
+            'Zeroes'   : 0,
             'Good'     : 0,
             'Ones'     : 0,
-            'Above 1'  : 0} 
+            'Above 1'  : 0}
 
         self._set_variables()
         self._df                              = self._get_df(df)
@@ -149,9 +149,9 @@ class SampleWeighter:
 
         Parameters
         ----------------
-        kind     : Describes things like brem or no brem or different binnings 
+        kind     : Describes things like brem or no brem or different binnings
         cfg      : Configuration meant to control weights
-        maps_path: Path containing `brem`, `nobrem` directories, inside ANADIR 
+        maps_path: Path containing `brem`, `nobrem` directories, inside ANADIR
 
         Returns
         ----------------
@@ -293,10 +293,10 @@ class SampleWeighter:
         value = row[name]
 
         if value == 1:
-            return BREM 
+            return BREM
 
         if value == 0:
-            return NOBREM 
+            return NOBREM
 
         raise ValueError(f'Invalid {name} value: {value}')
     # ------------------------------
@@ -443,7 +443,7 @@ class SampleWeighter:
     # ----------------------
     def get_weighted_data(self) -> pnd.DataFrame:
         '''
-        Returns 
+        Returns
         --------------------
         Input dataframe with:
 

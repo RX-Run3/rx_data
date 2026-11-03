@@ -37,7 +37,7 @@ class FitKind(StrEnum):
     reso = auto()
 # ----------------------
 def __save_grid_plot(
-    grid : YieldGrid, 
+    grid : YieldGrid,
     kind : str,
     name : str):
     '''
@@ -60,9 +60,9 @@ def __get_signal_grid(
     trig : Trigger,
     q2bin: Qsq,
     name : str,
-    proc : int, 
-    cmb  : float, 
-    prc  : float) -> tuple[YieldGrid, Path]: 
+    proc : int,
+    cmb  : float,
+    prc  : float) -> tuple[YieldGrid, Path]:
     '''
     Returns
     ---------------
@@ -111,8 +111,8 @@ def tabulate_scales(
 # ----------------------
 @app.command()
 def tabulate_mc_stats(
-    cache: bool    = typer.Option(True, '--cache/--no-cache', '-c', help='If used will re-use cached file '), # noqa: B008 
-    trig : Trigger = typer.Option(... , '--trigger', '-t', help='Name trigger'                    ),          # noqa: B008 
+    cache: bool    = typer.Option(True, '--cache/--no-cache', '-c', help='If used will re-use cached file '), # noqa: B008
+    trig : Trigger = typer.Option(... , '--trigger', '-t', help='Name trigger'                    ),          # noqa: B008
     name : str     = typer.Option(... , '--name'   , '-n', help='Name of fit group')              ) -> None:  # noqa: B008
     '''
     Makes latex table with cutflow for low statistics samples that were dropped from fits
@@ -158,7 +158,7 @@ def tabulate_mc_stats(
                 df_filt['Cut'] = df_filt['Cut'].replace(cut_map)
 
                 put.df_to_tex(
-                    df      = df_filt, 
+                    df      = df_filt,
                     path    = path)
 # ----------------------
 @app.command()
@@ -230,7 +230,7 @@ def prefit_postfit(
     '''
     Makes prefit and postfit plots of fit parameters
     '''
-    from fitter    import plot_prefit_postfit # noqa: PLC0415 
+    from fitter    import plot_prefit_postfit # noqa: PLC0415
 
     plot_prefit_postfit(update = update)
 # ----------------------
@@ -255,7 +255,7 @@ def calculate_sweights(
         raise ValueError('Fit model is not a SumPDF')
 
     sweights  = splot.compute_sweights(
-        model = pdf, 
+        model = pdf,
         x     = masses)
 
     plt.style.use(mplhep.style.LHCb2)
@@ -299,9 +299,9 @@ def fitted_background(
     from rx_common  import Component
 
     path    = _ANADIR / f'fits/data/{name}/fit_summary.json'
-    summary = FitSummary.from_json(path = path) 
+    summary = FitSummary.from_json(path = path)
     summary = summary.query(name = 'component', value = Component.data_24)
-    summary = summary.query(name = 'project'  , value = trigger.project) 
+    summary = summary.query(name = 'project'  , value = trigger.project)
     summary = summary.query(name = 'q2bin'    , value = q2bin)
 
     variables = summary.get_fitted_yields(exclude = trigger.rare_signal)
@@ -309,34 +309,34 @@ def fitted_background(
     for var in variables:
         log.info(var)
 
-    grid : YieldGrid | None = None 
+    grid : YieldGrid | None = None
     for variable in variables:
         tmp = summary.make_grid(var = variable, fall_back = 0.)
         __save_grid_plot(
-            grid = tmp, 
+            grid = tmp,
             kind = 'fitted_background/original',
             name = f'{trigger}_{q2bin}_{variable}')
 
         __save_grid_plot(
-            grid = tmp.patched, 
+            grid = tmp.patched,
             kind = 'fitted_background/patched',
             name = f'{trigger}_{q2bin}_{variable}')
 
         if grid is None:
             grid  = tmp
         else:
-            grid += tmp 
+            grid += tmp
 
     if grid is None:
         raise ValueError('Missing yields grid')
 
     __save_grid_plot(
-        grid = grid, 
+        grid = grid,
         kind = 'fitted_background',
         name = f'original/{trigger}_{q2bin}_total')
 
     __save_grid_plot(
-        grid = grid.patched, 
+        grid = grid.patched,
         kind = 'fitted_background',
         name = f'patched/{trigger}_{q2bin}_total')
 # ----------------------
@@ -357,9 +357,9 @@ def significance(
     from fitter     import Yield
 
     path    = _ANADIR / f'fits/data/{fits}/fit_summary.json'
-    summary = FitSummary.from_json(path = path) 
+    summary = FitSummary.from_json(path = path)
     summary = summary.query(name = 'component', value = Component.data_24)
-    summary = summary.query(name = 'project'  , value = trigger.project) 
+    summary = summary.query(name = 'project'  , value = trigger.project)
     summary = summary.query(name = 'q2bin'    , value = q2bin)
 
     variables = summary.get_fitted_yields(exclude = trigger.rare_signal)
@@ -367,14 +367,14 @@ def significance(
     for var in variables:
         log.info(var)
 
-    grid_bkg : YieldGrid | None = None 
+    grid_bkg : YieldGrid | None = None
     for variable in variables:
         tmp = summary.make_grid(var = variable, fall_back = 0.)
 
         if grid_bkg is None:
             grid_bkg  = tmp
         else:
-            grid_bkg += tmp 
+            grid_bkg += tmp
 
     if grid_bkg is None:
         raise ValueError('background yield is None')
@@ -422,7 +422,7 @@ def expected_background(
 
     grid_sig = cal.calculate()
     __save_grid_plot(
-        grid = grid_sig, 
+        grid = grid_sig,
         kind = 'expected_background',
         name = f'{trigger}_{q2bin}_sig')
 
@@ -430,12 +430,12 @@ def expected_background(
 
     summary = FitSummary.from_json(path = path)
     summary = summary.query(name = 'component', value = Component.data_24)
-    summary = summary.query(name = 'project'  , value = trigger.project  ) 
+    summary = summary.query(name = 'project'  , value = trigger.project  )
     summary = summary.query(name = 'q2bin'    , value = q2bin            )
 
     grid_all = summary.make_grid(var = 'yld_all', fall_back = 0)
     __save_grid_plot(
-        grid = grid_all, 
+        grid = grid_all,
         kind = 'expected_background',
         name = f'{trigger}_{q2bin}_all')
 
@@ -443,7 +443,7 @@ def expected_background(
         grid_bkg = grid_all - grid_sig
 
     __save_grid_plot(
-        grid = grid_bkg, 
+        grid = grid_bkg,
         kind = 'expected_background',
         name = f'{trigger}_{q2bin}_bkg')
 # ----------------------

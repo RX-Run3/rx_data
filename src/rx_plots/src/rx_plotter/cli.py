@@ -88,16 +88,16 @@ def control_region(
     l2_cut = 'L2_ProbNNe < 0.2 || L2_PIDe < 3.0'
 
     selection : dict[Cuts, str] = {
-        Cuts.pid_l : f'({l1_cut}) && ({l2_cut}) && ({tg_cut})', 
+        Cuts.pid_l : f'({l1_cut}) && ({l2_cut}) && ({tg_cut})',
         Cuts.cmb   : 'mva_cmb > 0.5',
         Cuts.prc   : 'mva_prc > 0.5',
     }
 
     with sel.custom_selection(d_sel = selection):
         rdf = sel.apply_full_selection(
-            rdf     = rdf, 
-            q2bin   = qsq, 
-            process = Component.data_24, 
+            rdf     = rdf,
+            q2bin   = qsq,
+            process = Component.data_24,
             out_path= Path('./cutflow'),
             trigger = trig)
 
@@ -108,7 +108,7 @@ def control_region(
 
     cmb_cut= selection[Cuts.cmb]
     prc_cut= selection[Cuts.prc]
-    title  = f'{l1_cut}\n {l2_cut}\n {prc_cut}\n {cmb_cut}\n {tg_cut}' 
+    title  = f'{l1_cut}\n {l2_cut}\n {prc_cut}\n {cmb_cut}\n {tg_cut}'
     plt.hist(arr_mass, bins = 100, range=(5000, 5500), label = 'Control region', color='blue', alpha=0.5)
     plt.axvline(x=5280, color='red', linestyle=':', label = 'PDG')
     plt.title(title)
@@ -127,7 +127,7 @@ def block_fraction_vs_q2(
     sample : Component = typer.Option(..., '--sample' , '-s', help='MC sample, e.g. bpkpee'),          # noqa: B008
     trigger: Trigger   = typer.Option(..., '--trigger', '-t', help='Trigger, e.g. rk_os_ee')) -> None: # noqa: B008
     '''
-    Used to plot block fraction in MC vs q2 
+    Used to plot block fraction in MC vs q2
     '''
     cache_path = Path(f'/tmp/block_fraction_vs_q2/{sample}_{trigger}.json')
     if cache_path.exists():
@@ -156,12 +156,12 @@ def rebuild_candidates(
         EnableImplicitMT(ncores)
 
     data        = gut.load_data(
-        package = 'rx_plotter_data', 
+        package = 'rx_plotter_data',
         fpath   =f'candidate_rebuild/{config}.yaml')
 
     data['q2bin'  ] = q2bin
-    data['trigger'] = trigger 
-    data['sample' ] = sample 
+    data['trigger'] = trigger
+    data['sample' ] = sample
 
     cfg = CandidateRebuildConf(**data)
     ptr = CandidateRebuild(cfg = cfg)
@@ -232,12 +232,12 @@ def _calculate_stats(
 
     with sel.custom_selection(d_sel = {Cuts.q2 : '(1)'}):
         rdf_reco = sel.apply_full_selection(
-            rdf     = rdf_reco, 
+            rdf     = rdf_reco,
             process = sample,
             q2bin   = Qsq.central,
             trigger = trigger)
 
-    l_data : list[dict] = [] 
+    l_data : list[dict] = []
     entries = [ (block, q2bin) for block in range(1, 9) for q2bin in Qsq ]
 
     true_yield = rdf_true.Count()

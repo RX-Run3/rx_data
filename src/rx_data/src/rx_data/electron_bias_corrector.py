@@ -29,9 +29,9 @@ class ElectronBiasCorrector:
     '''
     # ---------------------------------
     def __init__(
-        self, 
+        self,
         photon_veto_version   : str,
-        skip_correction       : bool  = False, 
+        skip_correction       : bool  = False,
         brem_energy_threshold : float = 300):
         '''
         Parameters
@@ -40,7 +40,7 @@ class ElectronBiasCorrector:
         skip_correction      : If true, will not correct electrons, but run all the code up to the last stage, default False
         brem_energy_threshold: Energy deposits in ECAL will be considered brem if their energy is above this value, default 300 MeV
         '''
-        self._lep_name : str | None= None 
+        self._lep_name : str | None= None
         self._skip_correction      = skip_correction
         self._min_brem_energy      = brem_energy_threshold
         self._bcor                 = BremBiasCorrector()
@@ -87,7 +87,7 @@ class ElectronBiasCorrector:
     def _check_massless_brem(self, e_brem : v4d) -> None:
         '''
         Checks if v4d representing brem is massless
-        Parameters 
+        Parameters
         -------------
         e_brem: 4D vector representing brem
 
@@ -197,8 +197,8 @@ class ElectronBiasCorrector:
         return e_corr
     # ---------------------------------
     def _correct_with_track_brem_1(
-        self, 
-        e_track : v4d, 
+        self,
+        e_track : v4d,
         row     : pnd.Series) -> v4d | None:
         '''
         Parameters
@@ -208,7 +208,7 @@ class ElectronBiasCorrector:
 
         Returns
         -------------
-        4-vector with kinematics of brem photon and electron 
+        4-vector with kinematics of brem photon and electron
         or None if no correction is needed on original electron
         '''
         if self._skip_correction:
@@ -216,7 +216,7 @@ class ElectronBiasCorrector:
 
         brem_energy = self._attr_from_row(row, f'{self._lep_name}_BREMTRACKBASEDENERGY')
         if brem_energy < self._min_brem_energy:
-            return None 
+            return None
 
         eta = e_track.eta
         phi = e_track.phi
@@ -239,15 +239,15 @@ class ElectronBiasCorrector:
         return e_corr
     # ---------------------------------
     def _correct_with_track_brem_2(
-        self, 
-        e_track : v4d, 
+        self,
+        e_track : v4d,
         row     : pnd.Series) -> v4d | None:
         '''
         Smarter strategy than brem_track_1
 
         Parameters
         ----------------
-        e_track: 4-vector associated to electron's track 
+        e_track: 4-vector associated to electron's track
         row    : Pandas series with entry information
 
         Returns
@@ -257,7 +257,7 @@ class ElectronBiasCorrector:
         '''
         if self._attr_from_row(row, f'{self._lep_name}_HASBREMADDED'):
             log.debug('Electron has already brem, skipping correction')
-            return None 
+            return None
 
         brem_energy = self._attr_from_row(row, f'{self._lep_name}_BREMTRACKBASEDENERGY')
         if brem_energy <  self._min_brem_energy:
@@ -280,14 +280,14 @@ class ElectronBiasCorrector:
     @property
     def all_photons(self) -> int:
         '''
-        Number of photons that could have been added 
+        Number of photons that could have been added
         '''
         return self._veto.ntotal
     # ---------------------------------
     def correct(
-        self, 
-        row  : pnd.Series, 
-        name : str, 
+        self,
+        row  : pnd.Series,
+        name : str,
         kind : str = 'brem_track_2') -> pnd.Series:
         '''
         Corrects kinematics and returns row

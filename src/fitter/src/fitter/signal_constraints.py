@@ -32,7 +32,7 @@ class SignalConstraints:
     '''
     # ----------------------
     def __init__(
-        self, 
+        self,
         channel : Channel,
         nll     : ParsHolder,
         comp    : Component):
@@ -50,10 +50,10 @@ class SignalConstraints:
         self._constraint_kind : ConstraintType = ConstraintType.gauss
     # ----------------------
     def _get_constraint(
-        self, 
-        brem  : Brem, 
-        block : Block, 
-        kind  : Correction, 
+        self,
+        brem  : Brem,
+        block : Block,
+        kind  : Correction,
         par   : zpar) -> Constraint:
         '''
         Parameters
@@ -68,8 +68,8 @@ class SignalConstraints:
         Constraint object
         '''
         val, err = self._srd.get_scale(
-            corr  = kind, 
-            block = block, 
+            corr  = kind,
+            block = block,
             brem  = brem)
 
         log.debug(f'Constraining: {par.name}')
@@ -103,11 +103,11 @@ class SignalConstraints:
             return
 
         if name.startswith('fr_'):
-            brem = Brem.from_str(value = mtch.group(2)) 
+            brem = Brem.from_str(value = mtch.group(2))
             block= Block(value = int(mtch.group(3)))
-            kind = mtch.group(1) 
+            kind = mtch.group(1)
         else:
-            brem = Brem.from_str(value = mtch.group(1)) 
+            brem = Brem.from_str(value = mtch.group(1))
             block= Block(value = int(mtch.group(2)))
             kind = mtch.group(3)
 
@@ -145,7 +145,7 @@ class SignalConstraints:
             brem, block, kind = correction_settings
 
             constraint = self._get_constraint(
-                brem = brem, 
+                brem = brem,
                 block= block,
                 kind = kind,
                 par  = par)

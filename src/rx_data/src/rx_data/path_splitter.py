@@ -56,9 +56,9 @@ class NestedSamples(RootModel):
         return self.model_dump_json(indent = 2)
     # ------------------------------------------
     def get_paths(
-        self, 
-        ftree  : str, 
-        sample : Component, 
+        self,
+        ftree  : str,
+        sample : Component,
         trigger: Trigger) -> list[Path]:
         '''
         Parameters
@@ -98,12 +98,12 @@ class Samples(RootModel):
 
         return size
     # -------------------------------------------------------
-    def get_subset(self, max_files : int) -> 'Samples': 
+    def get_subset(self, max_files : int) -> 'Samples':
         '''
         Will limit the number of paths in the values if Data.Max is larger than zero
         '''
         if max_files < 0:
-            return self 
+            return self
 
         log.warning(f'Truncating to {max_files} paths')
 
@@ -112,7 +112,7 @@ class Samples(RootModel):
         return Samples(root = d_path_trunc)
     # -------------------------------------------------------
     def __str__(self):
-        msg = '\n' 
+        msg = '\n'
         for sample, line in self.root:
             msg += f'{sample:<50}{line:<30}\n'
 
@@ -130,7 +130,7 @@ class Samples(RootModel):
 
             samples.root[sample][line] = l_path
 
-        return samples 
+        return samples
 # ------------------------------------------
 class PathSplitter:
     '''
@@ -139,8 +139,8 @@ class PathSplitter:
     '''
     # ------------------------------------------
     def __init__(
-        self, 
-        paths     : list[Path], 
+        self,
+        paths     : list[Path],
         max_files : int = -1):
         '''
         paths: List of LFNs/PFNs/Local paths
@@ -188,7 +188,7 @@ class PathSplitter:
         if npath != samples.npaths:
             raise ValueError(f'Different size after/before splitting: {samples.npaths} != {npath}')
 
-        samples = samples.get_subset(max_files = self._max_files) 
+        samples = samples.get_subset(max_files = self._max_files)
         if log.getEffectiveLevel() < LogLevels.info:
             log.debug('Found samples:')
             log.debug(samples)
@@ -196,5 +196,5 @@ class PathSplitter:
         if not nested:
             return samples
 
-        return samples.nested 
+        return samples.nested
 # ------------------------------------------

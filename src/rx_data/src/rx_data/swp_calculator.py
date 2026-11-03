@@ -13,7 +13,7 @@ from vector      import MomentumObject3D as v3d
 from vector      import MomentumObject4D as v4d
 
 from dmu         import LogStore
-from dmu.generic import typing_utilities as tut 
+from dmu.generic import typing_utilities as tut
 
 log = LogStore.add_logger('rx_data:swp_calculator')
 #---------------------------------
@@ -200,8 +200,8 @@ class SWPCalculator:
         if progress_bar:
             # TODO: This shows error in type analyzer, progress bar is enable through TQDM
             sr_mass = self._df.progress_apply( # type: ignore
-                self._combine, 
-                args=(had_name, kind, new_had_id), 
+                self._combine,
+                args=(had_name, kind, new_had_id),
                 axis=1)
         else:
             sr_mass = self._df.apply(self._combine, args=(had_name, kind, new_had_id), axis=1)

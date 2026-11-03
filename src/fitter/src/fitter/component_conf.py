@@ -61,7 +61,7 @@ class ComponentConf(UnpackerModel, frozen = True):
     Controls observable building
     '''
 
-    from_sim_fit : bool 
+    from_sim_fit : bool
     '''
     If true this component will be obtained from fitting MC
     through the SimFitter class

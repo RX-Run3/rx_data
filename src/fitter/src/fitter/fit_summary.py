@@ -32,18 +32,18 @@ class FitHarmonizer:
         '''
         Parameters
         --------------
-        fres: Object holding fit result 
+        fres: Object holding fit result
         meta: Object holding information on fitted sample
         '''
-        self.__fres = fres 
-        self.__meta = meta 
+        self.__fres = fres
+        self.__meta = meta
     # ----------------------
     def __skip_brem_info(self) -> bool:
         '''
         Returns
         ------------
         True if yields per brem fraction won't be extracted
-        e.g. for the muon channel or when fits are not done per brem category 
+        e.g. for the muon channel or when fits are not done per brem category
         '''
         if self.__meta.channel == Channel.mm:
             log.debug('Skipping brem info')
@@ -51,12 +51,12 @@ class FitHarmonizer:
 
         # NOTE: {SIGNAL}_fraction will exist if fit was done simultaneously
         # in brem categories
-        brem_fraction = f'{self.__meta.signal}_fraction' 
+        brem_fraction = f'{self.__meta.signal}_fraction'
         if brem_fraction in self.__fres:
-            return False 
+            return False
 
         log.debug('Skipping brem info')
-        return True 
+        return True
     # ----------------------
     def __get_dt_brem_pars(self) -> list[FitParameter]:
         '''
@@ -67,7 +67,7 @@ class FitHarmonizer:
         if self.__meta.component.is_mc:
             return []
 
-        if self.__skip_brem_info(): 
+        if self.__skip_brem_info():
             return []
 
         signal                    = self.__meta.signal
@@ -92,7 +92,7 @@ class FitHarmonizer:
         frc = gvar(fr_val, fr_err)
         yld = gvar(yld_val, yld_err)
         yld_1 = yld * frc
-        yld_2 = yld - yld_1 
+        yld_2 = yld - yld_1
 
         proj = self.__meta.project
         pars.append(FitParameter(name = f'yld_{signal}_{proj}_{Brem.one}', value = yld_1.mean, error = yld_1.sdev))
@@ -101,7 +101,7 @@ class FitHarmonizer:
         if total_yield_1 not in res:
             pars.append(FitParameter(name = f'yld_{signal}_{proj}_{Brem.brx12}', value = yld_val, error = yld_err))
 
-        return pars 
+        return pars
     # ----------------------
     def __get_dt_yield_pars(self) -> list[FitParameter]:
         '''
@@ -141,7 +141,7 @@ class FitHarmonizer:
 
             yield_pars.append(new_par)
 
-        return yield_pars 
+        return yield_pars
     # ----------------------
     def __get_mc_brem_pars(self) -> list[FitParameter]:
         '''
@@ -152,7 +152,7 @@ class FitHarmonizer:
         if not self.__meta.component.is_mc:
             return []
 
-        if self.__skip_brem_info(): 
+        if self.__skip_brem_info():
             return []
 
         log.debug('Adding MC brem parameters')
@@ -166,7 +166,7 @@ class FitHarmonizer:
 
         return [par]
     # -------------------------------
-    def get_result(self) -> FitResult: 
+    def get_result(self) -> FitResult:
         '''
         Returns
         -------------
@@ -207,7 +207,7 @@ class FitSummary(RootModel[list[tuple[FitMetadata,FitResult]]], frozen = True):
             raise ValueError(f'Field {by} not in FieldMetadata')
 
         data : dict[str, list[tuple[FitMetadata,FitResult]]] = dict()
-        
+
         for meta, fsmr in self.root:
             hsh = meta.weak_hash(exclude = by)
             elm = meta, fsmr
@@ -262,12 +262,12 @@ class FitSummary(RootModel[list[tuple[FitMetadata,FitResult]]], frozen = True):
         Parameters
         --------------------
         var      : Name of variable in FitResult objects for Z axis
-        fall_back: Value used if value is missing in any grid point 
+        fall_back: Value used if value is missing in any grid point
                    If None, will raise exception when value is missing
 
         Returns
         --------------------
-        Grid of yields for passed variable, 
+        Grid of yields for passed variable,
         '''
         nodes = []
         for meta, fres in self.root:
@@ -280,7 +280,7 @@ class FitSummary(RootModel[list[tuple[FitMetadata,FitResult]]], frozen = True):
 
             nodes.append(yld)
 
-        grid = YieldGrid(root = nodes) 
+        grid = YieldGrid(root = nodes)
 
         return grid
     # -----------------
@@ -343,7 +343,7 @@ class FitSummary(RootModel[list[tuple[FitMetadata,FitResult]]], frozen = True):
         '''
         data = { hash(meta) : fres for meta, fres in self.root }
 
-        return data 
+        return data
     # -----------------
     def __str__(self):
         msg = '\n'
@@ -497,14 +497,14 @@ class SummaryProcessor:
 # -------------------------------
 class FitSummarizer:
     '''
-    Class meant to aggregate fits and return FitSummary 
+    Class meant to aggregate fits and return FitSummary
     '''
     # ----------------------
     def __init__(self, name : str, kind : str) -> None:
         '''
         Parameters
         -------------FitHarmoniFitHarmonizer
-        name: Name of fit, e.g. reso_dtf-latest 
+        name: Name of fit, e.g. reso_dtf-latest
         kind: E.g. rare, reso
         '''
         self.__name = name
@@ -565,10 +565,10 @@ class FitSummarizer:
         if not self.out_name:
             return None
 
-        return self.fit_dir / self.out_name 
+        return self.fit_dir / self.out_name
     # ---------------------------------
     def get_summary(
-        self, 
+        self,
         out_name     : str | None = None,
         force_update : bool       = False) -> FitSummary:
         '''
@@ -584,7 +584,7 @@ class FitSummarizer:
             log.info(f'Reading cached files at: {self.output_path}')
             return FitSummary.from_json(path = self.output_path)
 
-        fits : list[tuple[FitMetadata,FitResult]] = [] 
+        fits : list[tuple[FitMetadata,FitResult]] = []
 
         paths = self.__get_paths()
 
@@ -597,7 +597,7 @@ class FitSummarizer:
             fres = hrm.get_result()
             fits.append((meta, fres))
 
-        summary = FitSummary(root = fits) 
+        summary = FitSummary(root = fits)
 
         prc     = SummaryProcessor(summary = summary)
         summary = prc.run()

@@ -25,7 +25,7 @@ log = LogStore.add_logger('post_ap:pfn_reader')
 _MAX_JOB_LENGTH    : Final[int] = 84
 _MAX_OUTPUT_LENGHT : Final[int] = 50
 _DATA_REGEX        : Final[str] = r'data_(24|25)_(magup|magdown)_turbo_rd_(\1c\d)' # Regex for name of data sample jobs
-_SIM_REGEX         : Final[str] = r'mc_.*(w\d{2}(_\d{2})?)_.*(\d{8}).*'            # Regex for name of simulated sample jobs 
+_SIM_REGEX         : Final[str] = r'mc_.*(w\d{2}(_\d{2})?)_.*(\d{8}).*'            # Regex for name of simulated sample jobs
 _SECTION           : Final[str] = '''
 {filter_job_name}:
   input :{sample_frac}
@@ -78,7 +78,7 @@ class Sample(BaseModel):
              downloaded ntuples, i.e.
 
              {storage}/v1r5811/ntuple.root
-    ''' 
+    '''
     model_config = ConfigDict(
         arbitrary_types_allowed = True,
         frozen                  = False)
@@ -275,7 +275,7 @@ class Sample(BaseModel):
         return val
     # ------------------------------
     def local_paths(
-        self, 
+        self,
         must_exist: bool) -> list[Path]:
         '''
         Parameters
@@ -418,7 +418,7 @@ class Sample(BaseModel):
     @cached_property
     def year_period(self) -> tuple[str,str]:
         '''
-        E.g. 24, 24c3 
+        E.g. 24, 24c3
         '''
         if self.is_mc:
             raise NotImplementedError('Year not implemented for MC')
@@ -435,13 +435,13 @@ class Sample(BaseModel):
     def year(self) -> str:
         val, _ = self.year_period
 
-        return val 
+        return val
     # ------------------------------
     @cached_property
     def period(self) -> str:
         _, val = self.year_period
 
-        return val 
+        return val
     # ------------------------------
     @cached_property
     def target_paths(self) -> dict[Trigger,Path]:
@@ -471,7 +471,7 @@ class Sample(BaseModel):
             log.debug(f'Target path: {target_path}')
             paths[trigger] = target_path
 
-        return paths 
+        return paths
     # ------------------------------
     @cached_property
     def targets_date(self) -> datetime | None:
@@ -558,7 +558,7 @@ class Samples(RootModel[list[Sample]]):
         return iter(self.root)
     # -----------------
     def __len__(self) -> int:
-        return self.size 
+        return self.size
     # -------------------------
     def __lt__(self, other : Sample) -> bool:
         return self < other
@@ -666,15 +666,15 @@ class PFNReaderConf(BaseModel):
     productions   : dict[Production,ProductionConf]
     # ----------------
     def get_data(
-        self, 
-        kind       : str, 
-        production : Production, 
+        self,
+        kind       : str,
+        production : Production,
         group      : str):
         '''
         Parameters
         ---------------
         kind      : Type of field e.g. samples, version
-        production: E.g. rx_2024, rx_filter 
+        production: E.g. rx_2024, rx_filter
         group     : Group of samples e.g. mc-rkst
         '''
         if production not in self.productions:
@@ -703,7 +703,7 @@ class PFNReader:
     '''
     #------------------------------------
     def __init__(
-        self, 
+        self,
         storage: Path,
         cfg    : PFNReaderConf):
         '''

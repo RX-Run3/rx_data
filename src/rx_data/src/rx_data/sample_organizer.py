@@ -21,7 +21,7 @@ _SCRATCH : Final[Path | None] = val if val is None else Path(val)
 # ----------------------------------
 class SampleProtocol(Protocol):
     '''
-    Class meant to represent how a sample should look like 
+    Class meant to represent how a sample should look like
     to `SampleOrganizer`
     '''
     # -----------------
@@ -40,7 +40,7 @@ class SampleProtocol(Protocol):
         ...
     # -----------------
     def local_paths(
-        self, 
+        self,
         must_exist: bool) -> list[Path]:
         ...
     # -----------------
@@ -62,7 +62,7 @@ class SampleOrganizerConf(BaseModel):
     # ------------------------------
     @classmethod
     def default(
-        cls, 
+        cls,
         cleanup : bool,
         dry_run : bool) -> 'SampleOrganizerConf':
         '''
@@ -88,7 +88,7 @@ class SampleOrganizer:
     '''
     # ---------------------------------------
     def __init__(
-        self, 
+        self,
         cleanup : bool,
         dry_run : bool):
         '''
@@ -112,7 +112,7 @@ class SampleOrganizer:
         '''
         Parameters
         ---------------
-        sample: Object representing sample 
+        sample: Object representing sample
 
         Return
         ---------------
@@ -148,7 +148,7 @@ class SampleOrganizer:
         return out_path
     # ---------------------------------------
     def _split_file(
-        self, 
+        self,
         is_mc   : bool,
         cleanup : bool,
         path    : Path) -> dict[Trigger,Path]:
@@ -174,7 +174,7 @@ class SampleOrganizer:
 
             found = self._save_file(
                 is_mc       = is_mc,
-                trigger     = trigger, 
+                trigger     = trigger,
                 input_path  = path,
                 output_path = split_path)
 
@@ -194,7 +194,7 @@ class SampleOrganizer:
         return result
     # ---------------------------------------
     def _save_file(
-        self, 
+        self,
         is_mc       : bool,
         output_path : Path,
         input_path  : Path,
@@ -238,13 +238,13 @@ class SampleOrganizer:
         return True
     # ---------------------------------------
     def _copy_files(
-        self, 
-        sample: SampleProtocol, 
+        self,
+        sample: SampleProtocol,
         paths : dict[Trigger,Path]) -> None:
         '''
         Parameters
         ---------------
-        sample: Object representing MC sample 
+        sample: Object representing MC sample
         paths : Dictionary mapping trigger name to ROOT file path
         '''
         log.debug('Moving files')
@@ -291,7 +291,7 @@ class SampleOrganizer:
 
         split_paths = self._split_file(
             is_mc   = sample.is_mc,
-            path    = merged_path, 
+            path    = merged_path,
             cleanup = cleanup)
 
         self._copy_files(

@@ -73,8 +73,8 @@ def _get_range(var : str) -> tuple[float|None,float|None]:
     return minx, maxx
 #-----------------------------------------
 def _plot_brem_kinematics(
-    df    : pnd.DataFrame, 
-    var   : str, 
+    df    : pnd.DataFrame,
+    var   : str,
     label : str, ax=None):
     df         = _add_column(df, var)
     minx, maxx = _get_range(var)
@@ -88,8 +88,8 @@ def _plot_brem_kinematics(
 #-----------------------------------------
 def _plot_correction(
     path : Path,
-    org  : pnd.DataFrame, 
-    cor  : pnd.DataFrame, 
+    org  : pnd.DataFrame,
+    cor  : pnd.DataFrame,
     name : str) -> None:
 
     out_dir = path / name
@@ -104,9 +104,9 @@ def _plot_correction(
         if 'PT' in var:
             track_var = var.replace('PT', 'TRACK_PT')
             ax = _plot_brem_kinematics(
-                df   = cor, 
-                var  = track_var, 
-                label= 'Track', 
+                df   = cor,
+                var  = track_var,
+                label= 'Track',
                 ax   = ax)
 
         nentries = len(org)
@@ -122,7 +122,7 @@ def _plot_correction(
 #-----------------------------------------
 def _get_df(nentries : int = 10) -> pnd.DataFrame:
     gtr = RDFGetter(
-        sample  = Component.data_24, 
+        sample  = Component.data_24,
         trigger = Trigger.rk_ee_os)
 
     rdf = gtr.get_rdf(per_file=False)
@@ -208,8 +208,8 @@ def test_correction_brem_track(tmp_path : Path, photon_veto : str):
     text = f'Vetoed {cor.photons_vetoed}/{cor.all_photons}; version: {photon_veto}'
 
     _plot_correction(
-        org =df_org, 
-        cor =df_cor, 
+        org =df_org,
+        cor =df_cor,
         path=tmp_path,
         name=text)
     _check_equal(df_org, df_cor, must_differ = True)

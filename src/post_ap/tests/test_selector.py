@@ -68,7 +68,7 @@ def test_dt():
 # --------------------------------------
 def test_cfl():
     '''
-    Test retrieving multiple dataframes, one after each cut 
+    Test retrieving multiple dataframes, one after each cut
     '''
 
     rdf          = RDataFrame('Hlt2RD_BuToKpMuMu_MVA/DecayTree', Data.mc_path)

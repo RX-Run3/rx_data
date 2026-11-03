@@ -23,7 +23,7 @@ class Node(BaseModel):
 
     @property
     def wp(self) -> Loc:
-        return Loc(root = []) 
+        return Loc(root = [])
 # -----------------------------------
 class Grid(RootModel[list[Node]]):
     model_config = ConfigDict(arbitrary_types_allowed = True)
@@ -32,18 +32,18 @@ class Grid(RootModel[list[Node]]):
     def df(self) -> pnd.DataFrame:
         xax = numpy.linspace(0, 1, 10)
         yax = numpy.linspace(0, 1, 10)
-        
+
         xval = []
         yval = []
         zval = []
-        for x in xax: 
-            for y in yax: 
+        for x in xax:
+            for y in yax:
                 xval.append(x)
                 yval.append(y)
                 zval.append(x + y)
 
         df = pnd.DataFrame({'cmb' : xval, 'prc' : yval})
-        df['yld'] = zval 
+        df['yld'] = zval
 
         return df
 

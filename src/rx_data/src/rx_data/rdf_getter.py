@@ -166,7 +166,7 @@ class RDFGetter(SpecMaker):
             if substr not in definition:
                 continue
 
-            # Brem fixed trees do not exist AND this is the electron channel 
+            # Brem fixed trees do not exist AND this is the electron channel
             if not self._ftree_was_excluded(ftree='brem_track_2') and self._trigger.is_electron:
                 log.warning(f'Skipping definition {name}={definition}')
                 return True
@@ -217,13 +217,13 @@ class RDFGetter(SpecMaker):
         # If this is a brem_track_2 dependent definition
         # and the definition is not possible, skip
         if self._skip_brem_track_2_definition(
-            name       = name, 
+            name       = name,
             definition = definition):
 
             return rdf
 
         if self._skip_smear_definition(
-            name       = name, 
+            name       = name,
             definition = definition):
 
             return rdf
@@ -258,7 +258,7 @@ class RDFGetter(SpecMaker):
 
         # TODO: The weight (taking into account prescale) should be removed
         # for 2025 data
-        
+
         # If doing data with noPID trigger, undo prescale
         # of misID trigger candidates
         if not self._component.is_mc and not self._trigger.has_pid:
@@ -342,9 +342,9 @@ class RDFGetter(SpecMaker):
                 continue
 
             rdf = self._add_column(
-                redefine  = True, 
-                rdf       = rdf, 
-                name      = name, 
+                redefine  = True,
+                rdf       = rdf,
+                name      = name,
                 definition= definition)
 
         return rdf
@@ -414,7 +414,7 @@ class RDFGetter(SpecMaker):
         return rdf
     # ---------------------------------------------------
     def _rdf_from_conf(
-        self, 
+        self,
         fpath     : Path | str,
         conf_path : Path) -> RDF.RNode:
         '''
@@ -433,11 +433,11 @@ class RDFGetter(SpecMaker):
             ntries = 10,
             wait   = 30,
             path   = conf_path)
-        
+
         nentries = rdf.Count().GetValue()
         if nentries == 0:
             log.warning(f'Found empty dataframe for {fpath}')
-            return rdf 
+            return rdf
 
         self._l_columns = [ name.c_str() for name in rdf.GetColumnNames() ]
         log.debug(f'Dataframe at: {id(rdf)}')
@@ -473,7 +473,7 @@ class RDFGetter(SpecMaker):
             return rdf
 
         log.debug(f'Filtering for a range of {nent} entries')
-        self._d_info['range'] = 0, nent 
+        self._d_info['range'] = 0, nent
         rdf  = rdf.Filter(f'rdfentry_ < {nent}')
 
         log.warning(f'Picking up range: [{0}, {nent}] ')
@@ -631,7 +631,7 @@ class RDFGetter(SpecMaker):
         rdf: ROOT dataframe associated to MC sample
         cfg: Config with the definitions of branches
 
-        Returns 
+        Returns
         -------------------
         Data frame after adding TRUEM branches missing from the AP
         '''

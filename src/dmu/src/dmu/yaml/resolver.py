@@ -57,7 +57,7 @@ class Resolver:
         '''
         Parameters
         -------------
-        item: Key of underlying dictionary 
+        item: Key of underlying dictionary
         '''
 
         return item in self._cfg

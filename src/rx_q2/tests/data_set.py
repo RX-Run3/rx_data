@@ -1,6 +1,6 @@
 import logging
 
-from q2_syst.data_set import data_set 
+from q2_syst.data_set import data_set
 
 #-----------------------------------
 def test_mc():

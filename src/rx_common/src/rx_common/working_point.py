@@ -1,5 +1,5 @@
 '''
-Module holding 
+Module holding
 '''
 from functools     import cached_property, lru_cache
 from ROOT          import RDF
@@ -110,7 +110,7 @@ class WorkingPoint(RootModel[list[Cut]], frozen = True):
     @classmethod
     @lru_cache
     def empty(cls) -> 'WorkingPoint':
-        return cls(root = []) 
+        return cls(root = [])
     # ----------------
     @cached_property
     def size(self) -> int:

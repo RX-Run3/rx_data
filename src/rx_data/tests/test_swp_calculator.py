@@ -25,7 +25,7 @@ def initialize():
     LogStore.set_level('rx_data:rdf_getter'         , 10)
 
     plt.style.use(mplhep.style.LHCb2)
-    
+
     with RDFGetter.only_friends(s_friend = set()):
         yield
 # ----------------------
@@ -50,15 +50,15 @@ def _get_hadron_mapping(trigger : Trigger) -> dict[str,int]:
 @pytest.mark.parametrize('trigger', [Trigger.rk_ee_ss])
 @pytest.mark.parametrize('sample' , [Component.data_24])
 def test_dzero_misid(
-    trigger  : Trigger, 
-    sample   : Component, 
+    trigger  : Trigger,
+    sample   : Component,
     tmp_path : Path):
     '''
     Tests dzero decay contamination
     '''
     with RDFGetter.only_friends(s_friend = set()):
         rdf = tst.rdf_from_sample(
-            sample          = sample, 
+            sample          = sample,
             trigger         = trigger,
             apply_selection = False)
 
@@ -84,9 +84,9 @@ def test_phi_misid(prefix : str, kind : str, tmp_path : Path):
     rdf     = tst.get_rdf(kind=kind, prefix=prefix)
     trigger = tst.get_trigger(kind = kind, prefix = prefix)
 
-    if   trigger.project == Project.rk: 
+    if   trigger.project == Project.rk:
         obj = SWPCalculator(rdf, d_lep={'L1' : 321, 'L2' : 321}, d_had={'H' : 321})
-    elif trigger.project == Project.rkst: 
+    elif trigger.project == Project.rkst:
         obj = SWPCalculator(rdf, d_lep={'H1' : 321}, d_had={'H2' : 321})
     else:
         raise ValueError(f'Invalid prefix: {prefix}')
@@ -135,9 +135,9 @@ def test_jpsi_misid_bzero(prefix : str, kind : str, tmp_path : Path):
     _plot(rdf_2, test=name_2, kind=kind, tmp_path = tmp_path, prefix=prefix)
 # ----------------------------------
 def _plot(
-    rdf     : RDF.RNode, 
-    test    : str, 
-    kind    : str, 
+    rdf     : RDF.RNode,
+    test    : str,
+    kind    : str,
     tmp_path: Path,
     prefix  : str):
     d_data = rdf.AsNumpy([f'{test}_mass_swp', f'{test}_mass_org'])

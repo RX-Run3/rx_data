@@ -29,20 +29,20 @@ def _get_config(kind : str) -> dict[str|int,str]:
     if kind in ['simple', 'input']:
         data['d'] = 'nested'
         data['a'] = 'something {d}'
-        data['b'] = 'here' 
-        data['c'] = '{a} {b}' 
+        data['b'] = 'here'
+        data['c'] = '{a} {b}'
 
     if kind == 'recursive_1':
         data['d'] = 'nested'
         data['a'] = 'something {a}'
-        data['b'] = 'here' 
-        data['c'] = '{a} {b}' 
+        data['b'] = 'here'
+        data['c'] = '{a} {b}'
 
     if kind == 'recursive_2':
         data['d'] = 'nested {a}'
         data['a'] = 'something {d}'
-        data['b'] = 'here' 
-        data['c'] = '{a} {b}' 
+        data['b'] = 'here'
+        data['c'] = '{a} {b}'
 
     return data
 # ----------------------

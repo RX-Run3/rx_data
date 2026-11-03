@@ -61,7 +61,7 @@ def preprocess_rk_df(df):
 def make_json(version, filename):
     csv_path    = files('q2_data').joinpath(filename)
     df_a        = pnd.read_csv(csv_path)
-    
+
     if version == 'vk.nom':
         df_a = preprocess_rk_df(df_a)
 

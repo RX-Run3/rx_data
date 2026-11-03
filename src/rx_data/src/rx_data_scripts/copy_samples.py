@@ -8,7 +8,7 @@ import numpy
 
 from rx_common    import Project
 from pydantic     import BaseModel
-from dmu.generic  import version_management as vman 
+from dmu.generic  import version_management as vman
 from typing       import Final
 from functools    import partial
 from ap_utilities import decay_utilities
@@ -38,20 +38,20 @@ class Config(BaseModel):
 
     Attributes:
     -------------------
-    l_source: 
+    l_source:
     '''
     kind    : str
-    proj    : Project 
+    proj    : Project
     dry     : bool
     nprc    : int
-    conf    : UsedSamples 
-    server  : Server 
+    conf    : UsedSamples
+    server  : Server
     timeout : int
     skipped_friend : str|None
 
     vers    : str | None        = None
     d_data  : dict       | None = None
-    l_source: list[Path]        = [] 
+    l_source: list[Path]        = []
     copied_files        : int   = 0
     copied_size         : float = 0
 # -----------------------------------------
@@ -124,7 +124,7 @@ def _get_source_paths(cfg : Config) -> list[Path]:
             if not id_str.startswith('data'):
                 nickname = decay_utilities.read_decay_name(event_type=id_str)
             else:
-                nickname = 'data' 
+                nickname = 'data'
 
             log.info(f'{nickname:<50}{id_str:<25}{npath:<10}{size:<20}')
             l_source += l_source_samp
@@ -144,7 +144,7 @@ def _get_source_paths(cfg : Config) -> list[Path]:
 def _initialize_kind(kind : str, cfg : Config) -> Config:
     '''
     This function will initialize:
-    - Data.out_dir : Full path to output directory 
+    - Data.out_dir : Full path to output directory
     - Data.l_source: List of paths with inputs to copy
 
     Parameters
@@ -152,7 +152,7 @@ def _initialize_kind(kind : str, cfg : Config) -> Config:
     kind: Kind of friend tree, e.g. main
     '''
     log.info(f'Initializing for trees of type: {kind}')
-    
+
     root_dir = Server.lxlogin.data_dir / cfg.proj / kind
     if cfg.kind == 'all' or cfg.vers is None:
         cfg.vers = vman.get_last_version(dir_path = root_dir, version_only = True)
@@ -213,7 +213,7 @@ def _copy_sample(
 def _transfer_group(
     cfg   : Config,
     kind  : str,
-    group : list[Path], 
+    group : list[Path],
     fcp   : FCopy) -> int:
     nfiles = len(group)
     log.debug(f'Transferring {nfiles} files in parallel')
@@ -228,7 +228,7 @@ def _transfer_group(
 
     with multiprocessing.Pool() as pool:
         log.debug(f'Will run {nfiles} processes')
-        fn = partial(_copy_sample, cfg, fcp, kind) 
+        fn = partial(_copy_sample, cfg, fcp, kind)
         l_ncopied = pool.map(fn, group)
         ncopied   = sum(l_ncopied)
 
@@ -238,7 +238,7 @@ def _group_paths(l_path : list[Path], cfg : Config) -> list[list[Path]]:
     '''
     Parameters
     --------------------
-    l_path: List of paths of files to transfer 
+    l_path: List of paths of files to transfer
 
     Returns
     --------------------
@@ -281,7 +281,7 @@ def _group_paths(l_path : list[Path], cfg : Config) -> list[list[Path]]:
 # -----------------------------------------
 def _transfer_kind(
     cfg  : Config,
-    kind : str, 
+    kind : str,
     fcp  : FCopy) -> None:
     '''
     Parameters
@@ -297,7 +297,7 @@ def _transfer_kind(
 
     for group in tqdm.tqdm(l_group, ascii=' -'):
         ncopied  += _transfer_group(
-            group = group, 
+            group = group,
             kind  = kind,
             cfg   = cfg,
             fcp   = fcp)
@@ -311,7 +311,7 @@ def main():
     cfg = _parse_args()
     fcp = FCopy(server = cfg.server.host)
     if cfg.kind == 'all':
-        l_kind = _FRIENDS 
+        l_kind = _FRIENDS
     else:
         l_kind = [cfg.kind]
 

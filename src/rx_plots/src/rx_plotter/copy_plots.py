@@ -22,9 +22,9 @@ class Section(BaseModel):
     target     : str       = Field(description = 'Environment variable with target directory WRT root')
     # -------------------------------------------------
     def _switch_root(
-        self, 
-        source      : Path, 
-        source_root : Path, 
+        self,
+        source      : Path,
+        source_root : Path,
         target_root : Path) -> Path:
         '''
         Parameters
@@ -64,7 +64,7 @@ class Section(BaseModel):
 
         paths = { source : self._switch_root(source, source_dir, target_dir) for source in sources }
 
-        return paths 
+        return paths
 # -------------------------------------------------
 class CopyPlotsConf(BaseModel):
     '''

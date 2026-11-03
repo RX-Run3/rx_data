@@ -15,8 +15,8 @@ class MisCalculator:
     '''
     # -------------
     def __init__(
-        self, 
-        rdf     : RDF.RNode, 
+        self,
+        rdf     : RDF.RNode,
         trigger : Trigger):
         '''
         Initializer taking dataframe and trigger, the latter is needed to know mass hypotheses of leptons
@@ -31,11 +31,11 @@ class MisCalculator:
         self._lmass = self._get_lepton_mass(trigger)
     # -------------
     def _get_lepton_mass(self, trigger : Trigger) -> float:
-        if trigger.channel == Channel.ee: 
+        if trigger.channel == Channel.ee:
             log.debug('Using electron mass hypothesis')
             return self._emass
 
-        if trigger.channel == Channel.mm: 
+        if trigger.channel == Channel.mm:
             log.debug('Using muon mass hypothesis')
             return self._mmass
 

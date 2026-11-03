@@ -23,13 +23,13 @@ class Samples(BaseModel):
     Attributes
     -------------
     filter  : HLT2 filtering regex
-    sampoles: Dictionary mapping event type with sample string, e.g. latex 
+    sampoles: Dictionary mapping event type with sample string, e.g. latex
     '''
     filter  : str | None
     samples : dict[int,str]
     # ----------------------
     @property
-    def hash(self) -> str | None: 
+    def hash(self) -> str | None:
         '''
         String representing hash needed to form BKK path
         Or None, if no filter was used
@@ -44,7 +44,7 @@ class Samples(BaseModel):
         digest   = hash_val.hexdigest()
         digest   = digest[:8]
         digest   = digest.upper()
-    
+
         return digest
 # ----------------------
 class BlockConf(BaseModel):
@@ -93,8 +93,8 @@ class SampleConfig:
     '''
     # ----------------------
     def __init__(
-        self, 
-        settings : str, 
+        self,
+        settings : str,
         samples  : str):
         '''
         Parameters
@@ -103,14 +103,14 @@ class SampleConfig:
         samples : Name of file with event types, e.g. by_priority
         '''
         data       = gut.load_data(
-            package= 'ap_utilities_data', 
+            package= 'ap_utilities_data',
             fpath  = f'samples/{settings}.yaml')
         data.pop('settings_common', None)
 
         self._cfg_set = SettingsConf(**data)
 
         data       = gut.load_data(
-            package= 'ap_utilities_data', 
+            package= 'ap_utilities_data',
             fpath  = f'analyses/{samples}.yaml')
         data.pop('all', None)
 
@@ -141,7 +141,7 @@ class SampleConfig:
             log.info(f'Found {ntypes} event types')
 
         for section in self._cfg_set.root.values():
-            section.samples = samples.samples 
+            section.samples = samples.samples
             section.hash    = samples.hash
 
         return self._cfg_set

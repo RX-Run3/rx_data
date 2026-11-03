@@ -111,7 +111,7 @@ def _get_all_info() -> list[tuple[str,str,int]]:
 # ----------------------------
 def _parse_args() -> None:
     parser = argparse.ArgumentParser(description='Script used to make list of commands to send selection jobs')
-    parser.add_argument('-v', '--version' , help='Version of post_ap ntuples, e.g. v1', required=True) 
+    parser.add_argument('-v', '--version' , help='Version of post_ap ntuples, e.g. v1', required=True)
     args = parser.parse_args()
 
     Data.version = args.version

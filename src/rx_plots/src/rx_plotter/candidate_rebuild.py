@@ -11,7 +11,7 @@ from ROOT         import RDF
 from pydantic     import BaseModel, RootModel, model_validator
 from rx_common    import Component, Cuts, Qsq, Trigger
 from rx_data      import CandidateRebuilder, RDFGetter
-from rx_selection import selection as sel 
+from rx_selection import selection as sel
 
 _ANADIR : Final[str] = os.environ['ANADIR']
 # ------------------------------------------------
@@ -52,7 +52,7 @@ class CandidateRebuildConf(BaseModel):
     sample     : Component
     particles  : set[str]
     constraint : tuple[int,set[str]]
-    swaps      : SwapConf 
+    swaps      : SwapConf
     plots      : OverlayConf
     # ------------------------------------------------
     @model_validator(mode = 'before')
@@ -61,7 +61,7 @@ class CandidateRebuildConf(BaseModel):
         trigger = data['trigger']
         sample  = data['sample' ]
         path    = data['plots']['saving']['plt_dir']
-        path    =f'{_ANADIR}/plots/{path}/{trigger}-{sample}' 
+        path    =f'{_ANADIR}/plots/{path}/{trigger}-{sample}'
 
         data['plots']['saving']['plt_dir'] = path
 
@@ -111,9 +111,9 @@ class CandidateRebuild:
                 stack.enter_context(ctx_sel)
 
             rdf = sel.apply_full_selection(
-                rdf     = rdf, 
+                rdf     = rdf,
                 q2bin   = self._cfg.q2bin,
-                process = self._cfg.sample, 
+                process = self._cfg.sample,
                 trigger = self._cfg.trigger)
 
         return rdf

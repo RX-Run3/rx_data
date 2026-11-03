@@ -43,7 +43,7 @@ class RDFLoader:
                 cls._CLIENT = client
                 yield
             finally:
-                cls._CLIENT = old_val 
+                cls._CLIENT = old_val
 
         return _context()
     # ----------------------

@@ -19,7 +19,7 @@ class PatchRanges(RootModel[dict[str,int]]):
     '''
     Class representing association between a file and the values a quantity that needs to be patched
     '''
-    root : dict[str,int] 
+    root : dict[str,int]
     # ------------------------
     def __str__(self):
         msg = '\n'
@@ -64,8 +64,8 @@ class File(BaseModel):
     ) -> 'File': ...
     @classmethod
     def from_path(
-        cls, 
-        path : Path, 
+        cls,
+        path : Path,
         tree : str,
         ftree: str,
         patch: bool,
@@ -74,11 +74,11 @@ class File(BaseModel):
         Parameters
         -----------------
         path : Path to ROOT file
-        tree : Tree associated to the eventual dataframe 
+        tree : Tree associated to the eventual dataframe
         patch: If true, will patch with block and with this file
         ftree: Friend tree name, e.g. mva
-        block: If passed, will 
-               - Override block in actual file. 
+        block: If passed, will
+               - Override block in actual file.
                - Symlink original file using new-block based naming
                Used when patching
 
@@ -94,7 +94,7 @@ class File(BaseModel):
             return cls(
                 path    = path,
                 entries = entries,
-                blocks  = set()) 
+                blocks  = set())
 
         # Here we do not patch
         if   block is None:
@@ -103,7 +103,7 @@ class File(BaseModel):
         elif patch:
             fname  = path.name.replace('.root', '_')
             link   = get_tmp_path(
-                dir       = f'rx_data/specification/{ftree}', 
+                dir       = f'rx_data/specification/{ftree}',
                 prefix    = fname,
                 extension = 'root')
 
@@ -115,12 +115,12 @@ class File(BaseModel):
 
         return cls(
             path    = path,
-            entries = entries, 
+            entries = entries,
             blocks  = blocks)
     # ----------------------
     @classmethod
     def _blocks_from_rdf(
-        cls, 
+        cls,
         rdf : RDF.RNode,
         path: Path,
         tree: str) -> set[Block]:
@@ -195,7 +195,7 @@ class Sample(BaseModel):
         '''
         Parameters
         ----------------
-        block: Block representing part of data 
+        block: Block representing part of data
 
         Returns
         ----------------
@@ -215,7 +215,7 @@ class Sample(BaseModel):
         '''
         Parameters
         -------------
-        paths: Patching files, i.e. the ones contained symlinks to patching ROOT files 
+        paths: Patching files, i.e. the ones contained symlinks to patching ROOT files
         block: Block been patched
         '''
         tree = self.trees[0]
@@ -236,12 +236,12 @@ class Sample(BaseModel):
         tree         = self.trees[0]
         ftree        = self.metadata['kind']
         paths        = sorted(paths)
-        linked_files = [ 
+        linked_files = [
             File.from_path(
-                path = path, 
-                tree = tree, 
+                path = path,
+                tree = tree,
                 patch= True,
-                block= block, 
+                block= block,
                 ftree= ftree) for path in paths ]
 
         non_empty_files : list[File] = [ file for file in linked_files if not file.is_empty ]
