@@ -25,9 +25,9 @@ def get_trees_from_file(ifile : TDirectoryFile) -> dict[str,TTree]:
             d_tree.update(d_tmp)
         elif obj.InheritsFrom('TTree'):
             obj_name = obj.GetName()
-            key      = f'{dir_name}/{obj_name}'
+            this_key = f'{dir_name}/{obj_name}'
 
-            d_tree[key] = obj
+            d_tree[this_key] = obj
         else:
             continue
 
