@@ -26,3 +26,4 @@ tests:
   script:
     - pixi run --as-is -e ci-cd test-sel
     - pixi run --as-is -e ci-cd test-ml
+    - pixi run --as-is -e ci-cd test-com

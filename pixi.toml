@@ -135,12 +135,14 @@ git-delta   = ">=0.20.1,<0.21"
 
 [feature.image_test.tasks]
 build-image = 'podman build --network=host -t rx_run3 -f Dockerfile .'
-test-sel    = { cmd = "podman run --rm localhost/rx_run3 sh -c 'cd /workspace && pixi run --as-is -e ci-cd test-sel'", depends-on = ['build-image'] }
-test-ml     = { cmd = "podman run --rm localhost/rx_run3 sh -c 'cd /workspace && pixi run --as-is -e ci-cd test-ml'" , depends-on = ['build-image'] }
+test-sel    = { cmd = "podman run --rm localhost/rx_run3 sh -c 'cd /workspace && pixi run --as-is -e ci-cd test-sel'" , depends-on = ['build-image'] }
+test-ml     = { cmd = "podman run --rm localhost/rx_run3 sh -c 'cd /workspace && pixi run --as-is -e ci-cd test-ml' " , depends-on = ['build-image'] }
+test-com    = { cmd = "podman run --rm localhost/rx_run3 sh -c 'cd /workspace && pixi run --as-is -e ci-cd test-com'" , depends-on = ['build-image'] }
 
 [feature.test.tasks]
 test-sel    = 'pytest src/rx_selection/tests/test_selection.py src/rx_selection/tests/test_registry.py'
 test-ml     = 'pytest src/dmu/tests/ml'
+test-com    = 'pytest src/rx_common'
 
 [environments]
 default     = { features = ['gpu', 'dev', 'ana', 'image_test'] , solve-group = 'main'}
