@@ -1,14 +1,12 @@
 '''
 Module holding CVPredict class
 '''
-import pandas as pnd
+import pandas           as pnd
 import numpy
 import tqdm
+import dmu.ml.utilities as ut
 
-from ROOT.RDF import RNode
-
-import dmu.ml.utilities     as ut
-
+from ROOT.RDF              import RNode
 from dmu.ml.cv_classifier  import CVClassifier
 from dmu.logging.log_store import LogStore
 from dmu.rdataframe        import utilities as rut
@@ -67,9 +65,9 @@ class CVPredict:
             if name.count('.') > 1:
                 raise ValueError(f'Invalid column name {name}')
 
-            [_, name] = name.split('.')
+            notree_name = name.split('.')[-1]
 
-            l_name.append(name)
+            l_name.append(notree_name)
 
         return sorted(l_name)
     # ----------------------------------
