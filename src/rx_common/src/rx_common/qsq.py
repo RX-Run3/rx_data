@@ -20,6 +20,20 @@ class QsqMeta[T : Qsq](EnumMeta):
         '''
         return [cls.low, cls.central, cls.high]
 # -----------------------
+class QsqKind(StrEnum):
+    '''
+    Enum mean to describe how q2 is calculated
+    '''
+    dtf = auto()
+    '''q2 obtained from constraining B mass to PDG value'''
+    raw = auto()
+    '''Default q2, using 4-vector from leptons'''
+    trk = auto()
+    '''q2 built from track information only'''
+    # -----------------------
+    def update_expression(self, expr : str) -> str:
+        return expr
+# -----------------------
 class Qsq(StrEnum, metaclass = QsqMeta):
     '''
     This class represents different q2 bins

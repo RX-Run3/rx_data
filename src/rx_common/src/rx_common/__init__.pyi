@@ -20,7 +20,7 @@ from .channel            import Channel
 from .region             import Region, MisID
 from .cuts               import Cuts, Cut
 from .mass               import Mass
-from .qsq                import Qsq
+from .qsq                import Qsq, QsqKind
 from .qsq                import QsqDef
 
 __all__ = [
@@ -50,6 +50,7 @@ __all__ = [
     'Block',
     'MVA',
     'Qsq',
+    'QsqKind',
     'QsqDef',
     # --------------------
     'set_nproc',
