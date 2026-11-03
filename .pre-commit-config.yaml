@@ -21,3 +21,8 @@ repos:
         stages        : [post-merge, post-rewrite]
         pass_filenames: false
         always_run    : true
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        types: [yaml]
