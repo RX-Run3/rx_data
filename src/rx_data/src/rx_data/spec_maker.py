@@ -313,7 +313,7 @@ class SpecMaker:
         spl  = PathSplitter(paths=l_root_path)
         data = spl.split(nested=True)
 
-        out_path = get_tmp_path(dir = 'rx_data/ftree_struc', extension = 'json')
+        out_path = get_tmp_path(directory = 'rx_data/ftree_struc', extension = 'json')
         log.debug(f'Saving friend tree structure to {out_path}')
         string = data.model_dump_json(indent = 2)
         out_path.write_text(string)
@@ -347,7 +347,7 @@ class SpecMaker:
         for ifile in range(nfiles):
             log.debug(f'Removing {ifile}-th file')
             single_file_spec, file = self._remove_all_but(spec=spec, ifile=ifile, main=main)
-            config_path            = get_tmp_path(dir = 'rx_data/per_file_spec', extension = 'json')
+            config_path            = get_tmp_path(directory = 'rx_data/per_file_spec', extension = 'json')
 
             log.debug(f'Saving per-file config path to {config_path}')
             config_path.write_text(single_file_spec.model_dump_json(indent=2))
@@ -435,7 +435,7 @@ class SpecMaker:
         log.debug(f'This instance/process ID is: {self._identifier}')
         if not per_file:
             log.debug('Not splitting per file')
-            cfg_path = get_tmp_path(dir = f'rx_data/full_dataset_spec/{self._component}', extension = 'json')
+            cfg_path = get_tmp_path(directory = f'rx_data/full_dataset_spec/{self._component}', extension = 'json')
 
             log.debug(f'Saving config path to {cfg_path}')
             string = self._spec.model_dump_json(indent=2)
