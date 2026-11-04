@@ -428,6 +428,7 @@ class DataPreprocessor(Cache):
         '''
         hash_dir = self._get_dir(kind = 'hash', make = False)
         log.debug(f'Looking for: {hash_dir}/data.npz')
+
         data_path = self._out_path / 'data.npz'
         if self._copy_from_cache():
             log.info(f'Data found cached, loading: {data_path}')

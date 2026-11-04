@@ -95,9 +95,13 @@ class LikelihoodFactory:
         '''
         Creates negative log-likelihood
 
+        Parameters
+        -----------------
+        project: If set, will be used to override default project, e.g. rk_nopid
+
         Returns
         ------------
-        Zfit likelihood
+        Holder of zfit likelihood
         '''
         log.info(30 * '-')
         log.info(f'Getting real data: {self._sample}/{self._trigger}/{self._q2bin}')
