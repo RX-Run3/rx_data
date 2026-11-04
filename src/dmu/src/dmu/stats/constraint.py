@@ -120,7 +120,7 @@ class Constraint(BaseModel, frozen = True, strict = True):
         '''
         return self.name < other.name
 # ----------------------------------------
-class Constraints[C : 'Constraint1D | ConstraintND'](RootModel[Mapping[str,C]], Serializable, frozen = True, strict = True):
+class Constraints[C : Constraint](RootModel[Mapping[str,C]], Serializable, frozen = True, strict = True):
     '''
     Class meant to be used as a container of constraint objects
 
