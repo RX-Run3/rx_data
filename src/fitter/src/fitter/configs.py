@@ -8,7 +8,7 @@ from functools   import cached_property
 from pydantic    import BaseModel, field_validator, model_validator, RootModel, TypeAdapter
 from pathlib     import Path
 from typing      import Callable, Literal, Self, Final
-from rx_common   import MVAWp, Brem
+from rx_common   import MVAWp, Brem, MassDef
 from rx_common   import Channel, Mass, Project, Qsq, MisID, Region
 from rx_common   import Component, Trigger, CCbarComponent, Cuts
 from rx_misid    import MisIDSampleWeights
@@ -532,6 +532,16 @@ class FitModelConf(UnpackerModel, frozen = True):
     constraints: ConstraintsCfg
     fit        : FitConf
     q2bin      : Qsq | None = None
+    # ------------------------
+    def update_observable(self, mass : MassDef) -> None:
+        '''
+        This method will update the `observable` field
+        to pick alternative masses
+
+        Parameters
+        --------------
+        mass: Mass definition, e.g. brem_corr, default, etc
+        '''
     # ------------------------
     @classmethod
     def default(cls) -> 'FitModelConf':

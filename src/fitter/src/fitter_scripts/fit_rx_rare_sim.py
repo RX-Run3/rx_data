@@ -20,6 +20,7 @@ from dmu              import LogStore, LogLevels
 from rx_selection     import selection as sel
 from rx_common        import Brem, Component, Region
 from rx_common        import MVAWp, Qsq, QsqDef
+from rx_common        import MassDef
 
 from fitter           import DataPreprocessor
 from fitter           import RXFitConfig
@@ -40,6 +41,9 @@ class Conf(BaseModel, Serializable, frozen=True):
     '''
     Script used to run simultaneous fits for RX, RK or RKst
     '''
+    mass   : Annotated[MassDef | None, tyro.conf.arg(aliases=['-M'])] = None
+    '''Mass used in fits'''
+
     cmode  : Annotated[ConstraintMode, tyro.conf.arg(aliases=['-c'])] = ConstraintMode.apply
     '''Controls how to use constraints'''
 
@@ -107,6 +111,9 @@ class Conf(BaseModel, Serializable, frozen=True):
         config_replacements = _get_replacements(kind = self.kind, syst = self.syst)
         with UnpackerModel.replacements(files = config_replacements):
             mod_cfg = FitModelConf(**data_mod)
+
+        if self.mass:
+            mod_cfg.update_observable(mass = self.mass)
 
         if mod_cfg.trigger.is_electron:
             name = 'brem_x12'
