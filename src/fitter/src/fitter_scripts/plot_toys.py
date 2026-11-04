@@ -6,10 +6,10 @@ import os
 import re
 import copy
 import argparse
-from pathlib import Path
-
 import mplhep
 import pandas as pnd
+
+from pathlib                 import Path
 from omegaconf               import DictConfig, OmegaConf
 from tqdm.contrib.concurrent import process_map
 from dmu.generic             import utilities as gut
@@ -84,7 +84,7 @@ def _get_paths(source_path : Path) -> list[Path]:
 
     return l_path
 # ----------------------
-def _run(input_path : Path) -> DictConfig|None:
+def _run(input_path : Path) -> DictConfig:
     '''
     Parameters
     -------------
@@ -93,10 +93,6 @@ def _run(input_path : Path) -> DictConfig|None:
     cfg = copy.deepcopy(Data.cfg)
     cfg.saving.plt_dir = input_path.parent/'plots'
 
-    if Data.dry_run:
-        log.debug(f'    {input_path}')
-        return None
-
     df  = pnd.read_parquet(input_path)
     ptr = ToyPlotter(df=df, cfg=cfg)
     cfg = ptr.plot()
@@ -104,7 +100,7 @@ def _run(input_path : Path) -> DictConfig|None:
 
     return cfg
 # ----------------------
-def _save_summary(out_dir : Path, l_cfg : list) -> None:
+def _save_summary(out_dir : Path, l_cfg : list[DictConfig]) -> None:
     '''
     This function will save a summary of the fits for all working
     poings in a YAML file
@@ -162,7 +158,11 @@ def main():
 
     log.info('Plotting:')
 
+    if Data.dry_run:
+        return
+
     l_cfg = process_map(_run, l_path, max_workers=Data.nworkers, ascii=' -')
+
     _save_summary(out_dir=inpt_dir, l_cfg=l_cfg)
 # ----------------------
 if __name__ == '__main__':
