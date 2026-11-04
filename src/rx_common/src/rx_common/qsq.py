@@ -229,7 +229,9 @@ class QsqDef(StrEnum, metaclass = QsqDefMeta):
         if var_1 != var_3:
             raise ValueError(f'Upper and lower bound q2 differ: {var_1}!={var_3}')
 
-        return f'({self.name} > {var_2}) && ({self.name} < {var_4})'
+        name = self.branch_name
+
+        return f'({name} > {var_2}) && ({name} < {var_4})'
 # -----------------------
 @cache
 def _load_data() -> dict[str,float]:
