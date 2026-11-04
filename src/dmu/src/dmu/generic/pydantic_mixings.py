@@ -1,6 +1,8 @@
 '''
 Module holding useful mixings for pydantic models
 '''
+import json
+
 from gvar                import gvar
 from pathlib             import Path
 from typing              import Sequence, TypeVar
@@ -34,9 +36,10 @@ class Serializable:
         --------------
         Config object
         '''
-        data = load_data(package = package, fpath = loc)
+        data   = load_data(package = package, fpath = loc)
+        string = json.dumps(data)
 
-        return cls(**data)
+        return cls.model_validate_json(json_data = string)
     # ---------------------------
     @classmethod
     def from_json(cls : type[TSerializable], path : Path) -> TSerializable:
