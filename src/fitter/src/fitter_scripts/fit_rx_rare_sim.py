@@ -42,26 +42,37 @@ class Conf(BaseModel, Serializable, frozen=True):
     '''
     cmode  : Annotated[ConstraintMode, tyro.conf.arg(aliases=['-c'])] = ConstraintMode.apply
     '''Controls how to use constraints'''
+
     syst   : Annotated[Systematic, tyro.conf.arg(aliases=['-s'])]
     '''Systematic variation used for fit'''
+
     q2bin  : Annotated[Qsq        , tyro.conf.arg(aliases=['-q'])]
     '''q2 bin for which fit is done'''
+
     q2def  : Annotated[QsqDef     , tyro.conf.arg(aliases=['-Q'])] = QsqDef.default
     '''Describes how the q2 was calculated, e.g. with track information only'''
+
     dry_run: Annotated[bool       , tyro.conf.arg(aliases=['-d'])] = False
     '''If true will not fit data, but will build NLL'''
+
     block  : Annotated[int        , tyro.conf.arg(aliases=['-b'])] = -1
     '''Block number, if not passed will do all data'''
+
     group  : Annotated[str        , tyro.conf.arg(aliases=['-g'])] = ''
     '''Name of group to which fit belongs, used for naming output directory'''
+
     kind   : Annotated[SimFit     , tyro.conf.arg(aliases=['-k'])] = SimFit.rx
     '''Type of simultaneous fit'''
+
     ncores : Annotated[int        , tyro.conf.arg(aliases=['-n'])] = 1
     '''Number of cores'''
+
     log_lvl: Annotated[LogLevels  , tyro.conf.arg(aliases=['-l'])] = LogLevels.info
     '''Logging level'''
+
     mva_cmb: Annotated[MVAWp      , tyro.conf.arg(aliases=['-C'], constructor=MVAWp.from_str)] = MVAWp.none()
     '''Combinatorial MVA working point, if used will override default, e.g. 0.8'''
+
     mva_prc: Annotated[MVAWp      , tyro.conf.arg(aliases=['-P'], constructor=MVAWp.from_str)] = MVAWp.none()
     '''Part reco MVA working point, if used will override default, e.g. 0.8'''
     # ---------------------------
