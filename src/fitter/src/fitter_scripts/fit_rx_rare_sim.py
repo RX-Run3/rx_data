@@ -161,6 +161,9 @@ class Conf(BaseModel, Serializable, frozen=True):
         if self.cmode != ConstraintMode.apply:
             parts.append(f'cns_{self.cmode}')
 
+        if self.mass is not None:
+            parts.append(f'mas_{self.mass}')
+
         group = '-'.join(parts)
 
         return f'{group}/{self.syst}'
