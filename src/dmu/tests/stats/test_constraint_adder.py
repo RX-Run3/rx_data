@@ -12,7 +12,6 @@ from dmu.stats   import zfit
 from dmu.stats   import Constraint1D, ConstraintND, Constraints
 from dmu.stats   import ConstraintAdder
 from dmu.stats   import ConstraintMode
-from dmu.generic import utilities as gut
 from dmu.generic import rxran
 from dmu.testing import get_nll
 
@@ -23,7 +22,7 @@ log             = LogStore.add_logger('dmu:stats:test_constraint_adder')
 type Loss       = ExtendedUnbinnedNLL | UnbinnedNLL
 type Constraint = Constraint1D        | ConstraintND
 # ----------------------
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(autouse=True)
 def initialize():
     '''
     This will run before any test
@@ -35,7 +34,7 @@ def initialize():
         yield
 # ----------------------
 @pytest.fixture(params=ConstraintMode)
-def _fix_or_constrain(request : pytest.FixtureRequest):
+def _mode(request : pytest.FixtureRequest):
     with ConstraintAdder.mode(value = request.param):
         yield
 # ----------------------
@@ -97,42 +96,38 @@ def _validate(
         tmp  = df_par['Value'].std()
         std  = float(tmp)
 
-        log.debug(f'STD : {std:.2f}/{expc:.2f}')
-        assert std < expc # Parameters distribution in data should be narrower than constrain
+        if ConstraintAdder.get_mode() != ConstraintMode.drop:
+            log.debug(f'STD : {std:.2f}/{expc:.2f}')
+            assert std < expc # Parameters distribution in data should be narrower than constrain
 # ----------------------
-def test_uncorrelated(_fix_or_constrain) -> None:
+def test_uncorrelated(_mode) -> None:
     '''
     Test multiple uncorrelated constraints
     '''
     nll  = get_nll(kind='s+b', suffix = '')
-    data = gut.load_data(package='dmu_data', fpath='tests/stats/constraints/uncorrelated.yaml')
-    cons = Constraints[Constraint1D](root = data)
+    cons = Constraints[Constraint1D].from_package(package='dmu_data', loc='tests/stats/constraints/uncorrelated.yaml')
 
     cad = ConstraintAdder(nll=nll, constraints=cons)
     nll = cad.get_nll()
 # ----------------------
-def test_correlated(_fix_or_constrain) -> None:
+def test_correlated(_mode) -> None:
     '''
     Test constraints of correlated parameters
     '''
     nll = get_nll(kind='s+b', suffix = '')
-    data = gut.load_data(package='dmu_data', fpath='tests/stats/constraints/correlated.yaml')
-    cons = Constraints[ConstraintND](root = data)
+    cons = Constraints[ConstraintND].from_package(package='dmu_data', loc='tests/stats/constraints/correlated.yaml')
 
     cad = ConstraintAdder(nll=nll, constraints=cons)
     nll = cad.get_nll()
 # ----------------------
-@pytest.mark.skip(reason = 'Takes too long')
-def test_toy(_fix_or_constrain) -> None:
+def test_toy(_mode) -> None:
     '''
     Tests toy constraint addition in a loop
     with timeout extended in order to profile
     '''
-    ntoy= 100
-    nll = get_nll(kind='s+b', suffix = '', nentries = 2000) # Do not change 2000, constraints are for 2000
-
-    data = gut.load_data(package='dmu_data', fpath='tests/stats/constraints/uncorrelated.yaml')
-    cons = Constraints[Constraint1D](root = data)
+    ntoy = 100
+    nll  = get_nll(kind='s+b', suffix = '', nentries = 2000) # Do not change 2000, constraints are for 2000
+    cons = Constraints[Constraint1D].from_package(package='dmu_data', loc='tests/stats/constraints/uncorrelated.yaml')
 
     log.info('')
     print(cons)

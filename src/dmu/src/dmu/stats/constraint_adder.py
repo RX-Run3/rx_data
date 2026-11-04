@@ -10,12 +10,14 @@ from zfit            import Parameter
 from zfit.loss       import ExtendedUnbinnedNLL
 
 from .types          import ConstraintMode
-from .constraint     import Constraints, Constraint
+from .constraint     import Constraints
+from .constraint     import ConstraintND
+from .constraint     import Constraint1D
 from .imports        import zfit
 
 log = LogStore.add_logger('dmu:stats:constraint_adder')
 # ----------------------
-class ConstraintAdder[C : Constraint]:
+class ConstraintAdder[C : Constraint1D | ConstraintND]:
     '''
     This class is in charge of:
 
@@ -31,13 +33,21 @@ class ConstraintAdder[C : Constraint]:
         Parameters
         -------------
         nll        : Zfit likelihood, before constraints added
-        constraints: List of constraint objects
+        constraints: Container with constraints
         '''
         self._nll         = nll
         self._constraints = constraints
 
         self._d_par = self._get_params(nll=nll)
         self._d_cns : dict[str,Parameter] = {}
+    # ----------------------
+    @classmethod
+    def get_mode(cls) -> ConstraintMode:
+        '''
+        Returns mode in which constraints are at this point
+        been applied
+        '''
+        return cls._mode
     # ----------------------
     def _get_params(self, nll : ExtendedUnbinnedNLL) -> dict[str, Parameter]:
         '''
