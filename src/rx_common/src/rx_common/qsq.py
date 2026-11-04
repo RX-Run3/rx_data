@@ -131,7 +131,7 @@ class QsqDef(StrEnum):
     '''q2 obtained from constraining B mass to PDG value'''
     true        = auto()
     '''True q2, only available in MC'''
-    trk = auto()
+    track       = auto()
     '''q2 built from track information only'''
     # -----------------------
     @property
@@ -144,7 +144,7 @@ class QsqDef(StrEnum):
                 return 'q2_dtf'
             case QsqDef.default:
                 return 'q2'
-            case QsqDef.trk:
+            case QsqDef.track:
                 return 'q2_trk'
             case QsqDef.true:
                 return 'q2_true'
@@ -177,7 +177,7 @@ class QsqDef(StrEnum):
                 return 'green'
             case QsqDef.true:
                 return 'red'
-            case QsqDef.trk:
+            case QsqDef.track:
                 return 'black'
     # -----------------------
     @property
@@ -192,7 +192,7 @@ class QsqDef(StrEnum):
                 return '$q_{DTF}^{2}$'
             case QsqDef.true:
                 return '$q_{True}^{2}$'
-            case QsqDef.trk:
+            case QsqDef.track:
                 return '$q_{trk}^{2}$'
     # -----------------------
     def update_expression(self, expr : str) -> str:
