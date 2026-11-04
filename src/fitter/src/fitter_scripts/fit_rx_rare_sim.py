@@ -13,7 +13,7 @@ from dmu.generic      import Serializable
 from dmu.stats        import ParameterLibrary as PL
 from dmu.stats        import utilities as sut
 from dmu.stats        import ConstraintAdder
-from dmu.stats        import Constraints
+from dmu.stats        import Constraints, ConstraintMode
 from dmu.stats        import FitResult
 from dmu.workflow     import Cache
 from dmu              import LogStore, LogLevels
@@ -40,6 +40,8 @@ class Conf(BaseModel, Serializable, frozen=True):
     '''
     Script used to run simultaneous fits for RX, RK or RKst
     '''
+    cmode  : Annotated[ConstraintMode, tyro.conf.arg(aliases=['-c'])] = ConstraintMode.apply
+    '''Controls how to use constraints'''
     syst   : Annotated[Systematic, tyro.conf.arg(aliases=['-s'])]
     '''Systematic variation used for fit'''
     q2bin  : Annotated[Qsq        , tyro.conf.arg(aliases=['-q'])]
@@ -320,7 +322,7 @@ def main():
     cfg.to_json(path = cfg.out_dir / cfg.q2bin / 'config.json')
 
     ctx_1 = DataPreprocessor.use_database()
-    ctx_2 = ConstraintAdder.fixed_parameters(value = False)
+    ctx_2 = ConstraintAdder.mode(value = cfg.cmode)
     ctx_3 = sut.root_directory(root_dir=cfg.out_dir / 'failed_nll')
     ctx_4 = sel.override_qsq(kind = cfg.q2def)
     with ExitStack() as stack:
