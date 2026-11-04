@@ -13,14 +13,12 @@ type zobs = zfit.Space
 class ObservableConf(BaseModel, frozen = True):
     '''
     Class representing configuration for observable
-
-    Attributes
-    ------------------
-    mass : Mass used to build PDF, e.g. bp, bp_dtf_jpsi, etc
-    range: Range where PDF is normalized to 1
     '''
     name : Mass
+    '''Mass that should match a branch in the trees where the
+    data to be fitted will be picked from'''
     range: tuple[int,int]
+    '''range: Range where PDF is normalized to 1'''
     # ------------------------
     def __str__(self):
         lower, upper = self.range
