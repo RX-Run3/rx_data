@@ -11,6 +11,7 @@ from dmu.generic      import UnpackerModel, utilities as gut
 from dmu.stats        import ParameterLibrary as PL
 from dmu.stats        import utilities as sut
 from dmu.stats        import ConstraintAdder
+from dmu.stats        import ConstraintMode
 from dmu.workflow     import Cache
 from dmu              import LogStore
 from rx_selection     import selection as sel
@@ -203,7 +204,7 @@ def main():
     ctx_3 = sel.custom_selection(d_sel=cfg.overriding_selection)
     ctx_4 = sut.root_directory(root_dir=cfg.output_directory / 'failed_nll')
     ctx_5 = DataPreprocessor.use_database()
-    ctx_6 = ConstraintAdder.fixed_parameters(value = False)
+    ctx_6 = ConstraintAdder.mode(value = ConstraintMode.apply)
 
     with ExitStack() as stack:
         stack.enter_context(ctx_1)
