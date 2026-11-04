@@ -1,12 +1,13 @@
 '''
 Script used to run simultaneous fits for rk, rkst and rx
 '''
-import argparse
+import tyro
 
-from typing           import Final
-from pydantic         import BaseModel
+from typing           import Final, Annotated
+from pydantic         import BaseModel, computed_field
 from pathlib          import Path
 from contextlib       import ExitStack
+from functools        import cached_property
 from dmu.generic      import UnpackerModel, utilities as gut
 from dmu.generic      import Serializable
 from dmu.stats        import ParameterLibrary as PL
@@ -37,18 +38,82 @@ _DATA_SAMPLE : Final[Component] = Component.data_24
 # ----------------------
 class Conf(BaseModel, Serializable, frozen=True):
     '''
-    Config holding all the information needed in current script
+    Script used to run simultaneous fits for RX, RK or RKst
     '''
-    cfgs : dict[Region,RXFitConfig]
-    '''Dictionary mapping fitting region and corresponding configuration'''
-    syst : Systematic
+    syst   : Annotated[Systematic, tyro.conf.arg(aliases=['-s'])]
     '''Systematic variation used for fit'''
-    q2bin: Qsq
+    q2bin  : Annotated[Qsq        , tyro.conf.arg(aliases=['-q'])]
     '''q2 bin for which fit is done'''
-    q2def: QsqDef
+    q2def  : Annotated[QsqDef     , tyro.conf.arg(aliases=['-Q'])] = QsqDef.default
     '''Describes how the q2 was calculated, e.g. with track information only'''
-    dry_run: bool
+    dry_run: Annotated[bool       , tyro.conf.arg(aliases=['-d'])] = False
     '''If true will not fit data, but will build NLL'''
+    block  : Annotated[int        , tyro.conf.arg(aliases=['-b'])] = -1
+    '''Block number, if not passed will do all data'''
+    group  : Annotated[str        , tyro.conf.arg(aliases=['-g'])] = ''
+    '''Name of group to which fit belongs, used for naming output directory'''
+    kind   : Annotated[SimFit     , tyro.conf.arg(aliases=['-k'])] = SimFit.rx
+    '''Type of simultaneous fit'''
+    ncores : Annotated[int        , tyro.conf.arg(aliases=['-n'])] = 1
+    '''Number of cores'''
+    log_lvl: Annotated[LogLevels  , tyro.conf.arg(aliases=['-l'])] = LogLevels.info
+    '''Logging level'''
+    mva_cmb: Annotated[MVAWp      , tyro.conf.arg(aliases=['-C'], constructor=MVAWp.from_str)] = MVAWp.none()
+    '''Combinatorial MVA working point, if used will override default, e.g. 0.8'''
+    mva_prc: Annotated[MVAWp      , tyro.conf.arg(aliases=['-P'], constructor=MVAWp.from_str)] = MVAWp.none()
+    '''Part reco MVA working point, if used will override default, e.g. 0.8'''
+    # ---------------------------
+    @computed_field
+    @cached_property
+    def cfgs(self) -> dict[Region, RXFitConfig]:
+        '''
+        Returns dictionary mapping fitting region to
+        corresponding fitting configuration
+        '''
+        ctx_1 = UnpackerModel.package(name = 'fitter_data')
+        with ExitStack() as stack:
+            stack.enter_context(ctx_1)
+            cfgs = { region : self._cfg_from_args(region = region) for region in self.kind.regions }
+
+        return cfgs
+    # ---------------------------
+    def _cfg_from_args(self, region : Region) -> RXFitConfig:
+        '''
+        Parameters
+        -------------
+        region: Signal region
+
+        Returns
+        -------------
+        Object storing full fit configuration
+        '''
+        data_mod= gut.load_data(
+            package= 'fitter_data',
+            fpath  = f'rare/{region.trigger.project}/{region.trigger.channel}/data.yaml')
+
+        config_replacements = _get_replacements(kind = self.kind, syst = self.syst)
+        with UnpackerModel.replacements(files = config_replacements):
+            mod_cfg = FitModelConf(**data_mod)
+
+        if mod_cfg.trigger.is_electron:
+            name = 'brem_x12'
+        else:
+            name = 'brem_xx0'
+
+        group   = self._get_group_string()
+
+        fit_cfg = RXFitConfig(
+            name    = name,
+            mod_cfg = mod_cfg,
+            group   = group,
+            block   = self.block,
+            q2bin   = self.q2bin,
+            ncores  = self.ncores,
+            mva_cmb = self.mva_cmb,
+            mva_prc = self.mva_prc,
+            log_lvl = self.log_lvl)
+
+        return fit_cfg
     # ---------------------------
     @property
     def out_dir(self) -> Path:
@@ -64,6 +129,15 @@ class Conf(BaseModel, Serializable, frozen=True):
             raise ValueError(f'Not found one and only one output directory: {s_path}')
 
         return list(s_path)[0]
+    # ----------------------
+    def _get_group_string(self) -> str:
+        '''
+        Returns {group_name}/{systematic} part of the output path
+        '''
+        if self.q2def == QsqDef.default:
+            return f'{self.group}/{self.syst}'
+
+        return f'{self.group}_{self.q2def}/{self.syst}'
 # ----------------------
 def _set_logs() -> None:
     '''
@@ -96,39 +170,6 @@ def _set_logs() -> None:
     LogStore.set_level('fitter:sim_fitter'       , 20)
     LogStore.set_level('fitter:data_preprocessor', 20)
 # ----------------------
-def _parse_args() -> Conf:
-    '''
-    Returns
-    --------------
-    Instance of configuration class, built from arguments
-    '''
-    parser = argparse.ArgumentParser(description='Script used to fit RX data')
-    parser.add_argument('-b', '--block'  , type=int           , help='Block number, if not passed will do all data'    , choices =[-1,1,2,3,4,5,6,7,8], default=-1)
-    parser.add_argument('-g', '--group'  , type=str           , help='Name of group to which fit belongs, e.g. toys'   , required= True)
-    parser.add_argument('-k', '--kind'   , type=SimFit        , help='Type of simultaneous fit'                        , required= True)
-    parser.add_argument('-n', '--ncores' , type=int           , help='Number of processes'                             , default =1)
-    parser.add_argument('-l', '--log_lvl', type=LogLevels     , help='Logging level'                                   , default =20)
-    parser.add_argument('-q', '--q2bin'  , type=Qsq           , help='q2 bin'       , choices=Qsq.rare                 , required=True)
-    parser.add_argument('-Q', '--q2def'  , type=QsqDef        , help='q2 definition', choices=QsqDef.physical          , default = QsqDef.default)
-    parser.add_argument('-s', '--syst'   , type=Systematic    , help='Systematic variation used for this fit'          , default = Systematic.nominal, choices=Systematic)
-    parser.add_argument('-C', '--mva_cmb', type=MVAWp.from_str, help='MVA working point, e.g. 0200; 0100-0300'         , default = MVAWp.none())
-    parser.add_argument('-P', '--mva_prc', type=MVAWp.from_str, help='MVA working point, e.g. 0200; 0100-0300'         , default = MVAWp.none())
-    parser.add_argument('-d', '--dry_run', action='store_true', help='If used, will not fit the data')
-    args = parser.parse_args()
-
-    regions : list[Region] = args.kind.regions
-
-    cfgs = { region : _cfg_from_args(region = region, args = args) for region in regions }
-
-    cfg  = Conf(
-        cfgs   = cfgs,
-        q2def  = args.qsq_def,
-        syst   = args.syst,
-        q2bin  = args.q2bin,
-        dry_run= args.dry_run)
-
-    return cfg
-# ----------------------
 def _get_replacements(kind : SimFit, syst : Systematic) -> dict[str,str]:
     '''
     Parameters
@@ -156,57 +197,6 @@ def _get_replacements(kind : SimFit, syst : Systematic) -> dict[str,str]:
     replacements.update(repl)
 
     return replacements
-# ----------------------
-def _get_group_string(args : argparse.Namespace) -> str:
-    '''
-    Returns {group_name}/{systematic} part of the output path
-    using the argparse args holder
-    '''
-    if args.q2def == QsqDef.default:
-        return f'{args.group}/{args.syst}'
-
-    return f'{args.group}_{args.q2def}/{args.syst}'
-# ----------------------
-def _cfg_from_args(
-    region : Region,
-    args   : argparse.Namespace) -> RXFitConfig:
-    '''
-    Parameters
-    -------------
-    region: Signal region
-    args  : Object storing configuration
-
-    Returns
-    -------------
-    Object storing full fit configuration
-    '''
-    data_mod= gut.load_data(
-        package= 'fitter_data',
-        fpath  = f'rare/{region.trigger.project}/{region.trigger.channel}/data.yaml')
-
-    config_replacements = _get_replacements(kind = args.kind, syst = args.syst)
-    with UnpackerModel.replacements(files = config_replacements):
-        mod_cfg = FitModelConf(**data_mod)
-
-    if mod_cfg.trigger.is_electron:
-        name = 'brem_x12'
-    else:
-        name = 'brem_xx0'
-
-    group = _get_group_string(args = args)
-
-    cfg = RXFitConfig(
-        name    = name,
-        mod_cfg = mod_cfg,
-        group   = group,
-        block   = args.block,
-        q2bin   = args.q2bin,
-        ncores  = args.ncores,
-        mva_cmb = args.mva_cmb,
-        mva_prc = args.mva_prc,
-        log_lvl = args.log_lvl)
-
-    return cfg
 # ----------------------
 def _get_region_nll(brem : Brem, cfg : RXFitConfig) -> NLLConf:
     ctx_1 = Cache.cache_root(path=cfg.output_directory)
@@ -320,24 +310,13 @@ def _fit(cfg : Conf) -> None:
         res  = res,
         cfg  = cfg)
 # ----------------------
-def _get_conf() -> Conf:
-    '''
-    Returns dictionary mapping signal region to configuration in region
-    '''
-    ctx_1 = UnpackerModel.package(name = 'fitter_data')
-    with ExitStack() as stack:
-        stack.enter_context(ctx_1)
-        cfgs = _parse_args()
-
-    return cfgs
-# ----------------------
 def main():
     '''
     Entry point
     '''
-    cfg = _get_conf()
     _set_logs()
 
+    cfg = tyro.cli(Conf)
     cfg.to_json(path = cfg.out_dir / cfg.q2bin / 'config.json')
 
     ctx_1 = DataPreprocessor.use_database()
