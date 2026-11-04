@@ -219,7 +219,7 @@ def test_misid_rare(
         stack.enter_context(ctx_4)
 
         dmd = DataModel(
-            name    = region.hadron,
+            name    = region.misid,
             cfg     = cfg,
             obs     = region.obs,
             trigger = Trigger.rk_ee_nopid,
