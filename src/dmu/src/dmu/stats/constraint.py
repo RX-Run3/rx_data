@@ -522,7 +522,6 @@ class Constraint1D(Constraint):
     '''
     Class representing Gaussian 1D constrain
     '''
-    name: str
     kind: ConstraintType
     mu  : float
     sg  : float
