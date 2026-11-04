@@ -274,7 +274,7 @@ class Constraints[C : 'Constraint1D | ConstraintND'](RootModel[Mapping[str,C]], 
             kind       = kind,
             parameters = params,
             values     = values,
-            cov        = numpy.diag(varncs))
+            cov        = numpy.diag(varncs).tolist())
     # -------------------------------------------
     def value(self, name : str) -> float | None:
         '''
