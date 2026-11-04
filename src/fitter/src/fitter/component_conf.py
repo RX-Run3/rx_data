@@ -17,6 +17,7 @@ class ObservableConf(BaseModel, frozen = True):
     name : Mass
     '''Mass that should match a branch in the trees where the
     data to be fitted will be picked from'''
+
     range: tuple[int,int]
     '''range: Range where PDF is normalized to 1'''
     # ------------------------
