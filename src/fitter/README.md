@@ -245,6 +245,10 @@ fit_rx_rare_sim -b -1 -g test -k rk -q low -C 0900 -P 0600 -s nominal
 Which will do the muon and electron channel fits needed to extract $R_K$. For $R_{K^*}$ run with
 `-k rkst` and for the full fit with both extracted simultaneously do `-k rx`.
 
+In order to switch the $q^2$ bin definition use the `-Q` flag, by default it will use the
+nominal definition, but it can be switched to `constrained`, `track` for the DTF version and the
+track based version.
+
 The fits will parametrize:
 
 - **$R_K$**: The muon signal yield is parametrized as a function of the electron signal yield and $R_K$:
