@@ -76,6 +76,7 @@ tf-keras                       = '*'
 tqdm                           = '*'
 types-tqdm                     = ">=4.70.0.20260906,<5"
 typer                          = '*'
+tyro                           = ">=1.0.16,<2"
 uproot                         = '*'
 uv                             = ">=0.13.5,<0.14"
 vector                         = '*'
