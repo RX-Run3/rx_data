@@ -18,7 +18,7 @@ from dmu.workflow     import Cache
 from dmu              import LogStore, LogLevels
 from rx_selection     import selection as sel
 from rx_common        import Brem, Component, Region
-from rx_common        import MVAWp, Qsq
+from rx_common        import MVAWp, Qsq, QsqDef
 
 from fitter           import DataPreprocessor
 from fitter           import RXFitConfig
@@ -45,6 +45,8 @@ class Conf(BaseModel, Serializable, frozen=True):
     '''Systematic variation used for fit'''
     q2bin: Qsq
     '''q2 bin for which fit is done'''
+    q2def: QsqDef
+    '''Describes how the q2 was calculated, e.g. with track information only'''
     dry_run: bool
     '''If true will not fit data, but will build NLL'''
     # ---------------------------
@@ -107,6 +109,7 @@ def _parse_args() -> Conf:
     parser.add_argument('-n', '--ncores' , type=int           , help='Number of processes'                             , default =1)
     parser.add_argument('-l', '--log_lvl', type=LogLevels     , help='Logging level'                                   , default =20)
     parser.add_argument('-q', '--q2bin'  , type=Qsq           , help='q2 bin'       , choices=Qsq.rare                 , required=True)
+    parser.add_argument('-Q', '--q2def'  , type=QsqDef        , help='q2 definition', choices=QsqDef.physical          , default = QsqDef.default)
     parser.add_argument('-s', '--syst'   , type=Systematic    , help='Systematic variation used for this fit'          , default = Systematic.nominal, choices=Systematic)
     parser.add_argument('-C', '--mva_cmb', type=MVAWp.from_str, help='MVA working point, e.g. 0200; 0100-0300'         , default = MVAWp.none())
     parser.add_argument('-P', '--mva_prc', type=MVAWp.from_str, help='MVA working point, e.g. 0200; 0100-0300'         , default = MVAWp.none())
@@ -119,6 +122,7 @@ def _parse_args() -> Conf:
 
     cfg  = Conf(
         cfgs   = cfgs,
+        q2def  = args.qsq_def,
         syst   = args.syst,
         q2bin  = args.q2bin,
         dry_run= args.dry_run)
@@ -327,10 +331,12 @@ def main():
     ctx_1 = DataPreprocessor.use_database()
     ctx_2 = ConstraintAdder.fixed_parameters(value = False)
     ctx_3 = sut.root_directory(root_dir=cfg.out_dir / 'failed_nll')
+    ctx_4 = sel.override_qsq(kind = cfg.q2def)
     with ExitStack() as stack:
         stack.enter_context(ctx_1)
         stack.enter_context(ctx_2)
         stack.enter_context(ctx_3)
+        stack.enter_context(ctx_4)
 
         _fit(cfg=cfg)
 # ----------------------
