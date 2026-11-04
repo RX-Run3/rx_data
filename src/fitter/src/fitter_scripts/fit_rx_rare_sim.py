@@ -157,6 +157,16 @@ def _get_replacements(kind : SimFit, syst : Systematic) -> dict[str,str]:
 
     return replacements
 # ----------------------
+def _get_group_string(args : argparse.Namespace) -> str:
+    '''
+    Returns {group_name}/{systematic} part of the output path
+    using the argparse args holder
+    '''
+    if args.q2def == QsqDef.default:
+        return f'{args.group}/{args.syst}'
+
+    return f'{args.group}_{args.q2def}/{args.syst}'
+# ----------------------
 def _cfg_from_args(
     region : Region,
     args   : argparse.Namespace) -> RXFitConfig:
@@ -183,10 +193,12 @@ def _cfg_from_args(
     else:
         name = 'brem_xx0'
 
+    group = _get_group_string(args = args)
+
     cfg = RXFitConfig(
         name    = name,
         mod_cfg = mod_cfg,
-        group   = f'{args.group}/{args.syst}',
+        group   = group,
         block   = args.block,
         q2bin   = args.q2bin,
         ncores  = args.ncores,
