@@ -37,7 +37,7 @@ _CONS_SPACE_SIGMAS : Final[float] = 5
 # When merging 1D constraints into ND one, use this ND Constraint
 _1D_CONS_TYPE      : Final[ConstraintType] = ConstraintType.gauss
 # ----------------------------------------
-class Constraint(BaseModel):
+class Constraint(BaseModel, frozen = True, strict = True):
     '''
     Class with common code to 1D and ND constraints
     '''
@@ -95,10 +95,9 @@ class Constraint(BaseModel):
         if not path.exists():
             raise ValueError(f'Path not found: {path}')
 
-        with open(path) as ifile:
-            data = json.load(ifile)
+        string = path.read_text()
 
-        return cls(**data)
+        return cls.model_validate_json(json_data=string)
     # ----------------------
     def to_json(self, path : Path) -> None:
         '''
@@ -121,7 +120,7 @@ class Constraint(BaseModel):
         '''
         return self.name < other.name
 # ----------------------------------------
-class Constraints[C : 'Constraint1D | ConstraintND'](RootModel[Mapping[str,C]], Serializable, frozen = True):
+class Constraints[C : 'Constraint1D | ConstraintND'](RootModel[Mapping[str,C]], Serializable, frozen = True, strict = True):
     '''
     Class meant to be used as a container of constraint objects
 
@@ -302,7 +301,7 @@ class Constraints[C : 'Constraint1D | ConstraintND'](RootModel[Mapping[str,C]], 
 
         raise ValueError(f'Found multiple values for parameter {name}')
 # ----------------------------------------
-class ConstraintND(Constraint):
+class ConstraintND(Constraint, frozen = True, strict = True):
     '''
     Class meant to symbolize NDimensional Gaussian constraint
     '''
@@ -518,7 +517,7 @@ class ConstraintND(Constraint):
         for new_value, observation in zip(new_values[0], self.observations.values(), strict = True):
             observation.set_value(new_value)
 # ----------------------------------------
-class Constraint1D(Constraint):
+class Constraint1D(Constraint, frozen = True, strict = True):
     '''
     Class representing Gaussian 1D constrain
     '''

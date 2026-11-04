@@ -4,11 +4,12 @@ Module with tests for classes and functions in constraint.py module
 import numpy
 import pytest
 
-from typing          import Any
+from collections.abc import Sequence
 from pathlib         import Path
+from typing          import overload
+from typing          import Literal
 from typing          import Final
 from dmu             import LogStore
-from dmu.generic     import utilities          as gut
 from dmu.stats       import ConstraintType
 from dmu.stats       import Constraint1D
 from dmu.stats       import ConstraintND
@@ -40,7 +41,11 @@ def initialize():
     '''
     numpy.random.seed(42)
 # ---------------------------------
-def _load_constraints(kind = 'uncorrelated') -> list[dict]:
+@overload
+def _load_constraints(kind : Literal['uncorrelated']) -> Sequence[Constraint1D]:...
+@overload
+def _load_constraints(kind : Literal['correlated'  ]) -> Sequence[ConstraintND]:...
+def _load_constraints(kind : Literal['correlated', 'uncorrelated']) -> Sequence[Constraint1D | ConstraintND]:
     '''
     Parameters
     -------------
@@ -48,16 +53,11 @@ def _load_constraints(kind = 'uncorrelated') -> list[dict]:
 
     Returns
     -------------
-    List of dictionary with information
+    List holding constraints
     '''
-    raw_input : dict[str,dict] = gut.load_data(package='dmu_data', fpath=f'tests/stats/constraints/{kind}.yaml')
+    cons = Constraints.from_package(package = 'dmu_data', loc = f'tests/stats/constraints/{kind}.yaml')
 
-    data : list[dict] = []
-    for name, entry in raw_input.items():
-        entry['name'] = name
-        data.append(entry)
-
-    return data
+    return list(cons.root.values())
 # ---------------------------------
 class ParsHolder:
     '''
@@ -80,13 +80,12 @@ class ParsHolder:
 
         return {mu, sg, nsig, nbkg}
 # ---------------------------------
-@pytest.mark.parametrize('data, mean, stdv', zip(_load_constraints(), _EXPECTED_MU, _EXPECTED_SG, strict = True))
-def test_constraint1D(data : dict, mean : float, stdv : float):
+@pytest.mark.parametrize('cons, mean, stdv', zip(_load_constraints('uncorrelated'), _EXPECTED_MU, _EXPECTED_SG, strict = True))
+def test_constraint1D(cons : Constraint1D, mean : float, stdv : float):
     '''
     Basic test for Constraint1D
     '''
     holder = ParsHolder()
-    cons   = Constraint1D(**data)
     zcons  = cons.zfit_cons(holder = holder)
 
     assert isinstance(zcons, (GConstraint, PConstraint))
@@ -106,8 +105,10 @@ def test_print_1d():
     '''
     Test printing of constraints
     '''
-    data = gut.load_data(package='dmu_data', fpath='tests/stats/constraints/uncorrelated.yaml')
-    cons = Constraints[Constraint1D](root = data)
+    cons = Constraints[Constraint1D].from_package(
+        package = 'dmu_data',
+        loc     = 'tests/stats/constraints/uncorrelated.yaml')
+
     log.info(f'\n{cons}')
 
     mu_cons = cons.root['mu']
@@ -120,8 +121,10 @@ def test_print_nd():
     '''
     Test printing of constraints
     '''
-    data = gut.load_data(package='dmu_data', fpath='tests/stats/constraints/correlated.yaml')
-    cons = Constraints[ConstraintND](root = data)
+    cons = Constraints[ConstraintND].from_package(
+        package = 'dmu_data',
+        loc     = 'tests/stats/constraints/correlated.yaml')
+
     log.info(f'\n{cons}')
 
     sig_cons = cons.root['signal_shape']
@@ -134,11 +137,11 @@ def test_mixed():
     '''
     Mix 1D and ND constraints
     '''
-    data = gut.load_data(package='dmu_data', fpath='tests/stats/constraints/uncorrelated_gauss.yaml')
-    cn1d = Constraints[Constraint1D](root = data)
+    cn1d = Constraints[Constraint1D].from_package(
+        package='dmu_data', loc = 'tests/stats/constraints/uncorrelated_gauss.yaml')
 
-    data = gut.load_data(package='dmu_data', fpath='tests/stats/constraints/correlated.yaml')
-    cnnd = Constraints[ConstraintND](root = data)
+    cnnd = Constraints[ConstraintND].from_package(
+        package='dmu_data', loc = 'tests/stats/constraints/correlated.yaml')
 
     root = {**cn1d.root, **cnnd.root}
     cons = Constraints(root = root)
@@ -151,11 +154,11 @@ def test_constraintND():
     '''
     Test ND constraints, loading and resampling
     '''
-    data : dict[str,Any] = gut.load_data(package='dmu_data', fpath='tests/stats/constraints/correlated.yaml')
-    block                = data['signal_shape']
+    obj    = _load_constraints(kind = 'correlated')[0]
+    data   = obj.model_dump()
 
     holder = ParsHolder()
-    cons   = ConstraintND(**block)
+    cons   = ConstraintND(**data)
     zcons  = cons.zfit_cons(holder)
 
     assert isinstance(zcons, GConstraint)
@@ -200,8 +203,7 @@ def test_serialization_nd(tmp_path : Path):
     Tests serialization to and from JSON
     fro ND constraints
     '''
-    data = _load_constraints(kind = 'correlated')[0]
-    obj  = ConstraintND(**data)
+    obj  = _load_constraints(kind = 'correlated')[0]
 
     path = tmp_path / 'ND.json'
     obj.to_json(path = path)
@@ -212,14 +214,12 @@ def test_serialization_nd(tmp_path : Path):
 
     assert res == obj
 # ---------------------------------
-@pytest.mark.parametrize('data', _load_constraints(kind = 'uncorrelated'))
-def test_serialization_1d(tmp_path : Path, data : dict[str,Any]):
+@pytest.mark.parametrize('obj', _load_constraints(kind = 'uncorrelated'))
+def test_serialization_1d(tmp_path : Path, obj : Constraint1D):
     '''
     Tests serialization to and from JSON
     fro ND constraints
     '''
-    obj  = Constraint1D(**data)
-
     path = tmp_path / '1D.json'
     obj.to_json(path = path)
 
@@ -233,11 +233,8 @@ def test_serialize_constraints(tmp_path : Path):
     '''
     Test that container of constraints can be serialized
     '''
-    data = gut.load_data(package='dmu_data', fpath='tests/stats/constraints/uncorrelated_gauss.yaml')
-    cn1d = Constraints[Constraint1D](root = data)
-
-    data = gut.load_data(package='dmu_data', fpath='tests/stats/constraints/correlated.yaml')
-    cnnd = Constraints[ConstraintND](root = data)
+    cn1d = Constraints[Constraint1D].from_package(package='dmu_data', loc ='tests/stats/constraints/uncorrelated_gauss.yaml')
+    cnnd = Constraints[ConstraintND].from_package(package='dmu_data', loc ='tests/stats/constraints/correlated.yaml')
 
     root = {**cn1d.root, **cnnd.root}
     cons = Constraints[Constraint1D | ConstraintND](root = root)
