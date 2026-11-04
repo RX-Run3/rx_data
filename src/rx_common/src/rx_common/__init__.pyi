@@ -19,7 +19,7 @@ from .project            import Project, AlternativeProject
 from .channel            import Channel
 from .region             import Region, MisID
 from .cuts               import Cuts, Cut
-from .mass               import Mass
+from .mass               import Mass, MassDef
 from .qsq                import Qsq
 from .qsq                import QsqDef
 
@@ -46,6 +46,7 @@ __all__ = [
     'Cuts',
     'Cut',
     'Mass',
+    'MassDef',
     'Brem',
     'Block',
     'MVA',

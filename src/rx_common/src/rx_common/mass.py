@@ -1,7 +1,7 @@
 '''
 Module holding Mass class
 '''
-from enum      import StrEnum
+from enum      import StrEnum, auto
 from dmu.stats import zfit
 from functools import cached_property
 
@@ -9,6 +9,17 @@ from .qsq      import Qsq
 from .project  import Project
 
 zobs = zfit.Space
+# -----------------------------------
+class MassDef(StrEnum):
+    '''Meant to represent way in which
+    masses were calculated'''
+
+    default = auto()
+    '''No correction applied on top of what DaVinci does'''
+
+    brem_corr = auto()
+    '''From electrons to which custom brem recovery was applied
+    needed in 2024 data'''
 # -----------------------------------
 class Mass(StrEnum):
     '''
