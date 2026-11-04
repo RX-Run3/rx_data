@@ -65,7 +65,8 @@ yields           : model/yields/rkst/rare_electron.yaml
 selection        :
   low    : {}
   central:
-    leakage : TMath::Abs(B_const_mass_M - 5280) > 200
+    leakage : TMath::Abs(B_const_mass_M - 5280) > 100
+    #leakage : 'true'
   high   : {}
 observable:
   low:
