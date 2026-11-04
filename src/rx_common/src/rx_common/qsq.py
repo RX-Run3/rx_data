@@ -121,7 +121,16 @@ class Qsq(StrEnum, metaclass = QsqMeta):
     def __str__(self):
         return self.value
 # -----------------------
-class QsqDef(StrEnum):
+class QsqDefMeta[T : Qsq](EnumMeta):
+    @property
+    def physical(cls : T) -> list['QsqDef']:
+        '''
+        List of q2 definitions that can be found in real data
+        e.g. it excludes true q2
+        '''
+        return [QsqDef.default, QsqDef.constrained, QsqDef.track]
+# -----------------------
+class QsqDef(StrEnum, metaclass = QsqDefMeta):
     '''
     Enum meant to symbolize q2 definition
     '''
