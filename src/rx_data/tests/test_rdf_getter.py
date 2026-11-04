@@ -1329,12 +1329,10 @@ def test_only_friends(sample : Component, trigger : Trigger):
 # ------------------------------------------------
 @pytest.mark.parametrize('trigger', [Trigger.rk_ee_os    , Trigger.rkst_ee_os])
 @pytest.mark.parametrize('sample' , [Component.bdkstkpiee, Component.data_24])
-@pytest.mark.parametrize('smeared', [True, False])
 @pytest.mark.parametrize('q2bin'  , [Qsq.low, Qsq.central, Qsq.jpsi, Qsq.psi2, Qsq.high])
 def test_selection(
     sample  : Component,
     trigger : Trigger,
-    smeared : bool,
     q2bin   : Qsq):
     '''
     Basic test of selection
@@ -1345,8 +1343,7 @@ def test_selection(
     d_sel = sel.selection(
         trigger=trigger,
         q2bin  =q2bin,
-        process=sample,
-        smeared=smeared)
+        process=sample)
 
     for cut_name, cut_value in d_sel.items():
         rdf = rdf.Filter(cut_value, cut_name)
@@ -1357,7 +1354,6 @@ def test_selection(
         raise ValueError('Empty cutflow')
 
     df['sample' ] = sample
-    df['smeared'] = smeared
     df['q2bin'  ] = q2bin
 
     col.Collector.add_dataframe(df=df, test_name='selection')

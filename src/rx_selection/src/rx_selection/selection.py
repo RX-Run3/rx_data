@@ -121,14 +121,12 @@ def selection(
     q2bin     : Qsq,
     process   : Component,
     trigger   : Trigger,
-    skip_truth: bool = False,
-    smeared   : bool = True) -> dict[Cuts,str]:
+    skip_truth: bool = False) -> dict[Cuts,str]:
     '''
     Picks up sample name, trigger, etc, returns dictionary with selection
 
     q2bin     : low, central, jpsi, psi2S or high
     process   : Nickname for MC sample, starts with "DATA" for data
-    smeared   : If true (default), the selection will use cuts on smeared masses. Only makes sense for electron MC samples
     trigger   : E.g. Hlt2RD...
     skip_truth: By default False, if True, it will not include truth matching requirement
     '''
@@ -165,13 +163,6 @@ def selection(
             log.error(yaml.dump(Data.d_custom_selection))
             raise ValueError('Cannot update selection') from exc
 
-    d_cut = _update_mass_cuts(
-        d_cut   =   d_cut,
-        q2bin   =   q2bin,
-        sample  = process,
-        trigger = trigger,
-        smeared = smeared)
-
     _print_selection(d_cut)
 
     return d_cut
@@ -194,81 +185,6 @@ def get_q2_cut(q2bin : Qsq) -> str:
         raise ValueError(f'q2 cut not a string: {val}')
 
     return val
-#-----------------------
-def _update_mass_cuts(
-    d_cut   : dict[Cuts,str],
-    q2bin   : Qsq,
-    sample  : Component,
-    trigger : Trigger,
-    smeared : bool) -> dict[Cuts,str]:
-    '''
-    Parameters
-    ---------------
-    d_cut   : Dictionary with cuts
-    q2bin   : E.g. central
-    sample  : Sample to which selection will be applied
-    trigger : Hlt2 trigger
-    sameared: If true, override masses and q2 with the smeared version, whenever it makes sense; e.g. not for data
-    '''
-    should_smear = sample.is_mc and trigger.is_electron
-
-    if not should_smear:
-        log.debug(f'Not using cuts on smeared masses for {sample}/{trigger}')
-        return d_cut
-
-    if not smeared:
-        log.warning('Using cuts on un-smeared masses')
-        return d_cut
-
-    log.debug('Using cuts on smeared masses')
-    d_cut = _use_smeared_masses(cuts=d_cut, q2bin=q2bin)
-
-    return d_cut
-#-----------------------
-def _use_smeared_masses(
-    cuts  : dict[Cuts,str],
-    q2bin : Qsq) -> dict[Cuts,str]:
-    '''
-    Parameters
-    -------------
-    cuts : Selection cuts
-    q2bin: E.g. central
-
-    Returns
-    -------------
-    Dictionary of cuts with q2 and mass cuts updated
-    to use smeared values or not
-    '''
-    log.info('Overriding selection for electron MC to use smeared q2 and mass')
-
-    cut_org = cuts[Cuts.q2]
-    if 'q2_track' not in cut_org:
-        cut_new       = cut_org.replace('q2', 'q2_smr')
-        cuts[Cuts.q2] = cut_new
-
-        log.debug('Overriding:')
-        log.debug(cut_org)
-        log.debug('--->')
-        log.debug(cut_new)
-    else:
-        # TODO: IF we use the q2_track for this cut, we need to find the
-        # correct smearing factors here
-        log.warning(f'Not overriding with smeared version q2 cut: {cut_org}')
-
-    if not q2bin.is_rare:
-        log.debug(f'Not overriding mass cut for resonant bin: {q2bin}')
-        return cuts
-
-    cut_org = cuts[Cuts.mass]
-    cut_new = cut_org.replace('B_Mass', 'B_Mass_smr')
-    cuts[Cuts.mass] = cut_new
-
-    log.debug('Overriding:')
-    log.debug(cut_org)
-    log.debug('--->')
-    log.debug(cut_new)
-
-    return cuts
 #-----------------------
 @cache
 def _load_selection_config() -> dict[str,dict[str,str | dict[str,str]]]:

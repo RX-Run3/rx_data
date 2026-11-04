@@ -91,8 +91,7 @@ def _apply_selection(rdf : RDF.RNode, cfg : dict) -> RDF.RNode:
     d_sel : dict[Cuts,str] = sel.selection(
             q2bin  =q2bin,
             trigger=trig,
-            process=name,
-            smeared=True)
+            process=name)
 
     d_sel = _override_selection(cfg=cfg, d_sel=d_sel)
     log.info('Applying selection')
