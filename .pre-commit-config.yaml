@@ -8,6 +8,12 @@ repos:
         language      : script
         stages        : [pre-commit]
         pass_filenames: false
+      - id            : pyrefly
+        name          : Run static type analysis
+        entry         : hooks/pyrefly.sh
+        language      : script
+        stages        : [pre-commit]
+        pass_filenames: false
       - id            : ruff
         name          : Fix formatting
         entry         : hooks/ruff.sh
