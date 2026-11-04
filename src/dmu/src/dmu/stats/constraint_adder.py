@@ -9,6 +9,7 @@ from omegaconf       import DictConfig
 from zfit            import Parameter
 from zfit.loss       import ExtendedUnbinnedNLL
 
+from .types          import ConstraintMode
 from .constraint     import Constraints, Constraint
 from .imports        import zfit
 
@@ -20,7 +21,7 @@ class ConstraintAdder[C : Constraint]:
 
     - Using those constraints to update the NLL
     '''
-    _fix_parameters = False
+    _mode = ConstraintMode.apply
     # ----------------------
     def __init__(
         self,
@@ -106,18 +107,17 @@ class ConstraintAdder[C : Constraint]:
     # ----------------------
     @classmethod
     @contextmanager
-    def fixed_parameters(cls, value : bool):
+    def mode(cls, value : ConstraintMode):
         '''
-        Contextmanager whose context makes ConstraintAdder fix parameters
-        instead of constrain them
+        Allows to override default behavior of constraints
         '''
-        old_value = cls._fix_parameters
+        old_value = cls._mode
 
         try:
-            cls._fix_parameters = value
+            cls._mode = value
             yield
         finally:
-            cls._fix_parameters = old_value
+            cls._mode = old_value
     # ----------------------
     def get_nll(self) -> ExtendedUnbinnedNLL:
         '''
@@ -129,7 +129,11 @@ class ConstraintAdder[C : Constraint]:
             log.info('No constraints found, using original (unconstrained) NLL')
             return self._nll
 
-        if self._fix_parameters:
+        if self._mode == ConstraintMode.drop:
+            log.warning('Dropping constraints')
+            return self._nll
+
+        if self._mode == ConstraintMode.fix:
             self.__fix_parameters()
             return self._nll
 

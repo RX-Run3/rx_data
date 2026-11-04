@@ -11,6 +11,7 @@ from dmu         import LogStore
 from dmu.stats   import zfit
 from dmu.stats   import Constraint1D, ConstraintND, Constraints
 from dmu.stats   import ConstraintAdder
+from dmu.stats   import ConstraintMode
 from dmu.generic import utilities as gut
 from dmu.generic import rxran
 from dmu.testing import get_nll
@@ -33,12 +34,9 @@ def initialize():
     with rxran.seed(42):
         yield
 # ----------------------
-@pytest.fixture(params=[True, False], ids=['Fixed', 'Constrained'])
-def _fix_or_constrain(request):
-    if request.param:
-        with ConstraintAdder.fixed_parameters(value = True):
-            yield
-    else:
+@pytest.fixture(params=ConstraintMode)
+def _fix_or_constrain(request : pytest.FixtureRequest):
+    with ConstraintAdder.mode(value = request.param):
         yield
 # ----------------------
 def _extract_parameters(nll : Loss) -> pnd.DataFrame:
