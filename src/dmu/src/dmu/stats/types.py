@@ -8,6 +8,20 @@ from .imports  import zfit
 Fft = type[zfit.pdf.KDE1DimFFT]
 Exc = type[zfit.pdf.KDE1DimExact]
 # ---------------------------------------
+class ConstraintMode(StrEnum):
+    '''
+    Enum meant to describe what should be done
+    with a constraint
+    '''
+    apply = auto()
+    '''Standard use'''
+
+    drop  = auto()
+    '''Let parameters be unconstrained'''
+
+    fix   = auto()
+    '''Fix parameters to constraint mean'''
+# ---------------------------------------
 class ConstraintType(StrEnum):
     '''
     Used to label constraints

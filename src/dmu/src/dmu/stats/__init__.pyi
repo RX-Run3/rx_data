@@ -39,7 +39,8 @@ from .minimizers          import Retries
 from .fit_result          import FitResult
 from .fit_parameter       import FitParameter
 from .goodness_of_fit     import GoodnessOfFit
-from .types               import Model, KDEModel, CorrectionImplementation, ConstraintType
+from .types               import Model, KDEModel, CorrectionImplementation
+from .types               import ConstraintType, ConstraintMode
 from .configs             import SimpleYieldConf
 from .configs             import CompositeYieldConf
 from .configs             import YieldsConf
@@ -58,6 +59,7 @@ __all__ = [
     'Function',
     'CorrectionImplementation',
     'ConstraintType',
+    'ConstraintMode',
     'SimpleYieldConf',
     'CompositeYieldConf',
     'FittedModel',
