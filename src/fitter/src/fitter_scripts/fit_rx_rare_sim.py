@@ -136,10 +136,16 @@ class Conf(BaseModel, Serializable, frozen=True):
         '''
         Returns {group_name}/{systematic} part of the output path
         '''
-        if self.q2def == QsqDef.default:
-            return f'{self.group}/{self.syst}'
+        parts : list[str] = [self.group]
+        if self.q2def != QsqDef.default:
+            parts.append(f'qsq_{self.q2def}')
 
-        return f'{self.group}_{self.q2def}/{self.syst}'
+        if self.cmode != ConstraintMode.apply:
+            parts.append(f'cns_{self.cmode}')
+
+        group = '-'.join(parts)
+
+        return f'{group}/{self.syst}'
 # ----------------------
 def _set_logs() -> None:
     '''
