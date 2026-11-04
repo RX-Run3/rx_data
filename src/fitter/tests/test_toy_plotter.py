@@ -91,7 +91,7 @@ def test_simple(tmp_path : Path) -> None:
     assert math.isclose(cfg.a_pul.mu, 0.02316429312808755, rel_tol=1e-5) # pyrefly: ignore
     assert math.isclose(cfg.a_pul.sg, 0.982856552637077  , rel_tol=1e-5) # pyrefly: ignore
 # ----------------------
-def test_missing_variable(caplog, tmp_path : Path) -> None:
+def test_missing_variable(caplog : pytest.LogCaptureFixture, tmp_path : Path) -> None:
     '''
     Test that plotter class:
 
