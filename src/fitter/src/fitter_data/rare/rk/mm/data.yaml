@@ -20,17 +20,17 @@ selection        :
   high   : {}
 observable:
   low:
-    name : B_Mass
+    name : bp
     range:
       - 5150
       - 5850
   central:
-    name : B_Mass
+    name : bp
     range:
       - 5150
       - 5850
   high:
-    name : B_Mass
+    name : bp
     range:
       - 5150
       - 5850
