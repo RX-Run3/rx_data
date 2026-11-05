@@ -74,12 +74,12 @@ selection :
   psi2 : {}
 observable:
   jpsi:
-    name : B_const_mass_M
+    name : bd_dtf_jpsi
     range:
       - 4700
       - 7000
   psi2:
-    name : B_const_mass_psi2S_M
+    name : bd_dtf_psi2
     range:
       - 4700
       - 7000
