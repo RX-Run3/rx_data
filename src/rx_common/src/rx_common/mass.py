@@ -161,8 +161,8 @@ class Mass(StrEnum):
         zfit observable associated with mass
         '''
         obs = zfit.Space(
-            obs    = self.branch_name,
-            label  = self.latex,
+            obs    = self.latex,
+            label  = self.name,
             limits = self.limits)
 
         return obs
