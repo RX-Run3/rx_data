@@ -13,6 +13,7 @@ from dmu           import LogStore
 from dmu.workflow  import Cache
 from rx_selection  import selection as sel
 from rx_common     import Correction, Cuts, Qsq, Region, Trigger, Component
+from rx_common     import Mass
 from rx_data       import RDFGetter
 from rx_misid      import MisIDSampleWeights
 from zfit.data     import Data      as zdata
@@ -68,7 +69,7 @@ def test_database(
     '''
     Test reading from database
     '''
-    obs = zfit.Space('B_Mass', limits=(5180, 6000))
+    obs = zfit.Space(Mass.bp_bcor, limits=(4700, 6000))
 
     ctx_1 = Cache.cache_root(path = tmp_path)
     ctx_2 = DataPreprocessor.use_database()
@@ -97,7 +98,7 @@ def test_mc(
     '''
     Test MC over few entries
     '''
-    obs = zfit.Space('B_Mass', limits=(5180, 6000))
+    obs = zfit.Space(Mass.bp_dtf_jpsi, limits=(5180, 6000))
 
     ctx_1 = Cache.cache_root(path = tmp_path)
     ctx_2 = RDFGetter.max_entries(value = 1000)
@@ -124,7 +125,7 @@ def test_cache(
     '''
     Tests caching of dataset
     '''
-    obs = zfit.Space('B_Mass', limits=(5180, 6000))
+    obs = zfit.Space(Mass.bp_dtf_jpsi, limits=(5180, 6000))
 
     ctx_1 = Cache.cache_root(path = tmp_path)
     ctx_2 = RDFGetter.max_entries(value = 1000)
@@ -160,9 +161,9 @@ def test_muon(
     tmp_path : Path,
     component: Component):
     '''
-    Tests class with toys
+    Tests muon dataset
     '''
-    obs = zfit.Space('B_Mass', limits=(5180, 6000))
+    obs = zfit.Space(Mass.bp_dtf_jpsi, limits=(5180, 6000))
 
     with Cache.cache_root(path = tmp_path):
         prp = DataPreprocessor(
@@ -187,7 +188,7 @@ def test_brem_cat_data(
     '''
     Tests class with toys
     '''
-    obs = zfit.Space('B_Mass', limits=(4500, 6000))
+    obs = zfit.Space(Mass.bp_dtf_jpsi, limits=(4800, 6000))
     cut = {Cuts.brem : f'nbrem == {brem_cat}'}
 
     with Cache.cache_root(path = tmp_path):
@@ -221,7 +222,13 @@ def test_with_pid_weights(
     data = gut.load_data(package='fitter_data', fpath='model/weights/weights.yaml')
     cfg  = MisIDSampleWeights(**data)
 
-    with Cache.cache_root(path = tmp_path):
+    ctx_1 = Cache.cache_root(path = tmp_path)
+    ctx_2 = RDFGetter.max_entries(value = 1000)
+
+    with ExitStack() as stack:
+        stack.enter_context(ctx_1)
+        stack.enter_context(ctx_2)
+
         prp  = DataPreprocessor(
             name      = 'main',
             obs       = region.obs,
@@ -244,7 +251,7 @@ def test_ph_sample(
     '''
     Test MC over few entries
     '''
-    obs   = zfit.Space('B_Mass', limits=(5180, 6000))
+    obs   = zfit.Space(Mass.bp_bcor, limits=(4700, 6000))
     ctx_1 = Cache.cache_root(path = tmp_path)
     ctx_2 = RDFGetter.max_entries(value = 1000)
     ctx_3 = DataPreprocessor.use_database()

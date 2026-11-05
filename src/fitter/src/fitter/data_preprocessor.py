@@ -23,7 +23,7 @@ from zfit.data       import Data
 from rx_data         import DBMakerConf
 from rx_data         import DBMaker
 from rx_data         import RDFGetter
-from rx_common       import Component, Qsq, Trigger, Correction, Cuts
+from rx_common       import Component, Mass, Qsq, Trigger, Correction, Cuts
 from rx_selection    import Registry
 from rx_selection    import selection  as sel
 from rx_misid        import SampleSplitter
@@ -346,13 +346,13 @@ class DataPreprocessor(Cache):
         '''
         log.debug(f'Extracting data through RDFGetter for sample {self._sample}')
 
-        rdf         = self._rdf
-        branch_name = self._obs.label
-        log.debug(f'Retrieving masses/weights from: {branch_name}/{_WEIGHT_BRANCH}')
+        rdf  = self._rdf
+        mass = Mass[self._obs.label]
+        log.debug(f'Retrieving masses/weights from: {mass.branch_name}/{_WEIGHT_BRANCH}')
 
         rep  = rdf.Report()
-        data = rdf.AsNumpy([branch_name, _WEIGHT_BRANCH])
-        arr  = data[branch_name]
+        data = rdf.AsNumpy([mass.branch_name, _WEIGHT_BRANCH])
+        arr  = data[mass.branch_name]
         wgt  = data[_WEIGHT_BRANCH]
         wgt  = wgt.astype(float)
         wgt  = self._add_extra_weights(wgt=wgt)
