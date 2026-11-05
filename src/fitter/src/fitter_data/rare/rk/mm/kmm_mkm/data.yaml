@@ -15,7 +15,7 @@ selection        :
   high   : {}
 observable:
   high:
-    name : swp_jpsi_misid_mass_swp
+    mass : swp_kmm_mkm
     range:
       - 2600
       - 3300
