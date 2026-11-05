@@ -27,24 +27,63 @@ class Mass(StrEnum):
     b_bcorr_pipi : B meson mass with electrons reconstructed as pions
     b_bcorr_kk   : B meson mass with electrons reconstructed as kaons
     '''
-    bp           = 'B_M'
-    bp_dtf_jpsi  = 'B_const_mass_M'
-    bp_dtf_psi2  = 'B_const_mass_psi2S_M'
-    bp_bcor      = 'B_Mass'
-    bp_bcor_smr  = 'B_Mass_smr'
-    bp_kk        = 'B_Mass_hdkk'
-    bp_pipi      = 'B_Mass_hdpipi'
+    bp           = auto()
+    '''B+ mass'''
+    bp_dtf_jpsi  = auto()
+    '''B+ mass with DTF constraint on Jpsi mass'''
+    bp_dtf_psi2  = auto()
+    '''B+ mass with DTF constraint on psi2S mass'''
+    bp_bcor      = auto()
+    '''B+ mass with brem corrected electrons'''
+    bp_bcor_smr  = auto()
+    '''B+ mass with brem correction and smearing'''
+    bp_kk        = auto()
+    '''B+ mass with electrons reconstructed as kaons'''
+    bp_pipi      = auto()
+    '''B+ mass with electrons reconstructed as pions'''
 
-    bd           = 'B_M'
-    bd_dtf_jpsi  = 'B_const_mass_M'
-    bd_dtf_psi2  = 'B_const_mass_psi2S_M'
-    bd_bcor      = 'B_Mass'
-    bd_bcor_smr  = 'B_Mass_smr'
-    bd_kk        = 'B_Mass_hdkk'
-    bd_pipi      = 'B_Mass_hdpipi'
+    bd           = auto()
+    '''B0 mass'''
+    bd_dtf_jpsi  = auto()
+    '''B0 mass with DTF constraint on Jpsi mass'''
+    bd_dtf_psi2  = auto()
+    '''B0 mass with DTF constraint on psi2S mass'''
+    bd_bcor      = auto()
+    '''B0 mass with brem corrected electrons'''
+    bd_bcor_smr  = auto()
+    '''B0 mass with brem correction and smearing'''
+    bd_kk        = auto()
+    '''B0 mass with electrons reconstructed as kaons'''
+    bd_pipi      = auto()
+    '''B0 mass with electrons reconstructed as pions'''
 
-    swp_swap     = 'swp_jpsi_misid_mass_swp'
+    swp_swap     = auto()
+    '''Swap mass for misID'''
     # ------------------------------
+    @property
+    def branch_name(self) -> str:
+        '''
+        Branch name in ROOT trees
+        '''
+        match self:
+            case Mass.bp | Mass.bd:
+                return 'B_M'
+            case Mass.bp_dtf_jpsi | Mass.bd_dtf_jpsi:
+                return 'B_const_mass_M'
+            case Mass.bp_dtf_psi2 | Mass.bd_dtf_psi2:
+                return 'B_const_mass_psi2S_M'
+            case Mass.bp_bcor | Mass.bd_bcor:
+                return 'B_Mass'
+            case Mass.bp_bcor_smr | Mass.bd_bcor_smr:
+                return 'B_Mass_smr'
+            case Mass.bp_kk | Mass.bd_kk:
+                return 'B_Mass_hdkk'
+            case Mass.bp_pipi | Mass.bd_pipi:
+                return 'B_Mass_hdpipi'
+            case Mass.swp_swap:
+                return 'swp_jpsi_misid_mass_swp'
+            case _:
+                raise ValueError(f'Cannot determine branch name for: {self}')
     @classmethod
     def dtf_from_qsq(cls, qsq : Qsq, project : Project) -> 'Mass':
         '''
@@ -95,22 +134,22 @@ class Mass(StrEnum):
         '''
         True if it is a mass with DTF constraints
         '''
-        return '_const_' in self
+        return '_dtf_' in self.name
     # ------------------------------
     @property
     def smeared_version(self) -> 'Mass':
         '''
         Smeared version of mass
         '''
-        if self.endswith('_smr'):
-            raise ValueError(f'Current mass is already smeared: {self}')
+        if self.name.endswith('_smr'):
+            raise ValueError(f'Current mass is already smeared: {self.name}')
 
-        smeared_value = f'{self.value}_smr'
+        smeared_name = f'{self.name}_smr'
 
         try:
-            mass = Mass(value = smeared_value)
+            mass = Mass[smeared_name]
         except Exception as exc:
-            raise ValueError(f'Cannot find mass: {smeared_value}') from exc
+            raise ValueError(f'Cannot find mass: {smeared_name}') from exc
 
         return mass
     # ------------------------------
@@ -120,7 +159,7 @@ class Mass(StrEnum):
         zfit observable associated with mass
         '''
         obs = zfit.Space(
-            obs    = self.value,
+            obs    = self.branch_name,
             label  = self.latex,
             limits = self.limits)
 
