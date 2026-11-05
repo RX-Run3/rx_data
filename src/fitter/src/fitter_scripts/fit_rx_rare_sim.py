@@ -41,20 +41,21 @@ class Conf(BaseModel, Serializable, frozen=True):
     '''
     Script used to run simultaneous fits for RX, RK or RKst
     '''
-    mass   : Annotated[MassDef | None, tyro.conf.arg(aliases=['-M'])] = None
+    # ------------------
+    mass   : Annotated[MassDef | None, tyro.conf.arg(aliases=['-m'])] = None
     '''Mass used in fits'''
 
     cmode  : Annotated[ConstraintMode, tyro.conf.arg(aliases=['-c'])] = ConstraintMode.apply
     '''Controls how to use constraints'''
 
-    syst   : Annotated[Systematic, tyro.conf.arg(aliases=['-s'])]
-    '''Systematic variation used for fit'''
-
-    q2bin  : Annotated[Qsq        , tyro.conf.arg(aliases=['-q'])]
-    '''q2 bin for which fit is done'''
-
     q2def  : Annotated[QsqDef     , tyro.conf.arg(aliases=['-Q'])] = QsqDef.default
     '''Describes how the q2 was calculated, e.g. with track information only'''
+
+    syst   : Annotated[Systematic, tyro.conf.arg(aliases=['-s'])]
+    '''Systematic variation used for fit'''
+    # ------------------
+    q2bin  : Annotated[Qsq        , tyro.conf.arg(aliases=['-q'])]
+    '''q2 bin for which fit is done'''
 
     dry_run: Annotated[bool       , tyro.conf.arg(aliases=['-d'])] = False
     '''If true will not fit data, but will build NLL'''

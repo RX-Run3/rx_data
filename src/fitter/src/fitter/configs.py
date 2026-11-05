@@ -542,6 +542,8 @@ class FitModelConf(UnpackerModel, frozen = True):
         --------------
         mass: Mass definition, e.g. brem_corr, default, etc
         '''
+        log.warning(f'Overriding observable to: {mass}')
+
         data = dict()
         for key, cfg in self.observable.items():
             data[key] = cfg.model_copy(update = {'name' : mass})
