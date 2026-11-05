@@ -70,17 +70,17 @@ selection        :
   high   : {}
 observable:
   low:
-    name : B_Mass
+    name : bd_bcor
     range:
       - 4500
       - 6996
   central:
-    name : B_Mass
+    name : bd_bcor
     range:
       - 4500
       - 6996
   high:
-    name : B_Mass
+    name : bd_bcor
     range:
       - 4500
       - 6996
