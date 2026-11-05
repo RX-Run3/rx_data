@@ -13,7 +13,7 @@ yields    :
     max : 100000
 observable:
   low:
-    name : B_M
+    name : bp
     range:
       - 4500
       - 7000

@@ -7,17 +7,17 @@ model:
   yields    : model/yields/rk/rare_electron.yaml
   observable:
     low:
-      name : B_Mass_smr
+      name : bp_bcor_smr
       range:
         - 4500
         - 6900
     central:
-      name : B_Mass_smr
+      name : bp_bcor_smr
       range:
         - 4600
         - 6900
     high:
-      name : B_Mass_smr
+      name : bp_bcor_smr
       range:
         - 4500
         - 6900
