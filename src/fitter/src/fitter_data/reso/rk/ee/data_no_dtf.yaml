@@ -17,7 +17,7 @@ selection :
     q2      : (q2_dtf > 6000000) && (q2_dtf < 11000000)
 observable:
   jpsi:
-    name : B_Mass
+    name : bp_bcor
     range:
       - 4500
       - 7000

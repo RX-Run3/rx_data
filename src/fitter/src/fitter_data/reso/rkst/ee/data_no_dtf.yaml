@@ -7,12 +7,12 @@ selection :
   extra   : TMath::Abs(B_const_mass_M) > 5180
 observable:
   jpsi:
-    name : B_Mass
+    name : bd_bcor
     range:
       - 4500
       - 7000
   psi2:
-    name : B_Mass
+    name : bd_bcor
     range:
       - 4500
       - 7000
