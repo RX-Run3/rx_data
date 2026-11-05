@@ -85,7 +85,7 @@ def test_observable_conf(mass : Mass):
     Test observable configuration
     '''
     cfg = ObservableConf(
-        name  = mass,
+        mass  = mass,
         range = (4000, 7000))
 
     log.info(cfg)

@@ -14,7 +14,7 @@ class ObservableConf(BaseModel, frozen = True):
     '''
     Class representing configuration for observable
     '''
-    name : Mass
+    mass : Mass
     '''Mass that should match a branch in the trees where the
     data to be fitted will be picked from'''
 
@@ -25,7 +25,7 @@ class ObservableConf(BaseModel, frozen = True):
         lower, upper = self.range
 
         val = '\n------------------------\n'
-        val+= f'Observable: {self.name}\n'
+        val+= f'Observable: {self.mass}\n'
         val+= f'Range     : [{lower}, {upper}]\n'
         val+= '------------------------'
 
@@ -39,7 +39,7 @@ class ObservableConf(BaseModel, frozen = True):
         Default instance of observable config
         needed for tests
         '''
-        return cls(name = Mass.bp_bcor, range = (4500, 7000))
+        return cls(mass = Mass.bp_bcor, range = (4500, 7000))
     # ------------------------
     @property
     def obs(self) -> zobs:
@@ -48,7 +48,7 @@ class ObservableConf(BaseModel, frozen = True):
         '''
         return zfit.Space(
             obs    = 'Mass',
-            label  = self.name,
+            label  = self.mass,
             limits = self.range)
 # ------------------------------
 class ComponentConf(UnpackerModel, frozen = True):

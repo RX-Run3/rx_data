@@ -389,7 +389,7 @@ class NonParametricConf(ComponentConf, frozen = True):
 
         obs = zfit.Space(
             obs   = 'Mass',
-            label = self.cfg_obs.name,
+            label = self.cfg_obs.mass,
             limits= self.events_range)
 
         return obs
@@ -609,7 +609,7 @@ class FitModelConf(UnpackerModel, frozen = True):
         '''
         # If fit is to DTF mass, all components should use DTF mass
         # when fitting MC
-        if cfg_obs.name.is_dtf:
+        if cfg_obs.mass.is_dtf:
             return cfg_obs
 
         # If fit uses muon non-DTF, use default mass from DaVinci
@@ -623,7 +623,7 @@ class FitModelConf(UnpackerModel, frozen = True):
 
         # If fit uses electron non-DTF AND non-parametric PDF
         # use smeared mass
-        return cfg_obs.model_copy(update = {'name' : cfg_obs.name.smeared_version })
+        return cfg_obs.model_copy(update = {'name' : cfg_obs.mass.smeared_version })
     # ----------------------
     @property
     def hash(self) -> str:

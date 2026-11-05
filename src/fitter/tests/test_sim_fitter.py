@@ -97,7 +97,7 @@ def test_nomc(tmp_path : Path):
     Test for components that have no MC associated
     '''
     cfg_obs = ObservableConf(
-        name  = Mass.bp_bcor,
+        mass  = Mass.bp_bcor,
         range = (4500, 7000))
 
     data = gut.load_data(package='fitter_data', fpath='rare/rk/ee/comb.yaml')
@@ -122,7 +122,7 @@ def test_nocat(tmp_path : Path):
     Test for components without categories, e.g. muon
     '''
     cfg_obs = ObservableConf(
-        name  = Mass.b,
+        mass  = Mass.b,
         range = (4800, 6000))
     data  = gut.load_data(package='fitter_data', fpath='rare/rk/mm/bpkpmm.yaml')
     cfg   = ParametricConf(**data)
@@ -146,7 +146,7 @@ def test_param_clone(
     '''
     q2bin   = Qsq.low
     cfg_obs = ObservableConf(
-        name  = Mass.bp_bcor,
+        mass  = Mass.bp_bcor,
         range = (4500, 7000))
 
     if   trigger == Trigger.rk_ee_os:
@@ -191,7 +191,7 @@ def test_param_region(
     '''
     q2bin   = Qsq.low
     cfg_obs = ObservableConf(
-        name  = Mass.bp_bcor,
+        mass  = Mass.bp_bcor,
         range = (4500, 7000))
 
     if   trigger == Trigger.rk_ee_os:
@@ -239,7 +239,7 @@ def test_param_region_constrained(
     '''
     q2bin   = Qsq.central
     cfg_obs = ObservableConf(
-        name  = Mass.bp_bcor,
+        mass  = Mass.bp_bcor,
         range = (4500, 7000))
 
     if   trigger == Trigger.rk_ee_os:
@@ -276,7 +276,7 @@ def test_kde_rk(component : Component, tmp_path : Path):
     Test fitting with KDE
     '''
     cfg_obs = ObservableConf(
-        name  = Mass.bp_bcor_smr,
+        mass  = Mass.bp_bcor_smr,
         range = (4600, 7000))
 
     data = gut.load_data(package='fitter_data', fpath=f'rare/rk/ee/{component}_np.yaml')
@@ -302,7 +302,7 @@ def test_kde_rkst(
     Test fitting with KDE
     '''
     cfg_obs = ObservableConf(
-        name  = Mass.bp_bcor_smr,
+        mass  = Mass.bp_bcor_smr,
         range = (4500, 7000))
     data = gut.load_data(package='fitter_data', fpath=f'rare/rkst/ee/{component}_np.yaml')
     cfg  = NonParametricConf(**data)
@@ -334,7 +334,7 @@ def test_misid(
     Test fitting misID simulation
     '''
     cfg_obs = ObservableConf(
-        name  = Mass.bp_bcor_smr,
+        mass  = Mass.bp_bcor_smr,
         range = (5000, 6000))
 
     data = gut.load_data(package='fitter_data', fpath=f'rare/rk/ee/{component}_np.yaml')
@@ -359,7 +359,7 @@ def test_ccbar_reso_rk(mass : Mass, tmp_path : Path):
     Tests retriveval of PDF associated to ccbar inclusive decays
     '''
     cfg_obs = ObservableConf(
-        name  = mass,
+        mass  = mass,
         range = (4500, 6000))
 
     component = Component.ccbar
@@ -386,7 +386,7 @@ def test_ccbar_reso_rkst(mass : Mass, tmp_path : Path):
     Tests retriveval of PDF associated to ccbar inclusive decays
     '''
     cfg_obs = ObservableConf(
-        name  = mass,
+        mass  = mass,
         range = (4500, 6000))
 
     component = Component.ccbar
@@ -416,7 +416,7 @@ def test_ccbar_rare(tmp_path : Path):
     mass      = Mass.bp_bcor_smr
     q2bin     = Qsq.high
     cfg_obs   = ObservableConf(
-        name  = mass,
+        mass  = mass,
         range = (4500, 6000))
 
     data = gut.load_data(package='fitter_data', fpath=f'rare/rk/ee/{component}.yaml')
@@ -447,7 +447,7 @@ def test_reso_rk_ee(
     Test electron resonant with rk trigger
     '''
     cfg_obs   = ObservableConf(
-        name  = Mass.bp_dtf_jpsi,
+        mass  = Mass.bp_dtf_jpsi,
         range = (4500, 6000))
 
     data = gut.load_data(package='fitter_data', fpath=f'reso/rk/ee/{component}.yaml')
@@ -488,7 +488,7 @@ def test_reso_rkst_mm(
     }[q2bin]
 
     cfg_obs   = ObservableConf(
-        name  = mass,
+        mass  = mass,
         range = (4800, 6000))
 
     data = gut.load_data(package='fitter_data', fpath=f'reso/rkst/mm/{component}.yaml')
@@ -523,7 +523,7 @@ def test_reso_rk_mm(
     }[q2bin]
 
     cfg_obs   = ObservableConf(
-        name  = mass,
+        mass  = mass,
         range = (4800, 6000))
 
     data = gut.load_data(package='fitter_data', fpath=f'reso/rk/mm/{component}.yaml')
@@ -561,7 +561,7 @@ def test_reso_rkst_ee(
     }[q2bin]
 
     cfg_obs   = ObservableConf(
-        name  = mass,
+        mass  = mass,
         range = (4500, 6000))
 
     data = gut.load_data(package='fitter_data', fpath=f'reso/rkst/ee/{component}.yaml')
@@ -591,7 +591,7 @@ def test_rare_rkst_mm(
     Test resonant jpsi and psi2S in rkst muon channel
     '''
     cfg_obs   = ObservableConf(
-        name  = Mass.bd,
+        mass  = Mass.bd,
         range = (5100, 5500))
 
     data = gut.load_data(package='fitter_data', fpath=f'rare/rkst/mm/{component}.yaml')
