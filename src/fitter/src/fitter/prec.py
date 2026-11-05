@@ -602,7 +602,8 @@ class PRec(Cache):
         Object holding data to fit with weights
         '''
         try:
-            arr_mass = df[mass     ].to_numpy()
+            branch   = mass.branch_name
+            arr_mass = df[branch   ].to_numpy()
             arr_wgt  = df['wgt_br' ].to_numpy()
             arr_sam  = df['wgt_sam'].to_numpy()
             arr_dec  = df['wgt_dec'].to_numpy()
@@ -733,7 +734,7 @@ class PRec(Cache):
         dfs   = [ df for df in d_df.values() ]
         df    = pnd.concat(objs = dfs, axis = 0)
         model = self.__get_model(
-            mass           = Mass(self._obs.label),
+            mass           = Mass[self._obs.label],
             component_name = _MERGED_PDFNAME,
             df             = df,
             q2bin          = self._q2bin)
