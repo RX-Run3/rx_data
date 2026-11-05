@@ -547,7 +547,7 @@ class FitModelConf(UnpackerModel, frozen = True):
         data = dict()
         for key, cfg in self.observable.items():
             mass      = mass_def.mass_from_trigger(trigger = self.trigger)
-            data[key] = cfg.model_copy(update = {'name' : mass})
+            data[key] = cfg.model_copy(update = {'mass' : mass})
 
         self.observable.update(data)
     # ------------------------
@@ -582,8 +582,7 @@ class FitModelConf(UnpackerModel, frozen = True):
 
         new_components : dict[Component, AnyModelConf] = {}
         for component, cfg_cmp in qsq_components.items():
-            new_cfg = self._update_cfg_obs(cfg_obs = cfg_obs, cfg_cmp = cfg_cmp)
-            new_val = cfg_cmp.model_copy(update = {'cfg_obs' : new_cfg })
+            new_val = cfg_cmp.model_copy(update = {'cfg_obs' : cfg_obs })
 
             if isinstance(new_val, CombinatorialConf):
                 new_val = new_val.specialize(q2bin = q2bin)
@@ -593,39 +592,6 @@ class FitModelConf(UnpackerModel, frozen = True):
         self.components[q2bin] = new_components
 
         return self.model_copy(update = {'components' : self.components, 'q2bin' : q2bin})
-    # ----------------------
-    def _update_cfg_obs(
-        self,
-        cfg_cmp : AnyModelConf,
-        cfg_obs : ObservableConf) -> ObservableConf:
-        '''
-        Parameters
-        ----------------
-        cfg_obs: Configuration for observable in fit to data
-        cfg_cmp: Configuration for fit component
-
-        Returns
-        ----------------
-        Configuration for observable of component
-        '''
-        # If fit is to DTF mass, all components should use DTF mass
-        # when fitting MC
-        if cfg_obs.mass.is_dtf:
-            return cfg_obs
-
-        # If fit uses muon non-DTF, use default mass from DaVinci
-        if self.trigger.is_muon:
-            mass = MassDef.default.mass_from_trigger(trigger = self.trigger)
-            return cfg_obs.model_copy(update = {'mass' : mass})
-
-        # If fit uses electron non-DTF AND parametric PDF
-        # use unsmeared mass
-        if not isinstance(cfg_cmp, (NonParametricConf, CCbarConf)):
-            return cfg_obs
-
-        # If fit uses electron non-DTF AND non-parametric PDF
-        # use smeared mass
-        return cfg_obs.model_copy(update = {'mass' : cfg_obs.mass.smeared_version })
     # ----------------------
     @property
     def hash(self) -> str:
