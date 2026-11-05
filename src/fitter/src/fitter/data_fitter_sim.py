@@ -6,6 +6,7 @@ from typing          import overload
 from dmu             import LogStore, LogLevels
 from dmu.stats       import FitResult
 from dmu.stats       import zfit
+from dmu.stats       import ConstraintAdder, ConstraintMode
 from dmu.stats       import utilities as sut
 from dmu.generic     import utilities as gut
 from rx_common       import Qsq, Region, Component
@@ -67,7 +68,7 @@ class DataFitterSim(BaseFitter):
 
             raise ParamNameNotUniqueError('Models contain multiple parameters with the same name') from exc
 
-        if len(nll.constraints) == 0:
+        if len(nll.constraints) == 0 and ConstraintAdder.get_mode() == ConstraintMode.apply:
             raise ValueError('Unconstrained likelihood found')
 
         return nll
