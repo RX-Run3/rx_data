@@ -57,8 +57,10 @@ class Mass(StrEnum):
     bd_pipi      = auto()
     '''B0 mass with electrons reconstructed as pions'''
 
-    swp_swap     = auto()
-    '''Swap mass for misID'''
+    swp_kmm_mkm  = auto()
+    '''Mass of Kmu pair for Kmumu final states where
+    kaon and muon are swapped and kaon is given muon
+    mass hypothesis'''
     # ------------------------------
     @property
     def branch_name(self) -> str:
@@ -80,7 +82,7 @@ class Mass(StrEnum):
                 return 'B_Mass_hdkk'
             case Mass.bp_pipi | Mass.bd_pipi:
                 return 'B_Mass_hdpipi'
-            case Mass.swp_swap:
+            case Mass.swp_kmm_mkm:
                 return 'swp_jpsi_misid_mass_swp'
             case _:
                 raise ValueError(f'Cannot determine branch name for: {self}')
@@ -174,7 +176,7 @@ class Mass(StrEnum):
             # ------------
             # Swap masses
             # ------------
-            case Mass.swp_swap:
+            case Mass.swp_kmm_mkm:
                 return r'$M(K_{\to\ell},\ell)$'
             # ------------
             # B+
@@ -253,7 +255,7 @@ class Mass(StrEnum):
                 return 4800, 6500
             case Mass.bd_pipi:
                 return Mass.bd_kk.limits
-            case Mass.swp_swap:
+            case Mass.swp_kmm_mkm:
                 return 2600, 3300
             case _:
                 raise ValueError(f'Cannot determine mass range for: {self}')
