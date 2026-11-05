@@ -7,7 +7,7 @@ yields    :
     max : 100000
 observable:
   low:
-    name : bp
+    mass : bp
     range:
       - 4500
       - 7000

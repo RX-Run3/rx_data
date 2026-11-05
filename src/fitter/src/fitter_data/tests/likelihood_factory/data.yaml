@@ -4,22 +4,22 @@ trigger          : rkst_mm_os
 yields           : tests/likelihood_factory/rare_muon.yaml
 observable:
   low:
-    name : bd
+    mass : bd
     range:
       - 5150
       - 5850
   central:
-    name : bd
+    mass : bd
     range:
       - 5150
       - 5850
   jpsi:
-    name : bd
+    mass : bd
     range:
       - 5150
       - 5850
   high:
-    name : bd
+    mass : bd
     range:
       - 5150
       - 5850

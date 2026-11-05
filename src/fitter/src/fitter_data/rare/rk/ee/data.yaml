@@ -78,17 +78,17 @@ selection        :
   high   : {}
 observable:
   low:
-    name : bp_bcor
+    mass : bp_bcor
     range:
       - 4600
       - 6996
   central:
-    name : bp_bcor
+    mass : bp_bcor
     range:
       - 4600
       - 6996
   high:
-    name : bp_bcor
+    mass : bp_bcor
     range:
       - 4600
       - 6996

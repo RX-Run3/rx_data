@@ -6,7 +6,7 @@ selection     :
   jpsi : {}
 observable:
   jpsi:
-    name : bp
+    mass : bp
     range:
       - 5000
       - 6500

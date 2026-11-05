@@ -68,17 +68,17 @@ mod_cfg: &mod_cfg
     high   : {}
   observable:
     low:
-      name : bp_bcor
+      mass : bp_bcor
       range:
         - 4500
         - 6896
     central:
-      name : bp_bcor
+      mass : bp_bcor
       range:
         - 4500
         - 6896
     high:
-      name : bp_bcor
+      mass : bp_bcor
       range:
         - 4500
         - 6896

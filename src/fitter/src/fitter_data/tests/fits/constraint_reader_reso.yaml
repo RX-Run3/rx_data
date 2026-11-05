@@ -7,7 +7,7 @@ model:
   yields    : model/yields/rk/reso_electron.yaml
   observable:
     jpsi:
-      name : bp_bcor
+      mass : bp_bcor
       range:
         - 4500
         - 7000
