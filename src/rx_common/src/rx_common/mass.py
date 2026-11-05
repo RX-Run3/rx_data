@@ -7,19 +7,9 @@ from functools import cached_property
 
 from .qsq      import Qsq
 from .project  import Project
+from .trigger  import Trigger
 
 zobs = zfit.Space
-# -----------------------------------
-class MassDef(StrEnum):
-    '''Meant to represent way in which
-    masses were calculated'''
-
-    default = auto()
-    '''No correction applied on top of what DaVinci does'''
-
-    brem_corr = auto()
-    '''From electrons to which custom brem recovery was applied
-    needed in 2024 data'''
 # -----------------------------------
 class Mass(StrEnum):
     '''
@@ -29,7 +19,6 @@ class Mass(StrEnum):
     -----------------
     lb/b         : Lambda/B meson mass
     lb/b_dtf_jpsi: Lambda/B meson mass with DTF constraint on Jpsi mass
-    b            : Generic B mass as taken from DaVinci, no corrections
     b_bcor       : B meson mass with brem corrected electrons
     b_bcor_smr   : B meson mass with brem correction and smearing
 
@@ -38,12 +27,6 @@ class Mass(StrEnum):
     b_bcorr_pipi : B meson mass with electrons reconstructed as pions
     b_bcorr_kk   : B meson mass with electrons reconstructed as kaons
     '''
-
-    lb_dtf_jpsi  = 'Lb_cons_Jpsi_M'
-    lb           = 'Lb_M'
-
-    b            = 'B_M'
-
     bp           = 'B_M'
     bp_dtf_jpsi  = 'B_const_mass_M'
     bp_dtf_psi2  = 'B_const_mass_psi2S_M'
@@ -155,13 +138,6 @@ class Mass(StrEnum):
             case Mass.swp_swap:
                 return r'$M(K_{\to\ell},\ell)$'
             # ------------
-            # Lambda_b
-            # ------------
-            case Mass.lb_dtf_jpsi:
-                return r'$M_{DTF}^{J/\psi}(\Lambda_b)$'
-            case Mass.lb:
-                return r'$M(\Lambda_b)$'
-            # ------------
             # B+
             # ------------
             case Mass.bp:
@@ -203,16 +179,7 @@ class Mass(StrEnum):
         '''
         Range used for observable limits
         '''
-        generic = 5000, 6000
-
         match self:
-            # ------------
-            # Lambda_b
-            # ------------
-            case Mass.lb_dtf_jpsi:
-                return generic
-            case Mass.lb:
-                return generic
             # ------------
             # B+
             # ------------
@@ -252,3 +219,47 @@ class Mass(StrEnum):
             case _:
                 raise ValueError(f'Cannot determine mass range for: {self}')
 # ------------------------------
+class MassDef(StrEnum):
+    '''Meant to represent way in which
+    masses were calculated'''
+
+    default = auto()
+    '''No correction applied on top of what DaVinci does'''
+
+    brem_corr = auto()
+    '''From electrons to which custom brem recovery was applied
+    needed in 2024 data'''
+    # ---------------------
+    def mass_from_trigger(self, trigger : Trigger) -> Mass:
+        '''
+        Parameters
+        ---------------
+        trigger: Hlt2 trigger
+
+        Returns
+        ---------------
+        Specific version of mass associated to both this MassDef and the passed trigger
+        '''
+        if trigger.is_muon and self == MassDef.default and trigger.project == Project.rk:
+            return Mass.bp
+
+        if trigger.is_muon and self == MassDef.default and trigger.project == Project.rkst:
+            return Mass.bd
+
+        if trigger.is_muon:
+            raise ValueError(f'Invalid trigger {trigger} for mass definition {self}')
+
+        if trigger.is_electron and self == MassDef.default and trigger.project == Project.rk:
+            return Mass.bp
+
+        if trigger.is_electron and self == MassDef.default and trigger.project == Project.rkst:
+            return Mass.bd
+
+        if trigger.is_electron and self == MassDef.brem_corr and trigger.project == Project.rk:
+            return Mass.bp_bcor
+
+        if trigger.is_electron and self == MassDef.brem_corr and trigger.project == Project.rkst:
+            return Mass.bd_bcor
+
+        raise ValueError(f'Invalid trigger/mass definition combination: {trigger}/{self}')
+# -----------------------------------

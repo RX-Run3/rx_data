@@ -9,7 +9,7 @@ from pydantic    import BaseModel, field_validator, model_validator, RootModel, 
 from pathlib     import Path
 from typing      import Callable, Literal, Self, Final
 from rx_common   import MVAWp, Brem, MassDef
-from rx_common   import Channel, Mass, Project, Qsq, MisID, Region
+from rx_common   import Channel, Project, Qsq, MisID, Region
 from rx_common   import Component, Trigger, CCbarComponent, Cuts
 from rx_misid    import MisIDSampleWeights
 from dmu         import LogLevels, LogStore
@@ -533,7 +533,7 @@ class FitModelConf(UnpackerModel, frozen = True):
     fit        : FitConf
     q2bin      : Qsq | None = None
     # ------------------------
-    def update_observable(self, mass : MassDef) -> None:
+    def update_observable(self, mass_def : MassDef) -> None:
         '''
         This method will update the `observable` field
         to pick alternative masses
@@ -542,10 +542,11 @@ class FitModelConf(UnpackerModel, frozen = True):
         --------------
         mass: Mass definition, e.g. brem_corr, default, etc
         '''
-        log.warning(f'Overriding observable to: {mass}')
+        log.warning(f'Overriding observable to: {mass_def}')
 
         data = dict()
         for key, cfg in self.observable.items():
+            mass      = mass_def.mass_from_trigger(trigger = self.trigger)
             data[key] = cfg.model_copy(update = {'name' : mass})
 
         self.observable.update(data)
@@ -614,7 +615,8 @@ class FitModelConf(UnpackerModel, frozen = True):
 
         # If fit uses muon non-DTF, use default mass from DaVinci
         if self.trigger.is_muon:
-            return cfg_obs.model_copy(update = {'name' : Mass.b})
+            mass = MassDef.default.mass_from_trigger(trigger = self.trigger)
+            return cfg_obs.model_copy(update = {'mass' : mass})
 
         # If fit uses electron non-DTF AND parametric PDF
         # use unsmeared mass
@@ -623,7 +625,7 @@ class FitModelConf(UnpackerModel, frozen = True):
 
         # If fit uses electron non-DTF AND non-parametric PDF
         # use smeared mass
-        return cfg_obs.model_copy(update = {'name' : cfg_obs.mass.smeared_version })
+        return cfg_obs.model_copy(update = {'mass' : cfg_obs.mass.smeared_version })
     # ----------------------
     @property
     def hash(self) -> str:

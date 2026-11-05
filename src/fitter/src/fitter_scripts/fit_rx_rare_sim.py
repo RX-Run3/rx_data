@@ -114,7 +114,7 @@ class Conf(BaseModel, Serializable, frozen=True):
             mod_cfg = FitModelConf(**data_mod)
 
         if self.mass:
-            mod_cfg.update_observable(mass = self.mass)
+            mod_cfg.update_observable(mass_def = self.mass)
 
         if mod_cfg.trigger.is_electron:
             name = 'brem_x12'

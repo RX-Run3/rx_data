@@ -122,7 +122,7 @@ def test_nocat(tmp_path : Path):
     Test for components without categories, e.g. muon
     '''
     cfg_obs = ObservableConf(
-        mass  = Mass.b,
+        mass  = Mass.bp,
         range = (4800, 6000))
     data  = gut.load_data(package='fitter_data', fpath='rare/rk/mm/bpkpmm.yaml')
     cfg   = ParametricConf(**data)
