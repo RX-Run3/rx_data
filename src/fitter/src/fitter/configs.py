@@ -542,6 +542,11 @@ class FitModelConf(UnpackerModel, frozen = True):
         --------------
         mass: Mass definition, e.g. brem_corr, default, etc
         '''
+        data = dict()
+        for key, cfg in self.observable.items():
+            data[key] = cfg.model_copy(update = {'name' : mass})
+
+        self.observable.update(data)
     # ------------------------
     @classmethod
     def default(cls) -> 'FitModelConf':
