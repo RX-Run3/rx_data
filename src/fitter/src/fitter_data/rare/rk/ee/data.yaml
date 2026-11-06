@@ -6,7 +6,7 @@ reg_cfg: &reg_cfg
   stacked : True
   plot_range :
     - 4600
-    - 6900
+    - 6800
   d_leg :
     bpkpjpsiee_brem_x12 : $B^+\to K^+ J/\psi(\to e^+e^-)$
     bpkpjpsiee_brem_xx1 : $B^+\to K^+ J/\psi(\to e^+e^-)$
@@ -81,17 +81,17 @@ observable:
     mass : bp_bcor
     range:
       - 4600
-      - 6996
+      - 7000
   central:
     mass : bp_bcor
     range:
       - 4600
-      - 6996
+      - 7000
   high:
     mass : bp_bcor
     range:
       - 4600
-      - 6996
+      - 7000
 components:
   low:
     <<: *comp

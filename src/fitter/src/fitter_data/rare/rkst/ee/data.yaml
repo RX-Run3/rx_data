@@ -6,7 +6,7 @@ reg_cfg: &reg_cfg
   stacked : True
   plot_range :
     - 4600
-    - 6900
+    - 6800
   d_leg :
     comb_brem_x12           : Combinatorial
     comb_brem_xx1           : Combinatorial
@@ -72,18 +72,18 @@ observable:
   low:
     mass : bd_bcor
     range:
-      - 4500
-      - 6996
+      - 4600
+      - 7000
   central:
     mass : bd_bcor
     range:
-      - 4500
-      - 6996
+      - 4600
+      - 7000
   high:
     mass : bd_bcor
     range:
-      - 4500
-      - 6996
+      - 4600
+      - 7000
 components:
   low:
     <<: *comp
