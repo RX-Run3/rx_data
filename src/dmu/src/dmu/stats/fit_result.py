@@ -439,7 +439,9 @@ class FitResult(BaseModel, frozen = True, ser_json_inf_nan = 'constants'):
         Fitting result
         '''
         l_par : list[FitParameter] = []
-        for par, data in res.params.items():
+        params = sorted(res.params, key = lambda x : x.name)
+        for par in params:
+            data  = res.params[par]
             param = cls._par_from_zfit(
                 no_errors_ok = no_errors_ok,
                 name         = par.name,
@@ -449,11 +451,7 @@ class FitResult(BaseModel, frozen = True, ser_json_inf_nan = 'constants'):
 
         pars = tuple(l_par)
 
-        if hasattr(res, 'cov'):
-            covariance : numpy.ndarray = res.cov # type: ignore
-        else:
-            covariance : numpy.ndarray = res.covariance()
-
+        covariance : numpy.ndarray = res.covariance(params = params)
         if numpy.isnan(covariance).any():
             log.warning('Found at least one NaN in covariance')
 
