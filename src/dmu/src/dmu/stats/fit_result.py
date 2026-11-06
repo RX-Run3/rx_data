@@ -72,6 +72,9 @@ class FitResult(BaseModel, frozen = True, ser_json_inf_nan = 'constants'):
     # ----------------------
     @property
     def __all_parameters(self) -> Sequence[FitParameter]:
+        '''
+        Returns sorted fit parameters and extra parameters
+        '''
         sorter = lambda par : par.name
 
         return sorted(self.parameters, key = sorter) + sorted(self.extra_pars, key = sorter)
