@@ -219,8 +219,11 @@ class SampleEmulator:
         cols = [ col.c_str() for col in rdf.GetColumnNames() ]
 
         for col_1, col_2 in self._cfg.trk_swap.items():
-            rdf = self._swap_columns(rdf, cols, col_1, col_2)
-            rdf = self._swap_columns(rdf, cols, col_2, col_1)
+            rdf = self._swap_columns(
+                rdf   = rdf,
+                cols  = cols,
+                prf_1 = col_1,
+                prf_2 = col_2)
 
         return rdf
     # ----------------------
@@ -239,31 +242,50 @@ class SampleEmulator:
 
         Returns
         --------------
-        Dataframe with columns associated to prefix `prf_1` renamed to
-        `prf_2`, `tmp_{prf_1}_...` columns will be added as byproduct.
-
-        cols gets updated with `tmp_...` columns
+        Dataframe with `prf_1` and `prf_2` columns swapped
         '''
-        cols_1 = [ col for col in cols if col.startswith(prf_1) ]
+        vars_1 = { col.removeprefix(prf_1) for col in cols if col.startswith(prf_1) }
+        vars_2 = { col.removeprefix(prf_2) for col in cols if col.startswith(prf_2) }
+        all_vars = vars_1 | vars_2
 
-        for col_1 in cols_1:
-            tmp   = f'tmp_{col_1}'
-            stem  = col_1.removeprefix(prf_1)
-            col_2 = f'{prf_2}{stem}'
-            col_2 = col_2 if f'tmp_{col_2}' not in cols else f'tmp_{col_2}'
+        for var in all_vars:
+            rdf = self._swap_var(
+                rdf  = rdf,
+                cols = cols,
+                var_1= f'{prf_1}{var}',
+                var_2= f'{prf_2}{var}')
 
-            if col_2 not in cols:
-                log.debug(f'Cannot find {col_2} for swapping')
-                continue
+        return rdf
+    # ---------------------
+    def _swap_var(
+        self,
+        rdf   : RDF.RNode,
+        cols  : list[str],
+        var_1 : str,
+        var_2 : str) -> RDF.RNode:
+        '''
+        Parameters
+        ----------------
+        rdf  : Dataframe where swapping will happen
+        cols : List with column names
+        var_x: Column names to be swapped
 
-            rdf = rdf.Define(tmp, col_1)
-            cols.append(tmp)
+        Returns
+        ----------------
+        Dataframe with columns swapped, if either column does not
+        exist the swapped value will be a nan
+        '''
+        if var_1 not in cols:
+            return rdf.Redefine(var_2, 'std::numeric_limits<double>::quiet_NaN()')
 
-            if col_1 in cols:
-                rdf = rdf.Redefine(col_1, col_2)
-            else:
-                rdf = rdf.Define(col_1, col_2)
-                cols.append(tmp)
+        if var_2 not in cols:
+            return rdf.Redefine(var_1, 'std::numeric_limits<double>::quiet_NaN()')
+
+        tmp = f'tmp_{var_1}'
+        rdf = rdf.Define(tmp  , var_1)
+
+        rdf = rdf.Redefine(var_1, var_2)
+        rdf = rdf.Redefine(var_2,   tmp)
 
         return rdf
     # ---------------------
