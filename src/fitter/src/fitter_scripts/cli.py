@@ -2,8 +2,6 @@
 This script is meant to be the entry point for all the functionalities
 provided by this project
 '''
-# ruff: noqa: PLC0415
-
 import os
 import typer
 import pandas as pnd
@@ -18,6 +16,8 @@ from dmu        import LogLevels, LogStore
 from dmu.stats  import zfit
 from dmu.stats  import FitResult
 from dmu.stats  import Constraints
+from dmu.stats  import ConstraintND
+from dmu.stats  import Constraint1D
 from dmu.stats  import FitConf
 from dmu.stats  import utilities as sut
 from fitter     import ToyMaker, ToyConf
@@ -218,7 +218,7 @@ def wp_translator(
     '''
     This will print the signal probability (i.e. MVA working point) given a string
     '''
-    from rx_common import MVAWp # noqa 
+    from rx_common import MVAWp # noqa
 
     val = MVAWp.from_str(val = wp)
 
@@ -463,7 +463,7 @@ def load_nll(syst : Systematic, q2bin : Qsq) -> tuple[ExtendedUnbinnedNLL, Const
 
     nll = sut.load_nll(out_dir / 'nll.bytes')
     res = FitResult.from_json(path = out_dir / 'result.json')
-    cns = Constraints.from_json(path = out_dir / 'constraints.json')
+    cns = Constraints[Constraint1D | ConstraintND].from_json(path = out_dir / 'constraints.json')
 
     if not isinstance(nll, ExtendedUnbinnedNLL):
         raise ValueError('Likelihood is not extended')
@@ -476,6 +476,7 @@ def run_toys(
     seed : int = typer.Option(..., '--seed' , '-s', help='Random seed'),
     ntoy : int = typer.Option(..., '--ntoy' , '-n', help='Number of toys')):
 
+    zfit.run.set_graph_mode(False)
     syst = Systematic.nominal
 
     nll, cns, res = load_nll(syst = syst, q2bin = q2bin)
@@ -484,7 +485,7 @@ def run_toys(
         ntoys            = ntoy,
         rseed            = seed,
         output_directory = Path(f'systematics/{syst}'),
-        fit_conf         = FitConf())
+        fit_conf         = FitConf(run_gof=False))
 
     mkr     = ToyMaker(
         cfg = cfg,
