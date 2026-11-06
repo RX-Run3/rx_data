@@ -144,9 +144,9 @@ class Fitter:
             log.debug(f'{"":<4}{par.name:<20}{"->":<10}{val:<20.3e}')
             par.set_value(val)
     #------------------------------
-    def _get_ranges(self, cfg : FitConf) -> list:
+    def _get_ranges(self, cfg : FitConf) -> list[tuple[float,float]] | None:
         if cfg.ranges is None:
-            return [None]
+            return None
 
         ranges_any = cfg.ranges
 
@@ -221,7 +221,10 @@ class Fitter:
     def _get_full_nll(self, cfg : FitConf) -> Loss:
         ranges  = self._get_ranges(cfg = cfg)
         data    = self._get_subdataset(cfg = cfg)
-        l_nll   = [ self._get_nll(data = data, frange = frange) for frange in ranges ]
+        if ranges is None:
+            l_nll = [self._get_nll(data = data, frange = None)]
+        else:
+            l_nll = [ self._get_nll(data = data, frange = frange) for frange in ranges ]
 
         nnll    = len(l_nll)
         log.info(f'Using {nnll} likelihoods')
