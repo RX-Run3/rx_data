@@ -54,7 +54,7 @@ _SWAPPED_MASSES : Final[list[str]] = [
 ]
 # ----------------------
 @pytest.fixture(scope='module', autouse=True)
-def initialize():
+def set_logs():
     '''
     This will run before any test
     '''
@@ -88,26 +88,31 @@ def _get_rdf(size : int = 10) -> RDF.RNode:
     rdf = rdf.Define('H_PT'                , '10000')
     rdf = rdf.Define('H_ETA'               , '2.0')
     rdf = rdf.Define('H_PHI'               , '1.0')
+    rdf = rdf.Define('H_kaonic'            , '1.0')
     # --------------------------
     rdf = rdf.Define('H1_ID'               , '321')
     rdf = rdf.Define('H1_PT'               , '10000')
     rdf = rdf.Define('H1_ETA'              , '2.0')
     rdf = rdf.Define('H1_PHI'              , '1.0')
+    rdf = rdf.Define('H1_kaonic'           , '1.0')
     # --------------------------
     rdf = rdf.Define('H2_ID'               , '-211')
     rdf = rdf.Define('H2_PT'               , '20000')
     rdf = rdf.Define('H2_ETA'              , '2.0')
     rdf = rdf.Define('H2_PHI'              , '1.0')
+    rdf = rdf.Define('H2_pionic'           , '1.0')
     # --------------------------
     rdf = rdf.Define('L1_ID'               , '-11')
     rdf = rdf.Define('L1_PT'               , '10000')
     rdf = rdf.Define('L1_ETA'              , '2.0')
     rdf = rdf.Define('L1_PHI'              , '1.0')
+    rdf = rdf.Define('L1_leptonic'         , '1.0')
     # --------------------------
     rdf = rdf.Define('L2_ID'               , '11')
     rdf = rdf.Define('L2_PT'               , '20000')
     rdf = rdf.Define('L2_ETA'              , '2.0')
     rdf = rdf.Define('L2_PHI'              , '1.0')
+    rdf = rdf.Define('L2_leptonic'         , '1.0')
     # --------------------------
 
     return rdf
@@ -203,11 +208,19 @@ def test_swap_tracks(sample : Component):
     for col in data:
         log.info(col)
 
+    columns = []
     if sample == Component.bdkstkpijpsiee_kpiee_pikee:
+        columns = ['L1_leptonic', 'L2_leptonic', 'H1_kaonic', 'H2_pionic']
+
         assert all(data['H1_ID'] == -_PION_ID)
         assert all(data['H2_ID'] ==  _KAON_ID)
 
     if sample == Component.bpkpjpsiee_kee_eke:
+        columns = ['L1_leptonic', 'L2_leptonic', 'H_kaonic']
+
         assert all(data['L1_ID'] ==   _KAON_ID)
         assert all(data['H_ID' ] == - _ELECTRON_ID)
+
+    if columns:
+        rdf_new.Display(columns).Print()
 # --------------------------------------------
