@@ -424,20 +424,21 @@ def save_nll(
     Parameters
     -------------
     loss: NLL
-    path: Path to file where NLL is saved, by default None, it will be saved to `/tmp/`
-          If `root_dir(ctx_path)` manager was used, `ctx_path` will take priority.
+    path: Path to file where NLL is saved. If not specified, context manager path
+    will be used. If not specified either, system's temporary directory will be used
 
     Returns
     -------------
     Path where it was saved
     '''
     rdir = _ROOT_DIR.get()
-    if rdir is not None:
+
+    if   path:
+        path.parent.mkdir(parents = True, exist_ok = True)
+    elif rdir is not None:
         rdir.mkdir(parents = True, exist_ok = True)
         with tempfile.NamedTemporaryFile(mode='w+b', delete=False, dir = rdir) as temp:
             path = Path(temp.name)
-    elif path:
-        path.parent.mkdir(parents = True, exist_ok = True)
     else:
         with tempfile.NamedTemporaryFile(mode='w+b', delete=False) as temp:
             path = Path(temp.name)
