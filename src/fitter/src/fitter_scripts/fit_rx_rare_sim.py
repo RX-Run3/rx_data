@@ -14,7 +14,7 @@ from dmu.stats        import ParameterLibrary as PL
 from dmu.stats        import utilities as sut
 from dmu.stats        import ConstraintAdder
 from dmu.stats        import Constraints, ConstraintMode
-from dmu.stats        import FitResult
+from dmu.stats        import FitResult, zfit
 from dmu.workflow     import Cache
 from dmu              import LogStore, LogLevels
 from rx_selection     import selection as sel
@@ -346,6 +346,7 @@ def main():
     Entry point
     '''
     _set_logs()
+    zfit.run.set_graph_mode(False)
 
     cfg = tyro.cli(Conf)
     cfg.to_json(path = cfg.out_dir / cfg.q2bin / 'config.json')
