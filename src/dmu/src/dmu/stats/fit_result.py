@@ -23,7 +23,7 @@ log = LogStore.add_logger('dmu:stats:fit_result')
 type zres = zfit.result.FitResult
 type zpar = zfit.param.Parameter
 # -------------------------------------
-class FitResult(BaseModel, frozen = True):
+class FitResult(BaseModel, frozen = True, ser_json_inf_nan = 'constants'):
     '''
     Class meant to represent fit result
     '''
@@ -72,11 +72,9 @@ class FitResult(BaseModel, frozen = True):
     # ----------------------
     @property
     def __all_parameters(self) -> Sequence[FitParameter]:
-        pars = list(self.parameters)
-        pars.sort(key = lambda par : par.name)
-        self.extra_pars.sort(key = lambda par : par.name)
+        sorter = lambda par : par.name
 
-        return pars + self.extra_pars
+        return sorted(self.parameters, key = sorter) + sorted(self.extra_pars, key = sorter)
     # ----------------------
     @property
     def df(self) -> pnd.DataFrame:
