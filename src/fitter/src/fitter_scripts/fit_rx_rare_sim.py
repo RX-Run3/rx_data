@@ -333,6 +333,7 @@ def _fit(cfg : Conf) -> None:
     res = ftr.run(skip_fit = False)
 
     if res is None:
+        log.warning('Result not found, not saving them')
         return
 
     _save_results(

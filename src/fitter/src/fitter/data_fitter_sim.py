@@ -121,7 +121,7 @@ class DataFitterSim(BaseFitter):
             out_path = out_dir)
 
         out_path = out_dir / 'conf.yaml'
-        log.info(f'Saving configuration to: {out_path}')
+        log.info(f'Saving cfg to: {out_path}')
         cfg.mod_cfg.to_yaml(path = out_path)
 
         out_path = out_dir / 'nll_fitted.bytes'
