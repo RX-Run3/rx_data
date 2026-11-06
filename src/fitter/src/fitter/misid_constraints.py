@@ -62,11 +62,11 @@ class MisIDConstraints(Cache):
             config   = cfg.model_dump(),
         )
     # ----------------------
-    def __get_constraints(self, pars : FitResult) -> dict[str,tuple[float,float]]:
+    def __get_constraints(self, res : FitResult) -> dict[str,tuple[float,float]]:
         '''
         Parameters
         -------------
-        pars: Dictionary with parameters from fit to control region
+        res: Result of fit to control region, holding yields
 
         Returns
         -------------
@@ -77,7 +77,7 @@ class MisIDConstraints(Cache):
             # Use constraint for signal region
             d_yield[f'yld_{region.signal}'] = self.__get_signal_region_yield(
                 region   = region, # Pick it from control region
-                pars     = pars)
+                pars     = res)
 
         return d_yield
     # ----------------------
@@ -241,8 +241,8 @@ class MisIDConstraints(Cache):
                 res = ftr.run(skip_fit = False)
                 l_res.append(res)
 
-        pars  = FitResult.merge(results = l_res)
-        d_cns = self.__get_constraints(pars=pars)
+        res   = FitResult.merge(results = l_res)
+        d_cns = self.__get_constraints(res=res)
         gut.dump_json(data=d_cns, path=cons_path)
 
         self._cache()
