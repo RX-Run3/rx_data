@@ -68,6 +68,9 @@ class Fitter:
         self._check_data()
     #------------------------------
     def _check_data(self):
+        '''
+        Check and convert input data into numpy array and zfit.Data
+        '''
         if   isinstance(self._data_in, numpy.ndarray):
             data_np = self._data_in
         elif isinstance(self._data_in, zfit.Data):
@@ -87,6 +90,9 @@ class Fitter:
             self._data_zf = self._data_in
     #------------------------------
     def _check_numpy_data(self, data : numpy.ndarray) -> numpy.ndarray:
+        '''
+        Check numpy data shape and remove NaN/Inf values
+        '''
         shp = data.shape
         if   len(shp) == 1:
             pass
@@ -145,6 +151,9 @@ class Fitter:
             par.set_value(val)
     #------------------------------
     def _get_ranges(self, cfg : FitConf) -> list[tuple[float,float]] | None:
+        '''
+        Get fit ranges from configuration
+        '''
         if cfg.ranges is None:
             return None
 
@@ -196,6 +205,9 @@ class Fitter:
         return data
     #------------------------------
     def _get_binned_observable(self, nbins : int):
+        '''
+        Get binned observable space for binned fits/operations
+        '''
         obs = self._pdf.space
         if not isinstance(obs, zobs):
             raise ValueError('Observable not an Space instance')
@@ -210,6 +222,9 @@ class Fitter:
         self,
         data   : zdat,
         frange : tuple[float,float] | None) -> Loss:
+        '''
+        Get negative log likelihood for given data and range
+        '''
 
         NLL = zfit.loss.ExtendedUnbinnedNLL if self._pdf.is_extended else zfit.loss.UnbinnedNLL
         nll = NLL(
@@ -220,6 +235,13 @@ class Fitter:
         return nll
     #------------------------------
     def _get_full_nll(self, cfg : FitConf) -> Loss:
+        '''
+        Get full negative log likelihood including, it will
+
+        - Use ranges if available, to split data into multiple NLLs
+        - Use a subset of the data if requested
+        - Add constraints if requested
+        '''
         ranges  = self._get_ranges(cfg = cfg)
         data    = self._get_subdataset(cfg = cfg)
         if ranges is None:
@@ -260,6 +282,9 @@ class Fitter:
         res    : FitResult,
         nsigma : float,
         yields : list[str]) -> None:
+        '''
+        Update parameter bounds based on fit results and nsigma
+        '''
 
         s_shape_par = self._pdf.get_params(is_yield=False, floating=True)
         d_shp_par   = { par.name : par for par in s_shape_par if par.name not in yields}
