@@ -294,12 +294,12 @@ def test_yield_from_zdata(weighted : bool):
 
     assert abs(val - target) < _FLOAT_TOLERANCE
 #----------------------------------
-def test_save_nll():
+def test_save_nll(tmp_path : Path):
     '''
     Saves NLL to temporary path
     '''
     nll  = get_nll(kind = 's+b', suffix = '')
-    path = sut.save_nll(loss = nll)
+    path = sut.save_nll(loss = nll, path = tmp_path / 'nll.bytes')
 
     log.info(f'Saving NLL to: {path}')
 
@@ -312,11 +312,11 @@ def test_save_nll():
     res = minimizer.minimize(loss = nll)
     print(res)
 #----------------------------------
-def test_save_nll_context():
+def test_save_nll_context(tmp_path : Path):
     '''
     Saves NLL to temporary path set by context manager
     '''
-    root_dir = Path('/tmp/alternative_context')
+    root_dir = tmp_path / 'alternative_context'
 
     nll  = get_nll(kind = 's+b', suffix = '')
     with sut.root_directory(root_dir = root_dir):
