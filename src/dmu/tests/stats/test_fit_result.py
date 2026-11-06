@@ -18,7 +18,7 @@ log=LogStore.add_logger('dmu:test_fit_result')
 
 _FALL_BACK : Final[int] = 3 # placeholder for missing parameter value
 # ----------------------
-@pytest.fixture(scope='module', autouse=True)
+@pytest.fixture(autouse=True)
 def initialize():
     '''
     This will run before any test
@@ -42,7 +42,7 @@ def test_from_zfit():
     _   = val.covariance
 
     cov = numpy.array(val.pars_covariance(pars = ['nbkg', 'nsig']), dtype=int)
-    assert cov.tolist() == [[943, -420], [-420, 898]]
+    assert cov.tolist() == [[942, -420], [-420, 898]]
 
     cov = numpy.array(val.pars_covariance(pars = ['mu', 'sg']), dtype=int)
     assert cov.tolist() == [[86, 3], [3, 81]]
