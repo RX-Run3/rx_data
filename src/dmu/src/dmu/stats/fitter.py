@@ -178,17 +178,18 @@ class Fitter:
         has_weights = self._data_zf.weights is not None
 
         if has_weights:
-            arr_wgt = self._data_zf.weights.numpy()
-            arr_inp = numpy.array([arr_inp, arr_wgt]).T
+            arr_wgt = self._data_zf.weights.numpy().flatten()
+            arr_inp = numpy.array([arr_inp, arr_wgt], dtype = numpy.float64).T
 
         arr_out = numpy.random.choice(arr_inp, size=nentries_out, replace=False)
         if has_weights:
-            arr_out = arr_out.T[0]
+            arr_val = arr_out.T[0]
             arr_wgt = arr_out.T[1]
         else:
+            arr_val = arr_out
             arr_wgt = None
 
-        data = zfit.data.Data.from_numpy(array=arr_out, weights=arr_wgt, obs=self._data_zf.space)
+        data = zfit.data.Data.from_numpy(array=arr_val, weights=arr_wgt, obs=self._data_zf.space)
         if not isinstance(data, zfit.Data):
             raise ValueError('Dataset not unbinned')
 
