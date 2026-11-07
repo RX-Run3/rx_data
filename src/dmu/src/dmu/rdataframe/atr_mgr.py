@@ -3,11 +3,11 @@ Module with AtrMgr class
 '''
 
 import os
-
-from ROOT import RDataFrame
-
 import dmu.generic.utilities as gut
-from dmu.logging.log_store import LogStore
+
+from typing import Any
+from ROOT   import RDF
+from dmu    import LogStore
 
 #TODO:Skip attributes that start with Take< in a betterway
 log = LogStore.add_logger('dmu:rdataframe:atr_mgr')
@@ -18,12 +18,12 @@ class AtrMgr:
     These operations create new dataframes and therefore drop attributes.
     '''
     #------------------------
-    def __init__(self, rdf : RDataFrame):
-        self.d_in_atr = {}
+    def __init__(self, rdf : RDF.RNode):
+        self.d_in_atr : dict[str,Any] = dict()
 
         self._store_atr(rdf)
     #------------------------
-    def _store_atr(self, rdf : RDataFrame):
+    def _store_atr(self, rdf : RDF.RNode):
         self.d_in_atr = self._get_atr(rdf)
     #------------------------
     def _skip_attr(self, name : str) -> bool:
@@ -32,7 +32,7 @@ class AtrMgr:
 
         return False
     #------------------------
-    def _get_atr(self, rdf : RDataFrame):
+    def _get_atr(self, rdf : RDF.RNode) -> dict[str,Any]:
         l_atr = dir(rdf)
         d_atr = {}
         for atr in l_atr:
@@ -44,7 +44,7 @@ class AtrMgr:
 
         return d_atr
     #------------------------
-    def add_atr(self, rdf : RDataFrame) -> RDataFrame:
+    def add_atr(self, rdf : RDF.RNode) -> RDF.RNode:
         '''
         Takes dataframe and adds back the attributes
         '''
@@ -65,7 +65,7 @@ class AtrMgr:
 
         return rdf
     #------------------------
-    def to_json(self, json_path : str, exists_ok) -> None:
+    def to_json(self, json_path : str, exists_ok : bool) -> None:
         '''
         Saves the attributes inside current instance to JSON. Takes JSON path as argument
         '''
