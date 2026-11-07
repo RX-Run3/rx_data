@@ -96,7 +96,7 @@ class CCbarPDF(BaseModel, Serializable, frozen = True):
         pdf  = zfit.pdf.SumPDF(
             name  = name,
             pdfs  = pdfs,
-            fracs = frac,
+            fracs = [frac],
             obs   = obs.obs)
 
         return pdf

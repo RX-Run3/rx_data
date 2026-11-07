@@ -14,6 +14,7 @@ check()
     )
 }
 
+check src/hqm
 check src/fitter
 check src/systematics
 check src/rx_efficiencies
