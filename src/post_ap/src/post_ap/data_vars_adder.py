@@ -7,8 +7,7 @@ import yaml
 import numpy
 
 from ROOT import RDataFrame, Numba
-
-from dmu.logging.log_store import LogStore
+from dmu  import LogStore
 
 log = LogStore.add_logger('post_ap:data_vars_adder')
 # -------------------------------------
