@@ -1,6 +1,6 @@
 [project]
 name            = 'dmu'
-version         = '0.3.4'
+version         = '0.3.5'
 description     = 'Project storing utilities needed to reduce boilerplate code when analyzing data'
 readme          = 'README.md'
 
@@ -15,3 +15,6 @@ dmu                 = 'dmu_scripts.cli:app'
 
 [tool.setuptools.package-data]
 dmu_data = ['**/*.json', '**/*.toml', '**/*.yaml', '**/*.txt']
+
+[tool.setuptools]
+script-files = ['bin/froot']
