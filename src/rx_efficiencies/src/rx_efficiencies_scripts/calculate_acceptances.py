@@ -151,7 +151,7 @@ def _get_acceptances(
         rdf     = rdf,
         project = Data.project,
         channel = sample.channel)
-    obj.plot_dir     = f'{Data.out_dir}/plots_{energy}/{sample}'
+    obj.plot_dir     = Data.out_dir / f'plots_{energy}/{sample}'
     acc_phy, acc_lhc = obj.get_acceptances()
 
     return acc_phy, acc_lhc
@@ -210,7 +210,10 @@ def _save_tables(
     tex_path = f'{Data.out_dir}/acceptances_{energy}.tex'
     log.info(f'Saving to: {tex_path}')
 
-    df_for_tex = df.assign(Sample=df['Sample'].apply(lambda sample : Component(sample).latex))
+    def _latex_from_sample(sample : str) -> str:
+        return Component(sample).latex
+
+    df_for_tex = df.assign(Sample=df['Sample'].apply(_latex_from_sample))
     put.df_to_tex(df_for_tex, tex_path, hide_index=True, d_format={'Sample' : '{}', 'Physical' : '{:.3f}', 'LHCb' : '{:.3f}'})
 
     jsn_path = f'{Data.out_dir}/acceptances_{energy}.json'

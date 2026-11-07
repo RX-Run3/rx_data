@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from ROOT      import RDF
 from dmu       import LogStore
 from typing    import Final
+from pathlib   import Path
 from functools import cached_property
 from rx_common import Channel, Project
 
@@ -62,7 +63,7 @@ class AcceptanceCalculator:
         self._project     = project
 
         self._rdf         = rdf
-        self._plot_dir    : str
+        self._plot_dir : Path
 
         self._initialized = False
     #-----------------------------
@@ -100,14 +101,14 @@ class AcceptanceCalculator:
             raise ValueError('At least one lepton was not found')
     #-----------------------------
     @property
-    def plot_dir(self) -> str:
+    def plot_dir(self) -> Path:
         '''
         Returns path to directory where validation plots go
         '''
         return self._plot_dir
     #-----------------------------
     @plot_dir.setter
-    def plot_dir(self, value) -> None:
+    def plot_dir(self, value : Path) -> None:
         try:
             os.makedirs(value, exist_ok=True)
         except:

@@ -42,7 +42,7 @@ def test_simple(year : str, component : Component, project : Project):
     obj=AcceptanceReader(
         year   =year,
         project=project,
-        sample =component.sample)
+        sample =component)
     acc=obj.read()
 
     log.info(f'{year:<20}{component:<20}{acc:10.3f}')
