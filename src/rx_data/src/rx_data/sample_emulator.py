@@ -275,11 +275,11 @@ class SampleEmulator:
         exist the swapped value will be a nan
         '''
         if var_1 not in cols:
-            self._nan_vars.append(var_1)
+            self._nan_vars.append(var_2)
             return rdf.Redefine(var_2, 'std::numeric_limits<double>::quiet_NaN()')
 
         if var_2 not in cols:
-            self._nan_vars.append(var_2)
+            self._nan_vars.append(var_1)
             return rdf.Redefine(var_1, 'std::numeric_limits<double>::quiet_NaN()')
 
         tmp = f'tmp_{var_1}'
