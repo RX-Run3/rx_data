@@ -173,7 +173,7 @@ rk: &rk
     clones    : (th_l1_l2 > 5e-4) && (th_l1_kp > 5e-4) && (th_l2_kp > 5e-4)
     tr_ipchi2 : H_IPCHI2_OWNPV > 9 && L1_IPCHI2_OWNPV > 9 && L2_IPCHI2_OWNPV > 9
     pid_l     : L1_ProbNNe > 0.2 && L2_ProbNNe > 0.2 && L1_PIDe  > 3.000 && L2_PIDe  > 3.000
-    pid_k     : H_PIDe <  0.000 && H_PID_K > 2.0
+    pid_k     : H_PIDe <  0.000 && H_PIDk > 2.0
     rich      : L1_PPHASRICH && L2_PPHASRICH && H_PPHASRICH
     acceptance: L1_INECAL    && L2_INECAL
     jpsi_misid:
