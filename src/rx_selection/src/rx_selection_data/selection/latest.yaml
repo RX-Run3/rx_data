@@ -199,7 +199,7 @@ rk: &rk
     clones    : (th_l1_l2 > 5e-4) && (th_l1_kp > 5e-4) && (th_l2_kp > 5e-4)
     tr_ipchi2 : H_IPCHI2_OWNPV > 9 && L1_IPCHI2_OWNPV > 9 && L2_IPCHI2_OWNPV > 9
     pid_l     : L1_ProbNNmu> 0.2 && L2_ProbNNmu> 0.2 && L1_isMuon && L2_isMuon && L1_PIDmu >-3. && L2_PIDmu > -3
-    pid_k     : (H_ProbNNk   * (1 - H_PROBNN_P) > 0.05) && H_PID_K > 0
+    pid_k     : (H_ProbNNk   * (1 - H_ProbNNp) > 0.05) && H_PIDk > 0
     rich      : L1_PPHASRICH && L2_PPHASRICH && H_PPHASRICH
     acceptance: L1_INMUON && L2_INMUON
     jpsi_misid:
