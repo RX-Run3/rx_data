@@ -5,6 +5,23 @@ common: &common
   total_charge                                              : H_ID / TMath::Abs(H_ID) - L1_ID / TMath::Abs(L1_ID) - L2_ID / TMath::Abs(L2_ID)
   H_PHI                                                     : H_PHI_rft
   # ---------
+  H_isMuon                                                  : H_ISMUON
+  # -------
+  H_ProbNNmu                                                : H_PROBNN_MU
+  # -------
+  L1_ProbNNk                                                : L1_PROBNN_K
+  L2_ProbNNk                                                : L2_PROBNN_K
+  # -------
+  H_PIDmu                                                   : H_PID_MU
+  # -------
+  H_PIDk                                                    : H_PID_K
+  L1_PIDk                                                   : L1_PID_K
+  L2_PIDk                                                   : L2_PID_K
+  # -------
+  H_ProbNNp                                                 : H_PROBNN_P
+  L1_ProbNNp                                                : L1_PROBNN_P
+  L2_ProbNNp                                                : L2_PROBNN_P
+  # ---------
   B_HEAD_CC_B_ChargedIso_DR2_0p15_CP                        : B_HEAD_CC_bp_ChargedIso_DR2_0p25_CP      # PRC BDT uses 0.15 cone, we kept 0.25
   B_HEAD_CC_B_ChargedIso_DR2_0p15_PTASY                     : B_HEAD_CC_bp_ChargedIso_DR2_0p25_PTASY   # Might not matter, cone isolation does
   B_HEAD_CC_B_ChargedIso_DR2_0p15_CMULT                     : B_HEAD_CC_bp_ChargedIso_DR2_0p25_CMULT   # not provide high discriminating power
@@ -40,5 +57,3 @@ TRUEM:
 
         auto bpls_4d = L1_4D + L2_4D + H_4D;
         auto val     = bpls_4d.M(); return val!=val ? 5279.34 : val'
-  # -------------------
-
