@@ -6,6 +6,10 @@ redefinitions:
 # Define columns if they do not exist
 definitions:
   common: &common
+    # -------
+    L1_ProbNNk                            : L1_PROBNN_K
+    L2_ProbNNk                            : L2_PROBNN_K
+    # -------
     Jpsi_PHI                              : Jpsi_PHI_rft # In ecal fixing version refitted phi was not saved
     L1_PHI                                : L1_PHI_rft   # Refitted phi is the same as original and original was dropped
     L2_PHI                                : L2_PHI_rft   # This should put back the original
