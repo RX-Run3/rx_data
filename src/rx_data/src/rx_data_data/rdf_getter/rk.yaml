@@ -9,9 +9,6 @@ common: &common
   # -------
   H_ProbNNmu                                                : H_PROBNN_MU
   # -------
-  L1_ProbNNk                                                : L1_PROBNN_K
-  L2_ProbNNk                                                : L2_PROBNN_K
-  # -------
   H_PIDmu                                                   : H_PID_MU
   # -------
   H_PIDk                                                    : H_PID_K

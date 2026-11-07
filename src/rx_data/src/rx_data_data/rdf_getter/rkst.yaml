@@ -6,6 +6,12 @@ common : &common
   Kst_PHI                               : Kst_PHI_rft # In ecal fixing version refitted phi was not saved
   H1_PHI                                : H1_PHI_rft  # Refitted phi is the same as original and original was dropped
   H2_PHI                                : H2_PHI_rft  # This should put back the original
+  H1_PIDmu                              : H1_PID_MU
+  H2_PIDmu                              : H2_PID_MU
+  H1_ProbNNmu                           : H1_PROBNN_MU
+  H2_ProbNNmu                           : H2_PROBNN_MU
+  H1_isMuon                             : H1_ISMUON
+  H2_isMuon                             : H2_ISMUON
   # ---------
   B_HEAD_CC_B_ChargedIso_DR2_0p15_CP    : B_HEAD_CC_B_ChargedIso_DR2_0p25_CP      # PRC BDT uses 0.15 cone, we kept 0.25
   B_HEAD_CC_B_ChargedIso_DR2_0p15_PTASY : B_HEAD_CC_B_ChargedIso_DR2_0p25_PTASY   # Might not matter, cone isolation does
