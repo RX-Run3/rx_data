@@ -2176,6 +2176,16 @@ obj = RFPrinter(path='/path/to/file.root')
 obj.save()
 ```
 
+## Fuzzy finding branches
+
+To search for branches in a tree do:
+
+```bash
+froot file.root tree_name
+```
+
+which will open an `fzf` window with the branches
+
 ## Printing from the command line
 
 This is mostly needed from the command line and can be done with:
