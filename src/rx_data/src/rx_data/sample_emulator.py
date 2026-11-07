@@ -154,6 +154,7 @@ class SampleEmulator:
         data        = gut.load_data(package='rx_data_data', fpath=fpath)
         data_string = json.dumps(data)
         cfg         = EmulatorConf.model_validate_json(data_string)
+        self._nan_vars = []
 
         if sample in cfg.root:
             log.warning(f'Emulating {sample}')
@@ -177,9 +178,7 @@ class SampleEmulator:
         Dataframe after definitiions
         '''
         for var, expr in self._cfg.redefine.items():
-            assert isinstance(var, str)
-
-            log.debug(f'{var:<10}{"--->"}\n{expr}')
+            log.debug(f'{var:<20}{expr}')
             rdf = rdf.Redefine(var, expr)
 
         return rdf
@@ -276,9 +275,11 @@ class SampleEmulator:
         exist the swapped value will be a nan
         '''
         if var_1 not in cols:
+            self._nan_vars.append(var_1)
             return rdf.Redefine(var_2, 'std::numeric_limits<double>::quiet_NaN()')
 
         if var_2 not in cols:
+            self._nan_vars.append(var_2)
             return rdf.Redefine(var_1, 'std::numeric_limits<double>::quiet_NaN()')
 
         tmp = f'tmp_{var_1}'
@@ -391,6 +392,9 @@ class SampleEmulator:
         rdf = self._swap_tracks(rdf=rdf)
         rdf = self._rebuild_masses(rdf = rdf)
         rdf = self._run_redefine(rdf=rdf)
+
+        for nan_var in sorted(self._nan_vars):
+            log.warning(f'Nan var: {nan_var}')
 
         return rdf
 # ----------------------
