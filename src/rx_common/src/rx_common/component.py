@@ -145,6 +145,24 @@ class Component(StrEnum):
     bsphigamma     = auto()
     # --------------------------------------------
     @property
+    def has_tracks_swapped(self) -> bool:
+        '''
+        True if sample hold candidates built from
+        misidentified tracks
+        '''
+        samples = {
+            Component.bpkpjpsimm_kmm_mkm,
+            Component.bpkpjpsiee_kee_eke,
+            Component.bdkstkpijpsiee_kpiee_pikee,
+            Component.bdkstkpijpsiee_kpiee_epiek,
+            Component.bdkstkpijpsiee_kpiee_kepie,
+            Component.bdkstkpijpsimm_kpimm_pikmm,
+            Component.bdkstkpijpsimm_kpimm_mpimk,
+            Component.bdkstkpijpsimm_kpimm_kmpim}
+
+        return self in samples
+    # --------------------------------------------
+    @property
     def metadata(self) -> dict[str,str]:
         '''
         Dictionary with basic information on component:

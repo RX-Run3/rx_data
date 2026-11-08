@@ -45,6 +45,13 @@ class Cuts(StrEnum):
     bppipi    = auto()
     # ----------------------------------
     @property
+    def is_pid(self) -> bool:
+        '''True if cut counts as PID cut'''
+        pid_cuts = {Cuts.pid_l, Cuts.pid_k, Cuts.pid_k}
+
+        return self in pid_cuts
+    # ----------------------------------
+    @property
     def latex(self) -> str:
         '''
         Latex representation (for tables) of cut
