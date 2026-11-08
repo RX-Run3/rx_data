@@ -32,6 +32,10 @@ def test_override_qsq(
     '''
     q2bin     = Qsq(q2bin)
     component = Component.data_24
+    d_default = sel.selection(
+        trigger=trigger,
+        q2bin  =q2bin,
+        process=component)
 
     with sel.override_qsq(kind = kind):
         d_sel = sel.selection(
@@ -39,8 +43,9 @@ def test_override_qsq(
             q2bin  =q2bin,
             process=component)
 
-    expr = d_sel[Cuts.q2]
-    print(expr)
+    expected = kind.update_expression(expr = d_default[Cuts.q2])
+
+    assert d_sel[Cuts.q2] == expected
 # --------------------------
 @pytest.mark.parametrize('trigger', [Trigger.rk_ee_os, Trigger.rk_mm_os, Trigger.rkst_ee_os, Trigger.rkst_mm_os])
 @pytest.mark.parametrize('q2bin'  , Qsq.for_physics())
