@@ -50,108 +50,36 @@ bskstpsi2ee:
 bdkstkpijpsimm_kpimm_pikmm:
   samples   :
     bdkstkpijpsimm : 1.0
-  trk_swap  :
-    H1_ : H2_
-  masses:
-    Kst_M:
-      H1 :  321
-      H2 : -211
 bdkstkpijpsiee_kpiee_pikee:
   samples   :
     bdkstkpijpsiee : 1.0
-  trk_swap  :
-    H1_ : H2_
-  masses:
-    Kst_M:
-      H1 :  321
-      H2 : -211
 # ----------------------------------------
 # pi <-> mu/e swaps
 # ----------------------------------------
 bdkstkpijpsimm_kpimm_kmpim:
-  redefine  :
-    q2 : Jpsi_M * Jpsi_M
   samples   :
     bdkstkpijpsimm : 1.0
-  trk_swap  :
-    H2_ : L2_
-  masses:
-    Kst_M:
-      H1 :  321
-      H2 : -211
-    Jpsi_M:
-      L1 :  13
-      L2 : -13
 bdkstkpijpsiee_kpiee_kepie:
-  redefine  :
-    q2 : Jpsi_M * Jpsi_M
   samples   :
     bdkstkpijpsiee : 1.0
-  trk_swap  :
-    H2_ : L2_
-  masses:
-    Kst_M:
-      H1 :  321
-      H2 : -211
-    Jpsi_M:
-      L1 :  11
-      L2 : -11
 # ----------------------------------------
 # K <-> mu/e swaps
 # ----------------------------------------
 bdkstkpijpsimm_kpimm_mpimk:
-  redefine  :
-    q2 : Jpsi_M * Jpsi_M
   samples   :
     bdkstkpijpsimm : 1.0
-  trk_swap  :
-    H1_ : L1_
-  masses:
-    Kst_M:
-      H1 :  321
-      H2 : -211
-    Jpsi_M:
-      L1 :  13
-      L2 : -13
 bdkstkpijpsiee_kpiee_epiek:
-  redefine  :
-    q2 : Jpsi_M * Jpsi_M
   samples   :
     bdkstkpijpsiee : 1.0
-  trk_swap  :
-    H1_ : L1_
-  masses:
-    Kst_M:
-      H1 : 321
-      H2 : 211
-    Jpsi_M:
-      L1 :  11
-      L2 : -11
 # ----------------------------------------
 # k <-> mu/e swaps
 # ----------------------------------------
 bpkpjpsimm_kmm_mkm:
-  redefine  :
-    q2 : Jpsi_M * Jpsi_M
   samples   :
     bpkpjpsimm     : 1.0
-  trk_swap  :
-    H_ : L1_
-  masses:
-    Jpsi_M:
-      L1 :  13
-      L2 : -13
 bpkpjpsiee_kee_eke:
-  redefine  :
-    q2 : Jpsi_M * Jpsi_M
   samples   :
     bpkpjpsiee     : 1.0
-  trk_swap  :
-    H_ : L1_
-  masses:
-    Jpsi_M:
-      L1 :  11
-      L2 : -11
 # ----------------------------------------
 bsjpsixmm:
   samples :
