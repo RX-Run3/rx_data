@@ -47,9 +47,7 @@ class Cuts(StrEnum):
     @property
     def is_pid(self) -> bool:
         '''True if cut counts as PID cut'''
-        pid_cuts = [cut for cut in Cuts if cut.name.startswith('pid')]
-
-        return self in pid_cuts
+        return self.name.startswith('pid')
     # ----------------------------------
     @property
     def latex(self) -> str:
