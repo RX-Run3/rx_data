@@ -154,7 +154,6 @@ class SampleEmulator:
         data        = gut.load_data(package='rx_data_data', fpath=fpath)
         data_string = json.dumps(data)
         cfg         = EmulatorConf.model_validate_json(data_string)
-        self._nan_vars = []
 
         if sample in cfg.root:
             log.warning(f'Emulating {sample}')
@@ -201,170 +200,6 @@ class SampleEmulator:
         log.warning(f'Not adding cocktail weights for: {self._cfg.samples}')
 
         return rdf
-    # ----------------------
-    def _swap_tracks(self, rdf : RDF.RNode) -> RDF.RNode:
-        '''
-        Parameters
-        ----------------
-        rdf: ROOT dataframe
-
-        Returns
-        ----------------
-        Dataframe with track swapping, if requested through `trk_swap`
-        '''
-        if not self._cfg.trk_swap:
-            return rdf
-
-        cols = [ col.c_str() for col in rdf.GetColumnNames() ]
-
-        for col_1, col_2 in self._cfg.trk_swap.items():
-            rdf = self._swap_columns(
-                rdf   = rdf,
-                cols  = cols,
-                prf_1 = col_1,
-                prf_2 = col_2)
-
-        return rdf
-    # ----------------------
-    def _swap_columns(
-        self,
-        rdf   : RDF.RNode,
-        cols  : list[str],
-        prf_1 : str,
-        prf_2 : str) -> RDF.RNode:
-        '''
-        Parameters
-        --------------
-        rdf  : ROOT dataframe
-        cols : All columns in dataframe
-        prf_x: Column prefixes for columns to be swapped, e.g. L1, H
-
-        Returns
-        --------------
-        Dataframe with `prf_1` and `prf_2` columns swapped
-        '''
-        vars_1 = { col.removeprefix(prf_1) for col in cols if col.startswith(prf_1) }
-        vars_2 = { col.removeprefix(prf_2) for col in cols if col.startswith(prf_2) }
-        all_vars = vars_1 | vars_2
-
-        for var in all_vars:
-            rdf = self._swap_var(
-                rdf  = rdf,
-                cols = cols,
-                var_1= f'{prf_1}{var}',
-                var_2= f'{prf_2}{var}')
-
-        return rdf
-    # ---------------------
-    def _swap_var(
-        self,
-        rdf   : RDF.RNode,
-        cols  : list[str],
-        var_1 : str,
-        var_2 : str) -> RDF.RNode:
-        '''
-        Parameters
-        ----------------
-        rdf  : Dataframe where swapping will happen
-        cols : List with column names
-        var_x: Column names to be swapped
-
-        Returns
-        ----------------
-        Dataframe with columns swapped, if either column does not
-        exist the swapped value will be a nan
-        '''
-        if var_1 not in cols:
-            self._nan_vars.append(var_2)
-            return rdf.Redefine(var_2, 'std::numeric_limits<double>::quiet_NaN()')
-
-        if var_2 not in cols:
-            self._nan_vars.append(var_1)
-            return rdf.Redefine(var_1, 'std::numeric_limits<double>::quiet_NaN()')
-
-        tmp = f'tmp_{var_1}'
-        rdf = rdf.Define(tmp  , var_1)
-
-        rdf = rdf.Redefine(var_1, var_2)
-        rdf = rdf.Redefine(var_2,   tmp)
-
-        return rdf
-    # ---------------------
-    def _rebuild_masses(self, rdf : RDF.RNode) -> RDF.RNode:
-        '''
-        Parameters
-        ---------------
-        rdf: Dataframe before mass rebuilding
-
-        Returns
-        ---------------
-        Dataframe after mass rebuilding
-        '''
-        if not self._cfg.masses:
-            return rdf
-
-        for name, tracks in self._cfg.masses.items():
-            rdf = self._add_mass(rdf = rdf, name = name, tracks = tracks)
-
-        return rdf
-    # ---------------------
-    def _add_mass(self, rdf : RDF.RNode, name : str, tracks : dict[str,int]) -> RDF.RNode:
-        '''
-        Parameters
-        ---------------
-        rdf   : Dataframe before mass rebuilding
-        name  : Name of column storing mass, e.g. `Kstar_M`
-        tracks: Dictionary mapping particle names to PDG ID used to extract mass
-
-        Returns
-        ---------------
-        DataFrame with mass column added
-        '''
-        vec_str : list[str] = []
-        sum_str : list[str] = []
-
-        log.debug(f'Rebuilding: {name}')
-
-        counter = 1
-        for track, pdg_id in tracks.items():
-            trk_expr = self._get_vector_expr(track, pdg_id, counter)
-            vec_str.append(trk_expr)
-            sum_str.append(f't{counter}')
-
-            counter += 1
-
-        expr_1 = ';'.join(vec_str)
-        expr_2 = '+'.join(sum_str)
-        expr   = f'{expr_1}; auto sum = {expr_2}; return sum.M();'
-
-        log.debug('')
-        log.debug(f'{name}:\n{expr}')
-        log.debug('')
-
-        rdf = rdf.Redefine(name, expr)
-
-        return rdf
-    # ---------------------
-    def _get_vector_expr(
-        self,
-        track  : str,
-        pdg_id : int,
-        counter: int) -> str:
-        '''
-        Parameters
-        ------------------
-        track  : Name of track, e.g. L1
-        pdg_id : E.g. 11 for electron, needed to pick mass
-        counter: Used as index for 4-vector
-
-        Returns
-        ------------------
-        Expression describing 4-vector for track
-        '''
-        pdg_id = abs(pdg_id)
-        mass   = _MASSES[pdg_id]
-
-        return f'ROOT::Math::PtEtaPhiMVector t{counter}({track}_PT, {track}_ETA, {track}_PHI, {mass})'
     # ---------------------
     @property
     def samples(self) -> SamplesConf:
@@ -389,12 +224,7 @@ class SampleEmulator:
             return rdf
 
         rdf = self._update_cocktail_weights(rdf = rdf)
-        rdf = self._swap_tracks(rdf=rdf)
-        rdf = self._rebuild_masses(rdf = rdf)
         rdf = self._run_redefine(rdf=rdf)
-
-        for nan_var in sorted(self._nan_vars):
-            log.warning(f'Nan var: {nan_var}')
 
         return rdf
 # ----------------------
