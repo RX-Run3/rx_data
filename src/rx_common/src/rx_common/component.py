@@ -150,15 +150,13 @@ class Component(StrEnum):
         True if sample hold candidates built from
         misidentified tracks
         '''
-        samples = {
-            Component.bpkpjpsimm_kmm_mkm,
-            Component.bpkpjpsiee_kee_eke,
-            Component.bdkstkpijpsiee_kpiee_pikee,
-            Component.bdkstkpijpsiee_kpiee_epiek,
-            Component.bdkstkpijpsiee_kpiee_kepie,
-            Component.bdkstkpijpsimm_kpimm_pikmm,
-            Component.bdkstkpijpsimm_kpimm_mpimk,
-            Component.bdkstkpijpsimm_kpimm_kmpim}
+        def _is_track_swapped(sample : Component) -> bool:
+            if not sample.is_mc:
+                return False
+
+            return '_' in sample.name
+
+        samples = {sample for sample in Component if _is_track_swapped(sample) }
 
         return self in samples
     # --------------------------------------------
