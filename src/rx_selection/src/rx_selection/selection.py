@@ -16,7 +16,7 @@ from dmu.generic            import hashing
 from dmu.rdataframe         import utilities          as rut
 from dmu.generic            import utilities          as gut
 from rx_selection           import truth_matching     as tm
-from rx_common              import Channel, Component, Project
+from rx_common              import Component
 from rx_common              import Qsq, QsqDef, Trigger, Cuts
 
 log=LogStore.add_logger('rx_selection:selection')
@@ -151,8 +151,8 @@ def selection(
         d_cut[Cuts.truth] = tm.get_truth(component=process, project = trigger.project)
 
     d_tmp = _get_selection(
-        chan   = trigger.channel,
-        proj   = trigger.project,
+        trig   = trigger,
+        comp   = process,
         q2_bin = q2bin)
     d_cut.update(d_tmp)
 
@@ -228,14 +228,14 @@ def _preprocess_cut(cut : Cuts, expr : str) -> str:
 #-----------------------
 # TODO: Add types
 def _get_selection(
-    chan   : Channel,
-    proj   : Project,
+    trig   : Trigger,
+    comp   : Component,
     q2_bin : Qsq) -> dict[Cuts,str]:
     '''
     Parameters
     -----------------
-    chan  : Channel, e.g. EE, MM
-    proj  : Project, e.g. RK, RKst
+    trig  : Hlt2 trigger
+    comp  : Sample used
     q2_bin: q2 bin e.g. central, needed to pick for q2 dependent cuts
 
     Returns
@@ -247,22 +247,26 @@ def _get_selection(
     '''
     cfg = _load_selection_config()
 
-    if proj not in cfg:
+    if trig.project not in cfg:
         for key in cfg:
             log.error(key)
-        raise ValueError(f'Cannot find {proj} in config')
+        raise ValueError(f'Cannot find {trig.project} in config')
 
-    if chan not in cfg[proj]:
-        raise ValueError(f'Cannot find {chan} in config section for {proj}')
+    if trig.channel not in cfg[trig.project]:
+        raise ValueError(f'Cannot find {trig.channel} in config section for {trig.project}')
 
-    d_cut = cfg[proj][chan]
+    d_cut = cfg[trig.project][trig.channel]
     if isinstance(d_cut, str):
-        raise ValueError(f'Selection at {proj}/{chan} is a string: {d_cut}')
+        raise ValueError(f'Selection for {trig} is a string: {d_cut}')
 
     d_new : dict[Cuts,str] = {}
     for cut_name, d_q2bin in d_cut.items():
-
         cut = Cuts(cut_name)
+
+        if cut.is_pid and comp.has_tracks_swapped:
+            log.debug(f'Skipping {cut} for track swapped sample {comp}')
+            continue
+
         if not isinstance(d_q2bin, dict):
             d_new[cut] = d_q2bin
             continue
