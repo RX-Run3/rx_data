@@ -36,7 +36,7 @@ rule database_making:
 
         pixi run --as-is rxdata make-database \
                 -c {wildcards.component} -t {wildcards.trigger} \
-                -d cmb -d prc -d q2 -d mass -d jpsi_misid -d pid_l\
+                -d cmb -d prc -d q2 -d mass -d jpsi_misid -d pid_l -d pid_k\
                 -d cascade -d hop
 
         echo "Databases made with status: $?"
