@@ -200,25 +200,19 @@ def _load_selection_config() -> dict[str,dict[str,str | dict[str,str]]]:
 
     return d_sel
 #-----------------------
-def _preprocess_cut(cut : Cuts, expr : str) -> str:
+def _preprocess_qsq_cut(expr : str) -> str:
     '''
     Parameters
     --------------
-    cut: Type of cut to preprocess, e.g. q2
     expr: String with the cut expression, e.g. q2 > 100000
 
     Returns
     --------------
     Updated cut expression
     '''
-    if cut != Cuts.q2:
-        return expr
-
     qsq_kind = _OVERRIDING_QSQ.get()
     if qsq_kind is None:
         return expr
-
-    log.info(f'Updating {cut}')
 
     log.info(f'Default: {expr}')
     expr = qsq_kind.update_expression(expr = expr)
@@ -280,7 +274,8 @@ def _get_selection(
         cut_val = d_q2bin[q2_bin]
         log.debug(f'Overriding {cut_name} for {q2_bin}')
 
-        cut_val    = _preprocess_cut(cut, cut_val)
+        if cut == Cuts.q2:
+            cut_val = _preprocess_qsq_cut(cut_val)
         d_new[cut] = cut_val
 
     return d_new
