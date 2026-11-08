@@ -77,12 +77,16 @@ def _get_samples(version : str, level : LogLevels) -> Samples:
 # ----------------------
 @app.command()
 def make_database(
-    component : Component = typer.Option(..., '--component', '-c', help = 'Sample to make database for'),
-    trigger   : Trigger   = typer.Option(..., '--trigger'  , '-t', help = 'HLT2 trigger'),
-    dropped   : list[Cuts]= typer.Option(..., '--dropped'  , '-d', help = 'List of cuts to drop with respect to full selection')) -> None:
+    log_level : LogLevels = typer.Option(LogLevels.info, '--log_level', '-l', help = 'Logging level'),
+    component : Component = typer.Option(...           , '--component', '-c', help = 'Sample to make database for'),
+    trigger   : Trigger   = typer.Option(...           , '--trigger'  , '-t', help = 'HLT2 trigger'),
+    dropped   : list[Cuts]= typer.Option(...           , '--dropped'  , '-d', help = 'List of cuts to drop with respect to full selection')) -> None:
     '''
     Used to slim ROOT files
     '''
+    LogStore.set_level('rx_data:sample_emulator', log_level)
+    LogStore.set_level('rx_data:db_maker'       , log_level)
+
     cfg = DBMakerConf(
         component    = component,
         trigger      = trigger,
