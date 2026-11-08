@@ -5,20 +5,12 @@ import json
 
 from ROOT        import RDF
 from dmu         import LogStore
-from typing      import Any, Final
+from typing      import Any
 from dmu.generic import utilities as gut
 from pydantic    import BaseModel, RootModel
 from rx_common   import Block, Component
 
 log=LogStore.add_logger('rx_data:sample_emulator')
-
-_MASSES : Final[dict[int,float]] = {
-    11 : 0.51099895,     # Electron mass in MeV
-    13 : 105.6583755,    # Muon mass in MeV
-    321: 493.677,        # Charged Kaon mass in MeV
-    211: 139.57039,      # Charged Pion mass in MeV
-}
-'''Dictionary mapping PDG ID with particle mass in MeV'''
 # ----------------------
 class SamplesConf(RootModel[dict[Component,float]], frozen=True, strict=True):
     '''
@@ -108,13 +100,6 @@ class EmulationConf(BaseModel, frozen=True, extra='forbid', strict=True):
     redefine : dict[str  ,   str] = dict()
     '''Dictionary used to update candidate information, e.g. B -> B + 30
     meant to change mass hypotheses of particles or mother IDs'''
-
-    trk_swap : dict[str  ,   str] = dict()
-    '''Dictionary mapping particle prefixes, e.g. L1 -> H
-    meant to be used to swap values of columns'''
-
-    masses   : dict[str, dict[str,int]] = dict()
-    '''Dictionary describing how to rebuild mass columns'''
     # --------------------------------------
     def model_post_init(self, context : Any) -> None:
         '''
