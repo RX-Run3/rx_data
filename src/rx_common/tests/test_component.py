@@ -15,15 +15,6 @@ _COMPONENTS_WITH_DECAYS : list[Component] = [
     Component.bpkpjpsiee,
     Component.bpkpjpsimm]
 # -------------------------------------------
-@pytest.mark.parametrize('comp', Component)
-def test_track_swaps(comp : Component):
-    if not comp.has_tracks_swapped:
-        with pytest.raises(ValueError):
-            _ = comp.track_swaps
-        return
-
-    assert comp.track_swaps
-# -------------------------------------------
 def test_component():
     '''
     Test Enum representing fit component

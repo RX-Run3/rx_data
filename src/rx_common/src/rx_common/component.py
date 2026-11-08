@@ -145,43 +145,6 @@ class Component(StrEnum):
     bsphigamma     = auto()
     # --------------------------------------------
     @property
-    def track_swaps(self) -> dict[str,str]:
-        '''
-        Dictionary matching particle names associated to
-        swapped tracks, e.g {L1: H}. If sample is not swapped, will raise
-        '''
-        if not self.has_tracks_swapped:
-            raise ValueError(f'Sample {self} has no track swapping')
-
-        match self:
-            case Component.bpkpjpsiee_kee_eke         | Component.bpkpjpsimm_kmm_mkm:
-                return {'H'  : 'L1'}
-            case Component.bdkstkpijpsiee_kpiee_pikee | Component.bdkstkpijpsimm_kpimm_pikmm:
-                return {'H1' : 'H2'}
-            case Component.bdkstkpijpsiee_kpiee_epiek | Component.bdkstkpijpsimm_kpimm_mpimk:
-                return {'H1' : 'L1'}
-            case Component.bdkstkpijpsiee_kpiee_kepie | Component.bdkstkpijpsimm_kpimm_kmpim:
-                return {'H2' : 'L2'}
-            case _:
-                raise ValueError(f'Sample {self} has tracks swapped, but no tracks found')
-    # --------------------------------------------
-    @property
-    def has_tracks_swapped(self) -> bool:
-        '''
-        True if sample hold candidates built from
-        misidentified tracks
-        '''
-        def _is_track_swapped(sample : Component) -> bool:
-            if not sample.is_mc:
-                return False
-
-            return '_' in sample.name
-
-        samples = {sample for sample in Component if _is_track_swapped(sample) }
-
-        return self in samples
-    # --------------------------------------------
-    @property
     def metadata(self) -> dict[str,str]:
         '''
         Dictionary with basic information on component:
