@@ -152,7 +152,6 @@ def selection(
 
     d_tmp = _get_selection(
         trig   = trigger,
-        comp   = process,
         q2_bin = q2bin)
     d_cut.update(d_tmp)
 
@@ -200,6 +199,12 @@ def _load_selection_config() -> dict[str,dict[str,str | dict[str,str]]]:
 
     return d_sel
 #-----------------------
+def _preprocess_cut(cut : Cuts, cut_val : str) -> str:
+    if cut == Cuts.q2:
+        cut_val = _preprocess_qsq_cut(cut_val)
+
+    return cut_val
+#-----------------------
 def _preprocess_qsq_cut(expr : str) -> str:
     '''
     Parameters
@@ -223,13 +228,11 @@ def _preprocess_qsq_cut(expr : str) -> str:
 # TODO: Add types
 def _get_selection(
     trig   : Trigger,
-    comp   : Component,
     q2_bin : Qsq) -> dict[Cuts,str]:
     '''
     Parameters
     -----------------
     trig  : Hlt2 trigger
-    comp  : Sample used
     q2_bin: q2 bin e.g. central, needed to pick for q2 dependent cuts
 
     Returns
@@ -257,12 +260,8 @@ def _get_selection(
     for cut_name, d_q2bin in d_cut.items():
         cut = Cuts(cut_name)
 
-        if cut.is_pid and comp.has_tracks_swapped:
-            log.debug(f'Skipping {cut} for track swapped sample {comp}')
-            continue
-
-        if not isinstance(d_q2bin, dict):
-            d_new[cut] = d_q2bin
+        if isinstance(d_q2bin, str):
+            d_new[cut] = _preprocess_cut(cut=cut, cut_val=d_q2bin)
             continue
 
         if q2_bin not in d_q2bin:
@@ -274,9 +273,7 @@ def _get_selection(
         cut_val = d_q2bin[q2_bin]
         log.debug(f'Overriding {cut_name} for {q2_bin}')
 
-        if cut == Cuts.q2:
-            cut_val = _preprocess_qsq_cut(cut_val)
-        d_new[cut] = cut_val
+        d_new[cut] = _preprocess_cut(cut=cut, cut_val=cut_val)
 
     return d_new
 #-----------------------
