@@ -76,6 +76,7 @@ columns:
   - L1_INMUON
   - L2_INMUON
   - H_TRACK_GhostProb
+  - H_PPHASRICH
   - H_PT
   - H_P
   - th_l1_l2
@@ -86,4 +87,5 @@ columns:
   - H_PIDk
   - mva_cmb
   - mva_prc
+  - H_ProbNNk
   - H_ProbNNp
