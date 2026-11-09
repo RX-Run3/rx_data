@@ -128,7 +128,7 @@ class SignalConstraints:
 
         if name.startswith('fr_'):
             brem = Brem.from_str(value = mtch.group(2))
-            block= Block(value = int(mtch.group(3)))
+            block= Block.from_str(mtch.group(3))
             kind = mtch.group(1)
         else:
             brem = Brem.from_str(value = mtch.group(1))
