@@ -8,14 +8,14 @@ categories:
       pdfs :
         - dscb
         - gauss
+      fix           : {}
+      reparametrize :
+        mu : scale
+        sg : reso
       shared        :
         - mu
         - sg
-      floating      :
-        - mu
-        - sg
-      reparametrize : {}
-      fix           : {}
+      floating      : []
       values        :
         mu:
           - 5279
