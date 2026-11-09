@@ -610,5 +610,9 @@ def test_rare_mm(
             cfg      = cfg,
             trigger  = trigger,
             q2bin    = q2bin)
-        ftr.get_model()
+        pdf = ftr.get_model()
+
+    assert pdf is not None
+
+    print_pdf(pdf = pdf)
 # ---------------------------------------------------
