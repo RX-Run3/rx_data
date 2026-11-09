@@ -19,18 +19,22 @@ zpar = zfit.param.Parameter
 log  = LogStore.add_logger('fitter:test_signal_constraints')
 
 _RK_SHAPE_MM = [
-    'mu_bpkpmm_brem_xx0_b4_rk_mm_scale_flt',
-    'sg_bpkpmm_brem_xx0_b4_rk_mm_reso_flt',
-    # --------
+    'mu_bpkpmm_brem_xx0_b2_rk_mm_scale_flt',
+    'mu_bpkpmm_brem_xx0_b3_rk_mm_scale_flt',
     'mu_bpkpmm_brem_xx0_b23_rk_mm_scale_flt',
+    # --------
+    'sg_bpkpmm_brem_xx0_b2_rk_mm_reso_flt',
+    'sg_bpkpmm_brem_xx0_b3_rk_mm_reso_flt',
     'sg_bpkpmm_brem_xx0_b23_rk_mm_reso_flt',
 ]
 
 _RKST_SHAPE_MM = [
-    'mu_bdkstkpimm_brem_xx0_b4_rkst_mm_scale_flt',
-    'sg_bdkstkpimm_brem_xx0_b4_rkst_mm_reso_flt',
-    # --------
+    'mu_bdkstkpimm_brem_xx0_b2_rkst_mm_scale_flt',
+    'mu_bdkstkpimm_brem_xx0_b3_rkst_mm_scale_flt',
     'mu_bdkstkpimm_brem_xx0_b23_rkst_mm_scale_flt',
+    # --------
+    'sg_bdkstkpimm_brem_xx0_b2_rkst_mm_reso_flt',
+    'sg_bdkstkpimm_brem_xx0_b3_rkst_mm_reso_flt',
     'sg_bdkstkpimm_brem_xx0_b23_rkst_mm_reso_flt',
 ]
 
