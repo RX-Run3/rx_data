@@ -38,8 +38,8 @@ class DBMakerConf(BaseModel, Serializable, frozen = True):
     '''Number of cores'''
     dropped_cuts : list[Cuts]
     '''List of cuts to drop with respect to full selection'''
-    max_size     : int
-    '''Used to limit number of entries in test runs'''
+    max_size     : int            = -1
+    '''Used to limit number of entries in test runs, by default, process all'''
     cuts         : dict[Cuts,str] = dict()
     '''Dictionary of cuts'''
     # ------------------------
