@@ -26,6 +26,17 @@ class SimFit(StrEnum):
     Enum meant to describe type of
     simultaneous fit
     '''
+    bp_mm = auto()
+    '''Represents fit to B+ -> K+ mumu, not simultaneous'''
+    bp_ee = auto()
+    '''Represents fit to B+ -> K+ ee, not simultaneous'''
+
+    bd_mm = auto()
+    '''Represents fit to Bd -> K* mumu, not simultaneous'''
+
+    bd_ee = auto()
+    '''Represents fit to Bd -> K* ee, not simultaneous'''
+
     rk = auto()
     '''
     Simultaneous between rare electron and muon for rk
@@ -52,6 +63,10 @@ class SimFit(StrEnum):
         rk_mm   = Region(brem = Brem.zero , trigger = Trigger.rk_mm_os)
 
         match self:
+            case SimFit.bp_mm | SimFit.bd_mm:
+                return [rk_mm, rkst_mm]
+            case SimFit.bp_ee | SimFit.bd_ee:
+                return [rk_ee, rkst_ee]
             case SimFit.rk:
                 return [rk_ee, rk_mm]
             case SimFit.rkst:
