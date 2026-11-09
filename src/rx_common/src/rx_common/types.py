@@ -141,6 +141,33 @@ class Block(BaseModel):
 
         return cls(value=val)
     # ----------------
+    @property
+    def is_composite(self) -> bool:
+        '''
+        True if it is a simple block, e.g. 1
+        False if it is a sum of blocks, e.g. 34
+        '''
+        if isinstance(self.value, int):
+            return False
+
+        if isinstance(self.value, set) and len(self.value) == 1:
+            return False
+
+        return True
+    # ----------------
+    @property
+    def sub_blocks(self) -> list['Block']:
+        '''
+        Basic blocks, e.g. [1, 2, 3...]
+        '''
+        if isinstance(self.value, int):
+            return [self]
+
+        if not isinstance(self.value, set):
+            raise ValueError(f'Block data is expected to be a set: {self}')
+
+        return [ Block(value = value) for value in self.value ]
+    # ----------------
     def __add__(self, other : 'Block') -> 'Block':
         '''
         Addition of block types. If blocks are the same

@@ -8,6 +8,26 @@ from dmu       import LogStore
 
 log=LogStore.add_logger('rx_common::test_block')
 # -------------------------------------------
+def test_block_is_composite():
+    '''
+    Test block is_composite
+    '''
+    b1  = Block(value = 1)
+    b12 = Block(value = {1, 2})
+
+    assert not b1.is_composite
+    assert b12.is_composite
+# -------------------------------------------
+def test_block_sub_blocks():
+    '''
+    Test block sub_blocks property
+    '''
+    b1  = Block(value = 1)
+    b12 = Block(value = {1, 2})
+
+    assert b1.sub_blocks == [b1]
+    assert set(b12.sub_blocks) == {b1, Block(value = 2)}
+# -------------------------------------------
 def test_block():
     '''
     Test block class
