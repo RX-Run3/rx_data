@@ -8,6 +8,7 @@ from dmu.stats       import FitResult
 from dmu.stats       import zfit
 from dmu.stats       import ConstraintAdder, ConstraintMode
 from dmu.stats       import utilities as sut
+from dmu.stats       import check_for_gpu
 from dmu.generic     import utilities as gut
 from rx_common       import Qsq, Region, Component
 from zfit.exception  import ParamNameNotUniqueError
@@ -83,6 +84,8 @@ class DataFitterSim(BaseFitter):
         ---------------
         Fit result
         '''
+        check_for_gpu()
+
         minimizer     = zfit.minimize.Minuit()
         res           = minimizer.minimize(loss = nll)
         res.hesse(name='minuit_hesse', method = 'minuit_hesse')

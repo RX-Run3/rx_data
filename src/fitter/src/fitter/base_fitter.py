@@ -9,6 +9,7 @@ from dmu         import LogStore
 from dmu.stats   import FitConf, FitResult, Fitter, ZFitPlotterConf
 from dmu.stats   import utilities  as sut
 from dmu.stats   import zfit
+from dmu.stats   import check_for_gpu
 from zfit.data   import Data       as zdata
 from zfit.pdf    import BasePDF    as zpdf
 from rx_common   import Component, Qsq, Cuts
@@ -49,6 +50,8 @@ class BaseFitter:
         --------------------
         Fit result object
         '''
+        check_for_gpu()
+
         ftr = Fitter(pdf=model, data=data)
         res = ftr.fit(cfg=cfg)
 
