@@ -33,9 +33,9 @@ categories:
           -   1
           - -10
           -  30
-  brem_xx0_b32:
+  brem_xx0_b23:
     selection :
-      block : block == 3 || block == 2
+      block : block == 2 || block == 3
     model: *model
   brem_xx0_b15678:
     selection :
