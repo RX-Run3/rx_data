@@ -18,6 +18,16 @@ zpdf = zfit.pdf.BasePDF
 zpar = zfit.param.Parameter
 log  = LogStore.add_logger('fitter:test_signal_constraints')
 
+_RK_SHAPE_MM = [
+    'mu_bpkpmm_brem_xx0_b4_rk_mm_scale_flt',
+    'sg_bpkpmm_brem_xx0_b4_rk_mm_reso_flt',
+]
+
+_RKST_SHAPE_MM = [
+    'mu_bdkstkpimm_brem_xx0_b4_rkst_mm_scale_flt',
+    'sg_bdkstkpimm_brem_xx0_b4_rkst_mm_reso_flt',
+]
+
 _RK_SHAPE_EE = [
     'mu_bpkpee_brem_xx1_b1_rk_ee_scale_flt',
     'mu_bpkpee_brem_xx2_b1_rk_ee_scale_flt',
@@ -263,6 +273,31 @@ def test_rk_shape_ee(shapes : list[str]):
     calc  = SignalConstraints(
         nll     = nll,
         channel = Channel.ee,
+        comp    = comp)
+    constraints = calc.get_constraints()
+
+    ncons = len(constraints)
+
+    log.info(f'Found {ncons} constraints')
+
+    assert ncons == len(shapes)
+# ----------------------
+@pytest.mark.parametrize('shapes', [_RK_SHAPE_MM, _RKST_SHAPE_MM])
+def test_rk_shape_mm(shapes : list[str]):
+    '''
+    Test constraints to mu and sg
+    '''
+    if  shapes == _RK_SHAPE_MM:
+        comp = Component.bpkpmm
+    elif shapes == _RKST_SHAPE_MM:
+        comp = Component.bdkstkpimm
+    else:
+        raise ValueError(f'Invalid shapes: {shapes}')
+
+    nll   = ParsHolder(pars = shapes)
+    calc  = SignalConstraints(
+        nll     = nll,
+        channel = Channel.mm,
         comp    = comp)
     constraints = calc.get_constraints()
 
