@@ -88,6 +88,9 @@ def make_database(
     LogStore.set_level('rx_data:sample_emulator', log_level)
     LogStore.set_level('rx_data:db_maker'       , log_level)
 
+    if max_size > 0:
+        log.warning(f'Limiting output to {max_size} entries')
+
     cfg = DBMakerConf(
         component    = component,
         trigger      = trigger,
