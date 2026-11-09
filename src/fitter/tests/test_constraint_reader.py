@@ -12,6 +12,7 @@ from dmu            import LogStore
 from dmu.stats      import zfit
 from dmu.generic    import UnpackerModel, utilities           as gut
 from rx_common      import Brem, Channel, Project, Qsq, Component
+from rx_common      import Trigger
 from fitter         import RXFitConfig
 from zfit.loss      import ExtendedUnbinnedNLL
 from zfit.param     import Parameter           as zpar
@@ -142,6 +143,25 @@ class Parameters:
             l_par_name = ['yld_bpkpipi']
         elif comp == Component.bpkkk:
             l_par_name = ['yld_bpkkk']
+        elif comp == Component.bpkpmm and shape:
+            l_par_name = [
+                f'mu_{comp}_brem_xx0_b1_rk_mm_scale_flt',
+                f'sg_{comp}_brem_xx0_b1_rk_mm_reso_flt',
+                f'mu_{comp}_brem_xx0_b23_rk_mm_scale_flt',
+                f'sg_{comp}_brem_xx0_b23_rk_mm_reso_flt',
+                # ------
+                # Block fraction
+                # ------
+                f'fr_{comp}_block_brem_xx0_b1_flt',
+                f'fr_{comp}_block_brem_xx0_b2_flt',
+                f'fr_{comp}_block_brem_xx0_b3_flt',
+                f'fr_{comp}_block_brem_xx0_b4_flt',
+                f'fr_{comp}_block_brem_xx0_b5_flt',
+                f'fr_{comp}_block_brem_xx0_b6_flt',
+                f'fr_{comp}_block_brem_xx0_b7_flt',
+                f'fr_{comp}_block_brem_xx0_b8_flt',
+                f'fr_{comp}_block_brem_xx0_b23_flt',
+                f'fr_{comp}_block_brem_xx0_b34_flt']
         elif comp == Component.bpkpee:
             l_par_name = [
                 f'mu_{comp}_brem_xx1_b1_rk_ee_scale_flt',
@@ -170,6 +190,25 @@ class Parameters:
                 f'fr_{comp}_block_brem_x12_b6_flt',
                 f'fr_{comp}_block_brem_x12_b7_flt',
                 f'fr_{comp}_block_brem_x12_b8_flt']
+        elif comp == Component.bdkstkpimm and shape:
+            l_par_name = [
+                f'mu_{comp}_brem_xx0_b1_rkst_mm_scale_flt',
+                f'sg_{comp}_brem_xx0_b1_rkst_mm_reso_flt',
+                f'mu_{comp}_brem_xx0_b23_rkst_mm_scale_flt',
+                f'sg_{comp}_brem_xx0_b23_rkst_mm_reso_flt',
+                # ------
+                # Block fraction
+                # ------
+                f'fr_{comp}_block_brem_xx0_b1_flt',
+                f'fr_{comp}_block_brem_xx0_b2_flt',
+                f'fr_{comp}_block_brem_xx0_b3_flt',
+                f'fr_{comp}_block_brem_xx0_b4_flt',
+                f'fr_{comp}_block_brem_xx0_b5_flt',
+                f'fr_{comp}_block_brem_xx0_b6_flt',
+                f'fr_{comp}_block_brem_xx0_b7_flt',
+                f'fr_{comp}_block_brem_xx0_b8_flt',
+                f'fr_{comp}_block_brem_xx0_b23_flt',
+                f'fr_{comp}_block_brem_xx0_b34_flt']
         elif comp == Component.bdkstkpiee and shape:
             l_par_name = [
                 f'mu_{comp}_brem_xx1_b1_rkst_ee_scale_flt',
@@ -264,6 +303,7 @@ def _get_fit_config(
 # --------------------------------------------------------------
 def _get_component_config(
     comp  : Component,
+    trig  : Trigger,
     path  : Path,
     q2bin : Qsq) -> RXFitConfig:
     '''
@@ -272,8 +312,8 @@ def _get_component_config(
     '''
     cfg = _get_fit_config(
         out_dir = path,
-        project = Project.rk,
-        channel = Channel.ee,
+        project = trig.project,
+        channel = trig.channel,
         q2bin   = q2bin)
 
     components = cfg.mod_cfg.components[q2bin]
@@ -375,12 +415,48 @@ def test_signal_electron(
     Check signal shape constraints
     '''
     brem = Brem.brx12
+    trig = {Component.bpkpee : Trigger.rk_ee_os, Component.bdkstkpiee : Trigger.rkst_ee_os}[comp]
 
     obs  = zfit.Space('dummy', limits=(4500, 6000))
     nll  = Parameters(comp = comp, obs = obs, shape = True)
     nll  = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
     cfg  = _get_component_config(
         comp = comp,
+        trig = trig,
+        path = tmp_path,
+        q2bin= q2bin)
+
+    with Cache.cache_root(path = tmp_path):
+        obj        = ConstraintReader(
+            brem   = brem,
+            signal = comp,
+            nll    = nll,
+            cfg    = cfg)
+        constraints= obj.get_constraints()
+
+    print(constraints)
+
+    pars = nll.get_params()
+    assert len(constraints.root) == len(pars)
+# --------------------------------------------------------------
+@pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
+@pytest.mark.parametrize('comp' , [Component.bpkpmm, Component.bdkstkpimm])
+def test_signal_muon(
+    tmp_path : Path,
+    comp     : Component,
+    q2bin    : Qsq):
+    '''
+    Check signal shape constraints
+    '''
+    brem = Brem.zero
+    trig = {Component.bpkpmm : Trigger.rk_mm_os, Component.bdkstkpimm : Trigger.rkst_mm_os}[comp]
+
+    obs  = zfit.Space('dummy', limits=(4500, 6000))
+    nll  = Parameters(comp = comp, obs = obs, shape = True)
+    nll  = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
+    cfg  = _get_component_config(
+        comp = comp,
+        trig = trig,
         path = tmp_path,
         q2bin= q2bin)
 
