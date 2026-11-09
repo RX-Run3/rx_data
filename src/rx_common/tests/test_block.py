@@ -57,3 +57,16 @@ def test_hash(value : int | set[int]):
 
     hash(block)
 # -------------------------------------------
+def test_block_lt():
+    '''
+    Test block less than comparison
+    '''
+    b1   = Block(value = 1)
+    b2   = Block(value = 2)
+    b12  = Block(value = {1, 2})
+    ball = Block(value = -1)
+
+    assert     b1 < b2
+    assert not b2 < b1
+    assert    ball< b12
+# -------------------------------------------

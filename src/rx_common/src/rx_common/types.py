@@ -175,10 +175,10 @@ class Block(BaseModel):
         return ''.join(values)
     # ----------------
     def __lt__(self, other : 'Block') -> bool:
-        if isinstance(self.value, int) and isinstance(other.value, int):
-            return self.value < other.value
+        this_value  =  self.value if isinstance( self.value, int) else  self.to_int()
+        other_value = other.value if isinstance(other.value, int) else other.to_int()
 
-        raise ValueError(f'Cannot order composite blocks: {self} and {other}')
+        return this_value < other_value
     # ----------------
     def __hash__(self):
         if isinstance(self.value, int):
