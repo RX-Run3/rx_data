@@ -18,11 +18,18 @@ zpdf = zfit.pdf.BasePDF
 zpar = zfit.param.Parameter
 log  = LogStore.add_logger('fitter:test_signal_constraints')
 
-_RK_SHAPE = [
+_RK_SHAPE_EE = [
     'mu_bpkpee_brem_xx1_b1_rk_ee_scale_flt',
-    'sg_bpkpee_brem_xx1_b1_rk_ee_reso_flt',
     'mu_bpkpee_brem_xx2_b1_rk_ee_scale_flt',
+    'sg_bpkpee_brem_xx1_b1_rk_ee_reso_flt',
     'sg_bpkpee_brem_xx2_b1_rk_ee_reso_flt',
+]
+
+_RKST_SHAPE_EE = [
+    'mu_bdkstkpiee_brem_xx1_b1_rkst_ee_scale_flt',
+    'mu_bdkstkpiee_brem_xx2_b1_rkst_ee_scale_flt',
+    'sg_bdkstkpiee_brem_xx1_b1_rkst_ee_reso_flt',
+    'sg_bdkstkpiee_brem_xx2_b1_rkst_ee_reso_flt',
 ]
 
 _FRACTIONS_BREM_1 = [
@@ -240,16 +247,23 @@ def test_fractions(component :  Component):
 
     assert len(constraints) == len(fractions)
 # ----------------------
-@pytest.mark.parametrize('shapes', [_RK_SHAPE])
-def test_rk_shape(shapes : list[str]):
+@pytest.mark.parametrize('shapes', [_RK_SHAPE_EE, _RKST_SHAPE_EE])
+def test_rk_shape_ee(shapes : list[str]):
     '''
     Test constraints to mu and sg
     '''
+    if  shapes == _RK_SHAPE_EE:
+        comp = Component.bpkpee
+    elif shapes == _RKST_SHAPE_EE:
+        comp = Component.bdkstkpiee
+    else:
+        raise ValueError(f'Invalid shapes: {shapes}')
+
     nll   = ParsHolder(pars = shapes)
     calc  = SignalConstraints(
         nll     = nll,
         channel = Channel.ee,
-        comp    = Component.bpkpee)
+        comp    = comp)
     constraints = calc.get_constraints()
 
     ncons = len(constraints)
