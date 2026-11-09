@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 check()
 {
     local project_dir=$1
