@@ -207,11 +207,11 @@ class DataPreprocessor(Cache):
         mkr = DBMaker(cfg = cfg)
         rdf = mkr.run(mode = Mode.read)
 
-        if not hasattr(rdf, 'd_sel'):
+        if not hasattr(rdf, 'sel'):
             raise ValueError('DataFrame has no selection attached')
 
         remaining_selection : Selection = dict()
-        d_sel : Selection = rdf.d_sel
+        d_sel : Selection = rdf.sel
 
         ninit = len(selection)
         for cut, needed in selection.items():
