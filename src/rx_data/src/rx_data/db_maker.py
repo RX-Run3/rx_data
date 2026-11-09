@@ -170,8 +170,8 @@ class DBMaker:
         json_path = self.__out_path.parent / 'cuts.json'
         d_sel     = gut.load_json(path = json_path)
 
-        setattr(rdf, 'd_sel', d_sel   ) # noqa: B010
-        setattr(rdf, 'uid'  , self.uid) # noqa: B010
+        setattr(rdf, 'sel', d_sel   ) # noqa: B010
+        setattr(rdf, 'uid', self.uid) # noqa: B010
 
         return rdf
     # -----------------------------
