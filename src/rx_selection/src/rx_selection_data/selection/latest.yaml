@@ -110,7 +110,7 @@ rkst: &rkst
       <<: *q2_common
     ghost     : H1_TRACK_GhostProb < 0.3 && H2_TRACK_GhostProb < 0.3 && L1_TRACK_GhostProb < 0.3 && L2_TRACK_GhostProb< 0.3
     hlt1      : (B_Hlt1TrackMVADecision_TOS == 1) || (B_Hlt1TwoTrackMVADecision_TOS == 1)
-    hlt2      : (1)
+    hlt2      : 'true'
     kinem_lep : L1_PT > 250 && L2_PT > 250 && L1_P > 3000 && L2_P > 3000
     kinem_had : H1_PT > 300 && H2_PT > 300 && H1_P > 2500 && H2_P > 2500
     kst_mass  : TMath::Abs(Kst_M - 892) < 100
@@ -138,7 +138,7 @@ rkst: &rkst
       <<: *q2_common
     ghost     : H1_TRACK_GhostProb < 0.3 && H2_TRACK_GhostProb < 0.3 && L1_TRACK_GhostProb < 0.3 && L2_TRACK_GhostProb< 0.3
     hlt1      : (B_Hlt1TrackMVADecision_TOS == 1) || (B_Hlt1TwoTrackMVADecision_TOS == 1)
-    hlt2      : (1)
+    hlt2      : 'true'
     kinem_lep : L1_PT > 250 && L2_PT > 250 && L1_P > 3000 && L2_P > 3000
     kinem_had : H1_PT > 300 && H2_PT > 300 && H1_P > 2500 && H2_P > 2500
     kst_mass  : TMath::Abs(Kst_M - 892) < 100
@@ -167,7 +167,7 @@ rk: &rk
       <<: *q2_common
     ghost     : H_TRACK_GhostProb<0.3 && L1_TRACK_GhostProb <0.3 && L2_TRACK_GhostProb<0.3
     hlt1      : (B_Hlt1TrackMVADecision_TOS == 1) || (B_Hlt1TwoTrackMVADecision_TOS == 1)
-    hlt2      : (1)
+    hlt2      : 'true'
     kinem_lep : L1_PT > 250 && L2_PT > 250 && L1_P > 3000 && L2_P > 3000
     kinem_had : H_PT > 300 && H_P > 2500
     clones    : (th_l1_l2 > 5e-4) && (th_l1_kp > 5e-4) && (th_l2_kp > 5e-4)
@@ -193,7 +193,7 @@ rk: &rk
       <<: *q2_common
     ghost     : H_TRACK_GhostProb < 0.3 && L1_TRACK_GhostProb < 0.3 && L2_TRACK_GhostProb< 0.3
     hlt1      : (B_Hlt1TrackMVADecision_TOS == 1) || (B_Hlt1TwoTrackMVADecision_TOS == 1)
-    hlt2      : (1)
+    hlt2      : 'true'
     kinem_lep : L1_PT > 250 && L2_PT > 250 && L1_P > 3000 && L2_P > 3000
     kinem_had : H_PT > 300 && H_P > 2500
     clones    : (th_l1_l2 > 5e-4) && (th_l1_kp > 5e-4) && (th_l2_kp > 5e-4)
