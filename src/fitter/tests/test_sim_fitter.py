@@ -580,22 +580,23 @@ def test_reso_rkst_ee(
             q2bin    = q2bin)
         ftr.get_model()
 # ---------------------------------------------------
-@pytest.mark.integration
-@pytest.mark.parametrize('component', [Component.bdkstkpimm])
+@pytest.mark.parametrize('component', [Component.bdkstkpimm, Component.bpkpmm])
 @pytest.mark.parametrize('q2bin'    , Qsq.rare)
-def test_rare_rkst_mm(
+def test_rare_mm(
     component : Component,
     q2bin     : Qsq,
     tmp_path  : Path):
     '''
     Test resonant jpsi and psi2S in rkst muon channel
     '''
+    dirname = {Component.bpkpmm :             'rk', Component.bdkstkpimm :             'rkst'}[component]
+    trigger = {Component.bpkpmm : Trigger.rk_mm_os, Component.bdkstkpimm : Trigger.rkst_mm_os}[component]
+
     cfg_obs   = ObservableConf(
         mass  = Mass.bd,
         range = (5100, 5500))
 
-    data = gut.load_data(package='fitter_data', fpath=f'rare/rkst/mm/{component}.yaml')
-    data['categories']['brem_xx0']['model']['pdfs'] = ['gauss']
+    data = gut.load_data(package='fitter_data', fpath=f'rare/{dirname}/mm/{component}.yaml')
     cfg  = ParametricConf(**data)
     cfg  = cfg.model_copy(update = {'cfg_obs' : cfg_obs})
 
@@ -607,7 +608,7 @@ def test_rare_rkst_mm(
             name     = 'main',
             component= cfg.component,
             cfg      = cfg,
-            trigger  = Trigger.rkst_mm_os,
+            trigger  = trigger,
             q2bin    = q2bin)
         ftr.get_model()
 # ---------------------------------------------------
