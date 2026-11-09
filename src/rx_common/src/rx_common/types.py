@@ -181,7 +181,14 @@ class Block(BaseModel):
         raise ValueError(f'Cannot order composite blocks: {self} and {other}')
     # ----------------
     def __hash__(self):
-        return hash(self.value)
+        if isinstance(self.value, int):
+            return hash(self.value)
+
+        value = [ str(val) for val in self.value ]
+        value = sorted(value)
+        string= ''.join(value)
+
+        return hash(string)
 # ---------------------------------------
 class Correction(StrEnum):
     r'''
