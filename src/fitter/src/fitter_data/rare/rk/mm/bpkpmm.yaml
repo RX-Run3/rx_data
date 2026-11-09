@@ -1,8 +1,10 @@
+# -------------------
 component : bpkpmm
 categories:
-  brem_xx0:
-    selection : {}
-    model:
+  brem_xx0_b4:
+    selection :
+      block : block == 4
+    model:   &model
       pdfs :
         - dscb
         - gauss
@@ -31,6 +33,14 @@ categories:
           -   1
           - -10
           -  30
+  brem_xx0_b32:
+    selection :
+      block : block == 3 || block == 2
+    model: *model
+  brem_xx0_b15678:
+    selection :
+      block : block == 1 || block > 4
+    model: *model
 fit:
   strategy:
     ntries : 10
