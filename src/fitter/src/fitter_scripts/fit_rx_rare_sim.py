@@ -221,6 +221,8 @@ def _get_replacements(kind : SimFit, syst : Systematic) -> dict[str,str]:
                 'rk/rare_electron.yaml' : 'rk/rare_electron_simultaneous.yaml', # nkstee -> nkee * eff_ratio
                 'rk/rare_muon.yaml'     : 'rk/rare_muon_simultaneous.yaml',     # nmumu  -> rk   * nee / ck
                 'rkst/rare_muon.yaml'   : 'rkst/rare_muon_simultaneous.yaml'}   # nmumu  -> rkst * nee / ck*
+        case _:
+            repl = dict() # Not a simultanous fit
 
     msys = ModelSystematics.load()
     replacements = msys.get(syst = syst)
