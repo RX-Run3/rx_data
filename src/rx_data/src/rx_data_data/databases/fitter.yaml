@@ -38,5 +38,52 @@ columns:
   # ------------------------
   - block
   - nbrem
+  # ------------------------
+  # Track and Kaon/Pion properties
+  # ------------------------
+  - H1_TRACK_GhostProb
+  - H2_TRACK_GhostProb
+  - L1_TRACK_GhostProb
+  - L2_TRACK_GhostProb
+  - B_Hlt1TrackMVADecision_TOS
+  - B_Hlt1TwoTrackMVADecision_TOS
+  - L1_PT
+  - L2_PT
+  - L1_P
+  - L2_P
+  - H1_PT
+  - H2_PT
+  - H1_P
+  - H2_P
+  - Kst_M
+  - Kst_PT
+  - H1_IPCHI2_OWNPV
+  - H2_IPCHI2_OWNPV
+  - L1_IPCHI2_OWNPV
+  - L2_IPCHI2_OWNPV
+  - H1_ProbNNk
+  - H1_PROBNN_P
+  - H1_PID_K
+  - H2_PROBNN_PI
+  - H2_PROBNN_P
+  - H2_ProbNNk
+  - L1_PPHASRICH
+  - L2_PPHASRICH
+  - H1_PPHASRICH
+  - H2_PPHASRICH
+  - L1_INECAL
+  - L2_INECAL
+  - L1_INMUON
+  - L2_INMUON
+  - H_TRACK_GhostProb
+  - H_PT
+  - H_P
+  - th_l1_l2
+  - th_l1_kp
+  - th_l2_kp
+  - H_IPCHI2_OWNPV
+  - H_PIDe
+  - H_PIDk
   - mva_cmb
   - mva_prc
+  - H_ProbNNp
