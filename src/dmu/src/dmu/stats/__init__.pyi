@@ -45,6 +45,7 @@ from .configs             import SimpleYieldConf
 from .configs             import CompositeYieldConf
 from .configs             import YieldsConf
 from .exceptions          import MinimizerFailError, ErrorFailError
+from .gpu                 import check_for_gpu
 
 from .regular_interpolator import RegularInterpolator
 
@@ -52,6 +53,7 @@ __all__ = [
     # ---------------------
     # Reimports
     # ---------------------
+    'check_for_gpu',
     'tensorflow',
     'tf_config',
     'zfit',
