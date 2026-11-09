@@ -225,7 +225,6 @@ def _preprocess_qsq_cut(expr : str) -> str:
 
     return expr
 #-----------------------
-# TODO: Add types
 def _get_selection(
     trig   : Trigger,
     q2_bin : Qsq) -> dict[Cuts,str]:
@@ -346,8 +345,6 @@ def apply_full_selection(
         except Exception as exc:
             raise ValueError(f'Cannot apply cut \"{cut_name}\" -> \"{cut_value}\"') from exc
 
-    setattr(rdf, 'sel', d_sel) # noqa: B010
-
     if isinstance(out_path, Path):
         save_cutflow(path=out_path, rdf=rdf, cuts=d_sel)
     elif out_path is None:
@@ -356,6 +353,7 @@ def apply_full_selection(
         log.debug('Not saving cutflow, as explicitly requested')
         pass
 
+    setattr(rdf, 'sel', d_sel) # noqa: B010
     if uid is None:
         log.debug('No UID found, not updating it')
         return rdf
@@ -392,6 +390,7 @@ def apply_selection(
     log.info(60 * '-')
     log.info('Applying cuts')
     log.info(60 * '-')
+
     for cut_name, cut_value in cuts.items():
         log.debug(f'{cut_name:<40}{cut_value}')
         rdf = rdf.Filter(cut_value, str(cut_name))
@@ -399,6 +398,7 @@ def apply_selection(
     if out_path:
         save_cutflow(path=out_path, rdf=rdf, cuts=cuts)
 
+    setattr(rdf, 'sel', cuts) # noqa: B010
     if uid is None:
         log.debug('No UID found, not updating it')
         return rdf
@@ -406,7 +406,6 @@ def apply_selection(
     log.info('Attaching updated UID and selection to dataframe')
     uid = hashing.hash_object([uid, cuts])
     setattr(rdf, 'uid',  uid) # noqa: B010
-    setattr(rdf, 'sel', cuts) # noqa: B010
 
     return rdf
 # ----------------------
