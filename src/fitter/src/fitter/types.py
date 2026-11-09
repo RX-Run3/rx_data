@@ -63,10 +63,14 @@ class SimFit(StrEnum):
         rk_mm   = Region(brem = Brem.zero , trigger = Trigger.rk_mm_os)
 
         match self:
-            case SimFit.bp_mm | SimFit.bd_mm:
-                return [rk_mm, rkst_mm]
-            case SimFit.bp_ee | SimFit.bd_ee:
-                return [rk_ee, rkst_ee]
+            case SimFit.bp_mm:
+                return [rk_mm]
+            case SimFit.bd_mm:
+                return [rkst_mm]
+            case SimFit.bp_ee:
+                return [rk_ee]
+            case SimFit.bd_ee:
+                return [rkst_ee]
             case SimFit.rk:
                 return [rk_ee, rk_mm]
             case SimFit.rkst:
