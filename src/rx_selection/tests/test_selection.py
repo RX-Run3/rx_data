@@ -4,13 +4,33 @@ Script with functions needed to test functions in selection.py
 import pytest
 
 from rx_common    import QsqDef
+from ROOT         import RDataFrame
 from pathlib      import Path
 from dmu          import LogStore
+from dmu.generic  import utilities as gut
 from rx_common    import Component, Cuts, Qsq, Trigger
 from rx_selection import selection as sel
 from rx_data      import RDFGetter
 
 log=LogStore.add_logger('rx_selection:test_selection')
+# --------------------------
+def test_save_cutflow(tmp_path : Path):
+    '''
+    Tests save_cutflow function
+    '''
+    rdf  = RDataFrame(10)
+    rdf  = rdf.Define('x', '0')
+    rdf  = rdf.Filter('x == 0', 'my_cut')
+    cuts = {Cuts.q2: 'x == 0'}
+    out_path = tmp_path / 'cutflow_test'
+
+    sel.save_cutflow(path=out_path, rdf=rdf, cuts=cuts)
+
+    assert (out_path / 'cutflow.md').exists()
+    assert (out_path / 'cuts.json').exists()
+
+    loaded_cuts = gut.load_json(out_path / 'cuts.json')
+    assert loaded_cuts == {str(Cuts.q2): 'x == 0'}
 # --------------------------
 @pytest.fixture(scope='session', autouse=True)
 def initialize():

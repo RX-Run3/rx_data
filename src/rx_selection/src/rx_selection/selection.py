@@ -277,7 +277,7 @@ def _get_selection(
 
     return d_new
 #-----------------------
-def _save_cutflow(
+def save_cutflow(
     path : Path,
     rdf  : RDF.RNode,
     cuts : dict[Cuts,str]) -> None:
@@ -346,8 +346,10 @@ def apply_full_selection(
         except Exception as exc:
             raise ValueError(f'Cannot apply cut \"{cut_name}\" -> \"{cut_value}\"') from exc
 
+    setattr(rdf, 'sel', d_sel) # noqa: B010
+
     if isinstance(out_path, Path):
-        _save_cutflow(path=out_path, rdf=rdf, cuts=d_sel)
+        save_cutflow(path=out_path, rdf=rdf, cuts=d_sel)
     elif out_path is None:
         log.warning('Not saving cutflow')
     else:
@@ -361,7 +363,6 @@ def apply_full_selection(
     log.info('Attaching updated UID and selection to dataframe')
     uid = hashing.hash_object([uid, d_sel])
     setattr(rdf, 'uid',   uid) # noqa: B010
-    setattr(rdf, 'sel', d_sel) # noqa: B010
 
     return rdf
 # ----------------------
@@ -396,7 +397,7 @@ def apply_selection(
         rdf = rdf.Filter(cut_value, str(cut_name))
 
     if out_path:
-        _save_cutflow(path=out_path, rdf=rdf, cuts=cuts)
+        save_cutflow(path=out_path, rdf=rdf, cuts=cuts)
 
     if uid is None:
         log.debug('No UID found, not updating it')
