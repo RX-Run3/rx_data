@@ -101,7 +101,11 @@ class Parameters:
     They are needed in tests
     '''
     # ----------------------
-    def __init__(self, comp : Component, obs : zobs) -> None:
+    def __init__(
+        self,
+        comp : Component,
+        obs  : zobs,
+        shape: bool) -> None:
         '''
         Parameters
         -------------
@@ -109,7 +113,7 @@ class Parameters:
         obs : Observable
         '''
         self._obs   = obs
-        self._s_par = self._get_pars(comp = comp)
+        self._s_par = self._get_pars(comp = comp, shape = shape)
     # ----------------------
     @property
     def space(self) -> zobs:
@@ -120,7 +124,7 @@ class Parameters:
         '''
         return self._obs
     # ----------------------
-    def _get_pars(self, comp : Component) -> set[zpar]:
+    def _get_pars(self, comp : Component, shape : bool) -> set[zpar]:
         '''
         Parameters
         -------------
@@ -132,7 +136,7 @@ class Parameters:
         '''
         if   comp in {Component.bppijpsiee, Component.bppijpsimm}:
             l_par_name = f's_{comp}_{Brem.two}'
-        elif comp in {Component.bdkstkpiee}:
+        elif comp in {Component.bdkstkpiee} and not shape:
             l_par_name = [ f's_{comp}_{Brem.two}' for comp in _PRC_COMPONENTS ]
         elif comp == Component.bpkpipi:
             l_par_name = ['yld_bpkpipi']
@@ -144,6 +148,34 @@ class Parameters:
                 f'sg_{comp}_brem_xx1_b1_rk_ee_reso_flt',
                 f'mu_{comp}_brem_xx2_b1_rk_ee_scale_flt',
                 f'sg_{comp}_brem_xx2_b1_rk_ee_reso_flt',
+                # ------
+                # Brem fraction
+                # ------
+                f'fr_{comp}_brem_brem_xx1_b1_reso_flt',
+                f'fr_{comp}_brem_brem_xx1_b2_reso_flt',
+                f'fr_{comp}_brem_brem_xx1_b3_reso_flt',
+                f'fr_{comp}_brem_brem_xx1_b4_reso_flt',
+                f'fr_{comp}_brem_brem_xx1_b5_reso_flt',
+                f'fr_{comp}_brem_brem_xx1_b6_reso_flt',
+                f'fr_{comp}_brem_brem_xx1_b7_reso_flt',
+                f'fr_{comp}_brem_brem_xx1_b8_reso_flt',
+                # ------
+                # Block fraction
+                # ------
+                f'fr_{comp}_block_brem_x12_b1_flt',
+                f'fr_{comp}_block_brem_x12_b2_flt',
+                f'fr_{comp}_block_brem_x12_b3_flt',
+                f'fr_{comp}_block_brem_x12_b4_flt',
+                f'fr_{comp}_block_brem_x12_b5_flt',
+                f'fr_{comp}_block_brem_x12_b6_flt',
+                f'fr_{comp}_block_brem_x12_b7_flt',
+                f'fr_{comp}_block_brem_x12_b8_flt']
+        elif comp == Component.bdkstkpiee and shape:
+            l_par_name = [
+                f'mu_{comp}_brem_xx1_b1_rkst_ee_scale_flt',
+                f'sg_{comp}_brem_xx1_b1_rkst_ee_reso_flt',
+                f'mu_{comp}_brem_xx2_b1_rkst_ee_scale_flt',
+                f'sg_{comp}_brem_xx2_b1_rkst_ee_reso_flt',
                 # ------
                 # Brem fraction
                 # ------
@@ -269,7 +301,7 @@ def test_rare_hadronic_misid(
 
     brem = Brem.brx12
     obs  = zfit.Space('dummy', limits=(4500, 6000))
-    nll  = Parameters(comp = Component.bpkpipi, obs = obs)
+    nll  = Parameters(comp = Component.bpkpipi, obs = obs, shape = False)
     nll  = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
 
     cfg = _get_fit_config(
@@ -308,7 +340,7 @@ def test_background_fraction(
         get_test_prec_constraints)
 
     obs  = zfit.Space('dummy', limits=(4500, 6000))
-    nll  = Parameters(comp = Component.bdkstkpiee, obs = obs)
+    nll  = Parameters(comp = Component.bdkstkpiee, obs = obs, shape = False)
     nll  = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
     cfg  = _get_fit_config(
         out_dir = tmp_path,
@@ -334,8 +366,8 @@ def test_background_fraction(
     assert len(constraints.root) == len(_PRC_COMPONENTS)
 # --------------------------------------------------------------
 @pytest.mark.parametrize('q2bin', [Qsq.low, Qsq.central, Qsq.high])
-@pytest.mark.parametrize('comp' , [Component.bpkpee])
-def test_signal(
+@pytest.mark.parametrize('comp' , [Component.bpkpee, Component.bdkstkpiee])
+def test_signal_electron(
     tmp_path : Path,
     comp     : Component,
     q2bin    : Qsq):
@@ -345,7 +377,7 @@ def test_signal(
     brem = Brem.brx12
 
     obs  = zfit.Space('dummy', limits=(4500, 6000))
-    nll  = Parameters(comp = comp, obs = obs)
+    nll  = Parameters(comp = comp, obs = obs, shape = True)
     nll  = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
     cfg  = _get_component_config(
         comp = comp,
@@ -389,7 +421,7 @@ def test_combinatorial(
         project = Project.rk,
         channel = Channel.ee)
 
-    nll = Parameters(comp = Component.comb, obs = obs)
+    nll = Parameters(comp = Component.comb, obs = obs, shape = True)
     nll = cast(ExtendedUnbinnedNLL, nll) # Tests will only need get_params
 
     obj         = ConstraintReader(
