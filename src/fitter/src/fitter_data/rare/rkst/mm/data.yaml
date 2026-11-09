@@ -46,7 +46,7 @@ components:
 constraints:
   signal_fraction      : []
   combinatorial : false
-  signal_shape  : false
+  signal_shape  : true
 fit: {}
 plots:
   low     : *plt_cfg

@@ -1,8 +1,9 @@
 component : bdkstkpimm
 categories:
-  brem_xx0:
-    selection : {}
-    model :
+  brem_xx0_b4:
+    selection :
+      block : block == 4
+    model : &model
       pdfs:
         - dscb
         - gauss
@@ -23,6 +24,14 @@ categories:
           - 15
           - 10
           - 20
+  brem_xx0_b23:
+    selection :
+      block : block == 2 || block == 3
+    model: *model
+  brem_xx0_b15678:
+    selection :
+      block : block == 1 || block > 4
+    model: *model
 fit:
   strategy  :
     ntries : 10
