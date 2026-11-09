@@ -3,15 +3,16 @@ Module holding the DBMaker class
 '''
 import os
 
-from functools    import cached_property
-from dmu          import LogStore
-from pydantic     import BaseModel
-from dmu.generic  import Serializable
-from dmu.generic  import Mode
-from dmu.generic  import utilities as gut
-from ROOT         import TFile, RDataFrame, RDF
-from typing       import Final
-from pathlib      import Path
+from functools      import cached_property
+from dmu            import LogStore
+from pydantic       import BaseModel
+from dmu.generic    import Serializable
+from dmu.generic    import Mode
+from dmu.generic    import utilities as gut
+from dmu.rdataframe import AtrMgr
+from ROOT           import TFile, RDataFrame, RDF
+from typing         import Final
+from pathlib        import Path
 
 from rx_data      import RDFGetter
 from rx_common    import Qsq
@@ -117,12 +118,12 @@ class DBMaker:
                 q2bin   = _Q2BIN,
                 trigger = self.__cfg.trigger,
                 process = self.__cfg.component,
-                out_path= self.__cfg.out_dir,
+                out_path= 0,
                 rdf     = rdf)
 
         return rdf
     # -----------------------------
-    def __save(self, rdf : RDF.RNode) -> None:
+    def __save_rdf(self, rdf : RDF.RNode) -> None:
         '''
         Parameters
         --------------
@@ -140,6 +141,22 @@ class DBMaker:
             treename  = _TREE_NAME,
             filename  = str(self.__out_path),
             columnList= columns)
+    # -----------------------------
+    def __save_cutflow(self, rdf : RDF.RNode) -> None:
+        '''
+        Save cutflow and selection
+        '''
+        # NOTE: Cutflow was not saved in order to keep execution lazy
+        # heeds to be saved here
+        if not hasattr(rdf, 'sel'):
+            raise ValueError('Selection not attached to dataframe')
+
+        cuts : dict[Cuts,str] = rdf.sel
+
+        sel.save_cutflow(
+            rdf  = rdf,
+            path = self.__cfg.out_dir,
+            cuts = cuts)
     # -----------------------------
     def __rdf_from_db(self) -> RDF.RNode:
         '''
@@ -187,9 +204,12 @@ class DBMaker:
         max_size = self.__cfg.max_size
         if max_size > 0:
             log.warning(f'Limitting output size to: {max_size}')
+            mgr = AtrMgr(rdf = rdf)
             rdf = rdf.Range(max_size)
+            rdf = mgr.add_atr(rdf = rdf)
 
-        self.__save(rdf = rdf)
+        self.__save_rdf(rdf = rdf)
+        self.__save_cutflow(rdf = rdf)
 
         return rdf
 # ------------------------
