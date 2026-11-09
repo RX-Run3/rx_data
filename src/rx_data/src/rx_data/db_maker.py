@@ -184,6 +184,11 @@ class DBMaker:
         rdf = self.__get_rdf()
         rdf = self.__filter(rdf)
 
+        max_size = self.__cfg.max_size
+        if max_size > 0:
+            log.warning(f'Limitting output size to: {max_size}')
+            rdf = rdf.Range(max_size)
+
         self.__save(rdf = rdf)
 
         return rdf
