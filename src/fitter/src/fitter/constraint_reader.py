@@ -213,7 +213,6 @@ class ConstraintReader:
             channel = self._cfg.mod_cfg.trigger.channel,
             comp    = self._signal,
             nll     = self._nll)
-
         cons = calc.get_constraints()
 
         if self._cfg.mod_cfg.trigger.is_electron and not cons:
