@@ -3,9 +3,11 @@ Module holding SignalConstraints class
 '''
 import re
 
+from gvar          import gvar
 from typing        import Final
 from dmu           import LogStore
 from dmu.stats     import Constraint, Constraint1D, ConstraintType, ParsHolder
+from dmu.generic   import utilities as gut
 from rx_common     import Block, Brem, Channel, Correction, Component
 from zfit.param    import Parameter as zpar
 from rx_q2         import ScaleReader
@@ -67,10 +69,14 @@ class SignalConstraints:
         -------------
         Constraint object
         '''
-        val, err = self._srd.get_scale(
-            corr  = kind,
-            block = block,
-            brem  = brem)
+        if block.is_composite:
+            scales   = [ self._srd.get_scale(corr = kind, block = x, brem = brem) for x in block.sub_blocks ]
+            val, err = self._merge_scales(scales = scales)
+        else:
+            val, err = self._srd.get_scale(
+                corr  = kind,
+                block = block,
+                brem  = brem)
 
         log.debug(f'Constraining: {par.name}')
         log.debug(f'{"Value":<20}{val:20.3f}')
@@ -81,6 +87,24 @@ class SignalConstraints:
             kind = self._constraint_kind,
             mu   = val,
             sg   = err)
+    # ----------------------
+    def _merge_scales(self, scales : list[tuple[float,float]]) -> tuple[float,float]:
+        '''
+        Merge a list of scales using gvar2 arithmetic.
+
+        Parameters
+        -------------
+        scales : List of tuples with mean and standard deviation for each scale
+
+        Returns
+        -------------
+        Tuple with merged mean and standard deviation
+        '''
+        gscales = [ gvar(mu, sg) for mu, sg in scales ]
+        nscales = len(gscales)
+        avg     = gut.add_container(gscales) / nscales
+
+        return avg.mean, avg.sdev
     # ----------------------
     def _get_correction_settings(self, par : zpar) -> tuple[Brem, Block, Correction] | None:
         '''
@@ -108,7 +132,7 @@ class SignalConstraints:
             kind = mtch.group(1)
         else:
             brem = Brem.from_str(value = mtch.group(1))
-            block= Block(value = int(mtch.group(2)))
+            block= Block.from_str(mtch.group(2))
             kind = mtch.group(3)
 
         if   kind == 'scale':
