@@ -30,10 +30,17 @@ class DBMakerConf(BaseModel, Serializable, frozen = True):
     Class meant to configure DBMaker
     '''
     component    : Component
+    '''Sample to make database for'''
     trigger      : Trigger
+    '''HLT2 trigger'''
     ncores       : int
+    '''Number of cores'''
     dropped_cuts : list[Cuts]
+    '''List of cuts to drop with respect to full selection'''
+    max_size     : int
+    '''Used to limit number of entries in test runs'''
     cuts         : dict[Cuts,str] = dict()
+    '''Dictionary of cuts'''
     # ------------------------
     @cached_property
     def columns(self) -> list[str]:

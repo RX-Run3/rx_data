@@ -78,6 +78,7 @@ def _get_samples(version : str, level : LogLevels) -> Samples:
 @app.command()
 def make_database(
     log_level : LogLevels = typer.Option(LogLevels.info, '--log_level', '-l', help = 'Logging level'),
+    max_size  : int       = typer.Option(-1            , '--max_size' , '-m', help = 'Used to limit number of entries in test runs'),
     component : Component = typer.Option(...           , '--component', '-c', help = 'Sample to make database for'),
     trigger   : Trigger   = typer.Option(...           , '--trigger'  , '-t', help = 'HLT2 trigger'),
     dropped   : list[Cuts]= typer.Option(...           , '--dropped'  , '-d', help = 'List of cuts to drop with respect to full selection')) -> None:
@@ -92,6 +93,7 @@ def make_database(
         trigger      = trigger,
         ncores       = 1,
         cuts         = {Cuts.cmb : 'mva_cmb > 0.1'},
+        max_size     = max_size,
         dropped_cuts = dropped)
 
     mkr = DBMaker(cfg = cfg)
