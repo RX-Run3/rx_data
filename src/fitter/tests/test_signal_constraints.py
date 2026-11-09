@@ -19,10 +19,10 @@ zpar = zfit.param.Parameter
 log  = LogStore.add_logger('fitter:test_signal_constraints')
 
 _RK_SHAPE = [
-    'mu_bpkpee_brem_xx1_b1_scale_flt',
-    'sg_bpkpee_brem_xx1_b1_reso_flt',
-    'mu_bpkpee_brem_xx2_b1_scale_flt',
-    'sg_bpkpee_brem_xx2_b1_reso_flt',
+    'mu_bpkpee_brem_xx1_b1_rk_ee_scale_flt',
+    'sg_bpkpee_brem_xx1_b1_rk_ee_reso_flt',
+    'mu_bpkpee_brem_xx2_b1_rk_ee_scale_flt',
+    'sg_bpkpee_brem_xx2_b1_rk_ee_reso_flt',
 ]
 
 _FRACTIONS_BREM_1 = [
