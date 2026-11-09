@@ -88,10 +88,10 @@ pytest-xdist                   = '*'
 pytest-benchmark               = '*'
 
 [feature.gpu.pypi-dependencies]
-tensorflow = { version = "*", extras = ["and-cuda"] }
+tensorflow = { version = "<=2.20.0", extras = ["and-cuda"] }
 
 [feature.cpu.pypi-dependencies]
-tensorflow = "*"
+tensorflow = "<=2.20.0"
 
 [feature.ana.pypi-dependencies]
 ap_utilities     = { path = "./src/ap_utilities",     editable = true }
