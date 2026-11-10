@@ -27,41 +27,77 @@ class SimFit(StrEnum):
     Enum meant to describe type of
     simultaneous fit
     '''
-    bp_mkm = auto()
+    # ---------------------
+    # Control fits
+    # ---------------------
+    bp_km = auto()
     '''Fit to K(as m)m mass in Kmm final state'''
 
-    bp_mm = auto()
-    '''Represents fit to B+ -> K+ mumu, not simultaneous'''
+    bd_km = auto()
+    '''Fit to Km mass from Bd -> Kpimm where K <-> m misID happened'''
 
+    bd_pim= auto()
+    '''Fit to pim mass from Bd -> Kpimm where pi <-> m misID happened'''
+    # ---------------------
+    # Basic signal fits
+    # ---------------------
     bp_ee = auto()
     '''Represents fit to B+ -> K+ ee, not simultaneous'''
-    # ---------------------
-    bd_mm = auto()
-    '''Represents fit to Bd -> K* mumu, not simultaneous'''
 
     bd_ee = auto()
     '''Represents fit to Bd -> K* ee, not simultaneous'''
 
-    bd_kpimm_kmmpi = auto()
-    '''Represents Bd -> kpimm where tracks were reconstructed
-    as kmmpi'''
+    bp_mm = auto()
+    '''Represents fit to B+ -> K+ mumu, not simultaneous'''
 
-    bd_kpimm_mpikm = auto()
-    '''Represents Bd -> kpimm where tracks were reconstructed
-    as mpikm'''
+    bd_mm = auto()
+    '''Represents fit to Bd -> K* mumu, not simultaneous'''
+    # ---------------------
+    # Composite muon fits
+    # ---------------------
+    bp_mm_km = auto()
+    '''Simultaneous fit between B+ -> Kmm and the Km control region'''
+
+    bd_mm_km = auto()
+    '''Simultaneous fit between B+ -> Kmm and the Km control region'''
+
+    bd_mm_pim = auto()
+    '''Simultaneous fit between B+ -> Kmm and the pim control region'''
+    # ---------------------
+    # Composite r fits
     # ---------------------
     rk = auto()
     '''
     Simultaneous between rare electron and muon for rk
     '''
+
+    rk_high = auto()
+    '''
+    Simultaneous between rare electron and muon for rk
+    for high-q2 bin
+    '''
+
     rkst = auto()
     '''
     Simultaneous between rare electron and muon for rkst
     '''
+
+    rkst_high = auto()
+    '''
+    Simultaneous between rare electron and muon for rkst
+    for high-q2 bin
+    '''
+
     rx = auto()
     '''
     Fully simultaneous fit in rare mode, putting together
     electron and muon rk and rkst
+    '''
+
+    rx_high = auto()
+    '''
+    Fully simultaneous fit in rare mode, putting together
+    electron and muon rk and rkst for high-q2 bin
     '''
     # ------------------------------------
     @property
@@ -79,25 +115,49 @@ class SimFit(StrEnum):
         rk_km   = Region(brem = Brem.zero , trigger = Trigger.rk_mm_os, misid = MisID.kmm_mkm)
 
         match self:
+            # ------------------------------
+            # Signal muon
+            # ------------------------------
             case SimFit.bp_mm:
                 return [rk_mm]
+            case SimFit.bp_mm_km:
+                return [rk_mm, rk_km.as_subregion]
             case SimFit.bd_mm:
                 return [rkst_mm]
+            case SimFit.bd_mm_km:
+                return [rkst_mm, rkst_km.as_subregion]
+            case SimFit.bd_mm_pim:
+                return [rkst_mm, rkst_pim.as_subregion]
+            # ------------------------------
+            # Signal electron
+            # ------------------------------
             case SimFit.bp_ee:
                 return [rk_ee]
             case SimFit.bd_ee:
                 return [rkst_ee]
+            # ------------------------------
+            # Simultaneous
+            # ------------------------------
             case SimFit.rk:
                 return [rk_ee, rk_mm]
+            case SimFit.rk_high:
+                return [rk_ee, rk_mm, rk_km.as_subregion]
             case SimFit.rkst:
                 return [rkst_ee, rkst_mm]
+            case SimFit.rkst_high:
+                return [rkst_ee, rkst_mm, rkst_km.as_subregion]
             case SimFit.rx:
                 return [rkst_ee, rkst_mm, rk_ee, rk_mm]
-            case SimFit.bp_mkm:
+            case SimFit.rx_high:
+                return [rkst_ee, rkst_mm, rkst_km.as_subregion, rk_ee, rk_mm, rk_km.as_subregion]
+            # ------------------------------
+            # Control regions
+            # ------------------------------
+            case SimFit.bp_km:
                 return [rk_km]
-            case SimFit.bd_kpimm_mpikm:
+            case SimFit.bd_pim:
                 return [rkst_km]
-            case SimFit.bd_kpimm_kmmpi:
+            case SimFit.bd_km:
                 return [rkst_pim]
 # ------------------------------
 class Systematic(StrEnum):
