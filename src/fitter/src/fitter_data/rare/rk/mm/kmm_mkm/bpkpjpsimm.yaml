@@ -1,7 +1,10 @@
 component : bpkpjpsimm_kmm_mkm
 categories:
   brem_xx0:
-    selection : {}
+    selection :
+      high   : # Need higher statistics to get B mass shape
+        pid_l : 'true'
+        pid_k : 'true'
     model :
       pdfs :
         - pol1
