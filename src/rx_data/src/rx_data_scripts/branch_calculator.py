@@ -225,12 +225,12 @@ def _get_charmonium_swap_rdf(
             progress_bar= cfg.pbar,
             use_ss      = trigger.is_ss)
 
-        obj_kaon = SWPCalculator(
+        obj_pion = SWPCalculator(
             rdf  = rdf,
             d_lep= {'L1' : lep_id, 'L2' : lep_id},
             d_had= {'H2' : lep_id})
 
-        rdf_pion        = obj_kaon.get_rdf(
+        rdf_pion        = obj_pion.get_rdf(
             preffix     = f'{cfg.kind}_pion',
             progress_bar= cfg.pbar,
             use_ss      = trigger.is_ss)
