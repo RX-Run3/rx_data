@@ -235,7 +235,7 @@ class MassBiasCorrector:
         dr   = sv - pv
         dr   = cast(v3d, dr)
 
-        cos_theta = dr.dot(momentum) / (dr.mag * momentum.mag)
+        cos_theta : float = dr.dot(momentum) / (dr.mag * momentum.mag)
 
         return cos_theta
     # ------------------------------------------
