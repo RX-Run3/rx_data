@@ -57,6 +57,14 @@ class Mass(StrEnum):
     bd_pipi      = auto()
     '''B0 mass with electrons reconstructed as pions'''
 
+    # ------------------------------------
+    # Swap masses
+    # ------------------------------------
+    swp_kpimm_kmmpi  = auto()
+    '''Mass of muon-pion pair for Kpimumu final states where
+    pion and muon are swapped and pion is given muon
+    mass hypothesis'''
+
     swp_kmm_mkm  = auto()
     '''Mass of Kmu pair for Kmumu final states where
     kaon and muon are swapped and kaon is given muon
