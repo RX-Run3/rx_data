@@ -27,4 +27,4 @@ plots:
     - 2900
     - 3200
   d_leg :
-    pol1_bpkpjpsimm_brem_xx0_rk_mm_1  : Crystal Ball
+    bpkpjpsimm_kmm_mkm_brem_xx0_rk_mm : Crystal Ball
