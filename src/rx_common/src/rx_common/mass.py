@@ -65,6 +65,11 @@ class Mass(StrEnum):
     pion and muon are swapped and pion is given muon
     mass hypothesis'''
 
+    swp_kpimm_mpimk = auto()
+    '''Mass of muon-kaon pair for Kpimumu final states where
+    kaon and muon are swapped and kaon is given muon
+    mass hypothesis'''
+
     swp_kmm_mkm  = auto()
     '''Mass of Kmu pair for Kmumu final states where
     kaon and muon are swapped and kaon is given muon
@@ -92,6 +97,10 @@ class Mass(StrEnum):
                 return 'B_Mass_hdpipi'
             case Mass.swp_kmm_mkm:
                 return 'swp_jpsi_misid_mass_swp'
+            case Mass.swp_kpimm_kmmpi:
+                return 'swp_jpsi_misid_pion_mass_swp'
+            case Mass.swp_kpimm_mpimk:
+                return 'swp_jpsi_misid_kaon_mass_swp'
             case _:
                 raise ValueError(f'Cannot determine branch name for: {self}')
     # ------------------------------
