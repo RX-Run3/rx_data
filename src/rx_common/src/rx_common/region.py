@@ -28,6 +28,12 @@ class MisID(StrEnum):
     kmm_mkm = auto()
     '''Swap of kaon by muon in rk muon rare'''
 
+    kpimm_kmmpi = auto()
+    '''Swap of pion by muon in rkst muon rare'''
+
+    kpimm_mpikm = auto()
+    '''Swap of kaon by muon in rkst muon rare'''
+
     kpiee_kpikk   = auto()
     '''Hadronic misID in rkst to kaons'''
 
