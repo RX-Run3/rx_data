@@ -5,6 +5,7 @@ import os
 import argparse
 import mplhep
 
+from functools     import lru_cache
 from copy          import deepcopy
 from ROOT          import RDF, EnableImplicitMT
 from dmu           import LogStore
@@ -99,6 +100,7 @@ def _parse_args() -> None:
     Data.ncores   = args.ncores
     Data.config   = f'{args.config}_{Data.trigger.project}'
 # ---------------------------------
+@lru_cache(maxsize=1)
 def _get_cfg() -> DictConfig:
     cfg           = gut.load_conf(package='rx_plotter_data', fpath=f'cutflow/{Data.config}.yaml')
     plt_dir       = cfg.saving.plt_dir
