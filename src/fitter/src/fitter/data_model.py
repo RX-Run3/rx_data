@@ -41,7 +41,7 @@ class DataModel:
         q2bin  : E.g. central
         obs    : zfit observable
         name   : Optional, identifier for this model,
-                 if passed, used also as suffix of yields, e.g. yld_combinatorial_{name}
+                 if passed, used also as suffix of yields, e.g. yld_comb_rk_{name}
         '''
         self._cfg    = cfg
         self._obs    = obs
