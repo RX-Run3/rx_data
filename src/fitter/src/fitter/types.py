@@ -115,10 +115,6 @@ class SimFit(StrEnum):
         rkst_km = Region(brem = Brem.zero , trigger = Trigger.rkst_mm_os, misid = MisID.kpimm_kmmpi)
         rkst_pim= Region(brem = Brem.zero , trigger = Trigger.rkst_mm_os, misid = MisID.kpimm_mpikm)
 
-        rk_km   = rk_km.as_subregion
-        rkst_km = rkst_km.as_subregion
-        rkst_pim= rkst_pim.as_subregion
-
         match self:
             # ------------------------------
             # Signal muon
