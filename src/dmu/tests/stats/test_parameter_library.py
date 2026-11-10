@@ -113,8 +113,15 @@ def test_get_yield(config : str) -> None:
     '''
     data = gut.load_data(package='dmu_data', fpath=f'tests/stats/parameters/{config}.yaml')
     cfg  = YieldsConf(**data)
+
+    pars = dict()
     with PL.parameter_schema(cfg=cfg):
         for parname, _ in cfg:
-            par = PL.get_yield(name=parname)
+            par           = PL.get_yield(name=parname)
+            pars[parname] = par
+
             _check_parameter(par=par)
+
+    if config == 'simultaneous':
+        assert pars['yield_001'] is pars['yield_003']
 # ------------------------------------

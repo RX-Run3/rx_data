@@ -32,12 +32,15 @@ class CompositeYieldConf(BaseModel, frozen = True):
     '''
     Class meant to represent composite yield
     '''
-    kind : Literal['mul', 'dif']
+    kind : Literal['mul', 'dif', 'equal']
     pars : list[str]
     # ----------------------
     @model_validator(mode = 'after')
     def check_size(self) -> Self:
-        if len(self.pars) < _MIN_COMPOSITE_PARS:
+        if self.kind == 'equal' and len(self.pars) != 1:
+            raise ValueError(f'Equality kind requires only one parameter: {self.pars}')
+
+        if len(self.pars) < _MIN_COMPOSITE_PARS and self.kind != 'equal':
             raise ValueError(f'At least two parameters are needed, found: {self.pars}')
 
         if self.kind == 'dif' and len(self.pars) != _MIN_COMPOSITE_PARS:

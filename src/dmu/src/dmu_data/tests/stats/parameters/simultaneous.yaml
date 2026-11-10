@@ -17,3 +17,6 @@ yield_002:
   pars :
     - yield
     - yield_001
+yield_003:
+  kind : equal
+  pars : [yield_001]

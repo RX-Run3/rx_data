@@ -216,6 +216,8 @@ class ParameterLibrary:
                 par_1    = cls.get_yield(name=cfg.pars[0])
                 par_2    = cls.get_yield(name=cfg.pars[1])
                 comp_par = cls._subtract_pars(name = name, par_1=par_1, par_2=par_2)
+            case 'equal':
+                comp_par = cls.get_yield(name=cfg.pars[0])
 
         return comp_par
     # ----------------------
