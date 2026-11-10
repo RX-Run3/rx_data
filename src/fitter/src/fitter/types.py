@@ -107,12 +107,17 @@ class SimFit(StrEnum):
         '''
         rkst_ee = Region(brem = Brem.brx12, trigger = Trigger.rkst_ee_os)
         rkst_mm = Region(brem = Brem.zero , trigger = Trigger.rkst_mm_os)
-        rkst_km = Region(brem = Brem.zero , trigger = Trigger.rkst_mm_os, misid = MisID.kpimm_kmmpi)
-        rkst_pim= Region(brem = Brem.zero , trigger = Trigger.rkst_mm_os, misid = MisID.kpimm_mpikm)
 
         rk_ee   = Region(brem = Brem.brx12, trigger = Trigger.rk_ee_os)
         rk_mm   = Region(brem = Brem.zero , trigger = Trigger.rk_mm_os)
-        rk_km   = Region(brem = Brem.zero , trigger = Trigger.rk_mm_os, misid = MisID.kmm_mkm)
+
+        rk_km   = Region(brem = Brem.zero , trigger = Trigger.rk_mm_os  , misid = MisID.kmm_mkm)
+        rkst_km = Region(brem = Brem.zero , trigger = Trigger.rkst_mm_os, misid = MisID.kpimm_kmmpi)
+        rkst_pim= Region(brem = Brem.zero , trigger = Trigger.rkst_mm_os, misid = MisID.kpimm_mpikm)
+
+        rk_km   = rk_km.as_subregion
+        rkst_km = rkst_km.as_subregion
+        rkst_pim= rkst_pim.as_subregion
 
         match self:
             # ------------------------------
@@ -121,13 +126,13 @@ class SimFit(StrEnum):
             case SimFit.bp_mm:
                 return [rk_mm]
             case SimFit.bp_mm_km:
-                return [rk_mm, rk_km.as_subregion]
+                return [rk_mm, rk_km]
             case SimFit.bd_mm:
                 return [rkst_mm]
             case SimFit.bd_mm_km:
-                return [rkst_mm, rkst_km.as_subregion]
+                return [rkst_mm, rkst_km]
             case SimFit.bd_mm_pim:
-                return [rkst_mm, rkst_pim.as_subregion]
+                return [rkst_mm, rkst_pim]
             # ------------------------------
             # Signal electron
             # ------------------------------
@@ -141,15 +146,15 @@ class SimFit(StrEnum):
             case SimFit.rk:
                 return [rk_ee, rk_mm]
             case SimFit.rk_high:
-                return [rk_ee, rk_mm, rk_km.as_subregion]
+                return [rk_ee, rk_mm, rk_km]
             case SimFit.rkst:
                 return [rkst_ee, rkst_mm]
             case SimFit.rkst_high:
-                return [rkst_ee, rkst_mm, rkst_km.as_subregion]
+                return [rkst_ee, rkst_mm, rkst_km]
             case SimFit.rx:
                 return [rkst_ee, rkst_mm, rk_ee, rk_mm]
             case SimFit.rx_high:
-                return [rkst_ee, rkst_mm, rkst_km.as_subregion, rk_ee, rk_mm, rk_km.as_subregion]
+                return [rkst_ee, rkst_mm, rkst_km, rk_ee, rk_mm, rk_km]
             # ------------------------------
             # Control regions
             # ------------------------------
