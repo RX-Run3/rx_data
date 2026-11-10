@@ -1,0 +1,30 @@
+component : bdkstkpijpsimm_kpimm_kmmpi
+categories:
+  brem_xx0:
+    selection :
+      cmb   : 'true'
+      prc   : 'true'
+      pid_l : 'true'
+      pid_k : 'true'
+    model :
+      pdfs :
+        - cbl
+      shared        : []
+      floating      : []
+      reparametrize : {}
+      fix           : {}
+      values        :
+        mu : [3100, 3000, 3200]
+        sg : [  40,   10,  100]
+fit:
+  strategy  :
+    ntries : 10
+    pvalue : 0.05
+plots:
+  nbins     : 50
+  stacked   : True
+  plot_range:
+    - 2900
+    - 3200
+  d_leg :
+    bdkstkpijpsimm_kpimm_kmmpi_brem_xx0_rkst_mm : Crystal Ball

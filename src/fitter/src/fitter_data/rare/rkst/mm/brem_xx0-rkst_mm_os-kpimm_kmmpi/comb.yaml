@@ -1,0 +1,12 @@
+# -----------------
+constraints: null
+# -----------------
+models:
+  high:
+    pdfs          : [pol1]
+    shared        : []
+    floating      : []
+    reparametrize : {}
+    fix           : {}
+    values        : {}
+# -----------------

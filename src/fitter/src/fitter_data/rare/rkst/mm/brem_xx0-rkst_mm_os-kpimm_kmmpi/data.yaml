@@ -1,0 +1,32 @@
+# These entries should be taken from https://gitlab.cern.ch/rx_run3/dmu#fit-plotting
+plots_cfg: &plt_cfg
+  merging : {}
+  regions :
+    brem_xx0-rkst_mm_os-kpimm_kmmpi:
+      nbins   : 50
+      stacked : True
+      d_leg :
+        bpkpjpsimm_kmm_mkm_brem_xx0-rk_mm_os-kmm_mkm: $\mu^+\pi^-_{\to\mu-}$
+        comb_brem_xx0-rkst_mm_os-kmmpi              : Combinatorial
+# -------------------------------
+trigger          : rkst_mm_os
+yields           : model/yields/rkst/rare_muon_kpimm_kmmpi.yaml
+selection        :
+  high   : {}
+observable:
+  high:
+    mass : swp_kpimm_kmmpi
+    range:
+      - 2600
+      - 3300
+components:
+  high:
+    comb                       : rare/rkst/mm/brem_xx0-rkst_mm_os-kpimm_kmmpi/comb.yaml
+    bdkstkpijpsimm_kpimm_kmmpi : rare/rkst/mm/brem_xx0-rkst_mm_os-kpimm_kmmpi/bdkstkpijpsimm_kpimm_kmmpi.yaml
+constraints:
+  signal_fraction : []
+  combinatorial   : false
+  signal_shape    : false
+fit: {}
+plots:
+  high : *plt_cfg
