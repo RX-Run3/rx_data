@@ -5,6 +5,12 @@ styling: &style
     histtype : fill
     linestyle: '-'
     alpha    : 0.3
+  $M(K^*)$:
+    histtype : step
+    linestyle: '-'
+  $p_T(K^*)$:
+    histtype : step
+    linestyle: '-'
   HOP:
     histtype : step
     linestyle: '-'
@@ -20,39 +26,51 @@ styling: &style
 general:
   size : [15, 10]
 selection:
-  cmb       : (1)
-  prc       : (1)
-  hop       : (1)
-  cascade   : (1)
-  jpsi_misid: (1)
-  mass      : (1)
+  kst_mass  : 'true'
+  kst_pt    : 'true'
+  cmb       : 'true'
+  prc       : 'true'
+  hop       : 'true'
+  cascade   : 'true'
+  jpsi_misid: 'true'
+  mass      : 'true'
 definitions:
   otk_mas : B_VTXISO_B_OneTrack_DChi2Vtx_9p0_Smallest_DELTACHI2_MASS
   ttk_mas : B_VTXISO_B_TwoTracks_DChi2Vtx_9p0_Smallest_DELTACHI2_MASS
 cutflow:
   low:
     None          : hop_mass >  0
+    $M(K^*)$      : TMath::Abs(Kst_M - 892) < 100
+    $p_T(K^*)$    : Kst_PT > 500
     HOP           : hop_mass >  4500
     Cascade       : swp_cascade_mass_swp    > 1900
     $J/\psi$ misID: swp_jpsi_misid_pion_mass_swp > 3150 || swp_jpsi_misid_pion_mass_swp < 3050
   central:
     None          : hop_mass >  0
+    $M(K^*)$      : TMath::Abs(Kst_M - 892) < 100
+    $p_T(K^*)$    : Kst_PT > 500
     HOP           : hop_mass >  4500
     Cascade       : swp_cascade_mass_swp    > 1900
     $J/\psi$ misID: swp_jpsi_misid_pion_mass_swp > 3150 || swp_jpsi_misid_pion_mass_swp < 3050
     Leakage       : TMath::Abs(B_const_mass_M - 5280) > 200
   jpsi:
     None          : hop_mass >  0
+    $M(K^*)$      : TMath::Abs(Kst_M - 892) < 100
+    $p_T(K^*)$    : Kst_PT > 500
     HOP           : hop_mass >  4500
     Cascade       : swp_cascade_mass_swp    > 1900
     $J/\psi$ misID: swp_jpsi_misid_pion_mass_swp > 3150 || swp_jpsi_misid_pion_mass_swp < 3050
   psi2S:
     None          : hop_mass >  0
+    $M(K^*)$      : TMath::Abs(Kst_M - 892) < 100
+    $p_T(K^*)$    : Kst_PT > 500
     HOP           : hop_mass >  4500
     Cascade       : swp_cascade_mass_swp    > 1900
     $J/\psi$ misID: swp_jpsi_misid_pion_mass_swp > 3150 || swp_jpsi_misid_pion_mass_swp < 3050
   high:
     None          : hop_mass >  0
+    $M(K^*)$      : TMath::Abs(Kst_M - 892) < 100
+    $p_T(K^*)$    : Kst_PT > 500
     HOP           : hop_mass >  3000
     Cascade       : swp_cascade_mass_swp    > 1900 || swp_cascade_mass_swp < 1800
     $J/\psi$ misID: swp_jpsi_misid_pion_mass_swp > 3150 || swp_jpsi_misid_pion_mass_swp < 3050
