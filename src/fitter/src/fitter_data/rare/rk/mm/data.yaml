@@ -43,8 +43,8 @@ components:
     bpkpmm : rare/rk/mm/bpkpmm.yaml
   high:
     comb               : rare/rk/mm/comb.yaml
-    bpkpmm             : rare/rk/mm/bpkpmm.yaml
     bpkpjpsimm_kmm_mkm : rare/rk/mm/bpkpjpsimm_kmm_mkm.yaml
+    bpkpmm             : rare/rk/mm/bpkpmm.yaml
 constraints:
   signal_fraction      : []
   combinatorial : false
