@@ -108,7 +108,11 @@ class Conf(BaseModel, Serializable, frozen=True):
         -------------
         Object storing full fit configuration
         '''
-        fpath = f'rare/{region.trigger.project}/{region.trigger.channel}/data.yaml'
+        if region.is_subregion:
+            fpath = f'rare/{region.trigger.project}/{region.trigger.channel}/{region.name}/data.yaml'
+        else:
+            fpath = f'rare/{region.trigger.project}/{region.trigger.channel}/data.yaml'
+
         log.info(f'Loading configuration from: {fpath}')
 
         data_mod= gut.load_data(
