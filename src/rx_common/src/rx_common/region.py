@@ -3,7 +3,7 @@ Module with Region enum
 '''
 
 from enum        import StrEnum, auto
-from typing      import Any, Self
+from typing      import Any
 from dmu.generic import Serializable
 from dmu.stats   import zfit
 from pydantic    import model_serializer
@@ -59,17 +59,12 @@ class Region(BaseModel, Serializable, frozen = True, extra = 'forbid', strict = 
 
     misid   : MisID   = MisID.none
     '''Identifies region by what tracks IDs were swapped'''
-
-    is_subregion : bool = False
-    '''If True, will treat region as part of other region, e.g.
-    a control region'''
     # ---------------------
     @property
-    def as_subregion(self) -> Self:
-        '''
-        Copy of current region with is_subregion set to True
-        '''
-        return self.model_copy(update = {'is_subregion' : True})
+    def is_control_region(self) -> bool:
+        '''True if, will treat region as part of other region, e.g.
+        a control region'''
+        return self.misid != MisID.none
     # ---------------------
     @property
     def signal(self) -> Component:
@@ -147,12 +142,12 @@ class Region(BaseModel, Serializable, frozen = True, extra = 'forbid', strict = 
         Allows to deserialize from name
         '''
         if isinstance(data, str):
-            return cls.from_string(name = data)
+            return cls._from_string(name = data)
 
         return data
     # ---------------------
     @classmethod
-    def from_string(cls, name : str) -> dict[str,Any]:
+    def _from_string(cls, name : str) -> dict[str,Any]:
         '''
         Parameters
         -----------------

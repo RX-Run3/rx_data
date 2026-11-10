@@ -108,7 +108,7 @@ class Conf(BaseModel, Serializable, frozen=True):
         -------------
         Object storing full fit configuration
         '''
-        if region.is_subregion:
+        if region.is_control_region:
             fpath = f'rare/{region.trigger.project}/{region.trigger.channel}/{region.name}/data.yaml'
         else:
             fpath = f'rare/{region.trigger.project}/{region.trigger.channel}/data.yaml'
@@ -254,7 +254,7 @@ def _get_region_nll(region : Region, cfg : RXFitConfig) -> NLLConf:
         stack.enter_context(ctx_4)
         stack.enter_context(ctx_5)
 
-        name = region.name if region.is_subregion else region.brem
+        name = region.name if region.is_control_region else region.brem
 
         ftr = LikelihoodFactory(
             name   = str(name),
