@@ -1,0 +1,19 @@
+# This config file defines the yields and the relationships between them
+# For the fit of the resonant electron channel
+yields: &yields
+  val : 10
+  min : 0
+  max : 1000000
+# ------------------------------------
+yld_bpkpmm_rk_brem_xx0:
+  <<: *yields
+yld_comb_rk_brem_xx0:
+  <<: *yields
+yld_bpkpjpsimm_kmm_mkm_rk_brem_xx0:
+  <<: *yields
+# ------------------------------------
+yld_bpkpjpsimm_kmm_mkm_rk_brem_xx0-rk_mm_os-kmm_mkm:
+  kind : equal
+  pars : [yld_bpkpjpsimm_kmm_mkm_rk_brem_xx0]
+yld_comb_rk_brem_xx0-rk_mm_os-kmm_mkm:
+  <<: *yields
