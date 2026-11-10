@@ -86,6 +86,7 @@ class Mass(StrEnum):
                 return 'swp_jpsi_misid_mass_swp'
             case _:
                 raise ValueError(f'Cannot determine branch name for: {self}')
+    # ------------------------------
     @classmethod
     def dtf_from_qsq(cls, qsq : Qsq, project : Project) -> 'Mass':
         '''
