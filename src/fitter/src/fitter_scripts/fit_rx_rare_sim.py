@@ -18,7 +18,7 @@ from dmu.stats        import FitResult, zfit
 from dmu.workflow     import Cache
 from dmu              import LogStore, LogLevels
 from rx_selection     import selection as sel
-from rx_common        import Brem, Component, Region
+from rx_common        import Component, Region
 from rx_common        import MVAWp, Qsq, QsqDef
 from rx_common        import MassDef
 
@@ -240,12 +240,12 @@ def _get_replacements(kind : SimFit, syst : Systematic) -> dict[str,str]:
 
     return replacements
 # ----------------------
-def _get_region_nll(brem : Brem, cfg : RXFitConfig) -> NLLConf:
+def _get_region_nll(region : Region, cfg : RXFitConfig) -> NLLConf:
     ctx_1 = Cache.cache_root(path=cfg.output_directory)
     ctx_2 = PL.parameter_schema(cfg=cfg.mod_cfg.yields)
     ctx_3 = sel.custom_selection(d_sel=cfg.overriding_selection)
     ctx_4 = sut.root_directory(root_dir=cfg.output_directory / 'failed_nll')
-    ctx_5 = sel.update_selection(d_sel = brem.selection)
+    ctx_5 = sel.update_selection(d_sel = region.brem.selection)
 
     with ExitStack() as stack:
         stack.enter_context(ctx_1)
@@ -254,8 +254,10 @@ def _get_region_nll(brem : Brem, cfg : RXFitConfig) -> NLLConf:
         stack.enter_context(ctx_4)
         stack.enter_context(ctx_5)
 
+        name = region.name if region.is_subregion else region.brem
+
         ftr = LikelihoodFactory(
-            name   = str(brem),
+            name   = str(name),
             obs    = cfg.obs,
             q2bin  = cfg.q2bin,
             sample = _DATA_SAMPLE,
@@ -263,7 +265,7 @@ def _get_region_nll(brem : Brem, cfg : RXFitConfig) -> NLLConf:
         cfg_nll  = ftr.run()
 
         nll, cons = add_constraints(
-            brem  = brem,
+            brem  = region.brem,
             nll   = cfg_nll.nll,
             cfg   = cfg)
 
@@ -273,8 +275,8 @@ def _get_region_nll(brem : Brem, cfg : RXFitConfig) -> NLLConf:
             constraints = cons.to_list())
 # ----------------------
 def _get_nll(
-    brem: Brem,
-    cfg : RXFitConfig) -> NLLConf:
+    region: Region,
+    cfg   : RXFitConfig) -> NLLConf:
     '''
     Parameters
     -----------------
@@ -285,19 +287,19 @@ def _get_nll(
     -----------------
     Dictionary mapping signal region with NLL container
     '''
-    if brem.is_composite:
+    if region.brem.is_composite:
         # Put all the elementary regions in same config
         cfg_brem         = cfg.cfg_clone(
             prefix       = 'BREM',
             q2bin        = cfg.q2bin,
-            brems        = [ brem for brem in brem.components ])
+            brems        = [ brem for brem in region.brem.components ])
     else:
         # Pick only elementary region
         cfg_brem         = cfg.cfg_copy(
             q2bin        = cfg.q2bin,
-            replacements = {'BREM' : str(brem)})
+            replacements = {'BREM' : str(region.brem)})
 
-    return _get_region_nll(brem = brem, cfg = cfg_brem)
+    return _get_region_nll(region = region, cfg = cfg_brem)
 # ----------------------
 def _save_results(
     nlls : dict[Region,NLLConf],
@@ -328,7 +330,7 @@ def _fit(cfg : Conf) -> None:
     '''
     d_nll : dict[Region, NLLConf] = {}
     for region, region_cfg in cfg.cfgs.items():
-        d_nll[region] = _get_nll(cfg = region_cfg, brem = region.brem)
+        d_nll[region] = _get_nll(cfg = region_cfg, region = region)
 
     if cfg.dry_run:
         log.info('Skipping fit to data, dry run')
