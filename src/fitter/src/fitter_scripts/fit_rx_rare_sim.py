@@ -81,7 +81,7 @@ class Conf(BaseModel, Serializable, frozen=True):
     mva_prc: Annotated[MVAWp      , tyro.conf.arg(aliases=['-P'], constructor=MVAWp.from_str)] = MVAWp.none()
     '''Part reco MVA working point, if used will override default, e.g. 0.8'''
 
-    use_graph_mode : Annotated[bool, tyro.conf.arg(aliases=['G'])] = True
+    use_graph_mode : Annotated[bool, tyro.conf.arg(aliases=['-G'])] = True
     '''If true will use graph mode in fits, otherwise eager mode'''
     # ---------------------------
     @computed_field
@@ -108,9 +108,12 @@ class Conf(BaseModel, Serializable, frozen=True):
         -------------
         Object storing full fit configuration
         '''
+        fpath = f'rare/{region.trigger.project}/{region.trigger.channel}/data.yaml'
+        log.info(f'Loading configuration from: {fpath}')
+
         data_mod= gut.load_data(
             package= 'fitter_data',
-            fpath  = f'rare/{region.trigger.project}/{region.trigger.channel}/data.yaml')
+            fpath  = fpath)
 
         config_replacements = _get_replacements(kind = self.kind, syst = self.syst)
         with UnpackerModel.replacements(files = config_replacements):
