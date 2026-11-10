@@ -34,28 +34,28 @@ cutflow:
     None          : hop_mass >  0
     HOP           : hop_mass >  4500
     Cascade       : swp_cascade_mass_swp    > 1900
-    $J/\psi$ misID: swp_jpsi_misid_mass_swp > 3150 || swp_jpsi_misid_mass_swp < 3050
+    $J/\psi$ misID: swp_jpsi_misid_pion_mass_swp > 3150 || swp_jpsi_misid_pion_mass_swp < 3050
   central:
     None          : hop_mass >  0
     HOP           : hop_mass >  4500
     Cascade       : swp_cascade_mass_swp    > 1900
-    $J/\psi$ misID: swp_jpsi_misid_mass_swp > 3150 || swp_jpsi_misid_mass_swp < 3050
+    $J/\psi$ misID: swp_jpsi_misid_pion_mass_swp > 3150 || swp_jpsi_misid_pion_mass_swp < 3050
     Leakage       : TMath::Abs(B_const_mass_M - 5280) > 200
   jpsi:
     None          : hop_mass >  0
     HOP           : hop_mass >  4500
     Cascade       : swp_cascade_mass_swp    > 1900
-    $J/\psi$ misID: swp_jpsi_misid_mass_swp > 3150 || swp_jpsi_misid_mass_swp < 3050
+    $J/\psi$ misID: swp_jpsi_misid_pion_mass_swp > 3150 || swp_jpsi_misid_pion_mass_swp < 3050
   psi2S:
     None          : hop_mass >  0
     HOP           : hop_mass >  4500
     Cascade       : swp_cascade_mass_swp    > 1900
-    $J/\psi$ misID: swp_jpsi_misid_mass_swp > 3150 || swp_jpsi_misid_mass_swp < 3050
+    $J/\psi$ misID: swp_jpsi_misid_pion_mass_swp > 3150 || swp_jpsi_misid_pion_mass_swp < 3050
   high:
     None          : hop_mass >  0
     HOP           : hop_mass >  3000
     Cascade       : swp_cascade_mass_swp    > 1900 || swp_cascade_mass_swp < 1800
-    $J/\psi$ misID: swp_jpsi_misid_mass_swp > 3150 || swp_jpsi_misid_mass_swp < 3050
+    $J/\psi$ misID: swp_jpsi_misid_pion_mass_swp > 3150 || swp_jpsi_misid_pion_mass_swp < 3050
 plots:
   otk_mas:
       binning    : [2000, 8000, 60]
@@ -84,7 +84,7 @@ plots:
       normalized : false
       styling:
         <<: *style
-  swp_jpsi_misid_mass_swp:
+  swp_jpsi_misid_pion_mass_swp:
       binning    : [2900, 3300, 60]
       yscale     : linear
       labels     : ['M$(\pi_{\to\ell},\ell)\;[\text{MeV}]$', 'Entries']
