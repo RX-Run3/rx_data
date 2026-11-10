@@ -80,6 +80,9 @@ class Conf(BaseModel, Serializable, frozen=True):
 
     mva_prc: Annotated[MVAWp      , tyro.conf.arg(aliases=['-P'], constructor=MVAWp.from_str)] = MVAWp.none()
     '''Part reco MVA working point, if used will override default, e.g. 0.8'''
+
+    use_graph_mode : Annotated[bool, tyro.conf.arg(aliases=['G'])] = True
+    '''If true will use graph mode in fits, otherwise eager mode'''
     # ---------------------------
     @computed_field
     @cached_property
@@ -348,10 +351,10 @@ def main():
     Entry point
     '''
     _set_logs()
-    zfit.run.set_graph_mode(False)
 
     cfg = tyro.cli(Conf)
     cfg.to_json(path = cfg.out_dir / cfg.q2bin / 'config.json')
+    zfit.run.set_graph_mode(cfg.use_graph_mode)
 
     ctx_1 = DataPreprocessor.use_database()
     ctx_2 = ConstraintAdder.mode(value = cfg.cmode)
