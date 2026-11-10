@@ -1,0 +1,33 @@
+# -------------------
+component : bpkpjpsimm_kmm_mkm
+categories:
+  brem_xx0:
+    selection :
+      pid_l : 'true'
+      pid_k : 'true'
+      cmb   : 'true'
+      prc   : 'true'
+    model:   &model
+      pdfs :
+        - suj
+      fix          :
+        dl_suj :  2.5
+        gm_suj : -1.5
+      reparametrize : {}
+      shared        : []
+      floating      : []
+      values:
+        mu:
+          - 4500
+          - 4200
+          - 5500
+fit:
+  strategy:
+    ntries : 10
+    pvalue : 0.05
+plots:
+  nbins      : 50
+  stacked    : True
+  plot_range : [5200, 5600]
+  d_leg   :
+    gauss_bpkpmm_brem_xx0_rk_mm_1 : Gauss
