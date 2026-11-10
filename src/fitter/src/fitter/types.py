@@ -2,6 +2,7 @@
 Module holding enums needed for fitting models
 '''
 
+from rx_common import MisID
 from rx_common import Brem
 from rx_common import Region
 from rx_common import Trigger
@@ -26,17 +27,29 @@ class SimFit(StrEnum):
     Enum meant to describe type of
     simultaneous fit
     '''
+    bp_mkm = auto()
+    '''Fit to K(as m)m mass in Kmm final state'''
+
     bp_mm = auto()
     '''Represents fit to B+ -> K+ mumu, not simultaneous'''
+
     bp_ee = auto()
     '''Represents fit to B+ -> K+ ee, not simultaneous'''
-
+    # ---------------------
     bd_mm = auto()
     '''Represents fit to Bd -> K* mumu, not simultaneous'''
 
     bd_ee = auto()
     '''Represents fit to Bd -> K* ee, not simultaneous'''
 
+    bd_kpimm_kmmpi = auto()
+    '''Represents Bd -> kpimm where tracks were reconstructed
+    as kmmpi'''
+
+    bd_kpimm_mpikm = auto()
+    '''Represents Bd -> kpimm where tracks were reconstructed
+    as mpikm'''
+    # ---------------------
     rk = auto()
     '''
     Simultaneous between rare electron and muon for rk
@@ -58,9 +71,12 @@ class SimFit(StrEnum):
         '''
         rkst_ee = Region(brem = Brem.brx12, trigger = Trigger.rkst_ee_os)
         rkst_mm = Region(brem = Brem.zero , trigger = Trigger.rkst_mm_os)
+        rkst_km = Region(brem = Brem.zero , trigger = Trigger.rkst_mm_os, misid = MisID.kpimm_kmmpi)
+        rkst_pim= Region(brem = Brem.zero , trigger = Trigger.rkst_mm_os, misid = MisID.kpimm_mpikm)
 
         rk_ee   = Region(brem = Brem.brx12, trigger = Trigger.rk_ee_os)
         rk_mm   = Region(brem = Brem.zero , trigger = Trigger.rk_mm_os)
+        rk_km   = Region(brem = Brem.zero , trigger = Trigger.rk_mm_os, misid = MisID.kmm_mkm)
 
         match self:
             case SimFit.bp_mm:
@@ -77,6 +93,12 @@ class SimFit(StrEnum):
                 return [rkst_ee, rkst_mm]
             case SimFit.rx:
                 return [rkst_ee, rkst_mm, rk_ee, rk_mm]
+            case SimFit.bp_mkm:
+                return [rk_km]
+            case SimFit.bd_kpimm_mpikm:
+                return [rkst_km]
+            case SimFit.bd_kpimm_kmmpi:
+                return [rkst_pim]
 # ------------------------------
 class Systematic(StrEnum):
     '''
