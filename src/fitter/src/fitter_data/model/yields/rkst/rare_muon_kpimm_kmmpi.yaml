@@ -1,0 +1,9 @@
+yields: &yields
+  val : 10
+  min : 0
+  max : 1000000
+
+yld_bdkstkpijpsimm_kpimm_kmmpi_rkst_brem_xx0-rkst_mm_os-kpimm_kmmpi:
+  <<: *yields
+yld_comb_rkst_brem_xx0-rkst_mm_os-kpimm_kmmpi:
+  <<: *yields
