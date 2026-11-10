@@ -8,7 +8,7 @@ styling: &style
   $M(K^*)$:
     histtype : step
     linestyle: '-'
-  $p_T(K^*)$:
+  PID:
     histtype : step
     linestyle: '-'
   HOP:
@@ -27,7 +27,9 @@ general:
   size : [15, 10]
 selection:
   kst_mass  : 'true'
-  kst_pt    : 'true'
+  pid_l     : 'true'
+  pid_k     : 'true'
+  pid_pi    : 'true'
   cmb       : 'true'
   prc       : 'true'
   hop       : 'true'
@@ -40,37 +42,37 @@ definitions:
 cutflow:
   low:
     None          : hop_mass >  0
+    PID           : (L1_ProbNNmu > 0.2 && L2_ProbNNmu > 0.2 && L1_isMuon && L2_isMuon && L1_PIDmu > -3. && L2_PIDmu > -3) && (H1_ProbNNk * (1 - H1_PROBNN_P) > 0.05 && H1_PID_K > 0) && (H2_PROBNN_PI * (1 - H2_PROBNN_P) * (1 - H2_ProbNNk) > 0.1)
     $M(K^*)$      : TMath::Abs(Kst_M - 892) < 100
-    $p_T(K^*)$    : Kst_PT > 500
     HOP           : hop_mass >  4500
     Cascade       : swp_cascade_mass_swp    > 1900
     $J/\psi$ misID: swp_jpsi_misid_pion_mass_swp > 3150 || swp_jpsi_misid_pion_mass_swp < 3050
   central:
     None          : hop_mass >  0
+    PID           : (L1_ProbNNmu > 0.2 && L2_ProbNNmu > 0.2 && L1_isMuon && L2_isMuon && L1_PIDmu > -3. && L2_PIDmu > -3) && (H1_ProbNNk * (1 - H1_PROBNN_P) > 0.05 && H1_PID_K > 0) && (H2_PROBNN_PI * (1 - H2_PROBNN_P) * (1 - H2_ProbNNk) > 0.1)
     $M(K^*)$      : TMath::Abs(Kst_M - 892) < 100
-    $p_T(K^*)$    : Kst_PT > 500
     HOP           : hop_mass >  4500
     Cascade       : swp_cascade_mass_swp    > 1900
     $J/\psi$ misID: swp_jpsi_misid_pion_mass_swp > 3150 || swp_jpsi_misid_pion_mass_swp < 3050
     Leakage       : TMath::Abs(B_const_mass_M - 5280) > 200
   jpsi:
     None          : hop_mass >  0
+    PID           : (L1_ProbNNmu > 0.2 && L2_ProbNNmu > 0.2 && L1_isMuon && L2_isMuon && L1_PIDmu > -3. && L2_PIDmu > -3) && (H1_ProbNNk * (1 - H1_PROBNN_P) > 0.05 && H1_PID_K > 0) && (H2_PROBNN_PI * (1 - H2_PROBNN_P) * (1 - H2_ProbNNk) > 0.1)
     $M(K^*)$      : TMath::Abs(Kst_M - 892) < 100
-    $p_T(K^*)$    : Kst_PT > 500
     HOP           : hop_mass >  4500
     Cascade       : swp_cascade_mass_swp    > 1900
     $J/\psi$ misID: swp_jpsi_misid_pion_mass_swp > 3150 || swp_jpsi_misid_pion_mass_swp < 3050
   psi2S:
     None          : hop_mass >  0
+    PID           : (L1_ProbNNmu > 0.2 && L2_ProbNNmu > 0.2 && L1_isMuon && L2_isMuon && L1_PIDmu > -3. && L2_PIDmu > -3) && (H1_ProbNNk * (1 - H1_PROBNN_P) > 0.05 && H1_PID_K > 0) && (H2_PROBNN_PI * (1 - H2_PROBNN_P) * (1 - H2_ProbNNk) > 0.1)
     $M(K^*)$      : TMath::Abs(Kst_M - 892) < 100
-    $p_T(K^*)$    : Kst_PT > 500
     HOP           : hop_mass >  4500
     Cascade       : swp_cascade_mass_swp    > 1900
     $J/\psi$ misID: swp_jpsi_misid_pion_mass_swp > 3150 || swp_jpsi_misid_pion_mass_swp < 3050
   high:
     None          : hop_mass >  0
+    PID           : (L1_ProbNNmu > 0.2 && L2_ProbNNmu > 0.2 && L1_isMuon && L2_isMuon && L1_PIDmu > -3. && L2_PIDmu > -3) && (H1_ProbNNk * (1 - H1_PROBNN_P) > 0.05 && H1_PID_K > 0) && (H2_PROBNN_PI * (1 - H2_PROBNN_P) * (1 - H2_ProbNNk) > 0.1)
     $M(K^*)$      : TMath::Abs(Kst_M - 892) < 100
-    $p_T(K^*)$    : Kst_PT > 500
     HOP           : hop_mass >  3000
     Cascade       : swp_cascade_mass_swp    > 1900 || swp_cascade_mass_swp < 1800
     $J/\psi$ misID: swp_jpsi_misid_pion_mass_swp > 3150 || swp_jpsi_misid_pion_mass_swp < 3050
@@ -102,12 +104,21 @@ plots:
       normalized : false
       styling:
         <<: *style
+  swp_jpsi_misid_kaon_mass_swp:
+      binning    : [2900, 3300, 60]
+      yscale     : linear
+      labels     : ['M$(K_{\to\ell},\ell)\;[\text{MeV}]$', 'Entries']
+      title      : ''
+      name       : 'mass_jpsi_misid_kaon'
+      normalized : false
+      styling:
+        <<: *style
   swp_jpsi_misid_pion_mass_swp:
       binning    : [2900, 3300, 60]
       yscale     : linear
       labels     : ['M$(\pi_{\to\ell},\ell)\;[\text{MeV}]$', 'Entries']
       title      : ''
-      name       : 'mass_jpsi_misid'
+      name       : 'mass_jpsi_misid_pion'
       normalized : false
       styling:
         <<: *style
