@@ -119,7 +119,10 @@ class Conf(BaseModel, Serializable, frozen=True):
             package= 'fitter_data',
             fpath  = fpath)
 
-        config_replacements = _get_replacements(kind = self.kind, syst = self.syst)
+        config_replacements = _get_replacements(
+            q2bin = self.q2bin,
+            kind  = self.kind,
+            syst  = self.syst)
         with UnpackerModel.replacements(files = config_replacements):
             mod_cfg = FitModelConf(**data_mod)
 
@@ -210,7 +213,10 @@ def _set_logs() -> None:
     LogStore.set_level('fitter:sim_fitter'       , 20)
     LogStore.set_level('fitter:data_preprocessor', 20)
 # ----------------------
-def _get_replacements(kind : SimFit, syst : Systematic) -> dict[str,str]:
+def _get_replacements(
+    q2bin : Qsq,
+    kind  : SimFit,
+    syst  : Systematic) -> dict[str,str]:
     '''
     Parameters
     ------------------
@@ -221,15 +227,19 @@ def _get_replacements(kind : SimFit, syst : Systematic) -> dict[str,str]:
     Replacements needed for config files describing yields.
     Needed in order to reparametrize in function of rk, rkst or both
     '''
+    suffix = '' if q2bin != Qsq.high else '_high'
+
     match kind:
+        case SimFit.bp_mm_km:
+            repl = {'rk/rare_muon.yaml' : f'rk/rare_muon{suffix}.yaml'}
         case SimFit.rk:
-            repl = {'rk/rare_muon.yaml' : 'rk/rare_muon_simultaneous.yaml'}
+            repl = {'rk/rare_muon.yaml' : f'rk/rare_muon_simultaneous{suffix}.yaml'}
         case SimFit.rkst:
             repl = {'rkst/rare_muon.yaml' : 'rkst/rare_muon_simultaneous.yaml'}
         case SimFit.rx:
             repl = {
                 'rk/rare_electron.yaml' : 'rk/rare_electron_simultaneous.yaml', # nkstee -> nkee * eff_ratio
-                'rk/rare_muon.yaml'     : 'rk/rare_muon_simultaneous.yaml',     # nmumu  -> rk   * nee / ck
+                'rk/rare_muon.yaml'     :f'rk/rare_muon_simultaneous{suffix}.yaml',     # nmumu  -> rk   * nee / ck
                 'rkst/rare_muon.yaml'   : 'rkst/rare_muon_simultaneous.yaml'}   # nmumu  -> rkst * nee / ck*
         case _:
             repl = dict() # Not a simultanous fit
