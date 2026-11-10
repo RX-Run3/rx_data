@@ -33,11 +33,11 @@ _EMULATED : Final[list[tuple[Component, Component, Trigger]]] = [
     (Component.bdkstkpijpsimm, Component.bdkstkpijpsimm_kpimm_pikmm , Trigger.rkst_mm_os),
     (Component.bdkstkpijpsiee, Component.bdkstkpijpsiee_kpiee_pikee , Trigger.rkst_ee_os),
     # -------------
-    (Component.bdkstkpijpsimm, Component.bdkstkpijpsimm_kpimm_kmpim , Trigger.rkst_mm_os),
+    (Component.bdkstkpijpsimm, Component.bdkstkpijpsimm_kpimm_kmmpi , Trigger.rkst_mm_os),
     (Component.bdkstkpijpsiee, Component.bdkstkpijpsiee_kpiee_pikee , Trigger.rkst_ee_os),
     # -------------
-    (Component.bdkstkpijpsimm, Component.bdkstkpijpsimm_kpimm_mpimk , Trigger.rkst_mm_os),
-    (Component.bdkstkpijpsiee, Component.bdkstkpijpsiee_kpiee_epiek , Trigger.rkst_ee_os),
+    (Component.bdkstkpijpsimm, Component.bdkstkpijpsimm_kpimm_mpikm , Trigger.rkst_mm_os),
+    (Component.bdkstkpijpsiee, Component.bdkstkpijpsiee_kpiee_epike , Trigger.rkst_ee_os),
     # -------------
     (Component.bpkpjpsimm    , Component.bpkpjpsimm_kmm_mkm         , Trigger.rk_mm_os),
     (Component.bpkpjpsiee    , Component.bpkpjpsiee_kee_eke         , Trigger.rk_ee_os),

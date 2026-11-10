@@ -26,8 +26,8 @@ _ELECTRON_ID : Final[int] = 11
 _SWAPPED_TRACKS : Final[Components] = [
     Component.bpkpjpsiee_kee_eke,
     Component.bdkstkpijpsiee_kpiee_pikee,
-    Component.bdkstkpijpsiee_kpiee_epiek,
-    Component.bdkstkpijpsiee_kpiee_kepie,
+    Component.bdkstkpijpsiee_kpiee_epike,
+    Component.bdkstkpijpsiee_kpiee_keepi,
 ]
 
 _SAMPLES_CONCATENATE : Final[Components] = [

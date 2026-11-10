@@ -19,11 +19,11 @@ _EMULATED : list[tuple[Component, Trigger]] = [
     (Component.bdkstkpijpsimm_kpimm_pikmm, Trigger.rkst_mm_os),
     (Component.bdkstkpijpsiee_kpiee_pikee, Trigger.rkst_ee_os),
     # --------
-    (Component.bdkstkpijpsimm_kpimm_kmpim, Trigger.rkst_mm_os),
-    (Component.bdkstkpijpsiee_kpiee_kepie, Trigger.rkst_ee_os),
+    (Component.bdkstkpijpsimm_kpimm_kmmpi, Trigger.rkst_mm_os),
+    (Component.bdkstkpijpsiee_kpiee_keepi, Trigger.rkst_ee_os),
     # --------
-    (Component.bdkstkpijpsimm_kpimm_mpimk, Trigger.rkst_mm_os),
-    (Component.bdkstkpijpsiee_kpiee_epiek, Trigger.rkst_ee_os),
+    (Component.bdkstkpijpsimm_kpimm_mpikm, Trigger.rkst_mm_os),
+    (Component.bdkstkpijpsiee_kpiee_epike, Trigger.rkst_ee_os),
     # --------
     (Component.bpkpjpsimm_kmm_mkm        , Trigger.rk_mm_os),
     (Component.bpkpjpsiee_kee_eke        , Trigger.rk_ee_os),
