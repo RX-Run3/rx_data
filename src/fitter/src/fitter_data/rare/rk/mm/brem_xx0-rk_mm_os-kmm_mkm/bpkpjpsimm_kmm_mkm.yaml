@@ -2,15 +2,20 @@ component : bpkpjpsimm_kmm_mkm
 categories:
   brem_xx0:
     selection :
+      cmb   : 'true'
+      prc   : 'true'
       pid_l : 'true'
       pid_k : 'true'
     model :
       pdfs :
-        - pol1
+        - cbl
       shared        : []
       floating      : []
       reparametrize : {}
       fix           : {}
+      values        :
+        mu : [3100, 3000, 3200]
+        sg : [  40,   10,  100]
 fit:
   strategy  :
     ntries : 10
@@ -19,7 +24,7 @@ plots:
   nbins     : 50
   stacked   : True
   plot_range:
-    - 2600
-    - 3300
+    - 2900
+    - 3200
   d_leg :
     pol1_bpkpjpsimm_brem_xx0_rk_mm_1  : Crystal Ball
